@@ -1,0 +1,41 @@
+[
+	{
+		"ProfileName": "Hi3Global",
+		"ZoneName": "Global",
+		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3rd",
+		"ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3rd",
+		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd glb",
+		"miHoYoAssetBundleAddress": "http://d2wztyirwsuyyo.cloudfront.net/asset_bundle/eur01/1.1/",
+		"miHoYoAssetBigFileAddress": "http://d2wztyirwsuyyo.cloudfront.net/tmp/com.miHoYo.bh3global/",
+		"Hi3MirrorAssetBundleAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
+		"Hi3MirrorAssetBigFileAddress": "http://data.in.sea.ironmaid.xyz:65535/tmp/com.miHoYo.bh3global/",
+		"LanguageAvailable": ["en", "cn", "fr", "de"],
+		"FallbackLanguage": "en"
+	},
+	{
+		"ProfileName": "Hi3SEA",
+		"ZoneName": "Southeast Asia",
+		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
+		"ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
+		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
+		"miHoYoAssetBundleAddress": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+		"miHoYoAssetBigFileAddress": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/",
+		"Hi3MirrorAssetBundleAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
+		"Hi3MirrorAssetBigFileAddress": "http://data.in.sea.ironmaid.xyz:65535/com.miHoYo.bh3oversea/",
+		"LanguageAvailable": ["en", "cn", "vn", "th", "id"],
+		"FallbackLanguage": "en"
+	}
+	/*
+	{
+		"ProfileName": "Hi3China",
+		"ZoneName": "Mainland China",
+		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\崩坏3",
+		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3",
+		"miHoYoAssetBundleAddress": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+		"miHoYoAssetBigFileAddress": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/",
+		"Hi3MirrorAssetBundleAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
+		"Hi3MirrorAssetBigFileAddress": "http://data.in.sea.ironmaid.xyz:65535/com.miHoYo.bh3oversea/",
+		"LanguageAvailable": ["cn"]
+	}
+	*/
+]

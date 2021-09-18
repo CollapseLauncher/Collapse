@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperGUI", "Hi3HelperGUI\Hi3HelperGUI.csproj", "{BE17E21E-3D9C-4037-8B4D-A6D236332114}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Debug|x64.ActiveCfg = Debug|x64
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Debug|x64.Build.0 = Debug|x64
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|x64.ActiveCfg = Release|x64
+		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7636737-C4CB-4FED-8101-37915CF1F8A7}
+	EndGlobalSection
+EndGlobal

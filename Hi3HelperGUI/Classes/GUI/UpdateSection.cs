@@ -1,0 +1,144 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+//using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+//using System.Runtime.InteropServices;
+using System.IO;
+using Hi3HelperGUI.Preset;
+using Hi3HelperGUI.Data;
+
+using static Hi3HelperGUI.Logger;
+using static Hi3HelperGUI.ConverterTools;
+
+namespace Hi3HelperGUI
+{
+    public partial class MainWindow
+    {
+        CancellationTokenSource DownloadTokenSource;
+        private void SetMirrorChange(object sender, SelectionChangedEventArgs e) => ChangeMirrorSelection(MirrorSelector.SelectedIndex);
+        private void UpdateCheckStart(object sender, RoutedEventArgs e) => FetchUpdateData();
+        private void UpdateDownloadStart(object sender, RoutedEventArgs e) => DoUpdateDownload();
+        private void UpdateDownloadCancel(object sender, RoutedEventArgs e) => DownloadTokenSource.Cancel();
+
+        UpdateData UpdateDataUtil;
+
+        private async void FetchUpdateData()
+        {
+            await Task.Run(() =>
+            {
+                (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
+                RefreshTotalProgressBar();
+                ConfigStore.UpdateFiles = new List<UpdateDataProperties>();
+                RefreshUpdateProgressLabel();
+                ChangeUpdateDownload(false);
+                ChangeUpdateStatus($"Fetching update data...", false);
+                foreach (PresetConfigClasses i in ConfigStore.Config)
+                {
+                    LogWriteLine($"Fetching update data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version... ");
+                    UpdateDataUtil = new UpdateData(i);
+                    for (byte j = 0; j < 3; j++)
+                        UpdateDataUtil.GetDataDict(i, ConfigStore.DataType.Hi3MirrorAssetBundle, j);
+                }
+                ConfigStore.UpdateFilesTotalSize = ConfigStore.UpdateFiles.Sum(item => item.ECS);
+                StoreToListView(ConfigStore.UpdateFiles);
+                if (!(ConfigStore.UpdateFilesTotalSize > 0))
+                {
+                    ChangeUpdateStatus($"Your files are already up-to-date!", true);
+                    return;
+                }
+                ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSize(ConfigStore.UpdateFilesTotalSize)}) will be updated. Click Download to start the update!", true);
+                ChangeUpdateDownload(true);
+                LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSize(ConfigStore.UpdateFilesTotalSize)}) will be updated");
+                return;
+            });
+        }
+
+
+        private void StoreToListView(List<UpdateDataProperties> i) => Dispatcher.Invoke(() => UpdateListView.ItemsSource = i);
+
+        private async void DoUpdateDownload()
+        {
+            DownloadTokenSource = new CancellationTokenSource();
+            var token = DownloadTokenSource.Token;
+
+            Dispatcher.Invoke(() => UpdateDownloadBtn.IsEnabled = false );
+            // await Task.Run(() => DownloadUpdateFiles(ConfigStore.UpdateFiles), token);
+            ToggleUpdateCancelBtnState(true);
+            try
+            {
+                await DownloadUpdateFilesAsync(DownloadTokenSource, token);
+            }
+            catch (TaskCanceledException)
+            {
+                ToggleUpdateCancelBtnState(false);
+                Console.WriteLine();
+                LogWriteLine($"Download is cancelled!", LogType.Warning, true);
+                ChangeUpdateStatus($"Download is cancelled! To resume, click Check Update and then click Download.", true);
+                return;
+            }
+            finally
+            {
+                DownloadTokenSource.Dispose();
+            }
+
+            RefreshUpdateProgressLabel();
+            ToggleUpdateCancelBtnState(false);
+            // await DownloadTask;
+            ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files have been downloaded!", true);
+        }
+
+        private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
+
+        private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
+
+        private void RefreshTotalProgressBar(double cur = 0, double max = 100) =>  Dispatcher.Invoke(() => TotalProgressBar.Value = Math.Round((100 * cur) / max, 2));
+
+        private void ToggleUpdateCancelBtnState(bool i) =>
+            Dispatcher.Invoke(() => {
+                if (i)
+                {
+                    UpdateCheckBtn.Visibility = Visibility.Collapsed;
+                    UpdateCancelBtn.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    UpdateCheckBtn.Visibility = Visibility.Visible;
+                    UpdateCancelBtn.Visibility = Visibility.Collapsed;
+                }
+            });
+
+        private void ChangeMirrorSelection(int i) =>
+            Dispatcher.Invoke(() =>
+            {
+                switch (i)
+                {
+                    case 0:
+                        ConfigStore.UseHi3Mirror = false;
+                        break;
+                    case 1:
+                        ConfigStore.UseHi3Mirror = true;
+                        break;
+                }
+                MirrorSelectorStatus.Content = ((ComboBoxItem)MirrorSelector.SelectedItem).Content.ToString();
+                LogWriteLine($"Mirror: \u001b[33;1m{MirrorSelectorStatus.Content}\u001b[0m is selected!");
+            });
+
+        private void ChangeUpdateDownload(bool a) =>
+            Dispatcher.Invoke(() =>
+            {
+                UpdateDownloadBtn.IsEnabled = a;
+                UpdateListView.IsEnabled = a;
+            });
+
+        private void ChangeUpdateStatus(string s, bool b) =>
+            Dispatcher.Invoke(() =>
+            {
+                UpdateCheckStatus.Content = s;
+                UpdateCheckBtn.IsEnabled = b;
+            });
+    }
+}
