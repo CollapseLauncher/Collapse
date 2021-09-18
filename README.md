@@ -1,2 +1,2 @@
 # Hi3Helper
- An universal tools for Honkai Impact 3
+ An universal tool for Honkai Impact 3
