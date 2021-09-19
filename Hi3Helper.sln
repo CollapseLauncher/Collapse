@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperGUI", "Hi3HelperGUI\Hi3HelperGUI.csproj", "{BE17E21E-3D9C-4037-8B4D-A6D236332114}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BenchmarkLab", "BenchmarkLab\BenchmarkLab.csproj", "{1E8DFCA5-3CD4-437F-872A-11D8A2059149}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|x64.ActiveCfg = Release|x64
 		{BE17E21E-3D9C-4037-8B4D-A6D236332114}.Release|x64.Build.0 = Release|x64
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E8DFCA5-3CD4-437F-872A-11D8A2059149}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
