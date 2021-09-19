@@ -20,37 +20,21 @@ namespace Hi3HelperGUI
             return hash;
         }
 
-        public static uint BytesToUInt32Big(byte[] buffer)
-        {
-            return (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
-                   (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8  | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;
-        }
+        public static uint BytesToUInt32Big(byte[] buffer) =>
+            (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
+            (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8  | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;
 
-        public static ushort BytesToUInt16Big(byte[] buffer)
-        {
-            return (ushort)((BitConverter.ToUInt16(buffer, 0) & 0xFFU) << 8 | (BitConverter.ToUInt16(buffer, 0) & 0xFF00U) >> 8);
-        }
+        public static ushort BytesToUInt16Big(byte[] buffer) => (ushort)((BitConverter.ToUInt16(buffer, 0) & 0xFFU) << 8 | (BitConverter.ToUInt16(buffer, 0) & 0xFF00U) >> 8);
 
-        public static uint ToUInt32Big(uint value)
-        {
-            return (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
-                   (value & 0x00FF0000U) >> 8  | (value & 0xFF000000U) >> 24;
-        }
+        public static uint ToUInt32Big(uint value) =>
+            (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
+            (value & 0x00FF0000U) >> 8  | (value & 0xFF000000U) >> 24;
 
-        public static ushort ToUInt16Big(ushort value)
-        {
-            return (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
-        }
+        public static ushort ToUInt16Big(ushort value) => (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
 
-        public static string BytesToHex(byte[] bytes, bool upperCase = false)
-        {
-            return string.Concat(bytes.Select(x => x.ToString(upperCase ? "X2" : "x2")));
-        }
+        public static string BytesToHex(byte[] bytes, bool upperCase = false) => string.Concat(bytes.Select(x => x.ToString(upperCase ? "X2" : "x2")));
 
-        public static string BytesToMD5(byte[] stream)
-        {
-            return BitConverter.ToString(MD5.Create().ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-        }
+        public static string BytesToMD5(byte[] stream) => BitConverter.ToString(MD5.Create().ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
 
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
