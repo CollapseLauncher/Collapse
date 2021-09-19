@@ -62,28 +62,29 @@ namespace Hi3HelperGUI
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_HIDE);
             Logger.DisableConsole = true;
+            WriteLog($"Console toggle: Hidden", LogType.Default);
         }
         public static void ShowConsoleWindow()
         {
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_SHOW);
             Logger.DisableConsole = false;
+            WriteLog($"Console toggle: Show", LogType.Default);
         }
 
         public MainWindow()
         {
             LoadAppConfig();
-            ApplyAppConfig();
             InitializeConsole();
+            ApplyAppConfig();
             InitializeComponent();
             //CheckVersionAvailability();
             Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString();
             CheckConfigSettings();
         }
 
-        private Version GetRunningVersion() => Assembly.GetExecutingAssembly().GetName().Version;
-
-        internal void DisableAllFunction() =>
+        internal void DisableAllFunction()
+        {
             Dispatcher.Invoke(() =>
             {
                 UpdateSection.IsEnabled = false;
@@ -92,10 +93,11 @@ namespace Hi3HelperGUI
                 SettingsSection.IsEnabled = false;
                 MirrorSelector.IsEnabled = false;
             });
+        }
 
         static void InitializeConsole()
         {
-            //AllocConsole();
+            AllocConsole();
 
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
             if (!GetConsoleMode(iStdOut, out uint outConsoleMode))

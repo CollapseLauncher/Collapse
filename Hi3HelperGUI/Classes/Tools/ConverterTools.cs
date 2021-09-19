@@ -11,19 +11,15 @@ namespace Hi3HelperGUI
 {
     public class ConverterTools
     {
-        public static string versionstring = "5_0_0";
-        public static string lastversionstring = "4_9_0_0";
-        private static string summary = "";
         public static string BytesToCRC32(byte[] buffer)
         {
-            return new Func<string>(() => {
-                Crc32Algorithm crc = new Crc32Algorithm();
-                String hash = String.Empty;
-                using (MemoryStream stream = new MemoryStream(buffer))
-                    foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
-                return hash;
-            })();
+            Crc32Algorithm crc = new Crc32Algorithm();
+            String hash = String.Empty;
+            using (MemoryStream stream = new MemoryStream(buffer))
+                foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
+            return hash;
         }
+
         public static uint BytesToUInt32Big(byte[] buffer)
         {
             return (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |

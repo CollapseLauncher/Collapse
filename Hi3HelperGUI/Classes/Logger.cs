@@ -4,26 +4,31 @@
 //using System.Text;
 //using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows;
+using System.Reflection;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Controls;
 
 namespace Hi3HelperGUI
 {
-    public partial class Logger : ILogger
+    public partial class Logger : Window, ILogger
     {
         private protected static StreamWriter logstream;
         private protected static string logdir,
                       filename;
         public static bool DisableConsole = false;
         public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag }
-        
+
+        public static Version GetRunningVersion() => Assembly.GetExecutingAssembly().GetName().Version;
+
         public static void InitLog()
         {
             logdir = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
             if (!Directory.Exists(logdir))
                 Directory.CreateDirectory(logdir);
             filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
+            LogWriteLine($"App started! v{GetRunningVersion()}", LogType.Scheme, true);
         }
 
         private protected static string ColorizePrint(string i, LogType a)
@@ -77,7 +82,7 @@ namespace Hi3HelperGUI
             if (!DisableConsole) Print(i, a);
         }
 
-        private protected static void WriteLog(string i, LogType a = LogType.Default)
+        public static void WriteLog(string i, LogType a = LogType.Default)
         {
             using (logstream = new StreamWriter(Path.Combine(logdir, filename), true))
                 logstream.WriteLine(GetLog(i, a));
