@@ -39,7 +39,7 @@ namespace Hi3HelperGUI
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
-        public static string SummarizeSizeSimplified(long value, byte decimalPlaces = 2)
+        public static string SummarizeSize(long value, byte decimalPlaces = 2)
         {
             if (value == 0 || value < 0)
                 return "0 bytes";
