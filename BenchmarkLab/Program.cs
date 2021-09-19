@@ -72,9 +72,6 @@ namespace BenchmarkLab
             if (value == 0 || value < 0)
                 return "0 bytes";
 
-            //if (decimalPlaces < 0) { throw new ArgumentOutOfRangeException("decimalPlaces"); }
-            //if (value < 0) { return "-" + SummarizeSize(-value, decimalPlaces); }
-            // if (value == 0) { return string.Format("{0:n" + decimalPlaces + "} bytes", 0); }
             // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
             int mag = (int)Math.Log(value, 1024);
 
@@ -89,10 +86,6 @@ namespace BenchmarkLab
                 mag++;
                 adjustedSize /= 1024;
             }
-
-            /*return string.Format("{0:n" + decimalPlaces + "} {1}",
-                adjustedSize,
-                SizeSuffixes[mag]);*/
 
             return $"{Math.Round(adjustedSize, decimalPlaces)} {SizeSuffixesOpt[mag]}";
         }
