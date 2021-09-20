@@ -62,7 +62,16 @@ namespace Hi3HelperGUI
                 adjustedSize /= 1024;
             }
 
-            return $"{Math.Round(adjustedSize, decimalPlaces)} {SizeSuffixes[mag]}";
+            return string.Format("{0:n" + decimalPlaces + "} {1}",
+               adjustedSize,
+               SizeSuffixes[mag]);
+        }
+
+        public static string SummarizeSizeSimple(double value, int decimalPlaces = 2)
+        {
+            byte mag = (byte)Math.Log(value, 1000);
+
+            return $"{Math.Round(value / (1L << (mag * 10)), decimalPlaces)} {SizeSuffixes[mag]}";
         }
 
         // Reference:

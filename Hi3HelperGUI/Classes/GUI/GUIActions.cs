@@ -97,8 +97,10 @@ namespace Hi3HelperGUI
                     beginTimeDownload = DateTime.Now;
                 }
 
+                ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceivedBytes;
+
                 if ((DateTime.Now - beginTimeDownload).TotalMilliseconds > 100)
-                    RefreshUpdateProgressLabel($"{(byte)e.ProgressPercentage}% ({SummarizeSize(e.BytesReceived)}) ({(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSize(bytesInterval)))}/s)");
+                    RefreshUpdateProgressLabel($"{(byte)e.ProgressPercentage}% ({SummarizeSizeSimple(e.BytesReceived)}) ({(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSizeSimple(bytesInterval)))}/s)");
 
                 /* TODO
                  * Realtime change Download Status for specific item.
@@ -108,10 +110,9 @@ namespace Hi3HelperGUI
                     ConfigStore.UpdateFiles[index].DownloadStatus = $"{(e.NoProgress ? "Unknown" : $"{(byte)e.ProgressPercentage}%")} ({(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSize(bytesInterval)))}/s) {SummarizeSize(e.BytesReceived)}";
                 }
                 */
-                ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceivedBytes;
                 RefreshTotalProgressBar(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
                 LogWrite($"{customMessage} \u001b[33;1m{(e.NoProgress ? "Unknown" : $"{(byte)e.ProgressPercentage}%")}"
-                 + $"\u001b[0m ({SummarizeSize(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSize(bytesInterval)))}/s\u001b[0m)", LogType.NoTag, false, true);
+                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSizeSimple(bytesInterval)))}/s\u001b[0m)", LogType.NoTag, false, true);
                 //}
             };
             return new EventHandler<DownloadProgressChangedEventArgs>(action);
@@ -146,7 +147,7 @@ namespace Hi3HelperGUI
                 ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceivedBytes;
                 RefreshTotalProgressBar(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
                 LogWrite($"{customMessage} \u001b[33;1m{(e.NoProgress ? "Unknown" : $"{(byte)e.ProgressPercentage}%")}"
-                 + $"\u001b[0m ({SummarizeSize(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSize(bytesInterval) + "/s"))}\u001b[0m)", LogType.NoTag, false, true);
+                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSizeSimple(bytesInterval) + "/s"))}\u001b[0m)", LogType.NoTag, false, true);
                 //}
             };
             return new EventHandler<DownloadProgressChangedEventArgs>(action);
