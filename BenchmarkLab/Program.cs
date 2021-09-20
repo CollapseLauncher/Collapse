@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Order;
@@ -11,6 +10,9 @@ namespace BenchmarkLab
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Console.WriteLine("Old SummarizeSize Result: " + new Tool().SummarizeSize((long)(uint.MaxValue * 0.987654321)) + " " + new Tool().SummarizeSize((long)(int.MaxValue * 0.987654321)));
+            Console.WriteLine("SummarizeSizeSimple Result: " + new Tool().SummarizeSizeSimple(uint.MaxValue * 0.987654321) + " " + new Tool().SummarizeSizeSimple((int.MaxValue * 0.987654321)));
+            Console.WriteLine("SummarizeSizeSimpleWithDecimal Result: " + new Tool().SummarizeSizeSimple(uint.MaxValue * 0.987654321, 9) + " " + new Tool().SummarizeSizeSimple(int.MaxValue * 0.987654321, 9));
 
             BenchmarkRunner.Run<Tool>();
         }
@@ -21,25 +23,29 @@ namespace BenchmarkLab
     [RankColumn]
     public class Tool
     {
-        internal protected static readonly string[] SizeSuffixesOpt =
+        private readonly string[] SizeSuffixes =
            { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         [Benchmark]
-        public void StartSummarizeOriginal()
+        public void SummarizeSize()
         {
-            for (short i = short.MaxValue; i > 0; i--)
-                SummarizeSize((long)i);
+            for (ushort i = ushort.MaxValue; i > 0; i--)
+                SummarizeSize((long)(i * 0.987654321));
         }
 
         [Benchmark]
-        public void StartSummarizeSimplifiedNew()
+        public void SummarizeSizeSimpleWithDecimal()
         {
-            for (short i = short.MaxValue; i > 0; i--)
-                SummarizeSizeSimplified((long)i);
+            for (ushort i = ushort.MaxValue; i > 0; i--)
+                SummarizeSizeSimple(i * 0.987654321, 9);
         }
 
-        static readonly string[] SizeSuffixes =
-                   { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        [Benchmark]
+        public void SummarizeSizeSimple()
+        {
+            for (ushort i = ushort.MaxValue; i > 0; i--)
+                SummarizeSizeSimple(i * 0.987654321);
+        }
 
         public string SummarizeSize(Int64 value, int decimalPlaces = 2)
         {
@@ -67,27 +73,11 @@ namespace BenchmarkLab
                 SizeSuffixes[mag]);
         }
 
-        public string SummarizeSizeSimplified(long value, byte decimalPlaces = 2)
+        public string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {
-            if (value == 0 || value < 0)
-                return "0 bytes";
+            byte mag = (byte)Math.Log(value, 1000);
 
-            // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
-            int mag = (int)Math.Log(value, 1024);
-
-            // 1L << (mag * 10) == 2 ^ (10 * mag) 
-            // [i.e. the number of bytes in the unit corresponding to mag]
-            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
-
-            // make adjustment when the value is large enough that
-            // it would round up to 1000 or more
-            if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
-            {
-                mag++;
-                adjustedSize /= 1024;
-            }
-
-            return $"{Math.Round(adjustedSize, decimalPlaces)} {SizeSuffixesOpt[mag]}";
+            return $"{Math.Round(value / (1L << (mag * 10)), decimalPlaces)} {SizeSuffixes[mag]}";
         }
     }
 }
