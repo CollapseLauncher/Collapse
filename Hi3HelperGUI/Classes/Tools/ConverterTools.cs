@@ -37,7 +37,7 @@ namespace Hi3HelperGUI
         public static string BytesToMD5(byte[] stream) => BitConverter.ToString(MD5.Create().ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
 
         static readonly string[] SizeSuffixes =
-                   { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+                   { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         public static string SummarizeSize(long value, byte decimalPlaces = 2)
         {
