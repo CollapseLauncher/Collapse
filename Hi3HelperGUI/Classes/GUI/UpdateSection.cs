@@ -50,9 +50,9 @@ namespace Hi3HelperGUI
                     ChangeUpdateStatus($"Your files are already up-to-date!", true);
                     return;
                 }
-                ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSize(ConfigStore.UpdateFilesTotalSize)}) will be updated. Click Download to start the update!", true);
+                ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated. Click Download to start the update!", true);
                 ChangeUpdateDownload(true);
-                LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSize(ConfigStore.UpdateFilesTotalSize)}) will be updated");
+                LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated");
                 return;
             });
         }

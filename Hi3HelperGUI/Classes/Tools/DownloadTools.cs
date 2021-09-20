@@ -489,8 +489,8 @@ namespace Hi3HelperGUI.Data
                     prevRecBytes = curRecBytes;
                     beginTimeDownload = DateTime.Now;
                 }
-                LogWrite($"{customMessage} \u001b[33;1m{(e.NoProgress ? "Unknown" : $"{(byte)e.ProgressPercentage}%")}"
-                 + $"\u001b[0m ({SummarizeSize(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSize(bytesInterval) + "/s"))}\u001b[0m)", LogType.NoTag, false, true);
+                LogWrite($"{customMessage} \u001b[33;1m{(byte)e.ProgressPercentage}%"
+                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{(bytesInterval == 0 || e.NoProgress ? "n/a" : (SummarizeSizeSimple(bytesInterval) + "/s"))}\u001b[0m)", LogType.NoTag, false, true);
                 //}
             };
             return new EventHandler<DownloadProgressChangedEventArgs>(action);
