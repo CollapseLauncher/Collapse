@@ -70,16 +70,21 @@ namespace Hi3HelperGUI
         {
             if (writeToLog)
                 WriteLog(i, a);
-            PrintLine(i, a);
+            if (!DisableConsole)
+                PrintLine(i, a);
         }
 
         public static void LogWrite(string i, LogType a = LogType.Default, bool writeToLog = false, bool overwriteCurLine = false)
         {
             if (writeToLog)
                 WriteLog(i, a);
-            if (overwriteCurLine)
-                Console.SetCursorPosition(0, Console.CursorTop);
-            Print(i, a);
+
+            if (!DisableConsole)
+            {
+                if (overwriteCurLine)
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                Print(i, a);
+            }
         }
 
         public static void WriteLog(string i, LogType a = LogType.Default)
