@@ -75,7 +75,7 @@ namespace Hi3HelperGUI.Data
                             CS = ConfigStore.DataProp.CS,
                             CRC = ConfigStore.DataProp.CRC,
                             ECS = ConfigStore.DataProp.CS,
-                            HumanizeSize = SummarizeSize(ConfigStore.DataProp.CS),
+                            HumanizeSize = SummarizeSizeSimple(ConfigStore.DataProp.CS),
                             RemotePath = $"{RemotePath}{ConfigStore.DataProp.N}_{ConfigStore.DataProp.CRC}",
                             ActualPath = LocalPath,
                             ZoneName = i.ZoneName,
@@ -90,12 +90,12 @@ namespace Hi3HelperGUI.Data
                             CS = ConfigStore.DataProp.CS,
                             CRC = ConfigStore.DataProp.CRC,
                             ECS = ConfigStore.DataProp.CS - new FileInfo(LocalPath).Length,
-                            HumanizeSize = SummarizeSize(ConfigStore.DataProp.CS),
+                            HumanizeSize = SummarizeSizeSimple(ConfigStore.DataProp.CS),
                             RemotePath = $"{RemotePath}{ConfigStore.DataProp.N}_{ConfigStore.DataProp.CRC}",
                             ActualPath = LocalPath,
                             ZoneName = i.ZoneName,
                             DataType = Enum.GetName(typeof(ConfigStore.DataType), dataType),
-                            DownloadStatus = $"Uncompleted {((100 * new FileInfo(LocalPath).Length) / ConfigStore.DataProp.CS)}% ({SummarizeSize(new FileInfo(LocalPath).Length)})"
+                            DownloadStatus = $"Uncompleted {((100 * new FileInfo(LocalPath).Length) / ConfigStore.DataProp.CS)}% ({SummarizeSizeSimple(new FileInfo(LocalPath).Length)})"
                         });
                     }
                 }
