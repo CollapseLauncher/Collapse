@@ -33,12 +33,12 @@ namespace Hi3HelperGUI
                     InitMirrorDropdown();
                     try
                     {
-                        InstalledClientLabel.Content = GetInstalledClientName();
+                        Dispatcher.Invoke(new Action(() => InstalledClientLabel.Content = GetInstalledClientName()));
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         ShowConsoleWindow();
-                        LogWriteLine($"No Client Installed!", LogType.Error, true);
+                        LogWriteLine($"No Client Installed!\r\n{ex}", LogType.Error, true);
                         DisableAllFunction();
                     }
                 });
