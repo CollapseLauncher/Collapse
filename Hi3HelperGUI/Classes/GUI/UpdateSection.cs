@@ -12,17 +12,22 @@ using Hi3HelperGUI.Preset;
 using Hi3HelperGUI.Data;
 
 using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.ConverterTools;
+using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
         CancellationTokenSource DownloadTokenSource;
-        private void SetMirrorChange(object sender, SelectionChangedEventArgs e) => ChangeMirrorSelection(MirrorSelector.SelectedIndex);
+        private void SetMirrorChange(object sender, SelectionChangedEventArgs e) => ChangeMirrorSelection((byte)MirrorSelector.SelectedIndex);
         private void UpdateCheckStart(object sender, RoutedEventArgs e) => FetchUpdateData();
         private void UpdateDownloadStart(object sender, RoutedEventArgs e) => DoUpdateDownload();
-        private void UpdateDownloadCancel(object sender, RoutedEventArgs e) => DownloadTokenSource.Cancel();
+        private void UpdateDownloadCancel(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine();
+            LogWriteLine($"Cancelling update...", LogType.Warning);
+            DownloadTokenSource.Cancel();
+        }
 
         UpdateData UpdateDataUtil;
 
@@ -41,7 +46,7 @@ namespace Hi3HelperGUI
                     LogWriteLine($"Fetching update data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version... ");
                     UpdateDataUtil = new UpdateData(i);
                     for (byte j = 0; j < 3; j++)
-                        UpdateDataUtil.GetDataDict(i, ConfigStore.DataType.Hi3MirrorAssetBundle, j);
+                        UpdateDataUtil.GetDataDict(i, j);
                 }
                 ConfigStore.UpdateFilesTotalSize = ConfigStore.UpdateFiles.Sum(item => item.ECS);
                 StoreToListView(ConfigStore.UpdateFiles);
@@ -50,7 +55,7 @@ namespace Hi3HelperGUI
                     ChangeUpdateStatus($"Your files are already up-to-date!", true);
                     return;
                 }
-                ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated. Click Download to start the update!", true);
+                ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) are ready to be updated. Click Download to start the update!", true);
                 ChangeUpdateDownload(true);
                 LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated");
                 return;
@@ -75,9 +80,8 @@ namespace Hi3HelperGUI
             catch (TaskCanceledException)
             {
                 ToggleUpdateCancelBtnState(false);
-                Console.WriteLine();
-                LogWriteLine($"Download is cancelled!", LogType.Warning, true);
-                ChangeUpdateStatus($"Download is cancelled! To resume, click Check Update and then click Download.", true);
+                LogWriteLine($"Update is cancelled!", LogType.Warning, true);
+                ChangeUpdateStatus($"Update is cancelled! To resume, click Check Update and then click Download.", true);
                 return;
             }
             finally
@@ -111,20 +115,25 @@ namespace Hi3HelperGUI
                 }
             });
 
-        private void ChangeMirrorSelection(int i) =>
+        byte? currentMirror;
+
+        private void ChangeMirrorSelection(byte i) =>
             Dispatcher.Invoke(() =>
             {
-                switch (i)
+                if (currentMirror == null)
                 {
-                    case 0:
-                        ConfigStore.UseHi3Mirror = false;
-                        break;
-                    case 1:
-                        ConfigStore.UseHi3Mirror = true;
-                        break;
+                    MirrorSelector.SelectedIndex = ConfigStore.AppConfigData.MirrorSelection;
+                    MirrorSelectorStatus.Content = MirrorSelector.SelectedItem.ToString();
+                    currentMirror = ConfigStore.AppConfigData.MirrorSelection;
                 }
-                MirrorSelectorStatus.Content = ((ComboBoxItem)MirrorSelector.SelectedItem).Content.ToString();
-                LogWriteLine($"Mirror: \u001b[33;1m{MirrorSelectorStatus.Content}\u001b[0m is selected!");
+                else
+                {
+                    ConfigStore.AppConfigData.MirrorSelection = i;
+                    currentMirror = ConfigStore.AppConfigData.MirrorSelection;
+                    MirrorSelectorStatus.Content = MirrorSelector.SelectedItem.ToString();
+                    LogWriteLine($"Mirror: \u001b[33;1m{MirrorSelectorStatus.Content}\u001b[0m is selected!");
+                    SaveAppConfig();
+                }
             });
 
         private void ChangeUpdateDownload(bool a) =>

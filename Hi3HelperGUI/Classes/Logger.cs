@@ -12,11 +12,11 @@ using System.Windows.Controls;
 
 namespace Hi3HelperGUI
 {
-    public partial class Logger : Window, ILogger
+    public partial class Logger : Window
     {
-        private protected static StreamWriter logstream;
-        private protected static string logdir,
-                      filename;
+        protected internal static StreamWriter logstream;
+        protected internal static string logdir,
+                                         filename;
         public static bool DisableConsole = false;
         public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag }
 
@@ -41,6 +41,7 @@ namespace Hi3HelperGUI
                 case LogType.Warning:
                     i = $"\u001b[33;1m[Warn]\u001b[0m\t{i}";
                     break;
+                default:
                 case LogType.Default:
                     i = $"\u001b[32;1m[Info]\u001b[0m\t{i}";
                     break;
@@ -61,9 +62,11 @@ namespace Hi3HelperGUI
 
         public static void SetLabelAttrib(out Label i, string s, SolidColorBrush a)
         {
-            i = new Label();
-            i.Foreground = a;
-            i.Content = s;
+            i = new Label
+            {
+                Foreground = a,
+                Content = s
+            };
         }
 
         public static void LogWriteLine(string i, LogType a = LogType.Default, bool writeToLog = false)
@@ -104,6 +107,9 @@ namespace Hi3HelperGUI
                     break;
                 case LogType.Warning:
                     i = $"[Warn]\t{i}";
+                    break;
+                default:
+                    i = $"\t\t{i}";
                     break;
                 case LogType.Default:
                     i = $"[Info]\t{i}";

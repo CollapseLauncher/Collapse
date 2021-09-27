@@ -8,6 +8,7 @@ namespace Hi3HelperGUI.Preset
 {
     public static class ConfigStore
     {
+        public static AppSettings AppConfigData = new AppSettings();
         public static List<PresetConfigClasses> Config = new List<PresetConfigClasses>();
         public static List<UpdateDataProperties> UpdateFiles;
         public static long UpdateFilesTotalSize;
@@ -16,21 +17,34 @@ namespace Hi3HelperGUI.Preset
         public static UpdateDataProperties DataProp = new UpdateDataProperties();
 
         public static readonly List<string> RegionalCheckName = new List<string>() { "TextMap", "RandomDialogData", "sprite" };
-        public static bool UseHi3Mirror = true;
         public enum DataType
         {
-            Hi3MirrorBigFile = 3,
-            Hi3MirrorAssetBundle = 4,
-            miHoYoBigFile = 5,
-            miHoYoAssetBundle = 6,
             Data = 0,
             Event = 1,
             Ai = 2,
-            Block = 7,
-            Video = 8,
-            Subtitle = 9
+            Block = 3,
+            Video = 4,
+            Subtitle = 5,
+            DictionaryAddress = 6,
+            Bigfile = 7,
+            AssetBundle = 8
         }
 
+        public static string GetMirrorAddressByIndex(PresetConfigClasses h, DataType i)
+        {
+            switch (i)
+            {
+                default:
+                case DataType.AssetBundle:
+                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].AssetBundle;
+                case DataType.Bigfile:
+                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile;
+                case DataType.DictionaryAddress:
+                    return h.DictionaryAddress;
+            }
+        }
+
+        /*
         public static string GetMirrorAddress(PresetConfigClasses h, DataType j)
         {
             switch (j)
@@ -46,5 +60,6 @@ namespace Hi3HelperGUI.Preset
                     return h.miHoYoAssetBigFileAddress;
             }
         }
+        */
     }
 }
