@@ -22,7 +22,7 @@ namespace Hi3HelperGUI
             {
                 await Task.Run(() =>
                 {
-                    string ConfigData = Encoding.UTF8.GetString(File.ReadAllBytes(@"fileconfig.json"));
+                    string ConfigData = Encoding.UTF8.GetString(File.ReadAllBytes(Path.Combine("config", "fileconfig.json")));
                     TempConfig = JsonConvert.DeserializeObject<List<PresetConfigClasses>>(ConfigData);
                     if (TempConfig == null)
                         throw new NullReferenceException($"File config is empty!");

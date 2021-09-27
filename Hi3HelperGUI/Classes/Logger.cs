@@ -24,7 +24,7 @@ namespace Hi3HelperGUI
 
         public static void InitLog()
         {
-            logdir = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+            logdir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
             if (!Directory.Exists(logdir))
                 Directory.CreateDirectory(logdir);
             filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
@@ -118,7 +118,7 @@ namespace Hi3HelperGUI
                     i = $"[Schm]\t{i}";
                     break;
             }
-            return $"[{GetCurrentTime("HH:mm:ss.fff")}] {i}";
+            return $"[{GetCurrentTime("HH:mm:ss.fff")}] {i.Replace("\n", $"{new string(' ', 22)}\t")}";
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
-        public void LoadAppConfig() => AppConfigData = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(@"appconfig.json"));
+        public void LoadAppConfig() => AppConfigData = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Path.Combine("config", "appconfig.json")));
 
         public async void ApplyAppConfig() => await Task.Run(() =>
         {
@@ -38,7 +38,7 @@ namespace Hi3HelperGUI
             {
                 AppConfigData.ShowConsole = ConfigEnableConsole.IsChecked ?? false;
             });
-            File.WriteAllText(@"appconfig.json", JsonConvert.SerializeObject(AppConfigData, Formatting.Indented).ToString());
+            File.WriteAllText(Path.Combine("config", "appconfig.json"), JsonConvert.SerializeObject(AppConfigData, Formatting.Indented).ToString());
         }
     }
 }

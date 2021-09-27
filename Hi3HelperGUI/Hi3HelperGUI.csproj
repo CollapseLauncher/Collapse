@@ -19,18 +19,17 @@
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+	<DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants />
+    <DebugSymbols>false</DebugSymbols>
+	<Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,10 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appconfig.json">
+    <Content Include="config\appconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="fileconfig.json">
+    <Content Include="config\fileconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
