@@ -31,6 +31,16 @@ namespace Hi3HelperGUI
                         isConfigAvailable(i);
 
                     InitMirrorDropdown();
+                    try
+                    {
+                        InstalledClientLabel.Content = GetInstalledClientName();
+                    }
+                    catch
+                    {
+                        ShowConsoleWindow();
+                        LogWriteLine($"No Client Installed!", LogType.Error, true);
+                        DisableAllFunction();
+                    }
                 });
             }
             catch (JsonReaderException e)
@@ -49,7 +59,6 @@ namespace Hi3HelperGUI
                 DisableAllFunction();
                 return;
             }
-            InstalledClientLabel.Content = GetInstalledClientName();
             return;
         }
 
@@ -75,7 +84,10 @@ namespace Hi3HelperGUI
             {
                 a = (string)Registry.GetValue(i.InstallRegistryLocation, RegValue, null);
                 if (a == null)
+                {
+                    ret = false;
                     throw new NullReferenceException($"Registry for \"{i.ZoneName}\" version doesn't exist, probably the version isn't installed.");
+                }
 
                 if (!Directory.Exists(a))
                 {
