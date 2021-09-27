@@ -4,12 +4,15 @@
 using System.Text;
 //using System.Threading.Tasks;
 using System.Net;
+#if (!NETFRAMEWORK)
+using System.Net.Http;
+#endif
 using System.IO;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
 //using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.ConverterTools;
+using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI.Data
 {
@@ -31,14 +34,44 @@ namespace Hi3HelperGUI.Data
 
         public UpdateData(PresetConfigClasses i)
         {
-            RemoteURL = new _RemoteURL();
-            RemoteURL.DataDictionary = $"{i.Hi3MirrorAssetBundleAddress}data/editor_compressed/PackageVersion.txt";
-            RemoteURL.Data = $"{ConfigStore.GetMirrorAddress(i, ConfigStore.UseHi3Mirror ? ConfigStore.DataType.Hi3MirrorAssetBundle : ConfigStore.DataType.miHoYoAssetBundle)}data/editor_compressed/";
-            RemoteURL.EventDictionary = $"{i.Hi3MirrorAssetBundleAddress}event/editor_compressed/PackageVersion.txt";
-            RemoteURL.Event = $"{ConfigStore.GetMirrorAddress(i, ConfigStore.UseHi3Mirror ? ConfigStore.DataType.Hi3MirrorAssetBundle : ConfigStore.DataType.miHoYoAssetBundle)}event/editor_compressed/";
-            RemoteURL.AiDictionary = $"{i.Hi3MirrorAssetBundleAddress}ai/editor_compressed/PackageVersion.txt";
-            RemoteURL.Ai = $"{ConfigStore.GetMirrorAddress(i, ConfigStore.UseHi3Mirror ? ConfigStore.DataType.Hi3MirrorAssetBundle : ConfigStore.DataType.miHoYoAssetBundle)}ai/editor_compressed/";
+            string bundleURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.AssetBundle);
+            string dictionaryURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.DictionaryAddress);
+            RemoteURL = new _RemoteURL()
+            {
+                DataDictionary = $"{dictionaryURL}data/editor_compressed/PackageVersion.txt",
+                Data = $"{bundleURL}data/editor_compressed/",
+                EventDictionary = $"{dictionaryURL}event/editor_compressed/PackageVersion.txt",
+                Event = $"{bundleURL}event/editor_compressed/",
+                AiDictionary = $"{dictionaryURL}ai/editor_compressed/PackageVersion.txt",
+                Ai = $"{bundleURL}ai/editor_compressed/"
+            };
         }
+
+        /*
+        public UpdateData(PresetConfigClasses i)
+        {
+            string bundleURL;
+            switch (ConfigStore.AppConfigData.MirrorSelection)
+            {
+                default:
+                case 0:
+                    bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.Hi3MirrorAssetBundle);
+                    break;
+                case 1:
+                    bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.miHoYoAssetBundle);
+                    break;
+            }
+            RemoteURL = new _RemoteURL()
+            {
+                DataDictionary = $"{i.Hi3MirrorAssetBundleAddress}data/editor_compressed/PackageVersion.txt",
+                Data = $"{bundleURL}data/editor_compressed/",
+                EventDictionary = $"{i.Hi3MirrorAssetBundleAddress}event/editor_compressed/PackageVersion.txt",
+                Event = $"{bundleURL}event/editor_compressed/",
+                AiDictionary = $"{i.Hi3MirrorAssetBundleAddress}ai/editor_compressed/PackageVersion.txt",
+                Ai = $"{bundleURL}ai/editor_compressed/"
+            };
+        }
+        */
 
         /*
          * dataType
@@ -46,15 +79,14 @@ namespace Hi3HelperGUI.Data
          * 1    = Event
          * 2    = Ai
          */
-        public void GetDataDict(PresetConfigClasses i, ConfigStore.DataType j, byte dataType)
+        public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
-            webClient = new WebClient();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
             // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
             MemoryStream memoryData = new MemoryStream();
-            DownloadTools Downloader = new DownloadTools();
+            DownloadTool Downloader = new DownloadTool();
             Downloader.DownloadToBuffer(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary, memoryData, $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list");
 
             // For NET5

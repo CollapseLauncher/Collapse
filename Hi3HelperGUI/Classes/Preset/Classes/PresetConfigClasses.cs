@@ -14,13 +14,11 @@ namespace Hi3HelperGUI.Preset
         public string ConfigRegistryLocation { get; set; }
         public string ActualGameLocation { get; set; }
         public string DefaultGameLocation { get; set; }
-        public string miHoYoAssetBundleAddress { get; set; }
-        public string miHoYoAssetBigFileAddress { get; set; }
-        public string Hi3MirrorAssetBundleAddress { get; set; }
-        public string Hi3MirrorAssetBigFileAddress { get; set; }
+        public string DictionaryAddress { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public string UsedLanguage { get; set; }
         public string FallbackLanguage { get; set; }
+        public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
     }
 
     public class AppSettings
@@ -28,6 +26,13 @@ namespace Hi3HelperGUI.Preset
         public bool ShowConsole { get; set; }
         public ushort SupportedGameVersion { get; set; }
         public ushort PreviousGameVersion { get; set; }
+        public byte MirrorSelection { get; set; }
+        public List<string> AvailableMirror { get; set; }
+    }
+    public class MirrorUrlMember
+    {
+        public string AssetBundle { get; set; }
+        public string Bigfile { get; set; }
     }
 
     public class UpdateDataProperties

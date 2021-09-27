@@ -7,16 +7,23 @@ using System.Security.Cryptography;
 using System.Numerics;
 using Force.Crc32;
 
-namespace Hi3HelperGUI
+namespace Hi3HelperGUI.Data
 {
-    public class ConverterTools
+    public class ConverterTool
     {
         public static string BytesToCRC32(byte[] buffer)
         {
             Crc32Algorithm crc = new Crc32Algorithm();
-            String hash = String.Empty;
+            string hash = String.Empty;
             using (MemoryStream stream = new MemoryStream(buffer))
                 foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
+            return hash;
+        }
+
+        public static string BytesToCRC32Simple(byte[] buffer)
+        {
+            string hash = String.Empty;
+            foreach (byte a in new Crc32Algorithm().ComputeHash(new MemoryStream(buffer))) hash += a.ToString("x2").ToLower();
             return hash;
         }
 
@@ -76,22 +83,13 @@ namespace Hi3HelperGUI
 
         // Reference:
         // https://stackoverflow.com/questions/249760/how-can-i-convert-a-unix-timestamp-to-datetime-and-vice-versa
-        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-        {
-            return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTimeStamp).ToLocalTime();
-        }
+        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp) => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTimeStamp).ToLocalTime();
 
-        public static int UnixTimestamp()
-        {
-            return (int)Math.Truncate((DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
-        }
+        public static int UnixTimestamp() => (int)Math.Truncate((DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
 
         // Reference:
         // https://social.msdn.microsoft.com/Forums/vstudio/en-US/7f5765cc-3edc-44b4-92c6-7b9680e778ed/getting-md5sha-as-number-instead-of-string?forum=csharpgeneral
-        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data)
-        {
-            return new BigInteger(algorithm.ComputeHash(data));
-        }
+        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data) => new BigInteger(algorithm.ComputeHash(data));
 
         // Reference:
         // https://makolyte.com/csharp-hex-string-to-byte-array

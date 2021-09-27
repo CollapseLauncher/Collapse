@@ -1,21 +1,16 @@
-﻿/* Grabbed from Hi3MirrorServer Code
- * There are bunch of things to get done for making this to work.
- * 
- * 
+﻿
 using System;
 using System.Collections.Generic;
 using System.IO;
 // using System.Linq;
 using System.Text;
-using Hi3Helper.DownloadtoolsV2;
-using Hi3Helper.Downloadtools;
-using static Hi3Helper.ConverterTools;
-using static Hi3Helper.Log;
-using static Hi3Helper.DataClasses;
+using static Hi3HelperGUI.Data.ConverterTool;
+using static Hi3HelperGUI.Logger;
+using Hi3HelperGUI.Preset;
 
 namespace Hi3HelperGUI.Data
 {
-    public class XMFPatchUtils
+    public class XMFPatchUtils : XMFDictionaryClasses
     {
         // XMF Section
         internal protected FileStream fs;
@@ -100,37 +95,12 @@ namespace Hi3HelperGUI.Data
             if (XMFBook == null)
                 throw new NullReferenceException("XMFBook is null. Please .Read() it first!");
 
-            Dictionary<string, string> Host = DownloadTools.ServerSwitch > 0 ?
-                DownloadTools.HostPropertiesGLB["Asb"] :
-                DownloadTools.HostProperties["Asb"];
-
-            string url = Host["Hostname"] + "/"
-                + Host["StreamingPath"] + "/"
-                + DownloadTools.GetVersionString() + "/"
-                + Host[deviceID == 0 ? "AndroidPatchPath" : deviceID == 1 ? "PCPatchPath" : "iOSPatchPath"] + "/";
-
-            string inp,
-                outp;
-
-            ushort c = 1;
-            foreach (_PatchFileProperty i in XMFBook.PatchContent)
-            {
-                inp = $"{url}{i._patchdir}/{i._patchfilename}.wmv";
-                outp = Path.Combine(Path.GetDirectoryName(xmfpath), i._patchdir);
-                if (!Directory.Exists(outp))
-                    Directory.CreateDirectory(outp);
-
-                if (!File.Exists(Path.Combine(outp, $"{i._patchfilename}.wmv")) || new FileInfo(Path.Combine(outp, $"{i._patchfilename}.wmv")).Length != i._patchfilesize)
-                    while (!DownloadToolsV2.DownloadFileV2(inp, Path.Combine(outp, $"{i._patchfilename}.wmv"), false, $"\rDownloading ({c}/{XMFBook.PatchCount})"))
-                        LoggerOverride($"\rRetrying to download \u001b[32;1m{i._patchfilename}\u001b[0m...");
-                c++;
-            }
+            throw new NotImplementedException($"GetPatchFile() is not implemented yet");
         }
     }
 
-    public class XMFUtils : DataClasses
+    public class XMFUtils : XMFDictionaryClasses
     {
-        LogWriter log = new LogWriter();
 
         // FileFormat Enum
         internal protected enum FileFormat
@@ -316,142 +286,5 @@ namespace Hi3HelperGUI.Data
         }
 
         public short deviceID = 0;
-
-        string GetBlockURL() 
-        {
-            Dictionary<string, string> Host = DownloadTools.ServerSwitch > 0 ?
-                DownloadTools.HostPropertiesGLB["Asb"] :
-                DownloadTools.HostProperties["Asb"];
-
-            Dictionary<string, string> patchfiles = new Dictionary<string, string>();
-            string versionstring = DownloadTools.GetVersionString(),
-                   asbpath = Host[deviceID == 0 ? "AndroidAsbPath" : deviceID == 1 ? "PCAsbPath" : "iOSAsbPath"],
-                   bundleurl = $"{Host["Hostname"]}/{Host["StreamingPath"]}/{versionstring}/" + asbpath;
-            return bundleurl;
-        }
-
-        public void CheckDownloadedBlock()
-        {
-            if (XMFBook == null)
-                throw new NullReferenceException("XMFBook is null. Please .Read() it first!");
-
-            string blockurl = GetBlockURL();
-            string blockurlpath;
-            string blockpath;
-            string outputdir = Path.GetDirectoryName(xmfpath);
-
-            short c = 1;
-            foreach (_XMFBlockList i in XMFBook)
-            {
-                blockpath = Path.Combine(outputdir, $"{i.BlockHash}.wmv");
-                blockurlpath = $"{blockurl}/{i.BlockHash}.wmv";
-                LoggerOverride($"\rChecking ({c}/{XMFBook.Count}) \u001b[32;1m{i.BlockHash}\u001b[0m availability...");
-                if (!File.Exists(blockpath))
-                    while (!DownloadToolsV2.DownloadFileV2(blockurlpath, blockpath, false, $"\rDownloading ({c}/{XMFBook.Count})"))
-                        LoggerOverride($"\rRetrying to download \u001b[32;1m{i.BlockHash}\u001b[0m...");
-                c++;
-            }
-        }
-
-        public void GenerateChunks(bool overwrite = false)
-        {
-            if (XMFBook == null)
-                throw new NullReferenceException("XMFBook is null. Please .Read() it first!");
-
-            string outputdir = Path.GetDirectoryName(xmfpath);
-            string blockpath;
-            string chunkpath;
-
-            if (File.Exists(Path.Combine(outputdir, "index.dict")))
-            {
-                LoggerLine($"Index file in {outputdir} is already exist! Use GenerateChunks(true) to overwrite it or just delete the Index file.", LogType.Warning);
-                if (!overwrite)
-                    return;
-            }
-
-            FileStream DictBuffer = new FileStream(Path.Combine(outputdir, "index.dict"), FileMode.Create);
-
-            // Write magic header
-            DictBuffer.Write(Encoding.ASCII.GetBytes("Dict"), 0, 4);
-
-            // Write block counts (1 byte/byte)(since block counts are < max.value of byte).
-            DictBuffer.Write(new byte[] { (byte)XMFBook.Count }, 0, 1);
-
-            short c = 1,
-                  f;
-            bool w;
-            foreach (_XMFBlockList i in XMFBook)
-            {
-                // Write MD5 Hash of block as bytes (16 bytes).
-                DictBuffer.Write(ToBytes(i.BlockHash), 0, 16);
-
-                // Write size of block (4 bytes/uint).
-                DictBuffer.Write(BitConverter.GetBytes((uint)i.BlockSize), 0, 4);
-
-                // Write file counts inside of block file (2 bytes/ushort).
-                DictBuffer.Write(BitConverter.GetBytes((ushort)i.BlockContent.Count), 0, 2);
-
-                blockpath = Path.Combine(outputdir, i.BlockHash);
-                chunkpath = blockpath + ".c";
-                if (!Directory.Exists(chunkpath))
-                    Directory.CreateDirectory(chunkpath);
-
-                try
-                {
-                    using (fs = new FileStream(blockpath + ".wmv", FileMode.Open, FileAccess.Read))
-                    {
-                        if (c > 1)
-                            ClearConsoleLines(1);
-                        f = 1;
-                        LoggerOverride($"\rGenerating chunk from {i.BlockHash} [{c}/{XMFBook.Count}] ({SummarizeSize(i.BlockSize)}) ({i.BlockContent.Count} files)", true);
-                        foreach (_XMFFileProperty j in i.BlockContent)
-                        {
-                            w = false;
-                            if (!File.Exists(Path.Combine(chunkpath, j._filename)))
-                                w = true;
-
-                            fs.Read(buffer = new byte[j._filesize], 0, (int)j._filesize);
-                            filehash = BytesToCRC32(buffer);
-
-                            LoggerOverride($"\r    > [CRC32: {filehash} {(w ? "W" : "S")}: {f}] Writing {j._filename} ({SummarizeSize(j._filesize)})...");
-
-                            // Write filename length (1 byte/byte)(255 char max).
-                            DictBuffer.Write(new byte[] { (byte)j._filename.Length }, 0, 1);
-
-                            // Write filename (size depends on filename length).
-                            DictBuffer.Write(Encoding.ASCII.GetBytes(j._filename), 0, j._filename.Length);
-
-                            // Write start offset (4 bytes/uint).
-                            DictBuffer.Write(BitConverter.GetBytes((uint)j._startoffset), 0, 4);
-
-                            // Write filesize (4 bytes/uint).
-                            DictBuffer.Write(BitConverter.GetBytes((uint)j._filesize), 0, 4);
-
-                            // Write filehash CRC32 as bytes (4 bytes/int).
-                            DictBuffer.Write(ToBytes(filehash), 0, 4);
-
-                            if (w) File.WriteAllBytes(Path.Combine(chunkpath, j._filename), buffer);
-
-                            // Console.WriteLine($"    > {j._filename}\tCRC32: {filehash}");
-                            f++;
-                        }
-                        c++;
-                    }
-                }
-                catch (FileNotFoundException e)
-                {
-                    Logger($"Block {i.BlockHash} doesn't exist!. Have you tried to do CheckDownloadedBlock() first?\r\nTraceback: {e}", LogType.Error);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    Logger($"An error occured while generating chunk for {i.BlockHash}\r\nTraceback: {e}", LogType.Error);
-                    return;
-                }
-                
-            }
-            DictBuffer.Close();
-        }
     }
 }
-*/

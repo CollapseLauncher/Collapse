@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Text;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Order;
+using System.IO;
+using System.Linq;
+using Force.Crc32;
 
 namespace BenchmarkLab
 {
@@ -9,6 +14,7 @@ namespace BenchmarkLab
     {
         static void Main(string[] args)
         {
+            /*
             Console.WriteLine("Hello World!");
             Console.WriteLine("Old SummarizeSize Result: " + new Tool().SummarizeSize((long)(uint.MaxValue * 0.987654321)) + " " + new Tool().SummarizeSize((long)(int.MaxValue * 0.987654321)));
             Console.WriteLine("SummarizeSizeSimple Result: " + new Tool().SummarizeSizeSimple(uint.MaxValue * 0.987654321) + " " + new Tool().SummarizeSizeSimple((int.MaxValue * 0.987654321)));
@@ -16,9 +22,58 @@ namespace BenchmarkLab
 
             Console.WriteLine(new Tool().SummarizeSizeSimple(uint.MaxValue));
             Console.WriteLine(new Tool().Digits_FindCountWithPrec(12345678.87654));
+            */
 
-            BenchmarkRunner.Run<Tool>();
+            CRCTest a = new CRCTest();
+            byte[] data = File.ReadAllBytes(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png");
+            FileStream stream = new FileStream(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png", FileMode.Open, FileAccess.Read);
+
+            string hash = a.BytesToCRC32SimpleLINQ(data);
+            Console.WriteLine(hash);
+            hash = a.BytesToCRC32Simple(data);
+            Console.WriteLine(hash);
+            hash = a.BytesToCRC32Simple(stream);
+            Console.WriteLine(hash);
+
+            BenchmarkRunner.Run<CRCTest>();
         }
+    }
+
+
+    [MemoryDiagnoser]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [RankColumn]
+    public class CRCTest
+    {
+        byte[] data = File.ReadAllBytes(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png");
+        FileStream stream = new FileStream(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png", FileMode.Open, FileAccess.Read);
+        Crc32Algorithm CRCEncoder = new Crc32Algorithm();
+
+        [Benchmark]
+        public void BytesToCRC32SimpleLINQ() => BytesToCRC32SimpleLINQ(data);
+        public string BytesToCRC32SimpleLINQ(byte[] buffer) => BytesToHexLinq(CRCEncoder.ComputeHash(new MemoryStream(buffer)));
+
+        [Benchmark]
+        public void BytesToCRC32Simple() => BytesToCRC32Simple(data);
+
+        [Benchmark]
+        public void BytesToCRC32SimpleStream() => BytesToCRC32Simple(stream);
+        public string BytesToCRC32Simple(in byte[] buffer) => BytesToHexBitConverter(CRCEncoder.ComputeHash(new MemoryStream(buffer)));
+        public string BytesToCRC32Simple(in Stream buffer) => BytesToHexBitConverter(CRCEncoder.ComputeHash(buffer));
+
+        [Benchmark]
+        public void BytesToCRC32() => BytesToCRC32(data);
+        public static string BytesToCRC32(byte[] buffer)
+        {
+            Crc32Algorithm crc = new Crc32Algorithm();
+            string hash = String.Empty;
+            using (MemoryStream stream = new MemoryStream(buffer))
+                foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
+            return hash;
+        }
+
+        public string BytesToHexLinq(byte[] bytes, bool upperCase = false) => string.Concat(bytes.Select(x => x.ToString(upperCase ? "X2" : "x2")));
+        public string BytesToHexBitConverter(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "").ToLower();
     }
 
     [MemoryDiagnoser]
@@ -26,8 +81,6 @@ namespace BenchmarkLab
     [RankColumn]
     public class Tool
     {
-        private readonly string[] SizeSuffixes =
-           { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         double number = 1234567.7654321;
 
@@ -117,7 +170,7 @@ namespace BenchmarkLab
                 SummarizeSize((long)(i * 0.987654321));
         }
 
-        //[Benchmark]
+        [Benchmark]
         public void SummarizeSizeSimpleWithDecimal()
         {
             for (ushort i = ushort.MaxValue; i > 0; i--)
@@ -127,8 +180,8 @@ namespace BenchmarkLab
         [Benchmark]
         public void SummarizeSizeSimple()
         {
-            //for (ushort i = ushort.MaxValue; i > 0; i--)
-                SummarizeSizeSimple(1234 * 0.987654321);
+            for (ushort i = ushort.MaxValue; i > 0; i--)
+                SummarizeSizeSimple(i * 0.987654321);
         }
 
         public string SummarizeSize(Int64 value, int decimalPlaces = 2)
@@ -156,12 +209,12 @@ namespace BenchmarkLab
                 adjustedSize,
                 SizeSuffixes[mag]);
         }
+        string[] SizeSuffixes = { " B", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB" };
 
         public string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {
             byte mag = (byte)Math.Log(value, 1000);
-
-            return $"{Math.Round((value / (1L << (mag * 10))), decimalPlaces)} {SizeSuffixes[mag]}";
+            return $"{Math.Round((value / (1L << (mag * 10))), decimalPlaces)}{SizeSuffixes[mag]}";
         }
     }
 }

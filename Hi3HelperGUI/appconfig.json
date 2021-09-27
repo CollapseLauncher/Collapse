@@ -1,5 +1,10 @@
 {
-	"ShowConsole": false,
+	"ShowConsole": true,
 	"SupportedGameVersion": 510,
-	"PreviousGameVersion": 500
+	"PreviousGameVersion": 500,
+	"MirrorSelection": 1,
+	"AvailableMirror": [
+		"Hi3Mirror",
+		"miHoYo"
+	]
 }

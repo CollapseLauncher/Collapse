@@ -29,6 +29,8 @@ namespace Hi3HelperGUI
 
                     foreach (PresetConfigClasses i in TempConfig)
                         isConfigAvailable(i);
+
+                    InitMirrorDropdown();
                 });
             }
             catch (JsonReaderException e)
@@ -49,6 +51,16 @@ namespace Hi3HelperGUI
             }
             InstalledClientLabel.Content = GetInstalledClientName();
             return;
+        }
+
+        internal void InitMirrorDropdown()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MirrorSelector.ItemsSource = AppConfigData.AvailableMirror;
+                MirrorSelector.SelectedIndex = AppConfigData.MirrorSelection;
+                MirrorSelectorStatus.Content = MirrorSelector.SelectedItem;
+            });
         }
 
         internal string GetInstalledClientName() => Config.Select(i => i.ZoneName).Aggregate((i, j) => i + ", " + j);
@@ -116,46 +128,6 @@ namespace Hi3HelperGUI
                 LogWriteLine($"Language setting is not exist. You'll be using {FallbackValue} as value.", LogType.Warning);
                 return FallbackValue;
             }
-        }
-
-        public async Task<byte> CheckVersionAvailability()
-        {
-            Dictionary<string, string> RegLoc = new Dictionary<string, string>()
-            {
-                { "HI3SeaReg", @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Honkai Impact 3" },
-                { "HI3GlobalReg", @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Honkai Impact 3rd" }
-            };
-            string RegValue = "InstallPath";
-            byte retcode = 0;
-
-            string a;
-
-            await Task.Run(() =>
-            {
-                foreach (KeyValuePair<string, string> i in RegLoc)
-                {
-                    try
-                    {
-                        a = (string)Registry.GetValue(i.Value, RegValue, null);
-                        if (a == null)
-                            throw new NullReferenceException($"Registry for \"{i.Key}\" doesn't exist. Probably the version isn't installed!");
-
-                        if (!Directory.Exists(a))
-                        {
-                            retcode = 10;
-                            throw new DirectoryNotFoundException($"Registry does exist but the registered directory for \"{i.Key}\" seems to be missing!");
-                        }
-                        else
-                            LogWriteLine($"{i.Key} is detected!");
-                    }
-                    catch (Exception e)
-                    {
-                        LogWriteLine(e.ToString(), Logger.LogType.Error, true);
-                    }
-                }
-            });
-
-            return retcode;
         }
     }
 }

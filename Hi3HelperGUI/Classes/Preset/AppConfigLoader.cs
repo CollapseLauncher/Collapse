@@ -9,13 +9,13 @@ using System.IO;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
+using static Hi3HelperGUI.Preset.ConfigStore;
 using static Hi3HelperGUI.Logger;
 
 namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
-        public static AppSettings AppConfigData = new AppSettings();
         public void LoadAppConfig() => AppConfigData = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(@"appconfig.json"));
 
         public async void ApplyAppConfig() => await Task.Run(() =>
