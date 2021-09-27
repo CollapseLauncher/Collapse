@@ -8,7 +8,7 @@
  * ~~Adjust In-game settings (like Window size, FPS Limit, Graphics Setting, etc)~~ **[Coming Soon]**
  * ~~Switch the update server to Hi3Mirror~~ **[Coming Soon]**
 
- This tool requires [.Net Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/thank-you/net472-offline-installer) (or newer) and Windows 7 (64-bit) (or newer) to work.
+ This tool requires [.NET 6](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-6.0.0-rc.1-windows-x64-installer) and Windows 7 (64-bit) (or newer) to work.
  
  # Supported Game Client
  For now, this tool only supports these versions of the game:
