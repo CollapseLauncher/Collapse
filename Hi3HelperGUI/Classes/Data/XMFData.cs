@@ -231,7 +231,7 @@ namespace Hi3HelperGUI.Data
             _blocklist.BlockHash = blockhash;
             _blocklist.BlockSize = blocksize;
 
-            if (debug) Console.WriteLine($"    > {blockhash} -> {SummarizeSize(blocksize)} ({contentcount} files)");
+            if (debug) Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} files)");
         }
 
         _XMFFileProperty ReadXMFContentInfo()

@@ -45,8 +45,8 @@ namespace BenchmarkLab
     [RankColumn]
     public class CRCTest
     {
-        byte[] data = File.ReadAllBytes(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png");
-        FileStream stream = new FileStream(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png", FileMode.Open, FileAccess.Read);
+        byte[] data = File.ReadAllBytes("sample.png");
+        FileStream stream = new FileStream("sample.png", FileMode.Open, FileAccess.Read);
         Crc32Algorithm CRCEncoder = new Crc32Algorithm();
 
         [Benchmark]
@@ -54,8 +54,8 @@ namespace BenchmarkLab
 
         [Benchmark]
         public void BytesToCRC32SimpleStream() => BytesToCRC32Simple(stream);
-        public string BytesToCRC32Simple(in byte[] buffer) => BytesToHexBitConverter(CRCEncoder.ComputeHash(new MemoryStream(buffer)));
-        public string BytesToCRC32Simple(in Stream buffer) => BytesToHexBitConverter(CRCEncoder.ComputeHash(buffer));
+        public string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer)));
+        public string BytesToCRC32Simple(in Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
 
         [Benchmark]
         public void BytesToCRC32() => BytesToCRC32(data);
@@ -67,7 +67,7 @@ namespace BenchmarkLab
                 foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
             return hash;
         }
-        public string BytesToHexBitConverter(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
+        public string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
     }
 
     [MemoryDiagnoser]
@@ -75,8 +75,6 @@ namespace BenchmarkLab
     [RankColumn]
     public class Tool
     {
-
-        double number = 1234567.7654321;
 
         //[Benchmark]
         public void numberTest_If()

@@ -124,7 +124,6 @@ namespace Hi3HelperGUI
                 {
                     MirrorSelector.SelectedIndex = ConfigStore.AppConfigData.MirrorSelection;
                     MirrorSelectorStatus.Content = MirrorSelector.SelectedItem.ToString();
-                    LogWriteLine($"Mirror: \u001b[33;1m{MirrorSelectorStatus.Content}\u001b[0m is selected!");
                     currentMirror = ConfigStore.AppConfigData.MirrorSelection;
                 }
                 else

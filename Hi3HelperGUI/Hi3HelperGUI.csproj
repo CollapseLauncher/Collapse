@@ -18,6 +18,7 @@
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

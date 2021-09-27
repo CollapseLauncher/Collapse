@@ -91,7 +91,7 @@
                     </ListView>
                 </DockPanel>
             </TabItem>
-            <TabItem x:Name="BlockSection" Header="Block Check">
+            <TabItem x:Name="BlockSection" Header="Block Check" IsEnabled="False">
                 <DockPanel LastChildFill="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListView x:Name="GameBlocksListView" DockPanel.Dock="Top" Height="354" IsSynchronizedWithCurrentItem="False" IsEnabled="False">
                         <ListView.View>

@@ -11,21 +11,14 @@ namespace Hi3HelperGUI.Data
 {
     public class ConverterTool
     {
-        public static string BytesToCRC32(byte[] buffer)
-        {
-            Crc32Algorithm crc = new Crc32Algorithm();
-            string hash = String.Empty;
-            using (MemoryStream stream = new MemoryStream(buffer))
-                foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
-            return hash;
-        }
-
-        public static string BytesToCRC32Simple(byte[] buffer)
-        {
-            string hash = String.Empty;
-            foreach (byte a in new Crc32Algorithm().ComputeHash(new MemoryStream(buffer))) hash += a.ToString("x2").ToLower();
-            return hash;
-        }
+        static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
+        public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
+        public static string BytesToCRC32Simple(in Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
+#if (NETCOREAPP)
+        public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
+#else
+        public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
+#endif
 
         public static uint BytesToUInt32Big(byte[] buffer) =>
             (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
@@ -39,40 +32,9 @@ namespace Hi3HelperGUI.Data
 
         public static ushort ToUInt16Big(ushort value) => (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
 
-        public static string BytesToHex(byte[] bytes, bool upperCase = false) => string.Concat(bytes.Select(x => x.ToString(upperCase ? "X2" : "x2")));
+        public static string BytesToMD5(byte[] stream) => BytesToHex(MD5.Create().ComputeHash(stream));
 
-        public static string BytesToMD5(byte[] stream) => BitConverter.ToString(MD5.Create().ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-
-        static readonly string[] SizeSuffixes =
-                   { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-
-        public static string SummarizeSize(long value, byte decimalPlaces = 2)
-        {
-            if (value == 0 || value < 0)
-                return "0 bytes";
-
-            //if (decimalPlaces < 0) { throw new ArgumentOutOfRangeException("decimalPlaces"); }
-            //if (value < 0) { return "-" + SummarizeSize(-value, decimalPlaces); }
-            // if (value == 0) { return string.Format("{0:n" + decimalPlaces + "} bytes", 0); }
-            // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
-            int mag = (int)Math.Log(value, 1024);
-
-            // 1L << (mag * 10) == 2 ^ (10 * mag) 
-            // [i.e. the number of bytes in the unit corresponding to mag]
-            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
-
-            // make adjustment when the value is large enough that
-            // it would round up to 1000 or more
-            if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
-            {
-                mag++;
-                adjustedSize /= 1024;
-            }
-
-            return string.Format("{0:n" + decimalPlaces + "} {1}",
-               adjustedSize,
-               SizeSuffixes[mag]);
-        }
+        internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         public static string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {
@@ -85,7 +47,7 @@ namespace Hi3HelperGUI.Data
         // https://stackoverflow.com/questions/249760/how-can-i-convert-a-unix-timestamp-to-datetime-and-vice-versa
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp) => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTimeStamp).ToLocalTime();
 
-        public static int UnixTimestamp() => (int)Math.Truncate((DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds);
+        public static int UnixTimestamp() => (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
 
         // Reference:
         // https://social.msdn.microsoft.com/Forums/vstudio/en-US/7f5765cc-3edc-44b4-92c6-7b9680e778ed/getting-md5sha-as-number-instead-of-string?forum=csharpgeneral
@@ -93,7 +55,7 @@ namespace Hi3HelperGUI.Data
 
         // Reference:
         // https://makolyte.com/csharp-hex-string-to-byte-array
-        private readonly static Dictionary<char, byte> hexmap = new Dictionary<char, byte>()
+        internal readonly static Dictionary<char, byte> hexmap = new Dictionary<char, byte>()
         {
             { 'a', 0xA },{ 'b', 0xB },{ 'c', 0xC },{ 'd', 0xD },
             { 'e', 0xE },{ 'f', 0xF },{ 'A', 0xA },{ 'B', 0xB },
@@ -102,7 +64,7 @@ namespace Hi3HelperGUI.Data
             { '4', 0x4 },{ '5', 0x5 },{ '6', 0x6 },{ '7', 0x7 },
             { '8', 0x8 },{ '9', 0x9 }
         };
-        public static byte[] ToBytes(string hex)
+        public static byte[] HexToBytes(string hex)
         {
             if (string.IsNullOrWhiteSpace(hex))
                 throw new ArgumentException("Hex cannot be null/empty/whitespace");

@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="sample.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="sample.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
   </ItemGroup>
