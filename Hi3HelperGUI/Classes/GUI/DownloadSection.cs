@@ -35,6 +35,7 @@ namespace Hi3HelperGUI
                             token.ThrowIfCancellationRequested();
 
                         LogWriteLine($"Retrying...", LogType.Warning);
+                        await Task.Delay(3000);
                     }
                 }, token);
             }

@@ -208,11 +208,15 @@ namespace Hi3HelperGUI.Data
             }
             catch (WebException e)
             {
-                int respose = (int)((HttpWebResponse)e.Response).StatusCode;
-                if (!(respose == 416))
+                switch (GetStatusCodeResponse(e.Response))
                 {
-                    LogWriteLine(e.Message, LogType.Error);
-                    ret = false;
+                    case 416:
+                        break;
+                    case -1:
+                    default:
+                        LogWriteLine(e.Message, LogType.Error, true);
+                        ret = false;
+                        break;
                 }
             }
             catch (TaskCanceledException e)
@@ -316,11 +320,15 @@ namespace Hi3HelperGUI.Data
             }
             catch (WebException e)
             {
-                int respose = (int)((HttpWebResponse)e.Response).StatusCode;
-                if (!(respose == 416))
+                switch (GetStatusCodeResponse(e.Response))
                 {
-                    LogWriteLine(e.Message, LogType.Error);
-                    ret = false;
+                    case 416:
+                        break;
+                    case -1:
+                    default:
+                        LogWriteLine(e.Message, LogType.Error, true);
+                        ret = false;
+                        break;
                 }
             }
             catch (Exception e)
@@ -331,6 +339,8 @@ namespace Hi3HelperGUI.Data
 
             return ret;
         }
+
+        int GetStatusCodeResponse(WebResponse e) => e == null ? -1 : (int)((HttpWebResponse)e).StatusCode;
 
         public void ReadRemoteResponse(HttpWebResponse response, in Stream localStream, long ExistingLength, long ContentLength, bool downloadResumable)
         {
@@ -406,7 +416,10 @@ namespace Hi3HelperGUI.Data
             client.DownloadCompleted += Client_DownloadFileCompleted();
 
             while (!client.DownloadFileToBuffer(input, output))
+            {
                 LogWriteLine($"Retrying...", LogType.Warning);
+                Task.Run(async () => { await Task.Delay(3000); }).Wait();
+            }
 
             return false;
         }
