@@ -1,55 +1,42 @@
 [
-	{
-		"ProfileName": "Hi3Global",
-		"ZoneName": "Global",
-		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3rd",
-		"ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3rd",
-		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd glb",
-		"DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
-		"LanguageAvailable": [ "en", "cn", "fr", "de" ],
-		"FallbackLanguage": "en",
-		"MirrorList": {
-			"Hi3Mirror": {
-				"AssetBundle": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
-				"Bigfile": "http://data.in.sea.ironmaid.xyz:65535/tmp/com.miHoYo.bh3global/"
-			},
-			"miHoYo": {
-				"AssetBundle": "http://d2wztyirwsuyyo.cloudfront.net/asset_bundle/eur01/1.1/",
-				"Bigfile": "http://d2wztyirwsuyyo.cloudfront.net/tmp/com.miHoYo.bh3global/"
-			}
-		}
-	},
-	{
-		"ProfileName": "Hi3SEA",
-		"ZoneName": "Southeast Asia",
-		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
-		"ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
-		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
-		"DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
-		"LanguageAvailable": [ "en", "cn", "vn", "th", "id" ],
-		"FallbackLanguage": "en",
-		"MirrorList": {
-			"Hi3Mirror": {
-				"AssetBundle": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
-				"Bigfile": "http://data.in.sea.ironmaid.xyz:65535/com.miHoYo.bh3oversea/"
-			},
-			"miHoYo": {
-				"AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
-				"Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/"
-			}
-		}
-	}
-	/*
-	{
-		"ProfileName": "Hi3China",
-		"ZoneName": "Mainland China",
-		"InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\崩坏3",
-		"DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3",
-		"miHoYoAssetBundleAddress": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
-		"miHoYoAssetBigFileAddress": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/",
-		"Hi3MirrorAssetBundleAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
-		"Hi3MirrorAssetBigFileAddress": "http://data.in.sea.ironmaid.xyz:65535/com.miHoYo.bh3oversea/",
-		"LanguageAvailable": ["cn"]
-	}
-	*/
+  {
+    "ProfileName": "Hi3Global",
+    "ZoneName": "Global",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3rd",
+    "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3rd",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd glb",
+    "DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
+    "LanguageAvailable": [ "en", "cn", "fr", "de" ],
+    "FallbackLanguage": "en",
+    "MirrorList": {
+      "Hi3Mirror": {
+        "AssetBundle": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
+        "Bigfile": "http://data.in.sea.ironmaid.xyz:65535/tmp/com.miHoYo.bh3global/"
+      },
+      "miHoYo": {
+        "AssetBundle": "http://d2wztyirwsuyyo.cloudfront.net/asset_bundle/eur01/1.1/",
+        "Bigfile": "http://d2wztyirwsuyyo.cloudfront.net/tmp/com.miHoYo.bh3global/"
+      }
+    }
+  },
+  {
+    "ProfileName": "Hi3SEA",
+    "ZoneName": "Southeast Asia",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
+    "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
+    "DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
+    "LanguageAvailable": [ "en", "cn", "vn", "th", "id" ],
+    "FallbackLanguage": "en",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.sea.ironmaid.xyz:65535/com.miHoYo.bh3oversea/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/"
+      }
+    }
+  }
 ]

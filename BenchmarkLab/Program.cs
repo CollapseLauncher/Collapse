@@ -28,11 +28,11 @@ namespace BenchmarkLab
             byte[] data = File.ReadAllBytes(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png");
             FileStream stream = new FileStream(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png", FileMode.Open, FileAccess.Read);
 
-            string hash = a.BytesToCRC32SimpleLINQ(data);
-            Console.WriteLine(hash);
-            hash = a.BytesToCRC32Simple(data);
+            string hash = a.BytesToCRC32Simple(data);
             Console.WriteLine(hash);
             hash = a.BytesToCRC32Simple(stream);
+            Console.WriteLine(hash);
+            hash = a.BytesToCRC32(data);
             Console.WriteLine(hash);
 
             BenchmarkRunner.Run<CRCTest>();
@@ -50,10 +50,6 @@ namespace BenchmarkLab
         Crc32Algorithm CRCEncoder = new Crc32Algorithm();
 
         [Benchmark]
-        public void BytesToCRC32SimpleLINQ() => BytesToCRC32SimpleLINQ(data);
-        public string BytesToCRC32SimpleLINQ(byte[] buffer) => BytesToHexLinq(CRCEncoder.ComputeHash(new MemoryStream(buffer)));
-
-        [Benchmark]
         public void BytesToCRC32Simple() => BytesToCRC32Simple(data);
 
         [Benchmark]
@@ -63,7 +59,7 @@ namespace BenchmarkLab
 
         [Benchmark]
         public void BytesToCRC32() => BytesToCRC32(data);
-        public static string BytesToCRC32(byte[] buffer)
+        public string BytesToCRC32(byte[] buffer)
         {
             Crc32Algorithm crc = new Crc32Algorithm();
             string hash = String.Empty;
@@ -71,9 +67,7 @@ namespace BenchmarkLab
                 foreach (byte a in crc.ComputeHash(stream)) hash += a.ToString("x2").ToLower();
             return hash;
         }
-
-        public string BytesToHexLinq(byte[] bytes, bool upperCase = false) => string.Concat(bytes.Select(x => x.ToString(upperCase ? "X2" : "x2")));
-        public string BytesToHexBitConverter(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "").ToLower();
+        public string BytesToHexBitConverter(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
     }
 
     [MemoryDiagnoser]

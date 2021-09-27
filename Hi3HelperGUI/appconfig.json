@@ -1,10 +1,11 @@
 {
-	"ShowConsole": true,
-	"SupportedGameVersion": 510,
-	"PreviousGameVersion": 500,
-	"MirrorSelection": 1,
-	"AvailableMirror": [
-		"Hi3Mirror",
-		"miHoYo"
-	]
+  "ShowConsole": true, // Display the Console Window for debugging purpose (true)
+  "SupportedGameVersion": 510,
+  "PreviousGameVersion": 500,
+  "MirrorSelection": 1, // Selection number starts from 0
+  "AvailableMirror": [ // Add the name of entries defined in fileconfig.json to use them
+    "Hi3Mirror", // Change MirrorSelection to 0 for using this mirror
+    "miHoYo" // Change MirrorSelection to 1 for using this mirror
+    // And so-on...
+  ]
 }

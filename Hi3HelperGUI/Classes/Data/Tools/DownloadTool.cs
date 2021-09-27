@@ -398,33 +398,11 @@ namespace Hi3HelperGUI.Data
     }
     public class DownloadTool
     {
-        public async Task<bool> DownloadUpdateFilesAsync(List<UpdateDataProperties> input, CancellationToken token)
-        {
-            ushort o = 1;
-
-            foreach (UpdateDataProperties i in input)
-            {
-                DownloadUtils client = new DownloadUtils();
-                if (!Directory.Exists(Path.GetDirectoryName(i.ActualPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(i.ActualPath));
-
-                client.DownloadProgressChanged += Client_DownloadProgressChanged($"Down: [{i.ZoneName} > {i.DataType}] ({o}/{input.Count}) {Path.GetFileName(i.N)}");
-                client.DownloadCompleted += Client_DownloadFileCompleted();
-
-                while (!await client.DownloadFileAsync(i.RemotePath, i.ActualPath, token))
-                    LogWriteLine($"Retrying...", LogType.Warning);
-
-                o++;
-            }
-
-            return false;
-        }
-
         public bool DownloadToBuffer(string input, in MemoryStream output, string CustomMessage = "")
         {
             DownloadUtils client = new DownloadUtils();
 
-            client.DownloadProgressChanged += Client_DownloadProgressChanged((CustomMessage != "" ? CustomMessage : $"Downloading to buffer"));
+            client.DownloadProgressChanged += Client_DownloadProgressChanged(CustomMessage != "" ? CustomMessage : $"Downloading to buffer");
             client.DownloadCompleted += Client_DownloadFileCompleted();
 
             while (!client.DownloadFileToBuffer(input, output))
@@ -438,7 +416,7 @@ namespace Hi3HelperGUI.Data
             Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
             {
                 LogWrite($"{customMessage} \u001b[33;1m{(byte)e.ProgressPercentage}%"
-                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{SummarizeSizeSimple(e.CurrentSpeed)}/ss\u001b[0m)", LogType.NoTag, false, true);
+                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{SummarizeSizeSimple(e.CurrentSpeed)}/s\u001b[0m)", LogType.NoTag, false, true);
             };
             return new EventHandler<DownloadProgressChangedEventArgs>(action);
         }
