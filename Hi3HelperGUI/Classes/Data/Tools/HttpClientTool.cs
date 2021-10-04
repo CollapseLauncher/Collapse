@@ -33,7 +33,7 @@ namespace Hi3HelperGUI.Data
 
         public bool stop = true; // by default stop is true
         /* Declare download buffer
-         * by default: 2 KiB (262144 bytes)
+         * by default: 256 KiB (262144 bytes)
         */
         long bufflength = 262144;
 
