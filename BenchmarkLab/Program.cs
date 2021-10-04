@@ -6,6 +6,8 @@ using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Order;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Force.Crc32;
 
 namespace BenchmarkLab
@@ -24,6 +26,13 @@ namespace BenchmarkLab
             Console.WriteLine(new Tool().Digits_FindCountWithPrec(12345678.87654));
             */
 
+            DownloadTool tool = new();
+            Task a = tool.Dunlud(
+                @"https://hk-bigfile-os-mihayo.akamaized.net/com.miHoYo.bh3oversea/StreamingAsb/5_1_0/android/HD/asb/Blocks_5_1.xmf",
+                @"C:\Users\neon-nyan\AppData\LocalLow\miHoYo\Honkai Impact 3\test.xmf");
+
+            Console.ReadLine();
+            /*
             CRCTest a = new CRCTest();
             byte[] data = File.ReadAllBytes(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png");
             FileStream stream = new FileStream(@"C:\Users\neon-nyan\Downloads\yoimiya_ayaka.png", FileMode.Open, FileAccess.Read);
@@ -36,6 +45,7 @@ namespace BenchmarkLab
             Console.WriteLine(hash);
 
             BenchmarkRunner.Run<CRCTest>();
+            */
         }
     }
 

@@ -18,8 +18,7 @@
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-	<DebugType>embedded</DebugType>
+	<DebugType>none</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -55,6 +54,21 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

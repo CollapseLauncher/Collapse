@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hi3HelperGUI"
         xmlns:Json="clr-namespace:Newtonsoft.Json;assembly=Newtonsoft.Json" x:Class="Hi3HelperGUI.MainWindow"
         mc:Ignorable="d"
-        Title="Hi3Helper" Height="528" Width="800" MinWidth="800" MinHeight="528" ResizeMode="CanMinimize">
+        Title="Hi3Helper" Height="528" Width="800" MinWidth="800" MinHeight="528" ResizeMode="CanResize">
     <DockPanel>
         <StatusBar VerticalAlignment="Bottom" DockPanel.Dock="Bottom" >
             <StatusBarItem>
@@ -16,11 +16,6 @@
                 <Label x:Name="MirrorSelectorStatus" Content="none" Margin="-10,0,0,0"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <DockPanel HorizontalAlignment="Right">
-                    <Label x:Name="TotalProgressBarLabel" Content="{Binding Value, ElementName=TotalProgressBar, StringFormat=\{\}\{0:00\}%}" DockPanel.Dock="Left" FontWeight="Bold" Margin="0,0,-10,0" />
-                    <Label x:Name="TotalProgressBarPercentSign" Content="%" DockPanel.Dock="Left" FontWeight="Bold" />
-                    <ProgressBar x:Name="TotalProgressBar" Width="247" Height="20" DockPanel.Dock="Right"/>
-                </DockPanel>
             </StatusBarItem>
         </StatusBar>
         <TabControl DockPanel.Dock="Top">
@@ -54,84 +49,115 @@
                     <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="5,0,5,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="477"/>
-                            <ColumnDefinition Width="28"/>
                             <ColumnDefinition Width="110"/>
                             <ColumnDefinition Width="91"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="UpdateCheckBtn" Content="Check Update" Grid.Column="3" HorizontalAlignment="Center" Width="110" Click="UpdateCheckStart"/>
-                        <Button x:Name="UpdateDownloadBtn" Content="Download" Grid.Column="4" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0"/>
-                        <Button x:Name="UpdateCancelBtn" Content="Cancel Download" Grid.Column="3" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
-                        <Label Content="Progress:" HorizontalAlignment="Left" FontWeight="Normal" Grid.Column="0" FontSize="10" Width="50"/>
-                        <Label x:Name="UpdateProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Grid.Column="1" Margin="-16,0,0,0"/>
+                        <Button x:Name="UpdateCheckBtn" Content="Check Update" Grid.Column="1" HorizontalAlignment="Center" Width="110" Click="UpdateCheckStart"/>
+                        <Button x:Name="UpdateDownloadBtn" Content="Download" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0"/>
+                        <Button x:Name="UpdateCancelBtn" Content="Cancel Download" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
+                        <DockPanel Margin="0,0,10,0">
+                            <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
+                                <ProgressBar x:Name="UpdateProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
+                                <Label x:Name="UpdateProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="-5,-5,0,0"/>
+                                <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
+                                    <TextBox x:Name="UpdateProgressBarLabel" Text="{Binding Value, ElementName=UpdateProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                    <!--<Label x:Name="UpdateProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                </DockPanel>
+                            </Grid>
+                        </DockPanel>
                     </Grid>
-                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="5,0,5,-7">
+                    <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="0,0,5,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="201"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Per File Progress:" HorizontalAlignment="Left" Grid.Column="0"/>
+                        <Label Content="Total Progress:" HorizontalAlignment="Right" Grid.Column="0" Margin="0,0,5,0"/>
+                    </Grid>
+                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="0,0,5,-10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="229"/>
                         </Grid.ColumnDefinitions>
-                        <Label x:Name="UpdateCheckStatus" Content="Please click Check Update to find what's new files available" HorizontalAlignment="Left" Margin="0,0,0,0" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Label x:Name="UpdateCheckStatus" Content="Please click Check Update to find what's new files available" HorizontalAlignment="Left" Margin="0,0,0,5" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
                     </Grid>
-                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="5,0,5,-7">
+                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,0,5,-7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="Status:" HorizontalAlignment="Center" Width="45" VerticalAlignment="Center"/>
+                        <Label Content="Status:" HorizontalAlignment="Left" Width="45" VerticalAlignment="Center"/>
                     </Grid>
-                    <ListView x:Name="UpdateListView" DockPanel.Dock="Top" Height="354" IsSynchronizedWithCurrentItem="False" IsEnabled="False">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding N}" Width="362"/>
-                                <GridViewColumn Header="Zone" DisplayMemberBinding="{Binding ZoneName}" Width="56"/>
-                                <GridViewColumn Header="Data Type" DisplayMemberBinding="{Binding DataType}" Width="64"/>
-                                <GridViewColumn Header="Size" DisplayMemberBinding="{Binding HumanizeSize}" Width="72"/>
-                                <GridViewColumn Header="Download Status" DisplayMemberBinding="{Binding DownloadStatus}" Width="190"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                    <DockPanel DockPanel.Dock="Top">
+                        <ListView x:Name="UpdateListView" IsSynchronizedWithCurrentItem="False" IsEnabled="False" Background="Transparent" BorderThickness="0,0,0,0" BorderBrush="#00828790" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding N}" Width="362"/>
+                                    <GridViewColumn Header="Zone" DisplayMemberBinding="{Binding ZoneName}" Width="56"/>
+                                    <GridViewColumn Header="Data Type" DisplayMemberBinding="{Binding DataType}" Width="64"/>
+                                    <GridViewColumn Header="Size" DisplayMemberBinding="{Binding HumanizeSize}" Width="72"/>
+                                    <GridViewColumn Header="Download Status" DisplayMemberBinding="{Binding DownloadStatus}" Width="190"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="BlockSection" Header="Block Check" IsEnabled="False">
                 <DockPanel LastChildFill="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <ListView x:Name="GameBlocksListView" DockPanel.Dock="Top" Height="354" IsSynchronizedWithCurrentItem="False" IsEnabled="False">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Chunk Filename" DisplayMemberBinding="{Binding N}" Width="192"/>
-                                <GridViewColumn Header="Block Hash" DisplayMemberBinding="{Binding ZoneName}" Width="128"/>
-                                <GridViewColumn Header="Start Offset" DisplayMemberBinding="{Binding DataType}" Width="72"/>
-                                <GridViewColumn Header="Size" DisplayMemberBinding="{Binding HumanizeSize}" Width="72"/>
-                                <GridViewColumn Header="Actl. CRC" DisplayMemberBinding="{Binding DownloadStatus}" Width="72"/>
-                                <GridViewColumn Header="Expct. CRC" DisplayMemberBinding="{Binding DownloadStatus}" Width="72"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
                     <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="5,0,5,5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="477"/>
-                            <ColumnDefinition Width="28"/>
                             <ColumnDefinition Width="110"/>
                             <ColumnDefinition Width="91"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="BlockCheckBtn" Content="Check Blocks" Grid.Column="3" HorizontalAlignment="Center" Width="110" Click="BlockCheckStart"/>
-                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="4" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0"/>
-                        <Button x:Name="BlockRepairCancelBtn" Content="Cancel Repair" Grid.Column="3" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
-                        <Label Content="Progress:" HorizontalAlignment="Left" FontWeight="Normal" Grid.Column="0" FontSize="10" Width="50"/>
-                        <Label x:Name="BlockRepairProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Grid.Column="1" Margin="-16,0,0,0"/>
+                        <Button x:Name="BlockCheckBtn" Content="Check Block" Grid.Column="1" HorizontalAlignment="Center" Width="110" Click="BlockCheckStart"/>
+                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0"/>
+                        <Button x:Name="BlockRepairCancelBtn" Content="Cancel Repair" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
+                        <DockPanel Margin="0,0,10,0">
+                            <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
+                                <ProgressBar x:Name="BlockProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
+                                <Label x:Name="BlockProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="-5,-5,0,0"/>
+                                <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
+                                    <TextBox x:Name="BlockProgressBarLabel" Text="{Binding Value, ElementName=BlockProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                    <!--<Label x:Name="BlockProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                </DockPanel>
+                            </Grid>
+                        </DockPanel>
                     </Grid>
-                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="5,0,5,-7">
+                    <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="0,0,5,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="201"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Per File Progress:" HorizontalAlignment="Left" Grid.Column="0"/>
+                        <Label Content="Total Progress:" HorizontalAlignment="Right" Grid.Column="0" Margin="0,0,5,0"/>
+                    </Grid>
+                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="0,0,5,-10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="229"/>
                         </Grid.ColumnDefinitions>
-                        <Label x:Name="BlockCheckStatus" Content="Please click Check Blocks to start checking the block files." HorizontalAlignment="Left" Margin="0,0,0,0" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Label x:Name="BlockCheckStatus" Content="Please click Check Block to start checking block files" HorizontalAlignment="Left" Margin="0,0,0,5" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
                     </Grid>
-                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="5,0,5,-7">
+                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,0,5,-7">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="Status:" HorizontalAlignment="Center" Width="45" VerticalAlignment="Center"/>
+                        <Label Content="Status:" HorizontalAlignment="Left" Width="45" VerticalAlignment="Center"/>
                     </Grid>
+                    <DockPanel DockPanel.Dock="Top">
+                        <ListView x:Name="BlockListView" IsSynchronizedWithCurrentItem="False" IsEnabled="False" Background="Transparent" BorderThickness="0,0,0,0" BorderBrush="#00828790" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding N}" Width="362"/>
+                                    <GridViewColumn Header="Zone" DisplayMemberBinding="{Binding ZoneName}" Width="56"/>
+                                    <GridViewColumn Header="Data Type" DisplayMemberBinding="{Binding DataType}" Width="64"/>
+                                    <GridViewColumn Header="Size" DisplayMemberBinding="{Binding HumanizeSize}" Width="72"/>
+                                    <GridViewColumn Header="Download Status" DisplayMemberBinding="{Binding DownloadStatus}" Width="190"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </DockPanel>
                 </DockPanel>
             </TabItem>
             <TabItem x:Name="CutsceneSection" Header="Video &amp; Subtitles" IsEnabled="False">
@@ -141,7 +167,7 @@
                 <DockPanel LastChildFill="False" Margin="5">
                     <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" DockPanel.Dock="Top">
                         <Label Content="Debug Settings:" DockPanel.Dock="Left"/>
-                        <CheckBox x:Name="ConfigEnableConsole"  Content="Enable Console" VerticalAlignment="Center" IsChecked="True"/>
+                        <CheckBox x:Name="ConfigEnableConsole" Content="Enable Console" VerticalAlignment="Center" IsChecked="True"/>
                     </DockPanel>
 
                     <DockPanel VerticalAlignment="Bottom" DockPanel.Dock="Bottom">

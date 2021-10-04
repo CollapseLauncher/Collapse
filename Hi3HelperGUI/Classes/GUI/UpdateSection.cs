@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Controls;
 //using System.Runtime.InteropServices;
 using System.IO;
@@ -24,7 +25,6 @@ namespace Hi3HelperGUI
         private void UpdateDownloadStart(object sender, RoutedEventArgs e) => DoUpdateDownload();
         private void UpdateDownloadCancel(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine();
             LogWriteLine($"Cancelling update...", LogType.Warning);
             DownloadTokenSource.Cancel();
         }
@@ -36,17 +36,19 @@ namespace Hi3HelperGUI
             await Task.Run(() =>
             {
                 (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
-                RefreshTotalProgressBar();
+                RefreshUpdateProgressBar();
                 ConfigStore.UpdateFiles = new List<UpdateDataProperties>();
                 RefreshUpdateProgressLabel();
                 ChangeUpdateDownload(false);
-                ChangeUpdateStatus($"Fetching update data...", false);
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
                     LogWriteLine($"Fetching update data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version... ");
                     UpdateDataUtil = new UpdateData(i);
                     for (byte j = 0; j < 3; j++)
+                    {
+                        ChangeUpdateStatus($"Fetching update data for {i.ZoneName} {Enum.GetName(typeof(ConfigStore.DataType), j)} zone...", false);
                         UpdateDataUtil.GetDataDict(i, j);
+                    }
                 }
                 ConfigStore.UpdateFilesTotalSize = ConfigStore.UpdateFiles.Sum(item => item.ECS);
                 StoreToListView(ConfigStore.UpdateFiles);
@@ -57,11 +59,10 @@ namespace Hi3HelperGUI
                 }
                 ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) are ready to be updated. Click Download to start the update!", true);
                 ChangeUpdateDownload(true);
-                LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated");
+                LogWriteLine($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) will be updated", LogType.Default, true);
                 return;
             });
         }
-
 
         private void StoreToListView(List<UpdateDataProperties> i) => Dispatcher.Invoke(() => UpdateListView.ItemsSource = i);
 
@@ -93,13 +94,14 @@ namespace Hi3HelperGUI
             ToggleUpdateCancelBtnState(false);
             // await DownloadTask;
             ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files have been downloaded!", true);
+            LogWriteLine($"{ConfigStore.UpdateFiles.Count} files have been downloaded!", LogType.Default, true);
         }
 
         private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
 
         private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
 
-        private void RefreshTotalProgressBar(double cur = 0, double max = 100) =>  Dispatcher.Invoke(() => TotalProgressBar.Value = Math.Round((100 * cur) / max, 2));
+        private void RefreshUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => UpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
 
         private void ToggleUpdateCancelBtnState(bool i) =>
             Dispatcher.Invoke(() => {
