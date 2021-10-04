@@ -75,7 +75,7 @@ namespace Hi3HelperGUI
                 ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceived;
 
                 UpdateProgressLabel.Content = $"{(byte)e.ProgressPercentage}% ({BytesReceived}) ({CurrentSpeed}/s)";
-                BlockProgressBar.Value = GetPercentageNumber(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
+                UpdateProgressBar.Value = GetPercentageNumber(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
             }, DispatcherPriority.Background);
 #if DEBUG
             LogWrite($"{e.Message} \u001b[33;1m{(byte)e.ProgressPercentage}%"

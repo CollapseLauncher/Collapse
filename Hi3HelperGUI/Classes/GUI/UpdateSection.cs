@@ -36,7 +36,7 @@ namespace Hi3HelperGUI
             await Task.Run(() =>
             {
                 (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
-                RefreshTotalUpdateProgressBar();
+                RefreshUpdateProgressBar();
                 ConfigStore.UpdateFiles = new List<UpdateDataProperties>();
                 RefreshUpdateProgressLabel();
                 ChangeUpdateDownload(false);
@@ -101,7 +101,7 @@ namespace Hi3HelperGUI
 
         private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
 
-        private void RefreshTotalUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => TotalUpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
+        private void RefreshUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => UpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
 
         private void ToggleUpdateCancelBtnState(bool i) =>
             Dispatcher.Invoke(() => {

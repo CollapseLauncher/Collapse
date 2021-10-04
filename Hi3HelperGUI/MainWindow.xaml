@@ -57,11 +57,11 @@
                         <Button x:Name="UpdateCancelBtn" Content="Cancel Download" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
                         <DockPanel Margin="0,0,10,0">
                             <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
-                                <ProgressBar x:Name="TotalUpdateProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
+                                <ProgressBar x:Name="UpdateProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
                                 <Label x:Name="UpdateProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="-5,-5,0,0"/>
                                 <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
-                                    <TextBox x:Name="TotalProgressBarLabel" Text="{Binding Value, ElementName=TotalProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
-                                    <!--<Label x:Name="TotalProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                    <TextBox x:Name="UpdateProgressBarLabel" Text="{Binding Value, ElementName=UpdateProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                    <!--<Label x:Name="UpdateProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
                                 </DockPanel>
                             </Grid>
                         </DockPanel>
@@ -118,8 +118,8 @@
                                 <ProgressBar x:Name="BlockProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
                                 <Label x:Name="BlockProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="-5,-5,0,0"/>
                                 <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
-                                    <TextBox x:Name="BlockProgressBarLabel" Text="{Binding Value, ElementName=TotalProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
-                                    <!--<Label x:Name="TotalProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                    <TextBox x:Name="BlockProgressBarLabel" Text="{Binding Value, ElementName=BlockProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                    <!--<Label x:Name="BlockProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
                                 </DockPanel>
                             </Grid>
                         </DockPanel>
