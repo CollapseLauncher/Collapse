@@ -30,6 +30,8 @@ namespace Hi3HelperGUI.Data
             (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
             (value & 0x00FF0000U) >> 8  | (value & 0xFF000000U) >> 24;
 
+        public static double GetPercentageNumber(double cur, double max, int round = 2) => Math.Round((100 * cur) / max, round);
+
         public static ushort ToUInt16Big(ushort value) => (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
 
         public static string BytesToMD5(byte[] stream) => BytesToHex(MD5.Create().ComputeHash(stream));

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 #endif
 using System.IO;
+using System.Windows.Controls;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
@@ -21,7 +22,6 @@ namespace Hi3HelperGUI.Data
         protected internal string LocalPath;
 
         protected internal _RemoteURL RemoteURL;
-        protected internal WebClient webClient;
         protected internal class _RemoteURL
         {
             internal string Data { get; set; }
@@ -81,17 +81,23 @@ namespace Hi3HelperGUI.Data
          */
         public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
+            HttpClientTool downloader = new HttpClientTool();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
-            // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
             MemoryStream memoryData = new MemoryStream();
-            DownloadTool Downloader = new DownloadTool();
-            Downloader.DownloadToBuffer(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary, memoryData, $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list");
+            // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
+            downloader.DownloadToStream(
+                dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
+                memoryData,
+                $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list"
+                );
 
-            // For NET5
-            // Span<string> DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');
+#if NETCOREAPP
+            Span<string> DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');
+#else
             string[] DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');
+#endif
 
             for (ushort a = (ushort)(dataType > 0 ? 0 : 1); a < DictData.Length - 1; a++)
             {
@@ -127,7 +133,7 @@ namespace Hi3HelperGUI.Data
                             ActualPath = LocalPath,
                             ZoneName = i.ZoneName,
                             DataType = Enum.GetName(typeof(ConfigStore.DataType), dataType),
-                            DownloadStatus = $"Uncompleted {((100 * new FileInfo(LocalPath).Length) / ConfigStore.DataProp.CS)}% ({SummarizeSizeSimple(new FileInfo(LocalPath).Length)})"
+                            DownloadStatus = $"Uncompleted {100 * new FileInfo(LocalPath).Length / ConfigStore.DataProp.CS}% ({SummarizeSizeSimple(new FileInfo(LocalPath).Length)})"
                         });
                     }
                 }

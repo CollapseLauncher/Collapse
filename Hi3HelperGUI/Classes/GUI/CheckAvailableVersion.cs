@@ -111,11 +111,11 @@ namespace Hi3HelperGUI
             }
             catch (NullReferenceException e)
             {
-                LogWriteLine(e.ToString(), Logger.LogType.Warning, true);
+                LogWriteLine(e.ToString(), LogType.Warning, true);
             }
             catch (Exception e)
             {
-                LogWriteLine(e.ToString(), Logger.LogType.Error, true);
+                LogWriteLine(e.ToString(), LogType.Error, true);
             }
 
             return ret;

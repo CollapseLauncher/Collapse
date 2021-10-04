@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
@@ -13,27 +16,30 @@ using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI
 {
-    public partial class MainWindow
+    public partial class MainWindow : Window
     {
+        readonly HttpClientTool client = new HttpClientTool();
         public async Task<bool> DownloadUpdateFilesAsync(CancellationTokenSource tokenSource, CancellationToken token)
         {
-            for (ushort p = 0; p < ConfigStore.UpdateFiles.Count; p++)
+            int updateFilesCount = ConfigStore.UpdateFiles.Count;
+            string message;
+            for (ushort p = 0; p < updateFilesCount; p++)
             {
-                DownloadUtils client = new DownloadUtils();
+                RemoveDownloadHandler();
                 if (!Directory.Exists(Path.GetDirectoryName(ConfigStore.UpdateFiles[p].ActualPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(ConfigStore.UpdateFiles[p].ActualPath));
 
-                client.DownloadProgressChanged += Client_UpdateFilesDownloadProgressChanged($"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p+1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}");
-                client.DownloadCompleted += Client_UpdateFilesDownloadFileCompleted();
+                client.ProgressChanged += new EventHandler<DownloadProgressChanged>(DownloadProgressChanged);
+                client.Completed += new EventHandler<DownloadProgressCompleted>(DownloadProgressCompleted);
 
-                ChangeUpdateStatus($"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p+1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}", false);
+                message = $"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}";
+                //client.ProgressChanged += DownloadProgressChanges($"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}");
+                //client.Completed += DownloadProgressCompleted();
+
+                ChangeUpdateStatus(message, false);
                 await Task.Run(async () => {
-                    token.ThrowIfCancellationRequested();
-                    while (!await client.DownloadFileAsync(ConfigStore.UpdateFiles[p].RemotePath, ConfigStore.UpdateFiles[p].ActualPath, token))
+                    while (!await client.DownloadFile(ConfigStore.UpdateFiles[p].RemotePath, ConfigStore.UpdateFiles[p].ActualPath, token, -1, -1, message))
                     {
-                        if (token.IsCancellationRequested)
-                            token.ThrowIfCancellationRequested();
-
                         LogWriteLine($"Retrying...", LogType.Warning);
                         await Task.Delay(3000);
                     }
@@ -43,29 +49,38 @@ namespace Hi3HelperGUI
             return false;
         }
 
-        private EventHandler<DownloadProgressChangedEventArgs> Client_UpdateFilesDownloadProgressChanged(string customMessage = "")
+        void RemoveDownloadHandler()
         {
-            Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
-            {
-                ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceivedBytes;
-
-                RefreshUpdateProgressLabel($"{(byte)e.ProgressPercentage}% ({SummarizeSizeSimple(e.BytesReceived)}) ({SummarizeSizeSimple(e.CurrentSpeed)}/s)");
-
-                RefreshTotalProgressBar(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
-                LogWrite($"{customMessage} \u001b[33;1m{(e.NoProgress ? "Unknown" : $"{(byte)e.ProgressPercentage}%")}"
-                 + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{SummarizeSizeSimple(e.CurrentSpeed)}/s\u001b[0m)", LogType.NoTag, false, true);
-            };
-            return new EventHandler<DownloadProgressChangedEventArgs>(action);
+            client.ProgressChanged -= new EventHandler<DownloadProgressChanged>(DownloadProgressChanged);
+            client.Completed -= new EventHandler<DownloadProgressCompleted>(DownloadProgressCompleted);
         }
 
-        private static EventHandler Client_UpdateFilesDownloadFileCompleted()
+        void DownloadProgressCompleted(object sender, DownloadProgressCompleted e)
         {
-            Action<object, EventArgs> action = (sender, e) =>
+#if DEBUG
+            if (e.DownloadCompleted)
             {
                 LogWrite($" Done!", LogType.Empty);
-                Console.WriteLine();
-            };
-            return new EventHandler(action);
+                LogWriteLine();
+            }
+#endif
+        }
+
+        void DownloadProgressChanged(object sender, DownloadProgressChanged e)
+        {
+            string BytesReceived = SummarizeSizeSimple(e.BytesReceived);
+            string CurrentSpeed = SummarizeSizeSimple(e.CurrentSpeed);
+            Dispatcher.Invoke(() =>
+            {
+                ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceived;
+
+                UpdateProgressLabel.Content = $"{(byte)e.ProgressPercentage}% ({BytesReceived}) ({CurrentSpeed}/s)";
+                BlockProgressBar.Value = GetPercentageNumber(ConfigStore.UpdateFilesTotalDownloaded, ConfigStore.UpdateFilesTotalSize);
+            }, DispatcherPriority.Background);
+#if DEBUG
+            LogWrite($"{e.Message} \u001b[33;1m{(byte)e.ProgressPercentage}%"
+             + $"\u001b[0m ({BytesReceived}) (\u001b[32;1m{CurrentSpeed}/s\u001b[0m)", LogType.NoTag, false, true);
+#endif
         }
     }
 }

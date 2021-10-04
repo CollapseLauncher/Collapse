@@ -7,12 +7,17 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 #endif
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3HelperGUI;
 using Hi3HelperGUI.Preset;
 using static Hi3HelperGUI.Logger;
 using static Hi3HelperGUI.Data.ConverterTool;
+
+using static Hi3HelperGUI.MainWindow;
 
 namespace Hi3HelperGUI.Data
 {
@@ -39,11 +44,17 @@ namespace Hi3HelperGUI.Data
             get; set;
         }
     }
+
+    public class DownloadProgressCompletedEventArgs : EventArgs
+    {
+        public bool DownloadCompleted { get; set; }
+    }
+
     public class DownloadUtils
     {
         public event EventHandler<DownloadStatusChangedEventArgs> DownloadStatusChanged;
         public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged;
-        public event EventHandler DownloadCompleted;
+        public event EventHandler<DownloadProgressCompletedEventArgs> DownloadCompleted;
         public string userAgent = "Dalvik/2.1.0 (Linux; U; Android 11; M2012K11AG Build/RKQ1.200826.002)";
 
         // By default, stop is true
@@ -53,25 +64,34 @@ namespace Hi3HelperGUI.Data
          * by default: 2 KiB (262144 bytes)
         */
         long bufflength = 262144;
-
-#if (!NETFRAMEWORK)
-        HttpClient httpClient = new HttpClient();
-#endif
-
         HttpWebRequest request;
+
+#if (NETCOREAPP)
+        HttpClient httpClient;
+#endif
         DownloadStatusChangedEventArgs downloadStatusArgs;
 
         Stream localStream;
         Stream remoteStream;
 
-        /* TODO:
-         * Change from HttpWebRequest to HttpClient
-         */
-
-#if (!NETFRAMEWORK)
-        public async Task<bool> DownloadFileAsyncNew(string DownloadLink, string path, CancellationToken token)
+        public DownloadUtils()
         {
-            var downloadStatusArgs = new DownloadStatusChangedEventArgs();
+#if (NETCOREAPP)
+            httpClient = new HttpClient(
+            new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.All,
+                UseCookies = true,
+                MaxConnectionsPerServer = 256,
+                AllowAutoRedirect = true,
+            });
+#endif
+        }
+
+        public async Task<bool> DownloadFileAsyncHTTP(string DownloadLink, string path, long startOffset = -1, long endOffset = -1, CancellationToken token = new CancellationToken())
+        {
+            bool ret = true;
+            downloadStatusArgs = new DownloadStatusChangedEventArgs();
             long ExistingLength = 0;
             bool downloadResumable;
 
@@ -81,14 +101,18 @@ namespace Hi3HelperGUI.Data
                 ExistingLength = fileInfo.Length;
             }
 
-            Console.WriteLine("Getting Request...");
-
             try
             {
-                using (HttpResponseMessage message = await httpClient.GetAsync(DownloadLink, HttpCompletionOption.ResponseHeadersRead, token))
+                var request = new HttpRequestMessage { RequestUri = new Uri(DownloadLink) };
+
+                if (startOffset != -1 && endOffset != -1)
+                    request.Headers.Range = new RangeHeaderValue(startOffset, endOffset);
+                else
+                    request.Headers.Range = new RangeHeaderValue(ExistingLength, null);
+
+                using (HttpResponseMessage message = await httpClient.SendAsync(new HttpRequestMessage { RequestUri = new Uri(DownloadLink) }, HttpCompletionOption.ResponseHeadersRead, token))
                 {
-                    message.Content.Headers.ContentRange = new ContentRangeHeaderValue(ExistingLength);
-                    long FileSize = ExistingLength + message.Content.Headers.ContentLength ?? 0;
+                    long ContentLength = ExistingLength + message.Content.Headers.ContentLength ?? 0;
 
                     if ((int)message.StatusCode == 206)
                     {
@@ -107,70 +131,72 @@ namespace Hi3HelperGUI.Data
                         localStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
                     }
 
-                    using (remoteStream = await message.Content.ReadAsStreamAsync(token).ConfigureAwait(false))
-                    {
-                        int byteSize = 0;
-                        long totalReceived = byteSize + ExistingLength;
-                        var sw = new Stopwatch();
-                        sw.Start();
-
-                        byte[] downBuffer = new byte[bufflength];
-                        while ((byteSize = await remoteStream.ReadAsync(downBuffer, 0, downBuffer.Length, token).ConfigureAwait(false)) > 0)
-                        {
-                            Console.WriteLine(byteSize);
-                            await localStream.WriteAsync(downBuffer, 0, byteSize, token).ConfigureAwait(false);
-                            totalReceived += byteSize;
-
-                            var args = new DownloadProgressChangedEventArgs();
-                            args.CurrentReceivedBytes = byteSize;
-                            args.BytesReceived = totalReceived;
-                            args.TotalBytesToReceive = FileSize;
-                            float currentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
-                            args.CurrentSpeed = currentSpeed;
-                            if (downloadResumable == true)
-                            {
-                                args.ProgressPercentage = ((float)totalReceived / (float)FileSize) * 100;
-                                long bytesRemainingtoBeReceived = FileSize - totalReceived;
-                                args.TimeLeft = (long)(bytesRemainingtoBeReceived / currentSpeed);
-                            }
-                            else
-                            {
-                                args.ProgressPercentage = 0;
-                                args.TimeLeft = 0;
-                            }
-
-                            OnDownloadProgressChanged(args);
-                        }
-                        sw.Stop();
-                    }
-                    var completedArgs = new EventArgs();
-                    OnDownloadCompleted(completedArgs);
+                    await ReadRemoteResponseAsyncHTTP(message.Content, localStream, ExistingLength, ContentLength, downloadResumable, token);
+                    message.Dispose();
                 }
+                OnDownloadCompleted(new DownloadProgressCompletedEventArgs());
             }
-            catch
+            catch (WebException e)
             {
-
+                ret = ThrowWebExceptionAsBool(e);
+            }
+            catch (TaskCanceledException e)
+            {
+                ret = true;
+                throw new TaskCanceledException(e.ToString());
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"An error occured while downloading {Path.GetFileName(path)}\r\nTraceback: {e}", LogType.Error, true);
+                ret = false;
             }
             finally
             {
+                localStream?.Dispose();
+                remoteStream?.Dispose();
             }
 
-            return true;
+            return ret;
         }
-#endif
 
-        public async Task<bool> DownloadFileAsync(string DownloadLink, string path, CancellationToken token, long startOffset = -1, long endOffset = -1)
+        public async Task ReadRemoteResponseAsyncHTTP(HttpContent response, Stream localStream, long ExistingLength, long ContentLength, bool downloadResumable, CancellationToken token)
+        {
+            using (remoteStream = await response.ReadAsStreamAsync(token).ConfigureAwait(false))
+            {
+                int byteSize = 0;
+                long totalReceived = byteSize + ExistingLength;
+                var sw = new Stopwatch();
+                sw.Start();
+                float currentSpeed;
+                long bytesRemainingtoBeReceived;
+                byte[] downBuffer = new byte[bufflength];
+                while ((byteSize = await remoteStream.ReadAsync(downBuffer, 0, downBuffer.Length, token).ConfigureAwait(false)) > 0)
+                {
+                    await localStream.WriteAsync(downBuffer, 0, byteSize, token).ConfigureAwait(false);
+                    totalReceived += byteSize;
+                    currentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
+                    bytesRemainingtoBeReceived = ContentLength - totalReceived;
+
+                    OnDownloadProgressChanged(new DownloadProgressChangedEventArgs()
+                    {
+                        CurrentReceivedBytes = byteSize,
+                        BytesReceived = totalReceived,
+                        TotalBytesToReceive = ContentLength,
+                        CurrentSpeed = currentSpeed,
+                        ProgressPercentage = downloadResumable ? (((float)totalReceived / (float)ContentLength) * 100) : 0,
+                        TimeLeft = downloadResumable ? ((long)(bytesRemainingtoBeReceived / currentSpeed)) : 0
+                    });
+                }
+                sw.Stop();
+            }
+        }
+
+        public async Task<bool> DownloadFileAsync(string DownloadLink, string path, long startOffset = -1, long endOffset = -1, CancellationToken token = new CancellationToken())
         {
             bool ret = true;
             downloadStatusArgs = new DownloadStatusChangedEventArgs();
 
-            long ExistingLength = 0;
-
-            if (File.Exists(path))
-            {
-                FileInfo fileInfo = new FileInfo(path);
-                ExistingLength = fileInfo.Length;
-            }
+            long ExistingLength = File.Exists(path) ? new FileInfo(path).Length : 0;
 
             request = (HttpWebRequest)WebRequest.Create(DownloadLink);
 
@@ -183,41 +209,30 @@ namespace Hi3HelperGUI.Data
 
             try
             {
-                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync().ConfigureAwait(false))
+                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
                 {
                     long ContentLength = ExistingLength + response.ContentLength;
-                    bool downloadResumable;
 
                     if ((int)response.StatusCode == 206)
                     {
-                        downloadResumable = true;
-                        localStream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                        downloadStatusArgs.ResumeSupported = true;
                     }
                     else
                     {
                         ExistingLength = 0;
-                        downloadResumable = false;
-                        localStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                        downloadStatusArgs.ResumeSupported = false;
                     }
-                    downloadStatusArgs.ResumeSupported = downloadResumable;
+
+                    localStream = new FileStream(path, downloadStatusArgs.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
                     OnDownloadStatusChanged(downloadStatusArgs);
 
-                    await ReadRemoteResponse(response, localStream, ExistingLength, ContentLength, downloadResumable, token).ConfigureAwait(false);
+                    await ReadRemoteResponse(response, localStream, ExistingLength, ContentLength, downloadStatusArgs.ResumeSupported, token).ConfigureAwait(false);
                 }
-                OnDownloadCompleted(new EventArgs());
+                OnDownloadCompleted(new DownloadProgressCompletedEventArgs());
             }
             catch (WebException e)
             {
-                switch (GetStatusCodeResponse(e.Response))
-                {
-                    case 416:
-                        break;
-                    case -1:
-                    default:
-                        LogWriteLine(e.Message, LogType.Error, true);
-                        ret = false;
-                        break;
-                }
+                ret = ThrowWebExceptionAsBool(e);
             }
             catch (TaskCanceledException e)
             {
@@ -232,6 +247,7 @@ namespace Hi3HelperGUI.Data
             finally
             {
                 localStream.Dispose();
+                remoteStream.Dispose();
             }
 
             return ret;
@@ -247,28 +263,22 @@ namespace Hi3HelperGUI.Data
                 sw = new Stopwatch();
                 sw.Start();
                 byte[] downBuffer = new byte[bufflength];
+                float currentSpeed;
                 while ((byteSize = await remoteStream.ReadAsync(downBuffer, 0, downBuffer.Length, token).ConfigureAwait(false)) > 0)
                 {
                     await localStream.WriteAsync(downBuffer, 0, byteSize, token).ConfigureAwait(false);
                     totalReceived += byteSize;
+                    currentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
 
-                    DownloadProgressChangedEventArgs args = new DownloadProgressChangedEventArgs();
-                    args.CurrentReceivedBytes = byteSize;
-                    args.BytesReceived = totalReceived;
-                    args.TotalBytesToReceive = ContentLength;
-                    args.CurrentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
-                    if (downloadResumable == true)
+                    OnDownloadProgressChanged(new DownloadProgressChangedEventArgs()
                     {
-                        args.ProgressPercentage = ((float)totalReceived / (float)ContentLength) * 100;
-                        args.TimeLeft = (long)(ContentLength - totalReceived / args.CurrentSpeed);
-                    }
-                    else
-                    {
-                        args.ProgressPercentage = 0;
-                        args.TimeLeft = 0;
-                    }
-
-                    OnDownloadProgressChanged(args);
+                        CurrentReceivedBytes = byteSize,
+                        BytesReceived = totalReceived,
+                        TotalBytesToReceive = ContentLength,
+                        CurrentSpeed = currentSpeed,
+                        ProgressPercentage = downloadResumable ? ((float)totalReceived / (float)ContentLength) * 100 : 0,
+                        TimeLeft = downloadResumable ? (long)(ContentLength - totalReceived / currentSpeed) : 0
+                    });
                 }
                 sw.Stop();
             }
@@ -280,9 +290,8 @@ namespace Hi3HelperGUI.Data
             stop = false;
 
             long ExistingLength = output.Length;
-            long ContentLength = 0;
 
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(DownloadLink);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(DownloadLink);
             request.UserAgent = userAgent;
             request.AddRange(ExistingLength);
 
@@ -293,7 +302,7 @@ namespace Hi3HelperGUI.Data
                     long FileSize = ExistingLength + response.ContentLength;
                     bool downloadResumable;
 
-                    ContentLength = response.ContentLength;
+                    long ContentLength = response.ContentLength;
 
                     if ((int)response.StatusCode == 206)
                     {
@@ -310,26 +319,16 @@ namespace Hi3HelperGUI.Data
                         downloadResumable = false;
                         downloadStatusArgs.ResumeSupported = downloadResumable;
                         OnDownloadStatusChanged(downloadStatusArgs);
-                        output.Dispose();
+                        output.Flush();
                     }
 
                     ReadRemoteResponse(response, output, ExistingLength, ContentLength, downloadResumable);
                 }
-                var completedArgs = new EventArgs();
-                OnDownloadCompleted(completedArgs);
+                OnDownloadCompleted(new DownloadProgressCompletedEventArgs());
             }
             catch (WebException e)
             {
-                switch (GetStatusCodeResponse(e.Response))
-                {
-                    case 416:
-                        break;
-                    case -1:
-                    default:
-                        LogWriteLine(e.Message, LogType.Error, true);
-                        ret = false;
-                        break;
-                }
+                ret = ThrowWebExceptionAsBool(e);
             }
             catch (Exception e)
             {
@@ -338,6 +337,20 @@ namespace Hi3HelperGUI.Data
             }
 
             return ret;
+        }
+
+        bool ThrowWebExceptionAsBool(WebException e)
+        {
+            switch (GetStatusCodeResponse(e.Response))
+            {
+                // Always ignore 416 code
+                case 416:
+                    return true;
+                case -1:
+                default:
+                    LogWriteLine(e.Message, LogType.Error, true);
+                    return false;
+            }
         }
 
         int GetStatusCodeResponse(WebResponse e) => e == null ? -1 : (int)((HttpWebResponse)e).StatusCode;
@@ -349,6 +362,7 @@ namespace Hi3HelperGUI.Data
             {
                 int byteSize = 0;
                 long totalReceived = byteSize + ExistingLength;
+                float currentSpeed;
                 sw = new Stopwatch();
                 sw.Start();
                 byte[] downBuffer = new byte[bufflength];
@@ -356,24 +370,17 @@ namespace Hi3HelperGUI.Data
                 {
                     localStream.Write(downBuffer, 0, byteSize);
                     totalReceived += byteSize;
+                    currentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
 
-                    DownloadProgressChangedEventArgs args = new DownloadProgressChangedEventArgs();
-                    args.CurrentReceivedBytes = byteSize;
-                    args.BytesReceived = totalReceived;
-                    args.TotalBytesToReceive = ContentLength;
-                    args.CurrentSpeed = totalReceived / (float)sw.Elapsed.TotalSeconds;
-                    if (downloadResumable == true)
+                    OnDownloadProgressChanged(new DownloadProgressChangedEventArgs()
                     {
-                        args.ProgressPercentage = ((float)totalReceived / (float)ContentLength) * 100;
-                        args.TimeLeft = (long)(ContentLength - totalReceived / args.CurrentSpeed);
-                    }
-                    else
-                    {
-                        args.ProgressPercentage = 0;
-                        args.TimeLeft = 0;
-                    }
-
-                    OnDownloadProgressChanged(args);
+                        CurrentReceivedBytes = byteSize,
+                        BytesReceived = totalReceived,
+                        TotalBytesToReceive = ContentLength,
+                        CurrentSpeed = currentSpeed,
+                        ProgressPercentage = downloadResumable ? ((float)totalReceived / (float)ContentLength) * 100 : 0,
+                        TimeLeft = downloadResumable ? (long)(ContentLength - totalReceived / currentSpeed) : 0
+                    });
                 }
                 sw.Stop();
             }
@@ -397,9 +404,9 @@ namespace Hi3HelperGUI.Data
             }
         }
 
-        protected virtual void OnDownloadCompleted(EventArgs e)
+        protected virtual void OnDownloadCompleted(DownloadProgressCompletedEventArgs e)
         {
-            EventHandler handler = DownloadCompleted;
+            EventHandler<DownloadProgressCompletedEventArgs> handler = DownloadCompleted;
             if (handler != null)
             {
                 handler(this, e);
@@ -408,11 +415,11 @@ namespace Hi3HelperGUI.Data
     }
     public class DownloadTool
     {
-        public bool DownloadToBuffer(string input, in MemoryStream output, string CustomMessage = "")
+        public bool DownloadToBuffer(string input, in MemoryStream output, string CustomMessage = "", bool updateProgress = false)
         {
             DownloadUtils client = new DownloadUtils();
 
-            client.DownloadProgressChanged += Client_DownloadProgressChanged(CustomMessage != "" ? CustomMessage : $"Downloading to buffer");
+            client.DownloadProgressChanged += Client_DownloadProgressChanged(CustomMessage != "" ? CustomMessage : $"Downloading to buffer", updateProgress);
             client.DownloadCompleted += Client_DownloadFileCompleted();
 
             while (!client.DownloadFileToBuffer(input, output))
@@ -424,24 +431,28 @@ namespace Hi3HelperGUI.Data
             return false;
         }
 
-        private EventHandler<DownloadProgressChangedEventArgs> Client_DownloadProgressChanged(string customMessage = "")
+        private EventHandler<DownloadProgressChangedEventArgs> Client_DownloadProgressChanged(string customMessage = "", bool updateProgress = false)
         {
             Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
             {
+#if DEBUG
                 LogWrite($"{customMessage} \u001b[33;1m{(byte)e.ProgressPercentage}%"
                  + $"\u001b[0m ({SummarizeSizeSimple(e.BytesReceived)}) (\u001b[32;1m{SummarizeSizeSimple(e.CurrentSpeed)}/s\u001b[0m)", LogType.NoTag, false, true);
+#endif
             };
             return new EventHandler<DownloadProgressChangedEventArgs>(action);
         }
 
-        private static EventHandler Client_DownloadFileCompleted()
+        private static EventHandler<DownloadProgressCompletedEventArgs> Client_DownloadFileCompleted()
         {
-            Action<object, EventArgs> action = (sender, e) =>
+            Action<object, DownloadProgressCompletedEventArgs> action = (sender, e) =>
             {
+#if DEBUG
                 LogWrite($" Done!", LogType.Empty);
-                Console.WriteLine();
+                LogWriteLine();
+#endif
             };
-            return new EventHandler(action);
+            return new EventHandler<DownloadProgressCompletedEventArgs>(action);
         }
     }
 }

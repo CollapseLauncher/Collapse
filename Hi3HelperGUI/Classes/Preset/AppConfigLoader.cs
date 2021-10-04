@@ -30,6 +30,8 @@ namespace Hi3HelperGUI
                 ShowConsoleWindow();
             else
                 HideConsoleWindow();
+
+            Logger.InitLog();
         });
 
         public void SaveAppConfig()
