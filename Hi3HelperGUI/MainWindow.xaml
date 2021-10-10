@@ -102,7 +102,7 @@
                     </DockPanel>
                 </DockPanel>
             </TabItem>
-            <TabItem x:Name="BlockSection" Header="Block Check" IsEnabled="False">
+            <TabItem x:Name="BlockSection" Header="Block Check">
                 <DockPanel LastChildFill="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="5,0,5,5">
                         <Grid.ColumnDefinitions>
