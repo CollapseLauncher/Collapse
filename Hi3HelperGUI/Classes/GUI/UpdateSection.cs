@@ -69,7 +69,7 @@ namespace Hi3HelperGUI
         private async void DoUpdateDownload()
         {
             DownloadTokenSource = new CancellationTokenSource();
-            var token = DownloadTokenSource.Token;
+            CancellationToken token = DownloadTokenSource.Token;
 
             Dispatcher.Invoke(() => UpdateDownloadBtn.IsEnabled = false );
             // await Task.Run(() => DownloadUpdateFiles(ConfigStore.UpdateFiles), token);

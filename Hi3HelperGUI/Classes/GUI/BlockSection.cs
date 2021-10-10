@@ -17,21 +17,14 @@ namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
-        BlockData BlockDataUtil;
-        public void BlockCheckStart(object sender, RoutedEventArgs e) => FetchDictionaryData();
+        // BlockData BlockDataUtil;
+        public void BlockCheckStart(object sender, RoutedEventArgs e) => DoBlockCheck();
 
-        public async void FetchDictionaryData()
+        public async void DoBlockCheck()
         {
-            await Task.Run(() =>
-            {
-                LogWriteLine($"Bruh");
-                RefreshBlockCheckProgressBar();
-                foreach (PresetConfigClasses i in ConfigStore.Config)
-                {
-                    BlockDataUtil = new BlockData(i);
-                    ChangeBlockRepairStatus($"Fetching dictionary file...", false);
-                }
-            }).ConfigureAwait(false);
+            DownloadTokenSource = new CancellationTokenSource();
+            CancellationToken token = DownloadTokenSource.Token;
+            await FetchBlockDictionary(DownloadTokenSource, token);
         }
 
         private void RefreshBlockCheckProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => BlockProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);

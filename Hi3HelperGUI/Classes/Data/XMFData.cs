@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.IO;
 // using System.Linq;
 using System.Text;
+using Hi3HelperGUI.Preset;
+
 using static Hi3HelperGUI.Data.ConverterTool;
 using static Hi3HelperGUI.Logger;
-using Hi3HelperGUI.Preset;
 
 namespace Hi3HelperGUI.Data
 {
     public class XMFPatchUtils : XMFDictionaryClasses
     {
         // XMF Section
-        internal protected FileStream fs;
+        internal protected Stream fs;
         internal protected long readoffset;
         internal protected string xmfpath;
         public ushort offset = 0x0;
@@ -25,24 +26,25 @@ namespace Hi3HelperGUI.Data
 
         public _PatchFilesList XMFBook;
 
-        public XMFPatchUtils(string path)
+        public XMFPatchUtils(Stream i)
         {
-            fs = new FileStream(path, FileMode.Open);
+            fs = i;
             XMFBook = new _PatchFilesList();
             using (fs)
             {
                 fs.Position = offset;
                 fs.Read(buffer = new byte[4], 0, 4);
                 XMFBook.PatchCount = BytesToUInt32Big(buffer);
-                if (debug) Console.WriteLine($"{XMFBook.PatchCount} patches are available.");
+#if DEBUG
+                LogWriteLine($"{XMFBook.PatchCount} patches are available.");
+#endif
                 readoffset = fs.Position;
-                xmfpath = path;
             }
         }
 
         public void Read()
         {
-            fs = new FileStream(xmfpath, FileMode.Open);
+            // fs = new FileStream(xmfpath, FileMode.Open);
             fs.Position = readoffset;
 
             using (fs)
@@ -99,19 +101,20 @@ namespace Hi3HelperGUI.Data
         }
     }
 
+    // FileFormat Enum
+    public enum XMFFileFormat
+    {
+        Dictionary,
+        XMF
+    }
+
     public class XMFUtils : XMFDictionaryClasses
     {
 
-        // FileFormat Enum
-        internal protected enum FileFormat
-        {
-            Dictionary,
-            XMF
-        }
-        FileFormat format;
+        XMFFileFormat format;
 
         // XMF Section
-        internal protected FileStream fs;
+        internal protected Stream fs;
         internal protected long readoffset;
         internal protected string xmfpath;
         public ushort offset = 0x21;
@@ -126,23 +129,19 @@ namespace Hi3HelperGUI.Data
 
         public List<_XMFBlockList> XMFBook;
 
-        public XMFUtils(string path)
+        public XMFUtils(MemoryStream i, XMFFileFormat j)
         {
-            xmfpath = path;
-            fs = new FileStream(path, FileMode.Open);
-            using (fs)
+            fs = i;
+            switch (j)
             {
-                switch (Path.GetExtension(xmfpath).ToLower())
-                {
-                    case ".xmf":
-                        format = FileFormat.XMF;
-                        InitXMF();
-                        break;
-                    case ".dict":
-                        format = FileFormat.Dictionary;
-                        InitDict();
-                        break;
-                }
+                case XMFFileFormat.XMF:
+                    format = XMFFileFormat.XMF;
+                    InitXMF();
+                    break;
+                case XMFFileFormat.Dictionary:
+                    format = XMFFileFormat.Dictionary;
+                    InitDict();
+                    break;
             }
         }
 
@@ -154,6 +153,9 @@ namespace Hi3HelperGUI.Data
                     + $"\r\nExpecting \"{dictmagicword}\" but got \"{Encoding.ASCII.GetString(buffer)}\" instead.");
             fs.Read(buffer = new byte[1], 0, 1);
             blockcount = buffer[0];
+#if DEBUG
+            LogWriteLine($"{blockcount} blocks are available.");
+#endif
             readoffset = fs.Position;
         }
 
@@ -162,14 +164,15 @@ namespace Hi3HelperGUI.Data
             fs.Position += offset;
             fs.Read(buffer = new byte[4], 0, 4);
             blockcount = BytesToUInt32Big(buffer);
-            if (debug) Console.WriteLine($"{blockcount} blocks are available.");
+#if DEBUG
+            LogWriteLine($"{blockcount} blocks are available.");
+#endif
             readoffset = fs.Position;
         }
 
         public void Read()
         {
             XMFBook = new List<_XMFBlockList>();
-            fs = new FileStream(xmfpath, FileMode.Open);
             fs.Position = readoffset;
 
             using (fs)
@@ -195,11 +198,11 @@ namespace Hi3HelperGUI.Data
 
             switch (format)
             {
-                case FileFormat.XMF:
+                case XMFFileFormat.XMF:
                     ReadContentMethod = ReadXMFContentInfo;
                     GetMetadataInfo(4, 0xC, true);
                     break;
-                case FileFormat.Dictionary:
+                case XMFFileFormat.Dictionary:
                 default:
                     ReadContentMethod = ReadDictContentInfo;
                     GetMetadataInfo(2, 0, false);
@@ -247,7 +250,9 @@ namespace Hi3HelperGUI.Data
 
             filesize = GetFileSize();
 
-            if (debug) Console.WriteLine($"        > [C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}");
+#if DEBUG   
+            LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+#endif
             curFileRead++;
 
             return new _XMFFileProperty() { _filename = filename, _filesize = filesize, _startoffset = fileoffset };
@@ -267,7 +272,9 @@ namespace Hi3HelperGUI.Data
             fs.Read(buffer = new byte[4], 0, 4);
             filehash = BytesToHex(buffer);
 
-            if (debug) Console.WriteLine($"        > [C:{curFileRead}] {filename} | CRC32: {filehash} | Start Offset: {fileoffset} | Size: {filesize}");
+#if DEBUG   
+            LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+#endif
             curFileRead++;
 
             return new _XMFFileProperty() { _filename = filename, _filesize = filesize, _startoffset = fileoffset, _filecrc32 = filehash };
