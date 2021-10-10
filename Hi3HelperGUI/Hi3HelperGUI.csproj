@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ironmaiden_logo_TsN_icon.ico</ApplicationIcon>
     <StartupObject />
@@ -18,7 +18,8 @@
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
-	<DebugType>none</DebugType>
+	<DebugType>embedded</DebugType>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
