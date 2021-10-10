@@ -16,7 +16,7 @@ namespace Hi3HelperGUI.Preset
         public static bool UpdateFinished = false;
         public static UpdateDataProperties DataProp = new UpdateDataProperties();
 
-        public static readonly List<string> RegionalCheckName = new List<string>() { "TextMap", "RandomDialogData", "sprite" };
+        public static readonly string[] RegionalCheckName = new string[] { "TextMap", "RandomDialogData", "sprite" };
         public enum DataType
         {
             Data = 0,
@@ -27,7 +27,8 @@ namespace Hi3HelperGUI.Preset
             Subtitle = 5,
             DictionaryAddress = 6,
             Bigfile = 7,
-            AssetBundle = 8
+            AssetBundle = 8,
+            BlockDictionaryAddress = 9,
         }
 
         public static string GetMirrorAddressByIndex(PresetConfigClasses h, DataType i)
@@ -40,7 +41,9 @@ namespace Hi3HelperGUI.Preset
                 case DataType.Bigfile:
                     return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile;
                 case DataType.DictionaryAddress:
-                    return h.DictionaryAddress;
+                    return h.DictionaryHost + h.UpdateDictionaryAddress;
+                case DataType.BlockDictionaryAddress:
+                    return h.DictionaryHost + h.BlockDictionaryAddress;
             }
         }
 

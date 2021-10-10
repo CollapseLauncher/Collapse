@@ -5,7 +5,9 @@
     "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3rd",
     "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3rd",
     "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd glb",
-    "DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/eur01/1.1/",
+    "DictionaryHost": "http://data.in.sea.ironmaid.xyz:65535/",
+    "UpdateDictionaryAddress": "asset_bundle/eur01/1.1/",
+    "BlockDictionaryAddress": "tmp/com.miHoYo.bh3global/",
     "LanguageAvailable": [ "en", "cn", "fr", "de" ],
     "FallbackLanguage": "en",
     "MirrorList": {
@@ -25,7 +27,9 @@
     "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
     "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
     "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
-    "DictionaryAddress": "http://data.in.sea.ironmaid.xyz:65535/asset_bundle/overseas01/1.1/",
+    "DictionaryHost": "http://data.in.sea.ironmaid.xyz:65535/",
+    "UpdateDictionaryAddress": "asset_bundle/overseas01/1.1/",
+    "BlockDictionaryAddress": "com.miHoYo.bh3oversea/",
     "LanguageAvailable": [ "en", "cn", "vn", "th", "id" ],
     "FallbackLanguage": "en",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors

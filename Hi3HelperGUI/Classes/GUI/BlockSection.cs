@@ -17,6 +17,7 @@ namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
+        BlockData BlockDataUtil;
         public void BlockCheckStart(object sender, RoutedEventArgs e) => FetchDictionaryData();
 
         public async void FetchDictionaryData()
@@ -25,6 +26,11 @@ namespace Hi3HelperGUI
             {
                 LogWriteLine($"Bruh");
                 RefreshBlockCheckProgressBar();
+                foreach (PresetConfigClasses i in ConfigStore.Config)
+                {
+                    BlockDataUtil = new BlockData(i);
+                    ChangeBlockRepairStatus($"Fetching dictionary file...", false);
+                }
             }).ConfigureAwait(false);
         }
 
@@ -33,15 +39,20 @@ namespace Hi3HelperGUI
         private void ChangeBlockRepair(bool a) =>
             Dispatcher.Invoke(() =>
             {
-                UpdateDownloadBtn.IsEnabled = a;
+                BlockRepairBtn.IsEnabled = a;
                 UpdateListView.IsEnabled = a;
             });
 
         private void ChangeBlockRepairStatus(string s, bool b) =>
             Dispatcher.Invoke(() =>
             {
-                UpdateCheckStatus.Content = s;
-                UpdateCheckBtn.IsEnabled = b;
+                BlockCheckStatus.Content = s;
+                BlockCheckBtn.IsEnabled = b;
             });
+
+        private void GetBlockDictionaryData(PresetConfigClasses i)
+        {
+            ChangeBlockRepairStatus($"Fetching dictionary file for {Enum.GetName(typeof(ConfigStore.DataType), 0)}...", false);
+        }
     }
 }
