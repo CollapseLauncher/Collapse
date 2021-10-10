@@ -38,6 +38,8 @@ namespace Hi3HelperGUI.Data
 
         internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
+        public static string NormalizePath(string i) => Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
+
         public static string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {
             byte mag = (byte)Math.Log(value, 1000);
