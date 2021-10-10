@@ -385,15 +385,11 @@ namespace Hi3HelperGUI.Data
         public long CurrentReceived { get; set; }
         public long BytesReceived { get; private set; }
         public long TotalBytesToReceive { get; private set; }
-        public float ProgressPercentage { get { return ((float)BytesReceived / (float)TotalBytesToReceive) * 100; } }
+        public float ProgressPercentage { get => ((float)BytesReceived / (float)TotalBytesToReceive) * 100; }
         public long CurrentSpeed { get; private set; }
         public TimeSpan TimeLeft
         {
-            get
-            {
-                var bytesRemainingtoBeReceived = TotalBytesToReceive - BytesReceived;
-                return TimeSpan.FromSeconds(bytesRemainingtoBeReceived / CurrentSpeed);
-            }
+            get => TimeSpan.FromSeconds((TotalBytesToReceive - BytesReceived) / CurrentSpeed);
         }
     }
 }
