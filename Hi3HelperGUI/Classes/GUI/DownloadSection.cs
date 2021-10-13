@@ -18,7 +18,8 @@ namespace Hi3HelperGUI
 {
     public partial class MainWindow : Window
     {
-        readonly HttpClientTool client = new HttpClientTool();
+        readonly HttpClientTool UpdateHttpClient = new HttpClientTool(),
+                                BlockHttpClient = new HttpClientTool();
 
         void BlockDictDownloadProgressChanged(object sender, DownloadProgressChanged e)
         {
@@ -56,14 +57,14 @@ namespace Hi3HelperGUI
 
         void RemoveUpdateDownloadHandler()
         {
-            client.ProgressChanged -= UpdateDownloadProgressChanged;
-            client.Completed -= DownloadProgressCompleted;
+            UpdateHttpClient.ProgressChanged -= UpdateDownloadProgressChanged;
+            UpdateHttpClient.Completed -= DownloadProgressCompleted;
         }
 
         void RemoveBlockDictDownloadHandler()
         {
-            client.ProgressChanged -= BlockDictDownloadProgressChanged;
-            client.Completed -= DownloadProgressCompleted;
+            BlockHttpClient.ProgressChanged -= BlockDictDownloadProgressChanged;
+            BlockHttpClient.Completed -= DownloadProgressCompleted;
         }
 
         void DownloadProgressCompleted(object sender, DownloadProgressCompleted e)
