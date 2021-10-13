@@ -13,8 +13,8 @@ namespace Hi3HelperGUI.Data
     {
         static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
-        public static string BytesToCRC32Simple(in Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
-#if (NETCOREAPP)
+        public static string BytesToCRC32Simple(MemoryStream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
+#if (!NETCOREAPP)
         public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
 #else
         public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);

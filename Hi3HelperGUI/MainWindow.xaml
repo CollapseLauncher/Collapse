@@ -111,8 +111,8 @@
                             <ColumnDefinition Width="91"/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="BlockCheckBtn" Content="Check Block" Grid.Column="1" HorizontalAlignment="Center" Width="110" Click="BlockCheckStart"/>
-                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0"/>
-                        <Button x:Name="BlockRepairCancelBtn" Content="Cancel Repair" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="UpdateDownloadCancel" Visibility="Collapsed"/>
+                        <Button x:Name="BlockCheckCancelBtn" Content="Cancel Check" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="BlockCheckCancel" Visibility="Collapsed"/>
+                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0" />
                         <DockPanel Margin="0,0,10,0">
                             <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
                                 <ProgressBar x:Name="BlockProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>

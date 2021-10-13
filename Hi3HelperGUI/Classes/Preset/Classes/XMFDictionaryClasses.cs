@@ -20,6 +20,8 @@ namespace Hi3HelperGUI.Preset
             // XMF Block Section
             public virtual string BlockHash { get; set; }
             public virtual long BlockSize { get; set; }
+            public virtual long BlockExistingSize { get; set; }
+            public virtual bool BlockIncompleted { get; set; }
             public List<_XMFFileProperty> BlockContent = new List<_XMFFileProperty>();
         }
 
@@ -30,6 +32,7 @@ namespace Hi3HelperGUI.Preset
             public virtual uint _filesize { get; set; }
             public virtual uint _startoffset { get; set; }
             public virtual string _filecrc32 { get; set; }
+            public virtual string _fileactualcrc32 { get; set; }
         }
 
         public class _PatchFilesList
