@@ -52,6 +52,7 @@ namespace Hi3HelperGUI
 
             await Task.Run(async () =>
             {
+                blockData.FlushProp();
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
                     blockDictStream = new MemoryStream();
@@ -85,12 +86,17 @@ namespace Hi3HelperGUI
                     else
                         ChangeBlockRepairStatus($"No broken blocks found!", true, false);
 
-                    await blockDictStream.DisposeAsync();
+                    blockDictStream.Dispose();
                 }
+
+                Dispatcher.Invoke(() =>
+                {
+                    BlockChunkTreeView.ItemsSource = blockData.BrokenBlocksRegion;
+                });
             });
         }
 
-        void BlockCheckProgressChanged(object sender, ReadingBlockProgressChanged e)
+        private void BlockCheckProgressChanged(object sender, ReadingBlockProgressChanged e)
         {
             string BytesReceived = SummarizeSizeSimple(e.BytesRead);
             double Percentage = GetPercentageNumber(e.BytesRead, e.TotalBlockSize);
@@ -119,10 +125,5 @@ namespace Hi3HelperGUI
                 BlockCheckCancelBtn.Visibility = b ? Visibility.Collapsed : Visibility.Visible;
                 BlockRepairBtn.IsEnabled = c;
             });
-
-        private void GetBlockDictionaryData(PresetConfigClasses i)
-        {
-            ChangeBlockRepairStatus($"Fetching dictionary file for {Enum.GetName(typeof(ConfigStore.DataType), 0)}...", false);
-        }
     }
 }

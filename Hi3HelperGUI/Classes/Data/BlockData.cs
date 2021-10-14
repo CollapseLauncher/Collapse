@@ -21,8 +21,8 @@ namespace Hi3HelperGUI.Data
         internal protected MemoryStream chunkBuffer;
         internal protected FileStream fileStream;
 
-        public Dictionary<string, List<_XMFBlockList>> BrokenBlocksRegion = new();
-        List<_XMFBlockList> BrokenBlocks = new();
+        public Dictionary<string, List<_XMFBlockList>> BrokenBlocksRegion;
+        List<_XMFBlockList> BrokenBlocks;
         List<_XMFFileProperty> BrokenChunkProp;
 
         public event EventHandler<ReadingBlockProgressChanged> ProgressChanged;
@@ -33,6 +33,12 @@ namespace Hi3HelperGUI.Data
             i.Position = 0;
             util = new XMFUtils(i, XMFFileFormat.Dictionary);
             util.Read();
+        }
+
+        public void FlushProp()
+        {
+            BrokenBlocks = new();
+            BrokenBlocksRegion = new();
         }
 
         public void CheckIntegrity(PresetConfigClasses input, CancellationToken token)
