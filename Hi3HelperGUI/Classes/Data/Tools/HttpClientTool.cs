@@ -107,7 +107,6 @@ namespace Hi3HelperGUI.Data
             finally
             {
                 if (!isStream) localStream?.Dispose();
-                else localStream.Position = 0;
                 remoteStream?.Dispose();
             }
 
