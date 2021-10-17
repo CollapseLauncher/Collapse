@@ -73,24 +73,14 @@ namespace Hi3HelperGUI
 
         string GetLog(string i, LogType a)
         {
-            switch (a)
+            i = a switch
             {
-                case LogType.Error:
-                    i = $"[Erro]\t{i}";
-                    break;
-                case LogType.Warning:
-                    i = $"[Warn]\t{i}";
-                    break;
-                default:
-                    i = $"\t\t{i}";
-                    break;
-                case LogType.Default:
-                    i = $"[Info]\t{i}";
-                    break;
-                case LogType.Scheme:
-                    i = $"[Schm]\t{i}";
-                    break;
-            }
+                LogType.Error => $"[Erro]\t{i}",
+                LogType.Warning => $"[Warn]\t{i}",
+                LogType.Default => $"[Info]\t{i}",
+                LogType.Scheme => $"[Schm]\t{i}",
+                _ => $"\t\t{i}",
+            };
             return $"[{Logger.GetCurrentTime("HH:mm:ss.fff")}] {i.Replace("\n", $"{new string(' ', 22)}\t")}";
         }
     }
@@ -165,24 +155,14 @@ namespace Hi3HelperGUI
 
         private protected string GetLog(string i, LogType a)
         {
-            switch (a)
+            i = a switch
             {
-                case LogType.Error:
-                    i = $"[Erro]\t{i}";
-                    break;
-                case LogType.Warning:
-                    i = $"[Warn]\t{i}";
-                    break;
-                default:
-                    i = $"\t\t{i}";
-                    break;
-                case LogType.Default:
-                    i = $"[Info]\t{i}";
-                    break;
-                case LogType.Scheme:
-                    i = $"[Schm]\t{i}";
-                    break;
-            }
+                LogType.Error => $"[Erro]\t{i}",
+                LogType.Warning => $"[Warn]\t{i}",
+                LogType.Default => $"[Info]\t{i}",
+                LogType.Scheme => $"[Schm]\t{i}",
+                _ => $"\t\t{i}",
+            };
             return $"[{Logger.GetCurrentTime("HH:mm:ss.fff")}] {i.Replace("\n", $"{new string(' ', 22)}\t")}";
         }
     }

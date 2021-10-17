@@ -15,10 +15,10 @@ namespace Hi3HelperGUI.Preset
             public string CS { get; set; }
         }
 
-        public class _XMFBlockList
+        public class XMFBlockList
         {
             public long SumDownloadableContent() =>
-                BlockContent.Count != 0 ? BlockContent.Sum(i => i._filesize) :
+                BlockContent.Count != 0 ? BlockContent.Sum(i => i.FileSize) :
                 BlockMissing ? BlockSize :
                 BlockSize < BlockExistingSize ? BlockSize :
                 (BlockSize - BlockExistingSize);
@@ -28,34 +28,34 @@ namespace Hi3HelperGUI.Preset
             public long BlockSize { get; set; }
             public long BlockExistingSize { get; set; }
             public bool BlockMissing { get; set; }
-            public List<_XMFFileProperty> BlockContent = new List<_XMFFileProperty>();
+            public List<XMFFileProperty> BlockContent = new();
         }
 
-        public class _XMFFileProperty
+        public class XMFFileProperty
         {
             // Files Section
-            public virtual string _filename { get; set; }
-            public virtual uint _filesize { get; set; }
-            public virtual uint _startoffset { get; set; }
-            public virtual string _filecrc32 { get; set; }
-            public virtual string _fileactualcrc32 { get; set; }
+            public virtual string FileName { get; set; }
+            public virtual uint FileSize { get; set; }
+            public virtual uint StartOffset { get; set; }
+            public virtual string FileHash { get; set; }
+            public virtual string FileActualHash { get; set; }
         }
 
-        public class _PatchFilesList
+        public class PatchFilesList
         {
             // Patch book section
             public virtual uint PatchCount { get; set; }
-            public List<_PatchFileProperty> PatchContent = new List<_PatchFileProperty>();
+            public List<PatchFileProperty> PatchContent = new();
         }
 
-        public class _PatchFileProperty
+        public class PatchFileProperty
         {
             // Files Section
-            public virtual string _sourcefilename { get; set; }
-            public virtual string _targetfilename { get; set; }
-            public virtual string _patchfilename { get; set; }
-            public virtual string _patchdir { get; set; }
-            public virtual uint _patchfilesize { get; set; }
+            public virtual string SourceFileName { get; set; }
+            public virtual string TargetFileName { get; set; }
+            public virtual string PatchFileName { get; set; }
+            public virtual string PatchDir { get; set; }
+            public virtual uint PatchFileSize { get; set; }
         }
     }
 }

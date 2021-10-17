@@ -11,7 +11,7 @@ namespace Hi3HelperGUI.Data
 {
     public class ConverterTool
     {
-        static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
+        static readonly Crc32Algorithm CRCEncoder = new();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(MemoryStream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
 #if (NETCOREAPP)
@@ -55,11 +55,11 @@ namespace Hi3HelperGUI.Data
 
         // Reference:
         // https://social.msdn.microsoft.com/Forums/vstudio/en-US/7f5765cc-3edc-44b4-92c6-7b9680e778ed/getting-md5sha-as-number-instead-of-string?forum=csharpgeneral
-        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data) => new BigInteger(algorithm.ComputeHash(data));
+        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data) => new(algorithm.ComputeHash(data));
 
         // Reference:
         // https://makolyte.com/csharp-hex-string-to-byte-array
-        internal readonly static Dictionary<char, byte> hexmap = new Dictionary<char, byte>()
+        internal readonly static Dictionary<char, byte> hexmap = new()
         {
             { 'a', 0xA },{ 'b', 0xB },{ 'c', 0xC },{ 'd', 0xD },
             { 'e', 0xE },{ 'f', 0xF },{ 'A', 0xA },{ 'B', 0xB },
@@ -113,7 +113,7 @@ namespace Hi3HelperGUI.Data
         /// <param name="n">The int to convert to Hex representation</param>
         /// <param name="len">number of digits in the hex string. Pads with leading zeros.</param>
         /// <returns></returns>
-        public static string NumberToHexString(long n, int len = 8) => new string(StringToChars(n, len));
+        public static string NumberToHexString(long n, int len = 8) => new(StringToChars(n, len));
 
         private static char[] StringToChars(long n, int len)
         {
@@ -135,6 +135,7 @@ namespace Hi3HelperGUI.Data
             return b < 10 ? (char)(b + 48) : (char)(b + 55);
         }
 
+        /*
         /// <summary>
         /// Convert a hexidecimal string to an base 10 integer
         /// </summary>
@@ -156,5 +157,6 @@ namespace Hi3HelperGUI.Data
         /// <param name="ch"></param>
         /// <returns></returns>
         private static int HexCharToInt(char ch) => (ch < 58) ? ch - 48 : ch - 55;
+        */
     }
 }

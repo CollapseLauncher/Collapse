@@ -21,7 +21,7 @@ namespace Hi3HelperGUI
     {
         CancellationTokenSource BlockCheckTokenSource;
         MemoryStream blockDictStream;
-        BlockData blockData = new BlockData();
+        readonly BlockData blockData = new();
 
         private void BlockCheckCancel(object sender, RoutedEventArgs e)
         {
@@ -99,7 +99,7 @@ namespace Hi3HelperGUI
                     {
                         LogWriteLine($"Retrying...", LogType.Warning);
                     }
-                    blockData.Init(blockDictStream, i);
+                    blockData.Init(blockDictStream);
 
                     blockData.CheckingProgressChanged += BlockProgressChanged;
                     blockData.CheckingProgressChangedStatus += BlockProgressChanged;
@@ -188,13 +188,6 @@ namespace Hi3HelperGUI
                 BlockProgressLabel.Text = "none";
             }, DispatcherPriority.Background);
         }
-
-        private void ChangeBlockRepair(bool a) =>
-            Dispatcher.Invoke(() =>
-            {
-                BlockRepairBtn.IsEnabled = a;
-                UpdateListView.IsEnabled = a;
-            });
 
         private void ChangeBlockRepairStatus(string s,bool b, bool c = false,
             bool resetprogress = false, bool hideCancelBtn = true) =>

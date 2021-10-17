@@ -76,7 +76,7 @@ namespace Hi3HelperGUI
             ToggleUpdateCancelBtnState(true);
             try
             {
-                await DownloadUpdateFilesAsync(DownloadTokenSource, token);
+                await DownloadUpdateFilesAsync(token);
             }
             catch (TaskCanceledException)
             {
@@ -97,7 +97,7 @@ namespace Hi3HelperGUI
             LogWriteLine($"{ConfigStore.UpdateFiles.Count} files have been downloaded!", LogType.Default, true);
         }
 
-        public async Task<bool> DownloadUpdateFilesAsync(CancellationTokenSource tokenSource, CancellationToken token)
+        public async Task<bool> DownloadUpdateFilesAsync(CancellationToken token)
         {
             int updateFilesCount = ConfigStore.UpdateFiles.Count;
             string message;
@@ -128,7 +128,7 @@ namespace Hi3HelperGUI
 
         private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
 
-        private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
+        // private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
 
         private void RefreshUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => UpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
 

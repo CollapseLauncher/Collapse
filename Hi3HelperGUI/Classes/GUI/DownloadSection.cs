@@ -18,8 +18,8 @@ namespace Hi3HelperGUI
 {
     public partial class MainWindow : Window
     {
-        readonly HttpClientTool UpdateHttpClient = new HttpClientTool(),
-                                BlockHttpClient = new HttpClientTool();
+        readonly HttpClientTool UpdateHttpClient = new(),
+                                BlockHttpClient = new();
 
         void BlockDictDownloadProgressChanged(object sender, DownloadProgressChanged e)
         {

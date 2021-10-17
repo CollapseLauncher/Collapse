@@ -21,8 +21,8 @@ namespace Hi3HelperGUI.Data
     {
         protected internal string LocalPath;
 
-        protected internal _RemoteURL RemoteURL;
-        protected internal class _RemoteURL
+        protected internal RemoteURLProp RemoteURL;
+        protected internal class RemoteURLProp
         {
             internal string Data { get; set; }
             internal string DataDictionary { get; set; }
@@ -36,7 +36,7 @@ namespace Hi3HelperGUI.Data
         {
             string bundleURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.AssetBundle);
             string dictionaryURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.DictionaryAddress);
-            RemoteURL = new _RemoteURL()
+            RemoteURL = new()
             {
                 DataDictionary = $"{dictionaryURL}data/editor_compressed/PackageVersion.txt",
                 Data = $"{bundleURL}data/editor_compressed/",
@@ -61,7 +61,7 @@ namespace Hi3HelperGUI.Data
                     bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.miHoYoAssetBundle);
                     break;
             }
-            RemoteURL = new _RemoteURL()
+            RemoteURL = new RemoteURL()
             {
                 DataDictionary = $"{i.Hi3MirrorAssetBundleAddress}data/editor_compressed/PackageVersion.txt",
                 Data = $"{bundleURL}data/editor_compressed/",
@@ -81,11 +81,11 @@ namespace Hi3HelperGUI.Data
          */
         public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
-            HttpClientTool downloader = new HttpClientTool();
+            HttpClientTool downloader = new();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
-            MemoryStream memoryData = new MemoryStream();
+            MemoryStream memoryData = new();
             // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
             while (!downloader.DownloadStream(
                 dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,

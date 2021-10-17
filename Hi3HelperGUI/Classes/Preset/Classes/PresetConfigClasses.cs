@@ -25,7 +25,7 @@ namespace Hi3HelperGUI.Preset
         {
             try
             {
-                IniParser Ini = new IniParser(Path.Combine(ActualGameDataLocation, "config.ini"));
+                IniParser Ini = new(Path.Combine(ActualGameDataLocation, "config.ini"));
                 GameVersion = Ini.Read("game_version", "General").Replace('.', '_');
             }
             catch (Exception e)
@@ -61,7 +61,7 @@ namespace Hi3HelperGUI.Preset
             }
             else if (tryFallback)
             {
-                IniParser Ini = new IniParser(Path.Combine(a, "config.ini"));
+                IniParser Ini = new(Path.Combine(a, "config.ini"));
                 string path = ConverterTool.NormalizePath(Ini.Read("game_install_path", "launcher"));
                 if (!Directory.Exists(path))
                 {

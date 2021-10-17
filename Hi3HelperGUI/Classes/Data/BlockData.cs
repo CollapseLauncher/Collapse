@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Reflection;
 using System.IO;
 using Hi3HelperGUI.Preset;
 
@@ -20,11 +15,11 @@ namespace Hi3HelperGUI.Data
         internal protected MemoryStream chunkBuffer;
         internal protected FileStream fileStream;
 
-        public Dictionary<string, List<_XMFBlockList>> BrokenBlocksRegion;
-        List<_XMFBlockList> BrokenBlocks;
-        List<_XMFFileProperty> BrokenChunkProp;
+        public Dictionary<string, List<XMFBlockList>> BrokenBlocksRegion;
+        List<XMFBlockList> BrokenBlocks;
+        List<XMFFileProperty> BrokenChunkProp;
         XMFUtils util;
-        readonly HttpClientTool httpUtil = new HttpClientTool();
+        readonly HttpClientTool httpUtil = new();
 
         public event EventHandler<CheckingBlockProgressChanged> CheckingProgressChanged;
         public event EventHandler<CheckingBlockProgressChangedStatus> CheckingProgressChangedStatus;
@@ -33,13 +28,13 @@ namespace Hi3HelperGUI.Data
 
 #if DEBUG
         // 4 KiB buffer
-        byte[] buffer = new byte[4096];
+        readonly byte[] buffer = new byte[4096];
 #else
         // 512 KiB buffer
-        byte[] buffer = new byte[524288];
+        readonly byte[] buffer = new byte[524288];
 #endif
 
-        public void Init(in MemoryStream i, PresetConfigClasses j)
+        public void Init(in MemoryStream i)
         {
             i.Position = 0;
             util = new XMFUtils(i, XMFFileFormat.Dictionary);
@@ -86,10 +81,10 @@ namespace Hi3HelperGUI.Data
 
             int z = 0;
             int y = util.XMFBook.Count;
-            foreach (_XMFBlockList i in util.XMFBook)
+            foreach (XMFBlockList i in util.XMFBook)
             {
                 z++;
-                BrokenChunkProp = new List<_XMFFileProperty>();
+                BrokenChunkProp = new List<XMFFileProperty>();
                 string localFile = Path.Combine(localPath, $"{i.BlockHash.ToLowerInvariant()}.wmv");
                 fileInfo = new FileInfo(localFile);
 
@@ -99,16 +94,16 @@ namespace Hi3HelperGUI.Data
                        FileMode.Open,
                        FileAccess.Read))
                     {
-                        foreach (_XMFFileProperty j in i.BlockContent)
+                        foreach (XMFFileProperty j in i.BlockContent)
                         {
-                            chunkSize = (int)j._filesize;
+                            chunkSize = (int)j.FileSize;
                             chunkBuffer = new MemoryStream();
 
                             OnProgressChanged(new CheckingBlockProgressChangedStatus()
                             {
                                 BlockHash = i.BlockHash,
-                                ChunkHash = j._filecrc32,
-                                ChunkName = j._filename,
+                                ChunkHash = j.FileHash,
+                                ChunkName = j.FileName,
                                 CurrentBlockPos = z,
                                 BlockCount = y
                             });
@@ -122,24 +117,24 @@ namespace Hi3HelperGUI.Data
                                 chunkSize -= byteSize;
                             }
 
-                            totalRead += j._filesize;
+                            totalRead += j.FileSize;
+
+                            chunkBuffer.Position = 0;
+
+                            if (j.FileHash != (chunkHash = BytesToCRC32Simple(chunkBuffer)))
+                            {
+                                j.FileActualHash = chunkHash;
+                                BrokenChunkProp.Add(j);
+                                LogWriteLine($"Block: {i.BlockHash} CRC: {j.FileHash} != {chunkHash} Offset: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken", LogType.Warning, true);
+                            }
 
                             OnProgressChanged(new CheckingBlockProgressChanged()
                             {
                                 BlockSize = i.BlockSize,
-                                ChunkSize = j._filesize,
+                                ChunkSize = j.FileSize,
                                 BytesRead = totalRead,
                                 TotalBlockSize = totalFileSize
                             });
-
-                            chunkBuffer.Position = 0;
-
-                            if (j._filecrc32 != (chunkHash = BytesToCRC32Simple(chunkBuffer)))
-                            {
-                                j._fileactualcrc32 = chunkHash;
-                                BrokenChunkProp.Add(j);
-                                LogWriteLine($"Block: {i.BlockHash} CRC: {j._filecrc32} != {chunkHash} Offset: {NumberToHexString(j._startoffset)} Size: {NumberToHexString(j._filesize)} is broken", LogType.Warning, true);
-                            }
                         }
                     }
                 }
@@ -217,7 +212,7 @@ namespace Hi3HelperGUI.Data
                 remoteAddress = ConfigStore.GetMirrorAddressByIndex(a, ConfigStore.DataType.Bigfile);
                 try
                 {
-                    foreach (_XMFBlockList b in BrokenBlocksRegion[a.ZoneName])
+                    foreach (XMFBlockList b in BrokenBlocksRegion[a.ZoneName])
                     {
                         currentChunkPos = 0;
                         currentBlockPos++;
@@ -238,7 +233,7 @@ namespace Hi3HelperGUI.Data
         }
 
         void RunRepairAction(
-            in _XMFBlockList b, in FileInfo j, in CancellationToken k,
+            in XMFBlockList b, in FileInfo j, in CancellationToken k,
             in string remotePath)
         {
             if (b.BlockMissing ||
@@ -253,24 +248,24 @@ namespace Hi3HelperGUI.Data
                 RepairCorruptedBlock(b, j, k, remotePath);
         }
 
-        void RepairCorruptedBlock(in _XMFBlockList blockProp, in FileInfo blockInfo, in CancellationToken token, in string remotePath)
+        void RepairCorruptedBlock(in XMFBlockList blockProp, in FileInfo blockInfo, in CancellationToken token, in string remotePath)
         {
             using (fileStream = blockInfo.Open(FileMode.Open, FileAccess.Write, FileShare.Write))
             {
-                foreach (_XMFFileProperty chunkProp in blockProp.BlockContent)
+                foreach (XMFFileProperty chunkProp in blockProp.BlockContent)
                 {
                     currentChunkPos++;
                     chunkBuffer = new MemoryStream();
-                    fileStream.Position = chunkProp._startoffset;
-                    DownloadContent($"{remotePath}.c/{chunkProp._filename}", chunkBuffer, chunkProp, -1, -1, token,
-                        $"Down: {blockProp.BlockHash} Offset {NumberToHexString(chunkProp._startoffset)} Size {NumberToHexString(chunkProp._filesize)}");
+                    fileStream.Position = chunkProp.StartOffset;
+                    DownloadContent($"{remotePath}.c/{chunkProp.FileName}", chunkBuffer, chunkProp, -1, -1, token,
+                        $"Down: {blockProp.BlockHash} Offset {NumberToHexString(chunkProp.StartOffset)} Size {NumberToHexString(chunkProp.FileSize)}");
 
-                    RepairingProgressChangedStatus(this, new()
+                    OnProgressChanged(new RepairingBlockProgressChangedStatus()
                     {
                         BlockHash = blockProp.BlockHash,
                         ZoneName = zoneName,
-                        ChunkOffset = chunkProp._startoffset,
-                        ChunkSize = chunkProp._filesize,
+                        ChunkOffset = chunkProp.StartOffset,
+                        ChunkSize = chunkProp.FileSize,
                         Downloading = false,
                         DownloadingBlock = false,
                         BlockCount = blockCount,
@@ -296,18 +291,18 @@ namespace Hi3HelperGUI.Data
             }
         }
 
-        void DownloadContent(string url, in MemoryStream destination, in _XMFFileProperty chunkProp, long startOffset, long endOffset, CancellationToken token, string message)
+        void DownloadContent(string url, in MemoryStream destination, in XMFFileProperty chunkProp, long startOffset, long endOffset, CancellationToken token, string message)
         {
             httpUtil.ProgressChanged += DownloadEventConverterForStream;
-            RepairingProgressChangedStatus(this, new()
+            OnProgressChanged(new RepairingBlockProgressChangedStatus()
             {
                 BlockHash = blockHash,
                 Downloading = true,
                 DownloadingBlock = false,
                 ZoneName = zoneName,
                 DownloadTotalSize = downloadSize,
-                ChunkOffset = chunkProp._startoffset,
-                ChunkSize = chunkProp._filesize,
+                ChunkOffset = chunkProp.StartOffset,
+                ChunkSize = chunkProp.FileSize,
                 BlockCount = blockCount,
                 CurrentBlockPos = currentBlockPos,
                 ChunkCount = chunkCount,
@@ -325,7 +320,7 @@ namespace Hi3HelperGUI.Data
         void DownloadContent(string url, string destination, long startOffset, long endOffset, CancellationToken token)
         {
             httpUtil.ProgressChanged += DownloadEventConverter;
-            RepairingProgressChangedStatus(this, new()
+            OnProgressChanged(new RepairingBlockProgressChangedStatus()
             {
                 BlockHash = blockHash,
                 Downloading = true,
@@ -345,7 +340,7 @@ namespace Hi3HelperGUI.Data
 
         private void DownloadEventConverterForStream(object sender, DownloadProgressChanged e)
         {
-            RepairingProgressChanged(this, new()
+            OnProgressChanged(new RepairingBlockProgressChanged()
             {
                 DownloadReceivedBytes = e.BytesReceived,
                 DownloadTotalSize = e.TotalBytesToReceive,
@@ -360,7 +355,7 @@ namespace Hi3HelperGUI.Data
         private void DownloadEventConverter(object sender, DownloadProgressChanged e)
         {
             totalBytesRead += e.CurrentReceived;
-            RepairingProgressChanged(this, new()
+            OnProgressChanged(new RepairingBlockProgressChanged()
             {
                 DownloadReceivedBytes = e.BytesReceived,
                 DownloadTotalSize = downloadSize,
@@ -372,10 +367,10 @@ namespace Hi3HelperGUI.Data
             LogWrite($"{e.Message} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.BytesReceived)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
         }
 
-        protected virtual void OnProgressChanged(CheckingBlockProgressChanged e) => CheckingProgressChanged(this, e);
-        protected virtual void OnProgressChanged(CheckingBlockProgressChangedStatus e) => CheckingProgressChangedStatus(this, e);
-        protected virtual void OnProgressChanged(RepairingBlockProgressChanged e) => RepairingProgressChanged(this, e);
-        protected virtual void OnProgressChanged(RepairingBlockProgressChangedStatus e) => RepairingProgressChangedStatus(this, e);
+        protected virtual void OnProgressChanged(CheckingBlockProgressChanged e) => CheckingProgressChanged?.Invoke(this, e);
+        protected virtual void OnProgressChanged(CheckingBlockProgressChangedStatus e) => CheckingProgressChangedStatus?.Invoke(this, e);
+        protected virtual void OnProgressChanged(RepairingBlockProgressChanged e) => RepairingProgressChanged?.Invoke(this, e);
+        protected virtual void OnProgressChanged(RepairingBlockProgressChangedStatus e) => RepairingProgressChangedStatus?.Invoke(this, e);
 
     }
 

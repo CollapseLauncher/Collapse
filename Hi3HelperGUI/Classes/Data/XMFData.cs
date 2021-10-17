@@ -24,12 +24,12 @@ namespace Hi3HelperGUI.Data
         // Buffer Section
         internal protected byte[] buffer;
 
-        public _PatchFilesList XMFBook;
+        public PatchFilesList XMFBook;
 
         public XMFPatchUtils(Stream i)
         {
             fs = i;
-            XMFBook = new _PatchFilesList();
+            XMFBook = new PatchFilesList();
             using (fs)
             {
                 fs.Position = offset;
@@ -72,23 +72,23 @@ namespace Hi3HelperGUI.Data
         string _sourcename;
         string _targetname;
         string _patchname;
-        string _patchdir;
+        string PatchDir;
         uint _Patchsize;
-        internal virtual _PatchFileProperty ReadPatch()
+        internal virtual PatchFileProperty ReadPatch()
         {
             _sourcename = ReadString();
             _targetname = ReadString();
             _patchname = ReadString();
-            _patchdir = ReadString();
+            PatchDir = ReadString();
             _Patchsize = ReadSize();
 
-            return new _PatchFileProperty
+            return new PatchFileProperty
             {
-                _sourcefilename = _sourcename,
-                _targetfilename = _targetname,
-                _patchfilename = _patchname,
-                _patchdir = _patchdir,
-                _patchfilesize = _Patchsize,
+                SourceFileName = _sourcename,
+                TargetFileName = _targetname,
+                PatchFileName = _patchname,
+                PatchDir = PatchDir,
+                PatchFileSize = _Patchsize,
             };
         }
 
@@ -111,7 +111,7 @@ namespace Hi3HelperGUI.Data
     public class XMFUtils : XMFDictionaryClasses
     {
 
-        XMFFileFormat format;
+        readonly XMFFileFormat format;
 
         // XMF Section
         internal protected Stream fs;
@@ -125,9 +125,9 @@ namespace Hi3HelperGUI.Data
         // Buffer Section
         internal protected byte[] buffer;
 
-        _XMFBlockList _blocklist;
+        XMFBlockList _blocklist;
 
-        public List<_XMFBlockList> XMFBook;
+        public List<XMFBlockList> XMFBook;
 
         public XMFUtils(MemoryStream i, XMFFileFormat j)
         {
@@ -172,7 +172,7 @@ namespace Hi3HelperGUI.Data
 
         public void Read()
         {
-            XMFBook = new List<_XMFBlockList>();
+            XMFBook = new List<XMFBlockList>();
             fs.Position = readoffset;
 
             using (fs)
@@ -191,7 +191,7 @@ namespace Hi3HelperGUI.Data
         protected uint Ffileoffset;
         protected uint filesize;
         protected uint curFileRead = 1;
-        protected Func<_XMFFileProperty> ReadContentMethod;
+        protected Func<XMFFileProperty> ReadContentMethod;
 
         void InitRead()
         {
@@ -219,7 +219,7 @@ namespace Hi3HelperGUI.Data
 
         void GetMetadataInfo(int contentbytelength, int jumper, bool isBigEndian)
         {
-            _blocklist = new _XMFBlockList();
+            _blocklist = new XMFBlockList();
 
             fs.Read(buffer = new byte[16], 0, 16);
             blockhash = BytesToHex(buffer);
@@ -237,7 +237,7 @@ namespace Hi3HelperGUI.Data
             if (debug) Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} files)");
         }
 
-        _XMFFileProperty ReadXMFContentInfo()
+        XMFFileProperty ReadXMFContentInfo()
         {
             fs.Read(buffer = new byte[2], 0, 2);
             filenamelength = BytesToUInt16Big(buffer);
@@ -255,10 +255,10 @@ namespace Hi3HelperGUI.Data
 #endif
             curFileRead++;
 
-            return new _XMFFileProperty() { _filename = filename, _filesize = filesize, _startoffset = fileoffset };
+            return new XMFFileProperty() { FileName = filename, FileSize = filesize, StartOffset = fileoffset };
         }
 
-        _XMFFileProperty ReadDictContentInfo()
+        XMFFileProperty ReadDictContentInfo()
         {
             fs.Read(buffer = new byte[1], 0, 1);
             filenamelength = buffer[0];
@@ -277,7 +277,7 @@ namespace Hi3HelperGUI.Data
 #endif
             curFileRead++;
 
-            return new _XMFFileProperty() { _filename = filename, _filesize = filesize, _startoffset = fileoffset, _filecrc32 = filehash };
+            return new XMFFileProperty() { FileName = filename, FileSize = filesize, StartOffset = fileoffset, FileHash = filehash };
         }
 
         uint GetFileSize()
