@@ -116,6 +116,7 @@ namespace Hi3HelperGUI.Data
         {
             token.ThrowIfCancellationRequested();
             long existingLength;
+            long contentLength;
             FileInfo fileinfo = new(output);
 
             if (isStream)
@@ -131,7 +132,12 @@ namespace Hi3HelperGUI.Data
                 request.Headers.Range = new RangeHeaderValue(existingLength, null);
 
             using HttpResponseMessage response = httpClient.Send(request, HttpCompletionOption.ResponseHeadersRead, token);
-            long contentLength = existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
+
+            if (startOffset != -1 && endOffset != -1)
+                contentLength = endOffset - startOffset;
+            else
+                contentLength = existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
+
             resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
 
             if (!isStream)

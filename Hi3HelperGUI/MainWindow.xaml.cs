@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Navigation;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using Hi3HelperGUI.Preset;
 
 using static Hi3HelperGUI.Logger;
 
@@ -10,6 +16,7 @@ namespace Hi3HelperGUI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : Window
     {
         [STAThread]
@@ -114,5 +121,7 @@ namespace Hi3HelperGUI
             SaveAppConfig();
             ApplyAppConfig();
         }
+
+        private void ClickableLink(object sender, RequestNavigateEventArgs e) => new Process() { StartInfo = new ProcessStartInfo() { FileName = e.Uri.AbsoluteUri, UseShellExecute = true } }.Start();
     }
 }

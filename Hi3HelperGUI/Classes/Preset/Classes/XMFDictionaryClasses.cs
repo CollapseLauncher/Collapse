@@ -3,6 +3,26 @@ using System.Linq;
 
 namespace Hi3HelperGUI.Preset
 {
+    public class ChunkProperties
+    {
+        public string ChunkOffset { get; set; }
+        public string ChunkSize { get; set; }
+    }
+
+    public class BlockName
+    {
+        public string BlockHash { get; set; }
+        public string BlockStatus { get; set; }
+        public List<ChunkProperties> ChunkItems { get; set; }
+    }
+
+    public class GameZoneName
+    {
+        public string ZoneName { get; set; }
+        public string ZoneStatus { get; set; }
+        public List<BlockName> BlockItems { get; set; }
+    }
+
     public class XMFDictionaryClasses
     {
         public class VersionFile

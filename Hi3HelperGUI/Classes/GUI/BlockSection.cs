@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows;
+using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 using Hi3HelperGUI.Data;
 
@@ -30,6 +32,7 @@ namespace Hi3HelperGUI
 
         public async void DoBlockCheck()
         {
+            ToggleBlockPlaceholder(false);
             BlockCheckTokenSource = new CancellationTokenSource();
             CancellationToken token = BlockCheckTokenSource.Token;
 
@@ -41,11 +44,13 @@ namespace Hi3HelperGUI
             {
                 LogWriteLine($"Block Checking Cancelled!", LogType.Warning, true);
                 ChangeBlockRepairStatus($"Block Checking Cancelled!", true);
+                ToggleBlockPlaceholder(true);
             }
         }
 
         public async void DoBlockRepair()
         {
+            ToggleBlockPlaceholder(false);
             BlockCheckTokenSource = new CancellationTokenSource();
             CancellationToken token = BlockCheckTokenSource.Token;
 
@@ -58,6 +63,9 @@ namespace Hi3HelperGUI
             {
                 LogWriteLine($"Block Repairing Cancelled!", LogType.Warning, true);
                 ChangeBlockRepairStatus($"Block Repairing Cancelled!", true, false);
+                blockData.DisposeAll();
+                RefreshBlockTreeView();
+                ToggleBlockPlaceholder(true);
             }
         }
 
@@ -69,10 +77,8 @@ namespace Hi3HelperGUI
             await Task.Run(() =>
             {
                 blockData.DisposeAll();
-                Dispatcher.Invoke(() =>
-                {
-                    BlockChunkTreeView.ItemsSource = blockData.BrokenBlocksRegion;
-                });
+                RefreshBlockTreeView();
+
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
                     blockDictStream = new MemoryStream();
@@ -109,16 +115,49 @@ namespace Hi3HelperGUI
                     blockData.CheckingProgressChangedStatus -= BlockProgressChanged;
 
                     blockDictStream.Dispose();
+
+                    // File.WriteAllText(@"C:\Users\neon-nyan\Documents\git\myApp\Hi3Helper\test.json", JsonConvert.SerializeObject(blockData.BrokenBlocksRegion));
                 }
 
                 blockData.DisposeAssets();
 
-                Dispatcher.Invoke(() =>
-                {
-                    BlockChunkTreeView.ItemsSource = blockData.BrokenBlocksRegion;
-                });
+                RefreshBlockTreeView();
             });
         }
+
+        List<GameZoneName> BlockGenerateTreeView()
+        {
+            List<GameZoneName> zoneName = new();
+            List<BlockName> blockName;
+            List<ChunkProperties> chunkProperties;
+
+            foreach (KeyValuePair<string, List<XMFDictionaryClasses.XMFBlockList>> i in blockData.BrokenBlocksRegion)
+            {
+                blockName = new();
+                foreach (XMFDictionaryClasses.XMFBlockList j in i.Value)
+                {
+                    chunkProperties = new();
+                    foreach (XMFDictionaryClasses.XMFFileProperty k in j.BlockContent)
+                    {
+                        chunkProperties.Add(new ChunkProperties { ChunkOffset = $"0x{NumberToHexString(k.StartOffset)}", ChunkSize = $"0x{NumberToHexString(k.FileSize)}" });
+                    }
+                    blockName.Add(new BlockName {
+                        BlockHash = j.BlockHash,
+                        BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : $"{j.BlockContent.Count} Chunk(s)")}]",
+                        ChunkItems = chunkProperties
+                    });
+                }
+                zoneName.Add(new GameZoneName {
+                    ZoneName = i.Key,
+                    ZoneStatus = $" [{blockName.Count} Blocks]",
+                    BlockItems = blockName
+                });
+            }
+
+            return zoneName;
+        }
+
+        void RefreshBlockTreeView() => Dispatcher.Invoke(() => { BlockChunkTreeView.ItemsSource = BlockGenerateTreeView(); });
 
         public async Task RunBlockRepair(CancellationToken token)
         {
@@ -131,6 +170,8 @@ namespace Hi3HelperGUI
 
                 blockData.RepairingProgressChanged -= BlockProgressChanged;
                 blockData.RepairingProgressChangedStatus -= BlockProgressChanged;
+                blockData.DisposeAll();
+                RefreshBlockTreeView();
             });
         }
         private void BlockProgressChanged(object sender, CheckingBlockProgressChangedStatus e)
@@ -175,6 +216,8 @@ namespace Hi3HelperGUI
                 BlockFetchingProgressBar.Value = Math.Round(e.DownloadProgressPercentage, 2);
             }, DispatcherPriority.Background);
         }
+
+        private void ToggleBlockPlaceholder(bool a) => Dispatcher.Invoke(() => BlockSectionPlaceHolder.Visibility = a ? Visibility.Visible : Visibility.Collapsed);
 
         private void RefreshBlockCheckProgressBar(double cur = 0, double max = 100)
         {

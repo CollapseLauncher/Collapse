@@ -28,7 +28,7 @@ namespace Hi3HelperGUI.Data
 
 #if DEBUG
         // 4 KiB buffer
-        readonly byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[4096];
 #else
         // 512 KiB buffer
         readonly byte[] buffer = new byte[524288];
@@ -94,19 +94,17 @@ namespace Hi3HelperGUI.Data
                        FileMode.Open,
                        FileAccess.Read))
                     {
+                        OnProgressChanged(new CheckingBlockProgressChangedStatus()
+                        {
+                            BlockHash = i.BlockHash,
+                            CurrentBlockPos = z,
+                            BlockCount = y
+                        });
+
                         foreach (XMFFileProperty j in i.BlockContent)
                         {
                             chunkSize = (int)j.FileSize;
                             chunkBuffer = new MemoryStream();
-
-                            OnProgressChanged(new CheckingBlockProgressChangedStatus()
-                            {
-                                BlockHash = i.BlockHash,
-                                ChunkHash = j.FileHash,
-                                ChunkName = j.FileName,
-                                CurrentBlockPos = z,
-                                BlockCount = y
-                            });
 
                             while (chunkSize > 0)
                             {
@@ -117,7 +115,13 @@ namespace Hi3HelperGUI.Data
                                 chunkSize -= byteSize;
                             }
 
+                            /*
+                                token.ThrowIfCancellationRequested();
+                                _ = fileStream.Read(buffer = new byte[chunkSize], 0, chunkSize);
+                            */
+
                             totalRead += j.FileSize;
+                            // totalRead += chunkSize;
 
                             chunkBuffer.Position = 0;
 
@@ -217,7 +221,7 @@ namespace Hi3HelperGUI.Data
                         currentChunkPos = 0;
                         currentBlockPos++;
                         chunkCount = b.BlockContent.Count;
-                        downloadSize = b.BlockSize < b.BlockExistingSize ? b.BlockSize : (b.BlockSize - b.BlockExistingSize);
+                        downloadSize = b.BlockSize;
                         blockHash = b.BlockHash;
                         remotePath = $"{remoteAddress}{blockHash.ToLowerInvariant()}";
                         localPath = Path.Combine(a.ActualGameDataLocation,
@@ -257,7 +261,7 @@ namespace Hi3HelperGUI.Data
                     currentChunkPos++;
                     chunkBuffer = new MemoryStream();
                     fileStream.Position = chunkProp.StartOffset;
-                    DownloadContent($"{remotePath}.c/{chunkProp.FileName}", chunkBuffer, chunkProp, -1, -1, token,
+                    DownloadContent($"{remotePath}.wmv", chunkBuffer, chunkProp, chunkProp.StartOffset, chunkProp.StartOffset + chunkProp.FileSize, token,
                         $"Down: {blockProp.BlockHash} Offset {NumberToHexString(chunkProp.StartOffset)} Size {NumberToHexString(chunkProp.FileSize)}");
 
                     OnProgressChanged(new RepairingBlockProgressChangedStatus()
@@ -377,8 +381,6 @@ namespace Hi3HelperGUI.Data
     public class CheckingBlockProgressChangedStatus : EventArgs
     {
         public string BlockHash { get; set; }
-        public string ChunkName { get; set; }
-        public string ChunkHash { get; set; }
         public int CurrentBlockPos { get; set; }
         public int BlockCount { get; set; }
     }
@@ -389,7 +391,6 @@ namespace Hi3HelperGUI.Data
         public long ChunkSize { get; set; }
         public long BytesRead { get; set; }
         public long TotalBlockSize { get; set; }
-        public float ProgressPercentage { get => ((float)BytesRead / (float)TotalBlockSize) * 100; }
     }
 
     public class RepairingBlockProgressChangedStatus : EventArgs

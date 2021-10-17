@@ -34,6 +34,7 @@ namespace Hi3HelperGUI
             await Task.Run(() =>
             {
                 (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
+                ToggleUpdatePlaceholder(false);
                 RefreshUpdateProgressBar();
                 ConfigStore.UpdateFiles = new List<UpdateDataProperties>();
                 RefreshUpdateProgressLabel();
@@ -53,6 +54,7 @@ namespace Hi3HelperGUI
                 if (!(ConfigStore.UpdateFilesTotalSize > 0))
                 {
                     ChangeUpdateStatus($"Your files are already up-to-date!", true);
+                    ToggleUpdatePlaceholder(true);
                     return;
                 }
                 ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) are ready to be updated. Click Download to start the update!", true);
@@ -123,6 +125,8 @@ namespace Hi3HelperGUI
 
             return false;
         }
+
+        private void ToggleUpdatePlaceholder(bool a) => Dispatcher.Invoke(() => UpdateSectionPlaceHolder.Visibility = a ? Visibility.Visible : Visibility.Collapsed);
 
         private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
 
