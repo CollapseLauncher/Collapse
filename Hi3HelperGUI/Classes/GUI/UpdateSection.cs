@@ -119,7 +119,6 @@ namespace Hi3HelperGUI
                     while (!UpdateHttpClient.DownloadFile(ConfigStore.UpdateFiles[p].RemotePath, ConfigStore.UpdateFiles[p].ActualPath, message, -1, -1, token))
                     {
                         LogWriteLine($"Retrying...", LogType.Warning);
-                        Task.Delay(3000,token);
                     }
                 }, token);
             }

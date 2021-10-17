@@ -39,7 +39,8 @@ namespace Hi3HelperGUI.Preset
                 case DataType.AssetBundle:
                     return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].AssetBundle;
                 case DataType.Bigfile:
-                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile;
+                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile
+                        + $"StreamingAsb/{h.GameVersion}/pc/HD/asb/";
                 case DataType.DictionaryAddress:
                     return h.DictionaryHost + h.UpdateDictionaryAddress;
                 case DataType.BlockDictionaryAddress:

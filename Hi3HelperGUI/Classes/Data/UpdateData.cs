@@ -12,7 +12,7 @@ using System.Windows.Controls;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
-//using static Hi3HelperGUI.Logger;
+using static Hi3HelperGUI.Logger;
 using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI.Data
@@ -87,14 +87,18 @@ namespace Hi3HelperGUI.Data
             string LocalPath;
             MemoryStream memoryData = new MemoryStream();
             // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
-            downloader.DownloadStream(
+            while (!downloader.DownloadStream(
                 dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
                 memoryData,
                 new System.Threading.CancellationToken(),
                 -1,
                 -1,
                 $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list"
-                );
+                ))
+            {
+                LogWriteLine($"Retrying...", LogType.Warning);
+            }
+            
 
 #if NETCOREAPP
             Span<string> DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');

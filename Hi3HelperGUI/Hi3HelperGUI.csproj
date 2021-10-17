@@ -7,7 +7,7 @@
     <ApplicationIcon>ironmaiden_logo_TsN_icon.ico</ApplicationIcon>
     <StartupObject />
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>0.0.1.0</Version>
+    <Version>0.0.2.0</Version>
     <Company />
     <Authors>neon-nyan</Authors>
     <NeutralLanguage>en</NeutralLanguage>

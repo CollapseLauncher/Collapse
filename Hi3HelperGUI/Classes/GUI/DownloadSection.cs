@@ -29,8 +29,8 @@ namespace Hi3HelperGUI
             {
                 ConfigStore.UpdateFilesTotalDownloaded += e.CurrentReceived;
 
-                BlockProgressLabel.Content = $"{(byte)e.ProgressPercentage}% ({BytesReceived}) ({CurrentSpeed}/s)";
-                BlockProgressBar.Value = GetPercentageNumber(e.ProgressPercentage, 100);
+                BlockFetchingProgressLabel.Text = $"Fetch {BytesReceived}";
+                BlockFetchingProgressBar.Value = GetPercentageNumber(e.ProgressPercentage, 100);
             }, DispatcherPriority.Background);
 #if DEBUG
             LogWrite($"{e.Message} \u001b[33;1m{(byte)e.ProgressPercentage}%"

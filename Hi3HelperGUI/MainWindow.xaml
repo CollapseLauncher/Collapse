@@ -88,7 +88,7 @@
                         <Label Content="Status:" HorizontalAlignment="Left" Width="45" VerticalAlignment="Center"/>
                     </Grid>
                     <DockPanel DockPanel.Dock="Top">
-                        <ListView x:Name="UpdateListView" IsSynchronizedWithCurrentItem="False" IsEnabled="False" Background="Transparent" BorderThickness="0,0,0,0" BorderBrush="#00828790" >
+                        <ListView x:Name="UpdateListView" IsSynchronizedWithCurrentItem="False" IsEnabled="False" Background="Transparent" BorderThickness="0,0,0,0" BorderBrush="Transparent" >
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding N}" Width="362"/>
@@ -111,17 +111,29 @@
                             <ColumnDefinition Width="91"/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="BlockCheckBtn" Content="Check Block" Grid.Column="1" HorizontalAlignment="Center" Width="110" Click="BlockCheckStart"/>
-                        <Button x:Name="BlockCheckCancelBtn" Content="Cancel Check" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="BlockCheckCancel" Visibility="Collapsed"/>
-                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="UpdateDownloadStart" Margin="9,0,0,0" />
-                        <DockPanel Margin="0,0,10,0">
-                            <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
-                                <ProgressBar x:Name="BlockProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
-                                <Label x:Name="BlockProgressLabel" Content="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="-5,-5,0,0"/>
-                                <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
-                                    <TextBox x:Name="BlockProgressBarLabel" Text="{Binding Value, ElementName=BlockProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
-                                    <!--<Label x:Name="BlockProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
-                                </DockPanel>
-                            </Grid>
+                        <Button x:Name="BlockCheckCancelBtn" Content="Cancel" Grid.Column="1" HorizontalAlignment="Center" Width="110"  Click="BlockCheckCancel" Visibility="Collapsed"/>
+                        <Button x:Name="BlockRepairBtn" Content="Repair" Grid.Column="2" HorizontalAlignment="Left" Width="82" IsEnabled="False" Click="BlockRepairStart" Margin="9,0,0,0" />
+                        <DockPanel>
+                            <DockPanel Margin="0,0,10,0" HorizontalAlignment="Left" Width="172">
+                                <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
+                                    <ProgressBar x:Name="BlockFetchingProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom" />
+                                    <TextBox x:Name="BlockFetchingProgressLabel" Text="Fetch" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="0,-5,0,0" IsReadOnly="true" BorderThickness="0" VerticalAlignment="Center"/>
+                                    <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
+                                        <TextBox x:Name="BlockFetchingProgressBarLabel" Text="{Binding Value, ElementName=BlockFetchingProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                        <!--<Label x:Name="BlockProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                    </DockPanel>
+                                </Grid>
+                            </DockPanel>
+                            <DockPanel Margin="0,0,10,0">
+                                <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Right">
+                                    <ProgressBar x:Name="BlockProgressBar" DockPanel.Dock="Right" HorizontalAlignment="Stretch" Height="4" VerticalAlignment="Bottom"/>
+                                    <TextBox AcceptsTab="True" x:Name="BlockProgressLabel" Text="none" HorizontalAlignment="Left" FontWeight="Bold" FontSize="10" Margin="0,-5,0,0" IsReadOnly="true" BorderThickness="0" VerticalAlignment="Center"/>
+                                    <DockPanel HorizontalAlignment="Right" Margin=" 0,-5,0,0">
+                                        <TextBox x:Name="BlockProgressBarLabel" Text="{Binding Value, ElementName=BlockProgressBar, StringFormat=\{0\}%}" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" IsReadOnly="true" BorderThickness="0" />
+                                        <!--<Label x:Name="BlockProgressBarPercentSign" Content="%" FontSize="10" FontWeight="Bold" HorizontalAlignment="Left" Margin="-10,0,-5,0" />-->
+                                    </DockPanel>
+                                </Grid>
+                            </DockPanel>
                         </DockPanel>
                     </Grid>
                     <Grid DockPanel.Dock="Bottom" Height="25" HorizontalAlignment="Stretch" Margin="0,0,5,3">
@@ -133,10 +145,6 @@
                         <Label Content="Total Progress:" HorizontalAlignment="Right" Grid.Column="0" Margin="0,0,5,0"/>
                     </Grid>
                     <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="0,0,5,-10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="229"/>
-                        </Grid.ColumnDefinitions>
                         <Label x:Name="BlockCheckStatus" Content="Please click Check Block to start checking block files" HorizontalAlignment="Left" Margin="0,0,0,5" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0"/>
                     </Grid>
                     <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,0,5,-7">
@@ -146,17 +154,38 @@
                         <Label Content="Status:" HorizontalAlignment="Left" Width="45" VerticalAlignment="Center"/>
                     </Grid>
                     <DockPanel DockPanel.Dock="Top">
-                        <ListView x:Name="BlockListView" IsSynchronizedWithCurrentItem="False" IsEnabled="False" Background="Transparent" BorderThickness="0,0,0,0" BorderBrush="#00828790" >
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding N}" Width="362"/>
-                                    <GridViewColumn Header="Zone" DisplayMemberBinding="{Binding ZoneName}" Width="56"/>
-                                    <GridViewColumn Header="Data Type" DisplayMemberBinding="{Binding DataType}" Width="64"/>
-                                    <GridViewColumn Header="Size" DisplayMemberBinding="{Binding HumanizeSize}" Width="72"/>
-                                    <GridViewColumn Header="Download Status" DisplayMemberBinding="{Binding DownloadStatus}" Width="190"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                        <Label DockPanel.Dock="Top">Broken Blocks List:</Label>
+                        <TreeView x:Name="BlockChunkTreeView" Background="Transparent" BorderThickness="0,0,0,0">
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Path=Value}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=Key}" />
+                                        <TextBlock Foreground="Red" Text=" [" />
+                                        <TextBlock Foreground="Red" Text="{Binding Path=Value.Count}" />
+                                        <TextBlock Foreground="Red" Text=" Blocks]" />
+                                    </StackPanel>
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Block: " />
+                                                <TextBlock Text="{Binding Path=BlockHash}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                    
+                                    <!--
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Block: " />
+                                                <TextBlock Text="{Binding Path=BlockHash}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                    -->
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                     </DockPanel>
                 </DockPanel>
             </TabItem>

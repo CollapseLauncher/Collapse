@@ -17,11 +17,17 @@ namespace Hi3HelperGUI.Preset
 
         public class _XMFBlockList
         {
+            public long SumDownloadableContent() =>
+                BlockContent.Count != 0 ? BlockContent.Sum(i => i._filesize) :
+                BlockMissing ? BlockSize :
+                BlockSize < BlockExistingSize ? BlockSize :
+                (BlockSize - BlockExistingSize);
+
             // XMF Block Section
-            public virtual string BlockHash { get; set; }
-            public virtual long BlockSize { get; set; }
-            public virtual long BlockExistingSize { get; set; }
-            public virtual bool BlockIncompleted { get; set; }
+            public string BlockHash { get; set; }
+            public long BlockSize { get; set; }
+            public long BlockExistingSize { get; set; }
+            public bool BlockMissing { get; set; }
             public List<_XMFFileProperty> BlockContent = new List<_XMFFileProperty>();
         }
 

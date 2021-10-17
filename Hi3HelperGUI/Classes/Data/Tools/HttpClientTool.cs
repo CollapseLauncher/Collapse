@@ -58,7 +58,12 @@ namespace Hi3HelperGUI.Data
             if (string.IsNullOrEmpty(customMessage))
                 customMessage = $"Downloading {Path.GetFileName(output)}";
 
-            return GetRemoteStreamResponseNew(input, output, startOffset, endOffset, customMessage, token, false);
+            bool ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false);
+
+            if (!ret)
+                Task.Delay(1000, token).ConfigureAwait(false);
+
+            return ret;
         }
 
         public bool DownloadStream(string input, MemoryStream output, CancellationToken token, long startOffset = -1, long endOffset = -1, string customMessage = "")
@@ -68,10 +73,14 @@ namespace Hi3HelperGUI.Data
 
             localStream = output;
 
-            return GetRemoteStreamResponseNew(input, @"tHiSiSduMmY.z", startOffset, endOffset, customMessage, token, true);
+            bool ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true);
+            if (!ret)
+                Task.Delay(1000, token).ConfigureAwait(false);
+
+            return ret;
         }
 
-        bool GetRemoteStreamResponseNew(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
+        bool GetRemoteStreamResponse(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
         {
             bool returnValue = true;
             OnCompleted(new DownloadProgressCompleted() { DownloadCompleted = false });
@@ -198,33 +207,11 @@ namespace Hi3HelperGUI.Data
 
         int GetStatusCodeResponse(WebException e) => e.Response == null ? -1 : (int)((HttpWebResponse)e.Response).StatusCode;
 
-        protected virtual void OnResumabilityChanged(DownloadStatusChanged e)
-        {
-            var handler = ResumablityChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        protected virtual void OnProgressChanged(DownloadProgressChanged e)
-        {
-            var handler = ProgressChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        protected virtual void OnCompleted(DownloadProgressCompleted e)
-        {
-            var handler = Completed;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
+        protected virtual void OnResumabilityChanged(DownloadStatusChanged e) => ResumablityChanged?.Invoke(this, e);
+        protected virtual void OnProgressChanged(DownloadProgressChanged e) => ProgressChanged?.Invoke(this, e);
+        protected virtual void OnCompleted(DownloadProgressCompleted e) => Completed?.Invoke(this, e);
     }
+
     public class DownloadStatusChanged : EventArgs
     {
         public DownloadStatusChanged(bool canResume)

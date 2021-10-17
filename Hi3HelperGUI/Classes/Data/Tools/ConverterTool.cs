@@ -14,7 +14,7 @@ namespace Hi3HelperGUI.Data
         static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(MemoryStream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
-#if (!NETCOREAPP)
+#if (NETCOREAPP)
         public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
 #else
         public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
@@ -68,6 +68,7 @@ namespace Hi3HelperGUI.Data
             { '4', 0x4 },{ '5', 0x5 },{ '6', 0x6 },{ '7', 0x7 },
             { '8', 0x8 },{ '9', 0x9 }
         };
+
         public static byte[] HexToBytes(string hex)
         {
             if (string.IsNullOrWhiteSpace(hex))
@@ -105,5 +106,55 @@ namespace Hi3HelperGUI.Data
                 throw new FormatException("Hex string has non-hex character");
             }
         }
+
+        /// <summary>
+        /// Convert an integer to a string of hexidecimal numbers.
+        /// </summary>
+        /// <param name="n">The int to convert to Hex representation</param>
+        /// <param name="len">number of digits in the hex string. Pads with leading zeros.</param>
+        /// <returns></returns>
+        public static string NumberToHexString(long n, int len = 8) => new string(StringToChars(n, len));
+
+        private static char[] StringToChars(long n, int len)
+        {
+            char[] ch = new char[len--];
+            for (int i = len; i >= 0; i--) ch[len - i] = ByteToHexChar((byte)((ulong)(n >> 4 * i) & 15));
+
+            return ch;
+        }
+
+        /// <summary>
+        /// Convert a byte to a hexidecimal char
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private static char ByteToHexChar(byte b)
+        {
+            if (b < 0 || b > 15)
+                throw new Exception("IntToHexChar: input out of range for Hex value");
+            return b < 10 ? (char)(b + 48) : (char)(b + 55);
+        }
+
+        /// <summary>
+        /// Convert a hexidecimal string to an base 10 integer
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        private static int HexStringToInt(string str)
+        {
+            int value = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                value += HexCharToInt(str[i]) << ((str.Length - 1 - i) * 4);
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Convert a hex char to it an integer.
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <returns></returns>
+        private static int HexCharToInt(char ch) => (ch < 58) ? ch - 48 : ch - 55;
     }
 }
