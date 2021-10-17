@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-//using System.Diagnostics;
 using Newtonsoft.Json;
 using Microsoft.Win32;
 using Hi3HelperGUI.Preset;
-using Hi3HelperGUI.Data;
 
 using static Hi3HelperGUI.Logger;
 
@@ -18,7 +16,7 @@ namespace Hi3HelperGUI
     {
         public async void CheckConfigSettings()
         {
-            List<PresetConfigClasses> TempConfig = new List<PresetConfigClasses>();
+            List<PresetConfigClasses> TempConfig = new();
             try
             {
                 await Task.Run(() =>
@@ -29,7 +27,7 @@ namespace Hi3HelperGUI
                         throw new NullReferenceException($"File config is empty!");
 
                     foreach (PresetConfigClasses i in TempConfig)
-                        isConfigAvailable(i);
+                        IsConfigAvailable(i);
 
                     InitMirrorDropdown();
                     try
@@ -75,7 +73,7 @@ namespace Hi3HelperGUI
 
         internal string GetInstalledClientName() => ConfigStore.Config.Select(i => i.ZoneName).Aggregate((i, j) => i + ", " + j);
         
-        internal static bool isConfigAvailable(PresetConfigClasses i)
+        internal static bool IsConfigAvailable(PresetConfigClasses i)
         {
             string RegValue = "InstallPath";
             bool ret = true;

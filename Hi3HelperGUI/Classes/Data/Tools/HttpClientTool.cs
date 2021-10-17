@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 
 using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI.Data
 {

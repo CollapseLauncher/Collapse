@@ -36,7 +36,6 @@
     <None Remove="appconfig.json" />
     <None Remove="fileconfig.json" />
     <None Remove="ironmaiden_logo.png" />
-    <None Remove="ironmaiden_logo.png" />
   </ItemGroup>
 
   <ItemGroup>

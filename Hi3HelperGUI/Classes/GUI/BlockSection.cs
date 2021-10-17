@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows;
-using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 using Hi3HelperGUI.Data;
 
 using static Hi3HelperGUI.Logger;
 using static Hi3HelperGUI.Data.ConverterTool;
-using static Hi3HelperGUI.Preset.XMFDictionaryClasses;
 
 namespace Hi3HelperGUI
 {

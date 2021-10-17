@@ -1,14 +1,6 @@
 ﻿using System;
-//using System.Collections.Generic;
-//using System.Linq;
 using System.Text;
-//using System.Threading.Tasks;
-using System.Net;
-#if (!NETFRAMEWORK)
-using System.Net.Http;
-#endif
 using System.IO;
-using System.Windows.Controls;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
