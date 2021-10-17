@@ -149,7 +149,7 @@ namespace Hi3HelperGUI
                 }
                 zoneName.Add(new GameZoneName {
                     ZoneName = i.Key,
-                    ZoneStatus = $" [{blockName.Count} Blocks]",
+                    ZoneStatus = $" [{blockName.Count} Block(s)]",
                     BlockItems = blockName
                 });
             }

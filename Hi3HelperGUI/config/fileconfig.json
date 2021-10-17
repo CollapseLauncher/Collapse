@@ -1,4 +1,4 @@
-[/*
+[
   {
     "ProfileName": "Hi3Global",
     "ZoneName": "Global",
@@ -20,7 +20,7 @@
         "Bigfile": "http://d2wztyirwsuyyo.cloudfront.net/tmp/com.miHoYo.bh3global/"
       }
     }
-  },*/
+  },
   {
     "ProfileName": "Hi3SEA",
     "ZoneName": "Southeast Asia",
