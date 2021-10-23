@@ -1,21 +1,12 @@
 ﻿using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Navigation;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Windows.Controls;
-//using System.Windows.Data;
-//using System.Windows.Documents;
-//using System.Windows.Input;
-//using System.Windows.Media;
-//using System.Windows.Media.Imaging;
-//using System.Windows.Navigation;
-//using System.Windows.Shapes;
-//using System.IO;
-//using Microsoft.Win32;
+using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
 using static Hi3HelperGUI.Logger;
@@ -25,8 +16,13 @@ namespace Hi3HelperGUI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : Window
     {
+        [STAThread]
+        [DebuggerNonUserCode]
+        public static void Main() => new Application() { StartupUri = new("MainWindow.xaml", UriKind.Relative) }.Run();
+
         private const int STD_OUTPUT_HANDLE = -11;
         private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
         private const uint DISABLE_NEWLINE_AUTO_RETURN = 0x0008;
@@ -120,11 +116,12 @@ namespace Hi3HelperGUI
 
         private void EnableConsole(object sender, RoutedEventArgs e) => ShowConsoleWindow();
         private void DisableConsole(object sender, RoutedEventArgs e) => HideConsoleWindow();
-
         private void ApplySettings(object sender, RoutedEventArgs e)
         {
             SaveAppConfig();
             ApplyAppConfig();
         }
+
+        private void ClickableLink(object sender, RequestNavigateEventArgs e) => new Process() { StartInfo = new ProcessStartInfo() { FileName = e.Uri.AbsoluteUri, UseShellExecute = true } }.Start();
     }
 }

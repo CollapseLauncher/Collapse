@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.IO;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
 using static Hi3HelperGUI.Preset.ConfigStore;
-using static Hi3HelperGUI.Logger;
 
 namespace Hi3HelperGUI
 {

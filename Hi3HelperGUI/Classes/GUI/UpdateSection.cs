@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Controls;
-//using System.Runtime.InteropServices;
 using System.IO;
 using Hi3HelperGUI.Preset;
 using Hi3HelperGUI.Data;
@@ -36,6 +34,7 @@ namespace Hi3HelperGUI
             await Task.Run(() =>
             {
                 (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
+                ToggleUpdatePlaceholder(false);
                 RefreshUpdateProgressBar();
                 ConfigStore.UpdateFiles = new List<UpdateDataProperties>();
                 RefreshUpdateProgressLabel();
@@ -55,6 +54,7 @@ namespace Hi3HelperGUI
                 if (!(ConfigStore.UpdateFilesTotalSize > 0))
                 {
                     ChangeUpdateStatus($"Your files are already up-to-date!", true);
+                    ToggleUpdatePlaceholder(true);
                     return;
                 }
                 ChangeUpdateStatus($"{ConfigStore.UpdateFiles.Count} files ({SummarizeSizeSimple(ConfigStore.UpdateFilesTotalSize)}) are ready to be updated. Click Download to start the update!", true);
@@ -69,14 +69,14 @@ namespace Hi3HelperGUI
         private async void DoUpdateDownload()
         {
             DownloadTokenSource = new CancellationTokenSource();
-            var token = DownloadTokenSource.Token;
+            CancellationToken token = DownloadTokenSource.Token;
 
             Dispatcher.Invoke(() => UpdateDownloadBtn.IsEnabled = false );
             // await Task.Run(() => DownloadUpdateFiles(ConfigStore.UpdateFiles), token);
             ToggleUpdateCancelBtnState(true);
             try
             {
-                await DownloadUpdateFilesAsync(DownloadTokenSource, token);
+                await DownloadUpdateFilesAsync(token);
             }
             catch (TaskCanceledException)
             {
@@ -97,9 +97,40 @@ namespace Hi3HelperGUI
             LogWriteLine($"{ConfigStore.UpdateFiles.Count} files have been downloaded!", LogType.Default, true);
         }
 
+        public async Task<bool> DownloadUpdateFilesAsync(CancellationToken token)
+        {
+            int updateFilesCount = ConfigStore.UpdateFiles.Count;
+            string message;
+            for (ushort p = 0; p < updateFilesCount; p++)
+            {
+                RemoveUpdateDownloadHandler();
+                if (!Directory.Exists(Path.GetDirectoryName(ConfigStore.UpdateFiles[p].ActualPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(ConfigStore.UpdateFiles[p].ActualPath));
+
+                UpdateHttpClient.ProgressChanged += UpdateDownloadProgressChanged;
+                UpdateHttpClient.Completed += DownloadProgressCompleted;
+
+                message = $"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}";
+                //client.ProgressChanged += DownloadProgressChanges($"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}");
+                //client.Completed += DownloadProgressCompleted();
+
+                ChangeUpdateStatus(message, false);
+                await Task.Run(() => {
+                    while (!UpdateHttpClient.DownloadFile(ConfigStore.UpdateFiles[p].RemotePath, ConfigStore.UpdateFiles[p].ActualPath, message, -1, -1, token))
+                    {
+                        LogWriteLine($"Retrying...", LogType.Warning);
+                    }
+                }, token);
+            }
+
+            return false;
+        }
+
+        private void ToggleUpdatePlaceholder(bool a) => Dispatcher.Invoke(() => UpdateSectionPlaceHolder.Visibility = a ? Visibility.Visible : Visibility.Collapsed);
+
         private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
 
-        private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
+        // private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
 
         private void RefreshUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => UpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
 

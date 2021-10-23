@@ -6,4 +6,4 @@ BenchmarkLab/obj/*
 build/*
 .vs/*
 *.user
-Hi3HelperGUI/Properties/PublishProfiles/FolderProfile.pubxml.user
+Hi3HelperGUI/Properties/PublishProfiles/*.user

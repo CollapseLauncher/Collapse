@@ -1,22 +1,18 @@
-﻿//using System;
-using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Hi3HelperGUI.Preset
 {
     public static class ConfigStore
     {
-        public static AppSettings AppConfigData = new AppSettings();
-        public static List<PresetConfigClasses> Config = new List<PresetConfigClasses>();
+        public static AppSettings AppConfigData = new();
+        public static List<PresetConfigClasses> Config = new();
         public static List<UpdateDataProperties> UpdateFiles;
         public static long UpdateFilesTotalSize;
         public static long UpdateFilesTotalDownloaded = 0;
         public static bool UpdateFinished = false;
-        public static UpdateDataProperties DataProp = new UpdateDataProperties();
+        public static UpdateDataProperties DataProp = new();
 
-        public static readonly List<string> RegionalCheckName = new List<string>() { "TextMap", "RandomDialogData", "sprite" };
+        public static readonly string[] RegionalCheckName = new string[] { "TextMap", "RandomDialogData", "sprite" };
         public enum DataType
         {
             Data = 0,
@@ -27,21 +23,20 @@ namespace Hi3HelperGUI.Preset
             Subtitle = 5,
             DictionaryAddress = 6,
             Bigfile = 7,
-            AssetBundle = 8
+            AssetBundle = 8,
+            BlockDictionaryAddress = 9,
         }
 
         public static string GetMirrorAddressByIndex(PresetConfigClasses h, DataType i)
         {
-            switch (i)
+            return i switch
             {
-                default:
-                case DataType.AssetBundle:
-                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].AssetBundle;
-                case DataType.Bigfile:
-                    return h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile;
-                case DataType.DictionaryAddress:
-                    return h.DictionaryAddress;
-            }
+                DataType.Bigfile => h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].Bigfile
+                                    + $"StreamingAsb/{h.GameVersion}/pc/HD/asb/",
+                DataType.DictionaryAddress => h.DictionaryHost + h.UpdateDictionaryAddress,
+                DataType.BlockDictionaryAddress => h.DictionaryHost + h.BlockDictionaryAddress,
+                _ => h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].AssetBundle,
+            };
         }
 
         /*

@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ironmaiden_logo_TsN_icon.ico</ApplicationIcon>
     <StartupObject />
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>0.0.1.0</Version>
+    <Version>0.0.2.3</Version>
     <Company />
     <Authors>neon-nyan</Authors>
     <NeutralLanguage>en</NeutralLanguage>
@@ -18,7 +18,8 @@
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
-	<DebugType>none</DebugType>
+	<DebugType>embedded</DebugType>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -34,7 +35,6 @@
   <ItemGroup>
     <None Remove="appconfig.json" />
     <None Remove="fileconfig.json" />
-    <None Remove="ironmaiden_logo.png" />
     <None Remove="ironmaiden_logo.png" />
   </ItemGroup>
 

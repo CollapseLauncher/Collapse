@@ -1,18 +1,10 @@
 ﻿using System;
-//using System.Collections.Generic;
-//using System.Linq;
 using System.Text;
-//using System.Threading.Tasks;
-using System.Net;
-#if (!NETFRAMEWORK)
-using System.Net.Http;
-#endif
 using System.IO;
-using System.Windows.Controls;
 using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 
-//using static Hi3HelperGUI.Logger;
+using static Hi3HelperGUI.Logger;
 using static Hi3HelperGUI.Data.ConverterTool;
 
 namespace Hi3HelperGUI.Data
@@ -21,8 +13,8 @@ namespace Hi3HelperGUI.Data
     {
         protected internal string LocalPath;
 
-        protected internal _RemoteURL RemoteURL;
-        protected internal class _RemoteURL
+        protected internal RemoteURLProp RemoteURL;
+        protected internal class RemoteURLProp
         {
             internal string Data { get; set; }
             internal string DataDictionary { get; set; }
@@ -36,7 +28,7 @@ namespace Hi3HelperGUI.Data
         {
             string bundleURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.AssetBundle);
             string dictionaryURL = ConfigStore.GetMirrorAddressByIndex(i, ConfigStore.DataType.DictionaryAddress);
-            RemoteURL = new _RemoteURL()
+            RemoteURL = new()
             {
                 DataDictionary = $"{dictionaryURL}data/editor_compressed/PackageVersion.txt",
                 Data = $"{bundleURL}data/editor_compressed/",
@@ -61,7 +53,7 @@ namespace Hi3HelperGUI.Data
                     bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.miHoYoAssetBundle);
                     break;
             }
-            RemoteURL = new _RemoteURL()
+            RemoteURL = new RemoteURL()
             {
                 DataDictionary = $"{i.Hi3MirrorAssetBundleAddress}data/editor_compressed/PackageVersion.txt",
                 Data = $"{bundleURL}data/editor_compressed/",
@@ -81,17 +73,21 @@ namespace Hi3HelperGUI.Data
          */
         public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
-            HttpClientTool downloader = new HttpClientTool();
+            HttpClientTool downloader = new();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
-            MemoryStream memoryData = new MemoryStream();
+            MemoryStream memoryData = new();
             // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
-            downloader.DownloadToStream(
+            downloader.DownloadStream(
                 dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
                 memoryData,
+                new System.Threading.CancellationToken(),
+                -1,
+                -1,
                 $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list"
                 );
+            
 
 #if NETCOREAPP
             Span<string> DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');

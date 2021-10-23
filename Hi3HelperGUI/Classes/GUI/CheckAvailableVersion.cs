@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-//using System.Diagnostics;
 using Newtonsoft.Json;
 using Microsoft.Win32;
 using Hi3HelperGUI.Preset;
+
 using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.Preset.ConfigStore;
 
 namespace Hi3HelperGUI
 {
@@ -17,7 +16,7 @@ namespace Hi3HelperGUI
     {
         public async void CheckConfigSettings()
         {
-            List<PresetConfigClasses> TempConfig = new List<PresetConfigClasses>();
+            List<PresetConfigClasses> TempConfig = new();
             try
             {
                 await Task.Run(() =>
@@ -28,12 +27,12 @@ namespace Hi3HelperGUI
                         throw new NullReferenceException($"File config is empty!");
 
                     foreach (PresetConfigClasses i in TempConfig)
-                        isConfigAvailable(i);
+                        IsConfigAvailable(i);
 
                     InitMirrorDropdown();
                     try
                     {
-                        Dispatcher.Invoke(new Action(() => InstalledClientLabel.Content = GetInstalledClientName()));
+                        Dispatcher.Invoke(() => InstalledClientLabel.Content = GetInstalledClientName());
                     }
                     catch (Exception ex)
                     {
@@ -66,15 +65,15 @@ namespace Hi3HelperGUI
         {
             Dispatcher.Invoke(() =>
             {
-                MirrorSelector.ItemsSource = AppConfigData.AvailableMirror;
-                MirrorSelector.SelectedIndex = AppConfigData.MirrorSelection;
+                MirrorSelector.ItemsSource = ConfigStore.AppConfigData.AvailableMirror;
+                MirrorSelector.SelectedIndex = ConfigStore.AppConfigData.MirrorSelection;
                 MirrorSelectorStatus.Content = MirrorSelector.SelectedItem;
             });
         }
 
-        internal string GetInstalledClientName() => Config.Select(i => i.ZoneName).Aggregate((i, j) => i + ", " + j);
+        internal string GetInstalledClientName() => ConfigStore.Config.Select(i => i.ZoneName).Aggregate((i, j) => i + ", " + j);
         
-        internal static bool isConfigAvailable(PresetConfigClasses i)
+        internal static bool IsConfigAvailable(PresetConfigClasses i)
         {
             string RegValue = "InstallPath";
             bool ret = true;
@@ -94,7 +93,7 @@ namespace Hi3HelperGUI
                     if (Directory.Exists(i.DefaultGameLocation))
                     {
                         i.ActualGameLocation = i.DefaultGameLocation;
-                        Config.Add(i);
+                        ConfigStore.Config.Add(i);
                         LogWriteLine($"Registered path for {i.ZoneName} version doesn't exist. But the default path does exist!", LogType.Warning);
                         return true;
                     }
@@ -103,11 +102,14 @@ namespace Hi3HelperGUI
                 }
                 else
                 {
-                    i.ActualGameLocation = a;
-                    SetLanguageParameter(i);
-                    Config.Add(i);
+                    i.SetGameLocationParameters(a);
+                    ConfigStore.Config.Add(i);
                     LogWriteLine($"\u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version is detected!");
                 }
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                LogWriteLine(e.ToString(), LogType.Warning, true);
             }
             catch (NullReferenceException e)
             {
@@ -119,27 +121,6 @@ namespace Hi3HelperGUI
             }
 
             return ret;
-        }
-
-        internal static void SetLanguageParameter(in PresetConfigClasses i) => i.UsedLanguage = GetUsedLanguage(i.ConfigRegistryLocation, "MIHOYOSDK_NOTICE_LANGUAGE_", i.FallbackLanguage);
-
-        internal static string GetUsedLanguage(string RegLocation, string RegValueWildCard, string FallbackValue)
-        {
-            string value = "";
-            try
-            {
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(RegLocation);
-                foreach (string valueName in keys.GetValueNames())
-                    if (valueName.Contains(RegValueWildCard))
-                        value = valueName;
-
-                return Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{RegLocation}", value, FallbackValue)).Replace("\0", string.Empty);
-            }
-            catch
-            {
-                LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(RegLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning);
-                return FallbackValue;
-            }
         }
     }
 }
