@@ -79,17 +79,14 @@ namespace Hi3HelperGUI.Data
             string LocalPath;
             MemoryStream memoryData = new();
             // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
-            while (!downloader.DownloadStream(
+            downloader.DownloadStream(
                 dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
                 memoryData,
                 new System.Threading.CancellationToken(),
                 -1,
                 -1,
                 $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list"
-                ))
-            {
-                LogWriteLine($"Retrying...", LogType.Warning);
-            }
+                );
             
 
 #if NETCOREAPP

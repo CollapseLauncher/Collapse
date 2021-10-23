@@ -66,29 +66,14 @@ namespace Hi3HelperGUI.Data
 
             return BytesToUInt32Big(buffer);
         }
-
-        string _sourcename;
-        string _targetname;
-        string _patchname;
-        string PatchDir;
-        uint _Patchsize;
-        internal virtual PatchFileProperty ReadPatch()
+        internal virtual PatchFileProperty ReadPatch() => new PatchFileProperty
         {
-            _sourcename = ReadString();
-            _targetname = ReadString();
-            _patchname = ReadString();
-            PatchDir = ReadString();
-            _Patchsize = ReadSize();
-
-            return new PatchFileProperty
-            {
-                SourceFileName = _sourcename,
-                TargetFileName = _targetname,
-                PatchFileName = _patchname,
-                PatchDir = PatchDir,
-                PatchFileSize = _Patchsize,
-            };
-        }
+            SourceFileName = ReadString(),
+            TargetFileName = ReadString(),
+            PatchFileName = ReadString(),
+            PatchDir = ReadString(),
+            PatchFileSize = ReadSize(),
+        };
 
         public void GetPatchFile()
         {
@@ -185,6 +170,7 @@ namespace Hi3HelperGUI.Data
         protected string filename;
         protected ushort filenamelength;
         protected string filehash;
+        protected int filehasharray;
         protected uint fileoffset;
         protected uint Ffileoffset;
         protected uint filesize;
@@ -232,7 +218,9 @@ namespace Hi3HelperGUI.Data
             _blocklist.BlockHash = blockhash;
             _blocklist.BlockSize = blocksize;
 
-            if (debug) Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} files)");
+#if (DEBUG)
+            // Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} files)");
+#endif
         }
 
         XMFFileProperty ReadXMFContentInfo()
@@ -249,7 +237,7 @@ namespace Hi3HelperGUI.Data
             filesize = GetFileSize();
 
 #if DEBUG   
-            //LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+            // LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
@@ -268,14 +256,19 @@ namespace Hi3HelperGUI.Data
             filesize = BitConverter.ToUInt32(buffer, 0);
 
             fs.Read(buffer = new byte[4], 0, 4);
-            filehash = BytesToHex(buffer);
+            filehasharray = BitConverter.ToInt32(buffer);
 
 #if DEBUG   
             // LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
-            return new XMFFileProperty() { FileName = filename, FileSize = filesize, StartOffset = fileoffset, FileHash = filehash };
+            return new XMFFileProperty() {
+                FileName = filename,
+                FileSize = filesize,
+                StartOffset = fileoffset,
+                FileHashArray = filehasharray
+            };
         }
 
         uint GetFileSize()

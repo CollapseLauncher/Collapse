@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ironmaiden_logo_TsN_icon.ico</ApplicationIcon>
     <StartupObject />
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>0.0.2.0</Version>
+    <Version>0.0.2.3</Version>
     <Company />
     <Authors>neon-nyan</Authors>
     <NeutralLanguage>en</NeutralLanguage>

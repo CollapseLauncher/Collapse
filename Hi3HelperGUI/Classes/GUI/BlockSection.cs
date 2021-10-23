@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows;
-using Newtonsoft.Json;
 using Hi3HelperGUI.Preset;
 using Hi3HelperGUI.Data;
 
@@ -33,7 +32,7 @@ namespace Hi3HelperGUI
         public async void DoBlockCheck()
         {
             ToggleBlockPlaceholder(false);
-            BlockCheckTokenSource = new CancellationTokenSource();
+            BlockCheckTokenSource = new();
             CancellationToken token = BlockCheckTokenSource.Token;
 
             try
@@ -51,7 +50,7 @@ namespace Hi3HelperGUI
         public async void DoBlockRepair()
         {
             ToggleBlockPlaceholder(false);
-            BlockCheckTokenSource = new CancellationTokenSource();
+            BlockCheckTokenSource = new();
             CancellationToken token = BlockCheckTokenSource.Token;
 
             try
@@ -81,7 +80,7 @@ namespace Hi3HelperGUI
 
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
-                    blockDictStream = new MemoryStream();
+                    blockDictStream = new();
 
                     RemoveBlockDictDownloadHandler();
                     RefreshBlockCheckProgressBar();
@@ -96,20 +95,13 @@ namespace Hi3HelperGUI
                     message = $"Fetching Block Data {i.ZoneName} {Path.GetFileName(i.InstallRegistryLocation)}";
                     ChangeBlockRepairStatus(message, false, false, false, false);
 
-                    while (!BlockHttpClient.DownloadStream(remotePath, blockDictStream, token, -1, -1, message))
-                    {
-                        LogWriteLine($"Retrying...", LogType.Warning);
-                    }
+                    BlockHttpClient.DownloadStream(remotePath, blockDictStream, token, -1, -1, message);
                     blockData.Init(blockDictStream);
 
                     blockData.CheckingProgressChanged += BlockProgressChanged;
                     blockData.CheckingProgressChangedStatus += BlockProgressChanged;
-                    blockData.CheckIntegrity(i, token);
 
-                    if (blockData.BrokenBlocksRegion.Count > 0)
-                        ChangeBlockRepairStatus($"Broken blocks have been found. Click Repair Block to start repairing!", true, true, true);
-                    else
-                        ChangeBlockRepairStatus($"No broken blocks found!", true, false, true);
+                    blockData.CheckIntegrity(i, token);
 
                     blockData.CheckingProgressChanged -= BlockProgressChanged;
                     blockData.CheckingProgressChangedStatus -= BlockProgressChanged;
@@ -117,6 +109,14 @@ namespace Hi3HelperGUI
                     blockDictStream.Dispose();
 
                     // File.WriteAllText(@"C:\Users\neon-nyan\Documents\git\myApp\Hi3Helper\test.json", JsonConvert.SerializeObject(blockData.BrokenBlocksRegion));
+                }
+
+                if (blockData.BrokenBlocksRegion.Count > 0)
+                    ChangeBlockRepairStatus($"Broken blocks have been found. Click Repair Block to start repairing!", true, true, true);
+                else
+                {
+                    ToggleBlockPlaceholder(true);
+                    ChangeBlockRepairStatus($"No broken blocks found!", true, false, true);
                 }
 
                 blockData.DisposeAssets();
@@ -143,7 +143,7 @@ namespace Hi3HelperGUI
                     }
                     blockName.Add(new BlockName {
                         BlockHash = j.BlockHash,
-                        BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : $"{j.BlockContent.Count} Chunk(s)")}]",
+                        BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : j.BlockUnused ? $"Unused" : $"{j.BlockContent.Count} Chunk(s)")}]",
                         ChunkItems = chunkProperties
                     });
                 }
@@ -167,6 +167,7 @@ namespace Hi3HelperGUI
                 blockData.RepairingProgressChangedStatus += BlockProgressChanged;
                 blockData.BlockRepair(ConfigStore.Config, token);
                 ChangeBlockRepairStatus($"Block repair is finished!", true, false, true);
+                ToggleBlockPlaceholder(true);
 
                 blockData.RepairingProgressChanged -= BlockProgressChanged;
                 blockData.RepairingProgressChangedStatus -= BlockProgressChanged;

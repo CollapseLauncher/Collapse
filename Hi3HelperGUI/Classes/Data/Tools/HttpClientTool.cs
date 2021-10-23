@@ -13,7 +13,6 @@ namespace Hi3HelperGUI.Data
 {
     public class HttpClientTool
     {
-
         readonly HttpClient httpClient;
         protected Stream localStream;
         protected Stream remoteStream;
@@ -29,8 +28,8 @@ namespace Hi3HelperGUI.Data
 
         public HttpClientTool()
         {
-            httpClient = new HttpClient(
-            new HttpClientHandler
+            httpClient = new(
+            new HttpClientHandler()
             {
                 AutomaticDecompression = DecompressionMethods.All,
                 UseCookies = true,
@@ -45,11 +44,14 @@ namespace Hi3HelperGUI.Data
         {
             if (string.IsNullOrEmpty(customMessage))
                 customMessage = $"Downloading {Path.GetFileName(output)}";
+            bool ret = true;
 
-            bool ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false);
-
-            if (!ret)
-                Task.Delay(1000, token).ConfigureAwait(false);
+            while (!(ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false)))
+            {
+                LogWriteLine($"Retrying...");
+                Thread.Sleep(1000);
+                ret = false;
+            }
 
             return ret;
         }
@@ -58,12 +60,15 @@ namespace Hi3HelperGUI.Data
         {
             if (string.IsNullOrEmpty(customMessage))
                 customMessage = $"Downloading to stream";
-
+            bool ret = true;
             localStream = output;
 
-            bool ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true);
-            if (!ret)
-                Task.Delay(1000, token).ConfigureAwait(false);
+            while (!(ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true)))
+            {
+                LogWriteLine($"Retrying...");
+                Thread.Sleep(1000);
+                ret = false;
+            }
 
             return ret;
         }
@@ -77,7 +82,7 @@ namespace Hi3HelperGUI.Data
             {
                 UseStream(input, output, startOffset, endOffset, customMessage, token, isStream);
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
                 returnValue = ThrowWebExceptionAsBool(e);
             }
@@ -115,30 +120,24 @@ namespace Hi3HelperGUI.Data
         void UseStream(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
         {
             token.ThrowIfCancellationRequested();
-            long existingLength;
             long contentLength;
             FileInfo fileinfo = new(output);
 
-            if (isStream)
-                existingLength = localStream.Length;
-            else
-                existingLength = fileinfo.Exists ? fileinfo.Length : 0;
+            long existingLength = isStream ? localStream.Length : fileinfo.Exists ? fileinfo.Length : 0;
 
             HttpRequestMessage request = new(){ RequestUri = new Uri(input) };
 
-            if (startOffset != -1 && endOffset != -1)
-                request.Headers.Range = new RangeHeaderValue(startOffset, endOffset);
-            else
-                request.Headers.Range = new RangeHeaderValue(existingLength, null);
+            request.Headers.Range = (startOffset != -1 && endOffset != -1) ?
+                                    new(startOffset, endOffset):
+                                    new(existingLength, null);
 
-            using HttpResponseMessage response = httpClient.Send(request, HttpCompletionOption.ResponseHeadersRead, token);
+            using HttpResponseMessage response = ThrowUnacceptableStatusCode(httpClient.Send(request, HttpCompletionOption.ResponseHeadersRead, token));
 
-            if (startOffset != -1 && endOffset != -1)
-                contentLength = endOffset - startOffset;
-            else
-                contentLength = existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
+            contentLength = (startOffset != -1 && endOffset != -1) ?
+                            endOffset - startOffset:
+                            existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
 
-            resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
+            resumabilityStatus = new((int)response.StatusCode == 206);
 
             if (!isStream)
                 localStream = fileinfo.Open(resumabilityStatus.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write);
@@ -154,6 +153,16 @@ namespace Hi3HelperGUI.Data
                 token
                 );
             response.Dispose();
+        }
+
+        HttpResponseMessage ThrowUnacceptableStatusCode(HttpResponseMessage input)
+        {
+            if (!input.IsSuccessStatusCode)
+                throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})",
+                    null,
+                    input.StatusCode);
+
+            return input;
         }
 
         void ReadRemoteStream(
@@ -176,28 +185,27 @@ namespace Hi3HelperGUI.Data
                     localStream.Write(buffer, 0, byteSize);
                     totalReceived += byteSize;
 
-                    OnProgressChanged(new DownloadProgressChanged(totalReceived, contentLength, sw.Elapsed.TotalSeconds) { Message = customMessage, CurrentReceived = byteSize });
+                    OnProgressChanged(new(totalReceived, contentLength, sw.Elapsed.TotalSeconds) { Message = customMessage, CurrentReceived = byteSize });
                 }
 
                 sw.Stop();
             }
         }
 
-        bool ThrowWebExceptionAsBool(WebException e)
+        bool ThrowWebExceptionAsBool(HttpRequestException e)
         {
             switch (GetStatusCodeResponse(e))
             {
                 // Always ignore 416 code
                 case 416:
                     return true;
-                case -1:
                 default:
                     LogWriteLine(e.Message, LogType.Error, true);
                     return false;
             }
         }
 
-        int GetStatusCodeResponse(WebException e) => e.Response == null ? -1 : (int)((HttpWebResponse)e.Response).StatusCode;
+        short GetStatusCodeResponse(HttpRequestException e) => (short)e.StatusCode;
 
         protected virtual void OnResumabilityChanged(DownloadStatusChanged e) => ResumablityChanged?.Invoke(this, e);
         protected virtual void OnProgressChanged(DownloadProgressChanged e) => ProgressChanged?.Invoke(this, e);
@@ -206,10 +214,7 @@ namespace Hi3HelperGUI.Data
 
     public class DownloadStatusChanged : EventArgs
     {
-        public DownloadStatusChanged(bool canResume)
-        {
-            ResumeSupported = canResume;
-        }
+        public DownloadStatusChanged(bool canResume) => ResumeSupported = canResume;
         public bool ResumeSupported { get; private set; }
     }
 
@@ -230,11 +235,8 @@ namespace Hi3HelperGUI.Data
         public long CurrentReceived { get; set; }
         public long BytesReceived { get; private set; }
         public long TotalBytesToReceive { get; private set; }
-        public float ProgressPercentage { get => ((float)BytesReceived / (float)TotalBytesToReceive) * 100; }
+        public float ProgressPercentage => ((float)BytesReceived / (float)TotalBytesToReceive) * 100;
         public long CurrentSpeed { get; private set; }
-        public TimeSpan TimeLeft
-        {
-            get => TimeSpan.FromSeconds((TotalBytesToReceive - BytesReceived) / CurrentSpeed);
-        }
+        public TimeSpan TimeLeft => TimeSpan.FromSeconds((TotalBytesToReceive - BytesReceived) / CurrentSpeed);
     }
 }

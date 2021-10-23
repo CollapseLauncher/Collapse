@@ -36,7 +36,7 @@ namespace Hi3HelperGUI.Preset
         {
             public long SumDownloadableContent() =>
                 BlockContent.Count != 0 ? BlockContent.Sum(i => i.FileSize) :
-                BlockMissing ? BlockSize :
+                BlockMissing || BlockUnused ? BlockSize :
                 BlockSize < BlockExistingSize ? BlockSize :
                 (BlockSize - BlockExistingSize);
 
@@ -45,6 +45,7 @@ namespace Hi3HelperGUI.Preset
             public long BlockSize { get; set; }
             public long BlockExistingSize { get; set; }
             public bool BlockMissing { get; set; }
+            public bool BlockUnused { get; set; }
             public List<XMFFileProperty> BlockContent = new();
         }
 
@@ -54,8 +55,8 @@ namespace Hi3HelperGUI.Preset
             public virtual string FileName { get; set; }
             public virtual uint FileSize { get; set; }
             public virtual uint StartOffset { get; set; }
-            public virtual string FileHash { get; set; }
-            public virtual string FileActualHash { get; set; }
+            public virtual int FileHashArray { get; set; }
+            public virtual int FileActualHashArray { get; set; }
         }
 
         public class PatchFilesList

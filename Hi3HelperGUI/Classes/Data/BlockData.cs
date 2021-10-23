@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Security.Cryptography;
 using System.IO;
 using Hi3HelperGUI.Preset;
 
@@ -14,6 +16,7 @@ namespace Hi3HelperGUI.Data
     {
         internal protected MemoryStream chunkBuffer;
         internal protected FileStream fileStream;
+        internal protected MD5 md5;
 
         public Dictionary<string, List<XMFBlockList>> BrokenBlocksRegion;
         List<XMFBlockList> BrokenBlocks;
@@ -31,7 +34,7 @@ namespace Hi3HelperGUI.Data
         byte[] buffer = new byte[4096];
 #else
         // 512 KiB buffer
-        readonly byte[] buffer = new byte[524288];
+        readonly byte[] buffer = new byte[4194304];
 #endif
 
         public void Init(in MemoryStream i)
@@ -66,13 +69,15 @@ namespace Hi3HelperGUI.Data
             DisposeAssets();
         }
 
+        int chunkSize;
+        long totalRead = 0;
+        long totalFileSize = 0;
         public void CheckIntegrity(PresetConfigClasses input, CancellationToken token)
         {
             int byteSize;
-            int chunkSize;
-            long totalRead = 0;
-            long totalFileSize = util.XMFBook.Sum(item => item.BlockSize);
-            string chunkHash = string.Empty;
+            totalRead = 0;
+            totalFileSize = util.XMFBook.Sum(item => item.BlockSize);
+            // int chunkHash;
             FileInfo fileInfo;
 
             FlushTemp();
@@ -81,18 +86,86 @@ namespace Hi3HelperGUI.Data
 
             int z = 0;
             int y = util.XMFBook.Count;
+
+            CheckForUnusedBlocks(input, localPath);
+
             foreach (XMFBlockList i in util.XMFBook)
             {
-                z++;
-                BrokenChunkProp = new List<XMFFileProperty>();
-                string localFile = Path.Combine(localPath, $"{i.BlockHash.ToLowerInvariant()}.wmv");
-                fileInfo = new FileInfo(localFile);
-
-                if (fileInfo.Exists && fileInfo.Length == i.BlockSize)
+                try
                 {
-                    using (fileStream = fileInfo.Open(
-                       FileMode.Open,
-                       FileAccess.Read))
+                    z++;
+                    BrokenChunkProp = new List<XMFFileProperty>();
+                    string localFile = Path.Combine(localPath, $"{i.BlockHash.ToLowerInvariant()}.wmv");
+                    fileInfo = new FileInfo(localFile);
+
+                    if (fileInfo.Exists && fileInfo.Length == i.BlockSize)
+                    {
+                        using (fileStream = fileInfo.Open(
+                           FileMode.Open,
+                           FileAccess.Read))
+                        {
+                            OnProgressChanged(new CheckingBlockProgressChangedStatus()
+                            {
+                                BlockHash = i.BlockHash,
+                                CurrentBlockPos = z,
+                                BlockCount = y
+                            });
+
+                            if (!CheckMD5Integrity(i, fileStream, token))
+                            {
+                                fileStream.Position = 0;
+                                foreach (XMFFileProperty j in i.BlockContent)
+                                {
+                                    token.ThrowIfCancellationRequested();
+                                    chunkBuffer = new MemoryStream();
+
+                                    chunkSize = (int)j.FileSize;
+
+                                    while (chunkSize > 0)
+                                    {
+                                        byteSize = chunkSize > buffer.Length ? buffer.Length : chunkSize;
+                                        fileStream.Read(buffer, 0, byteSize);
+                                        chunkBuffer.Write(buffer, 0, byteSize);
+                                        chunkSize -= byteSize;
+                                    }
+
+                                    /*
+                                        token.ThrowIfCancellationRequested();
+                                        _ = fileStream.Read(buffer = new byte[chunkSize], 0, chunkSize);
+                                    */
+
+                                    // totalRead += j.FileSize;
+                                    // totalRead += chunkSize;
+
+                                    chunkBuffer.Position = 0;
+
+                                    if (j.FileHashArray != (j.FileActualHashArray = BytesToCRC32Int(chunkBuffer)))
+                                    {
+                                        BrokenChunkProp.Add(j);
+                                        LogWriteLine($"Block: {i.BlockHash} CRC: {j.FileHashArray} != {j.FileActualHashArray} Offset: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken", LogType.Warning, true);
+                                    }
+
+                                    OnProgressChanged(new CheckingBlockProgressChanged()
+                                    {
+                                        BlockSize = i.BlockSize,
+                                        ChunkSize = j.FileSize,
+                                        BytesRead = (totalRead += j.FileSize),
+                                        TotalBlockSize = totalFileSize
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                OnProgressChanged(new CheckingBlockProgressChanged()
+                                {
+                                    BlockSize = i.BlockSize,
+                                    BytesRead = (totalRead += i.BlockSize),
+                                    TotalBlockSize = totalFileSize,
+                                });
+                            }
+                        }
+                    }
+                    else
                     {
                         OnProgressChanged(new CheckingBlockProgressChangedStatus()
                         {
@@ -101,51 +174,36 @@ namespace Hi3HelperGUI.Data
                             BlockCount = y
                         });
 
-                        foreach (XMFFileProperty j in i.BlockContent)
+                        OnProgressChanged(new CheckingBlockProgressChanged()
                         {
-                            chunkSize = (int)j.FileSize;
-                            chunkBuffer = new MemoryStream();
+                            BlockSize = i.BlockSize,
+                            BytesRead = (totalRead += i.BlockSize),
+                            TotalBlockSize = totalFileSize,
+                        });
 
-                            while (chunkSize > 0)
-                            {
-                                token.ThrowIfCancellationRequested();
-                                byteSize = chunkSize > buffer.Length ? buffer.Length : chunkSize;
-                                _ = fileStream.Read(buffer, 0, byteSize);
-                                chunkBuffer.Write(buffer, 0, byteSize);
-                                chunkSize -= byteSize;
-                            }
-
-                            /*
-                                token.ThrowIfCancellationRequested();
-                                _ = fileStream.Read(buffer = new byte[chunkSize], 0, chunkSize);
-                            */
-
-                            totalRead += j.FileSize;
-                            // totalRead += chunkSize;
-
-                            chunkBuffer.Position = 0;
-
-                            if (j.FileHash != (chunkHash = BytesToCRC32Simple(chunkBuffer)))
-                            {
-                                j.FileActualHash = chunkHash;
-                                BrokenChunkProp.Add(j);
-                                LogWriteLine($"Block: {i.BlockHash} CRC: {j.FileHash} != {chunkHash} Offset: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken", LogType.Warning, true);
-                            }
-
-                            OnProgressChanged(new CheckingBlockProgressChanged()
-                            {
-                                BlockSize = i.BlockSize,
-                                ChunkSize = j.FileSize,
-                                BytesRead = totalRead,
-                                TotalBlockSize = totalFileSize
-                            });
+                        i.BlockExistingSize = fileInfo.Exists ? fileInfo.Length : 0;
+                        i.BlockContent.Clear();
+                        if (!fileInfo.Exists)
+                        {
+                            i.BlockMissing = true;
+                            LogWriteLine($"Block: {i.BlockHash} is missing!", LogType.Warning, true);
                         }
+                        else
+                        {
+                            LogWriteLine($"Block: {i.BlockHash} size is not expected! Existing Size: {NumberToHexString(i.BlockExistingSize)} Size: {NumberToHexString(i.BlockSize)}", LogType.Warning, true);
+                        }
+                        BrokenBlocks.Add(i);
+                    }
+
+                    if (BrokenChunkProp.Count > 0)
+                    {
+                        i.BlockMissing = false;
+                        i.BlockContent = BrokenChunkProp;
+                        BrokenBlocks.Add(i);
                     }
                 }
-                else
+                catch (IOException e)
                 {
-                    totalRead += i.BlockSize;
-
                     OnProgressChanged(new CheckingBlockProgressChangedStatus()
                     {
                         BlockHash = i.BlockHash,
@@ -156,29 +214,11 @@ namespace Hi3HelperGUI.Data
                     OnProgressChanged(new CheckingBlockProgressChanged()
                     {
                         BlockSize = i.BlockSize,
-                        BytesRead = totalRead,
+                        BytesRead = (totalRead += i.BlockSize),
                         TotalBlockSize = totalFileSize,
                     });
 
-                    i.BlockExistingSize = fileInfo.Exists ? fileInfo.Length : 0;
-                    i.BlockContent.Clear();
-                    if (!fileInfo.Exists)
-                    {
-                        i.BlockMissing = true;
-                        LogWriteLine($"Block: {i.BlockHash} is missing!", LogType.Warning, true);
-                    }
-                    else
-                    {
-                        LogWriteLine($"Block: {i.BlockHash} size is not expected! Existing Size: {NumberToHexString(i.BlockExistingSize)} Size: {NumberToHexString(i.BlockSize)}", LogType.Warning, true);
-                    }
-                    BrokenBlocks.Add(i);
-                }
-
-                if (BrokenChunkProp.Count > 0)
-                {
-                    i.BlockMissing = false;
-                    i.BlockContent = BrokenChunkProp;
-                    BrokenBlocks.Add(i);
+                    LogWriteLine($"{e.Message}\r\nThis file will be ignored", LogType.Error, true);
                 }
             }
 
@@ -186,6 +226,39 @@ namespace Hi3HelperGUI.Data
                 BrokenBlocksRegion.Add(input.ZoneName, BrokenBlocks);
         }
 
+        bool CheckMD5Integrity(XMFBlockList i, Stream stream, CancellationToken token) => i.BlockHash == GenerateMD5(stream, token) ? true : false;
+
+        string GenerateMD5(Stream stream, CancellationToken token)
+        {
+            md5 = MD5.Create();
+            int read = 0;
+            while ((read = stream.Read(buffer, 0, buffer.Length)) >= buffer.Length)
+            {
+                token.ThrowIfCancellationRequested();
+                md5.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
+            }
+
+            md5.TransformFinalBlock(buffer, 0, read);
+
+            return BytesToHex(md5.Hash);
+        }
+
+        void CheckForUnusedBlocks(PresetConfigClasses inputConfig, string localPath)
+        {
+            IEnumerable<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.ToLowerInvariant().EndsWith("wmv"));
+            string blockLocal;
+            long blockLocalSize;
+            foreach (string file in fileList)
+            {
+                blockLocal = Path.GetFileNameWithoutExtension(file).ToUpperInvariant();
+                blockLocalSize = new FileInfo(file).Length;
+                if (!util.XMFBook.Any(item => item.BlockHash == blockLocal))
+                {
+                    LogWriteLine($"Block {blockLocal} ({SummarizeSizeSimple(blockLocalSize)}) might be unused. This will be deleted.");
+                    BrokenBlocks.Add(new() { BlockHash = blockLocal, BlockSize = blockLocalSize, BlockExistingSize = 0, BlockMissing = false, BlockUnused = true });
+                }
+            }
+        }
 
         long totalBytesRead = 0;
         long totalRepairableSize = 0;
@@ -216,6 +289,7 @@ namespace Hi3HelperGUI.Data
                 remoteAddress = ConfigStore.GetMirrorAddressByIndex(a, ConfigStore.DataType.Bigfile);
                 try
                 {
+                    currentBlockPos = 0;
                     foreach (XMFBlockList b in BrokenBlocksRegion[a.ZoneName])
                     {
                         currentChunkPos = 0;
@@ -241,12 +315,24 @@ namespace Hi3HelperGUI.Data
             in string remotePath)
         {
             if (b.BlockMissing ||
-               (b.BlockExistingSize < b.BlockSize && b.BlockContent.Count == 0))
+               (b.BlockExistingSize < b.BlockSize && (b.BlockContent.Count == 0 && !b.BlockUnused)))
                 DownloadContent(remotePath + ".wmv", j.FullName, -1, -1, k);
             else if (b.BlockExistingSize > b.BlockSize)
             {
                 j.Delete();
                 DownloadContent(remotePath + ".wmv", j.FullName, -1, -1, k);
+            }
+            else if (b.BlockUnused)
+            {
+                j.Delete();
+                totalBytesRead += b.BlockSize;
+                OnProgressChanged(new RepairingBlockProgressChanged()
+                {
+                    DownloadReceivedBytes = 0,
+                    DownloadTotalSize = b.BlockSize,
+                    TotalBytesRead = totalBytesRead,
+                    TotalRepairableSize = totalRepairableSize,
+                });
             }
             else
                 RepairCorruptedBlock(b, j, k, remotePath);
@@ -259,24 +345,24 @@ namespace Hi3HelperGUI.Data
                 foreach (XMFFileProperty chunkProp in blockProp.BlockContent)
                 {
                     currentChunkPos++;
-                    chunkBuffer = new MemoryStream();
-                    fileStream.Position = chunkProp.StartOffset;
-                    DownloadContent($"{remotePath}.wmv", chunkBuffer, chunkProp, chunkProp.StartOffset, chunkProp.StartOffset + chunkProp.FileSize, token,
-                        $"Down: {blockProp.BlockHash} Offset {NumberToHexString(chunkProp.StartOffset)} Size {NumberToHexString(chunkProp.FileSize)}");
 
                     OnProgressChanged(new RepairingBlockProgressChangedStatus()
                     {
                         BlockHash = blockProp.BlockHash,
                         ZoneName = zoneName,
-                        ChunkOffset = chunkProp.StartOffset,
-                        ChunkSize = chunkProp.FileSize,
                         Downloading = false,
                         DownloadingBlock = false,
                         BlockCount = blockCount,
                         CurrentBlockPos = currentBlockPos,
                         ChunkCount = chunkCount,
-                        CurrentChunkPos = currentChunkPos
+                        CurrentChunkPos = currentChunkPos,
+                        ChunkOffset = chunkProp.StartOffset
                     });
+
+                    chunkBuffer = new MemoryStream();
+                    fileStream.Position = chunkProp.StartOffset;
+                    DownloadContent($"{remotePath}.wmv", chunkBuffer, chunkProp, chunkProp.StartOffset, chunkProp.StartOffset + chunkProp.FileSize, token,
+                        $"Down: {blockProp.BlockHash} Offset {NumberToHexString(chunkProp.StartOffset)} Size {NumberToHexString(chunkProp.FileSize)}");
 
                     int byteSize = 0;
 
@@ -305,16 +391,14 @@ namespace Hi3HelperGUI.Data
                 DownloadingBlock = false,
                 ZoneName = zoneName,
                 DownloadTotalSize = downloadSize,
-                ChunkOffset = chunkProp.StartOffset,
-                ChunkSize = chunkProp.FileSize,
                 BlockCount = blockCount,
                 CurrentBlockPos = currentBlockPos,
                 ChunkCount = chunkCount,
-                CurrentChunkPos = currentChunkPos
+                CurrentChunkPos = currentChunkPos,
+                ChunkOffset = chunkProp.StartOffset
             });
 
-            while (!httpUtil.DownloadStream(url, destination, token, startOffset, endOffset, message))
-                LogWriteLine($"Retrying...");
+            httpUtil.DownloadStream(url, destination, token, startOffset, endOffset, message);
 
             httpUtil.ProgressChanged -= DownloadEventConverterForStream;
             GC.Collect();
@@ -334,8 +418,7 @@ namespace Hi3HelperGUI.Data
                 CurrentBlockPos = currentBlockPos
             });
 
-            while (!httpUtil.DownloadFile(url, destination, "", startOffset, endOffset, token))
-                LogWriteLine($"Retrying...");
+            httpUtil.DownloadFile(url, destination, "", startOffset, endOffset, token);
 
             httpUtil.ProgressChanged -= DownloadEventConverter;
             GC.Collect();
@@ -413,9 +496,9 @@ namespace Hi3HelperGUI.Data
         public long DownloadReceivedBytes { get; set; } = 0;
         public long DownloadTotalSize { get; set; } = 0;
         public long DownloadSpeed { get; set; } = 0;
-        public float DownloadProgressPercentage { get => ((float)DownloadReceivedBytes / (float)DownloadTotalSize) * 100; }
+        public float DownloadProgressPercentage => ((float)DownloadReceivedBytes / (float)DownloadTotalSize) * 100;
         public long TotalBytesRead { get; set; }
         public long TotalRepairableSize { get; set; }
-        public float ProgressPercentage { get => ((float)TotalBytesRead / (float)TotalRepairableSize) * 100; }
+        public float ProgressPercentage => ((float)TotalBytesRead / (float)TotalRepairableSize) * 100;
     }
 }
