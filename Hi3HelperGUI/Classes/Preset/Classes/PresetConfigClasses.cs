@@ -32,7 +32,7 @@ namespace Hi3HelperGUI.Preset
             }
         }
 
-        string GetUsedLanguage(string RegLocation, string RegValueWildCard, string FallbackValue)
+        public string GetUsedLanguage(string RegLocation, string RegValueWildCard, string FallbackValue)
         {
             string value = "";
             try

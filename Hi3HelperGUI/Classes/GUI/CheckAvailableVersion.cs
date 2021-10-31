@@ -94,6 +94,7 @@ namespace Hi3HelperGUI
                     if (valueName.Contains("GENERAL_DATA_V2_ResourceDownloadVersion_"))
                         value = valueName;
 
+                i.UsedLanguage = i.GetUsedLanguage(i.ConfigRegistryLocation, "MIHOYOSDK_NOTICE_LANGUAGE_", i.FallbackLanguage);
                 i.GameVersion = Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{i.ConfigRegistryLocation}", value, i.FallbackLanguage)).Replace('.', '_').Replace("\0", string.Empty) + "_0";
                 ConfigStore.Config.Add(i);
 
