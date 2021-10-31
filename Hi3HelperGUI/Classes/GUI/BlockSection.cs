@@ -106,8 +106,6 @@ namespace Hi3HelperGUI
                     blockData.CheckingProgressChangedStatus -= BlockProgressChanged;
 
                     blockDictStream.Dispose();
-
-                    // File.WriteAllText(@"C:\Users\neon-nyan\Documents\git\myApp\Hi3Helper\test.json", JsonConvert.SerializeObject(blockData.BrokenBlocksRegion));
                 }
 
                 if (blockData.BrokenBlocksRegion.Count > 0)
