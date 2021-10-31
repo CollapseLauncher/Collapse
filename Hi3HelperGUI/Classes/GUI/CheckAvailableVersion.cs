@@ -27,10 +27,7 @@ namespace Hi3HelperGUI
                         throw new NullReferenceException($"File config is empty!");
 
                     foreach (PresetConfigClasses i in TempConfig)
-                        if (!i.IsSteamVersion)
-                            IsConfigAvailable(i);
-                        else
-                            IsConfigAvailableSteam(i);
+                        IsConfigAvailable(i);
 
                     InitMirrorDropdown();
                     try
@@ -43,8 +40,6 @@ namespace Hi3HelperGUI
                         LogWriteLine($"No Client Installed!\r\n{ex}", LogType.Error, true);
                         DisableAllFunction();
                     }
-
-                    Screen.ScreenProp.InitScreenResolution();
                 });
             }
             catch (JsonReaderException e)
@@ -77,44 +72,7 @@ namespace Hi3HelperGUI
         }
 
         internal string GetInstalledClientName() => ConfigStore.Config.Select(i => i.ZoneName).Aggregate((i, j) => i + ", " + j);
-
-        internal static bool IsConfigAvailableSteam(PresetConfigClasses i)
-        {
-            string RegValue = "InstallLocation";
-            bool ret = true;
-
-            try
-            {
-                i.ActualGameDataLocation = (string)Registry.GetValue(i.InstallRegistryLocation, RegValue, null);
-                i.ActualGameLocation = Directory.GetParent(i.ActualGameDataLocation).FullName;
-
-                string value = "";
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(i.ConfigRegistryLocation);
-                foreach (string valueName in keys.GetValueNames())
-                    if (valueName.Contains("GENERAL_DATA_V2_ResourceDownloadVersion_"))
-                        value = valueName;
-
-                i.GameVersion = Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{i.ConfigRegistryLocation}", value, i.FallbackLanguage)).Replace('.', '_').Replace("\0", string.Empty) + "_0";
-                ConfigStore.Config.Add(i);
-
-                LogWriteLine($"\u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.ConfigRegistryLocation)}\u001b[0m) version is detected!");
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                LogWriteLine(e.ToString(), LogType.Warning, true);
-            }
-            catch (NullReferenceException e)
-            {
-                LogWriteLine(e.ToString(), LogType.Warning, true);
-            }
-            catch (Exception e)
-            {
-                LogWriteLine(e.ToString(), LogType.Error, true);
-            }
-
-            return ret;
-        }
-
+        
         internal static bool IsConfigAvailable(PresetConfigClasses i)
         {
             string RegValue = "InstallPath";

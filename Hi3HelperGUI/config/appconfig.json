@@ -5,7 +5,7 @@
   "MirrorSelection": 0, // Selection number starts from 0
   "AvailableMirror": [ // Add the name of entries defined in fileconfig.json to use them
     "Hi3Mirror", // Change MirrorSelection to 0 for using this mirror
-    "miHoYo", // Change MirrorSelection to 1 for using this mirror
+    "miHoYo" // Change MirrorSelection to 1 for using this mirror
     // And so-on...
   ]
 }
