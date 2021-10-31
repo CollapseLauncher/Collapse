@@ -84,7 +84,6 @@ namespace Hi3HelperGUI
 
                     RemoveBlockDictDownloadHandler();
                     RefreshBlockCheckProgressBar();
-                    LogWriteLine($"Fetching block data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version... ");
 
                     remotePath = i.DictionaryHost + i.BlockDictionaryAddress
                     + $"StreamingAsb/{i.GameVersion}/pc/HD/asb/index.dict";
@@ -92,7 +91,7 @@ namespace Hi3HelperGUI
                     BlockHttpClient.ProgressChanged += BlockDictDownloadProgressChanged;
                     BlockHttpClient.Completed += DownloadProgressCompleted;
 
-                    message = $"Fetching Block Data {i.ZoneName} {Path.GetFileName(i.InstallRegistryLocation)}";
+                    message = $"Fetching Block for {i.ZoneName} [{Path.GetFileName(i.ConfigRegistryLocation)}]";
                     ChangeBlockRepairStatus(message, false, false, false, false);
 
                     BlockHttpClient.DownloadStream(remotePath, blockDictStream, token, -1, -1, message);
@@ -143,7 +142,7 @@ namespace Hi3HelperGUI
                     }
                     blockName.Add(new BlockName {
                         BlockHash = j.BlockHash,
-                        BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : j.BlockUnused ? $"Unused" : $"{j.BlockContent.Count} Chunk(s)")}]",
+                        BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : j.BlockUnused ? $"Unused" : $"{j.BlockContent.Count} Broken Chunk(s)")}]",
                         ChunkItems = chunkProperties
                     });
                 }

@@ -19,7 +19,7 @@ namespace Hi3HelperGUI.Preset
             SetGameVersion();
         }
 
-        void SetGameVersion()
+        public void SetGameVersion()
         {
             try
             {
@@ -92,6 +92,7 @@ namespace Hi3HelperGUI.Preset
         public string FallbackLanguage { get; set; }
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
+        public bool IsSteamVersion { get; set; }
     }
 
     public class AppSettings

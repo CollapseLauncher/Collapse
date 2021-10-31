@@ -38,23 +38,5 @@ namespace Hi3HelperGUI.Preset
                 _ => h.MirrorList[AppConfigData.AvailableMirror[AppConfigData.MirrorSelection]].AssetBundle,
             };
         }
-
-        /*
-        public static string GetMirrorAddress(PresetConfigClasses h, DataType j)
-        {
-            switch (j)
-            {
-                default:
-                case DataType.Hi3MirrorAssetBundle:
-                    return h.Hi3MirrorAssetBundleAddress;
-                case DataType.Hi3MirrorBigFile:
-                    return h.Hi3MirrorAssetBigFileAddress;
-                case DataType.miHoYoAssetBundle:
-                    return h.miHoYoAssetBundleAddress;
-                case DataType.miHoYoBigFile:
-                    return h.miHoYoAssetBigFileAddress;
-            }
-        }
-        */
     }
 }

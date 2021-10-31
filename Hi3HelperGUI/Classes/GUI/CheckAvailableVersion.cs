@@ -104,7 +104,7 @@ namespace Hi3HelperGUI
                 {
                     i.SetGameLocationParameters(a);
                     ConfigStore.Config.Add(i);
-                    LogWriteLine($"\u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version is detected!");
+                    LogWriteLine($"\u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.ConfigRegistryLocation)}\u001b[0m) version is detected!");
                 }
             }
             catch (DirectoryNotFoundException e)

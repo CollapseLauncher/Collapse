@@ -41,7 +41,7 @@ namespace Hi3HelperGUI
                 ChangeUpdateDownload(false);
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
-                    LogWriteLine($"Fetching update data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.InstallRegistryLocation)}\u001b[0m) version... ");
+                    LogWriteLine($"Fetching update data for \u001b[34;1m{i.ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(i.ConfigRegistryLocation)}\u001b[0m) version... ");
                     UpdateDataUtil = new UpdateData(i);
                     for (byte j = 0; j < 3; j++)
                     {

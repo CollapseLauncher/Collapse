@@ -289,7 +289,6 @@ namespace Hi3HelperGUI.Data
                 remoteAddress = ConfigStore.GetMirrorAddressByIndex(a, ConfigStore.DataType.Bigfile);
                 try
                 {
-                    currentBlockPos = 0;
                     foreach (XMFBlockList b in BrokenBlocksRegion[a.ZoneName])
                     {
                         currentChunkPos = 0;

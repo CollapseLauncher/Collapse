@@ -20,6 +20,7 @@
     <RepositoryUrl>https://github.com/neon-nyan/Hi3Helper</RepositoryUrl>
 	<DebugType>embedded</DebugType>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
+	<UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

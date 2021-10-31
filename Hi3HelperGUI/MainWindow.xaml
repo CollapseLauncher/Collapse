@@ -225,10 +225,17 @@
             </TabItem>
             <TabItem x:Name="SettingsSection" Header="Settings Editor">
                 <DockPanel LastChildFill="False" Margin="5">
-                    <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" DockPanel.Dock="Top">
+                    <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
                         <Label Content="Debug Settings:" DockPanel.Dock="Left"/>
                         <CheckBox x:Name="ConfigEnableConsole" Content="Enable Console" VerticalAlignment="Center" IsChecked="True"/>
                     </DockPanel>
+                    <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                        <Label Content="Game Settings:" DockPanel.Dock="Top"/>
+                        <Grid>
+                            <DataGrid d:ItemsSource="{d:SampleData ItemCount=5}"/>
+                        </Grid>
+                    </DockPanel>
+
 
                     <DockPanel VerticalAlignment="Bottom" DockPanel.Dock="Bottom">
                         <Grid Height="26">
