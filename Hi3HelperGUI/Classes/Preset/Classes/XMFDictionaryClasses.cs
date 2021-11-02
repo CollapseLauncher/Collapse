@@ -7,6 +7,7 @@ namespace Hi3HelperGUI.Preset
     {
         public string ChunkOffset { get; set; }
         public string ChunkSize { get; set; }
+        public string ChunkName { get; set; }
     }
 
     public class BlockName
