@@ -2,7 +2,7 @@
 ### a Tweaker for Honkai Impact 3
  This tool will allows you to:
  * Perform the Daily Content Update (Updating Settings)(without opening the game)
- * Repair the corrupted game block files (without redownload/reinstall the whole thing)
+ * Better and faster block repair mechanism than Game built-in block repair feature
  * ~~Fix subtitle issue~~ **[Coming Soon]**
  * ~~Download the cutscenes~~ **[Coming Soon]**
  * ~~Adjust In-game settings (like Window size, FPS Limit, Graphics Setting, etc)~~ **[Coming Soon]**
