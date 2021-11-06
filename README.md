@@ -1,6 +1,6 @@
 # Hi3Helper
 ### a Tweaker for Honkai Impact 3
- This tool will allows you to:
+ This tweaker is featuring some functionality. Including:
  * Perform the Daily Content Update (Updating Settings)(without opening the game)
  * Better and faster block repair mechanism than Game built-in block repair feature
  * ~~Fix subtitle issue~~ **[Coming Soon]**
