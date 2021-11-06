@@ -75,7 +75,11 @@ namespace Hi3HelperGUI
             ApplyAppConfig();
             InitializeComponent();
             //CheckVersionAvailability();
-            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString();
+#if (NETCOREAPP)
+            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString() + " (NET Core)";
+#else
+            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString() + " (NET Framework)";
+#endif
             CheckConfigSettings();
         }
 

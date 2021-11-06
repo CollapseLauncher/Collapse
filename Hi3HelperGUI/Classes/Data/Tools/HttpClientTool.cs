@@ -84,12 +84,12 @@ namespace Hi3HelperGUI.Data
             {
                 UseStream(input, output, startOffset, endOffset, customMessage, token, isStream);
             }
+#if (NETCOREAPP)
             catch (HttpRequestException e)
             {
-#if (NETCOREAPP)
                 returnValue = ThrowWebExceptionAsBool(e);
-#endif
             }
+#endif
             catch (TaskCanceledException e)
             {
                 returnValue = true;

@@ -17,33 +17,7 @@ namespace BenchmarkLab
     {
         static void Main(string[] args)
         {
-            Uh uh = new Uh();
-            uh.bruh();
-
-            // BenchmarkRunner.Run<bruh>();
-        }
-    }
-
-    public class Uh
-    {
-        IEnumerable<string> fileList = Directory.GetFiles(@"C:\Users\neon-nyan\Documents\git\myApp\Hi3Helper\build\betaoutput\", "*.unity3d", SearchOption.AllDirectories);
-        byte[] buf1 = new byte[0x5];
-        byte[] buf2 = new byte[0xD];
-        public void bruh()
-        {
-            foreach (string file in fileList)
-            {
-                using (FileStream stream = new FileStream(file, FileMode.Open))
-                {
-                    stream.Position = 0xC;
-                    stream.Read(buf1);
-                    stream.Position++;
-                    stream.Read(buf2);
-                    if (Encoding.UTF8.GetString(buf2) != "2017.4.18f1.2" ||
-                        Encoding.UTF8.GetString(buf1) != "5.x.x")
-                        Console.WriteLine($"{Encoding.UTF8.GetString(buf1)} {Encoding.UTF8.GetString(buf2)}");
-                }
-            }
+            BenchmarkRunner.Run<bruh>();
         }
     }
 
