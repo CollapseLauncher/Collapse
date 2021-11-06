@@ -106,8 +106,6 @@ namespace Hi3HelperGUI
                     blockData.CheckingProgressChangedStatus -= BlockProgressChanged;
 
                     blockDictStream.Dispose();
-
-                    // File.WriteAllText(@"C:\Users\neon-nyan\Documents\git\myApp\Hi3Helper\test.json", JsonConvert.SerializeObject(blockData.BrokenBlocksRegion));
                 }
 
                 if (blockData.BrokenBlocksRegion.Count > 0)
@@ -137,9 +135,8 @@ namespace Hi3HelperGUI
                 {
                     chunkProperties = new();
                     foreach (XMFDictionaryClasses.XMFFileProperty k in j.BlockContent)
-                    {
-                        chunkProperties.Add(new ChunkProperties { ChunkOffset = $"0x{NumberToHexString(k.StartOffset)}", ChunkSize = $"0x{NumberToHexString(k.FileSize)}" });
-                    }
+                        chunkProperties.Add(new ChunkProperties { ChunkOffset = $"0x{NumberToHexString(k.StartOffset)}", ChunkSize = $"0x{NumberToHexString(k.FileSize)}", ChunkName = k.FileName });
+
                     blockName.Add(new BlockName {
                         BlockHash = j.BlockHash,
                         BlockStatus = $" [{(j.BlockMissing ? "Missing" : j.BlockExistingSize > 0 && j.BlockContent.Count == 0 ? "Incomplete" : j.BlockUnused ? $"Unused" : $"{j.BlockContent.Count} Broken Chunk(s)")}]",

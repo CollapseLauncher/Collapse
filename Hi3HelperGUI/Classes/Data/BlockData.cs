@@ -142,7 +142,8 @@ namespace Hi3HelperGUI.Data
                                     if (j.FileHashArray != (j.FileActualHashArray = BytesToCRC32Int(chunkBuffer)))
                                     {
                                         BrokenChunkProp.Add(j);
-                                        LogWriteLine($"Block: {i.BlockHash} CRC: {j.FileHashArray} != {j.FileActualHashArray} Offset: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken", LogType.Warning, true);
+                                        LogWriteLine($"Blk: {i.BlockHash} CRC: {NumberToHexString(j.FileHashArray)} != {NumberToHexString(j.FileActualHashArray)} Start: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken.", LogType.Warning, false);
+                                        WriteLog($"Blk: {i.BlockHash} CRC: {NumberToHexString(j.FileHashArray)} != {NumberToHexString(j.FileActualHashArray)} Start: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} (Virtual chunkname: {j.FileName}) is broken.", LogType.Warning);
                                     }
 
                                     OnProgressChanged(new CheckingBlockProgressChanged()
@@ -186,11 +187,11 @@ namespace Hi3HelperGUI.Data
                         if (!fileInfo.Exists)
                         {
                             i.BlockMissing = true;
-                            LogWriteLine($"Block: {i.BlockHash} is missing!", LogType.Warning, true);
+                            LogWriteLine($"Blk: {i.BlockHash} is missing!", LogType.Warning, true);
                         }
                         else
                         {
-                            LogWriteLine($"Block: {i.BlockHash} size is not expected! Existing Size: {NumberToHexString(i.BlockExistingSize)} Size: {NumberToHexString(i.BlockSize)}", LogType.Warning, true);
+                            LogWriteLine($"Blk: {i.BlockHash} size is not expected! Existing Size: {NumberToHexString(i.BlockExistingSize)} Size: {NumberToHexString(i.BlockSize)}", LogType.Warning, true);
                         }
                         BrokenBlocks.Add(i);
                     }
@@ -218,7 +219,7 @@ namespace Hi3HelperGUI.Data
                         TotalBlockSize = totalFileSize,
                     });
 
-                    LogWriteLine($"{e.Message}\r\nThis file will be ignored", LogType.Error, true);
+                    LogWriteLine($"Hi3Helper cannot read Blk: {i.BlockHash} (Size: {NumberToHexString(i.BlockSize)}). This Blk will be ignored.\r\nTraceback: {e.Message}", LogType.Error, true);
                 }
             }
 
@@ -254,7 +255,7 @@ namespace Hi3HelperGUI.Data
                 blockLocalSize = new FileInfo(file).Length;
                 if (!util.XMFBook.Any(item => item.BlockHash == blockLocal))
                 {
-                    LogWriteLine($"Block {blockLocal} ({SummarizeSizeSimple(blockLocalSize)}) might be unused. This will be deleted.");
+                    LogWriteLine($"Block: {blockLocal} ({SummarizeSizeSimple(blockLocalSize)}) might be unused. This will be deleted.", LogType.Warning);
                     BrokenBlocks.Add(new() { BlockHash = blockLocal, BlockSize = blockLocalSize, BlockExistingSize = 0, BlockMissing = false, BlockUnused = true });
                 }
             }
@@ -273,6 +274,7 @@ namespace Hi3HelperGUI.Data
         public void BlockRepair(List<PresetConfigClasses> i, CancellationToken token)
         {
             totalBytesRead = 0;
+            currentBlockPos = 0;
             totalRepairableSize = BrokenBlocksRegion.Sum(item => item.Value.Sum(child => child.SumDownloadableContent()));
             string remoteAddress;
             string remotePath;
@@ -417,7 +419,7 @@ namespace Hi3HelperGUI.Data
                 CurrentBlockPos = currentBlockPos
             });
 
-            httpUtil.DownloadFile(url, destination, "", startOffset, endOffset, token);
+            httpUtil.DownloadFile(url, destination, $"Down: {Path.GetFileNameWithoutExtension(destination).ToUpperInvariant()}", startOffset, endOffset, token);
 
             httpUtil.ProgressChanged -= DownloadEventConverter;
             GC.Collect();
