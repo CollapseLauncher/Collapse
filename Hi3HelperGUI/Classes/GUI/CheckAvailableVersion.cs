@@ -16,7 +16,7 @@ namespace Hi3HelperGUI
     {
         public async void CheckConfigSettings()
         {
-            List<PresetConfigClasses> TempConfig = new();
+            List<PresetConfigClasses> TempConfig = new List<PresetConfigClasses>();
             try
             {
                 await Task.Run(() =>

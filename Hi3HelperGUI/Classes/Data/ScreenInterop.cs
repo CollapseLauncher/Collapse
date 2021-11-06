@@ -115,8 +115,8 @@ namespace Hi3HelperGUI.Screen
             /// </summary>
             public void Initialize()
             {
-                dmDeviceName = new(new char[32]);
-                dmFormName = new(new char[32]);
+                dmDeviceName = new string(new char[32]);
+                dmFormName = new string(new char[32]);
                 dmSize = (ushort)Marshal.SizeOf(this);
             }
         }

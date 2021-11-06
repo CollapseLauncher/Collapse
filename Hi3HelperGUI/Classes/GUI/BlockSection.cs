@@ -17,7 +17,7 @@ namespace Hi3HelperGUI
     {
         CancellationTokenSource BlockCheckTokenSource;
         MemoryStream blockDictStream;
-        readonly BlockData blockData = new();
+        readonly BlockData blockData = new BlockData();
 
         private void BlockCheckCancel(object sender, RoutedEventArgs e)
         {
@@ -32,7 +32,7 @@ namespace Hi3HelperGUI
         public async void DoBlockCheck()
         {
             ToggleBlockPlaceholder(false);
-            BlockCheckTokenSource = new();
+            BlockCheckTokenSource = new CancellationTokenSource();
             CancellationToken token = BlockCheckTokenSource.Token;
 
             try
@@ -50,7 +50,7 @@ namespace Hi3HelperGUI
         public async void DoBlockRepair()
         {
             ToggleBlockPlaceholder(false);
-            BlockCheckTokenSource = new();
+            BlockCheckTokenSource = new CancellationTokenSource();
             CancellationToken token = BlockCheckTokenSource.Token;
 
             try
@@ -80,7 +80,7 @@ namespace Hi3HelperGUI
 
                 foreach (PresetConfigClasses i in ConfigStore.Config)
                 {
-                    blockDictStream = new();
+                    blockDictStream = new MemoryStream();
 
                     RemoveBlockDictDownloadHandler();
                     RefreshBlockCheckProgressBar();
@@ -124,16 +124,16 @@ namespace Hi3HelperGUI
 
         List<GameZoneName> BlockGenerateTreeView()
         {
-            List<GameZoneName> zoneName = new();
+            List<GameZoneName> zoneName = new List<GameZoneName>();
             List<BlockName> blockName;
             List<ChunkProperties> chunkProperties;
 
             foreach (KeyValuePair<string, List<XMFDictionaryClasses.XMFBlockList>> i in blockData.BrokenBlocksRegion)
             {
-                blockName = new();
+                blockName = new List<BlockName>();
                 foreach (XMFDictionaryClasses.XMFBlockList j in i.Value)
                 {
-                    chunkProperties = new();
+                    chunkProperties = new List<ChunkProperties>();
                     foreach (XMFDictionaryClasses.XMFFileProperty k in j.BlockContent)
                         chunkProperties.Add(new ChunkProperties { ChunkOffset = $"0x{NumberToHexString(k.StartOffset)}", ChunkSize = $"0x{NumberToHexString(k.FileSize)}", ChunkName = k.FileName });
 
@@ -153,7 +153,7 @@ namespace Hi3HelperGUI
             return zoneName;
         }
 
-        void RefreshBlockTreeView() => Dispatcher.Invoke(() => { BlockChunkTreeView.ItemsSource = BlockGenerateTreeView(); });
+        void RefreshBlockTreeView() => Dispatcher.Invoke(() => BlockChunkTreeView.ItemsSource = BlockGenerateTreeView());
 
         public async Task RunBlockRepair(CancellationToken token)
         {
@@ -171,13 +171,7 @@ namespace Hi3HelperGUI
                 RefreshBlockTreeView();
             });
         }
-        private void BlockProgressChanged(object sender, CheckingBlockProgressChangedStatus e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                BlockCheckStatus.Content = $"Checking Block: [{e.CurrentBlockPos}/{e.BlockCount}] {e.BlockHash}";
-            });
-        }
+        private void BlockProgressChanged(object sender, CheckingBlockProgressChangedStatus e) => Dispatcher.Invoke(() => BlockCheckStatus.Content = $"Checking Block: [{e.CurrentBlockPos}/{e.BlockCount}] {e.BlockHash}" );
 
         private void BlockProgressChanged(object sender, CheckingBlockProgressChanged e)
         {
@@ -185,7 +179,7 @@ namespace Hi3HelperGUI
             {
                 BlockProgressLabel.Text = $"Read: {SummarizeSizeSimple(e.BytesRead)}\t Total Size: {SummarizeSizeSimple(e.TotalBlockSize)}";
                 BlockProgressBar.Value = GetPercentageNumber(e.BytesRead, e.TotalBlockSize);
-            }, DispatcherPriority.Background);
+            });
         }
 
         private void BlockProgressChanged(object sender, RepairingBlockProgressChangedStatus e)
@@ -193,13 +187,9 @@ namespace Hi3HelperGUI
             Dispatcher.Invoke(() =>
             {
                 if (e.Downloading && e.DownloadingBlock)
-                {
                     BlockCheckStatus.Content = $"Downloading: [{e.CurrentBlockPos}/{e.BlockCount}] {e.BlockHash}\tSize: {SummarizeSizeSimple(e.DownloadTotalSize)}";
-                }
                 else
-                {
                     BlockCheckStatus.Content = $"Repairing: [{e.CurrentBlockPos}/{e.BlockCount}] {e.BlockHash}\tOffset: 0x{NumberToHexString(e.ChunkOffset)}\tPos: [{e.CurrentChunkPos}/{e.ChunkCount}]";
-                }
             });
         }
 
@@ -211,7 +201,7 @@ namespace Hi3HelperGUI
                 BlockProgressBar.Value = Math.Round(e.ProgressPercentage, 2);
                 BlockFetchingProgressLabel.Text = $"{SummarizeSizeSimple(e.DownloadReceivedBytes)} ({SummarizeSizeSimple(e.DownloadSpeed)}/s)";
                 BlockFetchingProgressBar.Value = Math.Round(e.DownloadProgressPercentage, 2);
-            }, DispatcherPriority.Background);
+            });
         }
 
         private void ToggleBlockPlaceholder(bool a) => Dispatcher.Invoke(() => BlockSectionPlaceHolder.Visibility = a ? Visibility.Visible : Visibility.Collapsed);
@@ -221,7 +211,7 @@ namespace Hi3HelperGUI
             Dispatcher.Invoke(() => {
                 BlockProgressBar.Value = Math.Round((100 * cur) / max, 2);
                 BlockProgressLabel.Text = "none";
-            }, DispatcherPriority.Background);
+            });
         }
 
         private void ChangeBlockRepairStatus(string s,bool b, bool c = false,
