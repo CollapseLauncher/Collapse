@@ -17,7 +17,10 @@ namespace Hi3HelperGUI
 
         public static void InitLog()
         {
-            logger = DisableConsole ? new DummyLogger() : new ConsoleLogger();
+            if (DisableConsole)
+                logger = new DummyLogger();
+            else
+                logger = new ConsoleLogger();
 
             logdir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
             if (!Directory.Exists(logdir))

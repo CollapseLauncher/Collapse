@@ -33,7 +33,8 @@ namespace Hi3HelperGUI
         {
             await Task.Run(() =>
             {
-                (ConfigStore.UpdateFilesTotalSize, ConfigStore.UpdateFilesTotalDownloaded) = (0, 0);
+                ConfigStore.UpdateFilesTotalSize = 0;
+                ConfigStore.UpdateFilesTotalDownloaded = 0;
                 ToggleUpdatePlaceholder(false);
                 RefreshUpdateProgressBar();
                 ConfigStore.UpdateFiles = new List<UpdateDataProperties>();

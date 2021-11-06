@@ -22,7 +22,7 @@ namespace Hi3HelperGUI.Data
         List<XMFBlockList> BrokenBlocks;
         List<XMFFileProperty> BrokenChunkProp;
         XMFUtils util;
-        readonly HttpClientTool httpUtil = new();
+        readonly HttpClientTool httpUtil = new HttpClientTool();
 
         public event EventHandler<CheckingBlockProgressChanged> CheckingProgressChanged;
         public event EventHandler<CheckingBlockProgressChangedStatus> CheckingProgressChangedStatus;
@@ -31,29 +31,29 @@ namespace Hi3HelperGUI.Data
 
 #if DEBUG
         // 4 KiB buffer
-        byte[] buffer = new byte[4096];
+        readonly byte[] buffer = new byte[4096];
 #else
-        // 512 KiB buffer
+        // 4 MB buffer
         readonly byte[] buffer = new byte[4194304];
 #endif
 
         public void Init(in MemoryStream i)
         {
             i.Position = 0;
-            util = new XMFUtils(i, XMFFileFormat.Dictionary);
+            util = new XMFUtils(i);
             util.Read();
         }
 
         public void FlushProp()
         {
-            BrokenBlocks = new();
-            BrokenBlocksRegion = new();
+            BrokenBlocks = new List<XMFBlockList>();
+            BrokenBlocksRegion = new Dictionary<string, List<XMFBlockList>>();
         }
 
         public void FlushTemp()
         {
-            BrokenBlocks = new();
-            BrokenChunkProp = new();
+            BrokenBlocks = new List<XMFBlockList>();
+            BrokenChunkProp = new List<XMFFileProperty>();
         }
 
         public void DisposeAssets()
@@ -87,7 +87,7 @@ namespace Hi3HelperGUI.Data
             int z = 0;
             int y = util.XMFBook.Count;
 
-            CheckForUnusedBlocks(input, localPath);
+            CheckForUnusedBlocks(localPath);
 
             foreach (XMFBlockList i in util.XMFBook)
             {
@@ -142,8 +142,7 @@ namespace Hi3HelperGUI.Data
                                     if (j.FileHashArray != (j.FileActualHashArray = BytesToCRC32Int(chunkBuffer)))
                                     {
                                         BrokenChunkProp.Add(j);
-                                        LogWriteLine($"Blk: {i.BlockHash} CRC: {NumberToHexString(j.FileHashArray)} != {NumberToHexString(j.FileActualHashArray)} Start: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} is broken.", LogType.Warning, false);
-                                        WriteLog($"Blk: {i.BlockHash} CRC: {NumberToHexString(j.FileHashArray)} != {NumberToHexString(j.FileActualHashArray)} Start: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} (Virtual chunkname: {j.FileName}) is broken.", LogType.Warning);
+                                        LogWriteLine($"Blk: {i.BlockHash} CRC: {NumberToHexString(j.FileHashArray)} != {NumberToHexString(j.FileActualHashArray)} Start: {NumberToHexString(j.StartOffset)} Size: {NumberToHexString(j.FileSize)} (Virtual chunkname: {j.FileName}) is broken.", LogType.Warning, true);
                                     }
 
                                     OnProgressChanged(new CheckingBlockProgressChanged()
@@ -190,9 +189,8 @@ namespace Hi3HelperGUI.Data
                             LogWriteLine($"Blk: {i.BlockHash} is missing!", LogType.Warning, true);
                         }
                         else
-                        {
                             LogWriteLine($"Blk: {i.BlockHash} size is not expected! Existing Size: {NumberToHexString(i.BlockExistingSize)} Size: {NumberToHexString(i.BlockSize)}", LogType.Warning, true);
-                        }
+
                         BrokenBlocks.Add(i);
                     }
 
@@ -227,12 +225,12 @@ namespace Hi3HelperGUI.Data
                 BrokenBlocksRegion.Add(input.ZoneName, BrokenBlocks);
         }
 
-        bool CheckMD5Integrity(XMFBlockList i, Stream stream, CancellationToken token) => i.BlockHash == GenerateMD5(stream, token) ? true : false;
+        bool CheckMD5Integrity(XMFBlockList i, Stream stream, CancellationToken token) => i.BlockHash == GenerateMD5(stream, token);
 
         string GenerateMD5(Stream stream, CancellationToken token)
         {
             md5 = MD5.Create();
-            int read = 0;
+            int read;
             while ((read = stream.Read(buffer, 0, buffer.Length)) >= buffer.Length)
             {
                 token.ThrowIfCancellationRequested();
@@ -244,7 +242,7 @@ namespace Hi3HelperGUI.Data
             return BytesToHex(md5.Hash);
         }
 
-        void CheckForUnusedBlocks(PresetConfigClasses inputConfig, string localPath)
+        void CheckForUnusedBlocks(string localPath)
         {
             IEnumerable<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.ToLowerInvariant().EndsWith("wmv"));
             string blockLocal;
@@ -255,8 +253,8 @@ namespace Hi3HelperGUI.Data
                 blockLocalSize = new FileInfo(file).Length;
                 if (!util.XMFBook.Any(item => item.BlockHash == blockLocal))
                 {
-                    LogWriteLine($"Block: {blockLocal} ({SummarizeSizeSimple(blockLocalSize)}) might be unused. This will be deleted.", LogType.Warning);
-                    BrokenBlocks.Add(new() { BlockHash = blockLocal, BlockSize = blockLocalSize, BlockExistingSize = 0, BlockMissing = false, BlockUnused = true });
+                    LogWriteLine($"Block: {blockLocal} ({SummarizeSizeSimple(blockLocalSize)}) might be unused. This will be deleted.", LogType.Warning, true);
+                    BrokenBlocks.Add(new XMFBlockList() { BlockHash = blockLocal, BlockSize = blockLocalSize, BlockExistingSize = 0, BlockMissing = false, BlockUnused = true });
                 }
             }
         }

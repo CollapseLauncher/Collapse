@@ -18,20 +18,31 @@ namespace Hi3HelperGUI
 
         public void WriteLog(string i, LogType a = LogType.Default)
         {
-            using (Logger.logstream = new(Path.Combine(Logger.logdir, Logger.filename), true))
+            using (Logger.logstream = new StreamWriter(Path.Combine(Logger.logdir, Logger.filename), true))
                 Logger.logstream.WriteLine(GetLog(i, a));
         }
 
         string GetLog(string i, LogType a)
         {
-            i = a switch
+            switch (a)
             {
-                LogType.Error => $"[Erro]\t{i}",
-                LogType.Warning => $"[Warn]\t{i}",
-                LogType.Default => $"[Info]\t{i}",
-                LogType.Scheme => $"[Schm]\t{i}",
-                _ => $"\t\t{i}",
-            };
+                case LogType.Error:
+                    i = $"[Erro]\t{i}";
+                    break;
+                case LogType.Warning:
+                    i = $"[Warn]\t{i}";
+                    break;
+                case LogType.Default:
+                    i = $"[Info]\t{i}";
+                    break;
+                case LogType.Scheme:
+                    i = $"[Schm]\t{i}";
+                    break;
+                default:
+                    i = $"\t\t{i}";
+                    break;
+            }
+
             return $"[{Logger.GetCurrentTime("HH:mm:ss.fff")}] {i.Replace("\n", $"{new string(' ', 22)}\t")}";
         }
     }

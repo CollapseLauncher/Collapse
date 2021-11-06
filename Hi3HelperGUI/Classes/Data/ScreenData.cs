@@ -12,7 +12,7 @@ namespace Hi3HelperGUI.Screen
         public static List<ScreenResolution> screenResolutions;
         public static void InitScreenResolution()
         {
-            devMode = new();
+            devMode = new DEVMODE();
             screenResolutions = new List<ScreenResolution>();
 
             int i = 0;

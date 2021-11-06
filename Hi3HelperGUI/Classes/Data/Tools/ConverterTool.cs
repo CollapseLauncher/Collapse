@@ -11,16 +11,17 @@ namespace Hi3HelperGUI.Data
 {
     public class ConverterTool
     {
-        static readonly Crc32Algorithm CRCEncoder = new();
+        static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
         public static string CreateMD5(Stream fs) => BytesToHex(MD5.Create().ComputeHash(fs));
-        public static async Task<string> CreateMD5(Stream fs, CancellationToken token) => BytesToHex(await MD5.Create().ComputeHashAsync(fs, token));
-        public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer));
+        public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer), 0);
 #if (NETCOREAPP)
         public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
+        public static async Task<string> CreateMD5(Stream fs, CancellationToken token) => BytesToHex(await MD5.Create().ComputeHashAsync(fs, token));
 #else
         public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
+        public static string CreateMD5(Stream fs, CancellationToken token) => BytesToHex(MD5.Create().ComputeHash(fs));
 #endif
 
         public static uint BytesToUInt32Big(byte[] buffer) =>
@@ -58,11 +59,11 @@ namespace Hi3HelperGUI.Data
 
         // Reference:
         // https://social.msdn.microsoft.com/Forums/vstudio/en-US/7f5765cc-3edc-44b4-92c6-7b9680e778ed/getting-md5sha-as-number-instead-of-string?forum=csharpgeneral
-        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data) => new(algorithm.ComputeHash(data));
+        public static BigInteger HexToNumber(HashAlgorithm algorithm, byte[] data) => new BigInteger(algorithm.ComputeHash(data));
 
         // Reference:
         // https://makolyte.com/csharp-hex-string-to-byte-array
-        internal readonly static Dictionary<char, byte> hexmap = new()
+        internal readonly static Dictionary<char, byte> hexmap = new Dictionary<char, byte>()
         {
             { 'a', 0xA },{ 'b', 0xB },{ 'c', 0xC },{ 'd', 0xD },
             { 'e', 0xE },{ 'f', 0xF },{ 'A', 0xA },{ 'B', 0xB },
@@ -116,7 +117,7 @@ namespace Hi3HelperGUI.Data
         /// <param name="n">The int to convert to Hex representation</param>
         /// <param name="len">number of digits in the hex string. Pads with leading zeros.</param>
         /// <returns></returns>
-        public static string NumberToHexString(long n, int len = 8) => new(StringToChars(n, len));
+        public static string NumberToHexString(long n, int len = 8) => new string(StringToChars(n, len));
 
         private static char[] StringToChars(long n, int len)
         {

@@ -18,36 +18,49 @@ namespace Hi3HelperGUI.Data
 
     public class XMFUtils : XMFDictionaryClasses
     {
-
-        readonly XMFFileFormat format;
-
         // XMF Section
-        internal protected Stream fs;
+        internal protected Stream stream;
         internal protected long readoffset;
         internal protected string xmfpath;
-        public ushort offset = 0x21;
-        public bool debug = false;
-        protected uint blockcount;
-        public string dictmagicword = "Dict";
+        internal protected uint blockcount;
+        internal protected readonly int dictmagicword;
+        internal protected readonly ushort offset;
+        internal protected readonly XMFFileFormat format;
 
         // Buffer Section
         internal protected byte[] buffer;
 
-        XMFBlockList _blocklist;
+        // Reading Section
+        internal protected string blockhash;
+        internal protected uint blocksize;
+        internal protected uint contentcount;
+
+        internal protected string filename;
+        internal protected ushort filenamelength;
+        internal protected string filehash;
+        internal protected int filehasharray;
+        internal protected uint fileoffset;
+        internal protected uint Ffileoffset;
+        internal protected uint filesize;
+        internal protected uint curFileRead = 1;
+        internal protected Func<XMFFileProperty> ReadContentMethod;
+
+        internal protected XMFBlockList _blocklist;
 
         public List<XMFBlockList> XMFBook;
 
-        public XMFUtils(MemoryStream i, XMFFileFormat j)
+        public XMFUtils(MemoryStream stream, XMFFileFormat format = XMFFileFormat.Dictionary, ushort offset = 0x21, int dictmagicword = 1952672068)
         {
-            fs = i;
-            switch (j)
+            this.stream = stream;
+            this.format = format;
+            this.dictmagicword = dictmagicword;
+            this.offset = offset;
+            switch (format)
             {
                 case XMFFileFormat.XMF:
-                    format = XMFFileFormat.XMF;
                     InitXMF();
                     break;
                 case XMFFileFormat.Dictionary:
-                    format = XMFFileFormat.Dictionary;
                     InitDict();
                     break;
             }
@@ -55,52 +68,38 @@ namespace Hi3HelperGUI.Data
 
         void InitDict()
         {
-            fs.Read(buffer = new byte[4], 0, 4);
-            if (Encoding.ASCII.GetString(buffer) != dictmagicword)
+            stream.Read(buffer = new byte[4], 0, 4);
+            if (BitConverter.ToInt32(buffer, 0) != dictmagicword)
                 throw new FormatException("Read file is not a dictionary file. Magic string in header is not expected!"
                     + $"\r\nExpecting \"{dictmagicword}\" but got \"{Encoding.ASCII.GetString(buffer)}\" instead.");
-            fs.Read(buffer = new byte[1], 0, 1);
+            stream.Read(buffer = new byte[1], 0, 1);
             blockcount = buffer[0];
 #if DEBUG
             LogWriteLine($"{blockcount} blocks are available.");
 #endif
-            readoffset = fs.Position;
+            readoffset = stream.Position;
         }
 
         void InitXMF()
         {
-            fs.Position += offset;
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Position += offset;
+            stream.Read(buffer = new byte[4], 0, 4);
             blockcount = BytesToUInt32Big(buffer);
 #if DEBUG
             LogWriteLine($"{blockcount} blocks are available.");
 #endif
-            readoffset = fs.Position;
+            readoffset = stream.Position;
         }
 
         public void Read()
         {
             XMFBook = new List<XMFBlockList>();
-            fs.Position = readoffset;
+            stream.Position = readoffset;
 
-            using (fs)
+            using (stream)
                 for (uint i = blockcount; i > 0; i--)
                     InitRead();
         }
-
-        protected string blockhash;
-        protected uint blocksize;
-        protected uint contentcount;
-
-        protected string filename;
-        protected ushort filenamelength;
-        protected string filehash;
-        protected int filehasharray;
-        protected uint fileoffset;
-        protected uint Ffileoffset;
-        protected uint filesize;
-        protected uint curFileRead = 1;
-        protected Func<XMFFileProperty> ReadContentMethod;
 
         void InitRead()
         {
@@ -130,65 +129,71 @@ namespace Hi3HelperGUI.Data
         {
             _blocklist = new XMFBlockList();
 
-            fs.Read(buffer = new byte[16], 0, 16);
+            stream.Read(buffer = new byte[16], 0, 16);
             blockhash = BytesToHex(buffer);
-            fs.Position += jumper;
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Position += jumper;
+            stream.Read(buffer = new byte[4], 0, 4);
             blocksize = isBigEndian ? BytesToUInt32Big(buffer) : BitConverter.ToUInt32(buffer, 0);
 
             // Reserve 4 bytes but will read as it requested by contentbytelength.
-            fs.Read(buffer = new byte[4], 0, contentbytelength);
+            stream.Read(buffer = new byte[4], 0, contentbytelength);
             contentcount = isBigEndian ? BytesToUInt32Big(buffer) : BitConverter.ToUInt32(buffer, 0);
 
             _blocklist.BlockHash = blockhash;
             _blocklist.BlockSize = blocksize;
 
 #if (DEBUG)
-            // Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} files)");
+            Console.WriteLine($"    > {blockhash} -> {SummarizeSizeSimple(blocksize)} ({contentcount} chunks)");
 #endif
         }
 
         XMFFileProperty ReadXMFContentInfo()
         {
-            fs.Read(buffer = new byte[2], 0, 2);
+            stream.Read(buffer = new byte[2], 0, 2);
             filenamelength = BytesToUInt16Big(buffer);
-            fs.Read(buffer = new byte[filenamelength], 0, filenamelength);
+            stream.Read(buffer = new byte[filenamelength], 0, filenamelength);
             filename = Encoding.UTF8.GetString(buffer);
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Read(buffer = new byte[4], 0, 4);
             fileoffset = BytesToUInt32Big(buffer);
 
-            readoffset = fs.Position;
+            readoffset = stream.Position;
 
             filesize = GetFileSize();
 
 #if DEBUG   
-            // LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+            LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
-            return new XMFFileProperty() { FileName = filename, FileSize = filesize, StartOffset = fileoffset };
+            return new XMFFileProperty()
+            {
+                FileName = filename,
+                FileSize = filesize,
+                StartOffset = fileoffset
+            };
         }
 
         XMFFileProperty ReadDictContentInfo()
         {
-            fs.Read(buffer = new byte[1], 0, 1);
+            stream.Read(buffer = new byte[1], 0, 1);
             filenamelength = buffer[0];
-            fs.Read(buffer = new byte[filenamelength], 0, filenamelength);
+            stream.Read(buffer = new byte[filenamelength], 0, filenamelength);
             filename = Encoding.UTF8.GetString(buffer);
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Read(buffer = new byte[4], 0, 4);
             fileoffset = BitConverter.ToUInt32(buffer, 0);
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Read(buffer = new byte[4], 0, 4);
             filesize = BitConverter.ToUInt32(buffer, 0);
 
-            fs.Read(buffer = new byte[4], 0, 4);
-            filehasharray = BitConverter.ToInt32(buffer);
+            stream.Read(buffer = new byte[4], 0, 4);
+            filehasharray = BitConverter.ToInt32(buffer, 0);
 
 #if DEBUG   
-            // LogWriteLine($"[C:{curFileRead}] {filename} | Start Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+            LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
-            return new XMFFileProperty() {
+            return new XMFFileProperty()
+            {
                 FileName = filename,
                 FileSize = filesize,
                 StartOffset = fileoffset,
@@ -198,16 +203,14 @@ namespace Hi3HelperGUI.Data
 
         uint GetFileSize()
         {
-            fs.Read(buffer = new byte[2], 0, 2);
-            fs.Position += BytesToUInt16Big(buffer);
-            fs.Read(buffer = new byte[4], 0, 4);
+            stream.Read(buffer = new byte[2], 0, 2);
+            stream.Position += BytesToUInt16Big(buffer);
+            stream.Read(buffer = new byte[4], 0, 4);
             Ffileoffset = BytesToUInt32Big(buffer);
 
-            fs.Position = readoffset;
+            stream.Position = readoffset;
 
             return (curFileRead == contentcount ? blocksize : Ffileoffset) - fileoffset;
         }
-
-        public short deviceID = 0;
     }
 }

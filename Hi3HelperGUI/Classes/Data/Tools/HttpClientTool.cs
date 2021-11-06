@@ -28,10 +28,14 @@ namespace Hi3HelperGUI.Data
 
         public HttpClientTool()
         {
-            httpClient = new(
+            httpClient = new HttpClient(
             new HttpClientHandler()
             {
+#if (NETCOREAPP)
                 AutomaticDecompression = DecompressionMethods.All,
+#else
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
+#endif
                 UseCookies = true,
                 MaxConnectionsPerServer = 32,
                 AllowAutoRedirect = true
@@ -42,15 +46,14 @@ namespace Hi3HelperGUI.Data
 
         public bool DownloadFile(string input, string output, string customMessage = "", long startOffset = -1, long endOffset = -1, CancellationToken token = new CancellationToken())
         {
-            if (string.IsNullOrEmpty(customMessage))
-                customMessage = $"Downloading {Path.GetFileName(output)}";
-            bool ret = true;
+            if (string.IsNullOrEmpty(customMessage)) customMessage = $"Downloading {Path.GetFileName(output)}";
+
+            bool ret;
 
             while (!(ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false)))
             {
                 LogWriteLine($"Retrying...");
                 Thread.Sleep(1000);
-                ret = false;
             }
 
             return ret;
@@ -58,16 +61,15 @@ namespace Hi3HelperGUI.Data
 
         public bool DownloadStream(string input, MemoryStream output, CancellationToken token, long startOffset = -1, long endOffset = -1, string customMessage = "")
         {
-            if (string.IsNullOrEmpty(customMessage))
-                customMessage = $"Downloading to stream";
-            bool ret = true;
+            if (string.IsNullOrEmpty(customMessage)) customMessage = $"Downloading to stream";
+
+            bool ret;
             localStream = output;
 
             while (!(ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true)))
             {
                 LogWriteLine($"Retrying...");
                 Thread.Sleep(1000);
-                ret = false;
             }
 
             return ret;
@@ -82,10 +84,12 @@ namespace Hi3HelperGUI.Data
             {
                 UseStream(input, output, startOffset, endOffset, customMessage, token, isStream);
             }
+#if (NETCOREAPP)
             catch (HttpRequestException e)
             {
                 returnValue = ThrowWebExceptionAsBool(e);
             }
+#endif
             catch (TaskCanceledException e)
             {
                 returnValue = true;
@@ -121,23 +125,23 @@ namespace Hi3HelperGUI.Data
         {
             token.ThrowIfCancellationRequested();
             long contentLength;
-            FileInfo fileinfo = new(output);
+            FileInfo fileinfo = new FileInfo(output);
 
             long existingLength = isStream ? localStream.Length : fileinfo.Exists ? fileinfo.Length : 0;
 
-            HttpRequestMessage request = new(){ RequestUri = new Uri(input) };
+            HttpRequestMessage request = new HttpRequestMessage(){ RequestUri = new Uri(input) };
 
             request.Headers.Range = (startOffset != -1 && endOffset != -1) ?
-                                    new(startOffset, endOffset):
-                                    new(existingLength, null);
-
+                                    new RangeHeaderValue(startOffset, endOffset):
+                                    new RangeHeaderValue(existingLength, null);
+#if (NETCOREAPP)
             using HttpResponseMessage response = ThrowUnacceptableStatusCode(httpClient.Send(request, HttpCompletionOption.ResponseHeadersRead, token));
 
             contentLength = (startOffset != -1 && endOffset != -1) ?
                             endOffset - startOffset:
                             existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
 
-            resumabilityStatus = new((int)response.StatusCode == 206);
+            resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
 
             if (!isStream)
                 localStream = fileinfo.Open(resumabilityStatus.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write);
@@ -153,14 +157,47 @@ namespace Hi3HelperGUI.Data
                 token
                 );
             response.Dispose();
+#else
+            using (HttpResponseMessage response = ThrowUnacceptableStatusCode(httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).GetAwaiter().GetResult()))
+            {
+                if (!(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.PartialContent))
+                    throw new Exception($"Status Response == {response.StatusCode} ({(int)response.StatusCode})");
+
+                contentLength = (startOffset != -1 && endOffset != -1) ?
+                                endOffset - startOffset :
+                                existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
+
+                resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
+
+                if (!isStream)
+                    localStream = fileinfo.Open(resumabilityStatus.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write);
+
+                OnResumabilityChanged(resumabilityStatus);
+
+                ReadRemoteStream(
+                    response,
+                    localStream,
+                    existingLength,
+                    contentLength,
+                    customMessage,
+                    token
+                    );
+                response.Dispose();
+            }
+#endif
         }
 
         HttpResponseMessage ThrowUnacceptableStatusCode(HttpResponseMessage input)
         {
+#if (NETCOREAPP)
             if (!input.IsSuccessStatusCode)
                 throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})",
                     null,
                     input.StatusCode);
+#else
+            if (!input.IsSuccessStatusCode)
+                throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})");
+#endif
 
             return input;
         }
@@ -176,7 +213,11 @@ namespace Hi3HelperGUI.Data
             int byteSize = 0;
             long totalReceived = byteSize + existingLength;
             byte[] buffer = new byte[bufflength];
+#if (NETCOREAPP)
             using (remoteStream = response.Content.ReadAsStream(token))
+#else
+            using (remoteStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+#endif
             {
                 var sw = Stopwatch.StartNew();
                 while ((byteSize = remoteStream.Read(buffer, 0, buffer.Length)) > 0)
@@ -185,13 +226,12 @@ namespace Hi3HelperGUI.Data
                     localStream.Write(buffer, 0, byteSize);
                     totalReceived += byteSize;
 
-                    OnProgressChanged(new(totalReceived, contentLength, sw.Elapsed.TotalSeconds) { Message = customMessage, CurrentReceived = byteSize });
+                    OnProgressChanged(new DownloadProgressChanged(totalReceived, contentLength, sw.Elapsed.TotalSeconds) { Message = customMessage, CurrentReceived = byteSize });
                 }
-
                 sw.Stop();
             }
         }
-
+#if (NETCOREAPP)
         bool ThrowWebExceptionAsBool(HttpRequestException e)
         {
             switch (GetStatusCodeResponse(e))
@@ -205,8 +245,9 @@ namespace Hi3HelperGUI.Data
             }
         }
 
-        short GetStatusCodeResponse(HttpRequestException e) => (short)e.StatusCode;
-
+        protected virtual short GetStatusCodeResponse(HttpRequestException e) => (short)e.StatusCode;
+#else
+#endif
         protected virtual void OnResumabilityChanged(DownloadStatusChanged e) => ResumablityChanged?.Invoke(this, e);
         protected virtual void OnProgressChanged(DownloadProgressChanged e) => ProgressChanged?.Invoke(this, e);
         protected virtual void OnCompleted(DownloadProgressCompleted e) => Completed?.Invoke(this, e);

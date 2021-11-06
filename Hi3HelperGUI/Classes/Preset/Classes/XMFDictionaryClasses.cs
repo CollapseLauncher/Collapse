@@ -47,7 +47,7 @@ namespace Hi3HelperGUI.Preset
             public long BlockExistingSize { get; set; }
             public bool BlockMissing { get; set; }
             public bool BlockUnused { get; set; }
-            public List<XMFFileProperty> BlockContent = new();
+            public List<XMFFileProperty> BlockContent = new List<XMFFileProperty>();
         }
 
         public class XMFFileProperty
@@ -64,7 +64,7 @@ namespace Hi3HelperGUI.Preset
         {
             // Patch book section
             public virtual uint PatchCount { get; set; }
-            public List<PatchFileProperty> PatchContent = new();
+            public List<PatchFileProperty> PatchContent = new List<PatchFileProperty>();
         }
 
         public class PatchFileProperty

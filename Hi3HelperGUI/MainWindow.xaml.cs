@@ -21,7 +21,7 @@ namespace Hi3HelperGUI
     {
         [STAThread]
         [DebuggerNonUserCode]
-        public static void Main() => new Application() { StartupUri = new("MainWindow.xaml", UriKind.Relative) }.Run();
+        public static void Main() => new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
 
         private const int STD_OUTPUT_HANDLE = -11;
         private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
@@ -75,7 +75,11 @@ namespace Hi3HelperGUI
             ApplyAppConfig();
             InitializeComponent();
             //CheckVersionAvailability();
-            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString();
+#if (NETCOREAPP)
+            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString() + " (NET Core)";
+#else
+            Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString() + " (NET Framework)";
+#endif
             CheckConfigSettings();
         }
 
