@@ -400,7 +400,6 @@ namespace Hi3HelperGUI.Data
             httpUtil.DownloadStream(url, destination, token, startOffset, endOffset, message);
 
             httpUtil.ProgressChanged -= DownloadEventConverterForStream;
-            GC.Collect();
             LogWriteLine();
         }
 
@@ -420,7 +419,6 @@ namespace Hi3HelperGUI.Data
             httpUtil.DownloadFile(url, destination, $"Down: {Path.GetFileNameWithoutExtension(destination).ToUpperInvariant()}", startOffset, endOffset, token);
 
             httpUtil.ProgressChanged -= DownloadEventConverter;
-            GC.Collect();
             LogWriteLine();
         }
 
