@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Numerics;
 using Force.Crc32;
 
-namespace Hi3HelperGUI.Data
+namespace Hi3Helper.Data
 {
     public class ConverterTool
     {

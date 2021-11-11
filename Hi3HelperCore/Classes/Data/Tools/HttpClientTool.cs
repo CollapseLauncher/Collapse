@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Logger;
 
-namespace Hi3HelperGUI.Data
+namespace Hi3Helper.Data
 {
     public class HttpClientTool
     {

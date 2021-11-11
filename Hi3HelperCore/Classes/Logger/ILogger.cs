@@ -1,4 +1,4 @@
-﻿namespace Hi3HelperGUI
+﻿namespace Hi3Helper
 {
     interface ILogger
     {

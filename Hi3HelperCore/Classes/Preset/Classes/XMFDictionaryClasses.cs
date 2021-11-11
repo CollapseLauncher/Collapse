@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Hi3HelperGUI.Preset
+namespace Hi3Helper.Preset
 {
     public class ChunkProperties
     {

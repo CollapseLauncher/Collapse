@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using System.IO;
 
-namespace Hi3HelperGUI
+namespace Hi3Helper
 {
     public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag }
     public static class Logger
@@ -13,7 +12,6 @@ namespace Hi3HelperGUI
         public static bool DisableConsole = false;
         private static ILogger logger;
         public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
-        public static Version GetRunningVersion() => Assembly.GetExecutingAssembly().GetName().Version;
 
         public static void InitLog()
         {

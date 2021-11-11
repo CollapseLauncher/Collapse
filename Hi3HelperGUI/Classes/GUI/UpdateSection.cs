@@ -7,11 +7,12 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Controls;
 using System.IO;
-using Hi3HelperGUI.Preset;
-using Hi3HelperGUI.Data;
+using Hi3Helper;
+using Hi3Helper.Preset;
+using Hi3Helper.Data;
 
-using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.Data.ConverterTool;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3HelperGUI
 {

@@ -1,7 +1,7 @@
 ﻿﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Hi3HelperGUI.Screen
+namespace Hi3Helper.Screen
 {
     public class ScreenInterop
     {

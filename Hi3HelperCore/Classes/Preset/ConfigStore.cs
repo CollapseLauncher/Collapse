@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hi3HelperGUI.Preset
+namespace Hi3Helper.Preset
 {
     public static class ConfigStore
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Hi3HelperGUI
+namespace Hi3Helper
 {
     public class DummyLogger : ILogger
     {

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Hi3HelperGUI.Data
+namespace Hi3Helper.Data
 {
     // Reference:
     // https://stackoverflow.com/questions/217902/reading-writing-an-ini-file

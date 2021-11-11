@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hi3HelperGUI"
         xmlns:Json="clr-namespace:Newtonsoft.Json;assembly=Newtonsoft.Json"
-        xmlns:Preset="clr-namespace:Hi3HelperGUI.Preset"
+        xmlns:Preset="clr-namespace:Hi3Helper.Preset;assembly=Hi3HelperCore"
         x:Class="Hi3HelperGUI.MainWindow"
         mc:Ignorable="d"
         Title="Hi3Helper" Height="528" Width="800" MinWidth="800" MinHeight="528" ResizeMode="CanResize">

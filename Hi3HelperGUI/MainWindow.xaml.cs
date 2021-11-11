@@ -7,9 +7,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
-using Hi3HelperGUI.Preset;
+using Hi3Helper;
+using Hi3Helper.Preset;
 
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Logger;
 
 namespace Hi3HelperGUI
 {
