@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
-using Hi3HelperGUI.Data;
+using Hi3Helper.Data;
 
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Logger;
 
-namespace Hi3HelperGUI.Preset
+namespace Hi3Helper.Preset
 {
     public class PresetConfigClasses
     {

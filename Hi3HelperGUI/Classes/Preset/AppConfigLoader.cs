@@ -1,15 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Threading;
+using System.Reflection;
 using System.IO;
 using Newtonsoft.Json;
-using Hi3HelperGUI.Preset;
+using Hi3Helper;
+using Hi3Helper.Preset;
 
-using static Hi3HelperGUI.Preset.ConfigStore;
+using static Hi3Helper.Preset.ConfigStore;
 
 namespace Hi3HelperGUI
 {
     public partial class MainWindow
     {
+        public Version GetRunningVersion() => Assembly.GetExecutingAssembly().GetName().Version;
         public void LoadAppConfig() => AppConfigData = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Path.Combine("config", "appconfig.json")));
 
         public async void ApplyAppConfig() => await Task.Run(() =>

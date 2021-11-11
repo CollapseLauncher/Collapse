@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ironmaiden_logo_TsN_icon.ico</ApplicationIcon>
     <StartupObject />
@@ -56,6 +56,10 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

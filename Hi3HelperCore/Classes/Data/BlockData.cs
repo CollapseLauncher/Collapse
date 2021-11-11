@@ -5,12 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
-using Hi3HelperGUI.Preset;
+using Hi3Helper.Preset;
 
-using static Hi3HelperGUI.Logger;
-using static Hi3HelperGUI.Data.ConverterTool;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 
-namespace Hi3HelperGUI.Data
+namespace Hi3Helper.Data
 {
     public class BlockData : XMFDictionaryClasses
     {
@@ -400,7 +400,9 @@ namespace Hi3HelperGUI.Data
             httpUtil.DownloadStream(url, destination, token, startOffset, endOffset, message);
 
             httpUtil.ProgressChanged -= DownloadEventConverterForStream;
+#if (DEBUG)
             LogWriteLine();
+#endif
         }
 
         void DownloadContent(string url, string destination, long startOffset, long endOffset, CancellationToken token)
@@ -419,7 +421,9 @@ namespace Hi3HelperGUI.Data
             httpUtil.DownloadFile(url, destination, $"Down: {Path.GetFileNameWithoutExtension(destination).ToUpperInvariant()}", startOffset, endOffset, token);
 
             httpUtil.ProgressChanged -= DownloadEventConverter;
+#if (DEBUG)
             LogWriteLine();
+#endif
         }
 
         private void DownloadEventConverterForStream(object sender, DownloadProgressChanged e)
@@ -433,7 +437,9 @@ namespace Hi3HelperGUI.Data
                 TotalRepairableSize = totalRepairableSize,
             });
 
+#if (DEBUG)
             LogWrite($"{e.Message} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.BytesReceived)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
+#endif
         }
 
         private void DownloadEventConverter(object sender, DownloadProgressChanged e)
@@ -448,7 +454,9 @@ namespace Hi3HelperGUI.Data
                 TotalRepairableSize = totalRepairableSize,
             });
 
+#if (DEBUG)
             LogWrite($"{e.Message} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.BytesReceived)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
+#endif
         }
 
         protected virtual void OnProgressChanged(CheckingBlockProgressChanged e) => CheckingProgressChanged?.Invoke(this, e);

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Logger;
 
-namespace Hi3HelperGUI.Screen
+namespace Hi3Helper.Screen
 {
     public class ScreenProp : ScreenInterop
     {

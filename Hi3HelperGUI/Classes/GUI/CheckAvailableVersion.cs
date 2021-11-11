@@ -6,9 +6,11 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Win32;
-using Hi3HelperGUI.Preset;
+using Hi3Helper;
+using Hi3Helper.Preset;
+using Hi3Helper.Screen;
 
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Logger;
 
 namespace Hi3HelperGUI
 {
@@ -44,7 +46,7 @@ namespace Hi3HelperGUI
                         DisableAllFunction();
                     }
 
-                    Screen.ScreenProp.InitScreenResolution();
+                    ScreenProp.InitScreenResolution();
                 });
             }
             catch (JsonReaderException e)

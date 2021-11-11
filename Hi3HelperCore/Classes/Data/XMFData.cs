@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Hi3HelperGUI.Preset;
+using Hi3Helper.Preset;
 
-using static Hi3HelperGUI.Data.ConverterTool;
-using static Hi3HelperGUI.Logger;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Logger;
 
-namespace Hi3HelperGUI.Data
+namespace Hi3Helper.Data
 {
     // FileFormat Enum
     public enum XMFFileFormat

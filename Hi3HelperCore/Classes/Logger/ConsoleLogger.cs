@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Media;
-using System.Windows.Controls;
 
-namespace Hi3HelperGUI
+namespace Hi3Helper
 {
     public class ConsoleLogger : ILogger
     {
@@ -35,15 +33,6 @@ namespace Hi3HelperGUI
 
         private protected void PrintLine(string i, LogType a) => Console.WriteLine(ColorizePrint(i, a));
         private protected void Print(string i, LogType a) => Console.Write(ColorizePrint(i, a));
-
-        public void SetLabelAttrib(out Label i, string s, SolidColorBrush a)
-        {
-            i = new Label
-            {
-                Foreground = a,
-                Content = s
-            };
-        }
 
         public void LogWriteLine(string i = "", LogType a = LogType.Default, bool writeToLog = false)
         {
