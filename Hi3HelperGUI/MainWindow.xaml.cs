@@ -75,7 +75,6 @@ namespace Hi3HelperGUI
             InitializeConsole();
             ApplyAppConfig();
             InitializeComponent();
-            //CheckVersionAvailability();
 #if (NETCOREAPP)
             Title = "Hi3HelperGUI InDev v" + GetRunningVersion().ToString() + " (NET Core)";
 #else
@@ -119,8 +118,6 @@ namespace Hi3HelperGUI
             InitLog();
         }
 
-        private void EnableConsole(object sender, RoutedEventArgs e) => ShowConsoleWindow();
-        private void DisableConsole(object sender, RoutedEventArgs e) => HideConsoleWindow();
         private void ApplySettings(object sender, RoutedEventArgs e)
         {
             SaveAppConfig();

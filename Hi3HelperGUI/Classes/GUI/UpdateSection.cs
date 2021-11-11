@@ -74,7 +74,6 @@ namespace Hi3HelperGUI
             CancellationToken token = DownloadTokenSource.Token;
 
             Dispatcher.Invoke(() => UpdateDownloadBtn.IsEnabled = false );
-            // await Task.Run(() => DownloadUpdateFiles(ConfigStore.UpdateFiles), token);
             ToggleUpdateCancelBtnState(true);
             try
             {
@@ -113,8 +112,6 @@ namespace Hi3HelperGUI
                 UpdateHttpClient.Completed += DownloadProgressCompleted;
 
                 message = $"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}";
-                //client.ProgressChanged += DownloadProgressChanges($"Down: [{ConfigStore.UpdateFiles[p].ZoneName} > {ConfigStore.UpdateFiles[p].DataType}] ({p + 1}/{ConfigStore.UpdateFiles.Count}) {Path.GetFileName(ConfigStore.UpdateFiles[p].N)}");
-                //client.Completed += DownloadProgressCompleted();
 
                 ChangeUpdateStatus(message, false);
                 await Task.Run(() => {
@@ -131,8 +128,6 @@ namespace Hi3HelperGUI
         private void ToggleUpdatePlaceholder(bool a) => Dispatcher.Invoke(() => UpdateSectionPlaceHolder.Visibility = a ? Visibility.Visible : Visibility.Collapsed);
 
         private void RefreshUpdateProgressLabel(string i = "none") => Dispatcher.Invoke(() => UpdateProgressLabel.Content = i);
-
-        // private void RefreshUpdateListView() => Dispatcher.Invoke(() => UpdateListView.Items.Refresh());
 
         private void RefreshUpdateProgressBar(double cur = 0, double max = 100) => Dispatcher.Invoke(() => UpdateProgressBar.Value = Math.Round((100 * cur) / max, 2), DispatcherPriority.Background);
 

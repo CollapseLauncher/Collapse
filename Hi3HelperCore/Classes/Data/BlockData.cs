@@ -77,7 +77,6 @@ namespace Hi3Helper.Data
             int byteSize;
             totalRead = 0;
             totalFileSize = util.XMFBook.Sum(item => item.BlockSize);
-            // int chunkHash;
             FileInfo fileInfo;
 
             FlushTemp();
@@ -128,14 +127,6 @@ namespace Hi3Helper.Data
                                         chunkBuffer.Write(buffer, 0, byteSize);
                                         chunkSize -= byteSize;
                                     }
-
-                                    /*
-                                        token.ThrowIfCancellationRequested();
-                                        _ = fileStream.Read(buffer = new byte[chunkSize], 0, chunkSize);
-                                    */
-
-                                    // totalRead += j.FileSize;
-                                    // totalRead += chunkSize;
 
                                     chunkBuffer.Position = 0;
 

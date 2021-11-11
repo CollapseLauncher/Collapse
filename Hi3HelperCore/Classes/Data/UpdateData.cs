@@ -40,32 +40,6 @@ namespace Hi3Helper.Data
         }
 
         /*
-        public UpdateData(PresetConfigClasses i)
-        {
-            string bundleURL;
-            switch (ConfigStore.AppConfigData.MirrorSelection)
-            {
-                default:
-                case 0:
-                    bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.Hi3MirrorAssetBundle);
-                    break;
-                case 1:
-                    bundleURL = ConfigStore.GetMirrorAddress(i, ConfigStore.DataType.miHoYoAssetBundle);
-                    break;
-            }
-            RemoteURL = new RemoteURL()
-            {
-                DataDictionary = $"{i.Hi3MirrorAssetBundleAddress}data/editor_compressed/PackageVersion.txt",
-                Data = $"{bundleURL}data/editor_compressed/",
-                EventDictionary = $"{i.Hi3MirrorAssetBundleAddress}event/editor_compressed/PackageVersion.txt",
-                Event = $"{bundleURL}event/editor_compressed/",
-                AiDictionary = $"{i.Hi3MirrorAssetBundleAddress}ai/editor_compressed/PackageVersion.txt",
-                Ai = $"{bundleURL}ai/editor_compressed/"
-            };
-        }
-        */
-
-        /*
          * dataType
          * 0    = Data
          * 1    = Event
@@ -78,7 +52,7 @@ namespace Hi3Helper.Data
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
             MemoryStream memoryData = new MemoryStream();
-            // Span<string> DictData = webClient.DownloadString(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary).Split("\n");
+
             downloader.DownloadStream(
                 dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
                 memoryData,

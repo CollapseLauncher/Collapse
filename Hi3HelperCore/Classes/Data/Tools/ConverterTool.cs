@@ -138,29 +138,5 @@ namespace Hi3Helper.Data
                 throw new Exception("IntToHexChar: input out of range for Hex value");
             return b < 10 ? (char)(b + 48) : (char)(b + 55);
         }
-
-        /*
-        /// <summary>
-        /// Convert a hexidecimal string to an base 10 integer
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        private static int HexStringToInt(string str)
-        {
-            int value = 0;
-            for (int i = 0; i < str.Length; i++)
-            {
-                value += HexCharToInt(str[i]) << ((str.Length - 1 - i) * 4);
-            }
-            return value;
-        }
-
-        /// <summary>
-        /// Convert a hex char to it an integer.
-        /// </summary>
-        /// <param name="ch"></param>
-        /// <returns></returns>
-        private static int HexCharToInt(char ch) => (ch < 58) ? ch - 48 : ch - 55;
-        */
     }
 }
