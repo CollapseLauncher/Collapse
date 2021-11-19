@@ -93,7 +93,7 @@ namespace Hi3HelperGUI
                 string value = "";
                 RegistryKey keys = Registry.CurrentUser.OpenSubKey(i.ConfigRegistryLocation);
                 foreach (string valueName in keys.GetValueNames())
-                    if (valueName.Contains("GENERAL_DATA_V2_ResourceDownloadVersion_"))
+                    if (valueName.Contains("_ResourceDownloadVersion_"))
                         value = valueName;
 
                 i.UsedLanguage = i.GetUsedLanguage(i.ConfigRegistryLocation, "MIHOYOSDK_NOTICE_LANGUAGE_", i.FallbackLanguage);

@@ -23,8 +23,10 @@ namespace Hi3Helper.Preset
         {
             try
             {
-                IniParser Ini = new IniParser(Path.Combine(ActualGameDataLocation, "config.ini"));
-                GameVersion = Ini.Read("game_version", "General").Replace('.', '_');
+                IniFile ini = new IniFile();
+                ini.Load(Path.Combine(ActualGameDataLocation, "config.ini"));
+
+                GameVersion = ini["General"]["game_version"].ToString().Replace('.', '_');
             }
             catch (Exception e)
             {
@@ -59,8 +61,10 @@ namespace Hi3Helper.Preset
             }
             else if (tryFallback)
             {
-                IniParser Ini = new IniParser(Path.Combine(a, "config.ini"));
-                string path = ConverterTool.NormalizePath(Ini.Read("game_install_path", "launcher"));
+                IniFile ini = new IniFile();
+                ini.Load(Path.Combine(a, "config.ini"));
+
+                string path = ConverterTool.NormalizePath(ini["game_install_path"]["launcher"].ToString());
                 if (!Directory.Exists(path))
                 {
                     if (Directory.Exists(Path.Combine(DefaultGameLocation, "Games")))

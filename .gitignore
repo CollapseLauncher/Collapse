@@ -9,3 +9,10 @@ build/*
 .vs/*
 *.user
 Hi3HelperGUI/Properties/PublishProfiles/*.user
+Benchy/**
+WEMSharp/**
+WEMSharpTests/**
+WwiseAudioReader/**
+WwiseParser/**
+packages/**
+

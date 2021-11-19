@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
+using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Data;
 
