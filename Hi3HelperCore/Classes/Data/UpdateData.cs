@@ -110,8 +110,6 @@ namespace Hi3Helper.Data
             }
         }
 
-        private static string NormalizePath(string i) => Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
-
         private static byte FilterRegion(string input, string regionName)
         {
             /* return value
