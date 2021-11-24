@@ -68,6 +68,18 @@ namespace Hi3HelperGUI
             return;
         }
 
+        internal void DisableAllFunction()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                UpdateSection.IsEnabled = false;
+                BlockSection.IsEnabled = false;
+                CutsceneSection.IsEnabled = false;
+                SettingsSection.IsEnabled = false;
+                MirrorSelector.IsEnabled = false;
+            });
+        }
+
         internal void InitMirrorDropdown()
         {
             Dispatcher.Invoke(() =>
