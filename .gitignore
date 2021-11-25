@@ -1,18 +1,10 @@
-Hi3HelperGUI/ironmaiden_logo.png
 Hi3HelperGUI/bin/*
 Hi3HelperGUI/obj/*
-BenchmarkLab/bin/*
-BenchmarkLab/obj/*
 Hi3HelperCore/bin/*
 Hi3HelperCore/obj/*
 build/*
 .vs/*
 *.user
 Hi3HelperGUI/Properties/PublishProfiles/*.user
-Benchy/**
-WEMSharp/**
-WEMSharpTests/**
-WwiseAudioReader/**
-WwiseParser/**
 packages/**
 
