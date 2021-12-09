@@ -1,0 +1,122 @@
+﻿[
+  {
+    "ProfileName": "Hi3SEA",
+    "ZoneName": "Southeast Asia",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
+    "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "UpdateDictionaryAddress": "update_sea/",
+    "BlockDictionaryAddress": "com.miHoYo.bh3oversea/",
+    "LanguageAvailable": [ "en", "cn", "vn", "th", "id" ],
+    "FallbackLanguage": "en",
+    "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=9",
+    "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=tEGNtVhN&launcher_id=9&sub_channel_id=1",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_sea/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/com.miHoYo.bh3oversea/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/com.miHoYo.bh3oversea/"
+      }
+    }
+  },
+  {
+    "ProfileName": "Hi3Global",
+    "ZoneName": "Global",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3rd",
+    "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3rd",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd glb",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "UpdateDictionaryAddress": "update_global/",
+    "BlockDictionaryAddress": "tmp/com.miHoYo.bh3global/",
+    "LanguageAvailable": [ "en", "cn", "fr", "de" ],
+    "FallbackLanguage": "en",
+    "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=10",
+    "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=dpz65xJ3&launcher_id=10&sub_channel_id=1",
+    "MirrorList": {
+      "Hi3Mirror": {
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_global/",
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/tmp/com.miHoYo.bh3global/"
+      },
+      "miHoYo": {
+        "AssetBundle": "http://d2wztyirwsuyyo.cloudfront.net/asset_bundle/eur01/1.1/",
+        "Bigfile": "http://d2wztyirwsuyyo.cloudfront.net/tmp/com.miHoYo.bh3global/"
+      }
+    }
+  },
+  {
+    "ProfileName": "Hi3CN",
+    "ZoneName": "Mainland China",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\崩坏3",
+    "ConfigRegistryLocation": "Software\\miHoYo\\崩坏3",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "UpdateDictionaryAddress": "update_cn/",
+    "BlockDictionaryAddress": "tmp/Original/",
+    "LanguageAvailable": [ "cn" ],
+    "FallbackLanguage": "cn",
+    "LauncherSpriteURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/content?filter_adv=true&language=zh-cn&launcher_id=4",
+    "LauncherResourceURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/resource?channel_id=1&key=SyvuPnqL&launcher_id=4&sub_channel_id=1",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/tmp/Original/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
+      }
+    }
+  },
+  {
+    "ProfileName": "Hi3TW",
+    "ZoneName": "TW/HK/MO",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\崩壞3rd",
+    "ConfigRegistryLocation": "Software\\miHoYo\\崩壞3rd",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd tw",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "UpdateDictionaryAddress": "update_cn/",
+    "BlockDictionaryAddress": "tmp/Original/",
+    "LanguageAvailable": [ "cn" ],
+    "FallbackLanguage": "cn",
+    "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=zh-tw&launcher_id=8",
+    "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=demhUTcW&launcher_id=8&sub_channel_id=1",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/tmp/Original/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
+      }
+    }
+  },
+  {
+    "ProfileName": "Hi3KR",
+    "ZoneName": "Korea",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\붕괴3rd",
+    "ConfigRegistryLocation": "Software\\miHoYo\\붕괴3rd",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd kr",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "UpdateDictionaryAddress": "update_cn/",
+    "BlockDictionaryAddress": "tmp/Original/",
+    "LanguageAvailable": [ "cn" ],
+    "FallbackLanguage": "cn",
+    "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=ko-kr&launcher_id=11",
+    "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=PRg571Xh&launcher_id=11&sub_channel_id=1",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/tmp/Original/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
+      }
+    }
+  }
+]

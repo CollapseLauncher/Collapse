@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CollapseLauncher.Invoker": {
+      "commandName": "Project",
+      "commandLineArgs": "migrate \"C:\\Program Files\\Honkai Impact 3 sea\" \"C:\\_appdata\""
+    }
+  }
+}

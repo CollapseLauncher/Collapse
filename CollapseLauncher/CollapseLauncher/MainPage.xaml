@@ -1,0 +1,85 @@
+﻿<Page
+    x:Class="CollapseLauncher.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource MyAcrylicBrush}">
+
+    <Page.Resources>
+        <!--This top margin is the height of the custom TitleBar-->
+        <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+    </Page.Resources>
+    <Grid x:Name="MainPageGrid">
+        <Image x:Name="BackgroundBack" Source="Assets\BG\default_bg.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+        <Border x:Name="AppTitleBar"
+                IsHitTestVisible="True"
+                VerticalAlignment="Top"
+                Background="Transparent"
+                Height="40"
+                Canvas.ZIndex="1" 
+                Margin="48,8,0,0">
+            <StackPanel Orientation="Horizontal" CanDrag="True">
+                <TextBlock x:Name="AppTitle"
+                    Text="Collapse Launcher"
+                    VerticalAlignment="Center"
+                    Margin="12, 0, 0, 10"
+                    Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
+            </StackPanel>
+        </Border>
+        <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="172,8,0,0" Orientation="Horizontal">
+            <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+            <Button Content="Change" Margin="16,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
+                            <Button Click="ChangeRegion">
+                                <Button.Content>
+                                    <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
+                                        <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
+                                        <TextBlock >Yes, Change It</TextBlock>
+                                    </Grid>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="16,0,8,0" Style="{StaticResource CaptionTextBlockStyle}" Text="Mirror"/>
+            <ComboBox PlaceholderText="Hi3Mirror" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left">
+                <x:String>Hi3Mirror</x:String>
+                <x:String>miHoYo</x:String>
+            </ComboBox>
+        </StackPanel>
+        <NavigationView x:Name="NavigationViewControl"
+            IsTitleBarAutoPaddingEnabled="False"            
+            IsBackButtonVisible="Collapsed"           
+            Header=""
+            DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
+            Canvas.ZIndex="0" Visibility="Visible" IsPaneOpen="False" Background="{StaticResource AcrylicInAppFillColorDefaultBrush}"
+            ItemInvoked="NavView_ItemInvoked"
+            Loaded="NavView_Loaded">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Launcher" Tag="launcher"/>
+            </NavigationView.MenuItems>
+
+            <Grid Margin="0,0,0,0">
+                <Image x:Name="BackgroundFront" Source="Assets\BG\default_bg.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Image.RenderTransform>
+                        <TranslateTransform />
+                    </Image.RenderTransform>
+                </Image>
+                <Frame x:Name="LauncherFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition/>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </Grid>
+        </NavigationView>
+    </Grid>
+</Page>

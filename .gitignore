@@ -2,9 +2,20 @@ Hi3HelperGUI/bin/*
 Hi3HelperGUI/obj/*
 Hi3HelperCore/bin/*
 Hi3HelperCore/obj/*
+*/bin/*
+*/obj/*
+*/build/*
 build/*
 .vs/*
 *.user
 Hi3HelperGUI/Properties/PublishProfiles/*.user
 packages/**
+Hi3HelperGUI/*/Debug/*
+Hi3HelperGUI/*/Release/*
 
+CollapseLauncher/*/bin*
+CollapseLauncher/*/obj*
+
+
+CollapseLauncher/*/BundleArtifacts*
+CollapseLauncher/*/*.pfx

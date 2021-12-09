@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Hi3Helper.Preset
 {
@@ -26,6 +28,8 @@ namespace Hi3Helper.Preset
             AssetBundle = 8,
             BlockDictionaryAddress = 9,
         }
+
+        public static void LoadConfigFromFile(string input) => Config = JsonConvert.DeserializeObject<List<PresetConfigClasses>>(File.ReadAllText(input));
 
         public static string GetMirrorAddressByIndex(PresetConfigClasses h, DataType i)
         {

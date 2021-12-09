@@ -13,18 +13,26 @@ namespace Hi3Helper
         private static ILogger logger;
         public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
 
-        public static void InitLog()
+        public static void InitLog(bool enableLog = true, string defaultLogLocation = null)
         {
             if (DisableConsole)
                 logger = new DummyLogger();
             else
                 logger = new ConsoleLogger();
 
-            logdir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
-            if (!Directory.Exists(logdir))
-                Directory.CreateDirectory(logdir);
-            filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
-            // LogWriteLine($"App started! v{GetRunningVersion()}", LogType.Scheme, true);
+            if (enableLog)
+            {
+                logdir = Path.Combine(
+                    string.IsNullOrEmpty(defaultLogLocation) ?
+                        Directory.GetCurrentDirectory()
+                      : defaultLogLocation,
+                    "logs");
+
+                if (!Directory.Exists(logdir))
+                    Directory.CreateDirectory(logdir);
+                filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
+                // LogWriteLine($"App started! v{GetRunningVersion()}", LogType.Scheme, true);
+            }
         }
 
         public static void LogWriteLine() => logger.LogWriteLine(string.Empty, LogType.Empty);

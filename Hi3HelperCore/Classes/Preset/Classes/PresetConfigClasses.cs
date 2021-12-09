@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Win32;
 using Hi3Helper.Data;
 
+using Hi3Helper.Data;
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
@@ -81,6 +82,80 @@ namespace Hi3Helper.Preset
             }
         }
 
+        public bool CheckExistingGame()
+        {
+            string RegValue = "InstallPath";
+            bool ret = true;
+
+            string a;
+            try
+            {
+                a = (string)Registry.GetValue(InstallRegistryLocation, RegValue, null);
+                if (a == null)
+                {
+                    ret = false;
+                    throw new NullReferenceException($"Registry for \"{ZoneName}\" version doesn't exist, probably the version isn't installed.");
+                }
+
+                if (!Directory.Exists(a))
+                {
+                    if (Directory.Exists(DefaultGameLocation))
+                    {
+                        ActualGameLocation = DefaultGameLocation;
+                        LogWriteLine($"Registered path for {ZoneName} version doesn't exist. But the default path does exist!", LogType.Warning);
+                        return true;
+                    }
+                    ret = false;
+                    throw new DirectoryNotFoundException($"Registry does exist but the registered directory for \"{ZoneName}\" version seems to be missing!");
+                }
+                else
+                {
+                    ActualGameLocation = a;
+                    LogWriteLine($"\u001b[34;1m{ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m) version is detected!");
+                }
+
+                CheckExistingGameConfig(ref ret);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                LogWriteLine(e.ToString(), LogType.Warning, true);
+            }
+            catch (NullReferenceException e)
+            {
+                LogWriteLine(e.ToString(), LogType.Warning, true);
+            }
+            catch (Exception e)
+            {
+                LogWriteLine(e.ToString(), LogType.Error, true);
+            }
+
+            return ret;
+        }
+
+        void CheckExistingGameConfig(ref bool ret)
+        {
+            string iniPath = Path.Combine(ActualGameLocation, "config.ini");
+            if (File.Exists(iniPath))
+            {
+                IniFile iniFile = new IniFile();
+                iniFile.Load(iniPath);
+
+                try
+                {
+                    ActualGameDataLocation = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
+
+                    if (File.Exists(Path.Combine(ActualGameDataLocation, "config.ini"))
+                        || File.Exists(Path.Combine(ActualGameDataLocation, "BH3.exe")))
+                        ret = true;
+                    else
+                        ret = false;
+                }
+                catch { ret = false; }
+            }
+            else
+                ret = false;
+        }
+
         public string ProfileName { get; set; }
         public string ZoneName { get; set; }
         public string InstallRegistryLocation { get; set; }
@@ -97,6 +172,8 @@ namespace Hi3Helper.Preset
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public bool IsSteamVersion { get; set; }
+        public string LauncherSpriteURL { get; set; }
+        public string LauncherResourceURL { get; set; }
     }
 
     public class AppSettings

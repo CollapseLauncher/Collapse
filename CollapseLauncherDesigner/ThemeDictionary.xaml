@@ -1,0 +1,73 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher">
+    
+    <ResourceDictionary.ThemeDictionaries>
+
+        <ResourceDictionary x:Key="Default">
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <Color x:Key="SystemAccentColor">#FFD927</Color>
+                    <Color x:Key="SystemAccentColorLight1">#FFD927</Color>
+                    <Color x:Key="SystemAccentColorLight2">#FFD927</Color>
+                    <Color x:Key="SystemAccentColorLight3">#FFD927</Color>
+                    <RevealBackgroundBrush x:Key="SystemControlHighlightListLowRevealBackgroundBrush" TargetTheme="Light" Color="{ThemeResource SystemRevealListMediumColor}" FallbackColor="{ StaticResource SystemListMediumColor}" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            
+            
+            <AcrylicBrush x:Key="CustomAcrylicBrush" BackgroundSource="Backdrop"
+            TintOpacity="0.338000016054139" TintColor="#FF000000" FallbackColor="#FF008000" />
+
+            <AcrylicBrush x:Key="PagesAcrylicBrush" BackgroundSource="Backdrop"
+            TintOpacity="0" TintColor="Black" />
+
+            <AcrylicBrush x:Key="NavigationAcrylicBrush" BackgroundSource="Backdrop"
+            TintOpacity="0" TintColor="#111111" />
+
+            <AcrylicBrush x:Key="MyAcrylicBrush"
+            BackgroundSource="HostBackdrop"
+            TintColor="Black"
+            TintOpacity="0"
+            FallbackColor="Transparent"/>
+
+
+            <Color x:Key="SystemAccentColorBruh">#107C10</Color>
+
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="MyAcrylicBrush"
+            Color="{ThemeResource SystemColorWindowColor}"/>
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Light">
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <Color x:Key="SystemAccentColor">#A65300</Color>
+                    <Color x:Key="SystemAccentColorDark1">#A65300</Color>
+                    <Color x:Key="SystemAccentColorDark2">#A65300</Color>
+                    <Color x:Key="SystemAccentColorDark3">#A65300</Color>
+                    <RevealBackgroundBrush x:Key="SystemControlHighlightListLowRevealBackgroundBrush" TargetTheme="Light" Color="{ThemeResource SystemRevealListMediumColor}" FallbackColor="{ StaticResource SystemListMediumColor}" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+
+            <AcrylicBrush x:Key="CustomAcrylicBrush" BackgroundSource="Backdrop"
+            TintOpacity="0.9" TintColor="#FFFFFF" FallbackColor="#FF008000" />
+
+            <AcrylicBrush x:Key="PagesAcrylicBrush" BackgroundSource="Backdrop"
+            TintOpacity="0.0" />
+            
+            <AcrylicBrush x:Key="MyAcrylicBrush"
+            BackgroundSource="HostBackdrop"
+            TintColor="Transparent"
+            TintOpacity="0"
+            FallbackColor="Transparent"/>
+
+
+            <Color x:Key="SystemAccentColorBruh">#107C10</Color>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

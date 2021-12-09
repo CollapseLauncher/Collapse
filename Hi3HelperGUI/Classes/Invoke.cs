@@ -54,6 +54,7 @@ namespace Hi3HelperGUI
             Logger.DisableConsole = false;
             WriteLog($"Console toggle: Show", LogType.Default);
         }
+
         static void InitializeConsole()
         {
             AllocConsole();

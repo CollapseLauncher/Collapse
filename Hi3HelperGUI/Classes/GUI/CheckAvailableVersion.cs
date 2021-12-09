@@ -130,7 +130,7 @@ namespace Hi3HelperGUI
             return ret;
         }
 
-        internal static bool IsConfigAvailable(PresetConfigClasses i)
+        public static bool IsConfigAvailable(PresetConfigClasses i)
         {
             string RegValue = "InstallPath";
             bool ret = true;
