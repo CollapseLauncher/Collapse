@@ -18,6 +18,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 
 using WinRT;
+using Hi3Helper;
 
 using static CollapseLauncher.LauncherConfig;
 using static CollapseLauncher.InvokeProp;
@@ -40,7 +41,20 @@ namespace CollapseLauncher
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
+            InitializeConsole(true, AppDataFolder);
+            WriteLog("App Started!", LogType.Scheme);
+            LogWriteLine($"Initializing...", LogType.Empty);
+            try
+            {
+                LoadAppPreset();
+                LoadGamePreset();
+                this.InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"FATAL ERROR!: {ex}\r\n\r\nIf you're sure that this problem is unintentional, please report this problem by open an issue in https://github.com/neon-nyan/Hi3Helper/issues", LogType.Error, true);
+                Console.ReadLine();
+            }
         }
 
         /// <summary>
@@ -50,10 +64,6 @@ namespace CollapseLauncher
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            LoadGamePreset();
-            InitializeConsole(true, AppDataFolder);
-            LogWriteLine($"Initializing...", Hi3Helper.LogType.Empty);
-
             m_window = new MainWindow();
             var windowNative = m_window.As<IWindowNative>();
             m_windowHandle = windowNative.WindowHandle;

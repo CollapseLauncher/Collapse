@@ -42,6 +42,7 @@
                                 <TextBlock Text="%" FontWeight="Bold" Margin="-1,0,0,0"/>
                             </StackPanel>
                             <TextBlock x:Name="ProgressStatusFooter" Text="Speed: -" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10" Margin="0,10,0,0"/>
+                            <TextBlock x:Name="ProgressTimeLeft" Text="- left" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10" Visibility="Collapsed"/>
                         </StackPanel>
                     </Grid>
                     <Button x:Name="GameStartupSetting" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch" PointerEntered="AnimateGameRegSettingIcon_Start" PointerExited="AnimateGameRegSettingIcon_End">

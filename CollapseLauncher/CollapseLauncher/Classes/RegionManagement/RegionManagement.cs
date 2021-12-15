@@ -34,6 +34,7 @@ namespace CollapseLauncher
             gameIni = new GameIniStruct();
 
             gamePath = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+            DispatcherQueue.TryEnqueue(() => ComboBoxGameRegion.PlaceholderText = CurrentRegion.ZoneName);
             gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
 
             if (!Directory.Exists(gamePath))
@@ -52,6 +53,8 @@ namespace CollapseLauncher
         public async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
+            appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
+            SaveAppConfig();
             await LoadRegion(ComboBoxGameRegion.SelectedIndex);
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {

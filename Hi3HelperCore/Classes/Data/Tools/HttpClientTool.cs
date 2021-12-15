@@ -230,7 +230,6 @@ namespace Hi3Helper.Data
             List<SegmentDownloadProperties> i;
 
             long BytesReceived = 0,
-                     TotalBytesToReceive = 0,
                      CurrentReceived = 0,
                      LastBytesReceived = 0,
                      nowBytesReceived = 0;
@@ -244,16 +243,15 @@ namespace Hi3Helper.Data
 
                 if (LastBytesReceived != BytesReceived)
                 {
-                    TotalBytesToReceive = i.Sum(x => x.TotalBytesToReceive);
                     CurrentReceived = i.Sum(x => x.CurrentReceived);
                     nowBytesReceived = i.Sum(x => x.NowBytesReceived);
                     // Console.WriteLine($"{BytesReceived}\t{TotalBytesToReceive}\t{CurrentReceived}" );
-                    PartialOnProgressChanged(new PartialDownloadProgressChanged(BytesReceived, nowBytesReceived, TotalBytesToReceive, sw.Elapsed.TotalSeconds) { Message = "Downloading", CurrentReceived = CurrentReceived });
+                    PartialOnProgressChanged(new PartialDownloadProgressChanged(BytesReceived, nowBytesReceived, downloadPartialSize, sw.Elapsed.TotalSeconds) { Message = "Downloading", CurrentReceived = CurrentReceived });
 
                     LastBytesReceived = BytesReceived;
                 }
 
-                Thread.Sleep(66);
+                Thread.Sleep(250);
                 i.Clear();
             }
             sw.Stop();

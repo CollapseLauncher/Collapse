@@ -11,7 +11,7 @@ namespace CollapseLauncher.Region
 {
     internal static partial class InstallationManagement
     {
-        static void BuildIniProfile()
+        static void BuildGameIniProfile()
         {
             gameIni.Profile.Add("launcher", new Dictionary<string, IniValue>
             {

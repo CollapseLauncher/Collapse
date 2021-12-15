@@ -40,12 +40,16 @@ namespace CollapseLauncher
         {
             // LoadGamePreset();
             // InitializeConsole(true, AppDataFolder);
-            LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", Hi3Helper.LogType.Default, false);
-            LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", Hi3Helper.LogType.Default);
+            LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
+            LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
+            // ImageSource defaultBackground = new BitmapImage(new Uri(startupBackgroundPath));
             InitializeComponent();
 
+            // BackgroundBack.Source = defaultBackground;
+            // BackgroundFront.Source = defaultBackground;
+
             LoadConfig();
-            LoadRegion().GetAwaiter();
+            LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt()).GetAwaiter();
             LauncherFrame.Navigate(typeof(Pages.HomePage));
         }
 
@@ -143,6 +147,13 @@ namespace CollapseLauncher
             }
         }
 
+        void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
+        {
+            LauncherFrame.Navigate(sourceType);
+            HideBackgroundImage(hideImage);
+            previousTag = (string)tag.Tag;
+        }
+
         string previousTag = string.Empty;
         private void NavView_Navigate(NavigationViewItem item)
         {
@@ -152,21 +163,15 @@ namespace CollapseLauncher
                 switch (item.Tag)
                 {
                     case "launcher":
-                        LauncherFrame.Navigate(typeof(Pages.HomePage));
-                        HideBackgroundImage(false);
-                        previousTag = (string)item.Tag;
+                        Navigate(typeof(Pages.HomePage), false, item);
                         break;
 
                     case "repair":
-                        LauncherFrame.Navigate(typeof(Pages.RepairPage));
-                        HideBackgroundImage();
-                        previousTag = (string)item.Tag;
+                        Navigate(typeof(Pages.RepairPage), true, item);
                         break;
 
                     case "caches":
-                        LauncherFrame.Navigate(typeof(Pages.CachesPage));
-                        HideBackgroundImage();
-                        previousTag = (string)item.Tag;
+                        Navigate(typeof(Pages.CachesPage), true, item);
                         break;
                         /*
 

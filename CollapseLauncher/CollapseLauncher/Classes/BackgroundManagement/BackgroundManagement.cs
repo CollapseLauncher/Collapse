@@ -35,22 +35,34 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         private BitmapImage BackgroundBitmap;
+
+        // Always use startupBackgroundPath on startup.
+        private bool startUp = true;
+        private string previousPath = startupBackgroundPath;
         private void ChangeBackgroundImageAsRegion()
         {
             try
             {
                 httpClient = new HttpClientTool();
 
-                MemoryStream memoryStream = new MemoryStream();
+                if (startUp)
+                {
+                    regionBackgroundProp = new RegionBackgroundProp { imgLocalPath = startupBackgroundPath };
+                    if (File.Exists(startupBackgroundPath))
+                        ApplyBackground();
 
+                    startUp = false;
+                }
+
+                MemoryStream memoryStream = new MemoryStream();
+                
                 httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppDataFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
 
-                DownloadBackgroundImage();
-
-                ApplyBackground();
+                if (DownloadBackgroundImage())
+                    ApplyBackground();
             }
             catch
             {
@@ -58,19 +70,25 @@ namespace CollapseLauncher
             }
         }
 
-        private void DownloadBackgroundImage()
+        private bool DownloadBackgroundImage()
         {
             if (!Directory.Exists(Path.Combine(AppDataFolder, "bg")))
                 Directory.CreateDirectory(Path.Combine(AppDataFolder, "bg"));
-            
-            if (!File.Exists(regionBackgroundProp.imgLocalPath))
+
+            if (!File.Exists(regionBackgroundProp.imgLocalPath)
+                || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
+                || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background))
+            {
                 httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
+                previousPath = regionBackgroundProp.imgLocalPath;
+                return true;
+            }
+
+            return false;
         }
 
         private void ApplyBackground()
         {
-            SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(regionBackgroundProp.imgLocalPath);
-
             DispatcherQueue.TryEnqueue(() => {
                 HideBackgroundImage();
                 BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
@@ -78,6 +96,9 @@ namespace CollapseLauncher
                 BackgroundFront.Source = BackgroundBitmap;
 
                 HideBackgroundImage(false);
+                appIni.Profile["app"]["CurrentBackground"] = regionBackgroundProp.imgLocalPath;
+
+                SaveAppConfig();
             });
         }
 

@@ -31,12 +31,7 @@ namespace CollapseLauncher.Region
         {
             gameIni.Profile = new IniFile();
             gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Create, FileAccess.ReadWrite);
-            BuildIniProfile();
-        }
-
-        public static void GetInstallation()
-        {
-
+            BuildGameIniProfile();
         }
     }
 }

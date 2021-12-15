@@ -19,10 +19,13 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
+using CollapseLauncher.Dialogs;
+
 using Hi3Helper.Data;
 
 using static Hi3Helper.Logger;
 using static CollapseLauncher.LauncherConfig;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Region.InstallationManagement;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -42,7 +45,6 @@ namespace CollapseLauncher.Pages
     {
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         HttpClientTool InstallerHttpClient = new HttpClientTool();
-        readonly int DownloadThread = 8;
         public HomePage()
         {
             this.InitializeComponent();
@@ -53,20 +55,8 @@ namespace CollapseLauncher.Pages
             Task.Run(() => CheckRunningGameInstance());
         }
 
-        public static bool TryGoBack()
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
-                return true;
-            }
-            return false;
-        }
-
         private async void CheckRunningGameInstance()
         {
-
             while (true)
             {
                 while (Process.GetProcessesByName("BH3").Length != 0)
@@ -100,29 +90,13 @@ namespace CollapseLauncher.Pages
             {
                 if (CurrentRegion.CheckExistingGame())
                 {
-                    LogWriteLine($"Existing Installation Has Been Found {CurrentRegion.ZoneName}");
-                    var cd = new ContentDialog
-                    {
-                        Title = "Existing Installation is Detected!",
-                        Content = $"Game is already been installed on this location:\r\n\r\n{CurrentRegion.ActualGameDataLocation}\r\n\r\n"
-                                + "It's recommended to migrate the game to CollapseLauncher.\r\nHowever, you can still use Official Launcher to start the game."
-                                + "\r\n\r\nDo you want to continue?",
-                        CloseButtonText = "Cancel",
-                        PrimaryButtonText = "Yes, Migrate it",
-                        SecondaryButtonText = "No, Keep Install it",
-                        DefaultButton = ContentDialogButton.Primary,
-                        Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
-                    };
-
-                    cd.XamlRoot = Content.XamlRoot;
-
-                    switch (await cd.ShowAsync())
+                    switch (await Dialog_ExistingInstallation(Content))
                     {
                         case ContentDialogResult.Primary:
-                            Dialogs.MigrationWatcher.IsMigrationRunning = true;
-                            OverlapFrame.Navigate(typeof(Dialogs.InstallationMigrate));
+                            MigrationWatcher.IsMigrationRunning = true;
+                            OverlapFrame.Navigate(typeof(InstallationMigrate));
                             await CheckMigrationProcess();
-                            OverlapFrame.Navigate(typeof(Pages.HomePage));
+                            OverlapFrame.Navigate(typeof(HomePage));
                             break;
                         case ContentDialogResult.Secondary:
                             LogWriteLine($"TODO: Do Install for CollapseLauncher");
@@ -150,6 +124,8 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                if (string.IsNullOrEmpty(destinationFolder))
+                    throw new OperationCanceledException();
                 while (!await DownloadGameClient(destinationFolder))
                 {
 
@@ -174,6 +150,7 @@ namespace CollapseLauncher.Pages
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 InstallGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility = Visibility.Visible;
                 ProgressStatusTitle.Text = "Downloading";
             });
 
@@ -188,7 +165,7 @@ namespace CollapseLauncher.Pages
                 InstallerHttpClient.Completed += InstallerDownloadStatusCompleted;
 
                 // await Task.Run(() => InstallerHttpClient.DownloadFile(fileURL, fileOutput, "", -1, -1, token));
-                await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, fileOutput, "", DownloadThread, token));
+                await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, fileOutput, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
 
                 InstallerHttpClient.PartialProgressChanged -= InstallerDownloadStatusChanged;
                 InstallerHttpClient.Completed -= InstallerDownloadStatusCompleted;
@@ -197,10 +174,12 @@ namespace CollapseLauncher.Pages
             InstallerDownloadTokenSource = new CancellationTokenSource();
             token = InstallerDownloadTokenSource.Token;
 
+            DispatcherQueue.TryEnqueue(() => ProgressTimeLeft.Visibility = Visibility.Collapsed);
+
             if (File.Exists(fileOutput))
                 await Task.Run(() =>
                 {
-                    fileHash = DoVerifyAndExtractInstallation(fileOutput, token);
+                    fileHash = GetMD5FromFile(fileOutput, token);
                     if (fileHash == regionResourceProp.data.game.latest.md5)
                     {
                         LogWriteLine();
@@ -216,21 +195,7 @@ namespace CollapseLauncher.Pages
 
             if (gameCorrupted)
             {
-                var cd = new ContentDialog
-                {
-                    Title = "Oops! Game Installation is Corrupted",
-                    Content = $"Sorry but seems your Game Installation that you've downloaded is broken."
-                       + $"\r\n\r\nServer Hash: {regionResourceProp.data.game.latest.md5}\r\nDownloaded Hash: {fileHash}"
-                       + "\r\n\r\nDo you want to rerdownload the file?",
-                    CloseButtonText = "No, Cancel",
-                    PrimaryButtonText = "Yes, Redownload",
-                    DefaultButton = ContentDialogButton.Primary,
-                    Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
-                };
-
-                cd.XamlRoot = Content.XamlRoot;
-
-                switch (await cd.ShowAsync())
+                switch (await Dialog_GameInstallationFileCorrupt(Content, regionResourceProp.data.game.latest.md5, fileHash))
                 {
                     case ContentDialogResult.Primary:
                         new FileInfo(fileOutput).Delete();
@@ -246,16 +211,11 @@ namespace CollapseLauncher.Pages
             return returnVal;
         }
 
-        string DoVerifyAndExtractInstallation(string fileOutput, CancellationToken token)
-        {
-            return VerifyPartialMD5(fileOutput, token).ToLowerInvariant();
-        }
-
-        string VerifyPartialMD5(string fileOutput, CancellationToken token)
+        string GetMD5FromFile(string fileOutput, CancellationToken token)
         {
             MD5 md5 = MD5.Create();
             FileStream stream;
-            byte[] buffer = new byte[16777216];
+            byte[] buffer = new byte[8388608];
 
             int read = 0;
             long totalRead = 0;
@@ -299,7 +259,7 @@ namespace CollapseLauncher.Pages
             md5.TransformFinalBlock(buffer, 0, read);
             sw.Stop();
 
-            return ConverterTool.BytesToHex(md5.Hash);
+            return ConverterTool.BytesToHex(md5.Hash).ToLowerInvariant();
         }
 
         private async Task<bool> CheckExistingDownload(string fileOutput)
@@ -312,26 +272,12 @@ namespace CollapseLauncher.Pages
                 long partialLength = GetExistingPartialDownloadLength(fileOutput);
                 if (partialLength != contentLength)
                 {
-                    var cd = new ContentDialog
-                    {
-                        Title = "Resume Download?",
-                        Content = $"You have downloaded {ConverterTool.SummarizeSizeSimple(partialLength)} of {ConverterTool.SummarizeSizeSimple(contentLength)} size"
-                                  + " of the game previously."
-                                  + "\r\n\r\nDo you want to resume the previous download?",
-                        PrimaryButtonText = "Yes, Resume",
-                        SecondaryButtonText = "No, Start from Beginning",
-                        DefaultButton = ContentDialogButton.Primary,
-                        Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
-                    };
-
-                    cd.XamlRoot = Content.XamlRoot;
-
-                    switch (await cd.ShowAsync())
+                    switch (await Dialog_ExistingDownload(Content, partialLength, contentLength))
                     {
                         case ContentDialogResult.Primary:
                             break;
                         case ContentDialogResult.Secondary:
-                            fileInfo.Delete();
+                            RemoveExistingPartialDownload(fileOutput);
                             break;
                     }
                     return true;
@@ -347,6 +293,15 @@ namespace CollapseLauncher.Pages
             }
 
             return true;
+        }
+
+        void RemoveExistingPartialDownload(string fileOutput)
+        {
+            FileInfo fileInfo;
+
+            foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileOutput), "*.7z.0*"))
+                if ((fileInfo = new FileInfo(file)).Exists)
+                    fileInfo.Delete();
         }
 
         long GetExistingPartialDownloadLength(string fileOutput)
@@ -375,6 +330,7 @@ namespace CollapseLauncher.Pages
                 ProgressStatusSubtitle.Text = $"{InstallDownloadSizeString} / {DownloadSizeString}";
                 LogWrite($"{e.Message}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
                 ProgressStatusFooter.Text = $"Speed: {InstallDownloadSpeedString}";
+                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
                 progressRing.Value = Math.Round(e.ProgressPercentage, 2);
                 ProgressStatusTitle.Text = e.Message;
             });
@@ -486,7 +442,7 @@ namespace CollapseLauncher.Pages
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(ConverterTool.NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "BH3.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"-window-mode exclusive";
+                proc.StartInfo.Arguments = $"";
                 proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(ConverterTool.NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()));
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
