@@ -20,10 +20,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 using Newtonsoft.Json;
 
-
-using SixLabors.ImageSharp;
-
-
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 
@@ -38,7 +34,7 @@ namespace CollapseLauncher
         {
             try
             {
-                httpClient = new HttpClientTool();
+                httpClient = new HttpClientTool(true);
 
                 MemoryStream memoryStream = new MemoryStream();
 
@@ -59,6 +55,7 @@ namespace CollapseLauncher
     public class RegionResourceGame
     {
         public RegionResourceLatest game { get; set; }
+        public RegionResourceLatest pre_download_game { get; set; }
     }
 
     public class RegionResourceLatest

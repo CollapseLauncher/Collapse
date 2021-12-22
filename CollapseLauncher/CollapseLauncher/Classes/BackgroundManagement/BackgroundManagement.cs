@@ -20,10 +20,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 using Newtonsoft.Json;
 
-
-using SixLabors.ImageSharp;
-
-
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 

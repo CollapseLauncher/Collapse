@@ -21,6 +21,15 @@ namespace CollapseLauncher
         public string ProfilePath;
     }
 
+    public enum GameInstallStateEnum
+    {
+        Installed = 0,
+        InstalledHavePreload = 1,
+        NotInstalled = 2,
+        NeedsUpdate = 3,
+        GameBroken = 4,
+    }
+
     public static class LauncherConfig
     {
         public static AppWindow _apw;
@@ -38,6 +47,10 @@ namespace CollapseLauncher
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
+        
+        public static bool RequireAdditionalDataDownload;
+        public static bool IsThisRegionInstalled;
+        public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
         public static void LoadGamePreset()
         {

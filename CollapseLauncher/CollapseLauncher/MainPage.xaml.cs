@@ -21,6 +21,14 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
+using System.CodeDom.Compiler;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using CollapseLauncher;
+using Microsoft.UI.Dispatching;
+using WinRT;
+
 using Hi3Helper;
 
 using static CollapseLauncher.LauncherConfig;
@@ -28,7 +36,6 @@ using static Hi3Helper.Logger;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher
 {
     /// <summary>
@@ -49,7 +56,7 @@ namespace CollapseLauncher
             // BackgroundFront.Source = defaultBackground;
 
             LoadConfig();
-            LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt()).GetAwaiter();
+            LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt());
             LauncherFrame.Navigate(typeof(Pages.HomePage));
         }
 
@@ -221,7 +228,7 @@ namespace CollapseLauncher
                 AppTitleBar.Margin = new Thickness(expandedIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
         }
-        
+
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = true;
     }
 }

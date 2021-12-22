@@ -79,6 +79,5 @@ namespace CollapseLauncher
                 InitLog(writeToLog, defaultLogLocation);
             }
         }
-
     }
 }

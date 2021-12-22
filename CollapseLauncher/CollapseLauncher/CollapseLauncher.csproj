@@ -1,40 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CollapseLauncher</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
-	  <!-- This bundles the WinUI3 components -->
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\BG\default_bg.png" />
+    <None Remove="CollapseLauncher.Invoker.dll" />
+    <None Remove="CollapseLauncher.Invoker.exe" />
     <None Remove="config\fileconfig.json" />
     <None Remove="MainPage.xaml" />
-    <None Remove="Pages\CachesPage.xaml" />
-    <None Remove="Pages\DialogContent.xaml" />
-    <None Remove="Pages\Dialogs\InstallationMigrate.xaml" />
-    <None Remove="Pages\HomePage.xaml" />
-    <None Remove="Pages\RepairPage.xaml" />
     <None Remove="ResourceDictionary.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config\fileconfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CollapseLauncher.Invoker.deps.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="CollapseLauncher.Invoker.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="CollapseLauncher.Invoker.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="CollapseLauncher.Invoker.runtimeconfig.json">
+    <Content Include="config\fileconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -43,7 +32,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.194" />
     <PackageReference Include="PInvoke.User32" Version="0.7.104" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -52,30 +40,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Assets\BG\default_bg.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="MainPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Pages\CachesPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Pages\HomePage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Pages\RepairPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="ResourceDictionary.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Pages\Dialogs\InstallationMigrate.xaml">
+    <Page Update="ResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

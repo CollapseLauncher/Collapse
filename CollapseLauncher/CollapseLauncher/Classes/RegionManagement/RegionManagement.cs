@@ -12,6 +12,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Data;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 using static CollapseLauncher.LauncherConfig;
 using static CollapseLauncher.Region.InstallationManagement;
 
@@ -21,11 +22,12 @@ namespace CollapseLauncher
     {
         HttpClientTool httpClient;
 
-        public async Task LoadRegion(int regionIndex = 0)
+        public void LoadRegion(int regionIndex = 0)
         {
             CurrentRegion = ConfigStore.Config[regionIndex];
+            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             LoadGameRegionFile();
-            await Task.Run(() => ChangeBackgroundImageAsRegion());
+            Task.Run(() => ChangeBackgroundImageAsRegion());
             FetchLauncherResourceAsRegion();
         }
 
@@ -55,7 +57,7 @@ namespace CollapseLauncher
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
             appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
             SaveAppConfig();
-            await LoadRegion(ComboBoxGameRegion.SelectedIndex);
+            await InvokeLoadRegion(ComboBoxGameRegion.SelectedIndex);
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {
                 LauncherFrame.Navigate(typeof(Pages.HomePage));
@@ -66,6 +68,11 @@ namespace CollapseLauncher
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 LogWriteLine($"Region changed to {ComboBoxGameRegion.SelectedValue}", Hi3Helper.LogType.Scheme);
             }
+        }
+
+        private async Task InvokeLoadRegion(int index)
+        {
+            await Task.Run(() => LoadRegion(index));
         }
     }
 }

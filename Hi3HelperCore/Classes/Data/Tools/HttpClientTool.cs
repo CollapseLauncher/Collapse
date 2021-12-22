@@ -38,20 +38,19 @@ namespace Hi3Helper.Data
         string downloadPartialOutputPath, downloadPartialInputPath;
         CancellationToken downloadPartialToken;
 
-        public HttpClientTool()
+        public HttpClientTool(bool IgnoreCompression = false)
         {
             httpClient = new HttpClient(
             new HttpClientHandler()
             {
-#if (NETCOREAPP)
-                AutomaticDecompression = DecompressionMethods.All,
-#else
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
-#endif
+                AutomaticDecompression = IgnoreCompression ? DecompressionMethods.None : DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
                 UseCookies = true,
                 MaxConnectionsPerServer = 32,
-                AllowAutoRedirect = true
+                AllowAutoRedirect = true,
             });
+
+            if (IgnoreCompression)
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
         }
 
         DownloadStatusChanged resumabilityStatus;
@@ -150,7 +149,23 @@ namespace Hi3Helper.Data
             }
 
             if (!downloadPartialToken.IsCancellationRequested)
-                MergePartialChunks();
+            {
+                try
+                {
+                    MergePartialChunks();
+                }
+                catch (OperationCanceledException ex)
+                {
+                    LogWriteLine($"Merging cancelled!", LogType.Warning);
+                    throw new OperationCanceledException("", ex);
+                }
+            }
+            else
+            {
+                segmentDownloadTask.Clear();
+                LogWriteLine($"Download cancelled!", LogType.Warning);
+                throw new OperationCanceledException();
+            }
 
             segmentDownloadTask.Clear();
 
@@ -172,12 +187,6 @@ namespace Hi3Helper.Data
 
         public void MergePartialChunks()
         {
-            if (downloadThread == null)
-            {
-                LogWriteLine("You haven't download anything! Please do DownloadFileMultipleSession() first!", LogType.Warning);
-                return;
-            }
-
             if (CheckExistingPartialChunksSize() != downloadPartialSize)
             {
                 LogWriteLine("Download is not completed yet! Please do DownloadFileMultipleSession() and wait it for finish!", LogType.Warning);
@@ -200,7 +209,10 @@ namespace Hi3Helper.Data
             int read;
             long totalRead = 0;
             var sw = Stopwatch.StartNew();
-            using (FileStream fs = new FileStream($"{downloadPartialOutputPath}_tmp", FileMode.Create, FileAccess.Write))
+
+            FileInfo fileInfo = new FileInfo($"{downloadPartialOutputPath}_tmp");
+
+            using (FileStream fs = fileInfo.Create())
             {
                 for (int i = 0; i < downloadThread; i++)
                 {
@@ -209,6 +221,7 @@ namespace Hi3Helper.Data
                     {
                         while ((read = chunkFile.Read(buffer, 0, buffer.Length)) > 0)
                         {
+                            downloadPartialToken.ThrowIfCancellationRequested();
                             fs.Write(buffer, 0, read);
                             totalRead += read;
                             PartialOnProgressChanged(new PartialDownloadProgressChanged(totalRead, 0, downloadPartialSize, sw.Elapsed.TotalSeconds) { Message = "Merging Chunks", CurrentReceived = read });
@@ -219,7 +232,31 @@ namespace Hi3Helper.Data
                     File.Delete(chunkFileName);
                 }
             }
-            File.Move($"{downloadPartialOutputPath}_tmp", downloadPartialOutputPath);
+
+            if (File.Exists(downloadPartialOutputPath))
+                File.Delete(downloadPartialOutputPath);
+
+            try
+            {
+                fileInfo.MoveTo(downloadPartialOutputPath);
+            }
+            // To fix yet stupid and nonsense bug while moving the file within the code.
+            catch (FileNotFoundException)
+            {
+                Process move = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "cmd.exe",
+                        UseShellExecute = false,
+                        Arguments = $"/c move \"{downloadPartialOutputPath}_tmp\" \"{downloadPartialOutputPath}\""
+                    }
+                };
+
+                move.Start();
+                move.WaitForExit();
+            }
+
             sw.Stop();
             stop = true;
         }
@@ -271,6 +308,12 @@ namespace Hi3Helper.Data
 
                 long fileSize = (j.EndRange - j.StartRange) + 1;
 
+                if (existingLength > fileSize)
+                {
+                    fileinfo.Delete();
+                    fileinfo.Create();
+                }
+
                 if (existingLength != fileSize)
                 {
                     using (HttpClient client = new HttpClient())
@@ -294,6 +337,10 @@ namespace Hi3Helper.Data
                             }
                         }
                     }
+                }
+                else if (existingLength == fileSize)
+                {
+                    segmentDownloadProperties[j.PartRange] = new SegmentDownloadProperties(fileSize, 0, fileSize, new TimeSpan().TotalSeconds) { CurrentReceived = 0 };
                 }
             }
             catch (OperationCanceledException)
@@ -321,7 +368,8 @@ namespace Hi3Helper.Data
                  nowReceived = 0;
             byte[] buffer = new byte[bufflength];
 #if (NETCOREAPP)
-            using (Stream remoteStream = response.Content.ReadAsStream(token))
+            using (Stream remoteStream = await response.Content.ReadAsStreamAsync())
+            // using (Stream remoteStream = response.Content.ReadAsStream(downloadPartialToken))
 #else
             using (Stream remoteStream = await response.Content.ReadAsStreamAsync())
 #endif
@@ -411,7 +459,7 @@ namespace Hi3Helper.Data
 
             HttpResponseMessage response = httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).GetAwaiter().GetResult();
 
-            if (!(response.Content.Headers.ContentRange.Length == existingLength))
+            if (!((response.Content.Headers.ContentRange.Length ?? 0) == existingLength))
             {
                 using (ThrowUnacceptableStatusCode(response))
                 {

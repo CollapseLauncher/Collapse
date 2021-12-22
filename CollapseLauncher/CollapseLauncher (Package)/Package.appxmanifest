@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="2758ff58-53d4-4fbd-8ca9-851ee2f4a383"
+    Name="9e167b50-ba59-410b-a405-2e10048b228e"
     Publisher="CN=neon-nyan"
     Version="1.0.0.0" />
 
@@ -32,7 +32,7 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="CollapseLauncher"
-        Description="CollapseLauncher, an Advanced Honkai Impact 3 Launcher"
+        Description="CollapseLauncher, an Advanced Honkai Impact 3rd Launcher"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
@@ -44,7 +44,5 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
-    <Capability Name="internetClient"/>
-    <uap:Capability Name="removableStorage"/>
   </Capabilities>
 </Package>

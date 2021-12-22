@@ -203,4 +203,11 @@ namespace Hi3Helper.Preset
         public string DataType { get; set; }
         public string DownloadStatus { get; set; } = "Not yet downloaded";
     }
+
+    public class PkgVersionProperties
+    {
+        public string remoteName { get; set; }
+        public string md5 { get; set; }
+        public long fileSize { get; set; }
+    }
 }

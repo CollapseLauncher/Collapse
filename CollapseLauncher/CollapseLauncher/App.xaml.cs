@@ -17,7 +17,12 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
+using System.CodeDom.Compiler;
+using System.Diagnostics;
+using System.Threading;
+using Microsoft.UI.Dispatching;
 using WinRT;
+
 using Hi3Helper;
 
 using static CollapseLauncher.LauncherConfig;

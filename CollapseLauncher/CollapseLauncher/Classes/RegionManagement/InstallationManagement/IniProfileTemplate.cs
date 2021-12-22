@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 using Hi3Helper.Data;
+using static CollapseLauncher.LauncherConfig;
 
 namespace CollapseLauncher.Region
 {
@@ -25,6 +26,20 @@ namespace CollapseLauncher.Region
             });
 
             gameIni.Profile.Save(gameIni.ProfileStream);
+        }
+
+        static void BuildGameIniConfig()
+        {
+            gameIni.Config.Add("General", new Dictionary<string, IniValue>
+            {
+                { "channel", new IniValue(1) },
+                { "cps", new IniValue() },
+                { "game_version", new IniValue(regionResourceProp.data.game.latest.version) },
+                { "sub_channel", new IniValue(1) },
+                { "sdk_version", new IniValue() }
+            });
+
+            gameIni.Config.Save(gameIni.ConfigStream);
         }
     }
 }

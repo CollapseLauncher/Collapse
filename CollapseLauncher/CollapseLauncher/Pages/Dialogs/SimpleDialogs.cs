@@ -29,6 +29,28 @@ namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
+        public static async Task<ContentDialogResult> Dialog_InstallationLocation(UIElement Content) =>
+            await SpawnDialog(
+                    "Locating Installation Folder",
+                    "Before Installing the Game, Do you want to specify the location of the game?",
+                    Content,
+                    "Cancel",
+                    "Use default directory",
+                    "Yes, Change location"
+                );
+
+        public static async Task<ContentDialogResult> Dialog_InstallationDownloadAdditional(UIElement Content) =>
+            await SpawnDialog(
+                    "Download Additional Resources",
+                    "Do you want to download the additional resources at the same time?\r\n"
+                    + "So you wouldn't be necessarily asked to download additional resources in-game.",
+                    Content,
+                    null,
+                    "Yes, please",
+                    "No, thank you",
+                    ContentDialogButton.Secondary
+                );
+
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
                     "Existing Installation is Detected!",
@@ -70,7 +92,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, string content, UIElement Content,
             string closeText = null, string primaryText = null,
-            string secondaryText = null) =>
+            string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary) =>
             await new ContentDialog
             {
                 Title = title,
@@ -78,7 +100,7 @@ namespace CollapseLauncher.Dialogs
                 CloseButtonText = closeText,
                 PrimaryButtonText = primaryText,
                 SecondaryButtonText = secondaryText,
-                DefaultButton = ContentDialogButton.Primary,
+                DefaultButton = defaultButton,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 XamlRoot = Content.XamlRoot
             }.ShowAsync();

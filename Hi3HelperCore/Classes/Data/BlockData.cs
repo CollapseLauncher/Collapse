@@ -37,10 +37,10 @@ namespace Hi3Helper.Data
         readonly byte[] buffer = new byte[4194304];
 #endif
 
-        public void Init(in MemoryStream i)
+        public void Init(in Stream i, XMFFileFormat format = XMFFileFormat.Dictionary)
         {
             i.Position = 0;
-            util = new XMFUtils(i);
+            util = new XMFUtils(i, format);
             util.Read();
         }
 
@@ -67,6 +67,14 @@ namespace Hi3Helper.Data
             FlushProp();
             FlushTemp();
             DisposeAssets();
+        }
+
+        public void PrintBlocks()
+        {
+            foreach (XMFBlockList block in util.XMFBook)
+            {
+                LogWriteLine($"{block.BlockHash} Size: {SummarizeSizeSimple(block.BlockSize)}");
+            }
         }
 
         int chunkSize;
@@ -233,9 +241,11 @@ namespace Hi3Helper.Data
             return BytesToHex(md5.Hash);
         }
 
-        void CheckForUnusedBlocks(string localPath)
+        public void CheckForUnusedBlocks(string localPath)
         {
-            IEnumerable<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.ToLowerInvariant().EndsWith("wmv"));
+            if (BrokenBlocks == null)
+                BrokenBlocks = new List<XMFBlockList>();
+            List<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.ToLowerInvariant().EndsWith("wmv")).ToList();
             string blockLocal;
             long blockLocalSize;
             foreach (string file in fileList)
@@ -369,6 +379,16 @@ namespace Hi3Helper.Data
                     }
                 }
             }
+        }
+
+        public List<string> GetListOfBrokenBlocks(string localPath)
+        {
+            List<string> list = new List<string>();
+            if (BrokenBlocks != null)
+                foreach (XMFBlockList block in BrokenBlocks)
+                    list.Add(Path.Combine(localPath, $"{block.BlockHash}.wmv"));
+
+            return list;
         }
 
         void DownloadContent(string url, in MemoryStream destination, in XMFFileProperty chunkProp, long startOffset, long endOffset, CancellationToken token, string message)

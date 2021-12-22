@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher">
     <ResourceDictionary.ThemeDictionaries>
 
         <ResourceDictionary x:Key="Default">
@@ -32,6 +33,11 @@
             <AcrylicBrush x:Key="DialogAcrylicBrush"
             TintColor="Black"
             TintOpacity="0.2" TintLuminosityOpacity="0.6"
+            FallbackColor="Transparent"/>
+
+            <AcrylicBrush x:Key="InfoBarInformationBrush"
+            TintColor="Black"
+            TintOpacity="0.75"
             FallbackColor="Transparent"/>
 
 
@@ -68,6 +74,11 @@
             <AcrylicBrush x:Key="DialogAcrylicBrush"
             TintColor="Black"
             TintOpacity="0"
+            FallbackColor="Transparent"/>
+
+            <AcrylicBrush x:Key="InfoBarInformationBrush"
+            TintColor="White"
+            TintOpacity="0.8" TintLuminosityOpacity="0.75"
             FallbackColor="Transparent"/>
 
 

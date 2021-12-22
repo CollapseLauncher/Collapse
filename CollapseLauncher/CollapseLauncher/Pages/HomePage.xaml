@@ -26,6 +26,23 @@
                         <ColumnDefinition Width="1224*"/>
                         <ColumnDefinition Width="227"/>
                     </Grid.ColumnDefinitions>
+                    <InfoBar Background="{StaticResource InfoBarInformationBrush}" IsOpen="True"
+                    Severity="Informational" Title="TODO: Notification System" Width="768"
+                    Message="This notification is useless for now. Nothing to do with it." HorizontalAlignment="Left">
+                        <InfoBar.IconSource>
+                            <SymbolIconSource Symbol="Refresh" />
+                        </InfoBar.IconSource>
+                        <InfoBar.ActionButton>
+                            <Button Style="{StaticResource AccentButtonStyle}">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE118;" FontSize="16"/>
+                                        <TextBlock Text="Bruh" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </InfoBar.ActionButton>
+                    </InfoBar>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="227" Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
@@ -71,7 +88,15 @@
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE118;" FontSize="16"/>
-                                <TextBlock Text="Install Game" Margin="4,0,0,0"/>
+                                <TextBlock Text="Install Game" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="UpdateGameBtn" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="UpdateGameDialog" Visibility="Collapsed">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE117;" FontSize="16"/>
+                                <TextBlock Text="Update Game" Margin="8,0,0,0"/>
                             </StackPanel>
                         </Button.Content>
                     </Button>

@@ -49,7 +49,7 @@ namespace Hi3Helper.Data
 
         public List<XMFBlockList> XMFBook;
 
-        public XMFUtils(MemoryStream stream, XMFFileFormat format = XMFFileFormat.Dictionary, ushort offset = 0x21, int dictmagicword = 1952672068)
+        public XMFUtils(Stream stream, XMFFileFormat format = XMFFileFormat.Dictionary, ushort offset = 0x21, int dictmagicword = 1952672068)
         {
             this.stream = stream;
             this.format = format;
