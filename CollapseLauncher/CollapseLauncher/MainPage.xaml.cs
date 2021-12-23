@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -18,15 +19,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
+
+using Windows.UI.Core;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 using CollapseLauncher;
-using Microsoft.UI.Dispatching;
 using WinRT;
 
 using Hi3Helper;
@@ -144,7 +146,10 @@ namespace CollapseLauncher
         {
             if (args.IsSettingsInvoked)
             {
-                // LauncherFrame.Navigate(typeof(SettingsPage));
+                LauncherFrame.Navigate(typeof(Pages.SettingsPage));
+                HideBackgroundImage(true);
+                previousTag = "settings";
+                LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
             else
             {
@@ -180,12 +185,16 @@ namespace CollapseLauncher
                     case "caches":
                         Navigate(typeof(Pages.CachesPage), true, item);
                         break;
-                        /*
 
-                    case "games":
-                        LauncherFrame.Navigate(typeof(GamesPage));
+                    case "cutscenes":
+                        Navigate(typeof(Pages.CutscenesPage), true, item);
                         break;
 
+                    case "gamesettings":
+                        Navigate(typeof(Pages.GameSettingsPage), true, item);
+                        break;
+
+                        /*
                     case "music":
                         LauncherFrame.Navigate(typeof(MusicPage));
                         break;
@@ -196,18 +205,18 @@ namespace CollapseLauncher
 
                         */
                 }
-                LogWriteLine($"Page changed to {item.Content}", Hi3Helper.LogType.Scheme);
+                LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
             }
         }
 
-        private void NavigationViewControl_DisplayModeChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs args)
+        private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
         {
             const int topIndent = 16;
             const int expandedIndent = 48;
             int minimalIndent = 104;
 
             // If the back button is not visible, reduce the TitleBar content indent.
-            if (NavigationViewControl.IsBackButtonVisible.Equals(Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed))
+            if (NavigationViewControl.IsBackButtonVisible.Equals(NavigationViewBackButtonVisible.Collapsed))
             {
                 minimalIndent = 48;
             }
@@ -215,11 +224,11 @@ namespace CollapseLauncher
             Thickness currMargin = AppTitleBar.Margin;
 
             // Set the TitleBar margin dependent on NavigationView display mode
-            if (sender.PaneDisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top)
+            if (sender.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
             {
                 AppTitleBar.Margin = new Thickness(topIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
-            else if (sender.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal)
+            else if (sender.DisplayMode == NavigationViewDisplayMode.Minimal)
             {
                 AppTitleBar.Margin = new Thickness(minimalIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
