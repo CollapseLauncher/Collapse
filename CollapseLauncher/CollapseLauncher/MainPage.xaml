@@ -59,7 +59,7 @@
             IsBackButtonVisible="Collapsed"           
             Header=""
             DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
-            Canvas.ZIndex="0" Visibility="Visible" IsPaneOpen="False" Background="{StaticResource AcrylicInAppFillColorDefaultBrush}"
+            Canvas.ZIndex="0" Visibility="Visible" IsPaneOpen="False" Background="{StaticResource NavigationBarBrush}"
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
             <NavigationView.MenuItems>

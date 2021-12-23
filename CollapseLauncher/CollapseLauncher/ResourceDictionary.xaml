@@ -20,7 +20,7 @@
             TintOpacity="0.338000016054139" TintColor="#FF000000" FallbackColor="#FF008000" />
 
             <AcrylicBrush x:Key="PagesAcrylicBrush" 
-            TintOpacity="0" TintColor="Black" />
+            TintOpacity="0.0" TintColor="Black" />
 
             <AcrylicBrush x:Key="NavigationAcrylicBrush" 
             TintOpacity="0" TintColor="#111111" />
@@ -36,6 +36,11 @@
             FallbackColor="Transparent"/>
 
             <AcrylicBrush x:Key="InfoBarInformationBrush"
+            TintColor="Black"
+            TintOpacity="0.75"
+            FallbackColor="Transparent"/>
+
+            <AcrylicBrush x:Key="NavigationBarBrush"
             TintColor="Black"
             TintOpacity="0.75"
             FallbackColor="Transparent"/>

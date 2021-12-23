@@ -8,12 +8,17 @@
     <Platforms>x64</Platforms>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="CollapseLauncher.Invoker.dll" />
     <None Remove="CollapseLauncher.Invoker.exe" />
     <None Remove="config\fileconfig.json" />
     <None Remove="MainPage.xaml" />
+    <None Remove="Pages\CutscenesPage.xaml" />
+    <None Remove="Pages\GameSettingsPage.xaml" />
+    <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="ResourceDictionary.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +53,17 @@
   <ItemGroup>
     <Page Update="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\CutscenesPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\SettingsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\GameSettingsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
 
