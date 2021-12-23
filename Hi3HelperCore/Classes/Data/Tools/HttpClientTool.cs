@@ -425,7 +425,7 @@ namespace Hi3Helper.Data
             }
             finally
             {
-                if (!isStream) localStream?.Dispose();
+                if (!isStream && returnValue) localStream?.Dispose();
                 remoteStream?.Dispose();
             }
 
