@@ -58,7 +58,7 @@ namespace CollapseLauncher
             // BackgroundFront.Source = defaultBackground;
 
             LoadConfig();
-            LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt());
+            Task.Run(() => LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt()));
             LauncherFrame.Navigate(typeof(Pages.HomePage));
         }
 

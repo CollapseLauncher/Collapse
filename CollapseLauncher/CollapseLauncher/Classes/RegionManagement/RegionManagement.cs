@@ -22,13 +22,16 @@ namespace CollapseLauncher
     {
         HttpClientTool httpClient;
 
-        public void LoadRegion(int regionIndex = 0)
+        public async Task LoadRegion(int regionIndex = 0)
         {
             CurrentRegion = ConfigStore.Config[regionIndex];
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             LoadGameRegionFile();
-            Task.Run(() => ChangeBackgroundImageAsRegion());
-            FetchLauncherResourceAsRegion();
+            await Task.Run(() =>
+            {
+                FetchLauncherResourceAsRegion();
+                ChangeBackgroundImageAsRegion();
+            });
         }
 
         private void LoadGameRegionFile()
@@ -72,7 +75,7 @@ namespace CollapseLauncher
 
         private async Task InvokeLoadRegion(int index)
         {
-            await Task.Run(() => LoadRegion(index));
+            await LoadRegion(index);
         }
     }
 }
