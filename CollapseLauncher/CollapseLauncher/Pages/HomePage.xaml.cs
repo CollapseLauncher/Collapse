@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,9 +147,9 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             MigrationWatcher.IsMigrationRunning = true;
-                            OverlapFrame.Navigate(typeof(InstallationMigrate));
+                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
                             await CheckMigrationProcess();
-                            OverlapFrame.Navigate(typeof(HomePage));
+                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
                             break;
                         case ContentDialogResult.Secondary:
                             LogWriteLine($"TODO: Do Install for CollapseLauncher");
