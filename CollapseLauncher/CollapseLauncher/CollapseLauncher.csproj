@@ -22,9 +22,6 @@
     <None Remove="ResourceDictionary.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CollapseLauncher.Invoker.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="CollapseLauncher.Invoker.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
