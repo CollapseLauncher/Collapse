@@ -9,7 +9,7 @@
   <Identity
     Name="9e167b50-ba59-410b-a405-2e10048b228e"
     Publisher="CN=neon-nyan"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <Properties>
     <DisplayName>CollapseLauncher</DisplayName>

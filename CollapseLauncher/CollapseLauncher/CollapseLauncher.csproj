@@ -10,6 +10,7 @@
     <UseWinUI>true</UseWinUI>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="CollapseLauncher.Invoker.dll" />
