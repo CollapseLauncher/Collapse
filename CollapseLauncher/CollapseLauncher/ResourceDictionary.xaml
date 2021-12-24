@@ -5,7 +5,7 @@
     <ResourceDictionary.ThemeDictionaries>
 
         <ResourceDictionary x:Key="Default">
-
+            <!--
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
                     <Color x:Key="SystemAccentColor">#FFD927</Color>
@@ -14,6 +14,7 @@
                     <Color x:Key="SystemAccentColorLight3">#FFD927</Color>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            -->
 
 
             <AcrylicBrush x:Key="CustomAcrylicBrush" 
@@ -45,6 +46,11 @@
             TintOpacity="0.75"
             FallbackColor="Transparent"/>
 
+            <AcrylicBrush x:Key="LoadingBrush"
+            TintColor="Black"
+            TintOpacity="0.7"
+            FallbackColor="Transparent"/>
+
 
             <Color x:Key="SystemAccentColorBruh">#107C10</Color>
 
@@ -56,14 +62,16 @@
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
+            <!--
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Color x:Key="SystemAccentColor">#A65300</Color>
-                    <Color x:Key="SystemAccentColorDark1">#A65300</Color>
-                    <Color x:Key="SystemAccentColorDark2">#A65300</Color>
-                    <Color x:Key="SystemAccentColorDark3">#A65300</Color>
+                    <Color x:Key="SystemAccentColor">#0078D4</Color>
+                    <Color x:Key="SystemAccentColorDark1">#0078D4</Color>
+                    <Color x:Key="SystemAccentColorDark2">#0078D4</Color>
+                    <Color x:Key="SystemAccentColorDark3">#0078D4</Color>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            -->
 
             <AcrylicBrush x:Key="CustomAcrylicBrush"
             TintOpacity="0.9" TintColor="#FFFFFF" FallbackColor="#FF008000" />
@@ -77,13 +85,23 @@
             FallbackColor="Transparent"/>
 
             <AcrylicBrush x:Key="DialogAcrylicBrush"
-            TintColor="Black"
-            TintOpacity="0"
+            TintColor="White"
+            TintOpacity="0.75"
             FallbackColor="Transparent"/>
 
             <AcrylicBrush x:Key="InfoBarInformationBrush"
             TintColor="White"
             TintOpacity="0.8" TintLuminosityOpacity="0.75"
+            FallbackColor="Transparent"/>
+
+            <AcrylicBrush x:Key="NavigationBarBrush"
+            TintColor="White"
+            TintOpacity="0.8" TintLuminosityOpacity="0.75"
+            FallbackColor="Transparent"/>
+
+            <AcrylicBrush x:Key="LoadingBrush"
+            TintColor="White"
+            TintOpacity="0.75" TintLuminosityOpacity="0.8"
             FallbackColor="Transparent"/>
 
 

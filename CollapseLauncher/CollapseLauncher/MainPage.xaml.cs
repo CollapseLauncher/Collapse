@@ -57,9 +57,15 @@ namespace CollapseLauncher
             // BackgroundBack.Source = defaultBackground;
             // BackgroundFront.Source = defaultBackground;
 
+
+            InitializeStartup().GetAwaiter();
+        }
+
+        private async Task InitializeStartup()
+        {
             LoadConfig();
-            Task.Run(() => LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt()));
-            LauncherFrame.Navigate(typeof(Pages.HomePage));
+            await LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt());
+            LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
         }
 
         private string GetVersionString()
@@ -93,7 +99,7 @@ namespace CollapseLauncher
             SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             SolidColorBrush inactiveForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorDisabledBrush"];
 
-            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            if (e.WindowActivationState == CoreWindowActivationState.Deactivated)
             {
                 AppTitle.Foreground = inactiveForegroundBrush;
             }
@@ -146,7 +152,7 @@ namespace CollapseLauncher
         {
             if (args.IsSettingsInvoked)
             {
-                LauncherFrame.Navigate(typeof(Pages.SettingsPage));
+                LauncherFrame.Navigate(typeof(Pages.SettingsPage), null, new DrillInNavigationTransitionInfo());
                 HideBackgroundImage(true);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
@@ -161,7 +167,7 @@ namespace CollapseLauncher
 
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
-            LauncherFrame.Navigate(sourceType);
+            LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
             HideBackgroundImage(hideImage);
             previousTag = (string)tag.Tag;
         }

@@ -73,7 +73,8 @@ namespace CollapseLauncher
 
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
-                || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background))
+                || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background)
+                || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)).ToLowerInvariant() != regionBackgroundProp.data.adv.bg_checksum)
             {
                 httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
                 previousPath = regionBackgroundProp.imgLocalPath;
@@ -96,6 +97,61 @@ namespace CollapseLauncher
 
                 SaveAppConfig();
             });
+        }
+
+        private async Task HideLoadingPopup(bool hide, string title, string subtitle)
+        {
+            Storyboard storyboard = new Storyboard();
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                LoadingTitle.Text = title;
+                LoadingSubtitle.Text = subtitle;
+            });
+
+            if (hide)
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    LoadingRing.IsIndeterminate = false;
+                });
+
+                await Task.Delay(500);
+
+                DoubleAnimation OpacityAnimation = new DoubleAnimation();
+                OpacityAnimation.From = 1;
+                OpacityAnimation.To = 0;
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+
+                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
+                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+                storyboard.Children.Add(OpacityAnimation);
+
+                storyboard.Begin();
+                await Task.Delay(250);
+                DispatcherQueue.TryEnqueue(() => LoadingPopup.Visibility = Visibility.Collapsed);
+            }
+            else
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    LoadingFooter.Text = "";
+                    LoadingRing.IsIndeterminate = true;
+                });
+
+                DispatcherQueue.TryEnqueue(() => LoadingPopup.Visibility = Visibility.Visible);
+
+                DoubleAnimation OpacityAnimation = new DoubleAnimation();
+                OpacityAnimation.From = 0;
+                OpacityAnimation.To = 1;
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+
+                Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
+                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+                storyboard.Children.Add(OpacityAnimation);
+
+                storyboard.Begin();
+            }
         }
 
         private void HideBackgroundImage(bool hideImage = true)
@@ -165,5 +221,6 @@ namespace CollapseLauncher
     public class RegionBackgroundProp_data_adv
     {
         public string background { get; set; }
+        public string bg_checksum { get; set; }
     }
 }

@@ -249,7 +249,7 @@ namespace Hi3Helper.Data
                     {
                         FileName = "cmd.exe",
                         UseShellExecute = false,
-                        Arguments = $"/c move \"{downloadPartialOutputPath}_tmp\" \"{downloadPartialOutputPath}\""
+                        Arguments = $"/c move /Y \"{downloadPartialOutputPath}_tmp\" \"{downloadPartialOutputPath}\""
                     }
                 };
 
@@ -418,6 +418,11 @@ namespace Hi3Helper.Data
                 LogWriteLine($"This file {input} has 0 byte in size.\r\nTraceback: {e}", LogType.Error, true);
                 returnValue = false;
             }
+            catch (ObjectDisposedException e)
+            {
+                LogWriteLine($"Connection is getting repeated while Stream has been disposed on {Path.GetFileName(output)}\r\nTraceback: {e}", LogType.Warning, true);
+                returnValue = true;
+            }
             catch (Exception e)
             {
                 LogWriteLine($"An error occured while downloading {Path.GetFileName(output)}\r\nTraceback: {e}", LogType.Error, true);
@@ -425,8 +430,11 @@ namespace Hi3Helper.Data
             }
             finally
             {
-                if (!isStream && returnValue) localStream?.Dispose();
-                remoteStream?.Dispose();
+                if (returnValue)
+                {
+                    if (!isStream) localStream?.Dispose();
+                    remoteStream?.Dispose();
+                }
             }
 
             OnCompleted(new DownloadProgressCompleted() { DownloadCompleted = true });
