@@ -90,7 +90,7 @@ namespace CollapseLauncher
             {
                 { "CurrentRegion", new IniValue(0) },
                 { "CurrentBackground", new IniValue(@"Assets\BG\default_bg.png") },
-                { "DownloadThread", new IniValue(8) },
+                { "DownloadThread", new IniValue(16) },
                 { "GameFolder", new IniValue(AppGameFolder) }
             });
 
