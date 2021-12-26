@@ -4,8 +4,11 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Composition;
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,6 +29,12 @@ namespace CollapseLauncher.Pages
         public GameSettingsPage()
         {
             this.InitializeComponent();
+            InitializeGamesettings();
+        }
+
+        public async void InitializeGamesettings()
+        {
+            ResolutionSelector.ItemsSource = LauncherConfig.ScreenResolutionsList;
         }
     }
 }

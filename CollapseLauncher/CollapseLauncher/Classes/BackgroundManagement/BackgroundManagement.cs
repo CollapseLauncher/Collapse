@@ -74,7 +74,8 @@ namespace CollapseLauncher
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background)
-                || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)).ToLowerInvariant() != regionBackgroundProp.data.adv.bg_checksum)
+                // || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)).ToLowerInvariant() != regionBackgroundProp.data.adv.bg_checksum
+                )
             {
                 httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
                 previousPath = regionBackgroundProp.imgLocalPath;
@@ -154,7 +155,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void HideBackgroundImage(bool hideImage = true)
+        private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
@@ -162,6 +163,10 @@ namespace CollapseLauncher
             if (!(hideImage && BackgroundFront.Opacity == 0))
             {
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
+                /*
+                OpacityAnimation.From = hideImage ? 1 : (absoluteTransparent ? 0 : 0.5);
+                OpacityAnimation.To = hideImage ? (absoluteTransparent ? 0 : 0.5) : 1;
+                 */
                 OpacityAnimation.From = hideImage ? 1 : 0;
                 OpacityAnimation.To = hideImage ? 0 : 1;
                 OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));

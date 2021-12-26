@@ -3,12 +3,17 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Windowing;
 
+using Windows.UI.ViewManagement;
+using Windows.Graphics.Display;
+
 using Hi3Helper.Preset;
 using Hi3Helper.Data;
+using Hi3Helper.Screen;
 
 using static Hi3Helper.Preset.ConfigStore;
 
@@ -40,6 +45,7 @@ namespace CollapseLauncher
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
         public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();
         public static List<string> GameConfigName = new List<string>();
+        public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();
 
@@ -59,8 +65,17 @@ namespace CollapseLauncher
             GameConfigName = Config.Select(x => x.ZoneName).ToList();
         }
 
+        public static void GetScreenResolutionString()
+        {
+            foreach (ScreenResolution res in ScreenProp.screenResolutions)
+                ScreenResolutionsList.Add(res.ToString());
+        }
+
         public static void LoadAppPreset()
         {
+            ScreenProp.InitScreenResolution();
+            GetCurrentScreenResolution();
+            GetScreenResolutionString();
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);
 
@@ -75,6 +90,13 @@ namespace CollapseLauncher
 
             LoadAppConfig();
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
+        }
+
+        private static void GetCurrentScreenResolution()
+        {
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            var size = new Size((int)((double)bounds.Width * scaleFactor), (int)((double)bounds.Height * scaleFactor));
         }
 
         public static IniValue GetAppConfigValue(string key) => appIni.Profile["app"][key];

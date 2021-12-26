@@ -9,17 +9,40 @@
     Background="{ThemeResource PagesAcrylicBrush}">
 
     <Grid>
-        <Grid Margin="32,32,32,32">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="258"/>
-                <RowDefinition Height="41"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1224*"/>
-                <ColumnDefinition Width="227"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Game Settings" Style="{StaticResource TitleLargeTextBlockStyle}"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="32,32,32,32">
+                <TextBlock x:Name="PageTitle" Text="Game Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                <StackPanel x:Name="GameResolution" Margin="0,16">
+                    <StackPanel>
+                        <TextBlock Text="Game Resolution" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <ComboBox x:Name="ResolutionSelector" PlaceholderText="Select" Width="128" ItemsSource="{Binding Path=LauncherConfig.ScreenResolutionsList}"/>
+                            <CheckBox x:Name="CustomResolutionCheckbox" Content="Use Custom Resolution" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel x:Name="CustomResolutionSelector" Orientation="Horizontal">
+                        <TextBlock Text="W" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <NumberBox Value="1920" HorizontalAlignment="Left" Width="80" IsEnabled="False"/>
+                        <TextBlock Text=" H" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                        <NumberBox Value="1920" HorizontalAlignment="Left" Width="80" IsEnabled="False"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel x:Name="GameMaxFPS" Margin="0,16">
+                    <StackPanel>
+                        <TextBlock Text="Maximum FPS" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                        <StackPanel x:Name="GameMaxFPSValuebox" Orientation="Horizontal">
+                            <NumberBox Value="60" Maximum="1024" HorizontalAlignment="Left" Width="64" IsEnabled="True"/>
+                            <TextBlock Text="Frames Per Second" VerticalAlignment="Center" Margin="16,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+        <Grid x:Name="GameSettingsApplyGrid"  VerticalAlignment="Bottom" Background="{ThemeResource CustomAcrylicBrush}" Padding="16" Margin="16" CornerRadius="5">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Apply Settings" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center"/>
+                <TextBlock Text="Changes have been saved!" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

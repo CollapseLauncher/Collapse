@@ -30,13 +30,15 @@ namespace Hi3Helper.Screen
                 i++;
             }
 
-            LogWriteLine($"Supported Screen Resolutions: {string.Join(", ", screenResolutions.Select(p => $"{p.Width}x{p.Height}"))}", LogType.Scheme);
+            // LogWriteLine($"Supported Screen Resolutions: {string.Join(", ", screenResolutions.Select(p => $"{p.Width}x{p.Height}"))}", LogType.Scheme);
         }
+    }
 
-        public class ScreenResolution
-        {
-            public uint Width { get; set; } = 0;
-            public uint Height { get; set; } = 0;
-        }
+    public class ScreenResolution
+    {
+        public uint Width { get; set; } = 0;
+        public uint Height { get; set; } = 0;
+
+        public override string ToString() => $"{Width}x{Height}";
     }
 }

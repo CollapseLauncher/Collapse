@@ -153,7 +153,7 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked)
             {
                 LauncherFrame.Navigate(typeof(Pages.SettingsPage), null, new DrillInNavigationTransitionInfo());
-                HideBackgroundImage(true);
+                HideBackgroundImage(true, false);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
@@ -168,7 +168,7 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
-            HideBackgroundImage(hideImage);
+            HideBackgroundImage(hideImage, false);
             previousTag = (string)tag.Tag;
         }
 
