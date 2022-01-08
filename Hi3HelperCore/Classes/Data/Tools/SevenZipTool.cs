@@ -281,6 +281,19 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                     {
                         WriteStream(j.x.OpenStream(j.db, i, null), new FileStream(path, FileMode.Create, FileAccess.Write), false, token);
                     }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        if (archiveEntries[i].Size == 0)
+                        {
+                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} has 0 byte in size.");
+                            new FileInfo(path).Create().Dispose();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
+                            failedEntries.Add(archiveEntries[i]);
+                        }
+                    }
                     catch (AggregateException ex)
                     {
                         Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
