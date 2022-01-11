@@ -22,10 +22,8 @@ using WinRT;
 
 using PInvoke;
 
-using static CollapseLauncher.LauncherConfig;
-using static CollapseLauncher.InvokeProp;
+using static CollapseLauncher.AppConfig;
 using static Hi3Helper.Logger;
-using Hi3Helper;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -61,7 +59,11 @@ namespace CollapseLauncher
         private void Restore(object sender, RoutedEventArgs e) => User32.ShowWindow(m_windowHandle, PInvoke.User32.WindowShowStyle.SW_RESTORE);
         */
 
-        private void Close(object sender, RoutedEventArgs e) => Application.Current.Exit();
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            App.IsAppKilled = true;
+            Application.Current.Exit();
+        }
 
         public void GetAppWindowAndPresenter()
         {

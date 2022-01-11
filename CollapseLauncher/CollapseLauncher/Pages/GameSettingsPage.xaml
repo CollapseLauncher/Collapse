@@ -6,42 +6,170 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource PagesAcrylicBrush}">
-
+    Background="{ThemeResource PagesAcrylicBrush}" Loaded="InitializeSettings">
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="32,32,32,32">
+            <StackPanel Margin="32,32,32,32" Padding="0,0,0,64">
                 <TextBlock x:Name="PageTitle" Text="Game Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                <StackPanel x:Name="GameResolution" Margin="0,16">
-                    <StackPanel>
-                        <TextBlock Text="Game Resolution" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                            <ComboBox x:Name="ResolutionSelector" PlaceholderText="Select" Width="128" ItemsSource="{Binding Path=LauncherConfig.ScreenResolutionsList}"/>
-                            <CheckBox x:Name="CustomResolutionCheckbox" Content="Use Custom Resolution" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <StackPanel x:Name="GameResolutionPanel" Margin="0,16">
+                            <StackPanel>
+                                <TextBlock Text="Game Resolution" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                                <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,8">
+                                    <CheckBox x:Name="GameResolutionFullscreen" Content="Fullscreen" HorizontalAlignment="Left" VerticalAlignment="Center" Click="GameResolutionFullscreen_IsEnabledChanged"/>
+                                    <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="Use Exclusive Fullscreen" HorizontalAlignment="Left"  VerticalAlignment="Center" Click="GameResolutionFullscreenExclusive_Click"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <ComboBox x:Name="GameResolutionSelector" PlaceholderText="Select" Width="128"/>
+                                    <CheckBox x:Name="GameCustomResolutionCheckbox" Content="Use Custom Resolution" VerticalAlignment="Center" Margin="16,0,0,0" Click="GameCustomResolutionCheckbox_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel x:Name="GameCustomResolutionPanel" Orientation="Horizontal">
+                                <TextBlock Text="W" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <NumberBox x:Name="GameCustomResolutionWidth" Value="1920" HorizontalAlignment="Left" Width="100" IsEnabled="False"/>
+                                <TextBlock Text=" H" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                <NumberBox x:Name="GameCustomResolutionHeight" Value="1920" HorizontalAlignment="Left" Width="100" IsEnabled="False"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="Maximum FPS" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16"/>
+                        <StackPanel x:Name="GameMaxFPSPanel" Margin="0,8" Orientation="Horizontal">
+                            <StackPanel x:Name="GameMaxFPSInCombatPanel" Orientation="Vertical">
+                                <TextBlock Text="In-Combat" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <NumberBox x:Name="GameMaxFPSInCombatValue" Value="60" Maximum="1024" HorizontalAlignment="Left" Width="64" IsEnabled="True"/>
+                                    <TextBlock Text="FPS" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel x:Name="GameMaxFPSInMainMenuPanel" Orientation="Vertical" Margin="16,0">
+                                <TextBlock Text="Main Menu" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <NumberBox x:Name="GameMaxFPSInMainMenuValue" Value="60" Maximum="1024" HorizontalAlignment="Left" Width="64" IsEnabled="True"/>
+                                    <TextBlock Text="FPS" VerticalAlignment="Center" Margin="8,0,8,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Text="Graphics API" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,24"/>
+                        <StackPanel x:Name="GraphicsAPIPanel" Orientation="Horizontal">
+                            <ComboBox x:Name="GraphicsAPISelector" PlaceholderText="Select" Width="224">
+                                <ComboBoxItem Content="DirectX 11 (FL 9.3)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 10.0)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 10.1)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 11)[Default]"/>
+                                <ComboBoxItem Content="DirectX 12 [EXPERIMENTAL]"/>
+                            </ComboBox>
+                            <Button Margin="16,0">
+                                <Button.Content>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE11B;" FontSize="12"/>
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Width="318">
+                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
+                                                <Run Text="There are few API modes which are available for this game, including:"/>
+                                                <LineBreak/><LineBreak/>
+                                                <Run Text="- DirectX 11.0 feature level 9.3"/><LineBreak/>
+                                                <Run Text="- DirectX 11.0 feature level 10.0"/><LineBreak/>
+                                                <Run Text="- DirectX 11.0 feature level 10.1"/><LineBreak/>
+                                                <Run Text="- DirectX 11.0 feature level 11.0 (Default)"/><LineBreak/>
+                                                <Run Text="- DirectX 12 (Experimental)"/><LineBreak/>
+                                            </TextBlock>
+                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
+                                                <Run Text="Note:"/>
+                                                <Run Text="Using DirectX 12 may cause crashes at some stages since the game wasn't natively compiled for DirectX 12 API"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel x:Name="CustomResolutionSelector" Orientation="Horizontal">
-                        <TextBlock Text="W" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <NumberBox Value="1920" HorizontalAlignment="Left" Width="80" IsEnabled="False"/>
-                        <TextBlock Text=" H" VerticalAlignment="Center" Margin="16,0,8,0"/>
-                        <NumberBox Value="1920" HorizontalAlignment="Left" Width="80" IsEnabled="False"/>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel x:Name="GameMaxFPS" Margin="0,16">
-                    <StackPanel>
-                        <TextBlock Text="Maximum FPS" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                        <StackPanel x:Name="GameMaxFPSValuebox" Orientation="Horizontal">
-                            <NumberBox Value="60" Maximum="1024" HorizontalAlignment="Left" Width="64" IsEnabled="True"/>
-                            <TextBlock Text="Frames Per Second" VerticalAlignment="Center" Margin="16,0"/>
+                    <StackPanel x:Name="GameGraphicsPanel" Margin="0,16" Grid.Column="1">
+                        <StackPanel>
+                            <TextBlock Text="Graphics Settings" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                            <TextBlock Text="Visual Quality" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                            <StackPanel Width="500" HorizontalAlignment="Left">
+                                <Slider x:Name="GameGraphicsSlider" AutomationProperties.Name="Slider with ticks" TickFrequency="1" Minimum="0" Maximum="3" TickPlacement="Outside" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Low" Grid.Column="0" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="Medium" Grid.Column="1" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="High" Grid.Column="1" HorizontalAlignment="Right"/>
+                                    <TextBlock Text="Very High" Grid.Column="2" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </StackPanel>
+                            <TextBlock Text="Shadow Quality" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,16,0,8"/>
+                            <StackPanel Width="500" HorizontalAlignment="Left">
+                                <Slider x:Name="GameShadowSlider" AutomationProperties.Name="Slider with ticks" TickFrequency="1" Minimum="0" Maximum="2" TickPlacement="Outside" />
+                                <Grid>
+                                    <TextBlock Text="Low" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="Medium" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="High" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </StackPanel>
+                            <TextBlock Text="Visual Effects" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,16,0,8"/>
+                            <StackPanel Orientation="Horizontal">
+                            </StackPanel>
+                            <Expander Margin="0,8,0,8" Width="500" HorizontalContentAlignment="Stretch"
+                                   x:Name="GameFXPostProcExpander">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox x:Name="GameFXPostProcCheckBox" Click="GameFXPostProcCheckBox_Click">
+                                            <CheckBox.Content>
+                                                <TextBlock Text="Post Proc." Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            </CheckBox.Content>
+                                        </CheckBox>
+                                        <CheckBox x:Name="GameFXReflectionCheckBox">
+                                            <CheckBox.Content>
+                                                <TextBlock Text="Reflection" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            </CheckBox.Content>
+                                        </CheckBox>
+                                        <CheckBox x:Name="GameFXPhysicsCheckBox">
+                                            <CheckBox.Content>
+                                                <TextBlock Text="Physics" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            </CheckBox.Content>
+                                        </CheckBox>
+                                    </StackPanel>
+                                </Expander.Header>
+                                <Expander.Content>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="GameFXHighQualityCheckBox" Content="High Quality Bloom" Grid.Column="0"/>
+                                        <CheckBox x:Name="GameFXHDRCheckBox" Content="Dynamic Range" Grid.Column="1"/>
+                                        <CheckBox x:Name="GameFXFXAACheckBox" Content="FXAA" Grid.Column="2"/>
+                                        <CheckBox x:Name="GameFXDistortionCheckBox" Content="Distortion" Grid.Column="3"/>
+                                    </Grid>
+                                </Expander.Content>
+                            </Expander>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
-        <Grid x:Name="GameSettingsApplyGrid"  VerticalAlignment="Bottom" Background="{ThemeResource CustomAcrylicBrush}" Padding="16" Margin="16" CornerRadius="5">
+        <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource OverlayAcrylicBrush}" Padding="16" Margin="16" CornerRadius="5">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Apply Settings" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center"/>
-                <TextBlock Text="Changes have been saved!" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <Button x:Name="ApplyButton" Content="Apply Settings" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click"/>
+                <TextBlock x:Name="ApplyText" Text="Changes have been saved!" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0" Visibility="Collapsed"/>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="Overlay" Background="{ThemeResource PagesAcrylicBrush}" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
+                <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
             </StackPanel>
         </Grid>
     </Grid>

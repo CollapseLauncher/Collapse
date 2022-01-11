@@ -25,7 +25,7 @@ using WinRT;
 
 using Hi3Helper;
 
-using static CollapseLauncher.LauncherConfig;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.InvokeProp;
 
 using static Hi3Helper.Logger;
@@ -40,6 +40,7 @@ namespace CollapseLauncher
     /// </summary>
     public partial class App : Application
     {
+        public static bool IsAppKilled = false;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -73,6 +74,7 @@ namespace CollapseLauncher
             var windowNative = m_window.As<IWindowNative>();
             m_windowHandle = windowNative.WindowHandle;
             m_window.Activate();
+            LogWriteLine($"WindowID IntPtr: {m_windowHandle}");
 
             SetWindowSize(m_windowHandle, 1280, 730);
         }

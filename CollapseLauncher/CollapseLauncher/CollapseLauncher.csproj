@@ -20,6 +20,7 @@
     <None Remove="Pages\CutscenesPage.xaml" />
     <None Remove="Pages\GameSettingsPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\UnavailablePage.xaml" />
     <None Remove="ResourceDictionary.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -43,7 +44,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Assets\BG\default_bg.png">
+    <Content Update="Assets\BG\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\BG\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -51,6 +55,9 @@
   <ItemGroup>
     <Page Update="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\UnavailablePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Pages\CutscenesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

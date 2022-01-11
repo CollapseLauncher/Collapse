@@ -18,8 +18,8 @@ using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
-using static CollapseLauncher.LauncherConfig;
-using static CollapseLauncher.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Logger;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -154,7 +154,7 @@ namespace CollapseLauncher.Dialogs
                     MigrationSubtextStatus.Visibility = Visibility.Visible;
                 });
 
-                gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath, "Games").Replace('\\', '/');
+                gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath, CurrentRegion.GameDirectoryName).Replace('\\', '/');
                 gameIni.Profile.Save(gameIni.ProfilePath);
             }
             catch (Exception)

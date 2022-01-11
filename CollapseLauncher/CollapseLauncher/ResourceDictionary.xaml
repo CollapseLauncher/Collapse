@@ -18,7 +18,10 @@
 
 
             <AcrylicBrush x:Key="CustomAcrylicBrush" 
-            TintOpacity="0.338000016054139" TintColor="#FF000000" FallbackColor="#FF008000" />
+            TintOpacity="0.33" TintColor="#FF000000" />
+
+            <AcrylicBrush x:Key="OverlayAcrylicBrush" 
+            TintOpacity="0" TintColor="#FF000000" />
 
             <AcrylicBrush x:Key="PagesAcrylicBrush" 
             TintOpacity="0.0" TintColor="Black" />
@@ -43,7 +46,7 @@
 
             <AcrylicBrush x:Key="NavigationBarBrush"
             TintColor="Black"
-            TintOpacity="0.75"
+            TintOpacity="0.5"
             FallbackColor="Transparent"/>
 
             <AcrylicBrush x:Key="LoadingBrush"
@@ -71,7 +74,10 @@
             -->
 
             <AcrylicBrush x:Key="CustomAcrylicBrush"
-            TintOpacity="0.0" TintColor="#FFFFFF" />
+            TintOpacity="1" TintColor="#FFFFFF" />
+            
+            <AcrylicBrush x:Key="OverlayAcrylicBrush"
+            TintOpacity="0" TintColor="#FFFFFF" />
 
             <AcrylicBrush x:Key="PagesAcrylicBrush"
             TintOpacity="0.0" />
@@ -94,7 +100,7 @@
 
             <AcrylicBrush x:Key="NavigationBarBrush"
             TintColor="White"
-            TintOpacity="0.0" TintLuminosityOpacity="0.5"
+            TintOpacity="0" TintLuminosityOpacity="0.75"
             FallbackColor="Transparent"/>
 
             <AcrylicBrush x:Key="LoadingBrush"

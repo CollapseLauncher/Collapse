@@ -33,7 +33,7 @@ using WinRT;
 
 using Hi3Helper;
 
-using static CollapseLauncher.LauncherConfig;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -66,6 +66,25 @@ namespace CollapseLauncher
             LoadConfig();
             await LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt());
             LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
+
+            // you can also add items in code behind
+            NavigationViewControl.IsSettingsVisible = true;
+
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
+
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = "Game Repair", Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = "Caches", Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = "Cutscenes", Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = "Game Settings", Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
+        }
+
+        public void LoadConfig()
+        {
+            ComboBoxGameRegion.ItemsSource = GameConfigName;
         }
 
         private string GetVersionString()
@@ -124,19 +143,6 @@ namespace CollapseLauncher
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
-            // you can also add items in code behind
-
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
-
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Game Repair", Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Caches", Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Cutscenes", Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Game Settings", Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
-
             // set the initial SelectedItem 
             foreach (NavigationViewItemBase item in NavigationViewControl.MenuItems)
             {
@@ -167,9 +173,15 @@ namespace CollapseLauncher
 
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
+            string tagStr = (string)tag.Tag;
+            if ((CurrentRegion.IsGenshin ?? false) && (string)tag.Tag != "launcher")
+            {
+                sourceType = typeof(Pages.UnavailablePage);
+                tagStr = "unavailable";
+            }
             LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
             HideBackgroundImage(hideImage, false);
-            previousTag = (string)tag.Tag;
+            previousTag = tagStr;
         }
 
         string previousTag = string.Empty;
@@ -199,17 +211,6 @@ namespace CollapseLauncher
                     case "gamesettings":
                         Navigate(typeof(Pages.GameSettingsPage), true, item);
                         break;
-
-                        /*
-                    case "music":
-                        LauncherFrame.Navigate(typeof(MusicPage));
-                        break;
-
-                    case "content":
-                        LauncherFrame.Navigate(typeof(MyContentPage));
-                        break;
-
-                        */
                 }
                 LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
             }

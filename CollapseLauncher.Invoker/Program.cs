@@ -20,6 +20,12 @@ namespace CollapseLauncher.Invoker
                     case "migrate":
                         DoMigration();
                         break;
+                    case "applygamesettings":
+                        DoApplyGameSettings();
+                        break;
+                    case "loadgamesettings":
+                        DoLoadGameSettings();
+                        break;
                     default:
                         Console.WriteLine($"Invalid argument!");
                         break;
@@ -32,12 +38,22 @@ namespace CollapseLauncher.Invoker
             }
         }
 
+        static void DoApplyGameSettings()
+        {
+
+        }
+
+        static void DoLoadGameSettings()
+        {
+
+        }
+
         static void DoMigration()
         {
             string source = argument[1];
             string target = argument[2];
 
-            string sourceGame, targetGame = Path.Combine(target, "Games");
+            string sourceGame, targetGame;
 
             IniFile iniFile = new IniFile();
 
@@ -45,7 +61,7 @@ namespace CollapseLauncher.Invoker
             {
                 iniFile.Load(Path.Combine(source, "config.ini"));
                 sourceGame = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
-
+                targetGame = Path.Combine(target, Path.GetFileName(sourceGame));
                 Console.WriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}");
                 try
                 {

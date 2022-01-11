@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Linq;
+using System.Drawing;
 
 namespace Hi3Helper.Data
 {
@@ -60,6 +61,21 @@ namespace Hi3Helper.Data
         public IniValue(string value)
         {
             Value = value;
+        }
+
+        public IniValue(Size value)
+        {
+            Value = $"{value.Width}x{value.Height}";
+        }
+
+        public Size ToSize()
+        {
+            Span<string> vs = Value.Split('x');
+            int width;
+            int height;
+            int.TryParse(vs[0], out width);
+            int.TryParse(vs[1], out height);
+            return new Size { Width = width, Height = height };
         }
 
         public bool ToBool(bool valueIfInvalid = false)

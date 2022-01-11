@@ -13,9 +13,8 @@ using Hi3Helper.Preset;
 using Hi3Helper.Data;
 
 using static Hi3Helper.Logger;
-using static Hi3Helper.Data.ConverterTool;
-using static CollapseLauncher.LauncherConfig;
-using static CollapseLauncher.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Shared.Region.InstallationManagement;
 
 namespace CollapseLauncher
 {

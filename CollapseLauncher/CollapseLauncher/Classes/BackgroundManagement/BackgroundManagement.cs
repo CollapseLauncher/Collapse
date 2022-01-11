@@ -23,8 +23,10 @@ using Newtonsoft.Json;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using Hi3Helper.Shared.ClassStruct;
+
 using static Hi3Helper.Logger;
-using static CollapseLauncher.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -39,7 +41,7 @@ namespace CollapseLauncher
         {
             try
             {
-                httpClient = new HttpClientTool();
+                httpClient = new HttpClientTool(true);
 
                 if (startUp)
                 {
@@ -211,21 +213,5 @@ namespace CollapseLauncher
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-    }
-
-    public class RegionBackgroundProp
-    {
-        public RegionBackgroundProp_data data { get; set; }
-        public string imgLocalPath { get; set; } = string.Empty;
-    }
-
-    public class RegionBackgroundProp_data
-    {
-        public RegionBackgroundProp_data_adv adv { get; set; }
-    }
-    public class RegionBackgroundProp_data_adv
-    {
-        public string background { get; set; }
-        public string bg_checksum { get; set; }
     }
 }

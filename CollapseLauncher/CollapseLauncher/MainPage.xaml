@@ -13,7 +13,7 @@
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
-        <Image x:Name="BackgroundBack" Source="Assets\BG\default_bg.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+        <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
         <Border x:Name="AppTitleBar"
                 IsHitTestVisible="True"
                 VerticalAlignment="Top"
@@ -55,8 +55,9 @@
             </ComboBox>
         </StackPanel>
         <NavigationView x:Name="NavigationViewControl"
-            IsTitleBarAutoPaddingEnabled="False"            
-            IsBackButtonVisible="Collapsed"           
+            IsTitleBarAutoPaddingEnabled="False"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="false"
             Header=""
             DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
             Canvas.ZIndex="0" Visibility="Visible" IsPaneOpen="False" Background="{StaticResource NavigationBarBrush}"
@@ -67,7 +68,7 @@
             </NavigationView.MenuItems>
 
             <Grid Margin="0,0,0,0">
-                <Image x:Name="BackgroundFront" Source="Assets\BG\default_bg.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image.RenderTransform>
                         <TranslateTransform />
                     </Image.RenderTransform>

@@ -22,8 +22,8 @@ using Windows.Storage.Pickers;
 using Hi3Helper.Data;
 
 using static Hi3Helper.Logger;
-using static CollapseLauncher.LauncherConfig;
-using static CollapseLauncher.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Shared.Region.InstallationManagement;
 
 namespace CollapseLauncher.Dialogs
 {

@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using Hi3Helper.Data;
 
 using Hi3Helper.Data;
+
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
@@ -56,9 +57,9 @@ namespace Hi3Helper.Preset
 
         void SetFallbackGameFolder(string a, bool tryFallback = false)
         {
-            if (File.Exists(Path.Combine(a, "Games", "bh3.exe")))
+            if (File.Exists(Path.Combine(a, GameDirectoryName, GameDirectoryName)))
             {
-                ActualGameDataLocation = Path.Combine(a, "Games");
+                ActualGameDataLocation = Path.Combine(a, GameDirectoryName);
             }
             else if (tryFallback)
             {
@@ -68,8 +69,8 @@ namespace Hi3Helper.Preset
                 string path = ConverterTool.NormalizePath(ini["game_install_path"]["launcher"].ToString());
                 if (!Directory.Exists(path))
                 {
-                    if (Directory.Exists(Path.Combine(DefaultGameLocation, "Games")))
-                        ActualGameDataLocation = Path.Combine(DefaultGameLocation, "Games");
+                    if (Directory.Exists(Path.Combine(DefaultGameLocation, GameDirectoryName)))
+                        ActualGameDataLocation = Path.Combine(DefaultGameLocation, GameDirectoryName);
                     else
                         throw new DirectoryNotFoundException($"\"{a}\" directory doesn't exist");
                 }
@@ -145,7 +146,7 @@ namespace Hi3Helper.Preset
                     ActualGameDataLocation = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
 
                     if (File.Exists(Path.Combine(ActualGameDataLocation, "config.ini"))
-                        || File.Exists(Path.Combine(ActualGameDataLocation, "BH3.exe")))
+                        || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName)))
                         ret = true;
                     else
                         ret = false;
@@ -169,9 +170,12 @@ namespace Hi3Helper.Preset
         public string GameVersion { get; set; }
         public string UsedLanguage { get; set; }
         public string FallbackLanguage { get; set; }
+        public string GameDirectoryName { get; set; }
+        public string GameExecutableName { get; set; }
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public bool IsSteamVersion { get; set; }
+        public bool? IsGenshin { get; set; }
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
     }

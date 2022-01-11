@@ -22,9 +22,10 @@ using Newtonsoft.Json;
 
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
-using static CollapseLauncher.LauncherConfig;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -46,28 +47,5 @@ namespace CollapseLauncher
                 LogWriteLine($"Cannot connect to the internet while fetching launcher resource");
             }
         }
-    }
-
-    public class RegionResourceProp
-    {
-        public RegionResourceGame data { get; set; }
-    }
-    public class RegionResourceGame
-    {
-        public RegionResourceLatest game { get; set; }
-        public RegionResourceLatest pre_download_game { get; set; }
-    }
-
-    public class RegionResourceLatest
-    {
-        public RegionResourceVersion latest { get; set; }
-    }
-
-    public class RegionResourceVersion
-    {
-        public string version { get; set; }
-        public string path { get; set; }
-        public string size { get; set; }
-        public string md5 { get; set; }
     }
 }
