@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Hi3Helper
 {
-    public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag }
+    public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag, Game }
     public static class Logger
     {
         internal static StreamWriter logstream;

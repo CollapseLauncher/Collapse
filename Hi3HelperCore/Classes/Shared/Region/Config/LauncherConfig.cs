@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
 using System.Drawing;
@@ -29,6 +28,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
+
+        public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
 
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled;
@@ -81,7 +82,7 @@ namespace Hi3Helper.Shared.Region
             {
                 { "CurrentRegion", new IniValue(0) },
                 { "CurrentBackground", new IniValue(@"Assets\BG\default.png") },
-                { "DownloadThread", new IniValue(16) },
+                { "DownloadThread", new IniValue(8) },
                 { "GameFolder", new IniValue(AppGameFolder) }
             });
 

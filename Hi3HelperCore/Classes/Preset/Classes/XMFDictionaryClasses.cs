@@ -58,6 +58,9 @@ namespace Hi3Helper.Preset
             public virtual uint StartOffset { get; set; }
             public virtual int FileHashArray { get; set; }
             public virtual int FileActualHashArray { get; set; }
+            public long _filesize { get; set; }
+            public long _startoffset { get; set; }
+            public string _filecrc32 { get; set; }
         }
 
         public class PatchFilesList

@@ -38,6 +38,9 @@ namespace Hi3Helper
                 case LogType.Scheme:
                     i = $"[Schm]\t{i}";
                     break;
+                case LogType.Game:
+                    i = $"[Game]\t{i}";
+                    break;
                 default:
                     i = $"\t\t{i}";
                     break;

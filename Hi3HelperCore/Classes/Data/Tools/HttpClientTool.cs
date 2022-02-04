@@ -70,7 +70,7 @@ namespace Hi3Helper.Data
             return ret;
         }
 
-        public bool DownloadStream(string input, MemoryStream output, CancellationToken token = new CancellationToken(), long startOffset = -1, long endOffset = -1, string customMessage = "")
+        public bool DownloadStream(string input, Stream output, CancellationToken token = new CancellationToken(), long startOffset = -1, long endOffset = -1, string customMessage = "")
         {
             if (string.IsNullOrEmpty(customMessage)) customMessage = $"Downloading to stream";
 
@@ -312,7 +312,12 @@ namespace Hi3Helper.Data
                 {
                     fileinfo.Delete();
                     fileinfo.Create();
+
+                    existingLength = 0;
                 }
+
+                if (j.PartRange == 7)
+                    Console.WriteLine();
 
                 if (existingLength != fileSize)
                 {
@@ -320,7 +325,14 @@ namespace Hi3Helper.Data
                     {
                         HttpRequestMessage request = new HttpRequestMessage() { RequestUri = new Uri(downloadPartialInputPath) };
 
-                        request.Headers.Range = new RangeHeaderValue(j.StartRange + existingLength, j.EndRange);
+                        try
+                        {
+                            request.Headers.Range = new RangeHeaderValue(j.StartRange + existingLength, j.EndRange);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"{ex}");
+                        }
 
                         HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, downloadPartialToken);
 
@@ -466,8 +478,8 @@ namespace Hi3Helper.Data
                                     new RangeHeaderValue(existingLength, null);
 
             HttpResponseMessage response = httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).GetAwaiter().GetResult();
-
-            if (!((response.Content.Headers.ContentRange.Length ?? 0) == existingLength))
+              
+            if  (!((response.Content.Headers.ContentRange.Length ?? 0) == existingLength))
             {
                 using (ThrowUnacceptableStatusCode(response))
                 {

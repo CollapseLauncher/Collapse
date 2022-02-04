@@ -5,8 +5,6 @@ using System.Text;
 using Microsoft.Win32;
 using Hi3Helper.Data;
 
-using Hi3Helper.Data;
-
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
@@ -172,10 +170,12 @@ namespace Hi3Helper.Preset
         public string FallbackLanguage { get; set; }
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
+        public string ZipFileURL { get; set; }
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public bool IsSteamVersion { get; set; }
         public bool? IsGenshin { get; set; }
+        public bool? UseRightSideProgress { get; set; }
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
     }

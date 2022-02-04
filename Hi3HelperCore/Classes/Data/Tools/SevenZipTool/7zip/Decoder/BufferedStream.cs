@@ -13,7 +13,7 @@ namespace ManagedLzma._7zip.Decoder
         private const int kStreamBufferSize = 0x1000;
 
         private byte[] mTemp = new byte[4 << 10];
-        private FileStream mBuffer;
+        private Stream mBuffer;
         private Stream mStream;
         private int mOffset;
         private int mEnding;

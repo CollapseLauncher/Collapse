@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.ComponentModel;
 
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -23,25 +25,45 @@ namespace Hi3Helper.Shared.Region
 {
     public static class GameSettingsManagement
     {
-        public const string SectionName = "Settings";
+        public static RegistryKey RegKey;
+        public static bool IsRegKeyExist = true;
+
+        public static void InitRegKey()
+        {
+            RegKey = Registry.CurrentUser.OpenSubKey($"{CurrentRegion.ConfigRegistryLocation}", true);
+            IsRegKeyExist = !(RegKey == null);
+        }
+
+        public const string SectionName = "SettingsV2";
         public static Dictionary<string, IniValue> GameSettingsTemplate = new Dictionary<string, IniValue>
         {
             { "Fullscreen", new IniValue(true) },
             { "ScreenResolution", new IniValue(ScreenProp.GetScreenSize()) },
-            { "MaximumCombatFPS", new IniValue(60) },
-            { "MaximumMenuFPS", new IniValue(60) },
-            { "VisualQuality", new IniValue(2) },
-            { "ShadowQuality", new IniValue(2) },
-            { "PostProcessing", new IniValue(false) },
-            { "Reflection", new IniValue(false) },
-            { "Physics", new IniValue(false) },
-            { "HighQualityBloom", new IniValue(false) },
-            { "DynamicRange", new IniValue(false) },
-            { "FXAA", new IniValue(false) },
-            { "Distortion", new IniValue(false) },
             { "FullscreenExclusive", new IniValue(false) },
             { "CustomScreenResolution", new IniValue(false) },
-            { "GameGraphicsAPI", new IniValue(3) }
+            { "GameGraphicsAPI", new IniValue(3) },
+
+            { "ResolutionQuality", new IniValue(2) },
+            { "ShadowLevel", new IniValue(3) },
+            { "TargetFrameRateForInLevel", new IniValue(60) },
+            { "TargetFrameRateForOthers", new IniValue(60) },
+            { "ReflectionQuality", new IniValue(2) },
+            { "UseDynamicBone", new IniValue(true) },
+            { "UseFXAA", new IniValue(true) },
+            { "GlobalIllumination", new IniValue(true) },
+            { "AmbientOcclusion", new IniValue(2) },
+            { "VolumetricLight", new IniValue(true) },
+            { "UsePostFX", new IniValue(true) },
+            { "HighQualityPostFX", new IniValue(true) },
+            { "UseHDR", new IniValue(true) },
+            { "UseDistortion", new IniValue(true) },
+
+            { "BGMVolume", new IniValue(3) },
+            { "SoundEffectVolume", new IniValue(3) },
+            { "VoiceVolume", new IniValue(3) },
+            { "ElfVolume", new IniValue(3) },
+            { "CGVolume", new IniValue(3) },
+            { "CVLanguage", new IniValue(1) },
         };
 
         public static async Task CheckExistingGameSettings()
@@ -80,18 +102,31 @@ namespace Hi3Helper.Shared.Region
                             break;
 
                         // Registry: PersonalGraphicsSetting
-                        case "MaximumCombatFPS":
-                        case "MaximumMenuFPS":
-                        case "VisualQuality":
-                        case "ShadowQuality":
-                        case "PostProcessing":
-                        case "Reflection":
-                        case "Physics":
-                        case "HighQualityBloom":
-                        case "DynamicRange":
-                        case "FXAA":
-                        case "Distortion":
+                        case "ResolutionQuality":
+                        case "ShadowLevel":
+                        case "TargetFrameRateForInLevel":
+                        case "TargetFrameRateForOthers":
+                        case "ReflectionQuality":
+                        case "UseDynamicBone":
+                        case "UseFXAA":
+                        case "GlobalIllumination":
+                        case "AmbientOcclusion":
+                        case "VolumetricLight":
+                        case "UsePostFX":
+                        case "HighQualityPostFX":
+                        case "UseHDR":
+                        case "UseDistortion":
                             GetOrCreatePersonalGraphicsSettingsValue(keyValue.Key);
+                            break;
+
+                        // Registry: PersonalAudioSetting
+                        case "BGMVolume":
+                        case "SoundEffectVolume":
+                        case "VoiceVolume":
+                        case "ElfVolume":
+                        case "CGVolume":
+                        case "CVLanguage":
+                            GetOrCreatePersonalAudioSettingsValue(keyValue.Key);
                             break;
 
                         // Unregistered Keys
@@ -106,23 +141,17 @@ namespace Hi3Helper.Shared.Region
         public static async Task SaveGameSettings() =>
         await Task.Run(() =>
         {
+            gameIni.Settings.Save(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
+            gameIni.Settings.Load(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.Open, FileAccess.Read));
+
             SaveWindowValue();
             SavePersonalGraphicsSettingsValue();
-
-            gameIni.Settings.Save(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
-            gameIni.Settings.Load(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.Open, FileAccess.Read)); 
+            SavePersonalAudioSettingsValue();
         });
 
-        private static string GetRegistryValue(in string key)
-        {
-            var parentkey = Registry.CurrentUser;
-            var reg = parentkey.OpenSubKey($"{CurrentRegion.ConfigRegistryLocation}", false);
-            var subkey = reg.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
-            return Encoding.UTF8.GetString((byte[])subkey).Replace("\0","");
-        }
+        private static string GetRegistryValue(in string key) => Encoding.UTF8.GetString((byte[])RegKey.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames)).Replace("\0","");
 
-        private static void SaveRegistryValue(in string key, in object value, in RegistryValueKind kind) =>
-            Registry.SetValue($"HKEY_CURRENT_USER\\{CurrentRegion.ConfigRegistryLocation}", key, value, kind);
+        public static void SaveRegistryValue(in string reglocation, in string key, in object value, in RegistryValueKind kind) => RegKey.SetValue(key, value, kind);
 
         #region Unregistered_Keys
 
@@ -133,7 +162,7 @@ namespace Hi3Helper.Shared.Region
 
         #region Registry_ScreenSettingData
 
-        const string ScreenSettingDataReg = "GENERAL_DATA_V2_ScreenSettingData_h1916288658";
+        public const string ScreenSettingDataReg = "GENERAL_DATA_V2_ScreenSettingData_h1916288658";
         public class ScreenSettingData
         {
             public int width { get; set; }
@@ -164,7 +193,7 @@ namespace Hi3Helper.Shared.Region
             gameIni.Settings[SectionName].Add(key, value);
         }
 
-        private static void SaveWindowValue()
+        public static void SaveWindowValue()
         {
             Size resolution = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
 
@@ -175,33 +204,65 @@ namespace Hi3Helper.Shared.Region
                 isfullScreen = gameIni.Settings[SectionName]["Fullscreen"].ToBool()
             }) + '\0';
 
-            SaveRegistryValue(ScreenSettingDataReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
-            SaveRegistryValue("Screenmanager Is Fullscreen mode_h3981298716", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0, RegistryValueKind.DWord);
-            SaveRegistryValue("Screenmanager Resolution Width_h182942802", resolution.Width, RegistryValueKind.DWord);
-            SaveRegistryValue("Screenmanager Resolution Height_h2627697771", resolution.Height, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, ScreenSettingDataReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Is Fullscreen mode_h3981298716", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Resolution Width_h182942802", resolution.Width, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Resolution Height_h2627697771", resolution.Height, RegistryValueKind.DWord);
         }
 
         #endregion
 
         #region Registry_PersonalGraphicsSetting
 
-        const string PersonalGraphicsSettingReg = "GENERAL_DATA_V2_PersonalGraphicsSetting_h906361411";
-        public enum EnumQuality { VHigh, High, Middle, Low, DISABLED, LOW, HIGH }
+        public const string PersonalGraphicsSettingReg = "GENERAL_DATA_V2_PersonalGraphicsSetting_h906361411";
+        public const string PersonalGraphicsSettingV2Reg = "GENERAL_DATA_V2_PersonalGraphicsSettingV2_h3480068519";
+        public const string GraphicsGradeReg = "GENERAL_DATA_V2_GraphicsGrade_h1073342808";
+
+        public enum EnumQuality
+        {
+            Low = 0,
+            Middle = 1,
+            High = 2,
+            VHigh = 3
+        }
+
+        public enum EnumQualityCloseable
+        {
+            DISABLED = 0,
+            LOW = 1,
+            MIDDLE = 2,
+            HIGH = 3,
+            ULTRA = 4
+        }
+
+        public enum EnumQualityOLH
+        {
+            OFF = 0,
+            LOW = 1,
+            HIGH = 2
+        }
+
+        public enum EnumQualityCloseableOLH
+        {
+            DISABLED = 0,
+            LOW = 1,
+            HIGH = 2,
+        }
 
         public class PersonalGraphicsSetting
         {
             public string RecommendGrade { get; set; } = "Off";
             public bool IsUserDefinedGrade { get; set; } = false;
-            public bool IsUserDefinedVolatile { get; set; } = true;
+            public bool IsUserDefinedVolatile { get; set; } = false;
             public bool IsEcoMode { get; set; } = false;
-            public int RecommendResolutionX { get; set; }
-            public int RecommendResolutionY { get; set; }
-            public EnumQuality ResolutionQuality { get; set; }
-            public int TargetFrameRateForInLevel { get; set; }
-            public int TargetFrameRateForOthers { get; set; }
+            public int RecommendResolutionX { get; set; } = 0;
+            public int RecommendResolutionY { get; set; } = 0;
+            public EnumQuality ResolutionQuality { get; set; } = EnumQuality.Low;
+            public int TargetFrameRateForInLevel { get; set; } = 0;
+            public int TargetFrameRateForOthers { get; set; } = 0;
             public float ContrastDelta { get; set; } = 0.0f;
             public bool isBrightnessStandardModeOn { get; set; } = true;
-            public _VolatileSetting VolatileSetting { get; set; }
+            public _VolatileSetting VolatileSetting { get; set; } = null;
         }
 
         public class _VolatileSetting
@@ -218,14 +279,34 @@ namespace Hi3Helper.Shared.Region
             public EnumQuality ShadowLevel { get; set; }
         }
 
+        public class PersonalGraphicsSettingV2
+        {
+            public EnumQuality ResolutionQuality { get; set; }
+            public EnumQualityCloseable ShadowLevel { get; set; }
+            public ushort TargetFrameRateForInLevel { get; set; }
+            public ushort TargetFrameRateForOthers { get; set; }
+            public EnumQualityCloseableOLH ReflectionQuality { get; set; }
+            public bool UseDynamicBone { get; set; }
+            public bool UseFXAA { get; set; }
+            public EnumQuality GlobalIllumination { get; set; }
+            public EnumQualityOLH AmbientOcclusion { get; set; }
+            public EnumQuality VolumetricLight { get; set; }
+            public bool UsePostFX { get; set; }
+            public EnumQuality PostFXGrade { get; set; }
+            public bool UseHDR { get; set; }
+            public bool UseDistortion { get; set; }
+        }
+
         private static void GetOrCreatePersonalGraphicsSettingsValue(in string key)
         {
             // Set default value before getting assigned
             IniValue value = GameSettingsTemplate[key];
             try
             {
-                PersonalGraphicsSetting data = JsonConvert.DeserializeObject<PersonalGraphicsSetting>
-                                               (GetRegistryValue(PersonalGraphicsSettingReg));
+                PersonalGraphicsSettingV2 data = JsonConvert.DeserializeObject<PersonalGraphicsSettingV2>
+                                               (GetRegistryValue(PersonalGraphicsSettingV2Reg));
+                #region Unused
+                /*
                 switch (key)
                 {
                     case "MaximumCombatFPS":
@@ -238,13 +319,13 @@ namespace Hi3Helper.Shared.Region
                         value = new IniValue(ConvertEnumToInt(data.ResolutionQuality));
                         break;
                     case "ShadowQuality":
-                        value = new IniValue(ConvertEnumToInt(data.VolatileSetting.ShadowLevel));
+                        value = new IniValue(ConvertEnumToInt(data.ShadowLevel));
                         break;
                     case "PostProcessing":
-                        value = new IniValue(data.VolatileSetting.UsePostFX);
+                        value = new IniValue(data.UsePostFX);
                         break;
-                    case "Reflection":
-                        value = new IniValue(data.VolatileSetting.UseReflection);
+                    case "ReflectionQuality":
+                        value = new IniValue(data.ReflectionQuality);
                         break;
                     case "Physics":
                         value = new IniValue(data.VolatileSetting.UseDynamicBone);
@@ -262,95 +343,248 @@ namespace Hi3Helper.Shared.Region
                         value = new IniValue(data.VolatileSetting.UseDistortion);
                         break;
                 }
+                */
+                #endregion
+
+                switch (key)
+                {
+                    case "ResolutionQuality":
+                        value = new IniValue(ConvertEnumToInt(data.ResolutionQuality));
+                        break;
+                    case "ShadowLevel":
+                        value = new IniValue(ConvertEnumToIntCloseable(data.ShadowLevel));
+                        break;
+                    case "TargetFrameRateForInLevel":
+                        value = new IniValue(data.TargetFrameRateForInLevel);
+                        break;
+                    case "TargetFrameRateForOthers":
+                        value = new IniValue(data.TargetFrameRateForOthers);
+                        break;
+                    case "ReflectionQuality":
+                        value = new IniValue(ConvertEnumToIntCloseableOLH(data.ReflectionQuality));
+                        break;
+                    case "UseDynamicBone":
+                        value = new IniValue(data.UseDynamicBone);
+                        break;
+                    case "UseFXAA":
+                        value = new IniValue(data.UseFXAA);
+                        break;
+                    case "GlobalIllumination":
+                        value = new IniValue(ConvertEnumHighLowToBool(data.GlobalIllumination));
+                        break;
+                    case "AmbientOcclusion":
+                        value = new IniValue(ConvertEnumToIntOLH(data.AmbientOcclusion));
+                        break;
+                    case "VolumetricLight":
+                        value = new IniValue(ConvertEnumHighLowToBool(data.VolumetricLight));
+                        break;
+                    case "UsePostFX":
+                        value = new IniValue(data.UsePostFX);
+                        break;
+                    case "HighQualityPostFX":
+                        value = new IniValue(ConvertEnumHighLowToBool(data.PostFXGrade));
+                        break;
+                    case "UseHDR":
+                        value = new IniValue(data.UseHDR);
+                        break;
+                    case "UseDistortion":
+                        value = new IniValue(data.UseDistortion);
+                        break;
+                }
             }
             catch { }
 
             gameIni.Settings[SectionName].Add(key, value);
         }
 
-        private static void SavePersonalGraphicsSettingsValue()
+        public static void SavePersonalGraphicsSettingsValue()
         {
-            Size resolution = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
-
-            string data = JsonConvert.SerializeObject(new PersonalGraphicsSetting
+            string data = JsonConvert.SerializeObject(new PersonalGraphicsSettingV2
             {
-                RecommendGrade = "Off",
-                RecommendResolutionX = resolution.Width,
-                RecommendResolutionY = resolution.Height,
-                ResolutionQuality = ConvertIntToEnum(gameIni.Settings[SectionName]["VisualQuality"].ToInt(), false),
-                TargetFrameRateForInLevel = gameIni.Settings[SectionName]["MaximumCombatFPS"].ToInt(),
-                TargetFrameRateForOthers = gameIni.Settings[SectionName]["MaximumMenuFPS"].ToInt(),
-                VolatileSetting = new _VolatileSetting
+                ResolutionQuality = ConvertIntToEnum(gameIni.Settings[SectionName]["ResolutionQuality"].ToInt()),
+                ShadowLevel = ConvertIntToEnumCloseable(gameIni.Settings[SectionName]["ShadowLevel"].ToInt()),
+                TargetFrameRateForInLevel = checked((ushort)gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt()),
+                TargetFrameRateForOthers = checked((ushort)gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt()),
+                ReflectionQuality = ConvertIntToEnumCloseableOLH(gameIni.Settings[SectionName]["ReflectionQuality"].ToInt()),
+                UseDynamicBone = gameIni.Settings[SectionName]["UseDynamicBone"].ToBool(),
+                UseFXAA = gameIni.Settings[SectionName]["UseFXAA"].ToBool(),
+                GlobalIllumination = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["GlobalIllumination"].ToBool()),
+                AmbientOcclusion = ConvertIntToEnumOLH(gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt()),
+                VolumetricLight = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["VolumetricLight"].ToBool()),
+                UsePostFX = gameIni.Settings[SectionName]["UsePostFX"].ToBool(),
+                PostFXGrade = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool()),
+                UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),
+                UseDistortion = gameIni.Settings[SectionName]["UseDistortion"].ToBool(),
+            }, new Newtonsoft.Json.Converters.StringEnumConverter()) + '\0';
+
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, PersonalGraphicsSettingV2Reg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+        }
+
+        private static int ConvertEnumToInt(EnumQuality value) => (int)value;
+        public static bool ConvertEnumHighLowToBool(EnumQuality input) => input == EnumQuality.High;
+        private static int ConvertEnumToIntCloseable(EnumQualityCloseable value) => (int)value;
+        private static int ConvertEnumToIntOLH(EnumQualityOLH value) => (int)value;
+        private static int ConvertEnumToIntCloseableOLH(EnumQualityCloseableOLH value) => (int)value;
+
+
+        public static EnumQuality ConvertIntToEnum(int value) => (EnumQuality)value;
+        public static EnumQuality ConvertBoolToEnumHighLow(bool input) => input ? (EnumQuality.High) : (EnumQuality.Low);
+        public static EnumQualityCloseable ConvertIntToEnumCloseable(int value) => (EnumQualityCloseable)value;
+        public static EnumQualityOLH ConvertIntToEnumOLH(int value) => (EnumQualityOLH)value;
+        public static EnumQualityCloseableOLH ConvertIntToEnumCloseableOLH(int value) => (EnumQualityCloseableOLH)value;
+
+        #endregion
+
+        #region Registry_PersonalAudioSetting
+
+        public const string PersonalAudioSettingReg = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
+
+        public class PersonalAudioSetting
+        {
+            public byte BGMVolume { get; set; }
+            public byte SoundEffectVolume { get; set; }
+            public byte VoiceVolume { get; set; }
+            public byte ElfVolume { get; set; }
+            public byte CGVolume { get; set; }
+            public string CVLanguage { get; set; }
+            public string _userCVLanguage { get; set; }
+            public bool IsUserDefined { get; set; } = false;
+        }
+
+        private static void GetOrCreatePersonalAudioSettingsValue(in string key)
+        {
+            // Set default value before getting assigned
+            IniValue value = GameSettingsTemplate[key];
+            try
+            {
+                PersonalAudioSetting data = JsonConvert.DeserializeObject<PersonalAudioSetting>
+                                               (GetRegistryValue(PersonalAudioSettingReg));
+
+                switch (key)
                 {
-                    PostFXGrade = ConvertBoolToEnum(gameIni.Settings[SectionName]["HighQualityBloom"].ToBool(), false),
-                    UsePostFX = gameIni.Settings[SectionName]["PostProcessing"].ToBool(),
-                    UseHDR = gameIni.Settings[SectionName]["DynamicRange"].ToBool(),
-                    UseDistortion = gameIni.Settings[SectionName]["Distortion"].ToBool(),
-                    UseReflection = gameIni.Settings[SectionName]["Reflection"].ToBool(),
-                    UseFXAA = gameIni.Settings[SectionName]["FXAA"].ToBool(),
-                    UseDynamicBone = gameIni.Settings[SectionName]["Physics"].ToBool(),
-                    ShadowLevel = ConvertIntToEnum(gameIni.Settings[SectionName]["ShadowQuality"].ToInt(), true),
+                    case "BGMVolume":
+                        value = new IniValue(data.BGMVolume);
+                        break;
+                    case "SoundEffectVolume":
+                        value = new IniValue(data.SoundEffectVolume);
+                        break;
+                    case "VoiceVolume":
+                        value = new IniValue(data.VoiceVolume);
+                        break;
+                    case "ElfVolume":
+                        value = new IniValue(data.ElfVolume);
+                        break;
+                    case "CGVolume":
+                        value = new IniValue(data.CGVolume);
+                        break;
+                    case "CVLanguage":
+                        value = data.IsUserDefined ? 0 : 1;
+                        break;
                 }
+            }
+            catch { }
+
+            gameIni.Settings[SectionName].Add(key, value);
+        }
+
+        private static void SavePersonalAudioSettingsValue()
+        {
+            string data = JsonConvert.SerializeObject(new PersonalAudioSetting
+            {
+                BGMVolume = (byte)gameIni.Settings[SectionName]["BGMVolume"].ToInt(),
+                SoundEffectVolume = (byte)gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt(),
+                VoiceVolume = (byte)gameIni.Settings[SectionName]["VoiceVolume"].ToInt(),
+                ElfVolume = (byte)gameIni.Settings[SectionName]["ElfVolume"].ToInt(),
+                CGVolume = (byte)gameIni.Settings[SectionName]["CGVolume"].ToInt(),
+                CVLanguage = "Japanese",
+                _userCVLanguage = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0 ? "Chinese(PRC)" : null,
+                IsUserDefined = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0
             }) + '\0';
 
-            SaveRegistryValue(PersonalGraphicsSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, PersonalAudioSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
         }
 
-        private static int ConvertEnumToInt(EnumQuality value)
+        public static byte ConvertStringToByte(string value)
         {
             switch (value)
             {
-                case EnumQuality.VHigh:
-                    return 3;
-                case EnumQuality.High:
-                    return 2;
-                case EnumQuality.Middle:
-                    return 1;
-                case EnumQuality.Low:
-                    return 0;
-                case EnumQuality.HIGH:
-                    return 2;
-                case EnumQuality.LOW:
-                    return 1;
-                case EnumQuality.DISABLED:
+                case "Chinese(PRC)":
                     return 0;
                 default:
-                    return 0;
+                case "Japanese":
+                    return 1;
             }
         }
-
-        private static bool ConvertEnumToBool(EnumQuality value)
+        public static string ConvertByteToString(byte value)
         {
             switch (value)
-            {
-                case EnumQuality.VHigh:
-                case EnumQuality.High:
-                case EnumQuality.Middle:
-                case EnumQuality.HIGH:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        private static EnumQuality ConvertBoolToEnum(bool input, bool upper) =>
-            input ? (upper ? EnumQuality.HIGH : EnumQuality.High) : (upper ? EnumQuality.DISABLED : EnumQuality.Low);
-
-        private static EnumQuality ConvertIntToEnum(int input, bool upper)
-        {
-            switch (input)
             {
                 case 0:
-                    return upper ? EnumQuality.DISABLED : EnumQuality.Low;
-                case 1:
-                    return upper ? EnumQuality.LOW : EnumQuality.Middle;
-                case 2:
-                    return upper ? EnumQuality.HIGH : EnumQuality.High;
-                case 3:
-                    return EnumQuality.VHigh;
+                    return "Chinese(PRC)";
                 default:
-                    return EnumQuality.DISABLED;
+                case 1:
+                    return "Japanese";
             }
+        }
+
+        #endregion
+
+        #region LaunchArgumentBuilder
+
+        public static async Task<string> GetLaunchArguments()
+        {
+            StringBuilder parameter = new StringBuilder();
+
+            if (IsRegKeyExist)
+            {
+                await CheckExistingGameSettings();
+
+                parameter.AppendFormat("-screen-fullscreen {0} ", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0);
+
+                if (gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool())
+                {
+                    parameter.Append("-window-mode exclusive ");
+                }
+
+                Size screenSize = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
+
+                int apiID = gameIni.Settings[SectionName]["GameGraphicsAPI"].ToInt();
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool() && gameIni.Settings[SectionName]["Fullscreen"].ToBool())
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+
+
+                switch (apiID)
+                {
+                    case 0:
+                        parameter.Append("-force-feature-level-9-3 ");
+                        break;
+                    case 1:
+                        parameter.Append("-force-feature-level-10-0 ");
+                        break;
+                    case 2:
+                        parameter.Append("-force-feature-level-10-1 ");
+                        break;
+                    default:
+                    case 3:
+                        parameter.Append("-force-feature-level-11-0 ");
+                        break;
+                    case 4:
+                        parameter.Append("-force-d3d12 ");
+                        break;
+                }
+            }
+
+            return parameter.ToString();
         }
 
         #endregion

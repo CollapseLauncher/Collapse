@@ -33,7 +33,7 @@ namespace Hi3Helper.Data
         List<ExtractThreadProp> extractProp = new List<ExtractThreadProp>();
         int thread,
             extractedCount;
-        byte[] buffer = new byte[2097152];
+        byte[] buffer = new byte[0x1000];
 
         // Public entity
         public List<CFileItem> archiveEntries;
@@ -87,10 +87,10 @@ namespace Hi3Helper.Data
         public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken())
         {
             stopWatch = Stopwatch.StartNew();
+            List<Task> tasks = new List<Task>();
 
             try
             {
-                List<Task> tasks = new List<Task>();
                 List<Task> fallbackTasks = new List<Task>();
 
                 totalExtractedSize = 0;
@@ -141,12 +141,12 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
 
                 if (failedEntries.Count != 0)
                 {
-                    Console.WriteLine($"There are {failedEntries.Count} files that failed to be extracted. Including:");
+                    // Console.WriteLine($"There are {failedEntries.Count} files that failed to be extracted. Including:");
                     foreach (CFileItem entry in failedEntries)
                     {
                         Console.WriteLine(entry.Name);
                     }
-                    Console.WriteLine($"This file will be extracted using fallback method, but it will takes so much memory and long time to process.");
+                    // Console.WriteLine($"This file will be extracted using fallback method, but it will takes so much memory and long time to process.");
                     GetFallbackThreadPartition(failedEntries);
 
                     int fallbackThreadID = 0;
@@ -203,7 +203,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
         List<FallbackExtractThreadProp> fallbackExtractProp = new List<FallbackExtractThreadProp>();
 
         long fallbackSingleUncompressedSize = 0;
-        private void FallbackThreadChild(in string inputFilePath, List<CFileItem> inputEntry, FallbackExtractThreadProp j, in string outputDirectory, int threadID, CancellationToken token = new CancellationToken())
+        private void FallbackThreadChild(in string inputFilePath, List<CFileItem> inputEntry, FallbackExtractThreadProp j, in string outputDirectory, int threadID, CancellationToken token)
         {
             FileStream fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
             using (j.reader = ArchiveFactory.Open(fileStream, new ReaderOptions { LookForHeader = true }))
@@ -268,7 +268,6 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             for (int i = j.start; i <= j.end; i++)
             {
                 string path = Path.Combine(output, archiveEntries[i].Name.Replace('/', '\\'));
-                // Console.WriteLine($"{path} on threadID: {threadID}");
 
                 if (archiveEntries[i].IsDir)
                 {
@@ -285,33 +284,33 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                     {
                         if (archiveEntries[i].Size == 0)
                         {
-                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} has 0 byte in size.");
+                            // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} has 0 byte in size.");
                             new FileInfo(path).Create().Dispose();
                         }
                         else
                         {
-                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
+                            // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
                             failedEntries.Add(archiveEntries[i]);
                         }
                     }
                     catch (AggregateException ex)
                     {
-                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        // Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
                         throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
                     }
                     catch (OperationCanceledException ex)
                     {
-                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        // Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
                         throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
                     }
                     catch (NotImplementedException)
                     {
-                        Console.WriteLine($"{archiveEntries[i].Name} on threadID {threadID} will be extracted using fallback method (but slower).");
+                        // Console.WriteLine($"{archiveEntries[i].Name} on threadID {threadID} will be extracted using fallback method (but slower).");
                         failedEntries.Add(archiveEntries[i]);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
+                        // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
                         failedEntries.Add(archiveEntries[i]);
                     }
                 }
@@ -324,8 +323,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             // int read = 0;
             using (input) using (output)
             {
-                token.ThrowIfCancellationRequested();
-                input.CopyTo(output);
+
                 /*
                 if (fallback)
                 {
@@ -347,11 +345,15 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                     }
                 }
                 */
+
+                token.ThrowIfCancellationRequested();
+                input.CopyTo(output);
+
                 totalExtractedSize += fallback ? fallbackSingleUncompressedSize : input.Length;
                 OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
             }
             extractedCount++;
-            OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
+            // OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
         }
 
         public event EventHandler<ExtractProgress> ExtractProgressChanged;
@@ -372,7 +374,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
         public long totalCount { get; private set; }
         public long totalExtractedSize { get; private set; }
         public long totalUncompressedSize { get; private set; }
-        public float ProgressPercentage => ((float)totalExtractedCount / (float)totalCount) * 100;
+        public float ProgressPercentage => ((float)totalExtractedSize / (float)totalUncompressedSize) * 100;
         public long CurrentSpeed { get; private set; }
         public TimeSpan TimeLeft => TimeSpan.FromSeconds((totalUncompressedSize - totalExtractedSize) / CurrentSpeed);
     }

@@ -22,6 +22,9 @@ namespace Hi3Helper
                 case LogType.Scheme:
                     i = $"\u001b[34;1m[Schm]\u001b[0m\t{i}";
                     break;
+                case LogType.Game:
+                    i = $"\u001b[35;1m[Game]\u001b[0m\t{i}";
+                    break;
                 case LogType.NoTag:
                     i = $"\t{i}";
                     break;
@@ -76,6 +79,9 @@ namespace Hi3Helper
                     break;
                 case LogType.Scheme:
                     i = $"[Schm]\t{i}";
+                    break;
+                case LogType.Game:
+                    i = $"[Game]\t{i}";
                     break;
                 default:
                     i = $"\t\t{i}";

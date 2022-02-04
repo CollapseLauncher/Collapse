@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CollapseLauncher (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "CollapseLauncher (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
