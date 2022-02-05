@@ -103,6 +103,7 @@ namespace CollapseLauncher.Pages
                     CheckFilesBtn.Visibility = Visibility.Visible;
                     CheckFilesBtn.IsEnabled = true;
                     RepairFilesBtn.Visibility = Visibility.Collapsed;
+                    RepairStatus.Text = "Repair Completed!";
                     RepairPerFileStatus.Text = "None";
                     RepairTotalStatus.Text = "None";
                     RepairPerFileProgressBar.Value = 0;

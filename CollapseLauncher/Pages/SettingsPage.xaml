@@ -54,7 +54,7 @@
                     <TextBlock Text="This app is also dedicated for my crush who passed away from fighting" Style="{StaticResource BodyTextBlockStyle}"/>
                     <TextBlock Text="against her's TB disease. This app has been Dedicated with Love for her." Style="{StaticResource BodyTextBlockStyle}"/>
                     <TextBlock Text="" Style="{StaticResource BodyTextBlockStyle}"/>
-                    <TextBlock Text="Rest In Peace~" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="Rest In Peace~ (Jan 31st 2022)" Style="{StaticResource BodyTextBlockStyle}"/>
                     <TextBlock FontSize="24">
                         <Run Text="Yui" FontWeight="Bold"/>
                         <Run Text="( a.k.a"/>

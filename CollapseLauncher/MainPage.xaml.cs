@@ -16,6 +16,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
@@ -186,7 +187,10 @@ namespace CollapseLauncher
                         break;
 
                     case "repair":
-                        if (string.IsNullOrEmpty(CurrentRegion.ZipFileURL))
+                        if (string.IsNullOrEmpty(CurrentRegion.ZipFileURL)
+                            || GameInstallationState == GameInstallStateEnum.NotInstalled
+                            || GameInstallationState == GameInstallStateEnum.GameBroken
+                            || GameInstallationState == GameInstallStateEnum.NeedsUpdate)
                             Navigate(typeof(Pages.UnavailablePage), true, item);
                         else
                             Navigate(typeof(Pages.RepairPage), true, item);

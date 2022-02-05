@@ -81,7 +81,9 @@ namespace CollapseLauncher.Pages
              SingleSize,
              SingleCurrentReadSize,
              BlockSize,
-             BlockCurrentReadSize;
+             BlockCurrentReadSize,
+             BrokenFilesRead,
+             BrokenFilesSize;
 
         int TotalIndexedCount,
             TotalCurrentReadCount;
@@ -231,6 +233,8 @@ namespace CollapseLauncher.Pages
                         BlockContent = BrokenChunk
                     });
 
+                    BrokenFilesSize += block.BlockSize;
+
                     BrokenFilesCount++;
 
                     BlockCurrentReadSize += block.BlockSize;
@@ -259,6 +263,8 @@ namespace CollapseLauncher.Pages
                     });
 
                     BrokenFilesCount++;
+
+                    BrokenFilesSize += block.BlockSize;
 
                     BlockCurrentReadSize += block.BlockSize;
 
@@ -302,6 +308,7 @@ namespace CollapseLauncher.Pages
 
                                 BrokenChunk.Add(chunk);
 
+                                BrokenFilesSize += chunk._filesize;
                                 BrokenFilesCount++;
                             }
 
@@ -347,7 +354,7 @@ namespace CollapseLauncher.Pages
             {
                 if (BrokenFilesCount > 0)
                 {
-                    RepairStatus.Text = $"{BrokenFilesCount} file{(BrokenFilesCount > 1 ? "s have" : " has")} been found to be broken. Click Repair Game to begin the repair process";
+                    RepairStatus.Text = $"{BrokenFilesCount} file{(BrokenFilesCount > 1 ? "s have" : " has")} been found to be broken ({SummarizeSizeSimple(BrokenFilesSize)} in total size). Click Repair Game to begin the repair process";
                     RepairFilesBtn.Visibility = Visibility.Visible;
                     CheckFilesBtn.Visibility = Visibility.Collapsed;
                     CancelBtn.IsEnabled = false;
@@ -388,6 +395,7 @@ namespace CollapseLauncher.Pages
                 }));
 
                 BrokenFileIndexesProperty.Add(input);
+                BrokenFilesSize += input.S;
 
                 BrokenFilesCount++;
             }

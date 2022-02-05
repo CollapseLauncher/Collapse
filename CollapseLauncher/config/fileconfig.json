@@ -135,6 +135,7 @@
       }
     }
   },
+  /*
   {
     "ProfileName": "GIGlb",
     "ZoneName": "Genshin Impact",
@@ -162,5 +163,5 @@
         "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
       }
     }
-  }
+  }*/
 ]

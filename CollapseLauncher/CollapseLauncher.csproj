@@ -13,6 +13,8 @@
 	<WindowsPackageType>None</WindowsPackageType>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
 	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
+	<DebugType>embedded</DebugType>
+	<Version>1.0.5</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="CollapseLauncher.Invoker.dll" />
