@@ -10,6 +10,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
@@ -41,6 +42,18 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|x64'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
