@@ -5,8 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 
 using Hi3Helper.Data;
+using Hi3Helper.Preset;
 
 using static CollapseLauncher.Invoker.SettingsGraphics;
 
@@ -25,6 +28,9 @@ namespace CollapseLauncher.Invoker
                 {
                     case "migrate":
                         DoMigration();
+                        break;
+                    case "migratebhi3l":
+                        DoMigrationBHI3L();
                         break;
                     case "applygamesettings":
                         DoApplyGameSettings(argument[1], argument[2]);
@@ -71,6 +77,80 @@ namespace CollapseLauncher.Invoker
                     Console.WriteLine($"\rMoving {i+1}/{fileList.Length}: {basepath}");
                 }
             }
+        }
+
+        static void DoMigrationBHI3L()
+        {
+            string version = argument[1];
+            string registryName = argument[2];
+            string sourceGame = argument[3];
+            string targetGame = argument[4];
+
+            IniFile iniFile = new IniFile();
+
+            if (sourceGame != targetGame)
+            {
+                try
+                {
+                    targetGame = Path.Combine(targetGame, "Games");
+                    MoveOperation(sourceGame, targetGame);
+                    BHI3LInfo info = new BHI3LInfo
+                    {
+                        game_info = new BHI3LInfo_GameInfo
+                        {
+                            installed = true,
+                            install_path = targetGame,
+                            version = version,
+                        }
+                    };
+
+                    Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher", true)
+                        .SetValue(registryName, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(info)), RegistryValueKind.Binary);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{ex}");
+                }
+            }
+
+            if (!File.Exists(Path.Combine(targetGame, "config.ini")))
+            {
+                iniFile.Add("General", new Dictionary<string, IniValue>
+                {
+                    { "channel", new IniValue(1) },
+                    { "cps", new IniValue() },
+                    { "game_version", new IniValue(version) },
+                    { "sub_channel", new IniValue(1) },
+                    { "sdk_version", new IniValue() },
+                });
+                iniFile.Save(new FileStream(Path.Combine(targetGame, "config.ini"), FileMode.OpenOrCreate, FileAccess.ReadWrite));
+            }
+
+            Process takeOwner = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = $"/c icacls \"{targetGame}\" /T /Q /C /RESET"
+                }
+            };
+
+            takeOwner.Start();
+            takeOwner.WaitForExit();
+
+            takeOwner = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = $"/c takeown /f \"{targetGame}\" /r /d y"
+                }
+            };
+
+            takeOwner.Start();
+            takeOwner.WaitForExit();
         }
 
         static void DoMigration()

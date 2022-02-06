@@ -2,7 +2,7 @@
   "profiles": {
     "CollapseLauncher.Invoker": {
       "commandName": "Project",
-      "commandLineArgs": "migrate \"D:\\Game\\Honkai Impact 3\" \"C:\\Users\\neon-nyan\\AppData\\LocalLow\\CollapseLauncher\\GameFolder\\Hi3CN\""
+      "commandLineArgs": "migratebhi3l  5.5.0 VersionInfoCN \"C:\\Program Files\\崩坏3\" \"C:\\Program Files\\崩坏3\""
     }
   }
 }

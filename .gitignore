@@ -19,3 +19,6 @@ CollapseLauncher/*/obj*
 
 CollapseLauncher/*/BundleArtifacts*
 CollapseLauncher/*/*.pfx
+CollapseLauncher/Invoker/*
+*.exe
+*.dll

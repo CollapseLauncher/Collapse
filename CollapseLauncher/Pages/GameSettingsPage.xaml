@@ -56,10 +56,10 @@
                         <TextBlock Text="Graphics API" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,24"/>
                         <StackPanel x:Name="GraphicsAPIPanel" Orientation="Horizontal">
                             <ComboBox x:Name="GraphicsAPISelector" PlaceholderText="Select" Width="224">
-                                <ComboBoxItem Content="DirectX 11 (FL 9.3)"/>
-                                <ComboBoxItem Content="DirectX 11 (FL 10.0)"/>
                                 <ComboBoxItem Content="DirectX 11 (FL 10.1)"/>
-                                <ComboBoxItem Content="DirectX 11 (FL 11)[Default]"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 11.0)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 11.1)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 11.1) No ST"/>
                                 <ComboBoxItem Content="DirectX 12 [EXPERIMENTAL]"/>
                             </ComboBox>
                             <Button Margin="16,0">
@@ -72,15 +72,15 @@
                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
                                                 <Run Text="There are few API modes which are available for this game, including:"/>
                                                 <LineBreak/><LineBreak/>
-                                                <Run Text="- DirectX 11.0 feature level 9.3"/><LineBreak/>
-                                                <Run Text="- DirectX 11.0 feature level 10.0"/><LineBreak/>
-                                                <Run Text="- DirectX 11.0 feature level 10.1"/><LineBreak/>
-                                                <Run Text="- DirectX 11.0 feature level 11.0 (Default)"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 10.1"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 11.0"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 11.1"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 11.1 No Single-Thread (Default)"/><LineBreak/>
                                                 <Run Text="- DirectX 12 (Experimental)"/><LineBreak/>
                                             </TextBlock>
                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
                                                 <Run Text="Note:"/>
-                                                <Run Text="Using DirectX 12 may cause crashes at some stages since the game wasn't natively compiled for DirectX 12 API"/>
+                                                <Run Text="Using DirectX 12 may cause crashes at some stages since the game wasn't natively compiled with DirectX 12 API"/>
                                             </TextBlock>
                                         </StackPanel>
                                     </Flyout>

@@ -38,6 +38,7 @@ namespace CollapseLauncher.Dialogs
     public partial class InstallationMigrate : Page
     {
         string targetPath;
+        bool UseCurrentBHI3LFolder = false;
         public InstallationMigrate()
         {
             this.InitializeComponent();
@@ -77,7 +78,7 @@ namespace CollapseLauncher.Dialogs
                 Title = "Locating Target Folder",
                 Content = $"Before starting this process, Do you want to specify the location of the game?",
                 CloseButtonText = "Cancel",
-                PrimaryButtonText = "Use default directory",
+                PrimaryButtonText = CurrentRegion.MigrateFromBetterHi3Launcher ? "Use current directory" : "Use default directory",
                 SecondaryButtonText = "Yes, Change location",
                 DefaultButton = ContentDialogButton.Primary,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
@@ -98,6 +99,12 @@ namespace CollapseLauncher.Dialogs
                         returnFolder = folder.Path;
                         break;
                     case ContentDialogResult.Primary:
+                        if (CurrentRegion.MigrateFromBetterHi3Launcher)
+                        {
+                            returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
+                            UseCurrentBHI3LFolder = true;
+                        }
+                        else
                         returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
                         break;
                     case ContentDialogResult.None:
@@ -143,7 +150,10 @@ namespace CollapseLauncher.Dialogs
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CollapseLauncher.Invoker.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"migrate \"{CurrentRegion.ActualGameLocation}\" \"{targetPath}\"";
+                if (CurrentRegion.MigrateFromBetterHi3Launcher)
+                    proc.StartInfo.Arguments = $"migratebhi3l {CurrentRegion.BetterHi3LauncherConfig.game_info.version} {CurrentRegion.BetterHi3LauncherVerInfoReg} \"{CurrentRegion.BetterHi3LauncherConfig.game_info.install_path}\" \"{targetPath}\"";
+                else
+                    proc.StartInfo.Arguments = $"migrate \"{CurrentRegion.ActualGameLocation}\" \"{targetPath}\"";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
@@ -157,7 +167,11 @@ namespace CollapseLauncher.Dialogs
                     MigrationSubtextStatus.Visibility = Visibility.Visible;
                 });
 
-                gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath, CurrentRegion.GameDirectoryName).Replace('\\', '/');
+                if (UseCurrentBHI3LFolder)
+                    gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath).Replace('\\', '/');
+                else
+                    gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath, CurrentRegion.GameDirectoryName).Replace('\\', '/');
+
                 gameIni.Profile.Save(gameIni.ProfilePath);
             }
             catch (Exception)

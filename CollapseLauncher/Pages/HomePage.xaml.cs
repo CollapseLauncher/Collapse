@@ -199,6 +199,24 @@ namespace CollapseLauncher.Pages
                             return;
                     }
                 }
+                else if (CurrentRegion.CheckExistingGameBetterLauncher())
+                {
+                    switch (await Dialog_ExistingInstallationBetterLauncher(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            MigrationWatcher.IsMigrationRunning = true;
+                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
+                            CurrentRegion.MigrateFromBetterHi3Launcher = true;
+                            await CheckMigrationProcess();
+                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                            break;
+                        case ContentDialogResult.Secondary:
+                            await StartInstallationProcedure(await InstallGameDialogScratch());
+                            break;
+                        case ContentDialogResult.None:
+                            return;
+                    }
+                }
                 else
                 {
                     LogWriteLine($"Existing Installation Not Found {CurrentRegion.ZoneName}");

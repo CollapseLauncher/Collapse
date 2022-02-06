@@ -566,17 +566,17 @@ namespace Hi3Helper.Shared.Region
                 switch (apiID)
                 {
                     case 0:
-                        parameter.Append("-force-feature-level-9-3 ");
+                        parameter.Append("-force-feature-level-10-1 ");
                         break;
                     case 1:
-                        parameter.Append("-force-feature-level-10-0 ");
+                        parameter.Append("-force-feature-level-11-0 ");
                         break;
                     case 2:
-                        parameter.Append("-force-feature-level-10-1 ");
+                        parameter.Append("-force-feature-level-11-1 ");
                         break;
                     default:
                     case 3:
-                        parameter.Append("-force-feature-level-11-0 ");
+                        parameter.Append("-force-d3d11-no-singlethreaded ");
                         break;
                     case 4:
                         parameter.Append("-force-d3d12 ");

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Win32;
 using Hi3Helper.Data;
+using Newtonsoft.Json;
 
 using static Hi3Helper.Logger;
 
@@ -81,6 +82,22 @@ namespace Hi3Helper.Preset
             }
         }
 
+        public bool CheckExistingGameBetterLauncher()
+        {
+            if (BetterHi3LauncherVerInfoReg == null) return false;
+            try
+            {
+                BetterHi3LauncherConfig = JsonConvert.DeserializeObject<BHI3LInfo>(
+                    Encoding.UTF8.GetString((byte[])Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher").GetValue(BetterHi3LauncherVerInfoReg))
+                    );
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public bool CheckExistingGame()
         {
             string RegValue = "InstallPath";
@@ -154,7 +171,6 @@ namespace Hi3Helper.Preset
             else
                 ret = false;
         }
-
         public string ProfileName { get; set; }
         public string ZoneName { get; set; }
         public string InstallRegistryLocation { get; set; }
@@ -167,6 +183,9 @@ namespace Hi3Helper.Preset
         public string BlockDictionaryAddress { get; set; }
         public string GameVersion { get; set; }
         public string UsedLanguage { get; set; }
+        public string BetterHi3LauncherVerInfoReg { get; set; }
+        public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
+        public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string FallbackLanguage { get; set; }
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
@@ -178,6 +197,18 @@ namespace Hi3Helper.Preset
         public bool? UseRightSideProgress { get; set; }
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
+    }
+
+    public class BHI3LInfo
+    {
+        public BHI3LInfo_GameInfo game_info { get; set; }
+    }
+
+    public class BHI3LInfo_GameInfo
+    {
+        public string version { get; set; }
+        public string install_path { get; set; }
+        public bool installed { get; set; }
     }
 
     public class AppSettings

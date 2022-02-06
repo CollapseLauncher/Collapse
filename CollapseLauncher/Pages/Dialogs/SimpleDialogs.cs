@@ -88,6 +88,19 @@ namespace CollapseLauncher.Dialogs
                     "No, Keep Install it"
             );
 
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content) =>
+            await SpawnDialog(
+                    "Existing Installation on BetterHI3Launcher is Detected!",
+                    string.Format(
+                        "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\n"
+                        + "It's recommended to migrate the game to CollapseLauncher.\r\nHowever, you can still use BetterHi3Launcher to start the game."
+                        + "\r\n\r\nDo you want to continue?", CurrentRegion.BetterHi3LauncherConfig.game_info.install_path),
+                    Content,
+                    "Cancel",
+                    "Yes, Migrate it",
+                    "No, Keep Install it"
+            );
+
         public static async Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(UIElement Content, string sourceHash, string downloadedHash) =>
             await SpawnDialog(
                     "Oops! Game Installation is Corrupted",
