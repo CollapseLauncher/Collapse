@@ -54,6 +54,25 @@ namespace Hi3Helper.Preset
             }
         }
 
+        public string GetGameLanguage()
+        {
+            string value = "";
+            try
+            {
+                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                foreach (string valueName in keys.GetValueNames())
+                    if (valueName.Contains("MIHOYOSDK_NOTICE_LANGUAGE_"))
+                        value = valueName;
+
+                return Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{ConfigRegistryLocation}", value, FallbackLanguage)).Replace("\0", string.Empty);
+            }
+            catch
+            {
+                LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning);
+                return FallbackLanguage;
+            }
+        }
+
         void SetFallbackGameFolder(string a, bool tryFallback = false)
         {
             if (File.Exists(Path.Combine(a, GameDirectoryName, GameDirectoryName)))
@@ -190,6 +209,9 @@ namespace Hi3Helper.Preset
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }
+        public string? CachesListAPIURL { get; set; }
+        public byte? CachesListGameVerID { get; set; }
+        public string? CachesEndpointURL { get; set; }
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public bool IsSteamVersion { get; set; }

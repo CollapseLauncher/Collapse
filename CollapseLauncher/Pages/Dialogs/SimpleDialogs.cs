@@ -29,6 +29,16 @@ namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
+        public static async Task<ContentDialogResult> Dialog_UnhandledException(UIElement Content, Exception e) =>
+               await SpawnDialog(
+                       "Unhandled Error!",
+                       string.Format("Oops! The app has suddenly can't continue this function with error details below:\n\n{0}", e.ToString()),
+                       Content,
+                       "Close",
+                       null,
+                       null,
+                       ContentDialogButton.Close
+                   );
         public static async Task<ContentDialogResult> Dialog_PreDownloadPackageVerified(UIElement Content, string hash) =>
                await SpawnDialog(
                        "Pre-Download Package is Verified!",

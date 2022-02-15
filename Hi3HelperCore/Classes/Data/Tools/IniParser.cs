@@ -88,6 +88,37 @@ namespace Hi3Helper.Data
             return valueIfInvalid;
         }
 
+        public bool? ToBoolNullable()
+        {
+            bool res;
+            if (TryConvertBoolNullable(out res) == null)
+                return null;
+            else
+                return res;
+        }
+
+        public bool? TryConvertBoolNullable(out bool result)
+        {
+            if (Value == null)
+            {
+                result = default(bool);
+                return null;
+            }
+            var boolStr = Value.Trim().ToLowerInvariant();
+            if (boolStr == "true")
+            {
+                result = true;
+                return true;
+            }
+            else if (boolStr == "false")
+            {
+                result = false;
+                return true;
+            }
+            result = default(bool);
+            return false;
+        }
+
         public bool TryConvertBool(out bool result)
         {
             if (Value == null)

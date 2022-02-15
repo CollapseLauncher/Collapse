@@ -27,6 +27,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 
 using static Hi3Helper.Shared.Region.GameSettingsManagement;
+using static Hi3Helper.Logger;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -40,38 +41,54 @@ namespace CollapseLauncher.Pages
     {
         public GameSettingsPage()
         {
-            this.InitializeComponent();
+            try
+            {
+                this.InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private async void InitializeSettings(object sender, RoutedEventArgs e)
         {
-            GameResolutionSelector.ItemsSource = ScreenResolutionsList;
+            try
+            {
+                GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
-            if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                || GameInstallationState == GameInstallStateEnum.GameBroken)
-            {
-                Overlay.Visibility = Visibility.Visible;
-                OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
-                OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
+                if (GameInstallationState == GameInstallStateEnum.NotInstalled
+                    || GameInstallationState == GameInstallStateEnum.NeedsUpdate
+                    || GameInstallationState == GameInstallStateEnum.GameBroken)
+                {
+                    Overlay.Visibility = Visibility.Visible;
+                    OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
+                    OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
+                }
+                else if (App.IsGameRunning)
+                {
+                    Overlay.Visibility = Visibility.Visible;
+                    OverlayTitle.Text = "Game is Currently Running!";
+                    OverlaySubtitle.Text = "Please close the game first to use this feature!";
+                }
+                else if (!IsRegKeyExist)
+                {
+                    Overlay.Visibility = Visibility.Visible;
+                    OverlayTitle.Text = "You haven't play this game for the first time!";
+                    OverlaySubtitle.Text = "Please run the game first and then come back to use this feature.";
+                }
+                else
+                {
+                    await CheckExistingGameSettings();
+                    await LoadGameSettingsUI();
+                    await LoadAudioSettingsUI();
+                }
             }
-            else if (App.IsGameRunning)
+            catch (Exception ex)
             {
-                Overlay.Visibility = Visibility.Visible;
-                OverlayTitle.Text = "Game is Currently Running!";
-                OverlaySubtitle.Text = "Please close the game first to use this feature!";
-            }
-            else if (!IsRegKeyExist)
-            {
-                Overlay.Visibility = Visibility.Visible;
-                OverlayTitle.Text = "You haven't play this game for the first time!";
-                OverlaySubtitle.Text = "Please run the game first and then come back to use this feature.";
-            }
-            else
-            {
-                await CheckExistingGameSettings();
-                await LoadGameSettingsUI();
-                await LoadAudioSettingsUI();
+                LogWriteLine($"FATAL ERROR!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 
@@ -82,8 +99,8 @@ namespace CollapseLauncher.Pages
             {
                 GameResolutionFullscreen.IsChecked = gameIni.Settings[SectionName]["Fullscreen"].ToBool();
 
-                if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool() || !ScreenResolutionsList.Contains(gameIni.Settings[SectionName]["ScreenResolution"].ToString()))
-                //if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool())
+                if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool()
+                || !ScreenResolutionsList.Contains(gameIni.Settings[SectionName]["ScreenResolution"].ToString()))
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
                     GameResolutionSelector.IsEnabled = false;
@@ -162,22 +179,21 @@ namespace CollapseLauncher.Pages
             });
         });
 
-        private void ToggleApplyButton(bool show)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ApplyButton.IsEnabled = show;
-                ApplyText.Visibility = show ? Visibility.Collapsed : Visibility.Visible;
-            });
-        }
-
         private async void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
-            ApplyText.Visibility = Visibility.Visible;
+            try
+            {
+                ApplyText.Visibility = Visibility.Visible;
 
-            await SetGraphicsSettingsIni();
-            await SetAudioSettingsIni();
-            await SaveGameSettings();
+                await SetGraphicsSettingsIni();
+                await SetAudioSettingsIni();
+                await SaveGameSettings();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private async Task SetGraphicsSettingsIni() =>
@@ -229,137 +245,177 @@ namespace CollapseLauncher.Pages
 
         private void GameResolutionFullscreen_IsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (GameResolutionFullscreen.IsChecked ?? false)
+            try
             {
-                if (GameCustomResolutionCheckbox.IsChecked ?? false)
+                if (GameResolutionFullscreen.IsChecked ?? false)
                 {
-                    GameResolutionFullscreenExclusive.IsEnabled = false;
-                    GameResolutionFullscreenExclusive.IsChecked = false;
+                    if (GameCustomResolutionCheckbox.IsChecked ?? false)
+                    {
+                        GameResolutionFullscreenExclusive.IsEnabled = false;
+                        GameResolutionFullscreenExclusive.IsChecked = false;
+                    }
+                    else
+                    {
+                        GameResolutionFullscreenExclusive.IsEnabled = true;
+                    }
                 }
                 else
                 {
-                    GameResolutionFullscreenExclusive.IsEnabled = true;
+                    GameResolutionFullscreenExclusive.IsEnabled = false;
+                    GameResolutionFullscreenExclusive.IsChecked = false;
+                    GameCustomResolutionCheckbox.IsEnabled = true;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                GameResolutionFullscreenExclusive.IsEnabled = false;
-                GameResolutionFullscreenExclusive.IsChecked = false;
-                GameCustomResolutionCheckbox.IsEnabled = true;
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 
         private void GameCustomResolutionCheckbox_Click(object sender, RoutedEventArgs e)
         {
-            if (GameCustomResolutionCheckbox.IsChecked ?? false)
+            try
             {
-                if (GameResolutionFullscreen.IsChecked ?? false)
+                if (GameCustomResolutionCheckbox.IsChecked ?? false)
                 {
-                    GameResolutionFullscreenExclusive.IsEnabled = false;
-                    GameResolutionFullscreenExclusive.IsChecked = false;
-                }
-                GameResolutionSelector.IsEnabled = false;
-                GameCustomResolutionWidth.IsEnabled = true;
-                GameCustomResolutionHeight.IsEnabled = true;
+                    if (GameResolutionFullscreen.IsChecked ?? false)
+                    {
+                        GameResolutionFullscreenExclusive.IsEnabled = false;
+                        GameResolutionFullscreenExclusive.IsChecked = false;
+                    }
+                    GameResolutionSelector.IsEnabled = false;
+                    GameCustomResolutionWidth.IsEnabled = true;
+                    GameCustomResolutionHeight.IsEnabled = true;
 
-                if (GameCustomResolutionWidth.Value == 0 || GameCustomResolutionHeight.Value == 0)
+                    if (GameCustomResolutionWidth.Value == 0 || GameCustomResolutionHeight.Value == 0)
+                    {
+                        Size size = new Size();
+                        if (GameResolutionSelector.SelectedValue == null)
+                        {
+                            size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                        }
+                        else
+                        {
+                            string[] _size = GameResolutionSelector.SelectedValue.ToString().Split('x');
+                            size.Width = int.Parse(_size[0]);
+                            size.Height = int.Parse(_size[1]);
+                        }
+
+                        GameCustomResolutionWidth.Value = size.Width;
+                        GameCustomResolutionHeight.Value = size.Height;
+                    }
+                }
+                else
                 {
-                    Size size = new Size();
+                    if (GameResolutionFullscreen.IsChecked ?? false)
+                    {
+                        GameResolutionFullscreenExclusive.IsEnabled = true;
+                    }
+                    GameResolutionSelector.IsEnabled = true;
+                    GameCustomResolutionWidth.IsEnabled = false;
+                    GameCustomResolutionHeight.IsEnabled = false;
+
                     if (GameResolutionSelector.SelectedValue == null)
                     {
-                        size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                        Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                        GameResolutionSelector.SelectedValue = $"{size.Width}x{size.Height}";
                     }
-                    else
-                    {
-                        string[] _size = GameResolutionSelector.SelectedValue.ToString().Split('x');
-                        size.Width = int.Parse(_size[0]);
-                        size.Height = int.Parse(_size[1]);
-                    }
-
-                    GameCustomResolutionWidth.Value = size.Width;
-                    GameCustomResolutionHeight.Value = size.Height;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (GameResolutionFullscreen.IsChecked ?? false)
-                {
-                    GameResolutionFullscreenExclusive.IsEnabled = true;
-                }
-                GameResolutionSelector.IsEnabled = true;
-                GameCustomResolutionWidth.IsEnabled = false;
-                GameCustomResolutionHeight.IsEnabled = false;
-
-                if (GameResolutionSelector.SelectedValue == null)
-                {
-                    Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
-                    GameResolutionSelector.SelectedValue = $"{size.Width}x{size.Height}";
-                }
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 
         private void GameResolutionFullscreenExclusive_Click(object sender, RoutedEventArgs e)
         {
-            if (GameResolutionFullscreenExclusive.IsChecked ?? false)
+            try
             {
-                GameCustomResolutionCheckbox.IsEnabled = false;
-                GameCustomResolutionCheckbox.IsChecked = false;
-                GameCustomResolutionWidth.IsEnabled = false;
-                GameCustomResolutionHeight.IsEnabled = false;
-                GameResolutionSelector.IsEnabled = true;
+                if (GameResolutionFullscreenExclusive.IsChecked ?? false)
+                {
+                    GameCustomResolutionCheckbox.IsEnabled = false;
+                    GameCustomResolutionCheckbox.IsChecked = false;
+                    GameCustomResolutionWidth.IsEnabled = false;
+                    GameCustomResolutionHeight.IsEnabled = false;
+                    GameResolutionSelector.IsEnabled = true;
+                }
+                else
+                {
+                    GameCustomResolutionCheckbox.IsEnabled = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                GameCustomResolutionCheckbox.IsEnabled = true;
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 
         private void GameFXPostProcCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if (!GameFXPostProcCheckBox.IsChecked ?? false)
+            try
             {
-                GameFXHDRCheckBox.IsChecked = false;
-                GameFXFXAACheckBox.IsChecked = false;
-                GameFXHighQualityCheckBox.IsChecked = false;
-                GameFXDistortionCheckBox.IsChecked = false;
+                if (!GameFXPostProcCheckBox.IsChecked ?? false)
+                {
+                    GameFXHDRCheckBox.IsChecked = false;
+                    GameFXFXAACheckBox.IsChecked = false;
+                    GameFXHighQualityCheckBox.IsChecked = false;
+                    GameFXDistortionCheckBox.IsChecked = false;
 
-                GameFXHDRCheckBox.IsEnabled = false;
-                GameFXFXAACheckBox.IsEnabled = false;
-                GameFXHighQualityCheckBox.IsEnabled = false;
-                GameFXDistortionCheckBox.IsEnabled = false;
+                    GameFXHDRCheckBox.IsEnabled = false;
+                    GameFXFXAACheckBox.IsEnabled = false;
+                    GameFXHighQualityCheckBox.IsEnabled = false;
+                    GameFXDistortionCheckBox.IsEnabled = false;
 
-                GameFXPostProcExpander.IsExpanded = false;
+                    GameFXPostProcExpander.IsExpanded = false;
+                }
+                else
+                {
+                    GameFXPostProcExpander.IsExpanded = true;
+
+                    GameFXHDRCheckBox.IsEnabled = true;
+                    GameFXFXAACheckBox.IsEnabled = true;
+                    GameFXHighQualityCheckBox.IsEnabled = true;
+                    GameFXDistortionCheckBox.IsEnabled = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                GameFXPostProcExpander.IsExpanded = true;
-
-                GameFXHDRCheckBox.IsEnabled = true;
-                GameFXFXAACheckBox.IsEnabled = true;
-                GameFXHighQualityCheckBox.IsEnabled = true;
-                GameFXDistortionCheckBox.IsEnabled = true;
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 
         int? prevGraphSelect;
         private async void RenderingAccuracySelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (prevGraphSelect != null)
+            try
             {
-                if (RenderingAccuracySelector.SelectedIndex == 3)
+                if (prevGraphSelect != null)
                 {
-                    var result = await Dialogs.SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
-
-                    switch (result)
+                    if (RenderingAccuracySelector.SelectedIndex == 3)
                     {
-                        case ContentDialogResult.Secondary:
-                            RenderingAccuracySelector.SelectedIndex = prevGraphSelect ?? 0;
-                            break;
+                        var result = await Dialogs.SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
+
+                        switch (result)
+                        {
+                            case ContentDialogResult.Secondary:
+                                RenderingAccuracySelector.SelectedIndex = prevGraphSelect ?? 0;
+                                break;
+                        }
                     }
                 }
-            }
 
-            prevGraphSelect = RenderingAccuracySelector.SelectedIndex;
+                prevGraphSelect = RenderingAccuracySelector.SelectedIndex;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
     }
 }

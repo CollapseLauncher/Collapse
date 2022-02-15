@@ -6,12 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
-    
     mc:Ignorable="d"
-    Background="{ThemeResource PagesAcrylicBrush}" Unloaded="Page_Unloaded">
+    Background="{ThemeResource PagesAcrylicBrush}" Unloaded="Page_Unloaded" Loaded="InitializeLoaded">
 
-    <Grid Margin="32,32,32,32">
-        <StackPanel>
+    <Grid>
+        <StackPanel Margin="32,32,32,32">
             <TextBlock Text="Repair" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -80,5 +79,12 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+        <Grid x:Name="Overlay" Background="{ThemeResource PagesAcrylicBrush}" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
+                <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

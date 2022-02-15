@@ -4,7 +4,7 @@ using Hi3Helper;
 
 using static Hi3Helper.Logger;
 
-namespace CollapseLauncher
+namespace Hi3Helper
 {
     public static class InvokeProp
     {
@@ -46,7 +46,7 @@ namespace CollapseLauncher
         {
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_HIDE);
-            DisableConsole = true;
+            EnableConsole = false;
             WriteLog($"Console toggle: Hidden", LogType.Default);
         }
 
@@ -54,7 +54,7 @@ namespace CollapseLauncher
         {
             var handle = GetConsoleWindow();
             ShowWindow(handle, SW_SHOW);
-            DisableConsole = false;
+            EnableConsole = true;
             WriteLog($"Console toggle: Show", LogType.Default);
         }
 

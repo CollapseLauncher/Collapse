@@ -14,12 +14,13 @@
 	<ApplicationIcon>icon.ico</ApplicationIcon>
 	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
 	<DebugType>embedded</DebugType>
-	<Version>1.0.6</Version>
+	<Version>1.0.7</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="CollapseLauncher.Invoker.dll" />
     <None Remove="CollapseLauncher.Invoker.exe" />
     <None Remove="config\fileconfig.json" />
+    <None Remove="Pages\UnhandledExceptionPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,6 +80,10 @@
     </Page>
     <Page Update="Pages\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\UnhandledExceptionPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\UnavailablePage.xaml">
       <Generator>MSBuild:Compile</Generator>

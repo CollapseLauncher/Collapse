@@ -10,11 +10,14 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Preset.ConfigStore;
+using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Shared.Region
 {
     public static class LauncherConfig
     {
+        const string SectionName = "app";
         public static string startupBackgroundPath;
         public static RegionBackgroundProp regionBackgroundProp = new RegionBackgroundProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
@@ -67,9 +70,30 @@ namespace Hi3Helper.Shared.Region
 
             LoadAppConfig();
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
+
+            InitConsoleSetting();
         }
 
-        public static IniValue GetAppConfigValue(string key) => appIni.Profile["app"][key];
+        public static void InitConsoleSetting()
+        {
+            if (GetAppConfigValue("EnableConsole").ToBoolNullable() == null)
+            {
+                SetAppConfigValue("EnableConsole", true);
+                SaveAppConfig();
+            }
+
+            if (GetAppConfigValue("EnableConsole").ToBool())
+                ShowConsoleWindow();
+            else
+                HideConsoleWindow();
+        }
+
+        public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
+        public static void SetAppConfigValue(string key, object? value)
+        {
+            appIni.Profile[SectionName][key] = new IniValue(value);
+            SaveAppConfig();
+        }
 
         public static void LoadAppConfig() => appIni.Profile.Load(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.Open, FileAccess.Read));
         public static void SaveAppConfig() => appIni.Profile.Save(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.OpenOrCreate, FileAccess.Write));
@@ -78,12 +102,13 @@ namespace Hi3Helper.Shared.Region
 
         static void BuildAppIniProfile()
         {
-            appIni.Profile.Add("app", new Dictionary<string, IniValue>
+            appIni.Profile.Add(SectionName, new Dictionary<string, IniValue>
             {
                 { "CurrentRegion", new IniValue(0) },
                 { "CurrentBackground", new IniValue(@"Assets\BG\default.png") },
                 { "DownloadThread", new IniValue(8) },
-                { "GameFolder", new IniValue(AppGameFolder) }
+                { "GameFolder", new IniValue(AppGameFolder) },
+                { "EnableConsole", new IniValue(true) }
             });
 
             SaveAppConfig();

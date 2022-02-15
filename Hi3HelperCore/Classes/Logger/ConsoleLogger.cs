@@ -41,7 +41,7 @@ namespace Hi3Helper
         {
             if (writeToLog)
                 WriteLog(i, a);
-            if (!Logger.DisableConsole)
+            if (Logger.EnableConsole)
                 PrintLine(i, a);
         }
 
@@ -50,7 +50,7 @@ namespace Hi3Helper
             if (writeToLog)
                 WriteLog(i, a);
 
-            if (!Logger.DisableConsole)
+            if (Logger.EnableConsole)
             {
                 if (overwriteCurLine)
                     Console.SetCursorPosition(0, Console.CursorTop);

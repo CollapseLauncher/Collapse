@@ -17,6 +17,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 
 using WinRT;
 
@@ -37,14 +38,22 @@ namespace CollapseLauncher
     {
         public MainWindow()
         {
-            InitializeComponent();
-            SetTitleBar(CustomTitleBar);
-            GetAppWindowAndPresenter();
+            try
+            {
+                InitializeComponent();
+                SetTitleBar(CustomTitleBar);
+                GetAppWindowAndPresenter();
 
-            _presenter.IsResizable = false;
-            _presenter.IsMaximizable = false;
-            ExtendsContentIntoTitleBar = true;
-            rootFrame.Navigate(typeof(MainPage));
+                _presenter.IsResizable = false;
+                _presenter.IsMaximizable = false;
+                ExtendsContentIntoTitleBar = true;
+                rootFrame.Navigate(typeof(MainPage));
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                Console.ReadLine();
+            }
         }
 
         private void Minimize(object sender, RoutedEventArgs e) => _presenter.Minimize();

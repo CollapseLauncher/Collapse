@@ -32,15 +32,20 @@ namespace Hi3Helper.Data
         */
         readonly long bufflength = 16384;
 
-        int downloadThread;
+        int downloadThread,
+            retryCount,
+            maxRetryCount;
         long downloadPartialExistingSize = 0,
              downloadPartialSize = 0;
         string downloadPartialOutputPath, downloadPartialInputPath;
         CancellationToken downloadPartialToken;
 
-        public HttpClientTool(bool IgnoreCompression = false)
+        public HttpClientTool(bool IgnoreCompression = false, int maxRetryCount = 5)
         {
-            httpClient = new HttpClient(
+            this.retryCount = 0;
+            this.maxRetryCount = maxRetryCount;
+
+            this.httpClient = new HttpClient(
             new HttpClientHandler()
             {
                 AutomaticDecompression = IgnoreCompression ? DecompressionMethods.None : DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
@@ -50,7 +55,7 @@ namespace Hi3Helper.Data
             });
 
             if (IgnoreCompression)
-                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+                this.httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
         }
 
         DownloadStatusChanged resumabilityStatus;
@@ -60,10 +65,11 @@ namespace Hi3Helper.Data
             if (string.IsNullOrEmpty(customMessage)) customMessage = $"Downloading {Path.GetFileName(output)}";
 
             bool ret;
+            retryCount = 0;
 
             while (!(ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false)))
             {
-                LogWriteLine($"Retrying...");
+                LogWriteLine($"Retrying (Count: {retryCount})...");
                 Thread.Sleep(1000);
             }
 
@@ -75,11 +81,12 @@ namespace Hi3Helper.Data
             if (string.IsNullOrEmpty(customMessage)) customMessage = $"Downloading to stream";
 
             bool ret;
+            retryCount = 0;
             localStream = output;
 
             while (!(ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true)))
             {
-                LogWriteLine($"Retrying...");
+                LogWriteLine($"Retrying (Count: {retryCount})...");
                 Thread.Sleep(1000);
             }
 
@@ -97,44 +104,45 @@ namespace Hi3Helper.Data
 
         public void DownloadFileMultipleSession(string input, string output, string customMessage = "", int threads = 1, CancellationToken token = new CancellationToken())
         {
-            downloadThread = threads;
-            downloadPartialToken = token;
-            downloadPartialInputPath = input;
-            downloadPartialOutputPath = output;
-
-            OnCompleted(new DownloadProgressCompleted() { DownloadCompleted = false });
-            downloadPartialSize = GetContentLength(downloadPartialInputPath) ?? 0;
-            long startContent, endContent;
-            segmentDownloadTask = new List<Task>();
-            segmentDownloadProperties = new List<SegmentDownloadProperties>();
-
-            List<ChunkRanges> chunkRanges = new List<ChunkRanges>();
-
-            long partitionSize = (long)Math.Ceiling((double)downloadPartialSize / downloadThread);
-
-            for (int i = 0; i < downloadThread; i++)
-            {
-                startContent = i * (downloadPartialSize / downloadThread);
-                endContent = i + 1 == downloadThread ? downloadPartialSize : ((i + 1) * (downloadPartialSize / downloadThread)) - 1;
-
-                segmentDownloadProperties.Add(new SegmentDownloadProperties(0, 0, 0, 0)
-                { CurrentReceived = 0, StartRange = startContent, EndRange = endContent, PartRange = i });
-            }
-
-            OnResumabilityChanged(new DownloadStatusChanged(true));
-            LogWriteLine($"Starting Partial Download!\r\n\tTotal Size: {SummarizeSizeSimple(downloadPartialSize)} ({downloadPartialSize} bytes)\r\n\tThreads/Chunks: {downloadThread}");
-
-            stop = false;
-
             try
             {
+                downloadThread = threads;
+                downloadPartialToken = token;
+                downloadPartialInputPath = input;
+                downloadPartialOutputPath = output;
+
+                OnCompleted(new DownloadProgressCompleted() { DownloadCompleted = false });
+                downloadPartialSize = GetContentLength(downloadPartialInputPath) ?? 0;
+                long startContent, endContent;
+                segmentDownloadTask = new List<Task>();
+                segmentDownloadProperties = new List<SegmentDownloadProperties>();
+
+                List<ChunkRanges> chunkRanges = new List<ChunkRanges>();
+
+                retryCount = 0;
+
+                long partitionSize = (long)Math.Ceiling((double)downloadPartialSize / downloadThread);
+
+                for (int i = 0; i < downloadThread; i++)
+                {
+                    startContent = i * (downloadPartialSize / downloadThread);
+                    endContent = i + 1 == downloadThread ? downloadPartialSize : ((i + 1) * (downloadPartialSize / downloadThread)) - 1;
+
+                    segmentDownloadProperties.Add(new SegmentDownloadProperties(0, 0, 0, 0)
+                    { CurrentReceived = 0, StartRange = startContent, EndRange = endContent, PartRange = i });
+                }
+
+                OnResumabilityChanged(new DownloadStatusChanged(true));
+                LogWriteLine($"Starting Partial Download!\r\n\tTotal Size: {SummarizeSizeSimple(downloadPartialSize)} ({downloadPartialSize} bytes)\r\n\tThreads/Chunks: {downloadThread}");
+
+                stop = false;
                 foreach (SegmentDownloadProperties j in segmentDownloadProperties)
                 {
                     segmentDownloadTask.Add(Task.Run(async () =>
                     {
                         while (!await GetPartialSessionStream(j))
                         {
-                            LogWriteLine($"Retrying to connect for chunk no: {j.PartRange + 1}...");
+                            LogWriteLine($"Retrying to connect for chunk no: {j.PartRange + 1} (Count: {retryCount})...");
                             Thread.Sleep(1000);
                         }
                     }, downloadPartialToken));
@@ -176,6 +184,7 @@ namespace Hi3Helper.Data
 
         long CheckExistingPartialChunksSize()
         {
+            downloadPartialExistingSize = 0;
             for (int i = 0; i < downloadThread; i++)
             {
                 try { downloadPartialExistingSize += new FileInfo(string.Format("{0}.{1:000}", downloadPartialOutputPath, i + 1)).Length; }
@@ -187,11 +196,11 @@ namespace Hi3Helper.Data
 
         public void MergePartialChunks()
         {
-            if (CheckExistingPartialChunksSize() != downloadPartialSize)
-            {
-                LogWriteLine("Download is not completed yet! Please do DownloadFileMultipleSession() and wait it for finish!", LogType.Warning);
-                return;
-            }
+            long existingPartialChunksSize = CheckExistingPartialChunksSize();
+            /*
+            if (existingPartialChunksSize != downloadPartialSize)
+                throw new FileLoadException("Download is not completed yet! Please do DownloadFileMultipleSession() and wait it for finish!");
+            */
 
             if (downloadPartialToken.IsCancellationRequested)
             {
@@ -341,6 +350,7 @@ namespace Hi3Helper.Data
                             try
                             {
                                 await ReadPartialRemoteStream(response, stream, existingLength, j.PartRange, j.EndRange - j.StartRange);
+                                stream.Dispose();
                             }
                             catch (OperationCanceledException)
                             {
@@ -386,6 +396,7 @@ namespace Hi3Helper.Data
             using (Stream remoteStream = await response.Content.ReadAsStreamAsync())
 #endif
             {
+                retryCount = 0;
                 var sw = Stopwatch.StartNew();
                 while ((byteSize = await remoteStream.ReadAsync(buffer, 0, buffer.Length, downloadPartialToken)) > 0)
                 {
@@ -400,6 +411,15 @@ namespace Hi3Helper.Data
             }
         }
 
+        bool HttpRequestExceptionRetryHandler(HttpRequestException e)
+        {
+            if (retryCount > maxRetryCount)
+                throw new HttpRequestException(e.ToString(), e);
+
+            retryCount++;
+            return true;
+        }
+
         bool GetRemoteStreamResponse(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
         {
             bool returnValue = true;
@@ -409,20 +429,17 @@ namespace Hi3Helper.Data
             {
                 UseStream(input, output, startOffset, endOffset, customMessage, token, isStream);
             }
-#if (NETCOREAPP)
             catch (HttpRequestException e)
             {
-                returnValue = ThrowWebExceptionAsBool(e);
+                returnValue = HttpRequestExceptionRetryHandler(e);
+                // throw new HttpRequestException(e.ToString());
             }
-#endif
             catch (TaskCanceledException e)
             {
-                returnValue = true;
                 throw new TaskCanceledException(e.ToString());
             }
             catch (OperationCanceledException e)
             {
-                returnValue = true;
                 throw new TaskCanceledException(e.ToString());
             }
             catch (NullReferenceException e)
@@ -444,7 +461,7 @@ namespace Hi3Helper.Data
             {
                 if (returnValue)
                 {
-                    if (!isStream) localStream?.Dispose();
+                    localStream?.Dispose();
                     remoteStream?.Dispose();
                 }
             }
@@ -466,7 +483,7 @@ namespace Hi3Helper.Data
         void UseStream(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
         {
             token.ThrowIfCancellationRequested();
-            long contentLength;
+            long contentLength = 0;
             FileInfo fileinfo = new FileInfo(output);
 
             long existingLength = isStream ? localStream.Length : fileinfo.Exists ? fileinfo.Length : 0;
@@ -478,36 +495,39 @@ namespace Hi3Helper.Data
                                     new RangeHeaderValue(existingLength, null);
 
             HttpResponseMessage response = httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).GetAwaiter().GetResult();
-              
-            if  (!((response.Content.Headers.ContentRange.Length ?? 0) == existingLength))
+
+            using (ThrowUnacceptableStatusCode(response))
             {
-                using (ThrowUnacceptableStatusCode(response))
+                if (response.Content.Headers.ContentRange != null)
                 {
+                    if (response.Content.Headers.ContentRange.Length == existingLength)
+                    {
+                        LogWriteLine($"File download for {input} is already completed! Skipping...", LogType.Warning);
+                        return;
+                    }
+
                     contentLength = (startOffset != -1 && endOffset != -1) ?
                                     endOffset - startOffset :
                                     existingLength + (response.Content.Headers.ContentRange.Length - response.Content.Headers.ContentRange.From) ?? 0;
-
-                    resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
-
-                    if (!isStream)
-                        localStream = fileinfo.Open(resumabilityStatus.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write);
-
-                    OnResumabilityChanged(resumabilityStatus);
-
-                    ReadRemoteStream(
-                        response,
-                        localStream,
-                        existingLength,
-                        contentLength,
-                        customMessage,
-                        token
-                        );
-                    response.Dispose();
                 }
-            }
-            else
-            {
-                LogWriteLine($"File download for {input} is already completed! Skipping...", LogType.Warning);
+
+                resumabilityStatus = new DownloadStatusChanged((int)response.StatusCode == 206);
+
+                if (!isStream)
+                    localStream = fileinfo.Open(resumabilityStatus.ResumeSupported ? FileMode.Append : FileMode.Create, FileAccess.Write);
+
+                OnResumabilityChanged(resumabilityStatus);
+
+                ReadRemoteStream(
+                    response,
+                    localStream,
+                    existingLength,
+                    contentLength,
+                    customMessage,
+                    token
+                    );
+                response.Dispose();
+                localStream.Dispose();
             }
         }
 
@@ -519,6 +539,7 @@ namespace Hi3Helper.Data
                     null,
                     input.StatusCode);
 #else
+            if (((int)input.StatusCode == 416)) return input;
             if (!input.IsSuccessStatusCode)
                 throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})");
 #endif
@@ -543,6 +564,7 @@ namespace Hi3Helper.Data
             using (remoteStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
 #endif
             {
+                retryCount = 0;
                 var sw = Stopwatch.StartNew();
                 while ((byteSize = remoteStream.Read(buffer, 0, buffer.Length)) > 0)
                 {
@@ -563,6 +585,9 @@ namespace Hi3Helper.Data
                 // Always ignore 416 code
                 case 416:
                     return true;
+                case 404:
+                    LogWriteLine(e.Message, LogType.Error, true);
+                    throw new HttpRequestException(e.ToString(), e);
                 default:
                     LogWriteLine(e.Message, LogType.Error, true);
                     return false;

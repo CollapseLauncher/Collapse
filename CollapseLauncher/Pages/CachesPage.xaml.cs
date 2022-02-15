@@ -13,6 +13,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
+using Hi3Helper.Shared.ClassStruct;
+
+using static Hi3Helper.Shared.Region.LauncherConfig;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -26,6 +29,32 @@ namespace CollapseLauncher.Pages
         public CachesPage()
         {
             this.InitializeComponent();
+        }
+
+        public async void StartCachesUpdate(object sender, RoutedEventArgs e) => await DoCachesUpdate();
+
+        public async void StartCachesCheck(object sender, RoutedEventArgs e) => await DoCachesCheck();
+
+        public void CancelOperation(object sender, RoutedEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+        }
+
+        private void InitializeLoaded(object sender, RoutedEventArgs e)
+        {
+            if (GameInstallationState == GameInstallStateEnum.NotInstalled
+                || GameInstallationState == GameInstallStateEnum.NeedsUpdate
+                || GameInstallationState == GameInstallStateEnum.GameBroken)
+            {
+                Overlay.Visibility = Visibility.Visible;
+                OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
+                OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
+            }
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            cancellationTokenSource?.Cancel();
         }
     }
 }

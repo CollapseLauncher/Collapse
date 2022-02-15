@@ -17,6 +17,9 @@
             -->
 
 
+            <AcrylicBrush x:Key="UnhandledErrorPageBrush" 
+            TintOpacity="0" TintColor="#FF000000" />
+
             <AcrylicBrush x:Key="CustomAcrylicBrush" 
             TintOpacity="0.33" TintColor="#FF000000" />
 
@@ -72,6 +75,11 @@
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             -->
+            <SolidColorBrush x:Key="ErrorSymbolLogo"
+            Color="{ThemeResource SystemAccentColor}"/>
+
+            <AcrylicBrush x:Key="UnhandledErrorPageBrush"
+            TintOpacity="1" TintColor="#FFFFFF" />
 
             <AcrylicBrush x:Key="CustomAcrylicBrush"
             TintOpacity="1" TintColor="#FFFFFF" />

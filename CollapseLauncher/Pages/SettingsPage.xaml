@@ -8,9 +8,15 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesAcrylicBrush}">
 
-    <Grid>
+    <ScrollViewer>
         <StackPanel Margin="32,32,32,32">
-            <TextBlock Text="App Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32"/>
+            <TextBlock Text="App Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+            <StackPanel x:Name="Debugging" Margin="0,16">
+                <StackPanel>
+                    <TextBlock Text="Debugging" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,12"/>
+                    <ToggleSwitch Header="Show Console" IsOn="{Binding EnableConsole}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" Toggled="ConsoleToggle"/>
+                </StackPanel>
+            </StackPanel>
             <StackPanel x:Name="AboutApp">
                 <StackPanel>
                     <TextBlock Text="About" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
@@ -31,25 +37,29 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                </StackPanel>
-                <StackPanel Margin="0,8,0,0">
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
+                    <StackPanel Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
                         <Hyperlink NavigateUri="https://github.com/neon-nyan/Hi3Helper/issues" UnderlineStyle="None">Report an Issue</Hyperlink>
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
                         <Hyperlink NavigateUri="https://github.com/neon-nyan/Hi3Helper/pulls" UnderlineStyle="None">Contribute on Pull Request</Hyperlink>
-                    </TextBlock>
+                        </TextBlock>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Margin="0,16,0,0">
+                <StackPanel Margin="0,16">
                     <TextBlock Text="Disclaimer" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="This app is not affiliated with" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text=" miHoYo" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                        <TextBlock Style="{StaticResource BodyTextBlockStyle}">
+                            <Hyperlink NavigateUri="https://www.mihoyo.com" UnderlineStyle="None" FontWeight="Bold"><Run Text=" miHoYo"/></Hyperlink>
+                            <Run Text="/"/>
+                            <Hyperlink NavigateUri="https://www.hoyoverse.com/en-us" UnderlineStyle="None" FontWeight="Bold"><Run Text="HoYoverse"/></Hyperlink>
+                        </TextBlock>
                         <TextBlock Text=" by any means" Style="{StaticResource BodyTextBlockStyle}"/>
                     </StackPanel>
                     <TextBlock Text="and completely open-sourced. Any contribution is welcomed." Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
-                <StackPanel Margin="0,16,0,0">
+                <StackPanel Margin="0,16,0,48">
                     <TextBlock Text="Dedication" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <TextBlock Text="This app is also dedicated for my crush who passed away from fighting" Style="{StaticResource BodyTextBlockStyle}"/>
                     <TextBlock Text="against her's TB disease. This app has been Dedicated with Love for her." Style="{StaticResource BodyTextBlockStyle}"/>
@@ -65,5 +75,5 @@
                 </StackPanel>
             </StackPanel>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>

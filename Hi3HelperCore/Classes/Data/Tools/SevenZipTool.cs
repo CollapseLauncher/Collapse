@@ -284,33 +284,33 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                     {
                         if (archiveEntries[i].Size == 0)
                         {
-                            // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} has 0 byte in size.");
+                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} has 0 byte in size.");
                             new FileInfo(path).Create().Dispose();
                         }
                         else
                         {
-                            // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
+                            Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
                             failedEntries.Add(archiveEntries[i]);
                         }
                     }
                     catch (AggregateException ex)
                     {
-                        // Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
                         throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
                     }
                     catch (OperationCanceledException ex)
                     {
-                        // Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
                         throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
                     }
                     catch (NotImplementedException)
                     {
-                        // Console.WriteLine($"{archiveEntries[i].Name} on threadID {threadID} will be extracted using fallback method (but slower).");
+                        Console.WriteLine($"{archiveEntries[i].Name} on threadID {threadID} will be extracted using fallback method (but slower).");
                         failedEntries.Add(archiveEntries[i]);
                     }
                     catch (Exception ex)
                     {
-                        // Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
+                        Console.WriteLine($"This file {archiveEntries[i].Name} on threadID {threadID} is failed to be extracted.\r\nWill try with fallback method. Traceback: {ex}");
                         failedEntries.Add(archiveEntries[i]);
                     }
                 }

@@ -3,6 +3,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+
+using Windows.UI;
 using Windows.ApplicationModel.Core;
 
 using System;
@@ -32,15 +34,42 @@ namespace CollapseLauncher
     {
         public MainPage()
         {
-            // LoadGamePreset();
-            // InitializeConsole(true, AppDataFolder);
-            LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
-            LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
-            // ImageSource defaultBackground = new BitmapImage(new Uri(startupBackgroundPath));
-            InitializeComponent();
+            try
+            {
+                LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
+                InitializeComponent();
 
-            InitializeStartup().GetAwaiter();
-            Task.Run(() => CheckRunningGameInstance());
+                ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
+
+                InitializeStartup().GetAwaiter();
+                Task.Run(() => CheckRunningGameInstance());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
+        }
+
+        private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
+        {
+            DispatcherQueue.TryEnqueue(() => LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo()));
+        }
+
+        private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        {
+            SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            SolidColorBrush inactiveForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorDisabledBrush"];
+
+            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            {
+                AppTitle.Foreground = inactiveForegroundBrush;
+            }
+            else
+            {
+                AppTitle.Foreground = defaultForegroundBrush;
+            }
         }
 
         private async void CheckRunningGameInstance()
@@ -55,7 +84,7 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             LoadConfig();
-            await LoadRegion(appIni.Profile["app"]["CurrentRegion"].ToInt());
+            await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
 
             // you can also add items in code behind
@@ -106,12 +135,12 @@ namespace CollapseLauncher
         }
 
         // Update the TitleBar based on the inactive/active state of the app
-        private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        private void Current_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs e)
         {
             SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             SolidColorBrush inactiveForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorDisabledBrush"];
 
-            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            if (e.WindowActivationState == WindowActivationState.Deactivated)
             {
                 AppTitle.Foreground = inactiveForegroundBrush;
             }
@@ -177,38 +206,49 @@ namespace CollapseLauncher
         string previousTag = string.Empty;
         private void NavView_Navigate(NavigationViewItem item)
         {
-            // Prevent repeated call of pages
-            if (!(previousTag == (string)item.Tag))
+            try
             {
-                switch (item.Tag)
+                // Prevent repeated call of pages
+                if (!(previousTag == (string)item.Tag))
                 {
-                    case "launcher":
-                        Navigate(typeof(Pages.HomePage), false, item);
-                        break;
+                    switch (item.Tag)
+                    {
+                        case "launcher":
+                            Navigate(typeof(Pages.HomePage), false, item);
+                            break;
 
-                    case "repair":
-                        if (string.IsNullOrEmpty(CurrentRegion.ZipFileURL)
-                            || GameInstallationState == GameInstallStateEnum.NotInstalled
-                            || GameInstallationState == GameInstallStateEnum.GameBroken
-                            || GameInstallationState == GameInstallStateEnum.NeedsUpdate)
-                            Navigate(typeof(Pages.UnavailablePage), true, item);
-                        else
-                            Navigate(typeof(Pages.RepairPage), true, item);
-                        break;
+                        case "repair":
+                            if (string.IsNullOrEmpty(CurrentRegion.ZipFileURL))
+                                Navigate(typeof(Pages.UnavailablePage), true, item);
+                            else
+                                Navigate(typeof(Pages.RepairPage), true, item);
+                            break;
 
-                    case "caches":
-                        Navigate(typeof(Pages.CachesPage), true, item);
-                        break;
+                        case "caches":
+                            if (CurrentRegion.CachesListGameVerID != null
+                                && CurrentRegion.CachesListAPIURL != null
+                                && CurrentRegion.CachesEndpointURL != null)
+                                Navigate(typeof(Pages.CachesPage), true, item);
+                            else
+                                Navigate(typeof(Pages.UnavailablePage), true, item);
+                            // throw new NotImplementedException("Caches Page isn't yet implemented for now.");
+                            break;
 
-                    case "cutscenes":
-                        Navigate(typeof(Pages.CutscenesPage), true, item);
-                        break;
+                        case "cutscenes":
+                            // Navigate(typeof(Pages.CutscenesPage), true, item);
+                            throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
 
-                    case "gamesettings":
-                        Navigate(typeof(Pages.GameSettingsPage), true, item);
-                        break;
+                        case "gamesettings":
+                            Navigate(typeof(Pages.GameSettingsPage), true, item);
+                            break;
+                    }
+                    LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
                 }
-                LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
             }
         }
 

@@ -14,6 +14,9 @@
     "GameExecutableName": "BH3.exe",
     "BetterHi3LauncherVerInfoReg": "VersionInfoSEA",
     "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
+    "CachesListAPIURL": "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
+    "CachesEndpointURL": "http://data.in.seanew.ironmaid.xyz:14000/update_sea/{0}/editor_compressed/",
+    "CachesListGameVerID": 0,
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=9",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=tEGNtVhN&launcher_id=9&sub_channel_id=1",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
@@ -42,6 +45,9 @@
     "GameExecutableName": "BH3.exe",
     "BetterHi3LauncherVerInfoReg": "VersionInfoGlobal",
     "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
+    "CachesListAPIURL": "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
+    "CachesEndpointURL": "http://data.in.seanew.ironmaid.xyz:14000/update_eu/{0}/editor_compressed/",
+    "CachesListGameVerID": 1,
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=10",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=dpz65xJ3&launcher_id=10&sub_channel_id=1",
     "MirrorList": {
@@ -70,6 +76,9 @@
     "GameExecutableName": "BH3.exe",
     "BetterHi3LauncherVerInfoReg": "VersionInfoCN",
     "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
+    "CachesListAPIURL": "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
+    "CachesEndpointURL": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/{0}/editor_compressed/",
+    "CachesListGameVerID": 2,
     "UseRightSideProgress": true,
     "LauncherSpriteURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/content?filter_adv=true&language=zh-cn&launcher_id=4",
     "LauncherResourceURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/resource?channel_id=1&key=SyvuPnqL&launcher_id=4&sub_channel_id=1",
@@ -140,7 +149,7 @@
       }
     }
   },
-  /*
+  
   {
     "ProfileName": "GIGlb",
     "ZoneName": "Genshin Impact",
@@ -168,5 +177,5 @@
         "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
       }
     }
-  }*/
+  }
 ]

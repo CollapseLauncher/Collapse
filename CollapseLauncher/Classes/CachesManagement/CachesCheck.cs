@@ -1,0 +1,304 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Security.Cryptography;
+using System.Xml;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
+
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
+
+using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+
+namespace CollapseLauncher.Pages
+{
+    public sealed partial class CachesPage : Page
+    {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        ObservableCollection<DataPropertiesUI> brokenCachesListUI = new ObservableCollection<DataPropertiesUI>();
+
+        HttpClientTool httpClient = new HttpClientTool();
+        Stream cachesStream;
+        FileInfo cachesFileInfo;
+        string[] cacheRegionalCheckName = new string[1] { "sprite" };
+        string cachesLanguage;
+        string cachesAPIURL, cachesURL, cachesEndpointURL, cachesBasePath, cachesPath;
+        HMACSHA1 hashTool;
+
+        string Pkcs1Salt;
+
+        int cachesTotalCount,
+            cachesCount;
+
+        long cachesTotalSize,
+             cachesRead;
+
+        List<DataProperties> cachesList;
+        List<DataProperties> brokenCachesList;
+
+        private async Task DoCachesCheck()
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    cachesRead = 0;
+                    cachesCount = 0;
+                    cachesTotalCount = 0;
+                    cachesTotalSize = 0;
+                    cancellationTokenSource = new CancellationTokenSource();
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        CachesDataTableGrid.Visibility = Visibility.Collapsed;
+                        brokenCachesListUI.Clear();
+                        CancelBtn.Visibility = Visibility.Visible;
+                        CheckUpdateBtn.IsEnabled = false;
+                        CancelBtn.IsEnabled = true;
+                    });
+                    cachesLanguage = CurrentRegion.GetGameLanguage();
+                    FetchCachesAPI();
+                    DispatcherQueue.TryEnqueue(() => CachesDataTableGrid.Visibility = Visibility.Visible);
+                    CheckCachesIntegrity();
+                }
+                catch (OperationCanceledException)
+                {
+                    LogWriteLine("Caches Update check cancelled!", LogType.Warning);
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        CachesStatus.Text = $"Operation has been cancelled!";
+                        CachesTotalStatus.Text = "None";
+                        CachesTotalProgressBar.Value = 0;
+                        CheckUpdateBtn.Visibility = Visibility.Visible;
+                        CheckUpdateBtn.IsEnabled = true;
+                        UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                        CancelBtn.IsEnabled = false;
+                    });
+                    httpClient.ProgressChanged -= DataFetchingProgress;
+                }
+                catch (Exception ex)
+                {
+                    ErrorSender.SendException(ex);
+                    LogWriteLine(ex.ToString(), LogType.Error, true);
+                }
+            });
+        }
+
+        private void FetchCachesAPI()
+        {
+            DataProperties cacheCatalog;
+            cachesList = new List<DataProperties>();
+            foreach (CachesType type in Enum.GetValues(typeof(CachesType)))
+            {
+                cachesStream = new MemoryStream();
+                cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
+                LogWriteLine($"Fetching CachesType: {type}");
+
+                DispatcherQueue.TryEnqueue(() => CachesStatus.Text = $"Fetching Caches Type: {type}");
+
+                httpClient.ProgressChanged += DataFetchingProgress;
+                httpClient.DownloadStream(cachesAPIURL, cachesStream, cancellationTokenSource.Token);
+                httpClient.ProgressChanged -= DataFetchingProgress;
+
+                cacheCatalog = JsonConvert.DeserializeObject<DataProperties>(
+                    Encoding.UTF8.GetString(
+                        (cachesStream as MemoryStream).GetBuffer()
+                    ));
+
+                if (cacheCatalog.HashSalt != null)
+                    Pkcs1Salt = cacheCatalog.HashSalt;
+
+                EliminateNonRegionalCaches(cacheCatalog);
+
+                cacheCatalog.DataType = type;
+                cachesStream.Dispose();
+
+                LogWriteLine($"Cache Metadata:"
+                    + $"\r\n\t\tDate (Local Time) = {DateTimeOffset.FromUnixTimeSeconds(cacheCatalog.Timestamp).ToLocalTime().ToString("dddd, dd MMMM yyyy HH:mm:ss")}"
+                    + $"\r\n\t\tVersion = {cacheCatalog.PackageVersion}"
+                    + $"\r\n\t\tCache Count = {cacheCatalog.Content.Count}"
+                    + $"\r\n\t\tCache Size = {SummarizeSizeSimple(cacheCatalog.Content.Sum(x => x.CS))}", LogType.NoTag);
+
+                cachesList.Add(cacheCatalog);
+            }
+
+            cachesTotalCount = cachesList.Sum(x => x.Content.Count);
+            cachesTotalSize = cachesList.Sum(x => x.Content.Sum(y => y.CS));
+
+            LogWriteLine($"Cache Counts (in Catalog): {cachesTotalCount} | Cache Size (in Catalog): {SummarizeSizeSimple(cachesTotalSize)}");
+        }
+
+        private void EliminateNonRegionalCaches(in DataProperties data) => data.Content = new List<DataPropertiesContent>(data.Content.Where(x => FilterRegion(x.N, cachesLanguage) > 0).ToList());
+
+        private byte FilterRegion(string input, string regionName)
+        {
+            foreach (string word in cacheRegionalCheckName)
+            {
+                if (input.Contains(word))
+                    if (input.Contains($"{word}_{regionName}"))
+                        return 1;
+                    else
+                        return 0;
+            }
+            return 2;
+        }
+
+        private void CheckCachesIntegrity()
+        {
+            cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentRegion.ConfigRegistryLocation));
+            string cachesPathType;
+            string hash;
+            List<DataPropertiesContent> brokenCaches;
+            brokenCachesList = new List<DataProperties>();
+            byte[] salt = new mhySHASaltTool(Pkcs1Salt).GetSalt();
+            hashTool = new HMACSHA1(salt);
+
+            foreach (DataProperties dataType in cachesList)
+            {
+                brokenCaches = new List<DataPropertiesContent>();
+
+                switch (dataType.DataType)
+                {
+                    case CachesType.Data:
+                        cachesPathType = Path.Combine(cachesBasePath, "Data");
+                        break;
+                    default:
+                        cachesPathType = Path.Combine(cachesBasePath, "Resources");
+                        break;
+                }
+
+                CleanUpCaches(dataType, cachesPathType);
+
+                foreach (DataPropertiesContent content in dataType.Content)
+                {
+                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    cachesCount++;
+                    cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        CachesStatus.Text = $"Checking {dataType.DataType}: {content.N}";
+                        CachesTotalStatus.Text = $"Processing: {cachesCount}/{cachesTotalCount}";
+                        CachesTotalProgressBar.Value = GetPercentageNumber(cachesCount, cachesTotalCount);
+                    });
+
+                    cachesFileInfo = new FileInfo(cachesPath);
+
+                    if (cachesFileInfo.Exists)
+                    {
+                        cachesStream = new FileStream(cachesPath, FileMode.Open, FileAccess.Read);
+                        hashTool.ComputeHash(cachesStream);
+                        hash = BytesToHex(hashTool.Hash);
+
+                        if (hash != content.CRC)
+                        {
+                            content.Status = CachesDataStatus.Broken;
+                            brokenCaches.Add(content);
+                            DispatcherQueue.TryEnqueue(() => brokenCachesListUI.Add(new DataPropertiesUI
+                            {
+                                FileName = Path.GetFileName(content.N),
+                                FileSizeStr = SummarizeSizeSimple(content.CS),
+                                CacheStatus = CachesDataStatus.Broken,
+                                DataType = dataType.DataType,
+                                FileSource = Path.GetDirectoryName(content.N)
+                            }));
+                            LogWriteLine($"Broken: {content.N}", LogType.Warning);
+                        }
+                        cachesStream.Dispose();
+                    }
+                    else
+                    {
+                        content.Status = CachesDataStatus.Missing;
+                        brokenCaches.Add(content);
+                        DispatcherQueue.TryEnqueue(() => brokenCachesListUI.Add(new DataPropertiesUI
+                        {
+                            FileName = Path.GetFileName(content.N),
+                            FileSizeStr = SummarizeSizeSimple(content.CS),
+                            CacheStatus = CachesDataStatus.Missing,
+                            DataType = dataType.DataType,
+                            FileSource = Path.GetDirectoryName(content.N)
+                        }));
+                        LogWriteLine($"Missing: {content.N}", LogType.Warning, true);
+                    }
+                }
+
+                if (brokenCaches.Count > 0)
+                {
+                    brokenCachesList.Add(new DataProperties
+                    {
+                        DataType = dataType.DataType,
+                        PackageVersion = dataType.PackageVersion,
+                        Timestamp = dataType.Timestamp,
+                        Content = brokenCaches
+                    });
+                }
+            }
+
+            if (brokenCachesList.Count > 0)
+            {
+                cachesTotalCount = brokenCachesList.Sum(x => x.Content.Count);
+                cachesTotalSize = brokenCachesList.Sum(x => x.Content.Sum(y => y.CS));
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    CachesStatus.Text = $"{cachesTotalCount} cache(s) ({SummarizeSizeSimple(cachesTotalSize)} in size) needs to be updated. Click Update Caches to start updating them.";
+                    CachesTotalStatus.Text = "None";
+                    CachesTotalProgressBar.Value = 0;
+                    CheckUpdateBtn.Visibility = Visibility.Collapsed;
+                    UpdateCachesBtn.Visibility = Visibility.Visible;
+                    UpdateCachesBtn.IsEnabled = true;
+                    CancelBtn.IsEnabled = false;
+                });
+                LogWriteLine($"{cachesTotalCount} caches ({SummarizeSizeSimple(cachesTotalSize)}) is available to be updated.", LogType.Default, true);
+            }
+            else
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    CachesStatus.Text = $"Your caches are updated!";
+                    CachesTotalStatus.Text = "None";
+                    CachesTotalProgressBar.Value = 0;
+                    CheckUpdateBtn.Visibility = Visibility.Visible;
+                    CheckUpdateBtn.IsEnabled = true;
+                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                    CancelBtn.IsEnabled = false;
+                });
+            }
+        }
+
+        private void CleanUpCaches(DataProperties prop, string cachesLocalPath)
+        {
+            if (!Directory.Exists(Path.Combine(cachesLocalPath, prop.DataType.ToString().ToLower())))
+                return;
+
+            IEnumerable<string> localFiles = Directory.GetFiles(Path.Combine(cachesLocalPath, prop.DataType.ToString().ToLower()), "*.*", SearchOption.AllDirectories);
+            string localFileName;
+            foreach (string file in localFiles)
+            {
+                localFileName = Path.GetFileNameWithoutExtension(file);
+                if (!prop.Content.Where(x => Path.GetFileNameWithoutExtension(x.ConcatN()).Contains(localFileName)).Any())
+                {
+                    LogWriteLine($"Removing unused cache: {file}", LogType.Default, true);
+                    File.Delete(file);
+                }
+            }
+        }
+
+        private void DataFetchingProgress(object sender, DownloadProgressChanged e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                CachesTotalStatus.Text = $"({SummarizeSizeSimple(e.CurrentSpeed)}/s)";
+            });
+        }
+    }
+}

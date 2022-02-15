@@ -1,0 +1,35 @@
+﻿<Page
+    x:Class="CollapseLauncher.Pages.UnhandledExceptionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource UnhandledErrorPageBrush}">
+    <Grid Margin="32,32,32,32">
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Grid.Row="0">
+            <TextBlock x:Name="Title" Text="Unhandled Error"
+                       Margin="0,0,0,24" Style="{StaticResource TitleLargeTextBlockStyle}"/>
+            <TextBlock x:Name="Subtitle" Text="An Unhandled Error was occured with an Exception Throw below:"
+                       Margin="0,0,0,8" Style="{StaticResource BodyStrongTextBlockStyle}" FontSize="18"/>
+            <TextBox x:Name="ExceptionTextBox"
+                     IsReadOnly="True"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     TextWrapping="Wrap"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     Height="450"
+                     AcceptsReturn="True"
+                     Margin="0,0,0,16">
+            </TextBox>
+            <Button x:Name="CopyThrow" Content="Copy All to Clipboard"
+                    HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
+                    Click="CopyTextToClipboard"/>
+        </StackPanel>
+    </Grid>
+</Page>

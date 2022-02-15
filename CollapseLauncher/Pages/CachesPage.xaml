@@ -5,21 +5,74 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource PagesAcrylicBrush}">
+    Background="{ThemeResource PagesAcrylicBrush}" Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
 
-    <Grid>
-        <Grid Margin="32,32,32,32">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="258"/>
-                <RowDefinition Height="41"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1224*"/>
-                <ColumnDefinition Width="227"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Caches" Style="{StaticResource TitleLargeTextBlockStyle}"/>
+    <Grid Margin="32,32,32,32">
+        <StackPanel>
+            <TextBlock Text="Caches" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="422"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid x:Name="CachesDataTableGrid" Grid.Row="0" Visibility="Collapsed">
+                    <Grid.ChildrenTransitions>
+                        <TransitionCollection>
+                            <PopupThemeTransition/>
+                        </TransitionCollection>
+                    </Grid.ChildrenTransitions>
+                    <control:DataGrid
+                    x:Name="CachesDataGrid"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    CanUserReorderColumns="False"    
+                    IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    CanUserSortColumns="True"
+                    ItemsSource="{x:Bind brokenCachesListUI}"
+                    Margin="0,0,0,16">
+                        <control:DataGrid.Columns>
+                            <control:DataGridTextColumn Header="Cache Name" Binding="{Binding FileName}" Tag="CacheName" Width="360" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Type" Binding="{Binding DataType}" Tag="CacheType" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Source" Binding="{Binding FileSource}" Tag="Source" Width="436" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Size" Binding="{Binding FileSizeStr}" Tag="CacheSize" Width="112" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Status" Binding="{Binding CacheStatus}" Tag="CacheStatus" Width="128" FontSize="13"/>
+                        </control:DataGrid.Columns>
+                    </control:DataGrid>
+                </Grid>
+                <StackPanel Grid.Row="1">
+                    <TextBlock x:Name="CachesStatus" Text="Click Check Update to check Caches update" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,32,0">
+                            <TextBlock Text="Total Progress"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                            <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
+                                <TextBlock x:Name="CachesTotalStatus" Text="None" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Value, ElementName=CachesTotalProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            </control:DockPanel>
+                            <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Button x:Name="UpdateCachesBtn" Content="Update Caches" Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartCachesUpdate"/>
+                            <Button x:Name="CheckUpdateBtn" Content="Check Update" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartCachesCheck"/>
+                            <Button x:Name="CancelBtn" IsEnabled="False" Content="Cancel" Width="72" Margin="16,0,0,0" Click="CancelOperation"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <Grid x:Name="Overlay" Background="{ThemeResource PagesAcrylicBrush}" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
+                <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

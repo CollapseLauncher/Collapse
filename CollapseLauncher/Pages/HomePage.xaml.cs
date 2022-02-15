@@ -22,6 +22,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Newtonsoft.Json;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -49,15 +50,23 @@ namespace CollapseLauncher.Pages
 
         public HomePage()
         {
-            this.InitializeComponent();
-            MigrationWatcher.IsMigrationRunning = false;
-            HomePageProp.Current = this;
+            try
+            {
+                this.InitializeComponent();
+                MigrationWatcher.IsMigrationRunning = false;
+                HomePageProp.Current = this;
 
-            CheckIfRightSideProgress();
-            LoadGameConfig();
-            CheckCurrentGameState();
+                CheckIfRightSideProgress();
+                LoadGameConfig();
+                CheckCurrentGameState();
 
-            Task.Run(() => CheckRunningGameInstance());
+                Task.Run(() => CheckRunningGameInstance());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private void CheckIfRightSideProgress()
@@ -229,7 +238,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        string fileURL, fileOutput, fileHash;
+        string fileURL, fileOutput, fileHash, fileDownloadHash;
 
         private async Task StartInstallationProcedure(string destinationFolder)
         {
@@ -295,6 +304,7 @@ namespace CollapseLauncher.Pages
             bool VerificationPass,
                  returnVal = true;
             fileURL = regionResourceProp.data.game.latest.path;
+            fileDownloadHash = regionResourceProp.data.game.latest.md5;
             fileOutput = Path.Combine(destinationFolder, Path.GetFileName(fileURL));
 
             DispatcherQueue.TryEnqueue(() =>
@@ -334,7 +344,7 @@ namespace CollapseLauncher.Pages
 
             if (!VerificationPass)
             {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, regionResourceProp.data.game.latest.md5, fileHash))
+                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
                 {
                     case ContentDialogResult.Primary:
                         new FileInfo(fileOutput).Delete();
@@ -357,14 +367,11 @@ namespace CollapseLauncher.Pages
 
         private async Task<bool> DoZipVerification(string inputFile, CancellationToken token)
         {
-            string md5 = GameInstallationState == GameInstallStateEnum.InstalledHavePreload ?
-                regionResourceProp.data.pre_download_game.latest.md5:
-                regionResourceProp.data.game.latest.md5;
             DispatcherQueue.TryEnqueue(() => ProgressTimeLeft.Visibility = Visibility.Collapsed);
             if (File.Exists(inputFile))
             {
                 fileHash = await Task.Run(() => GetMD5FromFile(inputFile, token));
-                if (fileHash == md5)
+                if (fileHash == fileDownloadHash)
                 {
                     LogWriteLine();
                     LogWriteLine($"Downloaded game installation is verified and Ready to be extracted!");
@@ -372,7 +379,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
                     LogWriteLine();
-                    LogWriteLine($"Downloaded game installation is corrupted!\r\n\tServer Hash: {md5}\r\n\tDownloaded Hash: {fileHash}", Hi3Helper.LogType.Error);
+                    LogWriteLine($"Downloaded game installation is corrupted!\r\n\tServer Hash: {fileDownloadHash}\r\n\tDownloaded Hash: {fileHash}", Hi3Helper.LogType.Error);
                     return false;
                 }
             }
@@ -390,8 +397,6 @@ namespace CollapseLauncher.Pages
         private void ExtractDownloadedGame(string sourceFile, string destinationFolder, CancellationToken token)
         {
             destinationFolder = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName);
-            byte[] buffer = new byte[131072];
-            // string outputPath;
 
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
@@ -480,7 +485,7 @@ namespace CollapseLauncher.Pages
             GetMD5EventStatus(sw, totalRead, fileLength);
             sw.Stop();
 
-            return BytesToHex(md5.Hash).ToLowerInvariant();
+            return BytesToHex(md5.Hash);
         }
 
 
@@ -697,7 +702,7 @@ namespace CollapseLauncher.Pages
                     case ContentDialogResult.Secondary:
                         LogWriteLine($"TODO: Do Install to Custom Folder");
                         folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InvokeProp.m_windowHandle);
+                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
                         folder = await folderPicker.PickSingleFolderAsync();
 
                         returnFolder = folder.Path;
@@ -758,36 +763,40 @@ namespace CollapseLauncher.Pages
         {
             await Task.Run(() =>
             {
+                string line;
                 int barwidth = ((Console.BufferWidth - 22) / 2) - 1;
                 LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
                 try
                 {
-                    using (StreamReader reader = new StreamReader(new FileStream($"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt",
-                            FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                    AppConfig._presenter.Minimize();
+                    using (FileStream fs = new FileStream($"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt",
+                            FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        long lastMaxOffset = reader.BaseStream.Length;
-
-                        while (true)
+                        using (StreamReader reader = new StreamReader(fs))
                         {
-                            WatchOutputLog.Token.ThrowIfCancellationRequested();
-                            Thread.Sleep(100);
+                            long lastMaxOffset = reader.BaseStream.Length;
 
-                            if (reader.BaseStream.Length == lastMaxOffset)
-                                continue;
+                            while (true)
+                            {
+                                WatchOutputLog.Token.ThrowIfCancellationRequested();
+                                Thread.Sleep(100);
 
-                            reader.BaseStream.Seek(lastMaxOffset, SeekOrigin.Begin);
+                                reader.BaseStream.Seek(lastMaxOffset, SeekOrigin.Begin);
 
-                            string line = "";
-                            while ((line = reader.ReadLine()) != null)
-                                LogWriteLine(line, Hi3Helper.LogType.Game, true);
+                                while ((line = reader.ReadLine()) != null)
+                                {
+                                    LogWriteLine(line, Hi3Helper.LogType.Game, true);
+                                }
 
-                            lastMaxOffset = reader.BaseStream.Position;
+                                lastMaxOffset = reader.BaseStream.Position;
+                            }
                         }
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
+                    AppConfig._presenter.Restore();
                 }
                 catch (Exception ex)
                 {
@@ -824,10 +833,18 @@ namespace CollapseLauncher.Pages
             {
                 string oldVer;
                 if ((oldVer = gameIni.Config["General"]["game_version"].ToString()) == null)
+                {
+                    fileDownloadHash = regionResourceProp.data.game.latest.md5;
                     return regionResourceProp.data.game.latest.path;
+                }
                 else
+                {
+                    fileDownloadHash = regionResourceProp.data.game.diffs.Where(x => x.version == oldVer).ToList()[0].md5;
                     return regionResourceProp.data.game.diffs.Where(x => x.version == oldVer).ToList()[0].path;
+                }
             }
+
+            fileDownloadHash = regionResourceProp.data.game.latest.md5;
             return regionResourceProp.data.game.latest.path;
         }
 
@@ -894,7 +911,7 @@ namespace CollapseLauncher.Pages
             }
             else
             {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, regionResourceProp.data.game.latest.md5, fileHash))
+                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
                 {
                     case ContentDialogResult.Primary:
                         new FileInfo(fileOutput).Delete();
@@ -917,6 +934,7 @@ namespace CollapseLauncher.Pages
 
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             fileURL = regionResourceProp.data.pre_download_game.latest.path;
+            fileDownloadHash = regionResourceProp.data.pre_download_game.latest.md5;
             string GameZipPath = Path.Combine(GamePath, "..\\", Path.GetFileName(fileURL));
 
             try
@@ -974,7 +992,7 @@ namespace CollapseLauncher.Pages
 
             if (!await DoZipVerification(sourceFile, token))
             {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, regionResourceProp.data.pre_download_game.latest.md5, fileHash))
+                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
                 {
                     case ContentDialogResult.Primary:
                         new FileInfo(fileOutput).Delete();

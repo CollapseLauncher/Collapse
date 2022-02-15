@@ -24,6 +24,7 @@ using Force.Crc32;
 
 using Newtonsoft.Json;
 
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 
@@ -43,7 +44,7 @@ namespace CollapseLauncher.Pages
         public FileType DataType { get; set; }
         public string FileSource { get; set; }
         public long FileSize { get; set; }
-        public string FileSizeStr => ConverterTool.SummarizeSizeSimple(FileSize);
+        public string FileSizeStr => SummarizeSizeSimple(FileSize);
         public long Offset { get; set; }
         public string ExpctCRC { get; set; }
         public string CurrCRC { get; set; }
@@ -109,28 +110,31 @@ namespace CollapseLauncher.Pages
 
             Task.Run(() =>
             {
-                string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
-                memBuffer = new MemoryStream();
-
-                httpClient.ProgressChanged += DataFetchingProgress;
-                httpClient.Completed += ProgressCompleted;
-
-                httpClient.DownloadStream(indexURL, memBuffer, cancellationTokenSource.Token);
-
-                httpClient.ProgressChanged -= DataFetchingProgress;
-                httpClient.Completed -= ProgressCompleted;
-
-                FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
                 try
                 {
+                    string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                    memBuffer = new MemoryStream();
+
+                    httpClient.ProgressChanged += DataFetchingProgress;
+
+                    httpClient.DownloadStream(indexURL, memBuffer, cancellationTokenSource.Token);
+
+                    httpClient.ProgressChanged -= DataFetchingProgress;
+
+                    FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
+
                     CheckGameFiles();
-                    sw.Stop();
                 }
                 catch (OperationCanceledException)
                 {
                     LogWriteLine($"Game Check Cancelled!");
-                    sw.Stop();
                 }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"{ex}", LogType.Error, true);
+                    ErrorSender.SendException(ex);
+                }
+                sw.Stop();
             });
         }
 
@@ -373,12 +377,6 @@ namespace CollapseLauncher.Pages
             });
         }
 
-        private bool CheckXMFFirst(FilePropertiesRemote input)
-        {
-            FileCRC = GenerateCRC(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
-            return string.Equals(FileCRC, input.CRC);
-        }
-
         private void CheckGenericAudioCRC(FilePropertiesRemote input)
         {
             FileCRC = GenerateCRC(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
@@ -406,6 +404,9 @@ namespace CollapseLauncher.Pages
         {
             crcTool = new Crc32Algorithm();
             int read = 0;
+
+            if (input.Length == 0) return "00000000";
+
             using (input)
             {
                 SingleCurrentReadSize = 0;
@@ -459,11 +460,6 @@ namespace CollapseLauncher.Pages
                 RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 1);
                 RepairPerFileStatus.Text = $"Fetching ({SummarizeSizeSimple(e.CurrentSpeed)}/s)";
             });
-        }
-
-        private void ProgressCompleted(object sender, DownloadProgressCompleted e)
-        {
-            // throw new NotImplementedException();
         }
     }
 }

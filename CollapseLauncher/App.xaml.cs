@@ -26,7 +26,7 @@ using WinRT;
 using Hi3Helper;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.InvokeProp;
+using static Hi3Helper.InvokeProp;
 
 using static Hi3Helper.Logger;
 
@@ -59,7 +59,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!: {ex}\r\n\r\nIf you're sure that this problem is unintentional, please report this problem by open an issue in https://github.com/neon-nyan/Hi3Helper/issues", LogType.Error, true);
+                LogWriteLine($"FATAL ERROR!!!\r\n{ex}\r\n\r\nIf you're sure that this problem is unintentional, please report this problem by open an issue in https://github.com/neon-nyan/Hi3Helper/issues", LogType.Error, true);
                 Console.ReadLine();
             }
         }

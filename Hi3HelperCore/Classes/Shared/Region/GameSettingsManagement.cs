@@ -569,7 +569,7 @@ namespace Hi3Helper.Shared.Region
                         parameter.Append("-force-feature-level-10-1 ");
                         break;
                     case 1:
-                        parameter.Append("-force-feature-level-11-0 ");
+                        parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
                         break;
                     case 2:
                         parameter.Append("-force-feature-level-11-1 ");

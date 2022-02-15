@@ -21,6 +21,7 @@ using Windows.Foundation.Collections;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -90,7 +91,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     case ContentDialogResult.Secondary:
                         folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InvokeProp.m_windowHandle);
+                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
                         folder = await folderPicker.PickSingleFolderAsync();
 
                         if (folder == null)

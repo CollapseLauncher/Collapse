@@ -9,13 +9,13 @@ namespace Hi3Helper
         internal static StreamWriter logstream;
         internal static string logdir,
                                filename;
-        public static bool DisableConsole = false;
+        public static bool EnableConsole = true;
         private static ILogger logger;
         public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
 
         public static void InitLog(bool enableLog = true, string defaultLogLocation = null)
         {
-            if (DisableConsole)
+            if (!EnableConsole)
                 logger = new DummyLogger();
             else
                 logger = new ConsoleLogger();

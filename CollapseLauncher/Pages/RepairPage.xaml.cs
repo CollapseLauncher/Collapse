@@ -18,6 +18,7 @@ using Windows.Foundation.Collections;
 
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
@@ -52,15 +53,26 @@ namespace CollapseLauncher.Pages
             RepairFilesBtn.Visibility = Visibility.Collapsed;
 
             httpClient.ProgressChanged -= DataFetchingProgress;
-            httpClient.Completed -= ProgressCompleted;
 
-            RepairData.cancellationTokenSource.Cancel();
+            cancellationTokenSource.Cancel();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             sw.Stop();
-            RepairData.cancellationTokenSource.Cancel();
+            cancellationTokenSource.Cancel();
+        }
+
+        private void InitializeLoaded(object sender, RoutedEventArgs e)
+        {
+            if (GameInstallationState == GameInstallStateEnum.NotInstalled
+                || GameInstallationState == GameInstallStateEnum.NeedsUpdate
+                || GameInstallationState == GameInstallStateEnum.GameBroken)
+            {
+                Overlay.Visibility = Visibility.Visible;
+                OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
+                OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
+            }
         }
     }
 }
