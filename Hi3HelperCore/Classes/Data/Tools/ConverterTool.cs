@@ -138,5 +138,18 @@ namespace Hi3Helper.Data
                 throw new Exception("IntToHexChar: input out of range for Hex value");
             return b < 10 ? (char)(b + 48) : (char)(b + 55);
         }
+
+        public static bool IsUserHasPermission(string input)
+        {
+            try
+            {
+                File.Create(Path.Combine(input, "write_test"), 1,FileOptions.DeleteOnClose).Close();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
