@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 
-using Windows.UI;
+// using Windows.UI;
 using Windows.ApplicationModel.Core;
 
 using System;
@@ -14,8 +14,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-using Windows.UI.Core;
-using Windows.UI.ViewManagement;
+// using Windows.UI.Core;
+// using Windows.UI.ViewManagement;
 
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -39,7 +39,6 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
-
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
 
                 InitializeStartup().GetAwaiter();
@@ -52,9 +51,61 @@ namespace CollapseLauncher
             }
         }
 
+        private void ReloadPageTheme(ElementTheme startTheme)
+        {
+            if (this.RequestedTheme == ElementTheme.Dark)
+                this.RequestedTheme = ElementTheme.Light;
+            else if (this.RequestedTheme == ElementTheme.Light)
+                this.RequestedTheme = ElementTheme.Default;
+            else if (this.RequestedTheme == ElementTheme.Default)
+                this.RequestedTheme = ElementTheme.Dark;
+
+            if (this.RequestedTheme != startTheme)
+                ReloadPageTheme(startTheme);
+        }
+
+        private ColorPaletteResources FindColorPaletteResourcesForTheme(string theme)
+        {
+            foreach (var themeDictionary in Application.Current.Resources.ThemeDictionaries)
+            {
+                if (themeDictionary.Key.ToString() == theme)
+                {
+                    if (themeDictionary.Value is ColorPaletteResources)
+                    {
+                        return themeDictionary.Value as ColorPaletteResources;
+                    }
+                    else if (themeDictionary.Value is ResourceDictionary targetDictionary)
+                    {
+                        foreach (var mergedDictionary in targetDictionary.MergedDictionaries)
+                        {
+                            if (mergedDictionary is ColorPaletteResources)
+                            {
+                                return mergedDictionary as ColorPaletteResources;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
         {
-            DispatcherQueue.TryEnqueue(() => LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo()));
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (e.Exception.GetType() == typeof(NotImplementedException))
+                {
+                    previousTag = "unavailable";
+                    HideBackgroundImage();
+                    LauncherFrame.Navigate(typeof(Pages.UnavailablePage), null, new DrillInNavigationTransitionInfo());
+                }
+                else
+                {
+                    previousTag = "crashinfo";
+                    HideBackgroundImage();
+                    LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo());
+                }
+            });
         }
 
         private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
@@ -282,5 +333,9 @@ namespace CollapseLauncher
         }
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = true;
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }

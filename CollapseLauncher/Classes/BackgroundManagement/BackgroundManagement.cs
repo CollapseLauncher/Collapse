@@ -18,6 +18,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 
+using ColorThiefDotNet;
+
 using Newtonsoft.Json;
 
 using Hi3Helper.Data;
@@ -33,6 +35,9 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         private BitmapImage BackgroundBitmap;
+        private Bitmap ThumbnailBitmap;
+        private Stream ThumbnailStream;
+        private readonly Size ThumbnailSize = new Size(32, 32);
 
         // Always use startupBackgroundPath on startup.
         private bool startUp = true;
@@ -47,7 +52,12 @@ namespace CollapseLauncher
                 {
                     regionBackgroundProp = new RegionBackgroundProp { imgLocalPath = startupBackgroundPath };
                     if (File.Exists(startupBackgroundPath))
+                    {
                         ApplyBackground();
+
+                        GenerateThumbnail();
+                        ApplyAccentColor();
+                    }
 
                     startUp = false;
                 }
@@ -61,12 +71,93 @@ namespace CollapseLauncher
 
                 if (DownloadBackgroundImage())
                     ApplyBackground();
+
+                GenerateThumbnail();
+                ApplyAccentColor();
             }
-            catch
+            catch (Exception ex)
             {
-                LogWriteLine($"Cannot connect to the internet while fetching background image");
+                LogWriteLine($"Something wrong happen while fetching Background Image\n{ex}");
             }
         }
+
+        private void ApplyAccentColor()
+        {
+            var uiSettings = new Windows.UI.ViewManagement.UISettings();
+            var theme = uiSettings.GetColorValue(
+                    Windows.UI.ViewManagement.UIColorType.Background
+                   );
+
+            Windows.UI.Color _color = new Windows.UI.Color();
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (theme.ToString() == "#FFFFFFFF")
+                {
+                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
+
+                    Application.Current.Resources["SystemAccentColor"] = _color;
+                    Application.Current.Resources["SystemAccentColorDark1"] = _color;
+                    Application.Current.Resources["SystemAccentColorDark2"] = _color;
+                    Application.Current.Resources["SystemAccentColorDark3"] = _color;
+                }
+                else
+                {
+                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
+
+                    Application.Current.Resources["SystemAccentColor"] = _color;
+                    Application.Current.Resources["SystemAccentColorLight1"] = _color;
+                    Application.Current.Resources["SystemAccentColorLight2"] = _color;
+                    Application.Current.Resources["SystemAccentColorLight3"] = _color;
+                }
+
+                ReloadPageTheme(this.RequestedTheme);
+            });
+        }
+
+        private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
+
+        private void GenerateThumbnail()
+        {
+            try
+            {
+                Task.Run(async () =>
+                {
+                    using (IRandomAccessStream fileStream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
+                    {
+                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                        InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
+
+                        BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
+
+                        encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Linear;
+
+                        encoder.BitmapTransform.ScaledHeight = (uint)ThumbnailSize.Width;
+                        encoder.BitmapTransform.ScaledWidth = (uint)ThumbnailSize.Height;
+
+                        await encoder.FlushAsync();
+                        resizedStream.Seek(0);
+
+                        ThumbnailStream = new MemoryStream();
+                        resizedStream.AsStream().CopyTo(ThumbnailStream);
+
+                        ThumbnailBitmap = new Bitmap(ThumbnailStream);
+                        ThumbnailStream.Dispose();
+                    }
+                }).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Cannot generate thumbnail: {ex}", Hi3Helper.LogType.Warning, true);
+            }
+        }
+
+        private IEnumerable<QuantizedColor> GetPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap);
+        private QuantizedColor GetColorFromPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap, 10)[paletteOrder];
+        private QuantizedColor GetColorFromPaletteByTheme(byte paletteOrder = 0, bool alwaysLight = true) =>
+            new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
+        private QuantizedColor GetSingleColorPalette() => new ColorThief().GetColor(ThumbnailBitmap);
 
         private bool DownloadBackgroundImage()
         {
@@ -76,7 +167,7 @@ namespace CollapseLauncher
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background)
-                // || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)).ToLowerInvariant() != regionBackgroundProp.data.adv.bg_checksum
+                // || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)) != regionBackgroundProp.data.adv.bg_checksum
                 )
             {
                 httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
@@ -160,6 +251,7 @@ namespace CollapseLauncher
         private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
+            Storyboard storyboardScale = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
 
             if (!(hideImage && BackgroundFront.Opacity == 0))

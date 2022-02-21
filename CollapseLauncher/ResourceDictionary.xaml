@@ -4,59 +4,35 @@
     xmlns:local="using:CollapseLauncher">
     <ResourceDictionary.ThemeDictionaries>
 
-        <ResourceDictionary x:Key="Default">
-            <!--
+        <ResourceDictionary x:Key="Dark">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Color x:Key="SystemAccentColor">#FFD927</Color>
-                    <Color x:Key="SystemAccentColorLight1">#FFD927</Color>
-                    <Color x:Key="SystemAccentColorLight2">#FFD927</Color>
-                    <Color x:Key="SystemAccentColorLight3">#FFD927</Color>
+                    <Color x:Key="SystemAccentColor">#FFFFFF</Color>
+                    <Color x:Key="SystemAccentColorLight1">#FFFFFF</Color>
+                    <Color x:Key="SystemAccentColorLight2">#FFFFFF</Color>
+                    <Color x:Key="SystemAccentColorLight3">#FFFFFF</Color>
+                    
+                    <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="0" TintColor="#FF000000" />
+
+                    <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="0.33" TintColor="#FF000000" />
+
+                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FF000000" />
+
+                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
+
+                    <AcrylicBrush x:Key="NavigationAcrylicBrush" TintOpacity="0" TintColor="#111111" />
+
+                    <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Black" TintOpacity="0" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="Black" TintOpacity="0.2" TintLuminosityOpacity="0.6" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="Black" TintOpacity="0.75" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="Black" TintOpacity="0.5" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="LoadingBrush" TintColor="Black" TintOpacity="0.7" FallbackColor="Transparent"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            -->
-
-
-            <AcrylicBrush x:Key="UnhandledErrorPageBrush" 
-            TintOpacity="0" TintColor="#FF000000" />
-
-            <AcrylicBrush x:Key="CustomAcrylicBrush" 
-            TintOpacity="0.33" TintColor="#FF000000" />
-
-            <AcrylicBrush x:Key="OverlayAcrylicBrush" 
-            TintOpacity="0" TintColor="#FF000000" />
-
-            <AcrylicBrush x:Key="PagesAcrylicBrush" 
-            TintOpacity="0.0" TintColor="Black" />
-
-            <AcrylicBrush x:Key="NavigationAcrylicBrush" 
-            TintOpacity="0" TintColor="#111111" />
-
-            <AcrylicBrush x:Key="MyAcrylicBrush"
-            TintColor="Black"
-            TintOpacity="0"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="DialogAcrylicBrush"
-            TintColor="Black"
-            TintOpacity="0.2" TintLuminosityOpacity="0.6"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="InfoBarInformationBrush"
-            TintColor="Black"
-            TintOpacity="0.75"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="NavigationBarBrush"
-            TintColor="Black"
-            TintOpacity="0.5"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="LoadingBrush"
-            TintColor="Black"
-            TintOpacity="0.7"
-            FallbackColor="Transparent"/>
-
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="HighContrast">
@@ -65,56 +41,33 @@
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
-            <!--
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Color x:Key="SystemAccentColor">#0078D4</Color>
-                    <Color x:Key="SystemAccentColorDark1">#0078D4</Color>
-                    <Color x:Key="SystemAccentColorDark2">#0078D4</Color>
-                    <Color x:Key="SystemAccentColorDark3">#0078D4</Color>
+                    <Color x:Key="SystemAccentColor">#111111</Color>
+                    <Color x:Key="SystemAccentColorDark1">#111111</Color>
+                    <Color x:Key="SystemAccentColorDark2">#111111</Color>
+                    <Color x:Key="SystemAccentColorDark3">#111111</Color>
+                    
+                    <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="1" TintColor="#FFFFFF" />
+
+                    <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="1" TintColor="#FFFFFF" />
+
+                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FFFFFF" />
+
+                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" />
+
+                    <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Transparent" TintOpacity="0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="White" TintOpacity="0.75" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="White" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
+
+                    <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.75" TintLuminosityOpacity="0.8" FallbackColor="Transparent"/>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            -->
-            <SolidColorBrush x:Key="ErrorSymbolLogo"
-            Color="{ThemeResource SystemAccentColor}"/>
-
-            <AcrylicBrush x:Key="UnhandledErrorPageBrush"
-            TintOpacity="1" TintColor="#FFFFFF" />
-
-            <AcrylicBrush x:Key="CustomAcrylicBrush"
-            TintOpacity="1" TintColor="#FFFFFF" />
-            
-            <AcrylicBrush x:Key="OverlayAcrylicBrush"
-            TintOpacity="0" TintColor="#FFFFFF" />
-
-            <AcrylicBrush x:Key="PagesAcrylicBrush"
-            TintOpacity="0.0" />
-
-            <AcrylicBrush x:Key="MyAcrylicBrush"
-            TintColor="Transparent"
-            TintOpacity="0"
-            TintLuminosityOpacity="0.0"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="DialogAcrylicBrush"
-            TintColor="White"
-            TintOpacity="0.75"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="InfoBarInformationBrush"
-            TintColor="White"
-            TintOpacity="0.8" TintLuminosityOpacity="0.75"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="NavigationBarBrush"
-            TintColor="White"
-            TintOpacity="0" TintLuminosityOpacity="0.75"
-            FallbackColor="Transparent"/>
-
-            <AcrylicBrush x:Key="LoadingBrush"
-            TintColor="White"
-            TintOpacity="0.75" TintLuminosityOpacity="0.8"
-            FallbackColor="Transparent"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>
