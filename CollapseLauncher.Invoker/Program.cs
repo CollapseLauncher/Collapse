@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
@@ -12,6 +14,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 
 using static CollapseLauncher.Invoker.SettingsGraphics;
+using static Hi3Helper.InvokeProp;
 
 namespace CollapseLauncher.Invoker
 {
@@ -20,6 +23,7 @@ namespace CollapseLauncher.Invoker
         static string[] argument = Array.Empty<string>();
         public static void Main (string[] args)
         {
+            InitializeConsole();
             argument = args;
 
             try
@@ -38,6 +42,12 @@ namespace CollapseLauncher.Invoker
                     case "loadgamesettings":
                         DoLoadGameSettings();
                         break;
+                    case "assignoriginalpath":
+                        DoAssignOriginalPath();
+                        break;
+                    case "aswindowhandler":
+                        DoAsWindowHandler();
+                        break;
                     default:
                         Console.WriteLine($"Invalid argument!");
                         break;
@@ -47,6 +57,19 @@ namespace CollapseLauncher.Invoker
             {
                 Console.WriteLine($"Invalid argument! {ex}");
                 Console.ReadLine();
+            }
+        }
+
+        static void DoAsWindowHandler()
+        {
+            IntPtr h_windowPtr = GetConsoleWindow();
+            Console.WriteLine($"Window Handler Pointer: {h_windowPtr}");
+            Console.WriteLine("Please define the pointer number above by adding this parameter to your unity game:");
+            Console.WriteLine($"--parentHWND {h_windowPtr}");
+
+            while (true)
+            {
+                Task.Delay(1000).Wait();
             }
         }
 
@@ -76,6 +99,55 @@ namespace CollapseLauncher.Invoker
                     File.Move(fileList[i], targetpath);
                     Console.WriteLine($"\rMoving {i+1}/{fileList.Length}: {basepath}");
                 }
+            }
+        }
+
+        static void DoAssignOriginalPath()
+        {
+            string gameVer = argument[1];
+            string gameDirectoryName = argument[2];
+            string sourceGame = argument[3];
+            IniFile iniFile = new IniFile();
+
+            Process takeOwner = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = $"/c icacls \"{sourceGame}\" /T /Q /C /RESET"
+                }
+            };
+
+            takeOwner.Start();
+            takeOwner.WaitForExit();
+
+            takeOwner = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = $"/c takeown /f \"{sourceGame}\" /r /d y"
+                }
+            };
+
+            takeOwner.Start();
+            takeOwner.WaitForExit();
+
+            string iniSourceGameLocation = Path.Combine(sourceGame, gameDirectoryName, "config.ini");
+
+            if (!File.Exists(iniSourceGameLocation))
+            {
+                iniFile.Add("General", new Dictionary<string, IniValue>
+                {
+                    { "channel", new IniValue(1) },
+                    { "cps", new IniValue() },
+                    { "game_version", new IniValue(gameVer) },
+                    { "sub_channel", new IniValue(1) },
+                    { "sdk_version", new IniValue() },
+                });
+                iniFile.Save(new FileStream(iniSourceGameLocation, FileMode.OpenOrCreate, FileAccess.ReadWrite));
             }
         }
 

@@ -2,7 +2,7 @@
   "profiles": {
     "CollapseLauncher.Invoker": {
       "commandName": "Project",
-      "commandLineArgs": "migratebhi3l  5.5.0 VersionInfoCN \"C:\\Program Files\\崩坏3\" \"C:\\Program Files\\崩坏3\""
+      "commandLineArgs": "aswindowhandler"
     }
   }
 }
