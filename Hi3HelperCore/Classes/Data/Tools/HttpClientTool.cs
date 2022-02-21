@@ -34,16 +34,18 @@ namespace Hi3Helper.Data
 
         int downloadThread,
             retryCount,
-            maxRetryCount;
+            maxRetryCount,
+            maxRetryTimeout;
         long downloadPartialExistingSize = 0,
              downloadPartialSize = 0;
         string downloadPartialOutputPath, downloadPartialInputPath;
         CancellationToken downloadPartialToken;
 
-        public HttpClientTool(bool IgnoreCompression = false, int maxRetryCount = 5)
+        public HttpClientTool(bool IgnoreCompression = false, int maxRetryCount = 5, int maxRetryTimeout = 1000)
         {
             this.retryCount = 0;
             this.maxRetryCount = maxRetryCount;
+            this.maxRetryTimeout = maxRetryTimeout;
 
             this.httpClient = new HttpClient(
             new HttpClientHandler()
@@ -70,7 +72,7 @@ namespace Hi3Helper.Data
             while (!(ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false)))
             {
                 LogWriteLine($"Retrying (Count: {retryCount})...");
-                Thread.Sleep(1000);
+                Thread.Sleep(maxRetryTimeout);
             }
 
             return ret;
@@ -87,7 +89,7 @@ namespace Hi3Helper.Data
             while (!(ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true)))
             {
                 LogWriteLine($"Retrying (Count: {retryCount})...");
-                Thread.Sleep(1000);
+                Thread.Sleep(maxRetryTimeout);
             }
 
             return ret;
@@ -143,7 +145,7 @@ namespace Hi3Helper.Data
                         while (!await GetPartialSessionStream(j))
                         {
                             LogWriteLine($"Retrying to connect for chunk no: {j.PartRange + 1} (Count: {retryCount})...");
-                            Thread.Sleep(1000);
+                            Thread.Sleep(maxRetryTimeout);
                         }
                     }, downloadPartialToken));
                 }
@@ -413,11 +415,11 @@ namespace Hi3Helper.Data
 
         bool HttpRequestExceptionRetryHandler(HttpRequestException e)
         {
-            if (retryCount > maxRetryCount)
+            if (retryCount >= maxRetryCount)
                 throw new HttpRequestException(e.ToString(), e);
 
             retryCount++;
-            return true;
+            return false;
         }
 
         bool GetRemoteStreamResponse(string input, string output, long startOffset, long endOffset, string customMessage, CancellationToken token, bool isStream)
