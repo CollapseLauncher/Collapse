@@ -189,6 +189,7 @@ namespace CollapseLauncher.Pages
 
                                 BrokenFileIndexesProperty.Add(Index);
 
+                                BrokenFilesSize += Index.S;
                                 BrokenFilesCount++;
                             }
                         }
