@@ -57,7 +57,7 @@
                         <StackPanel x:Name="GraphicsAPIPanel" Orientation="Horizontal">
                             <ComboBox x:Name="GraphicsAPISelector" PlaceholderText="Select" Width="224">
                                 <ComboBoxItem Content="DirectX 11 (FL 10.1)"/>
-                                <ComboBoxItem Content="DirectX 11 (FL 11.0)"/>
+                                <ComboBoxItem Content="DirectX 11 (FL 11.0) No ST"/>
                                 <ComboBoxItem Content="DirectX 11 (FL 11.1)"/>
                                 <ComboBoxItem Content="DirectX 11 (FL 11.1) No ST"/>
                                 <ComboBoxItem Content="DirectX 12 [EXPERIMENTAL]"/>
@@ -73,9 +73,9 @@
                                                 <Run Text="There are few API modes which are available for this game, including:"/>
                                                 <LineBreak/><LineBreak/>
                                                 <Run Text="- DirectX 11 level 10.1"/><LineBreak/>
-                                                <Run Text="- DirectX 11 level 11.0"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 11.0 No Single-Thread (Default)"/><LineBreak/>
                                                 <Run Text="- DirectX 11 level 11.1"/><LineBreak/>
-                                                <Run Text="- DirectX 11 level 11.1 No Single-Thread (Default)"/><LineBreak/>
+                                                <Run Text="- DirectX 11 level 11.1 No Single-Thread"/><LineBreak/>
                                                 <Run Text="- DirectX 12 (Experimental)"/><LineBreak/>
                                             </TextBlock>
                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}">

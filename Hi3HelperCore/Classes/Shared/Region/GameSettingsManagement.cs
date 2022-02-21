@@ -41,7 +41,7 @@ namespace Hi3Helper.Shared.Region
             { "ScreenResolution", new IniValue(ScreenProp.GetScreenSize()) },
             { "FullscreenExclusive", new IniValue(false) },
             { "CustomScreenResolution", new IniValue(false) },
-            { "GameGraphicsAPI", new IniValue(3) },
+            { "GameGraphicsAPI", new IniValue(1) },
 
             { "ResolutionQuality", new IniValue(2) },
             { "ShadowLevel", new IniValue(3) },
@@ -568,15 +568,15 @@ namespace Hi3Helper.Shared.Region
                     case 0:
                         parameter.Append("-force-feature-level-10-1 ");
                         break;
+                    default:
                     case 1:
                         parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
                         break;
                     case 2:
                         parameter.Append("-force-feature-level-11-1 ");
                         break;
-                    default:
                     case 3:
-                        parameter.Append("-force-d3d11-no-singlethreaded ");
+                        parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
                         break;
                     case 4:
                         parameter.Append("-force-d3d12 ");
