@@ -93,6 +93,7 @@ namespace CollapseLauncher
 
         public async void ChangeRegion(object sender, RoutedEventArgs e)
         {
+            ChangeRegionBtn.IsEnabled = false;
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
             appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
             SaveAppConfig();
@@ -106,13 +107,11 @@ namespace CollapseLauncher
                 // Thread.Sleep(1000);
                 f.Hide();
                 ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionBtn.IsEnabled = true;
                 LogWriteLine($"Region changed to {ComboBoxGameRegion.SelectedValue}", Hi3Helper.LogType.Scheme);
             }
         }
 
-        private async Task InvokeLoadRegion(int index)
-        {
-            await LoadRegion(index);
-        }
+        private async Task InvokeLoadRegion(int index) => await LoadRegion(index);
     }
 }
