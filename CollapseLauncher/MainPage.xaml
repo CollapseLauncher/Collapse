@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource MyAcrylicBrush}">
+    Background="{ThemeResource MyAcrylicBrush}" Loaded="Page_Loaded">
 
     <Page.Resources>
         <!--This top margin is the height of the custom TitleBar-->
@@ -38,7 +38,7 @@
                     <Flyout>
                         <StackPanel>
                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
-                            <Button Click="ChangeRegion">
+                            <Button x:Name="ChangeRegionBtn" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
                                 <Button.Content>
                                     <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
                                         <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
@@ -50,11 +50,13 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
+            <!--
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="16,0,8,0" Style="{StaticResource CaptionTextBlockStyle}" Text="Mirror"/>
             <ComboBox PlaceholderText="Hi3Mirror" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left">
                 <x:String>Hi3Mirror</x:String>
                 <x:String>miHoYo</x:String>
             </ComboBox>
+            -->
         </StackPanel>
         <NavigationView x:Name="NavigationViewControl"
             IsTitleBarAutoPaddingEnabled="False"

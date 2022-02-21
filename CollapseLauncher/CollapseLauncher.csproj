@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CollapseLauncher</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -17,9 +17,12 @@
 	<Version>1.0.7</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\BG\default.png" />
     <None Remove="CollapseLauncher.Invoker.dll" />
     <None Remove="CollapseLauncher.Invoker.exe" />
+    <None Remove="CollapseLauncher.Invoker.runtimeconfig.json" />
     <None Remove="config\fileconfig.json" />
+    <None Remove="Pages\Dialogs\InstallationMigrateSteam.xaml" />
     <None Remove="Pages\UnhandledExceptionPage.xaml" />
   </ItemGroup>
 
@@ -37,6 +40,9 @@
     <Content Include="CollapseLauncher.Invoker.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="CollapseLauncher.Invoker.runtimeconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\fileconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -45,8 +51,10 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+    <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.194" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -60,11 +68,20 @@
     <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\BG\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Pages\CachesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\CutscenesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\Dialogs\InstallationMigrateSteam.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\Dialogs\InstallationMigrate.xaml">
       <Generator>MSBuild:Compile</Generator>

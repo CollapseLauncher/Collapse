@@ -58,7 +58,27 @@ namespace CollapseLauncher.Dialogs
                     Content,
                     "Cancel",
                     "Use default directory",
-                    "Yes, Change location"
+                    "Locate location"
+                );
+
+        public static async Task<ContentDialogResult> Dialog_InsufficientWritePermission(UIElement Content, string path) =>
+            await SpawnDialog(
+                    "Unauthorized Location Choosen",
+                    $"You have choosen a location that you don't have a permission to write on this path:\n\n{path}\n\nPlease choose another location!",
+                    Content,
+                    "Okay",
+                    null,
+                    null
+                );
+
+        public static async Task<ContentDialogResult> Dialog_InstallationLocateExisting(UIElement Content, string locationPath) =>
+            await SpawnDialog(
+                    "You've located to the Existing Installation",
+                    $"We have detected the existing game in this path.\nLocation Path: {locationPath}",
+                    Content,
+                    "Cancel",
+                    "Use default directory",
+                    "Locate location"
                 );
 
         public static async Task<ContentDialogResult> Dialog_InstallationDownloadAdditional(UIElement Content) =>
@@ -109,6 +129,33 @@ namespace CollapseLauncher.Dialogs
                     "Cancel",
                     "Yes, Migrate it",
                     "No, Keep Install it"
+            );
+
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content) =>
+            await SpawnDialog(
+                    "Existing Installation on Steam is Detected!",
+                    string.Format(
+                        "Game is already been installed on Steam in this location:\r\n\r\n{0}\r\n\r\n"
+                        + "Do you want to convert this version to Normal Global version?\n"
+                        + "Note: Once you converted it, you can't log-in with your steam account and only miHoYo/HoYoverse account login method is available."
+                        + "\r\n\r\nDo you want to continue?", GamePathOnSteam),
+                    Content,
+                    "Cancel",
+                    "Yes, Convert it",
+                    "No, Keep Install it"
+            );
+
+        public static async Task<ContentDialogResult> Dialog_SteamConversionNoPermission(UIElement Content) =>
+            await SpawnDialog(
+                    "Folder Migration is Needed",
+                    string.Format(
+                        "You need to migrate the game folder to other location since the app doesn't have permission to do write activity.\n"
+                        + "It's recommended to move the location to CollapseLauncher folder but you can also choose your own location.\n"
+                        + "\nDo you want to move it to CollapseLauncher folder?"),
+                    Content,
+                    "Cancel",
+                    "Yes",
+                    "No, Other Location"
             );
 
         public static async Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(UIElement Content, string sourceHash, string downloadedHash) =>

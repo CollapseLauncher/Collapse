@@ -86,32 +86,32 @@ namespace CollapseLauncher.Dialogs
             };
 
             cd.XamlRoot = Content.XamlRoot;
-            
-                switch (await cd.ShowAsync())
-                {
-                    case ContentDialogResult.Secondary:
-                        folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
-                        folder = await folderPicker.PickSingleFolderAsync();
 
-                        if (folder == null)
-                            await MigrationCancelled(3000);
+            switch (await cd.ShowAsync())
+            {
+                case ContentDialogResult.Secondary:
+                    folderPicker.FileTypeFilter.Add("*");
+                    WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
+                    folder = await folderPicker.PickSingleFolderAsync();
 
-                        returnFolder = folder.Path;
-                        break;
-                    case ContentDialogResult.Primary:
-                        if (CurrentRegion.MigrateFromBetterHi3Launcher)
-                        {
-                            returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
-                            UseCurrentBHI3LFolder = true;
-                        }
-                        else
-                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
-                        break;
-                    case ContentDialogResult.None:
+                    if (folder == null)
                         await MigrationCancelled(3000);
-                        break;
-                }
+
+                    returnFolder = folder.Path;
+                    break;
+                case ContentDialogResult.Primary:
+                    if (CurrentRegion.MigrateFromBetterHi3Launcher)
+                    {
+                        returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
+                        UseCurrentBHI3LFolder = true;
+                    }
+                    else
+                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                    break;
+                case ContentDialogResult.None:
+                    await MigrationCancelled(3000);
+                    break;
+            }
 
             return returnFolder;
         }

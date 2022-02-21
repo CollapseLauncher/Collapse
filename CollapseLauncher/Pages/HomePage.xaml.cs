@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -190,13 +191,13 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (CurrentRegion.CheckExistingGame())
+                if ((GamePathOnSteam = CurrentRegion.GetSteamInstallationPath()) != null)
                 {
-                    switch (await Dialog_ExistingInstallation(Content))
+                    switch (await Dialog_ExistingInstallationSteam(Content))
                     {
                         case ContentDialogResult.Primary:
                             MigrationWatcher.IsMigrationRunning = true;
-                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
+                            OverlapFrame.Navigate(typeof(InstallationMigrateSteam), null, new DrillInNavigationTransitionInfo());
                             await CheckMigrationProcess();
                             OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
                             break;
@@ -226,6 +227,24 @@ namespace CollapseLauncher.Pages
                             return;
                     }
                 }
+                else if (CurrentRegion.CheckExistingGame())
+                {
+                    switch (await Dialog_ExistingInstallation(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            MigrationWatcher.IsMigrationRunning = true;
+                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
+                            await CheckMigrationProcess();
+                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                            break;
+                        case ContentDialogResult.Secondary:
+                            LogWriteLine($"TODO: Do Install for CollapseLauncher");
+                            await StartInstallationProcedure(await InstallGameDialogScratch());
+                            break;
+                        case ContentDialogResult.None:
+                            return;
+                    }
+                }
                 else
                 {
                     LogWriteLine($"Existing Installation Not Found {CurrentRegion.ZoneName}");
@@ -244,6 +263,25 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                /*
+                string ExistingPath = ScanForExistingGameLocation(destinationFolder);
+                if (ExistingPath != null)
+                {
+
+                    switch (await Dialog_InstallationLocateExisting(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            RequireAdditionalDataDownload = true;
+                            break;
+                        case ContentDialogResult.Secondary:
+                            RequireAdditionalDataDownload = false;
+                            break;
+                    }
+
+                    DispatcherQueue.TryEnqueue(() => OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo()));
+                    return;
+                }
+
                 switch (await Dialog_InstallationDownloadAdditional(Content))
                 {
                     case ContentDialogResult.Primary:
@@ -253,6 +291,7 @@ namespace CollapseLauncher.Pages
                         RequireAdditionalDataDownload = false;
                         break;
                 }
+                */
 
                 if (string.IsNullOrEmpty(destinationFolder))
                     throw new OperationCanceledException();
@@ -264,7 +303,7 @@ namespace CollapseLauncher.Pages
 
                 if (!File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_test")))
                     File.Delete(fileOutput);
-                
+
                 ApplyGameConfig(destinationFolder);
 
                 DispatcherQueue.TryEnqueue(() => OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo()));
@@ -273,6 +312,19 @@ namespace CollapseLauncher.Pages
             {
 
             }
+        }
+
+        private string ScanForExistingGameLocation(string destinationFolder)
+        {
+            string locatePath = Directory.GetFiles(destinationFolder, "*.exe", SearchOption.AllDirectories)
+                .Where(x => x.Contains(CurrentRegion.GameDirectoryName)
+                         && x.Contains(CurrentRegion.GameExecutableName)).First();
+
+            if (string.IsNullOrEmpty(locatePath))
+                return null;
+
+            locatePath = Path.GetDirectoryName(locatePath);
+            return locatePath;
         }
 
         private void ApplyGameConfig(string destinationFolder)
@@ -485,7 +537,7 @@ namespace CollapseLauncher.Pages
             GetMD5EventStatus(sw, totalRead, fileLength);
             sw.Stop();
 
-            return BytesToHex(md5.Hash);
+            return BytesToHex(md5.Hash).ToLower();
         }
 
 
@@ -693,22 +745,32 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                switch (await Dialog_InstallationLocation(Content))
+                bool isChoosen = false;
+                while (!isChoosen)
                 {
-                    case ContentDialogResult.Primary:
-                        LogWriteLine($"TODO: Do Install to Default Folder");
-                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
-                        break;
-                    case ContentDialogResult.Secondary:
-                        LogWriteLine($"TODO: Do Install to Custom Folder");
-                        folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
-                        folder = await folderPicker.PickSingleFolderAsync();
+                    switch (await Dialog_InstallationLocation(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                            isChoosen = true;
+                            break;
+                        case ContentDialogResult.Secondary:
+                            folder = null;
+                            folderPicker.FileTypeFilter.Add("*");
+                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
+                            folder = await folderPicker.PickSingleFolderAsync();
 
-                        returnFolder = folder.Path;
-                        break;
-                    case ContentDialogResult.None:
-                        throw new TaskCanceledException();
+                            if (folder != null)
+                                if (IsUserHasPermission(returnFolder = folder.Path))
+                                    isChoosen = true;
+                                else
+                                    await Dialog_InsufficientWritePermission(Content, returnFolder);
+                            else
+                                isChoosen = false;
+                            break;
+                        case ContentDialogResult.None:
+                            throw new TaskCanceledException();
+                    }
                 }
             }
             catch (TaskCanceledException)
@@ -744,7 +806,6 @@ namespace CollapseLauncher.Pages
                 proc.Start();
 
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-
 
                 WatchOutputLog = new CancellationTokenSource();
 
@@ -809,7 +870,7 @@ namespace CollapseLauncher.Pages
         {
             MigrationWatcher.IsMigrationRunning = false;
             CancelInstallationDownload();
-            WatchOutputLog.Cancel();
+            // WatchOutputLog.Cancel();
         }
 
         private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
