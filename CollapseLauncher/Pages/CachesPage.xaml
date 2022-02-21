@@ -9,8 +9,8 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesAcrylicBrush}" Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
 
-    <Grid Margin="32,32,32,32">
-        <StackPanel>
+    <Grid>
+        <StackPanel Margin="32,32,32,32">
             <TextBlock Text="Caches" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -34,10 +34,12 @@
                     ItemsSource="{x:Bind brokenCachesListUI}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
-                            <control:DataGridTextColumn Header="Cache Name" Binding="{Binding FileName}" Tag="CacheName" Width="360" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Name" Binding="{Binding FileName}" Tag="CacheName" Width="260" FontSize="13"/>
                             <control:DataGridTextColumn Header="Cache Type" Binding="{Binding DataType}" Tag="CacheType" FontSize="13"/>
-                            <control:DataGridTextColumn Header="Cache Source" Binding="{Binding FileSource}" Tag="Source" Width="436" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Cache Source" Binding="{Binding FileSource}" Tag="Source" Width="260" FontSize="13"/>
                             <control:DataGridTextColumn Header="Cache Size" Binding="{Binding FileSizeStr}" Tag="CacheSize" Width="112" FontSize="13"/>
+                            <control:DataGridTextColumn Header="Last Modified" Binding="{Binding FileLastModified}" Tag="CacheLastDate" Width="136" FontSize="13"/>
+                            <control:DataGridTextColumn Header="New Ver. Date" Binding="{Binding FileNewModified}" Tag="CacheNewDate" Width="136" FontSize="13"/>
                             <control:DataGridTextColumn Header="Cache Status" Binding="{Binding CacheStatus}" Tag="CacheStatus" Width="128" FontSize="13"/>
                         </control:DataGrid.Columns>
                     </control:DataGrid>

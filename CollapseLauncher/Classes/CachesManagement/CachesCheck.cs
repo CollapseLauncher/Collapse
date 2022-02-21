@@ -210,7 +210,9 @@ namespace CollapseLauncher.Pages
                                 FileSizeStr = SummarizeSizeSimple(content.CS),
                                 CacheStatus = CachesDataStatus.Broken,
                                 DataType = dataType.DataType,
-                                FileSource = Path.GetDirectoryName(content.N)
+                                FileSource = Path.GetDirectoryName(content.N),
+                                FileLastModified = File.GetLastWriteTime(cachesPath).ToString("yyyy/MM/dd HH:mm"),
+                                FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToString("yyyy/MM/dd HH:mm")
                             }));
                             LogWriteLine($"Broken: {content.N}", LogType.Warning);
                         }
@@ -226,7 +228,9 @@ namespace CollapseLauncher.Pages
                             FileSizeStr = SummarizeSizeSimple(content.CS),
                             CacheStatus = CachesDataStatus.Missing,
                             DataType = dataType.DataType,
-                            FileSource = Path.GetDirectoryName(content.N)
+                            FileSource = Path.GetDirectoryName(content.N),
+                            FileLastModified = File.GetLastWriteTime(cachesPath).ToString("yyyy/MM/dd HH:mm"),
+                            FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToString("yyyy/MM/dd HH:mm")
                         }));
                         LogWriteLine($"Missing: {content.N}", LogType.Warning, true);
                     }
