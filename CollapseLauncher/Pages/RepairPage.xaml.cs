@@ -73,6 +73,12 @@ namespace CollapseLauncher.Pages
                 OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
                 OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
             }
+            else if (App.IsGameRunning)
+            {
+                Overlay.Visibility = Visibility.Visible;
+                OverlayTitle.Text = "Game is Currently Running!";
+                OverlaySubtitle.Text = "Please close the game first to use this feature!";
+            }
         }
     }
 }
