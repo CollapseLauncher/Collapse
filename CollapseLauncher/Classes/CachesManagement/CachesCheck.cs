@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Security.Cryptography;
-using System.Xml;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -211,8 +210,8 @@ namespace CollapseLauncher.Pages
                                 CacheStatus = CachesDataStatus.Broken,
                                 DataType = dataType.DataType,
                                 FileSource = Path.GetDirectoryName(content.N),
-                                FileLastModified = File.GetLastWriteTime(cachesPath).ToString("yyyy/MM/dd HH:mm"),
-                                FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToString("yyyy/MM/dd HH:mm")
+                                FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
+                                FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                             }));
                             LogWriteLine($"Broken: {content.N}", LogType.Warning);
                         }
@@ -229,8 +228,8 @@ namespace CollapseLauncher.Pages
                             CacheStatus = CachesDataStatus.Missing,
                             DataType = dataType.DataType,
                             FileSource = Path.GetDirectoryName(content.N),
-                            FileLastModified = File.GetLastWriteTime(cachesPath).ToString("yyyy/MM/dd HH:mm"),
-                            FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToString("yyyy/MM/dd HH:mm")
+                            FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
+                            FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                         }));
                         LogWriteLine($"Missing: {content.N}", LogType.Warning, true);
                     }
