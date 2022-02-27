@@ -52,19 +52,6 @@ namespace ManagedLzma._7zip.Decoder
             base.Dispose(disposing);
         }
 
-        /*
-        private void Fetch()
-        {
-            int size = mStream.Read(mTemp, 0, mTemp.Length);
-            if (size <= 0 || size > mLength - mEnding)
-                throw new InvalidDataException("Decoded stream has been corrupted.");
-
-            mBuffer.Position = mEnding;
-            mEnding += size;
-            mBuffer.Write(mTemp, 0, size);
-        }
-        */
-
         private void Fetch()
         {
             int size = mStream.Read(mTemp, 0, mTemp.Length);
@@ -132,32 +119,6 @@ namespace ManagedLzma._7zip.Decoder
             if (count == 0 || mOffset == mLength)
                 return 0;
 
-
-            while (mOffset >= mEnding)
-                Fetch();
-
-
-            mBuffer.Position = mOffset;
-            count = mBuffer.Read(buffer, offset, Math.Min(count, mEnding - mOffset));
-            mOffset += count;
-            return count;
-        }
-
-        /*
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (buffer == null)
-                throw new ArgumentNullException("buffer");
-
-            if (offset < 0 || offset > buffer.Length)
-                throw new ArgumentOutOfRangeException("offset");
-
-            if (count < 0 || count > buffer.Length - offset)
-                throw new ArgumentOutOfRangeException("count");
-
-            if (count == 0 || mOffset == mLength)
-                return 0;
-
             while (mOffset >= mEnding)
                 Fetch();
 
@@ -166,7 +127,6 @@ namespace ManagedLzma._7zip.Decoder
             mOffset += count;
             return count;
         }
-        */
 
         public override bool CanWrite
         {

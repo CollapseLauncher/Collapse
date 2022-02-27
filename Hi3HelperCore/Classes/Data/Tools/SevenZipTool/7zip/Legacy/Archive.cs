@@ -1546,6 +1546,7 @@ namespace master._7zip.Legacy
                 int packStreamIndex = _db.Folders[folderIndex].FirstPackStreamId;
                 long folderStartPackPos = _db.GetFolderStreamPos(folderIndex, 0);
                 List<long> packSizes = new List<long>();
+
                 for (int j = 0; j < folderInfo.PackStreams.Count; j++)
                     packSizes.Add(_db.PackSizes[packStreamIndex + j]);
 
@@ -1572,11 +1573,12 @@ namespace master._7zip.Legacy
 
             int skipCount = fileIndex - firstFileIndex;
             long skipSize = 0;
+
             for (int i = 0; i < skipCount; i++)
                 skipSize += _db.Files[firstFileIndex + i].Size;
 
             Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
-            // s.Position = skipSize;
+            s.Position = skipSize;
             return new master._7zip.Utilities.UnpackSubStream(s, _db.Files[fileIndex].Size);
         }
 
