@@ -1513,7 +1513,7 @@ namespace master._7zip.Legacy
             #endregion
         }
 
-        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw)
+        /*private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
         {
             Stream s;
             if (!_cachedStreams.TryGetValue(folderIndex, out s))
@@ -1528,7 +1528,33 @@ namespace master._7zip.Legacy
 
                 s = DecoderStreamHelper.CreateDecoderStream(_stream, folderStartPackPos, packSizes.ToArray(), folderInfo, pw);
                 if (!s.CanSeek)
-                    s = new ManagedLzma._7zip.Decoder.FileBufferedDecoderStream(s);
+                    s = new ManagedLzma._7zip.Decoder.FileBufferedDecoderStream(s, item);
+
+                _cachedStreams.Add(folderIndex, s);
+            }
+
+            return s;
+        }*/
+
+        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
+        {
+            Stream s;
+            if (true)
+            {
+                CFolder folderInfo = _db.Folders[folderIndex];
+
+                int packStreamIndex = _db.Folders[folderIndex].FirstPackStreamId;
+                long folderStartPackPos = _db.GetFolderStreamPos(folderIndex, 0);
+                List<long> packSizes = new List<long>();
+                for (int j = 0; j < folderInfo.PackStreams.Count; j++)
+                    packSizes.Add(_db.PackSizes[packStreamIndex + j]);
+
+                s = DecoderStreamHelper.CreateDecoderStream(_stream, folderStartPackPos, packSizes.ToArray(), folderInfo, pw);
+                if (!s.CanSeek)
+                    s = new ManagedLzma._7zip.Decoder.FileBufferedDecoderStream(s, item);
+
+                if (_cachedStreams.Count > 0)
+                    _cachedStreams.Clear();
 
                 _cachedStreams.Add(folderIndex, s);
             }
@@ -1549,8 +1575,8 @@ namespace master._7zip.Legacy
             for (int i = 0; i < skipCount; i++)
                 skipSize += _db.Files[firstFileIndex + i].Size;
 
-            Stream s = GetCachedDecoderStream(_db, folderIndex, pw);
-            s.Position = skipSize;
+            Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
+            // s.Position = skipSize;
             return new master._7zip.Utilities.UnpackSubStream(s, _db.Files[fileIndex].Size);
         }
 

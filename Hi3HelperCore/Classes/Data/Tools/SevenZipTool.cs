@@ -45,6 +45,8 @@ namespace Hi3Helper.Data
                     totalCompressedSize,
                     totalExtractedSize = 0;
 
+        bool UseLegacy = false;
+
         public void Load(string inputFile)
         {
             inputFilePath = inputFile;
@@ -84,10 +86,12 @@ namespace Hi3Helper.Data
         }
 
         Stopwatch stopWatch;
-        public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken())
+        public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken(), bool alwaysUseLegacy = false)
         {
             stopWatch = Stopwatch.StartNew();
             List<Task> tasks = new List<Task>();
+
+            UseLegacy = alwaysUseLegacy;
 
             try
             {
@@ -278,7 +282,13 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                 {
                     try
                     {
-                        WriteStream(j.x.OpenStream(j.db, i, null), new FileStream(path, FileMode.Create, FileAccess.Write), false, token);
+                        if (UseLegacy)
+                            throw new NotImplementedException("Legacy mode is on!");
+
+                        using (Stream stream = j.x.OpenStream(j.db, i, null))
+                            WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), false, token);
+
+                        GC.Collect();
                     }
                     catch (ArgumentOutOfRangeException ex)
                     {
