@@ -100,7 +100,8 @@ namespace CollapseLauncher
             await InvokeLoadRegion(ComboBoxGameRegion.SelectedIndex);
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {
-                LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
+                MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+                // LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
 
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;

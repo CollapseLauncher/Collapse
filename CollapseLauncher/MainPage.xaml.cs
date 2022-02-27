@@ -40,6 +40,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
+                MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
 
                 InitializeStartup().GetAwaiter();
                 Task.Run(() => CheckRunningGameInstance());
@@ -64,65 +65,6 @@ namespace CollapseLauncher
                 ReloadPageTheme(startTheme);
         }
 
-        private ColorPaletteResources FindColorPaletteResourcesForTheme(string theme)
-        {
-            foreach (var themeDictionary in Application.Current.Resources.ThemeDictionaries)
-            {
-                if (themeDictionary.Key.ToString() == theme)
-                {
-                    if (themeDictionary.Value is ColorPaletteResources)
-                    {
-                        return themeDictionary.Value as ColorPaletteResources;
-                    }
-                    else if (themeDictionary.Value is ResourceDictionary targetDictionary)
-                    {
-                        foreach (var mergedDictionary in targetDictionary.MergedDictionaries)
-                        {
-                            if (mergedDictionary is ColorPaletteResources)
-                            {
-                                return mergedDictionary as ColorPaletteResources;
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (e.Exception.GetType() == typeof(NotImplementedException))
-                {
-                    previousTag = "unavailable";
-                    HideBackgroundImage();
-                    LauncherFrame.Navigate(typeof(Pages.UnavailablePage), null, new DrillInNavigationTransitionInfo());
-                }
-                else
-                {
-                    previousTag = "crashinfo";
-                    HideBackgroundImage();
-                    LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo());
-                }
-            });
-        }
-
-        private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
-        {
-            SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-            SolidColorBrush inactiveForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorDisabledBrush"];
-
-            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
-            {
-                AppTitle.Foreground = inactiveForegroundBrush;
-            }
-            else
-            {
-                AppTitle.Foreground = defaultForegroundBrush;
-            }
-        }
-
         private async void CheckRunningGameInstance()
         {
             while (true && !App.IsAppKilled)
@@ -136,7 +78,8 @@ namespace CollapseLauncher
         {
             LoadConfig();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
-            LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
+            MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+            // LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
 
             // you can also add items in code behind
             NavigationViewControl.IsSettingsVisible = true;
@@ -228,7 +171,8 @@ namespace CollapseLauncher
         {
             if (args.IsSettingsInvoked)
             {
-                LauncherFrame.Navigate(typeof(Pages.SettingsPage), null, new DrillInNavigationTransitionInfo());
+                MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
+                // LauncherFrame.Navigate(typeof(Pages.SettingsPage), null, new DrillInNavigationTransitionInfo());
                 HideBackgroundImage(true, false);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
@@ -249,7 +193,8 @@ namespace CollapseLauncher
                 sourceType = typeof(Pages.UnavailablePage);
                 tagStr = "unavailable";
             }
-            LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
+            MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
+            // LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
             HideBackgroundImage(hideImage, false);
             previousTag = tagStr;
         }
@@ -334,8 +279,27 @@ namespace CollapseLauncher
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = true;
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
         {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (e.Exception.GetType() == typeof(NotImplementedException))
+                {
+                    previousTag = "unavailable";
+                    HideBackgroundImage();
+                    MainFrameChanger.ChangeMainFrame(typeof(Pages.UnavailablePage));
+                    // LauncherFrame.Navigate(typeof(Pages.UnavailablePage), null, new DrillInNavigationTransitionInfo());
+                }
+                else
+                {
+                    previousTag = "crashinfo";
+                    HideBackgroundImage();
+                    MainFrameChanger.ChangeMainFrame(typeof(Pages.UnhandledExceptionPage));
+                    // LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo());
+                }
+            });
         }
+
+        private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e) => LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
     }
 }
