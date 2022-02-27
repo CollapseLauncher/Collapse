@@ -248,7 +248,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        public void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardScale = new Storyboard();
