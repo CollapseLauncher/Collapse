@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 
@@ -23,7 +22,7 @@ namespace CollapseLauncher.Invoker
         static string[] argument = Array.Empty<string>();
         public static void Main (string[] args)
         {
-            InitializeConsole();
+            // InitializeConsole();
             argument = args;
 
             try
@@ -48,6 +47,9 @@ namespace CollapseLauncher.Invoker
                     case "aswindowhandler":
                         DoAsWindowHandler();
                         break;
+                    case "movesteam":
+                        DoMoveSteam();
+                        break;
                     default:
                         Console.WriteLine($"Invalid argument!");
                         break;
@@ -71,6 +73,19 @@ namespace CollapseLauncher.Invoker
             {
                 Task.Delay(1000).Wait();
             }
+        }
+
+        static void DoMoveSteam()
+        {
+            string source = argument[1];
+            string target = argument[2];
+            string keyLoc = argument[3];
+            string keyName = argument[4];
+
+            MoveOperation(source, target);
+            TakeOwnership(target);
+
+            Registry.SetValue(keyLoc, keyName, target, RegistryValueKind.String);
         }
 
         static void MoveOperation(string source, string target)
@@ -109,31 +124,7 @@ namespace CollapseLauncher.Invoker
             string sourceGame = argument[3];
             IniFile iniFile = new IniFile();
 
-            Process takeOwner = new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = "cmd.exe",
-                    UseShellExecute = false,
-                    Arguments = $"/c icacls \"{sourceGame}\" /T /Q /C /RESET"
-                }
-            };
-
-            takeOwner.Start();
-            takeOwner.WaitForExit();
-
-            takeOwner = new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = "cmd.exe",
-                    UseShellExecute = false,
-                    Arguments = $"/c takeown /f \"{sourceGame}\" /r /d y"
-                }
-            };
-
-            takeOwner.Start();
-            takeOwner.WaitForExit();
+            TakeOwnership(sourceGame);
 
             string iniSourceGameLocation = Path.Combine(sourceGame, gameDirectoryName, "config.ini");
 
@@ -198,13 +189,18 @@ namespace CollapseLauncher.Invoker
                 iniFile.Save(new FileStream(Path.Combine(targetGame, "config.ini"), FileMode.OpenOrCreate, FileAccess.ReadWrite));
             }
 
+            TakeOwnership(targetGame);
+        }
+
+        static void TakeOwnership(string target)
+        {
             Process takeOwner = new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = "cmd.exe",
                     UseShellExecute = false,
-                    Arguments = $"/c icacls \"{targetGame}\" /T /Q /C /RESET"
+                    Arguments = $"/c icacls \"{target}\" /T /Q /C /RESET"
                 }
             };
 
@@ -217,7 +213,7 @@ namespace CollapseLauncher.Invoker
                 {
                     FileName = "cmd.exe",
                     UseShellExecute = false,
-                    Arguments = $"/c takeown /f \"{targetGame}\" /r /d y"
+                    Arguments = $"/c takeown /f \"{target}\" /r /d y"
                 }
             };
 
@@ -261,31 +257,7 @@ namespace CollapseLauncher.Invoker
                     move.WaitForExit();
                 }
 
-                Process takeOwner = new Process()
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        FileName = "cmd.exe",
-                        UseShellExecute = false,
-                        Arguments = $"/c icacls \"{targetGame}\" /T /Q /C /RESET"
-                    }
-                };
-
-                takeOwner.Start();
-                takeOwner.WaitForExit();
-
-                takeOwner = new Process()
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        FileName = "cmd.exe",
-                        UseShellExecute = false,
-                        Arguments = $"/c takeown /f \"{targetGame}\" /r /d y"
-                    }
-                };
-
-                takeOwner.Start();
-                takeOwner.WaitForExit();
+                TakeOwnership(targetGame);
 
                 iniFile["launcher"]["game_install_path"] = targetGame.Replace('\\', '/');
                 iniFile.Save(Path.Combine(source, "config.ini"));

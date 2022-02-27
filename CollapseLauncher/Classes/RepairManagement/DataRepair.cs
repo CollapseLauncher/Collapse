@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;

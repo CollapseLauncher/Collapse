@@ -1,0 +1,91 @@
+﻿<Page
+    x:Class="CollapseLauncher.Dialogs.InstallationMigrateSteam"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource DialogAcrylicBrush}"
+    x:FieldModifier="public" Loaded="Page_Loaded">
+
+    <StackPanel Margin="32">
+        <TextBlock Text="Converting..."
+                   Style="{StaticResource TitleLargeTextBlockStyle}"
+                   Margin="0,0,0,24"/>
+        <Grid
+              HorizontalAlignment="Stretch" Height="500">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="32*"/>
+                <ColumnDefinition Width="681*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="135*"/>
+                <RowDefinition Height="135*"/>
+                <RowDefinition Height="135*"/>
+                <RowDefinition Height="135*"/>
+                <RowDefinition Height="135*"/>
+            </Grid.RowDefinitions>
+            <Slider x:Name="ProgressSlider"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Left"
+                    TickFrequency="1"
+                    TickPlacement="TopLeft"
+                    Value="0"
+                    Maximum="4" Minimum="0" Grid.RowSpan="5"
+                    Margin="0,40,0,40" CanDrag="False"
+                    RenderTransformOrigin="0.5,0.5"
+                    Background="#22000000">
+                <Slider.RenderTransform>
+                    <CompositeTransform Rotation="180"/>
+                </Slider.RenderTransform>
+            </Slider>
+            <Rectangle Fill="Transparent" Grid.Column="0" Grid.RowSpan="5">
+            </Rectangle>
+            <StackPanel x:Name="Step1" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="1">
+                <ProgressRing x:Name="Step1ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="True" Margin="0,0,16,0"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="Step1ProgressTitle" Text="Checking Folder Permission" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step1ProgressStatus" Text="Not Running" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="Step2" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
+                <ProgressRing x:Name="Step2ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="False" Margin="0,0,16,0"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="Step2ProgressTitle" Text="Migrating Game Location" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step2ProgressStatus" Text="Not Running" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="Step3" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
+                <ProgressRing x:Name="Step3ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="Step3ProgressTitle" Text="Comparing Game Data Integrity for Conversion" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step3ProgressStatus" Text="Not Running" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="Step4" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
+                <ProgressRing x:Name="Step4ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="Step4ProgressTitle" Text="Conversion Task" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step4ProgressStatus" Text="Not Running" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="Step5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
+                <ProgressRing x:Name="Step5ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="Step5ProgressTitle" Text="Data Integrity Verification" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step5ProgressStatus" Text="Not Running" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <TextBlock x:Name="MigrationSubtextStatus"
+                   Style="{StaticResource BodyTextBlockStyle}" Margin="0,12,4,0"
+                   HorizontalAlignment="Right">
+                <Span>
+                    <Run>Please</Run>
+                    <Run Text="DO NOT" FontWeight="Black"/>
+                    <Run>switch to another page or quit while the process is running</Run>
+                </Span>
+        </TextBlock>
+    </StackPanel>
+</Page>

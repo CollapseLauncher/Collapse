@@ -12,6 +12,22 @@ namespace Hi3Helper.Preset
 {
     public class PresetConfigClasses
     {
+        public string GetSteamInstallationPath()
+        {
+            string returnval;
+            try
+            {
+                returnval = (string)Registry.GetValue(SteamInstallRegistryLocation, "InstallLocation", null);
+            }
+            catch
+            {
+                return null;
+            }
+            return returnval;
+        }
+
+        public void SetSteamInstallationPath(string input) => Registry.SetValue(SteamInstallRegistryLocation, "InstallLocation", input, RegistryValueKind.String);
+
         public void SetGameLocationParameters(string gameLocation)
         {
             ActualGameLocation = gameLocation;
@@ -109,6 +125,7 @@ namespace Hi3Helper.Preset
                 BetterHi3LauncherConfig = JsonConvert.DeserializeObject<BHI3LInfo>(
                     Encoding.UTF8.GetString((byte[])Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher").GetValue(BetterHi3LauncherVerInfoReg))
                     );
+                if (!File.Exists(Path.Combine(BetterHi3LauncherConfig.game_info.install_path)) && !BetterHi3LauncherConfig.game_info.installed) return false;
                 return true;
             }
             catch
@@ -206,6 +223,7 @@ namespace Hi3Helper.Preset
         public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
         public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string FallbackLanguage { get; set; }
+        public string SteamInstallRegistryLocation { get; set; }
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }

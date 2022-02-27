@@ -158,6 +158,31 @@ namespace CollapseLauncher.Dialogs
                     "No, Other Location"
             );
 
+        public static async Task<ContentDialogResult> Dialog_SteamConversionDownloadDialog(UIElement Content, string SizeString) =>
+            await SpawnDialog(
+                    "Integrity Checking is Done!",
+                    string.Format(
+                        $"Checking Game Data Integrity is done! The conversion process will download at least {SizeString} of file size\n"
+                        + "You can continue or cancel it for later.\n"
+                        + "\nDo you want to start the conversion process?"),
+                    Content,
+                    "Cancel",
+                    "Yes",
+                    null
+            );
+
+        public static async Task<ContentDialogResult> Dialog_SteamConversionFailedDialog(UIElement Content) =>
+            await SpawnDialog(
+                    "Conversion is Failed!",
+                    string.Format(
+                        "Sorry but, conversion process is failed! :(\n"
+                        + "Please try to start-over the conversion process again."),
+                    Content,
+                    "Okay ;-;)",
+                    null,
+                    null
+            );
+
         public static async Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(UIElement Content, string sourceHash, string downloadedHash) =>
             await SpawnDialog(
                     "Oops! Game Installation is Corrupted",
