@@ -143,6 +143,9 @@ namespace Hi3Helper.Data
         {
             try
             {
+                if (!Directory.Exists(input))
+                    Directory.CreateDirectory(input);
+
                 File.Create(Path.Combine(input, "write_test"), 1,FileOptions.DeleteOnClose).Close();
             }
             catch (UnauthorizedAccessException)

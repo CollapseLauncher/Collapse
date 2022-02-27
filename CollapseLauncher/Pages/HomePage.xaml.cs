@@ -150,12 +150,12 @@ namespace CollapseLauncher.Pages
                     }
                 }
                 if (CurrentRegion.IsGenshin ?? false)
-                    OpenGameSettingsMenu.IsEnabled = false;
+                    OpenCacheFolderButton.IsEnabled = false;
                 return;
             }
             GameInstallationState = GameInstallStateEnum.NotInstalled;
             OpenGameFolderButton.IsEnabled = false;
-            OpenGameSettingsMenu.IsEnabled = false;
+            OpenCacheFolderButton.IsEnabled = false;
         }
 
         private async void CheckRunningGameInstance()
@@ -199,7 +199,8 @@ namespace CollapseLauncher.Pages
                             MigrationWatcher.IsMigrationRunning = true;
                             OverlapFrame.Navigate(typeof(InstallationMigrateSteam), null, new DrillInNavigationTransitionInfo());
                             await CheckMigrationProcess();
-                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                            // OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
                             break;
                         case ContentDialogResult.Secondary:
                             LogWriteLine($"TODO: Do Install for CollapseLauncher");
@@ -218,7 +219,8 @@ namespace CollapseLauncher.Pages
                             OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
                             CurrentRegion.MigrateFromBetterHi3Launcher = true;
                             await CheckMigrationProcess();
-                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                            //OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
                             break;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
@@ -353,8 +355,7 @@ namespace CollapseLauncher.Pages
 
         private async Task<bool> DownloadGameClient(string destinationFolder)
         {
-            bool VerificationPass,
-                 returnVal = true;
+            bool returnVal = true;
             fileURL = regionResourceProp.data.game.latest.path;
             fileDownloadHash = regionResourceProp.data.game.latest.md5;
             fileOutput = Path.Combine(destinationFolder, Path.GetFileName(fileURL));
@@ -389,12 +390,7 @@ namespace CollapseLauncher.Pages
             InstallerDownloadTokenSource = new CancellationTokenSource();
             token = InstallerDownloadTokenSource.Token;
 
-            if (!File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_noverification")))
-                VerificationPass = await DoZipVerification(fileOutput, token);
-            else
-                VerificationPass = true;
-
-            if (!VerificationPass)
+            if (!await DoZipVerification(fileOutput, token))
             {
                 switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
                 {
@@ -420,6 +416,9 @@ namespace CollapseLauncher.Pages
         private async Task<bool> DoZipVerification(string inputFile, CancellationToken token)
         {
             DispatcherQueue.TryEnqueue(() => ProgressTimeLeft.Visibility = Visibility.Collapsed);
+
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_noverification"))) return true;
+
             if (File.Exists(inputFile))
             {
                 fileHash = await Task.Run(() => GetMD5FromFile(inputFile, token));
@@ -639,11 +638,11 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 ProgressStatusSubtitle.Text = $"{InstallDownloadSizeString} / {DownloadSizeString}";
-                LogWrite($"{e.Message}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
+                LogWrite($"{e.DownloadState}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
                 ProgressStatusFooter.Text = $"Speed: {InstallDownloadSpeedString}";
                 ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
                 progressRing.Value = Math.Round(e.ProgressPercentage, 2);
-                ProgressStatusTitle.Text = e.Message;
+                ProgressStatusTitle.Text = e.DownloadState.ToString();
             });
         }
 
@@ -660,7 +659,7 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 ProgressPreStatusSubtitle.Text = $"{InstallDownloadSizeString} / {DownloadSizeString}";
-                LogWrite($"{e.Message}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
+                LogWrite($"{e.DownloadState}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
                 ProgressPreStatusFooter.Text = $"Speed: {InstallDownloadSpeedString}";
                 ProgressPreTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
@@ -888,6 +887,21 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
+        private void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            string GameFolder = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentRegion.ConfigRegistryLocation));
+            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = GameFolder
+                }
+            }.Start();
+        }
+
         public string GetUpdateDiffs()
         {
             if (CurrentRegion.IsGenshin ?? false)
@@ -1038,6 +1052,7 @@ namespace CollapseLauncher.Pages
 
             if (await CheckExistingDownload(sourceFile))
             {
+                LogWriteLine($"Pre-download Link: {fileURL}");
                 await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, sourceFile, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
             }
 

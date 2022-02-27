@@ -117,7 +117,7 @@
                             <Flyout>
                                 <StackPanel Width="200">
                                     <TextBlock Text="Quick Settings" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <Button x:Name="OpenGameFolderButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
+                                    <Button x:Name="OpenGameFolderButton" Margin="0,8" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
                                         <Button.Content>
                                             <StackPanel Orientation="Horizontal">
                                                 <SymbolIcon Symbol="MoveToFolder"/>
@@ -125,11 +125,11 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
-                                    <Button x:Name="OpenGameSettingsMenu" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                    <Button x:Name="OpenCacheFolderButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
                                         <Button.Content>
                                             <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="Setting"/>
-                                                <TextBlock Text="Game Settings Menu" Margin="8,0,0,0"/>
+                                                <SymbolIcon Symbol="MoveToFolder"/>
+                                                <TextBlock Text="Open Cache Folder" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>

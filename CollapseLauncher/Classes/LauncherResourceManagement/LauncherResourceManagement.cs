@@ -33,11 +33,10 @@ namespace CollapseLauncher
     {
         public void FetchLauncherResourceAsRegion()
         {
+            MemoryStream memoryStream = new MemoryStream();
             try
             {
                 httpClient = new HttpClientTool(true);
-
-                MemoryStream memoryStream = new MemoryStream();
 
                 httpClient.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
@@ -46,6 +45,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Cannot connect to the internet while fetching launcher resource");
             }
+            memoryStream.Dispose();
         }
     }
 }

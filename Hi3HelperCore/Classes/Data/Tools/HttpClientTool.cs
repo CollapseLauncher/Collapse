@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Net;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Data
 {
+    public enum DownloadState { Downloading, Merging }
     public class HttpClientTool
     {
         readonly HttpClient httpClient;
@@ -235,7 +234,7 @@ namespace Hi3Helper.Data
                             downloadPartialToken.ThrowIfCancellationRequested();
                             fs.Write(buffer, 0, read);
                             totalRead += read;
-                            PartialOnProgressChanged(new PartialDownloadProgressChanged(totalRead, 0, downloadPartialSize, sw.Elapsed.TotalSeconds) { Message = "Merging Chunks", CurrentReceived = read });
+                            PartialOnProgressChanged(new PartialDownloadProgressChanged(totalRead, 0, downloadPartialSize, sw.Elapsed.TotalSeconds) { DownloadState = DownloadState.Merging, CurrentReceived = read });
                         }
                         chunkFile.Dispose();
                     }
@@ -294,7 +293,7 @@ namespace Hi3Helper.Data
                     CurrentReceived = i.Sum(x => x.CurrentReceived);
                     nowBytesReceived = i.Sum(x => x.NowBytesReceived);
                     // Console.WriteLine($"{BytesReceived}\t{TotalBytesToReceive}\t{CurrentReceived}" );
-                    PartialOnProgressChanged(new PartialDownloadProgressChanged(BytesReceived, nowBytesReceived, downloadPartialSize, sw.Elapsed.TotalSeconds) { Message = "Downloading", CurrentReceived = CurrentReceived });
+                    PartialOnProgressChanged(new PartialDownloadProgressChanged(BytesReceived, nowBytesReceived, downloadPartialSize, sw.Elapsed.TotalSeconds) { DownloadState = DownloadState.Downloading, CurrentReceived = CurrentReceived });
 
                     LastBytesReceived = BytesReceived;
                 }
@@ -490,10 +489,10 @@ namespace Hi3Helper.Data
 
             long existingLength = isStream ? localStream.Length : fileinfo.Exists ? fileinfo.Length : 0;
 
-            HttpRequestMessage request = new HttpRequestMessage(){ RequestUri = new Uri(input) };
+            HttpRequestMessage request = new HttpRequestMessage() { RequestUri = new Uri(input) };
 
             request.Headers.Range = (startOffset != -1 && endOffset != -1) ?
-                                    new RangeHeaderValue(startOffset, endOffset):
+                                    new RangeHeaderValue(startOffset, endOffset) :
                                     new RangeHeaderValue(existingLength, null);
 
             HttpResponseMessage response = httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).GetAwaiter().GetResult();
@@ -641,7 +640,7 @@ namespace Hi3Helper.Data
             TotalBytesToReceive = fileSize;
             CurrentSpeed = (long)((continueReceived == 0 ? totalReceived : continueReceived) / totalSecond);
         }
-        public string Message { get; set; }
+        public DownloadState DownloadState { get; set; }
         public long CurrentReceived { get; set; }
         public long BytesReceived { get; private set; }
         public long TotalBytesToReceive { get; private set; }
