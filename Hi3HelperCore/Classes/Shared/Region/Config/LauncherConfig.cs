@@ -31,6 +31,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
+        public static string GamePathOnSteam;
 
         public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
 
@@ -105,10 +106,14 @@ namespace Hi3Helper.Shared.Region
             appIni.Profile.Add(SectionName, new Dictionary<string, IniValue>
             {
                 { "CurrentRegion", new IniValue(0) },
-                { "CurrentBackground", new IniValue(@"Assets\BG\default.png") },
+                { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
                 { "DownloadThread", new IniValue(8) },
                 { "GameFolder", new IniValue(AppGameFolder) },
+#if DEBUG
                 { "EnableConsole", new IniValue(true) }
+#else
+                { "EnableConsole", new IniValue(false) }
+#endif
             });
 
             SaveAppConfig();
