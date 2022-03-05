@@ -201,19 +201,19 @@ namespace CollapseLauncher.Pages
 
                         if (hash != content.CRC)
                         {
-                            content.Status = CachesDataStatus.Broken;
+                            content.Status = CachesDataStatus.Obsolete;
                             brokenCaches.Add(content);
                             DispatcherQueue.TryEnqueue(() => brokenCachesListUI.Add(new DataPropertiesUI
                             {
                                 FileName = Path.GetFileName(content.N),
                                 FileSizeStr = SummarizeSizeSimple(content.CS),
-                                CacheStatus = CachesDataStatus.Broken,
+                                CacheStatus = CachesDataStatus.Obsolete,
                                 DataType = dataType.DataType,
                                 FileSource = Path.GetDirectoryName(content.N),
                                 FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
                                 FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                             }));
-                            LogWriteLine($"Broken: {content.N}", LogType.Warning);
+                            LogWriteLine($"Obsolete: {content.N}", LogType.Warning);
                         }
                         cachesStream.Dispose();
                     }

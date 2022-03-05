@@ -81,6 +81,7 @@ namespace master._7zip.Legacy
         internal List<CBindPair> BindPairs = new List<CBindPair>();
         internal List<int> PackStreams = new List<int>();
         internal int FirstPackStreamId;
+        internal List<long> PackSizes = new List<long>();
         internal List<long> UnpackSizes = new List<long>();
         internal uint? UnpackCRC;
         internal bool UnpackCRCDefined { get { return UnpackCRC != null; } }
@@ -207,6 +208,7 @@ namespace master._7zip.Legacy
     public class CFileItem
     {
         public long Size { get; internal set; }
+        public long PackSize { get; internal set; }
         public uint? Attrib { get; internal set; }
         public uint? Crc { get; internal set; }
         public string Name { get; internal set; }

@@ -83,6 +83,7 @@ namespace master._7zip.Legacy
         }
 
         public override int Read(byte[] buffer, int offset, int count)
+        
         {
             if (buffer == null)
                 throw new ArgumentNullException("buffer");

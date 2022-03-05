@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ManagedLzma.LZMA;
 using ManagedLzma.LZMA.Master.SevenZip;
+using ManagedLzma._7zip.Decoder;
 using BitVector = ManagedLzma.LZMA.Master.SevenZip.BitVector;
 using BlockType = ManagedLzma.LZMA.Master.SevenZip.BlockType;
 using CRC = ManagedLzma.CRC;
@@ -1291,7 +1292,7 @@ namespace master._7zip.Legacy
             _cachedStreams.Clear();
         }
 
-        public void ReadDatabase(CArchiveDatabaseEx db, IPasswordProvider pass)
+        public void ReadDatabase(CArchiveDatabaseEx db, IPasswordProvider? pass = null)
         {
             db.Clear();
 
@@ -1513,7 +1514,78 @@ namespace master._7zip.Legacy
             #endregion
         }
 
-        /*private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
+        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
+        {
+            Stream? sourceStream;
+            Stream? bufferStream;
+            if (!_cachedStreams.TryGetValue(folderIndex, out sourceStream))
+            {
+                CFolder folderInfo = _db.Folders[folderIndex];
+
+                int packStreamIndex = _db.Folders[folderIndex].FirstPackStreamId;
+                long folderStartPackPos = _db.GetFolderStreamPos(folderIndex, 0);
+                List<long> packSizes = new List<long>();
+                for (int j = 0; j < folderInfo.PackStreams.Count; j++)
+                    packSizes.Add(_db.PackSizes[packStreamIndex + j]);
+
+                sourceStream = DecoderStreamHelper.CreateDecoderStream(_stream, folderStartPackPos, packSizes.ToArray(), folderInfo, pw);
+                _cachedStreams.Add(folderIndex, sourceStream);
+            }
+
+            Console.WriteLine($"{item.Name} {item.Size}");
+            bufferStream = new SegmentedStream(sourceStream, item.Size);
+
+            return bufferStream;
+        }
+
+        bool startupSkip = true;
+
+        public Stream OpenStream(CArchiveDatabaseEx _db, int fileIndex, IPasswordProvider? pw = null)
+        {
+            int folderIndex = _db.FileIndexToFolderIndexMap[fileIndex];
+            int numFilesInFolder = _db.NumUnpackStreamsVector[folderIndex];
+            int firstFileIndex = _db.FolderStartFileIndex[folderIndex];
+            if (firstFileIndex > fileIndex || fileIndex - firstFileIndex >= numFilesInFolder)
+                throw new InvalidOperationException();
+
+            Console.Write($"{fileIndex} ");
+
+            Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
+
+            if (startupSkip)
+            {
+                int skipCount = fileIndex - firstFileIndex;
+                long skipSize = 0;
+                for (int i = 0; i < skipCount; i++)
+                    skipSize += _db.Files[firstFileIndex + i].Size;
+
+                (s as SegmentedStream)?.SkipLength(skipSize);
+                startupSkip = false;
+            }
+
+            return s;
+        }
+
+        /* OLD CODE
+        public Stream OpenStream(CArchiveDatabaseEx _db, int fileIndex, IPasswordProvider? pw = null)
+        {
+            int folderIndex = _db.FileIndexToFolderIndexMap[fileIndex];
+            int numFilesInFolder = _db.NumUnpackStreamsVector[folderIndex];
+            int firstFileIndex = _db.FolderStartFileIndex[folderIndex];
+            if (firstFileIndex > fileIndex || fileIndex - firstFileIndex >= numFilesInFolder)
+                throw new InvalidOperationException();
+
+            int skipCount = fileIndex - firstFileIndex;
+            long skipSize = 0;
+            for (int i = 0; i < skipCount; i++)
+                skipSize += _db.Files[firstFileIndex + i].Size;
+
+            Stream s = GetSingleDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
+            s.Position = skipSize;
+            return new master._7zip.Utilities.UnpackSubStream(s, _db.Files[fileIndex].Size);
+        }
+
+        private Stream GetSingleDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
         {
             Stream s;
             if (!_cachedStreams.TryGetValue(folderIndex, out s))
@@ -1534,53 +1606,8 @@ namespace master._7zip.Legacy
             }
 
             return s;
-        }*/
-
-        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
-        {
-            Stream s;
-            if (true)
-            {
-                CFolder folderInfo = _db.Folders[folderIndex];
-
-                int packStreamIndex = _db.Folders[folderIndex].FirstPackStreamId;
-                long folderStartPackPos = _db.GetFolderStreamPos(folderIndex, 0);
-                List<long> packSizes = new List<long>();
-
-                for (int j = 0; j < folderInfo.PackStreams.Count; j++)
-                    packSizes.Add(_db.PackSizes[packStreamIndex + j]);
-
-                s = DecoderStreamHelper.CreateDecoderStream(_stream, folderStartPackPos, packSizes.ToArray(), folderInfo, pw);
-                if (!s.CanSeek)
-                    s = new ManagedLzma._7zip.Decoder.FileBufferedDecoderStream(s, item);
-
-                if (_cachedStreams.Count > 0)
-                    _cachedStreams.Clear();
-
-                _cachedStreams.Add(folderIndex, s);
-            }
-
-            return s;
         }
-
-        public Stream OpenStream(CArchiveDatabaseEx _db, int fileIndex, IPasswordProvider pw)
-        {
-            int folderIndex = _db.FileIndexToFolderIndexMap[fileIndex];
-            int numFilesInFolder = _db.NumUnpackStreamsVector[folderIndex];
-            int firstFileIndex = _db.FolderStartFileIndex[folderIndex];
-            if (firstFileIndex > fileIndex || fileIndex - firstFileIndex >= numFilesInFolder)
-                throw new InvalidOperationException();
-
-            int skipCount = fileIndex - firstFileIndex;
-            long skipSize = 0;
-
-            for (int i = 0; i < skipCount; i++)
-                skipSize += _db.Files[firstFileIndex + i].Size;
-
-            Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
-            s.Position = skipSize;
-            return new master._7zip.Utilities.UnpackSubStream(s, _db.Files[fileIndex].Size);
-        }
+        */
 
         public void Extract(CArchiveDatabaseEx _db, int[] indices, IPasswordProvider pw)
         {
