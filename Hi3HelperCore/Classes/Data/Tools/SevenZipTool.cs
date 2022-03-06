@@ -285,7 +285,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                         if (UseLegacy)
                             throw new NotImplementedException("Legacy mode is on!");
 
-                        using (Stream stream = j.x.OpenStream(j.db, i, null))
+                        using (Stream stream = j.x.OpenStream(j.db, i, null, token))
                             WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), false, token);
 
                         GC.Collect();
@@ -333,29 +333,6 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             // int read = 0;
             using (input) using (output)
             {
-
-                /*
-                if (fallback)
-                {
-                    token.ThrowIfCancellationRequested();
-                    input.CopyTo(output, buffer.Length);
-
-                    totalExtractedSize += fallbackSingleUncompressedSize;
-                    OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
-                }
-                else
-                {
-                    while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        token.ThrowIfCancellationRequested();
-                        output.Write(buffer, 0, read);
-
-                        totalExtractedSize += read;
-                        OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
-                    }
-                }
-                */
-
                 token.ThrowIfCancellationRequested();
                 input.CopyTo(output);
 

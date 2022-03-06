@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ManagedLzma.LZMA;
 using ManagedLzma.LZMA.Master.SevenZip;
@@ -1514,7 +1515,7 @@ namespace master._7zip.Legacy
             #endregion
         }
 
-        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item)
+        private Stream GetCachedDecoderStream(CArchiveDatabaseEx _db, int folderIndex, IPasswordProvider pw, CFileItem item, CancellationToken token)
         {
             Stream? sourceStream;
             Stream? bufferStream;
@@ -1533,14 +1534,14 @@ namespace master._7zip.Legacy
             }
 
             Console.WriteLine($"{item.Name} {item.Size}");
-            bufferStream = new SegmentedStream(sourceStream, item.Size);
+            bufferStream = new SegmentedStream(sourceStream, item.Size, token);
 
             return bufferStream;
         }
 
         bool startupSkip = true;
 
-        public Stream OpenStream(CArchiveDatabaseEx _db, int fileIndex, IPasswordProvider? pw = null)
+        public Stream OpenStream(CArchiveDatabaseEx _db, int fileIndex, IPasswordProvider? pw = null, CancellationToken token = new CancellationToken())
         {
             int folderIndex = _db.FileIndexToFolderIndexMap[fileIndex];
             int numFilesInFolder = _db.NumUnpackStreamsVector[folderIndex];
@@ -1550,7 +1551,7 @@ namespace master._7zip.Legacy
 
             Console.Write($"{fileIndex} ");
 
-            Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex]);
+            Stream s = GetCachedDecoderStream(_db, folderIndex, pw, _db.Files[fileIndex], token);
 
             if (startupSkip)
             {

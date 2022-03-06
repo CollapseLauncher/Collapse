@@ -464,11 +464,7 @@ namespace CollapseLauncher.Pages
             sevenZip.ExtractProgressChanged += ExtractProgress;
             try
             {
-#if DEBUG
-                sevenZip.ExtractToDirectory(destinationFolder, 1, token);
-#else
                 sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
-#endif
             }
             catch (OperationCanceledException ex)
             {

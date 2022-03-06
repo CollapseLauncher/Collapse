@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using master._7zip.Legacy;
 
 namespace ManagedLzma._7zip.Decoder
 {
     internal class SegmentedStream : Stream
     {
+        // private const int tmpBufferSize = 0x10000;
         private const int tmpBufferSize = 4 << 10;
+        // private const int tmpSkipBufferSize = 0x80000;
 
         private Stream sourceStream;
         private int bufferOffset;
         private long bufferLength;
+        private CancellationToken cancelToken;
 
-        internal SegmentedStream(Stream sourceStream, long fileLength)
+        internal SegmentedStream(Stream sourceStream, long fileLength, CancellationToken token = new CancellationToken())
         {
             this.sourceStream = sourceStream;
             this.bufferLength = fileLength;
+            this.cancelToken = token;
         }
 
         public void SkipLength(long skipLength)
@@ -28,7 +34,10 @@ namespace ManagedLzma._7zip.Decoder
 
             bufferLength = skipLength;
             if (buffLength > 0)
-                while ((bufferOffset += Read(new byte[buffLength], 0, buffLength)) < skipLength) { }
+                while ((bufferOffset += Read(new byte[tmpBufferSize], 0, buffLength)) < skipLength)
+                {
+                    cancelToken.ThrowIfCancellationRequested();
+                }
 
             bufferLength = lastLength;
             bufferOffset = 0;
@@ -37,6 +46,12 @@ namespace ManagedLzma._7zip.Decoder
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+        }
+
+        public override void CopyTo(Stream destination, int bufferSize)
+        {
+            cancelToken.ThrowIfCancellationRequested();
+            base.CopyTo(destination, bufferSize);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
