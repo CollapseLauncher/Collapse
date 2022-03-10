@@ -42,7 +42,7 @@ namespace CollapseLauncher
         // Always use startupBackgroundPath on startup.
         private bool startUp = true;
         private string previousPath = startupBackgroundPath;
-        private void ChangeBackgroundImageAsRegion()
+        private void ChangeBackgroundImageAsRegion(CancellationToken token)
         {
             try
             {
@@ -64,16 +64,20 @@ namespace CollapseLauncher
 
                 MemoryStream memoryStream = new MemoryStream();
                 
-                httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream);
+                httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
-                regionBackgroundProp.imgLocalPath = Path.Combine(AppDataFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+                regionBackgroundProp.imgLocalPath = Path.Combine(AppDataFolder, "img", "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
 
                 if (DownloadBackgroundImage())
                     ApplyBackground();
 
                 GenerateThumbnail();
                 ApplyAccentColor();
+            }
+            catch (OperationCanceledException)
+            {
+                throw new OperationCanceledException($"Background Image fetch canceled!");
             }
             catch (Exception ex)
             {
@@ -94,7 +98,14 @@ namespace CollapseLauncher
             {
                 if (theme.ToString() == "#FFFFFFFF")
                 {
-                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
+                    try
+                    {
+                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
+                    }
+                    catch
+                    {
+                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
+                    }
 
                     Application.Current.Resources["SystemAccentColor"] = _color;
                     Application.Current.Resources["SystemAccentColorDark1"] = _color;
@@ -161,8 +172,8 @@ namespace CollapseLauncher
 
         private bool DownloadBackgroundImage()
         {
-            if (!Directory.Exists(Path.Combine(AppDataFolder, "bg")))
-                Directory.CreateDirectory(Path.Combine(AppDataFolder, "bg"));
+            if (!Directory.Exists(Path.Combine(AppDataFolder, "img", "bg")))
+                Directory.CreateDirectory(Path.Combine(AppDataFolder, "img", "bg"));
 
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)

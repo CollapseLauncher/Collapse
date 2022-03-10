@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Numerics;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -45,6 +46,7 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class HomePage : Page
     {
+        public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         HttpClientTool InstallerHttpClient = new HttpClientTool();
         bool IsCheckPreIntegrity = false;
@@ -61,6 +63,9 @@ namespace CollapseLauncher.Pages
                 LoadGameConfig();
                 CheckCurrentGameState();
 
+                SocMedPanel.Translation += new Vector3(0, 0, 32);
+                LauncherBtn.Translation += new Vector3(0, 0, 16);
+
                 Task.Run(() => CheckRunningGameInstance());
             }
             catch (Exception ex)
@@ -68,6 +73,32 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+        private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
+        {
+            Storyboard sb = ((Button)sender).Resources["EnterStoryboard"] as Storyboard;
+            ((Button)sender).Translation += new Vector3(0, 0, 16);
+            sb.Begin();
+        }
+
+        private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
+        {
+            Storyboard sb = ((Button)sender).Resources["ExitStoryboard"] as Storyboard;
+            ((Button)sender).Translation -= new Vector3(0, 0, 16);
+            sb.Begin();
+        }
+
+        private void OpenSocMedLink(object sender, RoutedEventArgs e)
+        {
+            var link = ((Button)sender).Tag.ToString();
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = link
+                }
+            }.Start();
         }
 
         private void CheckIfRightSideProgress()
@@ -312,7 +343,7 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-
+                LogWriteLine($"Installation cancelled!", Hi3Helper.LogType.Warning);
             }
         }
 
@@ -406,7 +437,6 @@ namespace CollapseLauncher.Pages
             else
             {
                 await Task.Run(() => ExtractDownloadedGame(fileOutput, destinationFolder, token), token);
-                LogWriteLine("Extract Cancelled");
             }
 
             CancelInstallationDownload();
@@ -422,7 +452,7 @@ namespace CollapseLauncher.Pages
             if (File.Exists(inputFile))
             {
                 fileHash = await Task.Run(() => GetMD5FromFile(inputFile, token));
-                if (fileHash == fileDownloadHash)
+                if (fileHash == fileDownloadHash.ToLower())
                 {
                     LogWriteLine();
                     LogWriteLine($"Downloaded game installation is verified and Ready to be extracted!");
@@ -469,6 +499,7 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException ex)
             {
                 sevenZip.ExtractProgressChanged -= ExtractProgress;
+                sevenZip.Dispose();
                 throw new OperationCanceledException("Operation cancelled", ex);
             }
 
@@ -945,12 +976,17 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"Update cancelled!", Hi3Helper.LogType.Warning);
             }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Update error! {ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private async Task<bool> UpdateGameClient(string sourceFile, string GamePath)
         {
             bool returnVal = true;
-
+            fileOutput = Path.Combine(gamePath, Path.GetFileName(fileURL));
             DispatcherQueue.TryEnqueue(() =>
             {
                 progressRing.Value = 0;

@@ -13,7 +13,7 @@ namespace ManagedLzma._7zip.Decoder
     {
         // private const int tmpBufferSize = 0x10000;
         private const int tmpBufferSize = 4 << 10;
-        // private const int tmpSkipBufferSize = 0x80000;
+        private const int tmpSkipBufferSize = 0x10000;
 
         private Stream sourceStream;
         private int bufferOffset;
@@ -29,12 +29,12 @@ namespace ManagedLzma._7zip.Decoder
 
         public void SkipLength(long skipLength)
         {
-            int buffLength = (int)Math.Min(skipLength, tmpBufferSize);
+            int buffLength = (int)Math.Min(skipLength, tmpSkipBufferSize);
             long lastLength = bufferLength;
 
             bufferLength = skipLength;
             if (buffLength > 0)
-                while ((bufferOffset += Read(new byte[tmpBufferSize], 0, buffLength)) < skipLength)
+                while ((bufferOffset += Read(new byte[tmpSkipBufferSize], 0, buffLength)) < skipLength)
                 {
                     cancelToken.ThrowIfCancellationRequested();
                 }

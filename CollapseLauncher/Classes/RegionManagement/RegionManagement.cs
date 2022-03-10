@@ -22,24 +22,83 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         HttpClientTool httpClient;
+        HttpClientTool httpClient4Img;
+        CancellationTokenSource tokenSource;
+        bool loadRegionComplete;
         Task loader = new Task(() => { });
         public async Task LoadRegion(int regionIndex = 0)
         {
+            loadRegionComplete = false;
             CurrentRegion = ConfigStore.Config[regionIndex];
             previousTag = "launcher";
             LoadGameRegionFile();
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
+            DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "" );
             await HideLoadingPopup(false, "Loading Region", CurrentRegion.ZoneName);
+            while (!await TryGetRegionResource())
+            {
+                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = $"Loading Region {CurrentRegion.ZoneName} has timed-out (> 10 seconds). Retrying...");
+                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> 10 seconds). Retrying...", Hi3Helper.LogType.Warning);
+            }
+            /*
             loader = Task.Run(() =>
             {
-                ChangeBackgroundImageAsRegion();
-                FetchLauncherResourceAsRegion();
+                ChangeBackgroundImageAsRegion(tokenSource.Token);
+                FetchLauncherResourceAsRegion(tokenSource.Token);
             });
             TimeOutWatcher();
             await loader;
+            */
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
             InitRegKey();
             await HideLoadingPopup(true, "Loading Region", CurrentRegion.ZoneName);
+        }
+
+        private async Task<bool> TryGetRegionResource()
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    tokenSource = new CancellationTokenSource();
+                    RetryWatcher();
+
+                    ChangeBackgroundImageAsRegion(tokenSource.Token);
+                    FetchLauncherResourceAsRegion(tokenSource.Token);
+
+                    tokenSource.Cancel();
+
+                    loadRegionComplete = true;
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private async void RetryWatcher()
+        {
+            while (true)
+            {
+                try
+                {
+                    await Task.Delay(5000, tokenSource.Token);
+                    DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "It takes a bit longer than expected. Please ensure that your connection is stable.");
+                    if (!loadRegionComplete)
+                    {
+                        await Task.Delay(5000, tokenSource.Token);
+                        tokenSource.Cancel();
+                    }
+                    else
+                        return;
+                }
+                catch
+                {
+                    return;
+                }
+            }
         }
 
         private async void TimeOutWatcher()
@@ -97,6 +156,7 @@ namespace CollapseLauncher
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
             appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
             SaveAppConfig();
+            MainFrameChanger.ChangeMainFrame(typeof(Pages.BlankPage));
             await InvokeLoadRegion(ComboBoxGameRegion.SelectedIndex);
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {

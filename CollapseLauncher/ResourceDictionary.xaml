@@ -11,14 +11,16 @@
                     <Color x:Key="SystemAccentColorLight1">#FFFFFF</Color>
                     <Color x:Key="SystemAccentColorLight2">#FFFFFF</Color>
                     <Color x:Key="SystemAccentColorLight3">#FFFFFF</Color>
-                    
-                    <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="0" TintColor="#FF000000" />
 
-                    <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="0.33" TintColor="#FF000000" />
+                    <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="0" TintColor="Black" />
 
-                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FF000000" />
+                    <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="0.33" TintColor="Black" />
+
+                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="Black" />
 
                     <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
+
+                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
 
                     <AcrylicBrush x:Key="NavigationAcrylicBrush" TintOpacity="0" TintColor="#111111" />
 
@@ -55,6 +57,8 @@
                     <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FFFFFF" />
 
                     <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" />
+
+                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0" TintLuminosityOpacity="0.75" TintColor="#FFFFFF" />
 
                     <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Transparent" TintOpacity="0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
 

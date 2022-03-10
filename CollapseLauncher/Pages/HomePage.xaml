@@ -17,6 +17,9 @@
             </Frame.ContentTransitions>
             <Frame.Content>
                 <Grid x:Name="FrameGrid" Margin="32,32,32,32">
+                    <Grid.Resources>
+                        <ThemeShadow x:Name="SharedShadow"/>
+                    </Grid.Resources>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="258"/>
@@ -80,12 +83,52 @@
                             </Button>
                         </InfoBar.ActionButton>
                     </InfoBar>
+                    <StackPanel
+                        x:Name="SocMedPanel"
+                        Background="{ThemeResource SocMedPanelAcrylicBrush}"
+                        Orientation="Vertical" HorizontalAlignment="Right"
+                        CornerRadius="12" Padding="0,4"
+                        Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                        VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}">
+                        <StackPanel.Transitions>
+                            <PopupThemeTransition/>
+                        </StackPanel.Transitions>
+                        <ScrollViewer x:Name="SocMedPanelScrollView" MaxHeight="336" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
+                                <ItemsControl.Transitions>
+                                    <PopupThemeTransition/>
+                                </ItemsControl.Transitions>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
+                                     PointerEntered="FadeInSocMedButton" PointerExited="FadeOutSocMedButton" Tag="{Binding URL}" Click="OpenSocMedLink"
+                                     Shadow="{StaticResource SharedShadow}">
+                                            <Button.Resources>
+                                                <Storyboard x:Name="EnterStoryboard">
+                                                    <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetName="IconHover" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                                <Storyboard x:Name="ExitStoryboard">
+                                                    <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetName="IconHover" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </Button.Resources>
+                                            <Grid>
+                                                <Image x:Name="Icon" Source="{Binding Icon}"/>
+                                                <Image x:Name="IconHover" Source="{Binding IconHover}" Opacity="0"/>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="227" Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
                         <Grid Width="227" Height="227">
-                            <Ellipse HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
+                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
                             <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="False" HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Height="227" Maximum="100"/>
                         </Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -137,7 +180,7 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2">
+                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{StaticResource SharedShadow}">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="InstallGameDialog">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">

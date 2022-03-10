@@ -237,6 +237,7 @@ namespace Hi3Helper.Preset
         public bool? UseRightSideProgress { get; set; }
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
+        public string LauncherInfoURL { get; set; }
     }
 
     public class BHI3LInfo

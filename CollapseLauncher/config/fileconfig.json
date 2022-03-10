@@ -4,7 +4,7 @@
     "ZoneName": "Southeast Asia",
     "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Honkai Impact 3",
     "ConfigRegistryLocation": "Software\\miHoYo\\Honkai Impact 3",
-    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd sea",
+    "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3 sea",
     "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
     "UpdateDictionaryAddress": "update_sea/",
     "BlockDictionaryAddress": "com.miHoYo.bh3oversea/",
@@ -19,6 +19,7 @@
     "CachesListGameVerID": 0,
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=9",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=tEGNtVhN&launcher_id=9&sub_channel_id=1",
+    "LauncherInfoURL": "https://honkaiimpact3.mihoyo.com/launcher/9/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_sea/", // AssetBundle URL used for Daily Update feature
@@ -51,6 +52,7 @@
     "CachesListGameVerID": 1,
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=10",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=dpz65xJ3&launcher_id=10&sub_channel_id=1",
+    "LauncherInfoURL": "https://honkaiimpact3.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
     "MirrorList": {
       "Hi3Mirror": {
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_global/",
@@ -83,6 +85,7 @@
     "UseRightSideProgress": true,
     "LauncherSpriteURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/content?filter_adv=true&language=zh-cn&launcher_id=4",
     "LauncherResourceURL": "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/resource?channel_id=1&key=SyvuPnqL&launcher_id=4&sub_channel_id=1",
+    "LauncherInfoURL": "https://www.bh3.com/launcher/4/zh-cn?api_url=https%3A%2F%2Fapi-sdk.mihoyo.com%2Fbh3_cn&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
@@ -111,6 +114,7 @@
     "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=zh-tw&launcher_id=8",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=demhUTcW&launcher_id=8&sub_channel_id=1",
+    "LauncherInfoURL": "https://honkaiimpact3.mihoyo.com/launcher/8/zh-tw?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
@@ -139,6 +143,7 @@
     "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=ko-kr&launcher_id=11",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=PRg571Xh&launcher_id=11&sub_channel_id=1",
+    "LauncherInfoURL": "https://honkaiimpact3.mihoyo.com/launcher/11/ko-kr?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
@@ -150,7 +155,7 @@
       }
     }
   },
-  
+
   {
     "ProfileName": "GIGlb",
     "ZoneName": "Genshin Impact",
@@ -158,8 +163,6 @@
     "ConfigRegistryLocation": "Software\\miHoYo\\Genshin Impact",
     "DefaultGameLocation": "C:\\Program Files\\Genshin Impact",
     "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
-    "UpdateDictionaryAddress": "update_cn/",
-    "BlockDictionaryAddress": "tmp/Original/",
     "LanguageAvailable": [ "en" ],
     "FallbackLanguage": "en",
     "IsGenshin": true,
@@ -168,6 +171,7 @@
     "GameExecutableName": "GenshinImpact.exe",
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=true&key=gcStgarh&language=en-us&launcher_id=10",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0",
+    "LauncherInfoURL": "https://genshin.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fhk4e_global&key=gcStgarh&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature

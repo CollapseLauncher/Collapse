@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CollapseLauncher</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -14,7 +14,7 @@
 	<ApplicationIcon>icon.ico</ApplicationIcon>
 	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
 	<DebugType>embedded</DebugType>
-	<Version>1.0.8</Version>
+	<Version>1.0.9</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\BG\default.png" />
@@ -22,6 +22,7 @@
     <None Remove="CollapseLauncher.Invoker.exe" />
     <None Remove="CollapseLauncher.Invoker.runtimeconfig.json" />
     <None Remove="config\fileconfig.json" />
+    <None Remove="Pages\BlankPage.xaml" />
     <None Remove="Pages\Dialogs\InstallationMigrateSteam.xaml" />
     <None Remove="Pages\UnhandledExceptionPage.xaml" />
   </ItemGroup>
@@ -50,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
@@ -97,6 +99,10 @@
     </Page>
     <Page Update="Pages\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\BlankPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\UnhandledExceptionPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

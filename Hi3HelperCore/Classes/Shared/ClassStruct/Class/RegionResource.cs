@@ -31,4 +31,17 @@ namespace Hi3Helper.Shared.ClassStruct
         public string entry { get; set; }
         public List<RegionResourceVersion> voice_packs { get; set; }
     }
+
+    public class HomeMenuPanel
+    {
+        public List<MenuPanelProp> sideMenuPanel { get; set; }
+        public List<MenuPanelProp> imageCarouselPanel { get; set; }
+    }
+
+    public class MenuPanelProp
+    {
+        public string URL { get; set; }
+        public string Icon { get; set; }
+        public string IconHover { get; set; }
+    }
 }

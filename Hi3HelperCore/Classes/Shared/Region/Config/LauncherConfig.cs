@@ -13,6 +13,8 @@ using static Hi3Helper.Preset.ConfigStore;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 
+using Aiursoft.HSharp.Models;
+
 namespace Hi3Helper.Shared.Region
 {
     public static class LauncherConfig
@@ -21,6 +23,7 @@ namespace Hi3Helper.Shared.Region
         public static string startupBackgroundPath;
         public static RegionBackgroundProp regionBackgroundProp = new RegionBackgroundProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
+        public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
         public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();
         public static List<string> GameConfigName = new List<string>();
         public static List<string> ScreenResolutionsList = new List<string>();

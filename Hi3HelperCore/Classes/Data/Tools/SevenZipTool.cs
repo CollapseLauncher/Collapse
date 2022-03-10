@@ -170,6 +170,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             catch (OperationCanceledException)
             {
                 Console.WriteLine($"Extraction cancelled!");
+                throw new OperationCanceledException($"Extraction cancelled!");
             }
 
             stopWatch.Stop();
