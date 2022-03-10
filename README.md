@@ -6,7 +6,7 @@
 ### An Advanced Launcher for Honkai Impact 3rd
 
 <p align="Left">
-  <img width="800px" alt="image" src="https://user-images.githubusercontent.com/30566970/157742367-25d57b03-5ac1-4a6c-95b1-b68a33f74fb5.png">
+  <img width="900px" alt="image" src="https://user-images.githubusercontent.com/30566970/157757321-b97f23c0-cd8b-4176-9bda-099f756c7d72.png">
 </p>
 
 > A Screenshot taken from Collapse Launcher v1.0.9-preview
