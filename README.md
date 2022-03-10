@@ -1,19 +1,38 @@
-# Hi3Helper
-### a Tweaker for Honkai Impact 3
- This tweaker is featuring some functionality. Including:
- * Perform the Daily Content Update (Updating Settings)(without opening the game)
- * Better and faster block repair mechanism than Game built-in block repair feature
- * ~~Fix subtitle issue~~ **[Coming Soon]**
- * ~~Download the cutscenes~~ **[Coming Soon]**
- * ~~Adjust In-game settings (like Window size, FPS Limit, Graphics Setting, etc)~~ **[Coming Soon]**
- * ~~Switch the update server to Hi3Mirror~~ **[Coming Soon]**
+<p align="Center">
+  <img width="200px" src="https://user-images.githubusercontent.com/30566970/157742052-603a7fd8-1894-4af4-bebc-356a528c10ab.svg">
+</p>
 
- This tool requires [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=48137) or [.NET 5 (For NET Core version)](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-desktop-5.0.10-windows-x64-installer) and Windows 7 (64-bit) (or newer) to work.
+# Collapse Launcher
+### An Advanced Launcher for Honkai Impact 3rd
+
+<p align="Left">
+  <img width="800px" alt="image" src="https://user-images.githubusercontent.com/30566970/157742367-25d57b03-5ac1-4a6c-95b1-b68a33f74fb5.png">
+</p>
+
+> A Screenshot taken from Collapse Launcher v1.0.9-rc1pre
+
+Collapse Launcher is a launcher especially made for Honkai Impact 3rd. This launcher not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
+* Caches Download (or aka. "Updating Settings" in-game).
+* Game Data Repair (with less data needed than Data Repair feature in-game).
+* Changing Game Settings (like: Graphics Settings and Audio Settings) without opening the game.
+* Cutscenes Download and Subtitle Fix feature (Coming Soon).
+* Multi-Region Game Download (supporting: Southeast Asia, Global, TW/HK/MO, Mainland China and Korea version).
+* Steam to Global version conversion (without re-downloading the whole game).
+* Enabling Game Mirror Server to be used for game (Powered by: Hi3Mirror)(Coming Soon).
+* Multi-session Download for Game Download/Installation.
+* Multi-thread Game Extraction for faster installation.
+* Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
+
+This launcher requires [**.NET Core 6 Desktop Runtime**](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.3-windows-x64-installer) and [**WinUI 3 (WindowsAppSDK Runtime 1.0)**](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.7-pre/prequesties-20220204.7z) in order to run.
+
+Unfortunately, this launcher only supports x64-bit version of Windows 10 (Build 1809 or later) or Windows 11 (Any Build) due to WinUI 3 limitation. ([**Read More Here**](https://microsoft.github.io/microsoft-ui-xaml/about.html))
  
- # Supported Game Client
- For now, this tool only supports these versions of the game:
- * Southeast Asia ([Honkai Impact 3](https://honkaiimpact3.mihoyo.com/asia/en-us/home))
- * Global ([Honkai Impact 3rd](https://honkaiimpact3.mihoyo.com/global/en-us/home))
- * Steam ([Honkai Impact 3rd](https://store.steampowered.com/app/1671200/Honkai_Impact_3rd/))
-
- Any contribution in this project are welcome.
+# Supported Game Client
+For now, this tool only supports these versions of the game:
+* Southeast Asia
+* Global
+* TW/HK/MO
+* Mainland China
+* Korea
+ 
+Any contribution in this project are welcome.
