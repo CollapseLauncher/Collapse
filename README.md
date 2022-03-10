@@ -9,7 +9,7 @@
   <img width="800px" alt="image" src="https://user-images.githubusercontent.com/30566970/157742367-25d57b03-5ac1-4a6c-95b1-b68a33f74fb5.png">
 </p>
 
-> A Screenshot taken from Collapse Launcher v1.0.9-rc1pre
+> A Screenshot taken from Collapse Launcher v1.0.9
 
 Collapse Launcher is a launcher especially made for Honkai Impact 3rd. This launcher not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
 * Caches Download (or aka. "Updating Settings" in-game).
