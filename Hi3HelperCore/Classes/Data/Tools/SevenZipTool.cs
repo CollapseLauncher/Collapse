@@ -6,6 +6,8 @@ using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO.Compression;
 
 using SharpCompress.Archives;
 using SharpCompress.Readers;
@@ -14,6 +16,7 @@ using master._7zip.Legacy;
 
 namespace Hi3Helper.Data
 {
+    public enum ArchiveType { SevenZip, Zip }
     public class SevenZipTool : IDisposable
     {
         class ExtractThreadProp
@@ -22,14 +25,25 @@ namespace Hi3Helper.Data
             public int end { get; set; }
             public CArchiveDatabaseEx db { get; set; }
             public ArchiveReader x { get; set; }
+            public ZipArchive xZip { get; set; }
             public FileStream fs { get; set; }
+        }
+        class FallbackExtractThreadProp
+        {
+            public int start { get; set; }
+            public int end { get; set; }
+            public IArchive reader { get; set; }
         }
 
         string inputFilePath;
+        ArchiveType inputFileType;
         FileStream inputFileStream;
 
         CArchiveDatabaseEx archiveDB;
         ArchiveReader archiveReader;
+
+        ZipArchive archiveReaderZip;
+
         List<ExtractThreadProp> extractProp = new List<ExtractThreadProp>();
         int thread,
             extractedCount;
@@ -37,6 +51,7 @@ namespace Hi3Helper.Data
 
         // Public entity
         public List<CFileItem> archiveEntries;
+        public ReadOnlyCollection<ZipArchiveEntry> archiveEntriesZip;
         public List<CFileItem> failedEntries = new List<CFileItem>();
         public int entriesCount,
                    filesCount,
@@ -66,13 +81,33 @@ namespace Hi3Helper.Data
 
             totalUncompressedSize = archiveEntries.Sum(f => f.Size);
             totalCompressedSize = inputFileStream.Length;
+
+            inputFileType = ArchiveType.SevenZip;
+        }
+
+        public void LoadZip(string inputFile)
+        {
+            inputFilePath = inputFile;
+            inputFileStream = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+
+            archiveReaderZip = ZipFile.OpenRead(inputFile);
+            archiveEntriesZip = archiveReaderZip.Entries;
+
+            entriesCount = archiveEntriesZip.Count;
+            filesCount = entriesCount;
+
+            totalUncompressedSize = archiveReaderZip.Entries.Sum(x => x.Length);
+            totalCompressedSize = archiveReaderZip.Entries.Sum(x => x.CompressedLength);
+
+            inputFileType = ArchiveType.Zip;
         }
 
         public void Dispose()
         {
             inputFileStream.Dispose();
-            archiveDB.Clear();
-            archiveReader.Close();
+            archiveDB?.Clear();
+            archiveReader?.Close();
+            archiveReaderZip?.Dispose();
             archiveEntries?.Clear();
             failedEntries?.Clear();
         }
@@ -89,14 +124,11 @@ namespace Hi3Helper.Data
         public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken(), bool alwaysUseLegacy = false)
         {
             stopWatch = Stopwatch.StartNew();
-            List<Task> tasks = new List<Task>();
 
             UseLegacy = alwaysUseLegacy;
 
             try
             {
-                List<Task> fallbackTasks = new List<Task>();
-
                 totalExtractedSize = 0;
                 extractedCount = 0;
                 this.thread = thread;
@@ -114,57 +146,14 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                        filesCount, foldersCount, totalCompressedSize,
                        totalUncompressedSize, $"{(float)((float)totalCompressedSize / totalUncompressedSize) * 100}%"));
 
-                GetThreadPartition();
-
-                InitializeFolder(outputDirectory);
-
-                foreach (ExtractThreadProp j in extractProp)
+                switch (inputFileType)
                 {
-                    j.db = new CArchiveDatabaseEx();
-                    j.x = new ArchiveReader();
-                    j.fs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                    j.x.Open(j.fs);
-                    j.x.ReadDatabase(j.db, null);
-                    j.db.Fill();
-                }
-
-                int threadID = 0;
-                foreach (ExtractThreadProp j in extractProp)
-                {
-                    fallbackTasks.Add(Task.Run(() => ThreadChild(inputFilePath, outputDirectory, j, threadID, token), token));
-
-                    // Give a 1/8 seconds to delay for each thread because of the thread bug
-                    Thread.Sleep(125);
-                    threadID++;
-                }
-
-                Console.WriteLine($"\rExtracting...");
-                Task.WhenAll(fallbackTasks).GetAwaiter().GetResult();
-                fallbackTasks.Clear();
-
-                if (failedEntries.Count != 0)
-                {
-                    // Console.WriteLine($"There are {failedEntries.Count} files that failed to be extracted. Including:");
-                    foreach (CFileItem entry in failedEntries)
-                    {
-                        Console.WriteLine(entry.Name);
-                    }
-                    // Console.WriteLine($"This file will be extracted using fallback method, but it will takes so much memory and long time to process.");
-                    GetFallbackThreadPartition(failedEntries);
-
-                    int fallbackThreadID = 0;
-                    foreach (FallbackExtractThreadProp j in fallbackExtractProp)
-                    {
-                        tasks.Add(Task.Run(() => FallbackThreadChild(inputFilePath, failedEntries, j, outputDirectory, threadID, token), token));
-
-                        // Give a 1/8 seconds to delay for each thread because of the thread bug
-                        Thread.Sleep(125);
-                        fallbackThreadID++;
-                    }
-
-                    Task.WhenAll(tasks).GetAwaiter().GetResult();
-                    tasks.Clear();
+                    case ArchiveType.SevenZip:
+                        Start7ZipThreads(outputDirectory, thread, token, alwaysUseLegacy);
+                        break;
+                    case ArchiveType.Zip:
+                        StartZipThreads(outputDirectory, thread, token);
+                        break;
                 }
             }
             catch (OperationCanceledException)
@@ -185,6 +174,97 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             Console.WriteLine($"Extracted: {extractedCount} | Listed Entry: {filesCount}");
         }
 
+        private void StartZipThreads(string outputDirectory, int thread, CancellationToken token)
+        {
+            List<Task> tasks = new List<Task>();
+            List<Task> fallbackTasks = new List<Task>();
+
+            GetThreadPartitionZip();
+
+            InitializeFolderZip(outputDirectory);
+
+            foreach (ExtractThreadProp j in extractProp)
+            {
+                j.fs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                j.xZip = new ZipArchive(j.fs, ZipArchiveMode.Read);
+            }
+
+            int threadID = 0;
+
+            foreach (ExtractThreadProp j in extractProp)
+            {
+                fallbackTasks.Add(Task.Run(() => ThreadChild(inputFilePath, outputDirectory, j, threadID, token), token));
+
+                // Give a 1/8 seconds to delay for each thread because of the thread bug
+                Thread.Sleep(125);
+                threadID++;
+            }
+
+            Task.WhenAll(fallbackTasks).GetAwaiter().GetResult();
+            fallbackTasks.Clear();
+        }
+
+        private void Start7ZipThreads(string outputDirectory, int thread, CancellationToken token, bool alwaysUseLegacy)
+        {
+            List<Task> tasks = new List<Task>();
+            List<Task> fallbackTasks = new List<Task>();
+
+            GetThreadPartition();
+
+            InitializeFolder(outputDirectory);
+
+            foreach (ExtractThreadProp j in extractProp)
+            {
+                j.db = new CArchiveDatabaseEx();
+                j.x = new ArchiveReader();
+                j.fs = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                j.x.Open(j.fs);
+                j.x.ReadDatabase(j.db, null);
+                j.db.Fill();
+            }
+
+            int threadID = 0;
+
+            Console.WriteLine($"\rExtracting...");
+
+            foreach (ExtractThreadProp j in extractProp)
+            {
+                fallbackTasks.Add(Task.Run(() => ThreadChild(inputFilePath, outputDirectory, j, threadID, token), token));
+
+                // Give a 1/8 seconds to delay for each thread because of the thread bug
+                Thread.Sleep(125);
+                threadID++;
+            }
+
+            Task.WhenAll(fallbackTasks).GetAwaiter().GetResult();
+            fallbackTasks.Clear();
+
+            if (failedEntries.Count != 0)
+            {
+                // Console.WriteLine($"There are {failedEntries.Count} files that failed to be extracted. Including:");
+                foreach (CFileItem entry in failedEntries)
+                {
+                    Console.WriteLine(entry.Name);
+                }
+                // Console.WriteLine($"This file will be extracted using fallback method, but it will takes so much memory and long time to process.");
+                GetFallbackThreadPartition(failedEntries);
+
+                int fallbackThreadID = 0;
+                foreach (FallbackExtractThreadProp j in fallbackExtractProp)
+                {
+                    tasks.Add(Task.Run(() => FallbackThreadChild(inputFilePath, failedEntries, j, outputDirectory, threadID, token), token));
+
+                    // Give a 1/8 seconds to delay for each thread because of the thread bug
+                    Thread.Sleep(125);
+                    fallbackThreadID++;
+                }
+
+                Task.WhenAll(tasks).GetAwaiter().GetResult();
+                tasks.Clear();
+            }
+        }
+
         private void InitializeFolder(in string outputDirectory)
         {
             foreach (CFileItem file in archiveEntries)
@@ -198,16 +278,19 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             }
         }
 
-        public class FallbackExtractThreadProp
+        private void InitializeFolderZip(in string outputDirectory)
         {
-            public int start { get; set; }
-            public int end { get; set; }
-            public IArchive reader { get; set; }
+            foreach (ZipArchiveEntry file in archiveEntriesZip)
+            {
+                string path = Path.Combine(outputDirectory, Path.GetDirectoryName(file.FullName.Replace('/', '\\')));
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+            }
         }
 
         List<FallbackExtractThreadProp> fallbackExtractProp = new List<FallbackExtractThreadProp>();
 
-        long fallbackSingleUncompressedSize = 0;
         private void FallbackThreadChild(in string inputFilePath, List<CFileItem> inputEntry, FallbackExtractThreadProp j, in string outputDirectory, int threadID, CancellationToken token)
         {
             FileStream fileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
@@ -218,8 +301,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                     string path = Path.Combine(outputDirectory, inputEntry[i].Name.Replace('/', '\\'));
                     IArchiveEntry entry1 = j.reader.Entries.FirstOrDefault(x => x.Key.Contains(inputEntry[i].Name));
                     // Console.WriteLine($"{entry1.Key} on threadID: {threadID}");
-                    fallbackSingleUncompressedSize = entry1.Size;
-                    WriteStream(entry1.OpenEntryStream(), new FileStream(path, FileMode.Create, FileAccess.Write), true, token);
+                    WriteStream(entry1.OpenEntryStream(), new FileStream(path, FileMode.Create, FileAccess.Write), entry1.Size, token);
                 }
             }
             fileStream.Dispose();
@@ -247,6 +329,27 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             fallbackExtractProp.Add(new FallbackExtractThreadProp { start = start, end = inputEntry.Count - 1 });
         }
 
+        private void GetThreadPartitionZip()
+        {
+            int start = 0;
+            int end = 0;
+            long aCur = 0,
+                 partitionSize = (long)Math.Ceiling((double)totalUncompressedSize / this.thread);
+
+            for (int i = 0; i < entriesCount; i++)
+            {
+                aCur += archiveEntriesZip[i].Length;
+                if (aCur > partitionSize)
+                {
+                    end = i;
+                    aCur = 0;
+                    extractProp.Add(new ExtractThreadProp { start = start, end = end });
+                    start = end + 1;
+                }
+            }
+            extractProp.Add(new ExtractThreadProp { start = start, end = entriesCount - 1 });
+        }
+
         private void GetThreadPartition()
         {
             int start = 0;
@@ -268,7 +371,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             extractProp.Add(new ExtractThreadProp { start = start, end = entriesCount - 1 });
         }
 
-        private void ThreadChild(string input, string output, ExtractThreadProp j, int threadID, CancellationToken token)
+        private void Start7ZipThreadChild(string input, string output, ExtractThreadProp j, int threadID, CancellationToken token)
         {
             for (int i = j.start; i <= j.end; i++)
             {
@@ -287,7 +390,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                             throw new NotImplementedException("Legacy mode is on!");
 
                         using (Stream stream = j.x.OpenStream(j.db, i, null, token))
-                            WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), false, token);
+                            WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), archiveEntries[i].Size, token);
 
                         GC.Collect();
                     }
@@ -329,7 +432,49 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             j.fs.Dispose();
         }
 
-        private void WriteStream(Stream input, Stream output, bool fallback, CancellationToken token)
+        private void StartZipThreadChild(string input, string output, ExtractThreadProp j, int threadID, CancellationToken token)
+        {
+            string path;
+            for (int i = j.start; i <= j.end; i++)
+            {
+                path = Path.Combine(output, archiveEntriesZip[i].FullName.Replace('/', '\\'));
+                try
+                {
+                    using (Stream stream = j.xZip.Entries[i].Open())
+                        WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), j.xZip.Entries[i].Length, token);
+                }
+                catch (AggregateException ex)
+                {
+                    Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                    throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                    throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new OperationCanceledException($"Unhandled Exception on threadID: {threadID}!", ex);
+                }
+            }
+            j.xZip.Dispose();
+        }
+
+        private void ThreadChild(string input, string output, ExtractThreadProp j, int threadID, CancellationToken token)
+        {
+            switch (inputFileType)
+            {
+                case ArchiveType.SevenZip:
+                    Start7ZipThreadChild(input, output, j, threadID, token);
+                    break;
+                case ArchiveType.Zip:
+                    StartZipThreadChild(input, output, j, threadID, token);
+                    break;
+            }
+        }
+
+        private void WriteStream(Stream input, Stream output, long fileSize, CancellationToken token)
         {
             // int read = 0;
             using (input) using (output)
@@ -337,8 +482,11 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                 token.ThrowIfCancellationRequested();
                 input.CopyTo(output);
 
-                totalExtractedSize += fallback ? fallbackSingleUncompressedSize : input.Length;
+                totalExtractedSize += fileSize;
                 OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
+
+                input.Dispose();
+                output.Dispose();
             }
             extractedCount++;
             // OnProgressChanged(new ExtractProgress(extractedCount, filesCount, totalExtractedSize, totalUncompressedSize, stopWatch.Elapsed.TotalSeconds));
