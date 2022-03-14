@@ -1149,7 +1149,8 @@ namespace CollapseLauncher.Pages
             foreach (string line in list)
             {
                 filePath = Path.Combine(GamePath, NormalizePath(line));
-                File.Delete(filePath);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
             }
 
             File.Delete(listPath);
