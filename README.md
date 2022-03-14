@@ -34,5 +34,12 @@ For now, this launcher only supports these versions of the game:
 * TW/HK/MO
 * Mainland China
 * Korea
- 
+
+# Other Supported Game Client
+This launcher also supports other game client, including:
+* Genshin Impact (Global Release)
+* 原神 / Yuan Shen (Mainland China's Genshin)
+
+Unfortunately, some features like Game Data repair, Game Settings, Game Mirror Server and Caches Download aren't available for this Game Client.
+
 Any contribution in this project are welcome.
