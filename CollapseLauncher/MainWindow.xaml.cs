@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.InteropServices;
 using Windows.ApplicationModel;
@@ -43,6 +44,16 @@ namespace CollapseLauncher
             {
                 InitializeComponent();
                 SetTitleBar(CustomTitleBar);
+
+                string title = $"Collapse Launcher - v{ Assembly.GetExecutingAssembly().GetName().Version} ";
+#if PREVIEW
+                title = title + "[PREVIEW]";
+#endif
+#if DEBUG
+                title = title + "[DEBUG]";
+#endif
+                this.Title = title;
+
                 GetAppWindowAndPresenter();
 
                 _presenter.IsResizable = false;

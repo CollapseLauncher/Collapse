@@ -14,7 +14,19 @@
 	<ApplicationIcon>icon.ico</ApplicationIcon>
 	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
 	<DebugType>embedded</DebugType>
-	<Version>1.0.9</Version>
+	<Version>1.0.10</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DefineConstants>PREVIEW</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <DefineConstants>PREVIEW</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>PREVIEW</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DefineConstants>PREVIEW</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\BG\default.png" />
