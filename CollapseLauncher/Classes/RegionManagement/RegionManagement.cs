@@ -26,8 +26,11 @@ namespace CollapseLauncher
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
         Task loader = new Task(() => { });
+        int LoadTimeoutSec = 5;
+        int LoadTimeoutJump = 2;
         public async Task LoadRegion(int regionIndex = 0)
         {
+            int prevTimeout = LoadTimeoutSec;
             loadRegionComplete = false;
             CurrentRegion = ConfigStore.Config[regionIndex];
             previousTag = "launcher";
@@ -37,9 +40,13 @@ namespace CollapseLauncher
             await HideLoadingPopup(false, "Loading Region", CurrentRegion.ZoneName);
             while (!await TryGetRegionResource())
             {
-                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = $"Loading Region {CurrentRegion.ZoneName} has timed-out (> 10 seconds). Retrying...");
-                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> 10 seconds). Retrying...", Hi3Helper.LogType.Warning);
+                int lastTimeout = LoadTimeoutSec;
+                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = $"Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...");
+                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...", Hi3Helper.LogType.Warning);
+
+                LoadTimeoutSec += LoadTimeoutJump;
             }
+            LoadTimeoutSec = prevTimeout;
             /*
             loader = Task.Run(() =>
             {
@@ -84,11 +91,11 @@ namespace CollapseLauncher
             {
                 try
                 {
-                    await Task.Delay(5000, tokenSource.Token);
+                    await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
                     DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "It takes a bit longer than expected. Please ensure that your connection is stable.");
                     if (!loadRegionComplete)
                     {
-                        await Task.Delay(5000, tokenSource.Token);
+                        await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
                         tokenSource.Cancel();
                     }
                     else
