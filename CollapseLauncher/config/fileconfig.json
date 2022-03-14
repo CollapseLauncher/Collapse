@@ -128,7 +128,7 @@
   },
   {
     "ProfileName": "Hi3KR",
-    "ZoneName": "Korea",
+    "ZoneName": "Korean",
     "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\붕괴3rd",
     "ConfigRegistryLocation": "Software\\miHoYo\\붕괴3rd",
     "DefaultGameLocation": "C:\\Program Files\\Honkai Impact 3rd kr",
@@ -172,6 +172,33 @@
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=true&key=gcStgarh&language=en-us&launcher_id=10",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0",
     "LauncherInfoURL": "https://genshin.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fhk4e_global&key=gcStgarh&prev=false",
+    "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
+      "Hi3Mirror": { // The name of mirror entry
+        "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
+        "Bigfile": "http://data.in.seanew.ironmaid.xyz:14000/tmp/Original/" // Bigfile URL used for Block Check feature
+      },
+      "miHoYo": {
+        "AssetBundle": "http://ali-hk-bundle-os01.oss-accelerate.aliyuncs.com/asset_bundle/overseas01/1.1/",
+        "Bigfile": "http://ali-hk-bigfile-os01.oss-accelerate.aliyuncs.com/tmp/Original/"
+      }
+    }
+  },
+  {
+    "ProfileName": "GICN",
+    "ZoneName": "原神",
+    "InstallRegistryLocation": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\原神",
+    "ConfigRegistryLocation": "Software\\miHoYo\\原神",
+    "DefaultGameLocation": "C:\\Program Files\\Genshin Impact",
+    "DictionaryHost": "http://data.in.seanew.ironmaid.xyz:14000/",
+    "LanguageAvailable": [ "en" ],
+    "FallbackLanguage": "en",
+    "IsGenshin": true,
+    "UseRightSideProgress": true,
+    "GameDirectoryName": "Genshin Impact game",
+    "GameExecutableName": "YuanShen.exe",
+    "LauncherSpriteURL": "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/content?filter_adv=true&key=eYd89JmJ&language=zh-cn&launcher_id=18",
+    "LauncherResourceURL": "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/resource?channel_id=1&key=eYd89JmJ&launcher_id=18&sub_channel_id=1",
+    "LauncherInfoURL": "https://ys.mihoyo.com/launcher/18/zh-cn?api_url=https%3A%2F%2Fapi-sdk.mihoyo.com%2Fhk4e_cn&key=eYd89JmJ&prev=false",
     "MirrorList": { // This defines mirror entries including AssetBundle and Bigfile URL for each mirrors
       "Hi3Mirror": { // The name of mirror entry
         "AssetBundle": "http://data.in.seanew.ironmaid.xyz:14000/update_cn/", // AssetBundle URL used for Daily Update feature
