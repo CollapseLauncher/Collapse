@@ -58,6 +58,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Lib\HPatchZ.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Lib\HPatchZ.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
