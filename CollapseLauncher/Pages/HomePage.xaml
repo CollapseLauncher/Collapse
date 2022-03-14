@@ -8,6 +8,9 @@
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     mc:Ignorable="d"
     x:FieldModifier="public" Unloaded="Page_Unloaded">
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow"/>
+    </Page.Resources>
     <Grid>
         <Frame x:Name="OverlapFrame" Canvas.ZIndex="1" x:FieldModifier="public">
             <Frame.ContentTransitions>
@@ -17,9 +20,6 @@
             </Frame.ContentTransitions>
             <Frame.Content>
                 <Grid x:Name="FrameGrid" Margin="32,32,32,32">
-                    <Grid.Resources>
-                        <ThemeShadow x:Name="SharedShadow"/>
-                    </Grid.Resources>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="258"/>
@@ -123,6 +123,17 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
+                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-72,0,0">
+                        <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
+                            MaxWidth="458" Height="213"
+                            CornerRadius="10" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Left">
+                            <FlipView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" PointerPressed="OpenImageLinkFromTag"/>
+                                </DataTemplate>
+                            </FlipView.ItemTemplate>
+                        </FlipView>
+                    </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="227" Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
@@ -142,7 +153,11 @@
                             <TextBlock x:Name="ProgressTimeLeft" Text="- left" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10" Visibility="Collapsed"/>
                         </StackPanel>
                     </Grid>
-                    <Button x:Name="GameStartupSetting" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch" PointerEntered="AnimateGameRegSettingIcon_Start" PointerExited="AnimateGameRegSettingIcon_End">
+                    <Button x:Name="GameStartupSetting"
+                            Grid.Column="0" Grid.Row="2" 
+                            VerticalAlignment="Stretch"
+                            PointerEntered="AnimateGameRegSettingIcon_Start"
+                            PointerExited="AnimateGameRegSettingIcon_End">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <AnimatedIcon x:Name='GameRegionSettingIcon' Width="24">

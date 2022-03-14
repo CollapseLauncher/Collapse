@@ -14,6 +14,7 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         public RegionBackgroundProp_data_adv adv { get; set; }
     }
+
     public class RegionBackgroundProp_data_adv
     {
         public string background { get; set; }

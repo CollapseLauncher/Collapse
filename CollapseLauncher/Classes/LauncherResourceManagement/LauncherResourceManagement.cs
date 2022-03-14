@@ -52,15 +52,23 @@ namespace CollapseLauncher
                 if (CurrentRegion.LauncherInfoURL != null)
                 {
                     httpClient4Img.DownloadStream(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
-                    var infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                    HDoc infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
                     try
                     {
-                        regionNewsProp.sideMenuPanel = GetSideMenuPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
+                        HTag sidePanel = infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1];
+                        regionNewsProp.sideMenuPanel = GetSideMenuPanel(sidePanel);
                     }
                     catch
                     {
                         regionNewsProp.sideMenuPanel = GetSideMenuPanelV2(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
                     }
+
+                    try
+                    {
+                        HTag carousel = infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"];
+                        regionNewsProp.imageCarouselPanel = GetCarouselPanel(carousel);
+                    }
+                    catch { }
                 }
             }
             catch (OperationCanceledException)
@@ -89,6 +97,22 @@ namespace CollapseLauncher
 
             return panel;
         }
+
+        public List<MenuPanelProp> GetCarouselPanel(HTag input)
+        {
+            List<MenuPanelProp> panel = new List<MenuPanelProp>();
+            foreach (var tag in input)
+            {
+                panel.Add(new MenuPanelProp
+                {
+                    URL = tag["a"].Properties["href"],
+                    Icon = GetCachedSprites(tag["a"]["img"].Properties["src"])
+                });
+            }
+
+            return panel;
+        }
+
         public List<MenuPanelProp> GetSideMenuPanelV2(HTag input)
         {
             List<MenuPanelProp> panel = new List<MenuPanelProp>();

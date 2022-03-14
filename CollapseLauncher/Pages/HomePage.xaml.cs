@@ -47,9 +47,14 @@ namespace CollapseLauncher.Pages
     public sealed partial class HomePage : Page
     {
         public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
+        CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         HttpClientTool InstallerHttpClient = new HttpClientTool();
         bool IsCheckPreIntegrity = false;
+
+        Vector3 Shadow16 = new Vector3(0, 0, 16);
+        Vector3 Shadow32 = new Vector3(0, 0, 32);
+        Vector3 Shadow48 = new Vector3(0, 0, 48);
 
         public HomePage()
         {
@@ -63,8 +68,16 @@ namespace CollapseLauncher.Pages
                 LoadGameConfig();
                 CheckCurrentGameState();
 
-                SocMedPanel.Translation += new Vector3(0, 0, 32);
-                LauncherBtn.Translation += new Vector3(0, 0, 16);
+                SocMedPanel.Translation += Shadow32;
+                LauncherBtn.Translation += Shadow16;
+
+                if (MenuPanels.imageCarouselPanel.Count != 0)
+                {
+                    ImageCarousel.SelectedIndex = 0;
+                    ImageCarousel.Visibility = Visibility.Visible;
+                    ImageCarousel.Translation += Shadow48;
+                    StartCarouselAutoScroll(PageToken.Token);
+                }
 
                 Task.Run(() => CheckRunningGameInstance());
             }
@@ -74,32 +87,83 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex);
             }
         }
+
+        private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
+        {
+            try
+            {
+                while (true)
+                {
+                    await Task.Delay(delay * 1000, token);
+                    DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
+                        {
+                            ImageCarousel.SelectedIndex++;
+                        }
+                        else
+                        {
+                            for (int i = MenuPanels.imageCarouselPanel.Count; i > 0; i--)
+                            {
+                                ImageCarousel.SelectedIndex = i - 1;
+                                await Task.Delay(50, token);
+                            }
+                        }
+                    });
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
+
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
         {
             Storyboard sb = ((Button)sender).Resources["EnterStoryboard"] as Storyboard;
-            ((Button)sender).Translation += new Vector3(0, 0, 16);
+            ((Button)sender).Translation += Shadow16;
             sb.Begin();
         }
 
         private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
         {
             Storyboard sb = ((Button)sender).Resources["ExitStoryboard"] as Storyboard;
-            ((Button)sender).Translation -= new Vector3(0, 0, 16);
+            ((Button)sender).Translation -= Shadow16;
             sb.Begin();
         }
 
-        private void OpenSocMedLink(object sender, RoutedEventArgs e)
+        private async Task HideImageCarousel(bool hide)
         {
-            var link = ((Button)sender).Tag.ToString();
+            await Task.Run(() => { });
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation OpacityAnimation = new DoubleAnimation();
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
+            OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
+
+            Storyboard.SetTarget(OpacityAnimation, ImageCarousel);
+            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+            storyboard.Children.Add(OpacityAnimation);
+
+            storyboard.Begin();
+        }
+
+        private void OpenSocMedLink(object sender, RoutedEventArgs e) =>
             new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
                     UseShellExecute = true,
-                    FileName = link
+                    FileName = ((Button)sender).Tag.ToString()
                 }
             }.Start();
-        }
+
+        private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e) =>
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = ((Image)sender).Tag.ToString()
+                }
+            }.Start();
 
         private void CheckIfRightSideProgress()
         {
@@ -197,6 +261,9 @@ namespace CollapseLauncher.Pages
                 {
                     DispatcherQueue.TryEnqueue(() =>
                     {
+                        if (StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation -= Shadow16;
+
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = "Game is Running";
                         GameStartupSetting.IsEnabled = false;
@@ -207,6 +274,9 @@ namespace CollapseLauncher.Pages
 
                 DispatcherQueue.TryEnqueue(() =>
                 {
+                    if (!StartGameBtn.IsEnabled)
+                        LauncherBtn.Translation += Shadow16;
+
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = "Start Game";
                     GameStartupSetting.IsEnabled = true;
@@ -325,6 +395,9 @@ namespace CollapseLauncher.Pages
                         break;
                 }
                 */
+
+                if (CurrentRegion.UseRightSideProgress ?? false)
+                    await HideImageCarousel(true);
 
                 if (string.IsNullOrEmpty(destinationFolder))
                     throw new OperationCanceledException();
@@ -488,13 +561,23 @@ namespace CollapseLauncher.Pages
             });
 
             SevenZipTool sevenZip = new SevenZipTool();
-
-            sevenZip.Load(sourceFile);
-
-            sevenZip.ExtractProgressChanged += ExtractProgress;
             try
             {
-                sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
+                switch (Path.GetExtension(sourceFile).ToLower())
+                {
+                    case ".7z":
+                        sevenZip.Load(sourceFile);
+
+                        sevenZip.ExtractProgressChanged += ExtractProgress;
+                        sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
+                        break;
+                    case ".zip":
+                        sevenZip.LoadZip(sourceFile);
+
+                        sevenZip.ExtractProgressChanged += ExtractProgress;
+                        sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
+                        break;
+                }
             }
             catch (OperationCanceledException ex)
             {
@@ -829,12 +912,14 @@ namespace CollapseLauncher.Pages
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentRegion.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = await Hi3Helper.Shared.Region.GameSettingsManagement.GetLaunchArguments();
+                if (!CurrentRegion.IsGenshin ?? false)
+                {
+                    proc.StartInfo.Arguments = await Hi3Helper.Shared.Region.GameSettingsManagement.GetLaunchArguments();
+                    LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
+                }
                 proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()));
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
-
-                LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
 
                 WatchOutputLog = new CancellationTokenSource();
 
@@ -898,6 +983,7 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             MigrationWatcher.IsMigrationRunning = false;
+            PageToken.Cancel();
             CancelInstallationDownload();
             // WatchOutputLog.Cancel();
         }
@@ -955,20 +1041,25 @@ namespace CollapseLauncher.Pages
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
+            if (CurrentRegion.UseRightSideProgress ?? false)
+                await HideImageCarousel(true);
+
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             fileURL = GetUpdateDiffs();
-            string GameZipPath = Path.Combine(GamePath, "..\\", Path.GetFileName(fileURL));
+            fileOutput = Path.Combine(GamePath, "..\\", Path.GetFileName(fileURL));
 
             GetUpdateDiffs();
 
             try
             {
-                while (!await UpdateGameClient(GameZipPath, GamePath))
+                while (!await UpdateGameClient(fileOutput, GamePath))
                 {
 
                 }
 
-                File.Delete(GameZipPath);
+                if (!File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_test")))
+                    File.Delete(fileOutput);
+
                 ApplyGameConfig(Path.GetDirectoryName(GamePath));
                 OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
@@ -1017,7 +1108,15 @@ namespace CollapseLauncher.Pages
             if (await DoZipVerification(sourceFile, token))
             {
                 await Task.Run(() => ExtractDownloadedGame(sourceFile, Path.Combine(GamePath, "..\\"), token));
-                await CleanUpAssets(GamePath);
+                if (CurrentRegion.IsGenshin ?? false)
+                {
+                    await Task.Run(() => ApplyDeltaPatch(GamePath));
+                    await Task.Run(() => CleanUpAssetsGenshin(GamePath));
+                }
+                else
+                {
+                    await CleanUpAssets(GamePath);
+                }
             }
             else
             {
@@ -1034,6 +1133,81 @@ namespace CollapseLauncher.Pages
             }
 
             return returnVal;
+        }
+
+        class PatchEntryProp
+        {
+            public string remoteName { get; set; }
+        }
+
+        public void CleanUpAssetsGenshin(string GamePath)
+        {
+            string listPath = Path.Combine(GamePath, "deletefiles.txt"),
+                   filePath;
+
+            string[] list = File.ReadAllLines(listPath);
+            foreach (string line in list)
+            {
+                filePath = Path.Combine(GamePath, NormalizePath(line));
+                File.Delete(filePath);
+            }
+
+            File.Delete(listPath);
+        }
+
+        public void ApplyDeltaPatch(string GamePath)
+        {
+            string patchListPath = Path.Combine(GamePath, "hdifffiles.txt"),
+                   patchFilePath,
+                   inputFilePath,
+                   outputFilePath;
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressRing.Value = 0;
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility = Visibility.Collapsed;
+                ProgressStatusFooter.Visibility = Visibility.Collapsed;
+                ProgressStatusTitle.Text = "Applying Delta Patches";
+            });
+
+            HPatchUtil patchUtil = new HPatchUtil();
+
+            PatchEntryProp entry;
+
+            if (File.Exists(patchListPath))
+            {
+                string[] list = File.ReadAllLines(patchListPath);
+                int count = 0;
+                foreach (string line in list)
+                {
+                    entry = JsonConvert.DeserializeObject<PatchEntryProp>(line);
+                    inputFilePath = Path.Combine(GamePath, NormalizePath(entry.remoteName));
+                    patchFilePath = inputFilePath + ".hdiff";
+                    outputFilePath = inputFilePath + "_tmp";
+
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        progressRing.Value = GetPercentageNumber(count, list.Length);
+                        ProgressStatusSubtitle.Text = $"{count} / {list.Length} files";
+                    });
+
+                    if (File.Exists(inputFilePath) && File.Exists(outputFilePath) || File.Exists(inputFilePath))
+                    {
+                        if (File.Exists(patchFilePath))
+                        {
+                            patchUtil.HPatchFile(inputFilePath, patchFilePath, outputFilePath);
+                            File.Delete(patchFilePath);
+                            File.Delete(inputFilePath);
+                            File.Move(outputFilePath, inputFilePath);
+                        }
+                    }
+
+                    count++;
+                }
+            }
+
+            File.Delete(patchListPath);
         }
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)

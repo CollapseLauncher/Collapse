@@ -18,6 +18,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public List<XMFBlockList> BlkC { get; set; }
         public long S { get; set; }
     }
+
     public class FileProperties
     {
         public string FileName { get; set; }
