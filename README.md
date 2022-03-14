@@ -11,7 +11,7 @@
 
 > A Screenshot taken from Collapse Launcher v1.0.9-preview
 
-Collapse Launcher is a launcher especially made for Honkai Impact 3rd. This launcher not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
+Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This launcher not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
 * Caches Download (or aka. "Updating Settings" in-game).
 * Game Data Repair (with less data needed than Data Repair feature in-game).
 * Changing Game Settings (like: Graphics Settings and Audio Settings) without opening the game.
