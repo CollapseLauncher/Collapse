@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Windows.ApplicationModel.Core;
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -37,7 +38,7 @@ namespace CollapseLauncher
         {
             try
             {
-                LogWriteLine($"Welcome to CollapseLauncher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
@@ -70,7 +71,8 @@ namespace CollapseLauncher
         {
             while (true && !App.IsAppKilled)
             {
-                App.IsGameRunning = Process.GetProcessesByName("BH3").Length != 0 && !App.IsAppKilled;
+                string execName = Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName);
+                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
                 await Task.Delay(3000);
             }
         }
