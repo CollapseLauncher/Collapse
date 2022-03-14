@@ -59,7 +59,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!!!\r\n{ex}\r\n\r\nIf you're sure that this problem is unintentional, please report this problem by open an issue in https://github.com/neon-nyan/Hi3Helper/issues", LogType.Error, true);
+                LogWriteLine($"FATAL ERROR!!!\r\n{ex}\r\n\r\nIf you're sure that this problem is unintentional, please report this problem by open an issue in https://github.com/neon-nyan/CollapseLauncher/issues", LogType.Error, true);
                 Console.ReadLine();
             }
         }
