@@ -50,3 +50,5 @@ Any contribution in this project are welcome.
 - [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
 - [**managed-lzma**](https://github.com/weltkante/managed-lzma) by weltkante
 - [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by adamhathcock
+- [**HSharp**](https://github.com/Anduin2017/HSharp) by Anduin2017/Aiursoft
+- [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
