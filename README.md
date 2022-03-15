@@ -43,3 +43,10 @@ This launcher also supports other game client, including:
 Unfortunately, some features like Game Data repair, Game Settings, Game Mirror Server and Caches Download aren't available for this Game Client.
 
 Any contribution in this project are welcome.
+
+# Third-party repositories and references being used on this project
+- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
+- [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
+- [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
+- [**managed-lzma**](https://github.com/weltkante/managed-lzma) by weltkante
+- [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by adamhathcock
