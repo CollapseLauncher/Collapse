@@ -14,7 +14,7 @@
 	<ApplicationIcon>icon.ico</ApplicationIcon>
 	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
 	<DebugType>embedded</DebugType>
-	<Version>1.0.10</Version>
+	<Version>1.0.11</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <DefineConstants>PREVIEW</DefineConstants>
@@ -36,6 +36,7 @@
     <None Remove="config\fileconfig.json" />
     <None Remove="Pages\BlankPage.xaml" />
     <None Remove="Pages\Dialogs\InstallationMigrateSteam.xaml" />
+    <None Remove="Pages\StartupPage.xaml" />
     <None Remove="Pages\UnhandledExceptionPage.xaml" />
   </ItemGroup>
 
@@ -85,10 +86,17 @@
     <Content Update="Assets\BG\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\ironmaiden_logo_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\CachesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\StartupPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\CutscenesPage.xaml">
       <Generator>MSBuild:Compile</Generator>

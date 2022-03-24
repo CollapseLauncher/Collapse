@@ -191,6 +191,15 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
+                                    <TextBlock Text="Game Installation" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                    <Button x:Name="UninstallGameButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <SymbolIcon Symbol="Delete"/>
+                                                <TextBlock Text="Uninstall Game" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>

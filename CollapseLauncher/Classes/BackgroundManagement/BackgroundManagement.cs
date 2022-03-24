@@ -67,7 +67,7 @@ namespace CollapseLauncher
                 httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
-                regionBackgroundProp.imgLocalPath = Path.Combine(AppDataFolder, "img", "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+                regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
 
                 if (DownloadBackgroundImage())
                     ApplyBackground();
@@ -172,8 +172,8 @@ namespace CollapseLauncher
 
         private bool DownloadBackgroundImage()
         {
-            if (!Directory.Exists(Path.Combine(AppDataFolder, "img", "bg")))
-                Directory.CreateDirectory(Path.Combine(AppDataFolder, "img", "bg"));
+            if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
+                Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
 
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)

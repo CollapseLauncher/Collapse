@@ -70,7 +70,7 @@ namespace Hi3Helper.Data
 
             while (!(ret = GetRemoteStreamResponse(input, output, startOffset, endOffset, customMessage, token, false)))
             {
-                LogWriteLine($"Retrying (Count: {retryCount})...");
+                LogWriteLine($"Retrying (Count: {retryCount + 1 / maxRetryCount})...");
                 Thread.Sleep(maxRetryTimeout);
             }
 
@@ -87,7 +87,7 @@ namespace Hi3Helper.Data
 
             while (!(ret = GetRemoteStreamResponse(input, @"buffer", startOffset, endOffset, customMessage, token, true)))
             {
-                LogWriteLine($"Retrying (Count: {retryCount})...");
+                LogWriteLine($"Retrying (Count: {retryCount + 1 / maxRetryCount})...");
                 Thread.Sleep(maxRetryTimeout);
             }
 
@@ -143,7 +143,7 @@ namespace Hi3Helper.Data
                     {
                         while (!await GetPartialSessionStream(j))
                         {
-                            LogWriteLine($"Retrying to connect for chunk no: {j.PartRange + 1} (Count: {retryCount})...");
+                            LogWriteLine($"Retrying to connect for chunk no: {j.PartRange + 1} (Count: {retryCount + 1 / maxRetryCount})...");
                             Thread.Sleep(maxRetryTimeout);
                         }
                     }, downloadPartialToken));
@@ -292,7 +292,6 @@ namespace Hi3Helper.Data
                 {
                     CurrentReceived = i.Sum(x => x.CurrentReceived);
                     nowBytesReceived = i.Sum(x => x.NowBytesReceived);
-                    // Console.WriteLine($"{BytesReceived}\t{TotalBytesToReceive}\t{CurrentReceived}" );
                     PartialOnProgressChanged(new PartialDownloadProgressChanged(BytesReceived, nowBytesReceived, downloadPartialSize, sw.Elapsed.TotalSeconds) { DownloadState = DownloadState.Downloading, CurrentReceived = CurrentReceived });
 
                     LastBytesReceived = BytesReceived;
@@ -325,9 +324,6 @@ namespace Hi3Helper.Data
 
                     existingLength = 0;
                 }
-
-                if (j.PartRange == 7)
-                    Console.WriteLine();
 
                 if (existingLength != fileSize)
                 {
@@ -390,12 +386,7 @@ namespace Hi3Helper.Data
             long totalReceived = byteSize + existingLength,
                  nowReceived = 0;
             byte[] buffer = new byte[bufflength];
-#if (NETCOREAPP)
             using (Stream remoteStream = await response.Content.ReadAsStreamAsync())
-            // using (Stream remoteStream = response.Content.ReadAsStream(downloadPartialToken))
-#else
-            using (Stream remoteStream = await response.Content.ReadAsStreamAsync())
-#endif
             {
                 retryCount = 0;
                 var sw = Stopwatch.StartNew();
@@ -414,7 +405,7 @@ namespace Hi3Helper.Data
 
         bool HttpRequestExceptionRetryHandler(HttpRequestException e)
         {
-            if (retryCount >= maxRetryCount)
+            if (retryCount > maxRetryCount)
                 throw new HttpRequestException(e.ToString(), e);
 
             retryCount++;
@@ -433,7 +424,6 @@ namespace Hi3Helper.Data
             catch (HttpRequestException e)
             {
                 returnValue = HttpRequestExceptionRetryHandler(e);
-                // throw new HttpRequestException(e.ToString());
             }
             catch (TaskCanceledException e)
             {
@@ -534,16 +524,9 @@ namespace Hi3Helper.Data
 
         HttpResponseMessage ThrowUnacceptableStatusCode(HttpResponseMessage input)
         {
-#if (NETCOREAPP)
-            if (!input.IsSuccessStatusCode)
-                throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})",
-                    null,
-                    input.StatusCode);
-#else
             if (((int)input.StatusCode == 416)) return input;
             if (!input.IsSuccessStatusCode)
                 throw new HttpRequestException($"an Error occured while doing request to {input.RequestMessage.RequestUri} with error code {(int)input.StatusCode} ({input.StatusCode})");
-#endif
 
             return input;
         }
@@ -559,11 +542,7 @@ namespace Hi3Helper.Data
             int byteSize = 0;
             long totalReceived = byteSize + existingLength;
             byte[] buffer = new byte[bufflength];
-#if (NETCOREAPP)
-            using (remoteStream = response.Content.ReadAsStream(token))
-#else
             using (remoteStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
-#endif
             {
                 retryCount = 0;
                 var sw = Stopwatch.StartNew();
@@ -578,26 +557,6 @@ namespace Hi3Helper.Data
                 sw.Stop();
             }
         }
-#if (NETCOREAPP)
-        bool ThrowWebExceptionAsBool(HttpRequestException e)
-        {
-            switch (GetStatusCodeResponse(e))
-            {
-                // Always ignore 416 code
-                case 416:
-                    return true;
-                case 404:
-                    LogWriteLine(e.Message, LogType.Error, true);
-                    throw new HttpRequestException(e.ToString(), e);
-                default:
-                    LogWriteLine(e.Message, LogType.Error, true);
-                    return false;
-            }
-        }
-
-        protected virtual short GetStatusCodeResponse(HttpRequestException e) => (short)e.StatusCode;
-#else
-#endif
         protected virtual void OnResumabilityChanged(DownloadStatusChanged e) => ResumablityChanged?.Invoke(this, e);
         protected virtual void OnProgressChanged(DownloadProgressChanged e) => ProgressChanged?.Invoke(this, e);
         protected virtual void PartialOnProgressChanged(PartialDownloadProgressChanged e) => PartialProgressChanged?.Invoke(this, e);

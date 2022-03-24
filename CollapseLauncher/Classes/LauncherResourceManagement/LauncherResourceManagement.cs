@@ -55,8 +55,7 @@ namespace CollapseLauncher
                     HDoc infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
                     try
                     {
-                        HTag sidePanel = infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1];
-                        regionNewsProp.sideMenuPanel = GetSideMenuPanel(sidePanel);
+                        regionNewsProp.sideMenuPanel = GetSideMenuPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
                     }
                     catch
                     {
@@ -65,8 +64,7 @@ namespace CollapseLauncher
 
                     try
                     {
-                        HTag carousel = infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"];
-                        regionNewsProp.imageCarouselPanel = GetCarouselPanel(carousel);
+                        regionNewsProp.imageCarouselPanel = GetCarouselPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]);
                     }
                     catch { }
                 }
@@ -135,7 +133,7 @@ namespace CollapseLauncher
 
         public string GetCachedSprites(string URL)
         {
-            string cacheFolder = Path.Combine(AppDataFolder, "img", "cache");
+            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
             string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);

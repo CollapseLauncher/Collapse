@@ -196,6 +196,19 @@ namespace CollapseLauncher.Dialogs
                     null
             );
 
+        public static async Task<ContentDialogResult> Dialog_LocateFirstSetupFolder(UIElement Content, string defaultAppFolder) =>
+            await SpawnDialog(
+                    "Locate Folder",
+                    string.Format(
+                        "I'm recommending you to use default AppData in this folder"
+                       + "\r\n\r\nLocation: {0}"
+                       + "\r\n\r\nDo you want to use this location?", defaultAppFolder),
+                    Content,
+                    "Cancel",
+                    "Yes, please",
+                    "No, choose folder"
+            );
+
         public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
             await SpawnDialog(
                     "Resume Download?",
@@ -206,6 +219,28 @@ namespace CollapseLauncher.Dialogs
                     null,
                     "Yes, Resume",
                     "No, Start from Beginning"
+                );
+
+        public static async Task<ContentDialogResult> Dialog_RelocateFolder(UIElement Content) =>
+            await SpawnDialog(
+                    "Relocate App Data Folder",
+                    string.Format("You are currently using this folder as your App Data Folder:\r\n\r\n {0}\r\n\r\nDo you want to relocate?",
+                                  GetAppConfigValue("GameFolder").ToString()),
+                    Content,
+                    null,
+                    "Yes, Relocate",
+                    "No, Cancel"
+                );
+
+        public static async Task<ContentDialogResult> Dialog_UninstallGame(UIElement Content, string gameLocation, string region) =>
+            await SpawnDialog(
+                    $"Uninstalling Game: {region}",
+                    string.Format("You are about to uninstall the game in this location:\r\n\r\n {0}\r\n\r\nDo you want to continue?",
+                                  gameLocation),
+                    Content,
+                    null,
+                    "Uninstall",
+                    "Cancel"
                 );
 
         public static async Task<ContentDialogResult> SpawnDialog(

@@ -13,8 +13,17 @@
             <TextBlock Text="App Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
             <StackPanel x:Name="Debugging" Margin="0,16">
                 <StackPanel>
-                    <TextBlock Text="Debugging" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,12"/>
+                    <TextBlock Text="Debugging" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <ToggleSwitch Header="Show Console" IsOn="{Binding EnableConsole}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" Toggled="ConsoleToggle"/>
+                    <TextBlock Text="App Files Management" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                    <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
+                        <Button Content="Open App Data Folder" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder"/>
+                        <Button Content="Relocate App Data Folder" Style="{StaticResource AccentButtonStyle}" Click="RelocateFolder"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <Button Content="Clear Log Files" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder"/>
+                        <Button Content="Clear Image Files" Style="{StaticResource AccentButtonStyle}" Click="ClearImgFolder"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="AboutApp">
@@ -31,18 +40,20 @@
                                 <TextBlock Text=" neon-nyan [14372096 SEA]" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Under" Style="{StaticResource BodyTextBlockStyle}"/>
-                                <TextBlock Text=' "The Unlicense"'  Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock>
+                                    <Run Text="Under"/>
+                                    <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/blob/main/LICENSE" UnderlineStyle="None"><Run Text="MIT License" FontWeight="Bold"/></Hyperlink>
+                                </TextBlock>
                                 <TextBlock Text=" license. All rights reserved." Style="{StaticResource BodyTextBlockStyle}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
-                        <Hyperlink NavigateUri="https://github.com/neon-nyan/Hi3Helper/issues" UnderlineStyle="None">Report an Issue</Hyperlink>
+                        <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/issues" UnderlineStyle="None">Report an Issue</Hyperlink>
                         </TextBlock>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8">
-                        <Hyperlink NavigateUri="https://github.com/neon-nyan/Hi3Helper/pulls" UnderlineStyle="None">Contribute on Pull Request</Hyperlink>
+                        <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/pulls" UnderlineStyle="None">Contribute on Pull Request</Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>

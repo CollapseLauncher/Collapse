@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -40,15 +41,57 @@ namespace CollapseLauncher.Pages
 
         private void ConsoleToggle(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-
-            if (toggle.IsOn)
+            if (((ToggleSwitch)sender).IsOn)
                 ShowConsoleWindow();
             else
                 HideConsoleWindow();
 
-            SetAppConfigValue("EnableConsole", toggle.IsOn);
+            SetAppConfigValue("EnableConsole", ((ToggleSwitch)sender).IsOn);
             InitLog(true, AppDataFolder);
+        }
+
+        private async void RelocateFolder(object sender, RoutedEventArgs e)
+        {
+            switch (await Dialogs.SimpleDialogs.Dialog_RelocateFolder(Content))
+            {
+                case ContentDialogResult.Primary:
+                    File.Delete(AppConfigFile);
+                    MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void OpenAppDataFolder(object sender, RoutedEventArgs e)
+        {
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = AppDataFolder
+                }
+            }.Start();
+        }
+
+        private void ClearImgFolder(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(AppGameImgFolder))
+                Directory.Delete(AppGameImgFolder, true);
+
+            Directory.CreateDirectory(AppGameImgFolder);
+            (sender as Button).IsEnabled = false;
+        }
+
+        private void ClearLogsFolder(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(AppGameLogsFolder))
+                Directory.Delete(AppGameLogsFolder, true);
+
+            Directory.CreateDirectory(AppGameLogsFolder);
+            (sender as Button).IsEnabled = false;
         }
     }
 }

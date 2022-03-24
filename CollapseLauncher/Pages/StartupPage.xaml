@@ -1,0 +1,44 @@
+﻿<Page
+    x:Class="CollapseLauncher.Pages.StartupPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource PagesAcrylicBrush}">
+    <Grid Margin="32">
+        <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" x:Name="LeftPanel">
+                <StackPanel.Transitions>
+                    <EntranceThemeTransition/>
+                </StackPanel.Transitions>
+                <Image Source="/Assets/ironmaiden_logo_256.png" Width="160" Height="160" HorizontalAlignment="Left"/>
+                <TextBlock Text="Welcome" Style="{StaticResource DisplayTextBlockStyle}"/>
+                <TextBlock Text="to Collapse Launcher" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
+            </StackPanel>
+        <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" x:Name="RightPanel">
+            <StackPanel.Transitions>
+                <EntranceThemeTransition/>
+            </StackPanel.Transitions>
+            <TextBlock Text="Hi!" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
+            <TextBlock Text="Seems like it's your first time to use this launcher." Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
+            <TextBlock Text="Anyway, thank you for trying out this project and to set everything up, please choose where will you be placing this launcher's data into your computer."
+                Style="{StaticResource SubtitleTextBlockStyle}"
+                FontWeight="Normal"
+                Margin="0,0,0,32"/>
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16">
+                <Run Text="To Start, click on" FontWeight="Normal"/>
+                <Run Text="Locate folder" Foreground="{StaticResource SystemAccentColor}"/>
+                <Run Text="button below to choose where do you want to place the game on." FontWeight="Normal"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Locate folder" Style="{StaticResource AccentButtonStyle}" Click="ChooseFolder"/>
+                <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" VerticalAlignment="Center" Foreground="Red"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

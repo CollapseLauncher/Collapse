@@ -7,4 +7,3 @@ build/*
 packages/*
 
 CollapseLauncher/Invoker/*
-*.exe

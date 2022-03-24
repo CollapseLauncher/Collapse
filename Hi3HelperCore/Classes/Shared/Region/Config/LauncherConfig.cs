@@ -33,6 +33,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
+        public static string AppGameImgFolder = Path.Combine(AppDataFolder, "img");
+        public static string AppGameLogsFolder = Path.Combine(AppDataFolder, "logs");
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
         public static string GamePathOnSteam;
 

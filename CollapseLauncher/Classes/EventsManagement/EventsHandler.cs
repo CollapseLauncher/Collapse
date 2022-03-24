@@ -54,13 +54,17 @@ namespace CollapseLauncher
     internal static class MainFrameChanger
     {
         static MainFrameChangerInvoker invoker = new MainFrameChangerInvoker();
+        public static void ChangeWindowFrame(Type e) => invoker.ChangeWindowFrame(e, new DrillInNavigationTransitionInfo());
+        public static void ChangeWindowFrame(Type e, NavigationTransitionInfo eT) => invoker.ChangeWindowFrame(e, eT);
         public static void ChangeMainFrame(Type e) => invoker.ChangeMainFrame(e, new DrillInNavigationTransitionInfo());
         public static void ChangeMainFrame(Type e, NavigationTransitionInfo eT) => invoker.ChangeMainFrame(e, eT);
     }
 
     internal class MainFrameChangerInvoker
     {
+        public static event EventHandler<MainFrameProperties> WindowFrameEvent;
         public static event EventHandler<MainFrameProperties> FrameEvent;
+        public void ChangeWindowFrame(Type e, NavigationTransitionInfo eT) => WindowFrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
         public void ChangeMainFrame(Type e, NavigationTransitionInfo eT) => FrameEvent?.Invoke(this, new MainFrameProperties(e, eT));
     }
 

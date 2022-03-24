@@ -38,6 +38,8 @@ namespace CollapseLauncher
         {
             try
             {
+                LoadAppPreset();
+                LoadGamePreset();
                 LogWriteLine($"Welcome to Collapse Launcher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();

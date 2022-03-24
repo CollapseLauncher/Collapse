@@ -249,6 +249,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
             GameInstallationState = GameInstallStateEnum.NotInstalled;
+            UninstallGameButton.IsEnabled = false;
             OpenGameFolderButton.IsEnabled = false;
             OpenCacheFolderButton.IsEnabled = false;
         }
@@ -1016,6 +1017,21 @@ namespace CollapseLauncher.Pages
                     Arguments = GameFolder
                 }
             }.Start();
+        }
+
+        private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            string GameFolder = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+
+            switch (await Dialog_UninstallGame(Content, GameFolder, CurrentRegion.ZoneName))
+            {
+                case ContentDialogResult.Primary:
+                    Directory.Delete(GameFolder, true);
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                    break;
+                default:
+                    break;
+            }
         }
 
         public string GetUpdateDiffs()

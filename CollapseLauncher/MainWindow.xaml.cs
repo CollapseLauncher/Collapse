@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Windowing;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ using PInvoke;
 
 using static CollapseLauncher.AppConfig;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,7 +47,7 @@ namespace CollapseLauncher
                 InitializeComponent();
                 SetTitleBar(CustomTitleBar);
 
-                string title = $"Collapse Launcher - v{ Assembly.GetExecutingAssembly().GetName().Version} ";
+                string title = $"Collapse Launcher - v{Assembly.GetExecutingAssembly().GetName().Version} ";
 #if PREVIEW
                 title = title + "[PREVIEW]";
 #endif
@@ -59,13 +61,26 @@ namespace CollapseLauncher
                 _presenter.IsResizable = false;
                 _presenter.IsMaximizable = false;
                 ExtendsContentIntoTitleBar = true;
-                rootFrame.Navigate(typeof(MainPage));
+
+                MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
+
+                if (!File.Exists(AppConfigFile))
+                    rootFrame.Navigate(typeof(Pages.StartupPage));
+                else
+                {
+                    rootFrame.Navigate(typeof(MainPage));
+                }
             }
             catch (Exception ex)
             {
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 Console.ReadLine();
             }
+        }
+
+        private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
+        {
+            rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
         private void Minimize(object sender, RoutedEventArgs e) => _presenter.Minimize();

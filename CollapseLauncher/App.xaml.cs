@@ -53,8 +53,6 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing...", LogType.Empty);
             try
             {
-                LoadAppPreset();
-                LoadGamePreset();
                 this.InitializeComponent();
             }
             catch (Exception ex)
