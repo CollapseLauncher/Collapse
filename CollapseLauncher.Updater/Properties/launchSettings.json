@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "CollapseLauncher.Updater": {
+      "commandName": "Project"
+    },
+    "CollapseLauncher.Reindex": {
+      "commandName": "Project",
+      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher\\deploy 1.0.11.0"
+    }
+  }
+}
