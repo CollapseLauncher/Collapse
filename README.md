@@ -48,7 +48,9 @@ Any contribution in this project are welcome.
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
 - [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
 - [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
-- [**managed-lzma**](https://github.com/weltkante/managed-lzma) by weltkante
-- [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by adamhathcock
+- ~~[**managed-lzma**](https://github.com/weltkante/managed-lzma) by weltkante~~
+  - Deprecated (Will be replaced by [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection soon)
+- ~~[**SharpCompress**](https://github.com/adamhathcock/sharpcompress) by adamhathcock~~
+  - Deprecated (Will be replaced by [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection soon)
 - [**HSharp**](https://github.com/Anduin2017/HSharp) by Anduin2017/Aiursoft
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
