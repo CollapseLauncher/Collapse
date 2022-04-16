@@ -43,9 +43,10 @@ namespace CollapseLauncher.Updater
                     new Reindexer(argument[1], argument[2]).RunReindex();
                     return;
                 }
-            }
 
-            new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
+                if (argument[0].ToLower() == "update")
+                    new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
+            }
         }
 
         public MainWindow()
@@ -80,6 +81,9 @@ namespace CollapseLauncher.Updater
             this.filePath = NormalizePath(filePath);
             this.reindexTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             this.clientVer = clientVer;
+
+            if (File.Exists(Path.Combine(this.filePath, "fileindex.json")))
+                File.Delete(Path.Combine(this.filePath, "fileindex.json"));
         }
 
         public void RunReindex()
@@ -90,10 +94,13 @@ namespace CollapseLauncher.Updater
             FileStream fileStream;
             foreach (string file in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
             {
-                nameRoot = file.Substring(baseLength).Replace('\\', '/');
-                fileCrc = BytesToCRC32Simple(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-                Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
-                LogWriteLine($"{nameRoot} -> {fileCrc}");
+                if (Path.GetFileName(file).ToLower() != "CollapseLauncher.Updater.exe")
+                {
+                    nameRoot = file.Substring(baseLength).Replace('\\', '/');
+                    fileCrc = BytesToCRC32Simple(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+                    Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
+                    LogWriteLine($"{nameRoot} -> {fileCrc}");
+                }
             }
 
             File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"), JsonConvert.SerializeObject(Prop));

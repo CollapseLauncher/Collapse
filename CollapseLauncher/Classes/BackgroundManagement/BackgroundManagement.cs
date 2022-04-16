@@ -46,7 +46,8 @@ namespace CollapseLauncher
         {
             try
             {
-                httpClient = new HttpClientTool(true);
+                httpClient = new HttpClientToolLegacy(true);
+                httpHelper = new HttpClientHelper(true);
 
                 if (startUp)
                 {
@@ -63,8 +64,9 @@ namespace CollapseLauncher
                 }
 
                 MemoryStream memoryStream = new MemoryStream();
-                
-                httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+
+                httpHelper.DownloadFile(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+                // httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
@@ -181,7 +183,8 @@ namespace CollapseLauncher
                 // || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)) != regionBackgroundProp.data.adv.bg_checksum
                 )
             {
-                httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
+                httpHelper.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
+                // httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
                 previousPath = regionBackgroundProp.imgLocalPath;
                 return true;
             }

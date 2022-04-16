@@ -22,7 +22,7 @@ namespace Hi3Helper.Data
         List<XMFBlockList> BrokenBlocks;
         List<XMFFileProperty> BrokenChunkProp;
         XMFUtils util;
-        readonly HttpClientTool httpUtil = new HttpClientTool();
+        readonly HttpClientToolLegacy httpUtil = new HttpClientToolLegacy();
 
         public event EventHandler<CheckingBlockProgressChanged> CheckingProgressChanged;
         public event EventHandler<CheckingBlockProgressChangedStatus> CheckingProgressChangedStatus;

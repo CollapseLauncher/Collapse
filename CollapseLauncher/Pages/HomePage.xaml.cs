@@ -49,7 +49,7 @@ namespace CollapseLauncher.Pages
         public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
-        HttpClientTool InstallerHttpClient = new HttpClientTool();
+        HttpClientToolLegacy InstallerHttpClient = new HttpClientToolLegacy();
         bool IsCheckPreIntegrity = false;
 
         Vector3 Shadow16 = new Vector3(0, 0, 16);
@@ -76,7 +76,7 @@ namespace CollapseLauncher.Pages
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarousel.Translation += Shadow48;
-                    StartCarouselAutoScroll(PageToken.Token);
+                    Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
                 Task.Run(() => CheckRunningGameInstance());
@@ -88,31 +88,27 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
+        private void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
         {
-            try
+            DispatcherQueue.TryEnqueue(async () =>
             {
-                while (true)
+                try
                 {
-                    await Task.Delay(delay * 1000, token);
-                    DispatcherQueue.TryEnqueue(async () =>
+                    while (true)
                     {
+                        await Task.Delay(delay * 1000, token);
                         if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
-                        {
                             ImageCarousel.SelectedIndex++;
-                        }
                         else
-                        {
                             for (int i = MenuPanels.imageCarouselPanel.Count; i > 0; i--)
                             {
                                 ImageCarousel.SelectedIndex = i - 1;
-                                await Task.Delay(50, token);
+                                await Task.Delay(100, token);
                             }
-                        }
-                    });
+                    }
                 }
-            }
-            catch (OperationCanceledException) { }
+                catch { }
+            });
         }
 
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
@@ -171,7 +167,7 @@ namespace CollapseLauncher.Pages
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    FrameGrid.ColumnDefinitions[0].Width = new GridLength(227, GridUnitType.Pixel);
+                    FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
                     FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
                     LauncherBtn.SetValue(Grid.ColumnProperty, 0);
                     ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
@@ -213,8 +209,7 @@ namespace CollapseLauncher.Pages
 
                             if (!File.Exists(
                                 Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
-                                "..\\",
-                                Path.GetFileName(regionResourceProp.data.pre_download_game.latest.path))))
+                                Path.GetFileName(GetUpdateDiffs(true).path))))
                             {
                                 NotificationBar.Message = $"Pre-Download package for v{regionResourceProp.data.pre_download_game.latest.version} is available! You can download the package while playing the game at the same time.";
                             }
@@ -357,68 +352,53 @@ namespace CollapseLauncher.Pages
             }
             catch (TaskCanceledException)
             {
+                CancelInstallationDownload();
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
-            }
-        }
-
-        string fileURL, fileOutput, fileHash, fileDownloadHash;
-
-        private async Task StartInstallationProcedure(string destinationFolder)
-        {
-            try
-            {
-                /*
-                string ExistingPath = ScanForExistingGameLocation(destinationFolder);
-                if (ExistingPath != null)
-                {
-
-                    switch (await Dialog_InstallationLocateExisting(Content))
-                    {
-                        case ContentDialogResult.Primary:
-                            RequireAdditionalDataDownload = true;
-                            break;
-                        case ContentDialogResult.Secondary:
-                            RequireAdditionalDataDownload = false;
-                            break;
-                    }
-
-                    DispatcherQueue.TryEnqueue(() => OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo()));
-                    return;
-                }
-
-                switch (await Dialog_InstallationDownloadAdditional(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        RequireAdditionalDataDownload = true;
-                        break;
-                    case ContentDialogResult.Secondary:
-                        RequireAdditionalDataDownload = false;
-                        break;
-                }
-                */
-
-                if (CurrentRegion.UseRightSideProgress ?? false)
-                    await HideImageCarousel(true);
-
-                if (string.IsNullOrEmpty(destinationFolder))
-                    throw new OperationCanceledException();
-
-                while (!await DownloadGameClient(destinationFolder))
-                {
-                    // Always loop if something wrong happen
-                }
-
-                if (!File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_test")))
-                    File.Delete(fileOutput);
-
-                ApplyGameConfig(destinationFolder);
-
-                DispatcherQueue.TryEnqueue(() => OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo()));
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Installation cancelled!", Hi3Helper.LogType.Warning);
+                CancelInstallationDownload();
+                LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
             }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while installing region {CurrentRegion.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex, ErrorType.Unhandled);
+            }
+        }
+
+        private async Task StartInstallationProcedure(string destinationFolder)
+        {
+            GameDirPath = destinationFolder;
+            if (!Directory.Exists(GameDirPath))
+                Directory.CreateDirectory(GameDirPath);
+
+            if (CurrentRegion.UseRightSideProgress ?? false)
+                await HideImageCarousel(true);
+
+            if (string.IsNullOrEmpty(GameDirPath))
+                throw new OperationCanceledException();
+
+            TryAddVoicePack(GetUpdateDiffs());
+
+            if (IsGameHasVoicePack)
+            {
+                GameZipVoiceUrl = VoicePackFile.path;
+                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                GameZipVoiceRemoteHash = VoicePackFile.md5.ToLower();
+                GameZipVoiceSize = VoicePackFile.package_size;
+            }
+
+            while (!await DownloadGameClient(GameDirPath))
+            {
+                // Always loop if something wrong happen
+            }
+
+            ApplyGameConfig(GameDirPath);
+
+            CancelInstallationDownload();
+            // MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            // DispatcherQueue.TryEnqueue(() => OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo()));
         }
 
         private string ScanForExistingGameLocation(string destinationFolder)
@@ -436,7 +416,7 @@ namespace CollapseLauncher.Pages
 
         private void ApplyGameConfig(string destinationFolder)
         {
-            gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName).Replace('\\', '/');
+            gameIni.Profile["launcher"]["game_install_path"] = destinationFolder.Replace('\\', '/');
             SaveGameProfile();
             PrepareGameConfig();
             // GamePkgVersionVerification();
@@ -458,75 +438,165 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        /*
         private async Task<bool> DownloadGameClient(string destinationFolder)
         {
             bool returnVal = true;
-            fileURL = regionResourceProp.data.game.latest.path;
-            fileDownloadHash = regionResourceProp.data.game.latest.md5;
-            fileOutput = Path.Combine(destinationFolder, Path.GetFileName(fileURL));
+            GameZipUrl = regionResourceProp.data.game.latest.path;
+            GameZipRemoteHash = regionResourceProp.data.game.latest.md5.ToLower();
+            GameZipPath = Path.Combine(destinationFolder, Path.GetFileName(GameZipUrl));
 
             DispatcherQueue.TryEnqueue(() =>
             {
                 progressRing.Value = 0;
+                progressRing.IsIndeterminate = false;
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 InstallGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
-                ProgressStatusTitle.Text = "Downloading";
             });
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
 
             InstallerHttpClient = new HttpClientTool();
+            InstallerHttpClient.PartialProgressChanged += InstallerDownloadStatusChanged;
+            InstallerHttpClient.Completed += InstallerDownloadStatusCompleted;
 
-            if (await CheckExistingDownload(fileOutput))
+            if (await CheckExistingDownload(GameZipPath, GameZipUrl))
             {
-                InstallerHttpClient.PartialProgressChanged += InstallerDownloadStatusChanged;
-                InstallerHttpClient.Completed += InstallerDownloadStatusCompleted;
+                ProgressStatusTitleName = "{0}" + (IsGameHasVoicePack ? " (1/2)" : "");
+                LogWriteLine($"Download URL: {GameZipUrl}");
+                if (!File.Exists(GameZipPath))
+                    await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipUrl, GameZipPath, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
 
-                LogWriteLine($"Download URL: {fileURL}");
-                await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, fileOutput, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
-
-                InstallerHttpClient.PartialProgressChanged -= InstallerDownloadStatusChanged;
-                InstallerHttpClient.Completed -= InstallerDownloadStatusCompleted;
+                if (IsGameHasVoicePack)
+                {
+                    ProgressStatusTitleName = "{0} (2/2)";
+                    LogWriteLine($"Download Voice Pack URL: {GameZipVoiceUrl}"); 
+                    if (!File.Exists(GameZipVoicePath))
+                        await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipVoiceUrl, GameZipVoicePath, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+                }
             }
+
+            InstallerHttpClient.PartialProgressChanged -= InstallerDownloadStatusChanged;
+            InstallerHttpClient.Completed -= InstallerDownloadStatusCompleted;
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
             token = InstallerDownloadTokenSource.Token;
 
-            if (!await DoZipVerification(fileOutput, token))
+            if (await TryCheckZipVerification(GameZipPath, GameZipRemoteHash.ToLower(), token)
+                && IsGameHasVoicePack ? await TryCheckZipVerification(GameZipVoicePath, GameZipVoiceRemoteHash.ToLower(), token) : true)
             {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
+                await Task.Run(() =>
                 {
-                    case ContentDialogResult.Primary:
-                        new FileInfo(fileOutput).Delete();
-                        returnVal = false;
-                        break;
-                    case ContentDialogResult.None:
-                        CancelInstallationDownload();
-                        throw new OperationCanceledException();
-                }
+                    ExtractDownloadedGame(GameZipPath, destinationFolder, token);
+
+                    if (IsGameHasVoicePack)
+                        ExtractDownloadedGame(GameZipVoicePath, destinationFolder, token);
+
+                    if (CurrentRegion.IsGenshin ?? false)
+                    {
+                        ApplyDeltaPatch(destinationFolder);
+                        CleanUpAssetsGenshin(destinationFolder);
+                        PostInstallVerificationGenshin(destinationFolder, regionResourceProp.data.game.latest.decompressed_path, token);
+                    }
+                }, token);
             }
             else
+                returnVal = false;
+
+            return returnVal;
+        }
+        */
+
+        private async Task<bool> DownloadGameClient(string destinationFolder)
+        {
+            bool returnVal = true;
+            GameZipUrl = regionResourceProp.data.game.latest.path;
+            GameZipRemoteHash = regionResourceProp.data.game.latest.md5.ToLower();
+            GameZipPath = Path.Combine(destinationFolder, Path.GetFileName(GameZipUrl));
+
+            DispatcherQueue.TryEnqueue(() =>
             {
-                await Task.Run(() => ExtractDownloadedGame(fileOutput, destinationFolder, token), token);
+                progressRing.Value = 0;
+                progressRing.IsIndeterminate = false;
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                InstallGameBtn.Visibility = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility = Visibility.Visible;
+            });
+
+            InstallerDownloadTokenSource = new CancellationTokenSource();
+            CancellationToken token = InstallerDownloadTokenSource.Token;
+
+            InstallTool = new InstallManagement(DownloadType.FirstInstall,
+                                destinationFolder,
+                                appIni.Profile["app"]["DownloadThread"].ToInt(),
+                                Environment.ProcessorCount,
+                                token,
+                                CurrentRegion.IsGenshin ?? false ?
+                                    regionResourceProp.data.game.latest.decompressed_path :
+                                    null,
+                                regionResourceProp.data.game.latest.version,
+                                CurrentRegion.ProtoDispatchKey,
+                                CurrentRegion.GetRegServerNameID(),
+                                Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+
+            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash);
+            if (IsGameHasVoicePack)
+                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash);
+
+            ProgressStatusGrid.Visibility = Visibility.Visible;
+            UpdateGameBtn.Visibility = Visibility.Collapsed;
+            CancelDownloadBtn.Visibility = Visibility.Visible;
+
+            InstallTool.InstallStatusChanged += InstallToolStatus;
+            InstallTool.InstallProgressChanged += InstallToolProgress;
+            bool RetryRoutine = true;
+
+            await InstallTool.CheckExistingDownloadAsync(Content);
+
+            while (RetryRoutine)
+            {
+                await InstallTool.StartDownloadAsync();
+                RetryRoutine = await InstallTool.StartVerificationAsync(Content);
             }
 
-            CancelInstallationDownload();
+            await InstallTool.StartInstallAsync();
+            await InstallTool.FinalizeInstallationAsync(Content);
+
             return returnVal;
         }
 
-        private async Task<bool> DoZipVerification(string inputFile, CancellationToken token)
+        async Task<bool> TryCheckZipVerification(string ZipPath, string ZipHash, CancellationToken token)
+        {
+            if (await DoZipVerification(ZipPath, ZipHash.ToLower(), token))
+                return true;
+
+            switch (await Dialog_GameInstallationFileCorrupt(Content, ZipHash, GameZipLocalHash))
+            {
+                case ContentDialogResult.Primary:
+                    new FileInfo(ZipPath).Delete();
+                    return false;
+                case ContentDialogResult.None:
+                    CancelInstallationDownload();
+                    throw new OperationCanceledException();
+            }
+
+            return false;
+        }
+
+        private async Task<bool> DoZipVerification(string inputFile, string inputHash, CancellationToken token)
         {
             DispatcherQueue.TryEnqueue(() => ProgressTimeLeft.Visibility = Visibility.Collapsed);
 
-            if (File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_noverification"))) return true;
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(inputFile), "_noverification"))) return true;
 
             if (File.Exists(inputFile))
             {
-                fileHash = await Task.Run(() => GetMD5FromFile(inputFile, token));
-                if (fileHash == fileDownloadHash.ToLower())
+                GameZipLocalHash = await Task.Run(() => GetMD5FromFile(inputFile, token));
+                if (GameZipLocalHash == inputHash)
                 {
                     LogWriteLine();
                     LogWriteLine($"Downloaded game installation is verified and Ready to be extracted!");
@@ -534,7 +604,7 @@ namespace CollapseLauncher.Pages
                 else
                 {
                     LogWriteLine();
-                    LogWriteLine($"Downloaded game installation is corrupted!\r\n\tServer Hash: {fileDownloadHash}\r\n\tDownloaded Hash: {fileHash}", Hi3Helper.LogType.Error);
+                    LogWriteLine($"Downloaded game installation is corrupted!\r\n\tServer Hash: {inputHash.ToLower()}\r\n\tDownloaded Hash: {GameZipLocalHash}", Hi3Helper.LogType.Error);
                     return false;
                 }
             }
@@ -551,8 +621,6 @@ namespace CollapseLauncher.Pages
         string InstallExtractSizeString, ExtractSizeString, InstallExtractSpeedString;
         private void ExtractDownloadedGame(string sourceFile, string destinationFolder, CancellationToken token)
         {
-            destinationFolder = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName);
-
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
@@ -567,7 +635,8 @@ namespace CollapseLauncher.Pages
                 switch (Path.GetExtension(sourceFile).ToLower())
                 {
                     case ".7z":
-                        sevenZip.Load(sourceFile);
+                        sevenZip.LoadAuto7Zip(sourceFile);
+                        // sevenZip.LoadLegacy(sourceFile);
 
                         sevenZip.ExtractProgressChanged += ExtractProgress;
                         sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
@@ -625,7 +694,7 @@ namespace CollapseLauncher.Pages
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    ProgressStatusTitle.Text = "Verifying";
+                    ProgressStatusTitle.Text = "Verifying Package";
                 });
             }
 
@@ -686,37 +755,62 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task<bool> CheckExistingDownload(string fileOutput)
+        private bool IsPackageDownloadCompleted(string filePath, long fileSize)
         {
-            FileInfo fileInfo = new FileInfo($"{fileOutput}.001");
+            FileInfo fileInfo = new FileInfo($"{filePath}");
+            FileInfo fileInfoPartial = new FileInfo($"{filePath}.001");
 
             if (fileInfo.Exists)
+                if ((DownloadedSize += fileInfo.Length) != fileSize)
+                    return false;
+                else
+                    return true;
+
+            if (fileInfoPartial.Exists)
+                if ((DownloadedSize += GetExistingPartialDownloadLength(filePath)) != fileSize)
+                    return false;
+                else
+                    return true;
+
+            return false;
+        }
+
+        private async Task<bool> CheckExistingDownload(string fileOutput, string fileUrl)
+        {
+            TotalPackageDownloadSize = 0;
+            DownloadedSize = 0;
+
+            bool case1 = IsPackageDownloadCompleted(fileOutput, TotalPackageDownloadSize += new HttpClientToolLegacy().GetContentLength(fileUrl) ?? 0);
+            bool case2 = IsGameHasVoicePack ? IsPackageDownloadCompleted(GameZipVoicePath, TotalPackageDownloadSize += GameZipVoiceSize) : true;
+
+            if (!(case1 && case2))
             {
-                long contentLength = new HttpClientTool().GetContentLength(fileURL) ?? 0;
-                long partialLength = GetExistingPartialDownloadLength(fileOutput);
-                if (partialLength != contentLength)
-                {
-                    switch (await Dialog_ExistingDownload(Content, partialLength, contentLength))
-                    {
-                        case ContentDialogResult.Primary:
-                            break;
-                        case ContentDialogResult.Secondary:
-                            RemoveExistingPartialDownload(fileOutput);
-                            break;
-                    }
+                if (DownloadedSize == 0)
                     return true;
-                }
-                else if (partialLength == contentLength && !File.Exists(fileOutput))
+
+                switch (await Dialog_ExistingDownload(Content, DownloadedSize, TotalPackageDownloadSize))
                 {
-                    return true;
+                    case ContentDialogResult.Primary:
+                        break;
+                    case ContentDialogResult.Secondary:
+                        RemoveExistingPartialDownload(fileOutput);
+                        if (File.Exists(fileOutput))
+                            File.Delete(fileOutput);
+
+                        if (IsGameHasVoicePack)
+                        {
+                            RemoveExistingPartialDownload(GameZipVoicePath);
+                            if (File.Exists(GameZipVoicePath))
+                                File.Delete(GameZipVoicePath);
+                        }
+                        break;
                 }
+                return true;
             }
-            else if (File.Exists(fileOutput))
+            else
             {
                 return false;
             }
-
-            return true;
         }
 
         void RemoveExistingPartialDownload(string fileOutput)
@@ -756,7 +850,7 @@ namespace CollapseLauncher.Pages
                 ProgressStatusFooter.Text = $"Speed: {InstallDownloadSpeedString}";
                 ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
                 progressRing.Value = Math.Round(e.ProgressPercentage, 2);
-                ProgressStatusTitle.Text = e.DownloadState.ToString();
+                ProgressStatusTitle.Text = string.Format(ProgressStatusTitleName, e.DownloadState.ToString());
             });
         }
 
@@ -846,7 +940,8 @@ namespace CollapseLauncher.Pages
                 InstallGameBtn.Visibility = Visibility.Visible;
                 CancelDownloadBtn.Visibility = Visibility.Collapsed;
 
-                OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                // OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             });
         }
 
@@ -864,13 +959,13 @@ namespace CollapseLauncher.Pages
                     switch (await Dialog_InstallationLocation(Content))
                     {
                         case ContentDialogResult.Primary:
-                            returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                            returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
                             isChoosen = true;
                             break;
                         case ContentDialogResult.Secondary:
                             folder = null;
                             folderPicker.FileTypeFilter.Add("*");
-                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
+                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, AppConfig.m_windowHandle);
                             folder = await folderPicker.PickSingleFolderAsync();
 
                             if (folder != null)
@@ -890,8 +985,6 @@ namespace CollapseLauncher.Pages
             {
                 throw new TaskCanceledException();
             }
-            catch
-            { }
 
             return returnFolder;
         }
@@ -913,7 +1006,7 @@ namespace CollapseLauncher.Pages
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentRegion.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
-                if (!CurrentRegion.IsGenshin ?? false)
+                if (!(CurrentRegion.IsGenshin ?? false))
                 {
                     proc.StartInfo.Arguments = await Hi3Helper.Shared.Region.GameSettingsManagement.GetLaunchArguments();
                     LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
@@ -944,8 +1037,16 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
                 try
                 {
-                    AppConfig._presenter.Minimize();
-                    using (FileStream fs = new FileStream($"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt",
+                    AppConfig.m_presenter.Minimize();
+                    string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt";
+
+                    if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                    
+                    if (!File.Exists(logPath))
+                        File.Create(logPath).Close();
+
+                    using (FileStream fs = new FileStream(logPath,
                             FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
                         using (StreamReader reader = new StreamReader(fs))
@@ -972,7 +1073,7 @@ namespace CollapseLauncher.Pages
                 catch (OperationCanceledException)
                 {
                     LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
-                    AppConfig._presenter.Restore();
+                    AppConfig.m_presenter.Restore();
                 }
                 catch (Exception ex)
                 {
@@ -985,7 +1086,8 @@ namespace CollapseLauncher.Pages
         {
             MigrationWatcher.IsMigrationRunning = false;
             PageToken.Cancel();
-            CancelInstallationDownload();
+            // CancelInstallationDownload();
+            InstallerDownloadTokenSource.Cancel();
             // WatchOutputLog.Cancel();
         }
 
@@ -1026,7 +1128,11 @@ namespace CollapseLauncher.Pages
             switch (await Dialog_UninstallGame(Content, GameFolder, CurrentRegion.ZoneName))
             {
                 case ContentDialogResult.Primary:
-                    Directory.Delete(GameFolder, true);
+                    try
+                    {
+                        Directory.Delete(GameFolder, true);
+                    }
+                    catch { }
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                     break;
                 default:
@@ -1034,49 +1140,118 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public string GetUpdateDiffs()
+        public RegionResourceVersion GetUpdateDiffs(bool isPredownload = false)
         {
-            if (CurrentRegion.IsGenshin ?? false)
+            RegionResourceVersion diff;
+            try
             {
-                string oldVer;
-                if ((oldVer = gameIni.Config["General"]["game_version"].ToString()) == null)
-                {
-                    fileDownloadHash = regionResourceProp.data.game.latest.md5;
-                    return regionResourceProp.data.game.latest.path;
-                }
+                if (isPredownload)
+                    diff = regionResourceProp.data.pre_download_game.diffs
+                            .Where(x => x.version == gameIni.Config["General"]["game_version"].ToString())
+                            .First();
                 else
-                {
-                    fileDownloadHash = regionResourceProp.data.game.diffs.Where(x => x.version == oldVer).ToList()[0].md5;
-                    return regionResourceProp.data.game.diffs.Where(x => x.version == oldVer).ToList()[0].path;
-                }
+                    diff = regionResourceProp.data.game.diffs
+                            .Where(x => x.version == gameIni.Config["General"]["game_version"].ToString())
+                            .First();
+            }
+            catch
+            {
+                if (isPredownload)
+                    diff = regionResourceProp.data.pre_download_game.latest;
+                else
+                    diff = regionResourceProp.data.game.latest;
             }
 
-            fileDownloadHash = regionResourceProp.data.game.latest.md5;
-            return regionResourceProp.data.game.latest.path;
+            return diff;
+        }
+
+
+        private void InstallToolStatus(object sender, InstallManagementStatus e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                ProgressStatusTitle.Text = e.StatusTitle;
+                progressPerFile.Visibility = e.IsPerFile ? Visibility.Visible : Visibility.Collapsed;
+
+                progressRing.IsIndeterminate = e.IsIndetermined;
+                progressRingPerFile.IsIndeterminate = e.IsIndetermined;
+            });
+        }
+
+        private void InstallToolProgress(object sender, InstallManagementProgress e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressRing.Value = e.ProgressPercentage;
+                progressRingPerFile.Value = e.ProgressPercentagePerFile;
+                ProgressStatusSubtitle.Text = $"{SummarizeSizeSimple(e.ProgressDownloadedSize)} / {SummarizeSizeSimple(e.ProgressTotalSizeToDownload)}";
+                ProgressStatusFooter.Text = $"Speed: {SummarizeSizeSimple(e.ProgressSpeed)}";
+                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
+            });
         }
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
+            InstallerDownloadTokenSource = new CancellationTokenSource();
+            CancellationToken token = InstallerDownloadTokenSource.Token;
+
             if (CurrentRegion.UseRightSideProgress ?? false)
                 await HideImageCarousel(true);
 
-            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            fileURL = GetUpdateDiffs();
-            fileOutput = Path.Combine(GamePath, "..\\", Path.GetFileName(fileURL));
+            GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
 
-            GetUpdateDiffs();
+            RegionResourceVersion diff = GetUpdateDiffs();
+            InstallTool = new InstallManagement(DownloadType.Update,
+                                GameDirPath,
+                                appIni.Profile["app"]["DownloadThread"].ToInt(),
+                                Environment.ProcessorCount,
+                                token,
+                                CurrentRegion.IsGenshin ?? false ?
+                                    regionResourceProp.data.game.latest.decompressed_path :
+                                    null,
+                                regionResourceProp.data.game.latest.version,
+                                CurrentRegion.ProtoDispatchKey,
+                                CurrentRegion.GetRegServerNameID(),
+                                Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+
+            GameZipUrl = diff.path;
+            GameZipRemoteHash = diff.md5.ToLower();
+            GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
+            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash);
+
+            TryAddVoicePack(GetUpdateDiffs(false));
+
+            if (IsGameHasVoicePack)
+            {
+                GameZipVoiceUrl = VoicePackFile.path;
+                GameZipVoiceRemoteHash = VoicePackFile.md5;
+                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                GameZipVoiceSize = VoicePackFile.package_size;
+                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash);
+            }
 
             try
             {
-                while (!await UpdateGameClient(fileOutput, GamePath))
-                {
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                UpdateGameBtn.Visibility = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
 
+                InstallTool.InstallStatusChanged += InstallToolStatus;
+                InstallTool.InstallProgressChanged += InstallToolProgress;
+                bool RetryRoutine = true;
+
+                await InstallTool.CheckExistingDownloadAsync(Content);
+
+                while (RetryRoutine)
+                {
+                    await InstallTool.StartDownloadAsync();
+                    RetryRoutine = await InstallTool.StartVerificationAsync(Content);
                 }
 
-                if (!File.Exists(Path.Combine(Path.GetDirectoryName(fileOutput), "_test")))
-                    File.Delete(fileOutput);
+                await InstallTool.StartInstallAsync();
+                await InstallTool.FinalizeInstallationAsync(Content);
 
-                ApplyGameConfig(Path.GetDirectoryName(GamePath));
+                ApplyGameConfig(GameDirPath);
                 OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
             catch (OperationCanceledException)
@@ -1090,86 +1265,289 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        /*
+        private async void UpdateGameDialog(object sender, RoutedEventArgs e)
+        {
+            if (CurrentRegion.UseRightSideProgress ?? false)
+                await HideImageCarousel(true);
+
+            RegionResourceVersion diff = GetUpdateDiffs();
+
+            GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+
+            GameZipUrl = diff.path;
+            GameZipRemoteHash = diff.md5.ToLower();
+            GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
+
+            TryAddVoicePack(GetUpdateDiffs(false));
+
+            if (IsGameHasVoicePack)
+            {
+                GameZipVoiceUrl = VoicePackFile.path;
+                GameZipVoiceRemoteHash = VoicePackFile.md5;
+                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                GameZipVoiceSize = VoicePackFile.package_size;
+            }
+
+            try
+            {
+                while (!await UpdateGameClient(GameZipPath, GameDirPath)) { }
+
+                if (!File.Exists(Path.Combine(GameDirPath, "_test")))
+                {
+                    File.Delete(GameZipPath);
+                    if (IsGameHasVoicePack)
+                        File.Delete(GameZipVoicePath);
+                }
+
+                ApplyGameConfig(GameDirPath);
+                OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+            }
+            catch (OperationCanceledException)
+            {
+                LogWriteLine($"Update cancelled!", Hi3Helper.LogType.Warning);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Update error! {ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
+        }
+        */
+
         private async Task<bool> UpdateGameClient(string sourceFile, string GamePath)
         {
             bool returnVal = true;
-            fileOutput = Path.Combine(gamePath, Path.GetFileName(fileURL));
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressRing.Value = 0;
+                progressRing.IsIndeterminate = false;
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                UpdateGameBtn.Visibility = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility = Visibility.Visible;
+            });
+
+            InstallerDownloadTokenSource = new CancellationTokenSource();
+            CancellationToken token = InstallerDownloadTokenSource.Token;
+
+            InstallerHttpClient = new HttpClientToolLegacy();
+
+            InstallerHttpClient.PartialProgressChanged += InstallerDownloadStatusChanged;
+            InstallerHttpClient.Completed += InstallerDownloadStatusCompleted;
+
+            if (await CheckExistingDownload(sourceFile, GameZipUrl))
+            {
+                ProgressStatusTitleName = "{0} Update" + (IsGameHasVoicePack ? " (1/2)" : "");
+                LogWriteLine($"Download URL: {GameZipUrl}");
+
+                if (!File.Exists(GameZipPath))
+                    await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipUrl, sourceFile, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+
+                if (IsGameHasVoicePack)
+                {
+                    ProgressStatusTitleName = "{0} Update (2/2)";
+                    LogWriteLine($"Download Voice Pack URL: {GameZipVoiceUrl}");
+
+                    if (!File.Exists(GameZipVoicePath))
+                        await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipVoiceUrl, GameZipVoicePath, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+                }
+            }
+
+            InstallerHttpClient.PartialProgressChanged -= InstallerDownloadStatusChanged;
+            InstallerHttpClient.Completed -= InstallerDownloadStatusCompleted;
+
+            if (await TryCheckZipVerification(sourceFile, GameZipRemoteHash.ToLower(), token)
+                && IsGameHasVoicePack ? await TryCheckZipVerification(GameZipVoicePath, GameZipVoiceRemoteHash.ToLower(), token) : true)
+            {
+                await Task.Run(() =>
+                {
+                    if (!File.Exists(Path.Combine(GamePath, "_noextraction")))
+                    {
+                        ExtractDownloadedGame(sourceFile, GamePath, token);
+                        if (IsGameHasVoicePack)
+                            ExtractDownloadedGame(GameZipVoicePath, GamePath, token);
+                    }
+
+                    if (CurrentRegion.IsGenshin ?? false)
+                    {
+                        ApplyDeltaPatch(GamePath);
+                        CleanUpAssetsGenshin(GamePath);
+                        PostInstallVerificationGenshin(GamePath, regionResourceProp.data.game.latest.decompressed_path, token);
+                    }
+                    else
+                    {
+                        CleanUpAssets(GamePath);
+                    }
+                });
+            }
+            else
+                returnVal = false;
+
+            return returnVal;
+        }
+
+        void BuildManifestList(string manifestPath, in List<PkgVersionProperties> listInput)
+        {
+            Span<string> _data = File.ReadAllLines(manifestPath);
+            foreach (string data in _data)
+                listInput.Add(JsonConvert.DeserializeObject<PkgVersionProperties>(data));
+        }
+
+        public void PostInstallVerificationGenshin(string GamePath, string RemoteBasePath, CancellationToken token)
+        {
+            FileInfo LocalFileInfo;
+            FileStream LocalStream;
+            string RemotePath, FilePath, LocalHash, ManifestPath = Path.Combine(GamePath, "pkg_version");
+
+            if (!File.Exists(ManifestPath))
+                new HttpClientToolLegacy(false).DownloadFile(RemoteBasePath + "/pkg_version", ManifestPath);
+
+            List<PkgVersionProperties> fileProp = new List<PkgVersionProperties>();
+            List<PkgVersionProperties> BrokenFiles = new List<PkgVersionProperties>();
+
+            BuildManifestList(ManifestPath, fileProp);
+            if (IsGameHasVoicePack)
+                foreach (string AudioPackPath in Directory.GetFiles(GamePath, "Audio_*_pkg_version"))
+                    BuildManifestList(AudioPackPath, fileProp);
+
+            long TotalManifestedSize = fileProp.Sum(x => x.fileSize), Read = 0, Speed = 0;
+
             DispatcherQueue.TryEnqueue(() =>
             {
                 progressRing.Value = 0;
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressStatusFooter.Visibility = Visibility.Visible;
+                CancelDownloadBtn.IsEnabled = true;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
-                ProgressStatusTitle.Text = "Updating";
+                ProgressStatusTitle.Text = "Verifying Integrity";
             });
 
-            InstallerDownloadTokenSource = new CancellationTokenSource();
-            CancellationToken token = InstallerDownloadTokenSource.Token;
+            PostInstallCheck InstallCheckTool = new PostInstallCheck(GamePath, fileProp, Environment.ProcessorCount, token);
+            InstallCheckTool.PostInstallCheckChanged += InstallCheckTool_PostInstallCheckChanged;
+            BrokenFiles = InstallCheckTool.StartCheck();
+            InstallCheckTool.PostInstallCheckChanged -= InstallCheckTool_PostInstallCheckChanged;
 
-            InstallerHttpClient = new HttpClientTool();
-
-            InstallerHttpClient.PartialProgressChanged += InstallerDownloadStatusChanged;
-            InstallerHttpClient.Completed += InstallerDownloadStatusCompleted;
-
-            if (await CheckExistingDownload(sourceFile))
+            if (BrokenFiles.Count > 0)
             {
-                LogWriteLine($"Download URL: {fileURL}");
-                await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, sourceFile, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
-            }
+                ManifestedBrokenSw = Stopwatch.StartNew();
 
-            InstallerHttpClient.PartialProgressChanged -= InstallerDownloadStatusChanged;
-            InstallerHttpClient.Completed -= InstallerDownloadStatusCompleted;
+                TotalManifestedBrokenSize = BrokenFiles.Sum(x => x.fileSize);
+                ManifestedBrokenRead = 0;
 
-            if (await DoZipVerification(sourceFile, token))
-            {
-                await Task.Run(() => ExtractDownloadedGame(sourceFile, Path.Combine(GamePath, "..\\"), token));
-                if (CurrentRegion.IsGenshin ?? false)
+                DispatcherQueue.TryEnqueue(() =>
                 {
-                    await Task.Run(() => ApplyDeltaPatch(GamePath));
-                    await Task.Run(() => CleanUpAssetsGenshin(GamePath));
-                }
-                else
-                {
-                    await CleanUpAssets(GamePath);
-                }
-            }
-            else
-            {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
-                {
-                    case ContentDialogResult.Primary:
-                        new FileInfo(fileOutput).Delete();
-                        returnVal = false;
-                        break;
-                    case ContentDialogResult.None:
-                        CancelInstallationDownload();
-                        throw new OperationCanceledException();
-                }
-            }
+                    progressRing.Value = 0;
+                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    UpdateGameBtn.Visibility = Visibility.Collapsed;
+                    CancelDownloadBtn.Visibility = Visibility.Visible;
+                    ProgressStatusFooter.Visibility = Visibility.Visible;
+                    CancelDownloadBtn.IsEnabled = true;
+                    ProgressTimeLeft.Visibility = Visibility.Visible;
+                    ProgressStatusTitle.Text = "Repairing Files";
+                });
 
-            return returnVal;
+                foreach (PkgVersionProperties dat in BrokenFiles)
+                {
+                    RemotePath = string.Format("{0}/{1}", RemoteBasePath, dat.remoteName);
+                    FilePath = Path.Combine(GamePath, NormalizePath(dat.remoteName));
+
+                    if (!Directory.Exists(Path.GetDirectoryName(FilePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
+
+                    // Use Partial Downloader for files > 50 MB in size
+                    if (dat.fileSize > 0x2FFFFFF)
+                    {
+                        InstallerHttpClient.PartialProgressChanged += RedownloadBrokenGenshinFilesPartialProgress;
+                        InstallerHttpClient.DownloadFileMultipleSession(RemotePath, FilePath, "", GetAppConfigValue("DownloadThread").ToInt(), token);
+                        InstallerHttpClient.PartialProgressChanged -= RedownloadBrokenGenshinFilesPartialProgress;
+                    }
+                    else
+                    {
+                        InstallerHttpClient.ProgressChanged += RedownloadBrokenGenshinFilesProgress;
+                        InstallerHttpClient.DownloadStream(RemotePath, LocalStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write), token);
+                        InstallerHttpClient.ProgressChanged -= RedownloadBrokenGenshinFilesProgress;
+                        LocalStream.Dispose();
+                    }
+                }
+
+                ManifestedBrokenSw.Stop();
+            }
         }
 
-        class PatchEntryProp
+        private void InstallCheckTool_PostInstallCheckChanged(object sender, PostInstallCheckProp e)
         {
-            public string remoteName { get; set; }
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressRing.Value = GetPercentageNumber(e.TotalReadSize, e.TotalCheckSize);
+                ProgressStatusSubtitle.Text = string.Format("{0} / {1}", SummarizeSizeSimple(e.TotalReadSize), SummarizeSizeSimple(e.TotalCheckSize));
+                ProgressStatusFooter.Text = string.Format("Speed: {0}/s", SummarizeSizeSimple(e.CurrentSpeed));
+                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((e.TotalReadSize - e.TotalCheckSize) / e.CurrentSpeed));
+            });
+        }
+
+        long TotalManifestedBrokenSize, ManifestedBrokenRead;
+        Stopwatch ManifestedBrokenSw;
+
+        private void RedownloadBrokenGenshinFilesProgress(object sender, DownloadProgressChanged e)
+        {
+            ManifestedBrokenRead += e.CurrentReceived;
+            long Speed = (long)(ManifestedBrokenRead / ManifestedBrokenSw.Elapsed.TotalSeconds);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressRing.Value = GetPercentageNumber(ManifestedBrokenRead, TotalManifestedBrokenSize);
+                ProgressStatusSubtitle.Text = string.Format("{0} / {1}", SummarizeSizeSimple(ManifestedBrokenRead), SummarizeSizeSimple(TotalManifestedBrokenSize));
+                ProgressStatusFooter.Text = string.Format("Speed: {0}/s", SummarizeSizeSimple(Speed));
+                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((ManifestedBrokenRead - TotalManifestedBrokenSize) / Speed));
+            });
+        }
+
+        private void RedownloadBrokenGenshinFilesPartialProgress(object sender, PartialDownloadProgressChanged e)
+        {
+            if (e.DownloadState == DownloadState.Downloading)
+            {
+                ManifestedBrokenRead += e.CurrentReceived;
+                long Speed = (long)(ManifestedBrokenRead / ManifestedBrokenSw.Elapsed.TotalSeconds);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    progressRing.Value = GetPercentageNumber(ManifestedBrokenRead, TotalManifestedBrokenSize);
+                    ProgressStatusSubtitle.Text = string.Format("{0} / {1}", SummarizeSizeSimple(ManifestedBrokenRead), SummarizeSizeSimple(TotalManifestedBrokenSize));
+                    ProgressStatusFooter.Text = string.Format("Speed: {0}/s", SummarizeSizeSimple(Speed));
+                    ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((ManifestedBrokenRead - TotalManifestedBrokenSize) / Speed));
+                });
+            }
         }
 
         public void CleanUpAssetsGenshin(string GamePath)
         {
-            string listPath = Path.Combine(GamePath, "deletefiles.txt"),
-                   filePath;
-
-            string[] list = File.ReadAllLines(listPath);
-            foreach (string line in list)
+            try
             {
-                filePath = Path.Combine(GamePath, NormalizePath(line));
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
-            }
+                string listPath = Path.Combine(GamePath, "deletefiles.txt"),
+                       filePath;
 
-            File.Delete(listPath);
+                string[] list = File.ReadAllLines(listPath);
+                foreach (string line in list)
+                {
+                    filePath = Path.Combine(GamePath, NormalizePath(line));
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                }
+
+                File.Delete(listPath);
+
+                IEnumerable<string> fileList = Directory.GetFiles(GamePath, "*.*", SearchOption.AllDirectories)
+                    .Where(x => x.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
+                             || x.EndsWith("_tmp", StringComparison.OrdinalIgnoreCase));
+
+                foreach (string del in fileList)
+                    File.Delete(del);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while doing cleanup! Ignoring...\r\n{ex}", Hi3Helper.LogType.Warning, true);
+            }
         }
 
         public void ApplyDeltaPatch(string GamePath)
@@ -1182,6 +1560,7 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 progressRing.Value = 0;
+                CancelDownloadBtn.IsEnabled = false;
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Collapsed;
                 ProgressStatusFooter.Visibility = Visibility.Collapsed;
@@ -1190,7 +1569,7 @@ namespace CollapseLauncher.Pages
 
             HPatchUtil patchUtil = new HPatchUtil();
 
-            PatchEntryProp entry;
+            PkgVersionProperties entry;
 
             if (File.Exists(patchListPath))
             {
@@ -1198,7 +1577,7 @@ namespace CollapseLauncher.Pages
                 int count = 0;
                 foreach (string line in list)
                 {
-                    entry = JsonConvert.DeserializeObject<PatchEntryProp>(line);
+                    entry = JsonConvert.DeserializeObject<PkgVersionProperties>(line);
                     inputFilePath = Path.Combine(GamePath, NormalizePath(entry.remoteName));
                     patchFilePath = inputFilePath + ".hdiff";
                     outputFilePath = inputFilePath + "_tmp";
@@ -1209,15 +1588,22 @@ namespace CollapseLauncher.Pages
                         ProgressStatusSubtitle.Text = $"{count} / {list.Length} files";
                     });
 
-                    if (File.Exists(inputFilePath) && File.Exists(outputFilePath) || File.Exists(inputFilePath))
+                    try
                     {
-                        if (File.Exists(patchFilePath))
+                        if (File.Exists(inputFilePath) && File.Exists(outputFilePath) || File.Exists(inputFilePath))
                         {
-                            patchUtil.HPatchFile(inputFilePath, patchFilePath, outputFilePath);
-                            File.Delete(patchFilePath);
-                            File.Delete(inputFilePath);
-                            File.Move(outputFilePath, inputFilePath);
+                            if (File.Exists(patchFilePath))
+                            {
+                                patchUtil.HPatchFile(inputFilePath, patchFilePath, outputFilePath);
+                                File.Delete(patchFilePath);
+                                File.Delete(inputFilePath);
+                                File.Move(outputFilePath, inputFilePath);
+                            }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", Hi3Helper.LogType.Warning, true);
                     }
 
                     count++;
@@ -1227,28 +1613,48 @@ namespace CollapseLauncher.Pages
             File.Delete(patchListPath);
         }
 
+        private void TryAddVoicePack(in RegionResourceVersion diffVer)
+        {
+            if (diffVer.voice_packs != null
+                && diffVer.voice_packs.Count > 0)
+            {
+                IsGameHasVoicePack = true;
+                VoicePackFile = diffVer.voice_packs[CurrentRegion.GetVoiceLanguageID()];
+                return;
+            }
+            LogWriteLine($"This {CurrentRegion.ProfileName} region doesn't have Voice Pack");
+            IsGameHasVoicePack = false;
+        }
+
         private async void PredownloadDialog(object sender, RoutedEventArgs e)
         {
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             NotificationBar.IsClosable = false;
+            RegionResourceVersion diffVer = GetUpdateDiffs(true);
 
-            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            fileURL = regionResourceProp.data.pre_download_game.latest.path;
-            fileDownloadHash = regionResourceProp.data.pre_download_game.latest.md5;
-            string GameZipPath = Path.Combine(GamePath, "..\\", Path.GetFileName(fileURL));
+            GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            GameZipUrl = diffVer.path;
+            GameZipRemoteHash = diffVer.md5.ToLower();
+
+            TryAddVoicePack(diffVer);
+
+            if (IsGameHasVoicePack)
+            {
+                GameZipVoiceUrl = VoicePackFile.path;
+                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                GameZipVoiceRemoteHash = VoicePackFile.md5.ToLower();
+                GameZipVoiceSize = VoicePackFile.package_size;
+            }
+
+            string GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
 
             try
             {
-                while (!await DownloadPredownload(GameZipPath, GamePath))
-                {
-
-                }
+                while (!await DownloadPredownload(GameZipPath, GameDirPath)) { }
 
                 if (IsCheckPreIntegrity)
-                {
-                    await Dialog_PreDownloadPackageVerified(Content, fileHash);
-                }
+                    await Dialog_PreDownloadPackageVerified(Content, GameZipLocalHash);
 
                 OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
@@ -1266,20 +1672,31 @@ namespace CollapseLauncher.Pages
             {
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                NotificationBar.Title = "Downloading Pre-Download";
+                NotificationBar.Message = "Necessary Package";
             });
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
 
-            InstallerHttpClient = new HttpClientTool();
+            InstallerHttpClient = new HttpClientToolLegacy();
 
             InstallerHttpClient.PartialProgressChanged += InstallerDownloadPreStatusChanged;
             InstallerHttpClient.Completed += InstallerDownloadPreStatusCompleted;
 
-            if (await CheckExistingDownload(sourceFile))
+            if (await CheckExistingDownload(sourceFile, GameZipUrl))
             {
-                LogWriteLine($"Pre-download Link: {fileURL}");
-                await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(fileURL, sourceFile, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+                LogWriteLine($"Pre-download Link: {GameZipUrl}");
+                if (!File.Exists(sourceFile))
+                    await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipUrl, sourceFile, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+
+                if (IsGameHasVoicePack)
+                {
+                    LogWriteLine($"Download Voice Pack URL: {GameZipVoiceUrl}");
+                    DispatcherQueue.TryEnqueue(() => ProgressStatusTitle.Text = "Updating Voice Pack");
+                    if (!File.Exists(GameZipVoicePath))
+                        await Task.Run(() => InstallerHttpClient.DownloadFileMultipleSession(GameZipVoiceUrl, GameZipVoicePath, "", appIni.Profile["app"]["DownloadThread"].ToInt(), token));
+                }
             }
 
             InstallerHttpClient.PartialProgressChanged -= InstallerDownloadPreStatusChanged;
@@ -1292,62 +1709,44 @@ namespace CollapseLauncher.Pages
                 PauseDownloadPreBtn.IsEnabled = false;
             });
 
-            if (!await DoZipVerification(sourceFile, token))
-            {
-                switch (await Dialog_GameInstallationFileCorrupt(Content, fileDownloadHash, fileHash))
-                {
-                    case ContentDialogResult.Primary:
-                        new FileInfo(fileOutput).Delete();
-                        returnVal = false;
-                        break;
-                    case ContentDialogResult.None:
-                        CancelInstallationDownload();
-                        throw new OperationCanceledException();
-                }
-            }
+            if (await TryCheckZipVerification(sourceFile, GameZipRemoteHash.ToLower(), token)
+                && IsGameHasVoicePack ? await TryCheckZipVerification(GameZipVoicePath, GameZipVoiceRemoteHash.ToLower(), token) : true)
+                returnVal = true;
 
             return returnVal;
         }
 
-        private async Task CleanUpAssets(string GamePath)
+        private void CleanUpAssets(string GamePath)
         {
             List<string> unusedFiles = new List<string>();
             BlockData blockUtil = new BlockData();
 
-            PresetConfigClasses gameProp = new PresetConfigClasses
-            {
-                ActualGameDataLocation = GamePath
-            };
-
             string xmfPath = Path.Combine(GamePath, @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf");
 
-            DispatcherQueue.TryEnqueue(() => {
+            DispatcherQueue.TryEnqueue(() =>
+            {
                 ProgressStatusTitle.Text = "Clean up";
                 ProgressStatusFooter.Visibility = Visibility.Collapsed;
                 ProgressTimeLeft.Visibility = Visibility.Collapsed;
             });
 
             int i = 0;
+            blockUtil.Init(new FileStream(xmfPath, FileMode.Open, FileAccess.Read), XMFFileFormat.XMF);
+            blockUtil.CheckForUnusedBlocks(Path.GetDirectoryName(xmfPath));
+            unusedFiles = blockUtil.GetListOfBrokenBlocks(Path.GetDirectoryName(xmfPath));
+            unusedFiles.AddRange(Directory.EnumerateFiles(Path.GetDirectoryName(xmfPath), "Blocks_*.xmf"));
 
-            await Task.Run(() =>
+            foreach (string unusedFile in unusedFiles)
             {
-                blockUtil.Init(new FileStream(xmfPath, FileMode.Open, FileAccess.Read), XMFFileFormat.XMF);
-                blockUtil.CheckForUnusedBlocks(Path.GetDirectoryName(xmfPath));
-                unusedFiles = blockUtil.GetListOfBrokenBlocks(Path.GetDirectoryName(xmfPath));
-                unusedFiles.AddRange(Directory.EnumerateFiles(Path.GetDirectoryName(xmfPath), "Blocks_*.xmf"));
-
-                foreach (string unusedFile in unusedFiles)
+                i++;
+                DispatcherQueue.TryEnqueue(() =>
                 {
-                    i++;
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        ProgressStatusSubtitle.Text = $"{i} / {unusedFiles.Count}";
-                        progressRing.Maximum = unusedFiles.Count;
-                        progressRing.Value = i;
-                    });
-                    File.Delete(unusedFile);
-                }
-            });
+                    ProgressStatusSubtitle.Text = $"{i} / {unusedFiles.Count}";
+                    progressRing.Maximum = unusedFiles.Count;
+                    progressRing.Value = i;
+                });
+                File.Delete(unusedFile);
+            }
         }
 
         private async void GameLogWatcher()

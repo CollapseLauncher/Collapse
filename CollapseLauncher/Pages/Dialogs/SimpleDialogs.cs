@@ -22,6 +22,7 @@ using Windows.Storage.Pickers;
 using Hi3Helper.Data;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 
@@ -50,6 +51,17 @@ namespace CollapseLauncher.Dialogs
                        null,
                        ContentDialogButton.Secondary
                    );
+        public static async Task<ContentDialogResult> Dialog_PreDownloadExtraPackageNotif(UIElement Content, long packageSize, long addtSize) =>
+               await SpawnDialog(
+                       "Additional Package is Required!",
+                       "Some additional package will be downloaded. Make sure that your disk space is enough.\r\n"
+                       + "Necessary Package Size: " + SummarizeSizeSimple(packageSize) + "\r\nAdditional Package Size: " + SummarizeSizeSimple(addtSize),
+                       Content,
+                       "Okay",
+                       null,
+                       null,
+                       ContentDialogButton.None
+                   );
 
         public static async Task<ContentDialogResult> Dialog_InstallationLocation(UIElement Content) =>
             await SpawnDialog(
@@ -68,6 +80,28 @@ namespace CollapseLauncher.Dialogs
                     Content,
                     "Okay",
                     null,
+                    null
+                );
+
+        public static async Task<ContentDialogResult> Dialog_AdditionalDownloadNeeded(UIElement Content, long fileSize) =>
+            await SpawnDialog(
+                    "Additional Download is Needed",
+                    $"You have to download atleast {SummarizeSizeSimple(fileSize)} of additional/persistent files. Although you can skip and download it in-game instead."
+                    + "\nDo you want to continue?",
+                    Content,
+                    "Skip",
+                    "Yes, proceed",
+                    null
+                );
+
+        public static async Task<ContentDialogResult> Dialog_AdditionalDownloadCompleted(UIElement Content) =>
+            await SpawnDialog(
+                    "Additional Download is Completed!",
+                    $"Aditional/Persistent Download has been completed! You can now enjoy your game."
+                    + "\nHappy gaming!",
+                    Content,
+                    null,
+                    "Okay (≧▽≦)ﾉ",
                     null
                 );
 
@@ -232,10 +266,22 @@ namespace CollapseLauncher.Dialogs
                     "No, Cancel"
                 );
 
+        public static async Task<ContentDialogResult> Dialog_RedownloadBrokenFilesGenshin(UIElement Content, long fileSize, int fileCount) =>
+            await SpawnDialog(
+                    "Broken Files were Found on Post-Install!",
+                    string.Format("{1} file(s) are broken after post-installation and this may caused by broken files from previous installation."
+                                + "\r\nAt least {0} of data need to be redownloaded. You can ignore this but it will probably break your game.\r\n\r\nDo you want to continue?",
+                                  SummarizeSizeSimple(fileSize), fileCount),
+                    Content,
+                    "No, Ignore it",
+                    "Yes, Redownload",
+                    null
+                );
+
         public static async Task<ContentDialogResult> Dialog_UninstallGame(UIElement Content, string gameLocation, string region) =>
             await SpawnDialog(
                     $"Uninstalling Game: {region}",
-                    string.Format("You are about to uninstall the game in this location:\r\n\r\n {0}\r\n\r\nDo you want to continue?",
+                    string.Format("You are about to uninstall the game in this location:\r\n\r\n{0}\r\n\r\nDo you want to continue?",
                                   gameLocation),
                     Content,
                     null,

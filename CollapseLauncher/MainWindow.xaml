@@ -6,12 +6,60 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+
     <Grid>
-        <Frame x:Name="rootFrame"/>
-        <StackPanel x:Name="CustomTitleBar" VerticalAlignment="Top" Height="46" HorizontalAlignment="Right">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="46"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--<Image Grid.Row="0" Grid.RowSpan="2" x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1"/>-->
+        <Grid x:Name="AppTitleBar"  
+            Height="46">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="SearchColumn" Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="LeftPaddingColumn" Background="Transparent" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <Grid x:Name="TitleColumn" Background="Transparent" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <Grid Background="Transparent" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <Grid Background="Transparent" Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <Grid x:Name="RightDragColumn" HorizontalAlignment="Stretch" Height="46" Background="{StaticResource NavigationBarBrush}" Grid.Row="0" Grid.ColumnSpan="6"/>
+            <TextBlock x:Name="TitleTextBlock" 
+                       Text="Collapse Launcher" 
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Grid.Column="2"
+                       VerticalAlignment="Center"
+                       Margin="12,0,6,0"/>
+            <StackPanel x:Name="RegionChangerPanel" Orientation="Horizontal" Grid.Column="3" Margin="10,0,0,0">
+                <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Margin="0,8,8,0"/>
+                <Button Content="Change" Margin="0,2,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
+                                <Button x:Name="ChangeRegionBtn" Style="{StaticResource AccentButtonStyle}">
+                                    <Button.Content>
+                                        <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
+                                            <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
+                                            <TextBlock >Yes, Change It</TextBlock>
+                                        </Grid>
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel x:Name="CustomTitleBar" VerticalAlignment="Top" Height="48" HorizontalAlignment="Right">
             <Grid Height="46" VerticalAlignment="Stretch">
                 <!--<Grid x:Name="DragArea" Background="Transparent" Width="670" Height="46" CanDrag="True"/>-->
-                <Grid x:Name="DragArea" Background="Transparent" Width="840" Height="46" CanDrag="True"/>
+                <Grid x:Name="DragArea" Background="Transparent" Width="842" Height="40" CanDrag="True"/>
                 <Grid x:Name="TitleBarMinMaxCloseContainer"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top">
@@ -57,5 +105,42 @@
                 </Grid>
             </Grid>
         </StackPanel>
+        <NavigationView x:Name="NavigationViewControl"
+            IsTitleBarAutoPaddingEnabled="False"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="false"
+            Grid.Row="1"
+            Canvas.ZIndex="0" Visibility="Visible"
+            IsPaneOpen="False"
+            Background="{StaticResource NavigationBarBrush}">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Launcher" Tag="launcher"/>
+            </NavigationView.MenuItems>
+            <Grid Margin="0,0,0,0">
+                <!--<Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Image.RenderTransform>
+                        <TranslateTransform />
+                    </Image.RenderTransform>
+                </Image>-->
+                <Frame x:Name="LauncherFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <NavigationThemeTransition/>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+                <Grid x:Name="LoadingPopup" Background="{StaticResource LoadingBrush}" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">
+                        <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+                        <TextBlock x:Name="LoadingTitle" Text="Loading Region" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        <TextBlock x:Name="LoadingFooter" Text=""
+                                   Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0"
+                                   CharacterSpacing="0"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </NavigationView>
+        <Frame x:Name="rootFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1" />
     </Grid>
 </Window>

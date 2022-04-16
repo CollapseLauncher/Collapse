@@ -14,7 +14,7 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Data
 {
     public enum DownloadState { Downloading, Merging }
-    public class HttpClientTool
+    public class HttpClientToolLegacy
     {
         readonly HttpClient httpClient;
         protected Stream localStream;
@@ -40,7 +40,7 @@ namespace Hi3Helper.Data
         string downloadPartialOutputPath, downloadPartialInputPath;
         CancellationToken downloadPartialToken;
 
-        public HttpClientTool(bool IgnoreCompression = false, int maxRetryCount = 5, int maxRetryTimeout = 1000)
+        public HttpClientToolLegacy(bool IgnoreCompression = false, int maxRetryCount = 5, int maxRetryTimeout = 1000)
         {
             this.retryCount = 0;
             this.maxRetryCount = maxRetryCount;

@@ -40,18 +40,21 @@ namespace CollapseLauncher
             MemoryStream memoryStream = new MemoryStream();
             try
             {
-                httpClient = new HttpClientTool();
-                httpClient4Img = new HttpClientTool();
+                httpClient = new HttpClientToolLegacy();
+                httpHelper = new HttpClientHelper(false);
+                httpClient4Img = new HttpClientToolLegacy();
                 regionNewsProp = new HomeMenuPanel();
                 regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
                 regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
 
-                httpClient.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, token);
+                httpHelper.DownloadFile(CurrentRegion.LauncherResourceURL, memoryStream, token);
+                // httpClient.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, token);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 if (CurrentRegion.LauncherInfoURL != null)
                 {
-                    httpClient4Img.DownloadStream(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
+                    httpHelper.DownloadFile(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
+                    // httpClient4Img.DownloadStream(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
                     HDoc infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
                     try
                     {
@@ -66,7 +69,12 @@ namespace CollapseLauncher
                     {
                         regionNewsProp.imageCarouselPanel = GetCarouselPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]);
                     }
-                    catch { }
+                    catch (Exception)
+                    {
+#if DEBUG
+                        LogWriteLine($"This region {CurrentRegion.ZoneName} doesn't have banner to load");
+#endif
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -138,7 +146,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) httpClient4Img.DownloadFile(URL, cachePath);
+            if (!File.Exists(cachePath)) httpHelper.DownloadFile(URL, cachePath, 4, new CancellationToken());
 
             return cachePath;
         }

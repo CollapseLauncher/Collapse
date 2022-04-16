@@ -20,7 +20,7 @@ namespace Hi3Helper.Shared.GameConversion
     {
         private string targetPath;
         private string endpointURL;
-        private HttpClientTool httpClient;
+        private HttpClientToolLegacy httpClient;
         private Stream stream;
         private CancellationTokenSource tokenSource;
         private Stopwatch sw;
@@ -46,7 +46,7 @@ namespace Hi3Helper.Shared.GameConversion
             this.targetPath = targetPath;
             this.endpointURL = endpointURL;
             this.tokenSource = tokenSource;
-            this.httpClient = new HttpClientTool();
+            this.httpClient = new HttpClientToolLegacy();
         }
 
         public void StartCheckIntegrity()

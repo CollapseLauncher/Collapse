@@ -1,7 +1,8 @@
 {
   "profiles": {
     "CollapseLauncher.Updater": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "update"
     },
     "CollapseLauncher.Reindex": {
       "commandName": "Project",

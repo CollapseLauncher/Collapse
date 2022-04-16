@@ -27,7 +27,7 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         ObservableCollection<DataPropertiesUI> brokenCachesListUI = new ObservableCollection<DataPropertiesUI>();
 
-        HttpClientTool httpClient = new HttpClientTool();
+        HttpClientToolLegacy httpClient = new HttpClientToolLegacy();
         Stream cachesStream;
         FileInfo cachesFileInfo;
         string[] cacheRegionalCheckName = new string[1] { "sprite" };

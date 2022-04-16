@@ -15,6 +15,16 @@
                 <StackPanel>
                     <TextBlock Text="Debugging" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <ToggleSwitch Header="Show Console" IsOn="{Binding EnableConsole}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" Toggled="ConsoleToggle"/>
+                    <TextBlock Text="Check Updates" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                        <TextBlock Text="Current Version: " VerticalAlignment="Center" Margin="0,0,0,16"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CheckUpdateBtn" Content="Check Update"/>
+                            <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
+                                <ProgressRing x:Name="ChangeRegionConfirmProgressBar" Width="20" Height="20" IsIndeterminate="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
                     <TextBlock Text="App Files Management" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                     <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
                         <Button Content="Open App Data Folder" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder"/>

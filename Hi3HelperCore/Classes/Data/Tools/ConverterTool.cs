@@ -40,9 +40,10 @@ namespace Hi3Helper.Data
 
         public static string BytesToMD5(byte[] stream) => BytesToHex(MD5.Create().ComputeHash(stream));
 
-        internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        public static string NormalizePath(string i) => 
+            Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
 
-        public static string NormalizePath(string i) => Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
+        internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         public static string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {

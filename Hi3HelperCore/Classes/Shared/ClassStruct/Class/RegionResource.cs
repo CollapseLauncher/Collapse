@@ -24,7 +24,9 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         public string version { get; set; }
         public string path { get; set; }
-        public string size { get; set; }
+        public string decompressed_path { get; set; }
+        public long size { get; set; }
+        public long package_size { get; set; }
         public string md5 { get; set; }
         public string language { get; set; }
         public bool is_recommended_update { get; set; }

@@ -47,7 +47,7 @@ namespace Hi3Helper.Data
          */
         public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
-            HttpClientTool downloader = new HttpClientTool();
+            HttpClientToolLegacy downloader = new HttpClientToolLegacy();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;

@@ -49,7 +49,7 @@ namespace CollapseLauncher.Pages
     {
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
-        HttpClientTool httpClient = new HttpClientTool();
+        HttpClientToolLegacy httpClient = new HttpClientToolLegacy();
         MemoryStream memBuffer; 
         byte[] buffer = new byte[0x400000];
 

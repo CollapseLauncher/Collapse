@@ -20,6 +20,8 @@
 
                     <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
 
+                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintOpacity="1" TintColor="Black" />
+
                     <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
 
                     <AcrylicBrush x:Key="NavigationAcrylicBrush" TintOpacity="0" TintColor="#111111" />
@@ -58,7 +60,9 @@
 
                     <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" />
 
-                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0" TintLuminosityOpacity="0.75" TintColor="#FFFFFF" />
+                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintOpacity="0.0"  TintLuminosityOpacity="0.80"/>
+
+                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0" TintLuminosityOpacity="0.25" TintColor="#FFFFFF" />
 
                     <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Transparent" TintOpacity="0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
 
@@ -66,7 +70,7 @@
 
                     <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="White" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.80" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.75" TintLuminosityOpacity="0.8" FallbackColor="Transparent"/>
 

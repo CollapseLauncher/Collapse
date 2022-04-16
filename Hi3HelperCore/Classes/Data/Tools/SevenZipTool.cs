@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Compression;
 
+using SevenZipExtractor;
+
 using SharpCompress.Archives;
 using SharpCompress.Readers;
 
@@ -16,7 +18,7 @@ using master._7zip.Legacy;
 
 namespace Hi3Helper.Data
 {
-    public enum ArchiveType { SevenZip, Zip }
+    public enum ArchiveType { SevenZip, Zip, AutoLoad7Zip }
     public class SevenZipTool : IDisposable
     {
         class ExtractThreadProp
@@ -41,6 +43,7 @@ namespace Hi3Helper.Data
 
         CArchiveDatabaseEx archiveDB;
         ArchiveReader archiveReader;
+        ArchiveFile archiveReader7Zip;
 
         ZipArchive archiveReaderZip;
 
@@ -51,6 +54,7 @@ namespace Hi3Helper.Data
 
         // Public entity
         public List<CFileItem> archiveEntries;
+        public IList<Entry> archiveEntries7Zip;
         public ReadOnlyCollection<ZipArchiveEntry> archiveEntriesZip;
         public List<CFileItem> failedEntries = new List<CFileItem>();
         public int entriesCount,
@@ -61,8 +65,40 @@ namespace Hi3Helper.Data
                     totalExtractedSize = 0;
 
         bool UseLegacy = false;
+        
+        public void AutoLoad(string inputFile)
+        {
+            switch (Path.GetExtension(inputFile).ToLower())
+            {
+                case ".7z":
+                    LoadAuto7Zip(inputFile);
+                    // LoadLegacy(inputFile);
+                    break;
+                case ".zip":
+                    LoadZip(inputFile);
+                    break;
+                default:
+                    throw new FormatException($"Format {Path.GetExtension(inputFile)} is unsupported!");
+            }
+        }
 
-        public void Load(string inputFile)
+        public void LoadAuto7Zip(string InputFile)
+        {
+            inputFilePath = InputFile;
+            inputFileStream = new FileStream(InputFile, FileMode.Open, FileAccess.Read);
+            archiveReader7Zip = new ArchiveFile(inputFileStream, null, @"Lib\7z.dll");
+            archiveEntries7Zip = archiveReader7Zip.Entries;
+            entriesCount = archiveEntries7Zip.Count();
+            filesCount = archiveEntries7Zip.Sum(x => x.IsFolder ? 0 : 1);
+            foldersCount = entriesCount - filesCount;
+
+            totalUncompressedSize = archiveEntries7Zip.Sum(f => (long)f.Size);
+            totalCompressedSize = archiveEntries7Zip.Sum(f => (long)f.PackedSize);
+
+            inputFileType = ArchiveType.SevenZip;
+        }
+
+        public void LoadLegacy(string inputFile)
         {
             inputFilePath = inputFile;
             inputFileStream = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
@@ -100,6 +136,25 @@ namespace Hi3Helper.Data
             totalCompressedSize = archiveReaderZip.Entries.Sum(x => x.CompressedLength);
 
             inputFileType = ArchiveType.Zip;
+        }
+
+        public long GetUncompressedSize(string inputFile, ArchiveType type = ArchiveType.SevenZip)
+        {
+            inputFilePath = inputFile;
+            inputFileStream = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+
+            switch (Path.GetExtension(inputFile).ToLower())
+            {
+                case ".7z":
+                    // LoadLegacy(inputFile);
+                    LoadAuto7Zip(inputFile);
+                    return totalUncompressedSize;
+                case ".zip":
+                    LoadZip(inputFile);
+                    return totalUncompressedSize;
+                default:
+                    throw new FormatException($"Format {Path.GetExtension(inputFile)} is unsupported!");
+            }
         }
 
         public void Dispose()
@@ -142,14 +197,16 @@ Compressed Size: {5}
 Uncompressed Size: {6}
 Comp. > Uncomp. Ratio: {7}
 
-Initializing...", inputFilePath, outputDirectory, this.thread,
+Initializing...", inputFilePath, outputDirectory,
+                       inputFileType == ArchiveType.AutoLoad7Zip ? $"Auto ({Environment.ProcessorCount})" : $"{this.thread}",
                        filesCount, foldersCount, totalCompressedSize,
                        totalUncompressedSize, $"{(float)((float)totalCompressedSize / totalUncompressedSize) * 100}%"));
 
                 switch (inputFileType)
                 {
                     case ArchiveType.SevenZip:
-                        Start7ZipThreads(outputDirectory, thread, token, alwaysUseLegacy);
+                        StartAuto7ZipThread(outputDirectory, token);
+                        // Start7ZipThreadsLegacy(outputDirectory, thread, token, alwaysUseLegacy);
                         break;
                     case ArchiveType.Zip:
                         StartZipThreads(outputDirectory, thread, token);
@@ -172,6 +229,26 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
                 ts.Milliseconds / 10);
             Console.WriteLine(elapsedTime, "RunTime");
             Console.WriteLine($"Extracted: {extractedCount} | Listed Entry: {filesCount}");
+        }
+
+        private void StartAuto7ZipThread(string OutputDirectory, CancellationToken Token)
+        {
+            stopWatch = Stopwatch.StartNew();
+            string _outPath;
+            archiveReader7Zip.ExtractProgress += ArchiveReaderAuto7ZipAdapter;
+            using (archiveReader7Zip)
+            {
+                archiveReader7Zip.Extract(entry =>
+                {
+                    _outPath = Path.Combine(OutputDirectory, entry.FileName);
+                    return _outPath;
+                }, Token);
+            }
+        }
+
+        private void ArchiveReaderAuto7ZipAdapter(object sender, ArchiveFile.ExtractProgressProp e)
+        {
+            OnProgressChanged(new ExtractProgress(extractedCount, filesCount, (long)e.TotalRead, (long)e.TotalSize, stopWatch.Elapsed.TotalSeconds));
         }
 
         private void StartZipThreads(string outputDirectory, int thread, CancellationToken token)
@@ -204,7 +281,7 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
             fallbackTasks.Clear();
         }
 
-        private void Start7ZipThreads(string outputDirectory, int thread, CancellationToken token, bool alwaysUseLegacy)
+        private void Start7ZipThreadsLegacy(string outputDirectory, int thread, CancellationToken token, bool alwaysUseLegacy)
         {
             List<Task> tasks = new List<Task>();
             List<Task> fallbackTasks = new List<Task>();
@@ -434,28 +511,31 @@ Initializing...", inputFilePath, outputDirectory, this.thread,
 
         private void StartZipThreadChild(string input, string output, ExtractThreadProp j, int threadID, CancellationToken token)
         {
-            string path;
             for (int i = j.start; i <= j.end; i++)
             {
-                path = Path.Combine(output, archiveEntriesZip[i].FullName.Replace('/', '\\'));
-                try
+                string path = Path.Combine(output, archiveEntriesZip[i].FullName.Replace('/', '\\'));
+                using (FileStream localStream = new FileStream(path, FileMode.Create,
+                    FileAccess.Write, FileShare.None))
                 {
-                    using (Stream stream = j.xZip.Entries[i].Open())
-                        WriteStream(stream, new FileStream(path, FileMode.Create, FileAccess.Write), j.xZip.Entries[i].Length, token);
-                }
-                catch (AggregateException ex)
-                {
-                    Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
-                    throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
-                    throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
-                }
-                catch (Exception ex)
-                {
-                    throw new OperationCanceledException($"Unhandled Exception on threadID: {threadID}!", ex);
+                    try
+                    {
+                        using (Stream stream = j.xZip.Entries[i].Open())
+                            WriteStream(stream, localStream, j.xZip.Entries[i].Length, token);
+                    }
+                    catch (AggregateException ex)
+                    {
+                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        Console.WriteLine($"Operation cancelled on threadID: {threadID}!");
+                        throw new OperationCanceledException($"Operation cancelled on threadID: {threadID}!", ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OperationCanceledException($"Unhandled Exception on threadID: {threadID}!", ex);
+                    }
                 }
             }
             j.xZip.Dispose();

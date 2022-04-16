@@ -20,44 +20,51 @@
                 IsHitTestVisible="True"
                 VerticalAlignment="Top"
                 Background="Transparent"
-                Height="40"
+                Height="48"
                 Canvas.ZIndex="1" 
-                Margin="48,8,0,0">
-            <StackPanel Orientation="Horizontal" CanDrag="True">
-                <TextBlock x:Name="AppTitle"
+                Margin="48,4,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                    <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
+                    <ColumnDefinition x:Name="TitleColumn" Width="Auto"/>
+                    <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
+                    <ColumnDefinition x:Name="SearchColumn" Width="Auto"/>
+                    <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
+                    <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="WindowButtonFrameWin11" Background="{ThemeResource SystemAltHighColor}"
+                      Width="8" Height="32" Grid.Column="5" VerticalAlignment="Top"
+                      Margin="323,-4,0,0" CornerRadius="0,0,0,8" Visibility="Collapsed"/>
+                <StackPanel Orientation="Horizontal" CanDrag="True" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
+                    <TextBlock x:Name="AppTitle"
                     Text="Collapse Launcher"
                     VerticalAlignment="Center"
                     Margin="12, 0, 0, 10"
                     Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
-            </StackPanel>
+                    <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="16,4,0,0" Orientation="Horizontal">
+                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+                        <Button Content="Change" Margin="8,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel>
+                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
+                                        <Button x:Name="ChangeRegionBtn" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
+                                            <Button.Content>
+                                                <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
+                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
+                                                    <TextBlock >Yes, Change It</TextBlock>
+                                                </Grid>
+                                            </Button.Content>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </Border>
-        <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="172,8,0,0" Orientation="Horizontal">
-            <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
-            <Button Content="Change" Margin="16,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
-                <Button.Flyout>
-                    <Flyout>
-                        <StackPanel>
-                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
-                            <Button x:Name="ChangeRegionBtn" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
-                                <Button.Content>
-                                    <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
-                                        <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
-                                        <TextBlock >Yes, Change It</TextBlock>
-                                    </Grid>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-            <!--
-            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="16,0,8,0" Style="{StaticResource CaptionTextBlockStyle}" Text="Mirror"/>
-            <ComboBox PlaceholderText="Hi3Mirror" Width="108" VerticalAlignment="Top" HorizontalAlignment="Left">
-                <x:String>Hi3Mirror</x:String>
-                <x:String>miHoYo</x:String>
-            </ComboBox>
-            -->
-        </StackPanel>
         <NavigationView x:Name="NavigationViewControl"
             IsTitleBarAutoPaddingEnabled="False"
             IsBackButtonVisible="Collapsed"

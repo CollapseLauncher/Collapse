@@ -22,12 +22,12 @@
                 <Grid x:Name="FrameGrid" Margin="32,32,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition Height="258"/>
+                        <RowDefinition Height="290"/>
                         <RowDefinition Height="41"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1224*"/>
-                        <ColumnDefinition Width="227"/>
+                        <ColumnDefinition Width="248"/>
                     </Grid.ColumnDefinitions>
                     <InfoBar x:Name="NotificationBar" Background="{StaticResource InfoBarInformationBrush}"
                     IsOpen="False" IsClosable="False"
@@ -134,13 +134,27 @@
                             </FlipView.ItemTemplate>
                         </FlipView>
                     </StackPanel>
-                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="227" Visibility="Collapsed">
+                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
-                        <Grid Width="227" Height="227">
+                        <Grid Width="250" Height="250">
+                            <Grid.ChildrenTransitions>
+                                <PopupThemeTransition/>
+                            </Grid.ChildrenTransitions>
+                            <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
+                                          IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
                             <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
-                            <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="False" HorizontalAlignment="Left" VerticalAlignment="Top" Width="227" Height="227" Maximum="100"/>
+                            <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Maximum="100"/>
+
+                            <Grid x:Name="progressPerFile" Visibility="Collapsed">
+                                <ProgressRing x:Name="progressRingAcrBG2"  Value="{Binding Value, ElementName=progressRingPerFile}"
+                                          IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}" HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" Width="194" Height="194" Maximum="{Binding Maximum, ElementName=progressRingPerFile}"/>
+                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
+                                <ProgressRing x:Name="progressRingPerFile" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="214" Height="214" Maximum="100"/>
+                            </Grid>
                         </Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock x:Name="ProgressStatusTitle"  Text="-" HorizontalAlignment="Center" Margin="0,0,0,10"/>
@@ -150,7 +164,7 @@
                                 <TextBlock Text="%" FontWeight="Bold" Margin="-1,0,0,0"/>
                             </StackPanel>
                             <TextBlock x:Name="ProgressStatusFooter" Text="Speed: -" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10" Margin="0,10,0,0"/>
-                            <TextBlock x:Name="ProgressTimeLeft" Text="- left" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10" Visibility="Collapsed"/>
+                            <TextBlock x:Name="ProgressTimeLeft" Text="- left" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10"/>
                         </StackPanel>
                     </Grid>
                     <Button x:Name="GameStartupSetting"

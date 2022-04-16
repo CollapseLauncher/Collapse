@@ -10,18 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-
-using System.CodeDom.Compiler;
-using System.Diagnostics;
-using System.Threading;
-using Microsoft.UI.Dispatching;
-using WinRT;
+using Windows.UI.ViewManagement;
 
 using Hi3Helper;
 
@@ -70,34 +65,9 @@ namespace CollapseLauncher
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
-            var windowNative = m_window.As<IWindowNative>();
-            m_windowHandle = windowNative.WindowHandle;
             m_window.Activate();
-            LogWriteLine($"WindowID IntPtr: {m_windowHandle}");
-
-            SetWindowSize(m_windowHandle, 1280, 730);
-        }
-
-        private void SetWindowSize(IntPtr hwnd, int width, int height)
-        {
-            var dpi = PInvoke.User32.GetDpiForWindow(hwnd);
-            float scalingFactor = (float)dpi / 96;
-            width = (int)(width * scalingFactor);
-            height = (int)(height * scalingFactor);
-
-            PInvoke.User32.SetWindowPos(hwnd, PInvoke.User32.SpecialWindowHandles.HWND_TOP,
-                                        0, 0, width, height,
-                                        PInvoke.User32.SetWindowPosFlags.SWP_NOMOVE);
         }
 
         private Window m_window;
-
-        [ComImport]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [Guid("EECDBF0E-BAE9-4CB6-A68E-9598E1CB57BB")]
-        internal interface IWindowNative
-        {
-            IntPtr WindowHandle { get; }
-        }
     }
 }

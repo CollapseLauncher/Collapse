@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -15,10 +16,12 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 // using Windows.UI.Core;
 // using Windows.UI.ViewManagement;
 
+using WinRT.Interop;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 
@@ -48,6 +51,9 @@ namespace CollapseLauncher
 
                 InitializeStartup().GetAwaiter();
                 Task.Run(() => CheckRunningGameInstance());
+
+                if (AppWindowTitleBar.IsCustomizationSupported())
+                    WindowButtonFrameWin11.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {

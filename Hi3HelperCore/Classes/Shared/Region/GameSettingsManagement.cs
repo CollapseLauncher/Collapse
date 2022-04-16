@@ -540,7 +540,7 @@ namespace Hi3Helper.Shared.Region
             {
                 await CheckExistingGameSettings();
 
-                parameter.AppendFormat("-screen-fullscreen {0} ", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0);
+                // parameter.AppendFormat("-screen-fullscreen {0} ", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0);
 
                 if (gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool())
                 {

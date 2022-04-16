@@ -13,7 +13,7 @@
     "GameDirectoryName": "Games",
     "GameExecutableName": "BH3.exe",
     "BetterHi3LauncherVerInfoReg": "VersionInfoSEA",
-    "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
+    "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/sea/{0}/",
     "CachesListAPIURL": "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
     "CachesEndpointURL": "http://data.in.seanew.ironmaid.xyz:14000/update_sea/{0}/editor_compressed/",
     "CachesListGameVerID": 0,
@@ -46,7 +46,7 @@
     "GameDirectoryName": "Games",
     "GameExecutableName": "BH3.exe",
     "BetterHi3LauncherVerInfoReg": "VersionInfoGlobal",
-    "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/{0}/",
+    "ZipFileURL": "https://prophost.ironmaid.xyz/_shared/_zipfiles/global/{0}/",
     "CachesListAPIURL": "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
     "CachesEndpointURL": "http://data.in.seanew.ironmaid.xyz:14000/update_global/{0}/editor_compressed/",
     "CachesListGameVerID": 1,
@@ -169,6 +169,9 @@
     "UseRightSideProgress": true,
     "GameDirectoryName": "Genshin Impact game",
     "GameExecutableName": "GenshinImpact.exe",
+
+    "ProtoDispatchKey": "1e0e352db05bd0a8",
+
     "LauncherSpriteURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=true&key=gcStgarh&language=en-us&launcher_id=10",
     "LauncherResourceURL": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0",
     "LauncherInfoURL": "https://genshin.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fhk4e_global&key=gcStgarh&prev=false",

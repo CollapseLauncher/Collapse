@@ -5,6 +5,18 @@
     },
     "CollapseLauncher (Unpackaged)": {
       "commandName": "Project"
+    },
+    "CollapseLauncher (Remote)": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true,
+      "authenticationMode": "Windows",
+      "remoteDebugMachine": "192.168.80.129",
+      "nativeDebugging": true
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
     }
   }
 }

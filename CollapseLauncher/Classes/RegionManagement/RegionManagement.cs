@@ -21,12 +21,13 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        HttpClientTool httpClient;
-        HttpClientTool httpClient4Img;
+        HttpClientToolLegacy httpClient;
+        HttpClientHelper httpHelper;
+        HttpClientToolLegacy httpClient4Img;
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
         Task loader = new Task(() => { });
-        int LoadTimeoutSec = 5;
+        int LoadTimeoutSec = 10;
         int LoadTimeoutJump = 2;
         public async Task LoadRegion(int regionIndex = 0)
         {
@@ -160,6 +161,7 @@ namespace CollapseLauncher
         public async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             ChangeRegionBtn.IsEnabled = false;
+            ChangeRegionConfirmBtn.Flyout.Hide();
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
             appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
             SaveAppConfig();

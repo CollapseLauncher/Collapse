@@ -1,10 +1,12 @@
-﻿using Microsoft.UI.Windowing;
+﻿using System;
+using Microsoft.UI.Windowing;
 
 namespace CollapseLauncher
 {
     public static class AppConfig
     {
-        public static AppWindow _apw;
-        public static OverlappedPresenter _presenter;
+        public static IntPtr m_windowHandle;
+        public static AppWindow m_AppWindow;
+        public static OverlappedPresenter m_presenter;
     }
 }

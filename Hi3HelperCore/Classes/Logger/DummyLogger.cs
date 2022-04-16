@@ -18,8 +18,7 @@ namespace Hi3Helper
 
         public void WriteLog(string i, LogType a = LogType.Default)
         {
-            using (Logger.logstream = new StreamWriter(Path.Combine(Logger.logdir, Logger.filename), true))
-                Logger.logstream.WriteLine(GetLog(i, a));
+            Logger.logstream.WriteLine(GetLog(i, a));
         }
 
         string GetLog(string i, LogType a)

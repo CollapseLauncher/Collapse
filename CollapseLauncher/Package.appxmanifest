@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="69eb9dbe-cf95-478d-83fc-3c48361232eb"
-    Publisher="CN=neon-test"
+    Name="a5e5c7f7-d755-466e-9e8c-e6a5ad83098f"
+    Publisher="CN=neon-nyan"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>CollapseLauncher</DisplayName>
-    <PublisherDisplayName>neon-test</PublisherDisplayName>
+    <PublisherDisplayName>neon-nyan</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

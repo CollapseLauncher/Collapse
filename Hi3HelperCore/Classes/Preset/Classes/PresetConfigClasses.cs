@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 using Microsoft.Win32;
 using Hi3Helper.Data;
 using Newtonsoft.Json;
@@ -12,6 +13,13 @@ namespace Hi3Helper.Preset
 {
     public class PresetConfigClasses
     {
+        public enum ServerRegionID
+        {
+            os_usa = 0,
+            os_euro = 1,
+            os_asia = 2,
+            os_cht = 3
+        }
         public string GetSteamInstallationPath()
         {
             string returnval;
@@ -87,6 +95,56 @@ namespace Hi3Helper.Preset
                 LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning);
                 return FallbackLanguage;
             }
+        }
+
+        // WARNING!!!
+        // This feature is only available for Genshin.
+        public int GetVoiceLanguageID()
+        {
+            try
+            {
+                string regValue, value = string.Empty;
+                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
+                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+
+                return JsonConvert.DeserializeObject<GeneralDataProp>(regValue).deviceVoiceLanguageType;
+            }
+            catch
+            {
+                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (1 / en-us).", LogType.Warning);
+                return 1;
+            }
+        }
+
+        // WARNING!!!
+        // This feature is only available for Genshin.
+        public int GetRegServerNameID()
+        {
+            try
+            {
+                string regValue, value = string.Empty;
+                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
+                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+                
+                return (int)JsonConvert.DeserializeObject<GeneralDataProp>(regValue).selectedServerName;
+            }
+            catch
+            {
+                LogWriteLine($"Server name ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (0 / USA).", LogType.Warning);
+                return 0;
+            }
+        }
+
+
+        // WARNING!!!
+        // This feature is only available for Genshin.
+        class GeneralDataProp
+        {
+            public int deviceLanguageType { get; set; }
+            public int deviceVoiceLanguageType { get; set; }
+            public ServerRegionID selectedServerName { get; set; }
         }
 
         void SetFallbackGameFolder(string a, bool tryFallback = false)
@@ -207,6 +265,7 @@ namespace Hi3Helper.Preset
             else
                 ret = false;
         }
+
         public string ProfileName { get; set; }
         public string ZoneName { get; set; }
         public string InstallRegistryLocation { get; set; }
@@ -227,6 +286,7 @@ namespace Hi3Helper.Preset
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }
+        public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }
         public string? CachesEndpointURL { get; set; }
@@ -282,8 +342,11 @@ namespace Hi3Helper.Preset
 
     public class PkgVersionProperties
     {
+        public string localName { get; set; }
+        public string remoteURL { get; set; }
         public string remoteName { get; set; }
         public string md5 { get; set; }
         public long fileSize { get; set; }
+        public bool isPatch { get; set; } = false;
     }
 }
