@@ -1,3 +1,8 @@
+# Attention
+I'm sorry to tell you but the development for stable release of this project will be suspended while we are still waiting for WinUI 3 1.1 to come out this 22H1.
+I will be releasing some of preview builds but there might be some breaking changes that made this project unstable. I hope that I can address this after WinUI 3 1.1 become stable in this first half of 2022 (22H1).
+Thank you for your patience and cooperation.
+
 <p align="Center">
   <img width="200px" src="https://user-images.githubusercontent.com/30566970/157742052-603a7fd8-1894-4af4-bebc-356a528c10ab.svg">
 </p>
