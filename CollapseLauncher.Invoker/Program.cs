@@ -91,29 +91,24 @@ namespace CollapseLauncher.Invoker
         static void MoveOperation(string source, string target)
         {
             string pripath = Path.GetPathRoot(source).ToLower();
-            if (Path.GetPathRoot(source).ToLower() == Path.GetPathRoot(target).ToLower())
+            Console.WriteLine($"Using \"Cross-disk\" method while moving to target");
+            string[] fileList = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
+            string basepath;
+            string targetpath;
+
+            for (int i = 0; i < fileList.Length; i++)
             {
-                Console.WriteLine($"Using \"new DirectoryInfo().MoveTo()\" method while moving to the same target disk");
-                new DirectoryInfo(source).MoveTo(target);
-            }
-            else
-            {
-                Console.WriteLine($"Using \"Cross-disk\" method while moving to different target disk");
-                string[] fileList = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
-                string basepath;
-                string targetpath;
+                basepath = fileList[i].Substring(source.Length + 1);
+                targetpath = Path.Combine(target, basepath);
 
-                for (int i = 0; i < fileList.Length; i++)
-                {
-                    basepath = fileList[i].Substring(source.Length + 1);
-                    targetpath = Path.Combine(target, basepath);
+                if (!Directory.Exists(Path.GetDirectoryName(targetpath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetpath));
 
-                    if (!Directory.Exists(Path.GetDirectoryName(targetpath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(targetpath));
+                if (File.Exists(targetpath))
+                    File.Delete(targetpath);
 
-                    File.Move(fileList[i], targetpath);
-                    Console.WriteLine($"\rMoving {i+1}/{fileList.Length}: {basepath}");
-                }
+                File.Move(fileList[i], targetpath);
+                Console.WriteLine($"\rMoving {i + 1}/{fileList.Length}: {basepath}");
             }
         }
 

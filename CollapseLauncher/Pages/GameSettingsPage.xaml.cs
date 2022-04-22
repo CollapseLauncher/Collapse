@@ -8,19 +8,9 @@ using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Composition;
 using System;
-using System.Numerics;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Drawing;
-using System.Diagnostics;
 
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -29,14 +19,8 @@ using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.GameSettingsManagement;
 using static Hi3Helper.Logger;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher.Pages
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class GameSettingsPage : Page
     {
         public GameSettingsPage()

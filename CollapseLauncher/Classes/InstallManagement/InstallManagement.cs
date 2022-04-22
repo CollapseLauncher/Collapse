@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
 using Newtonsoft.Json;
 
 using Hi3Helper;
@@ -24,6 +25,9 @@ namespace CollapseLauncher
     {
         public event EventHandler<InstallManagementStatus> InstallStatusChanged;
         public event EventHandler<InstallManagementProgress> InstallProgressChanged;
+
+        private List<PkgVersionProperties> Entries = new List<PkgVersionProperties>();
+        private List<PkgVersionProperties> BrokenFiles = new List<PkgVersionProperties>();
 
         private InstallManagementStatus InstallStatus;
         private InstallManagementProgress InstallProgress;
@@ -63,7 +67,7 @@ namespace CollapseLauncher
 
         public InstallManagement(DownloadType downloadType, string GameDirPath, int downloadThread,
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
-            // These section is for Genshin only
+            // These sections are for Genshin only
             string GameVerString = "", string DispatchKey = null, int RegionID = 0,
             string ExecutablePrefix = "BH3")
         {
@@ -146,7 +150,7 @@ namespace CollapseLauncher
                 InstallStatus.StatusTitle = $"Verifying: {CountCurrentDownload}/{CountTotalToDownload}";
                 UpdateStatus(InstallStatus);
                 if ((DownloadProperty[i].LocalHash = GetMD5FromFile(DownloadProperty[i].Output, Token))
-                    != DownloadProperty[i].RemoteHash)
+                    != DownloadProperty[i].RemoteHash.ToLower())
                     return DownloadProperty[i];
             }
 
@@ -444,6 +448,8 @@ namespace CollapseLauncher
                     DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds);
                 UpdateProgress(InstallProgress);
             }
+
+            File.Delete(PatchListPath);
         }
 
         private void CleanUpUnusedAssets()
@@ -493,7 +499,7 @@ namespace CollapseLauncher
             foreach (string _Entry in UnusedFiles) File.Delete(_Entry);
         }
 
-        private async Task PostInstallVerification(UIElement Content)
+        public async Task PostInstallVerification(UIElement Content)
         {
             if (DecompressedRemotePath == null) return;
 
@@ -507,8 +513,8 @@ namespace CollapseLauncher
 
             Dictionary<string, PkgVersionProperties> HashtableManifest = new Dictionary<string, PkgVersionProperties>();
 
-            List<PkgVersionProperties> Entries = new List<PkgVersionProperties>();
-            List<PkgVersionProperties> BrokenFiles = new List<PkgVersionProperties>();
+            Entries = new List<PkgVersionProperties>();
+            BrokenFiles = new List<PkgVersionProperties>();
 
             await Task.Run(() =>
             {
@@ -527,6 +533,7 @@ namespace CollapseLauncher
                 switch (await Dialog_AdditionalDownloadNeeded(Content, Size))
                 {
                     case ContentDialogResult.None:
+                        BrokenFiles.Clear();
                         return;
                     case ContentDialogResult.Primary:
                         break;
@@ -750,6 +757,8 @@ namespace CollapseLauncher
             EntryOut = Util.StartCheck();
             Util.PostInstallCheckChanged -= PostInstallCheckProgressAdapter;
         }
+
+        public int GetBrokenFilesCount() => BrokenFiles.Count;
 
         private async Task RepairFileIntegrity(UIElement Content, List<PkgVersionProperties> EntryIn)
         {

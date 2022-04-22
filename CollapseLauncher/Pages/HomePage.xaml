@@ -123,16 +123,30 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-72,0,0">
+                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-260,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                         <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
                             MaxWidth="458" Height="213"
-                            CornerRadius="10" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Left">
+                            CornerRadius="10" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
                             <FlipView.ItemTemplate>
                                 <DataTemplate>
                                     <Image Source="{Binding Icon}" Tag="{Binding URL}" PointerPressed="OpenImageLinkFromTag"/>
                                 </DataTemplate>
                             </FlipView.ItemTemplate>
                         </FlipView>
+                        <Grid x:Name="ImageCarouselPipsPager"
+                              Padding="4,12" Margin="12,0,0,0" CornerRadius="8"
+                              Shadow="{StaticResource SharedShadow}"
+                              Background="{StaticResource CarouselPipsAcrylicBrush}"
+                              HorizontalAlignment="Center" Visibility="Collapsed"
+                              VerticalAlignment="Center">
+                            <PipsPager
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Margin="0, 0, 0, 0"
+                              NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
+                              SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
+                              Orientation="Vertical"/>
+                        </Grid>
                     </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">
                         <Grid.ChildrenTransitions>
@@ -145,14 +159,14 @@
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
-                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
+                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
                             <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Maximum="100"/>
 
                             <Grid x:Name="progressPerFile" Visibility="Collapsed">
                                 <ProgressRing x:Name="progressRingAcrBG2"  Value="{Binding Value, ElementName=progressRingPerFile}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="194" Height="194" Maximum="{Binding Maximum, ElementName=progressRingPerFile}"/>
-                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource CustomAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
+                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
                                 <ProgressRing x:Name="progressRingPerFile" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="214" Height="214" Maximum="100"/>
                             </Grid>
                         </Grid>
@@ -206,6 +220,14 @@
                                         </Button.Content>
                                     </Button>
                                     <TextBlock Text="Game Installation" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                    <Button x:Name="RepairGameButton" Margin="0,8" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <SymbolIcon Symbol="Repair"/>
+                                                <TextBlock Text="Repair Game" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
                                     <Button x:Name="UninstallGameButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
                                         <Button.Content>
                                             <StackPanel Orientation="Horizontal">

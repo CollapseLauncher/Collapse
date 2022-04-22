@@ -1,30 +1,14 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.Storage.Pickers;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 using Hi3Helper.Data;
 
-using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -102,6 +86,16 @@ namespace CollapseLauncher.Dialogs
                     Content,
                     null,
                     "Okay (≧▽≦)ﾉ",
+                    null
+                );
+
+        public static async Task<ContentDialogResult> Dialog_RepairCompleted(UIElement Content, int Count) =>
+            await SpawnDialog(
+                    $"Repair Process is Completed!",
+                    $"{(Count > 0 ? $"{Count} file(s) have been repaired." : "No files are broken.")}",
+                    Content,
+                    null,
+                    "Okay",
                     null
                 );
 

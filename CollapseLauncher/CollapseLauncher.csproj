@@ -1,19 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-	<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+	<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CollapseLauncher</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64</Platforms>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
-    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+    <!--<PublishProfile>win10-$(Platform).pubxml</PublishProfile>-->
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
-	<Version>1.0.12.0</Version>
-	<SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
+	<Version>1.0.10.0</Version>
+	<Configurations>Debug;Release;Publish</Configurations>
+	<ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>PREVIEW</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DefineConstants>PREVIEW</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+    <DefineConstants></DefineConstants>
+    <DebugType>embedded</DebugType>
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
 	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
@@ -23,10 +35,7 @@
 	</Target>
 
 	<ItemGroup>
-	  <None Remove="Assets\ironmaiden_logo_256.png" />
-	  <None Remove="config\fileconfig.json" />
-	  <None Remove="MainPage.xaml" />
-	  <None Remove="ResourceDictionary.xaml" />
+	  <None Remove="CollapseLauncher.Updater.exe" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,19 +46,35 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="CollapseLauncher.Invoker.deps.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CollapseLauncher.Invoker.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CollapseLauncher.Invoker.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CollapseLauncher.Invoker.runtimeconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CollapseLauncher.Updater.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="config\fileconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview1" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22581-preview" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview2" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22598-preview" />
     <PackageReference Include="PInvoke.User32" Version="0.7.104" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.2.22152.2" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.3.22175.4" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -63,6 +88,9 @@
     <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\BG\AiHappy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\BG\default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -71,13 +99,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Update="Pages\NullPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="ResourceDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Update="Pages\UpdatePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
 </Project>

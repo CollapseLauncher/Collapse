@@ -7,7 +7,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource PagesAcrylicBrush}">
-
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
     <ScrollViewer>
         <StackPanel Margin="32,32,32,32">
             <TextBlock Text="App Settings" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
@@ -17,11 +31,28 @@
                     <ToggleSwitch Header="Show Console" IsOn="{Binding EnableConsole}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" Toggled="ConsoleToggle"/>
                     <TextBlock Text="Check Updates" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                     <StackPanel Orientation="Vertical" Margin="0,0,0,16">
-                        <TextBlock Text="Current Version: " VerticalAlignment="Center" Margin="0,0,0,16"/>
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="CheckUpdateBtn" Content="Check Update"/>
-                            <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
-                                <ProgressRing x:Name="ChangeRegionConfirmProgressBar" Width="20" Height="20" IsIndeterminate="True"/>
+                            <TextBlock VerticalAlignment="Center" Margin="0,0,0,16">
+                                <Run Text="Current Version:"/>
+                                <Run x:Name="CurrentVersion" Text="0.0.0.0" Foreground="{StaticResource AccentColor}" FontWeight="Bold"/>
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="CheckUpdateBtn" Content="Check Update" Click="CheckUpdate"/>
+                            <StackPanel x:Name="UpdateLoadingStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+                                <ProgressRing Width="20" Height="20" IsIndeterminate="True"/>
+                            </StackPanel>
+                            <StackPanel x:Name="UpdateAvailableStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,-3,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="😆" FontSize="20"/>
+                                <TextBlock Margin="8,0,0,0" VerticalAlignment="Center">
+                                    <Run Text="Update to"/>
+                                    <Run x:Name="UpdateAvailableLabel" Text="0.0.0.0" Foreground="{StaticResource AccentColor}" FontWeight="Bold"/>
+                                    <Run Text="is available!"/>
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel x:Name="UpToDateStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,-3,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="✅" FontSize="20"/>
+                                <TextBlock Text="Your version is up-to-date" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
@@ -91,7 +122,7 @@
                         <Run Text="( a.k.a"/>
                         <Run Text="DreadBurst" FontWeight="Bold"/>
                         <Run Text=")"/>
-                        <Hyperlink NavigateUri="https://www.youtube.com/watch?v=AtRtEXZxO2w" UnderlineStyle="None"><Run Text="❤️"/></Hyperlink>
+                        <Hyperlink NavigateUri="https://www.youtube.com/watch?v=4cugGAKsSNY&amp;list=PLLH-gVOGJkTLB_ixlYZ2fo51yPxn3m1LB" UnderlineStyle="None"><Run Text="❤️"/></Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </StackPanel>

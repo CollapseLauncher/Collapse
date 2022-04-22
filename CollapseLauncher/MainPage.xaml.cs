@@ -1,40 +1,25 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-
-// using Windows.UI;
-using Windows.ApplicationModel.Core;
-
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
-// using Windows.UI.Core;
-// using Windows.UI.ViewManagement;
+using Windows.ApplicationModel.Core;
 
-using WinRT.Interop;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
+
 using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace CollapseLauncher
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
@@ -49,11 +34,10 @@ namespace CollapseLauncher
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
                 MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
 
+                LauncherUpdateWatcher.StartCheckUpdate();
+
                 InitializeStartup().GetAwaiter();
                 Task.Run(() => CheckRunningGameInstance());
-
-                if (AppWindowTitleBar.IsCustomizationSupported())
-                    WindowButtonFrameWin11.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -73,6 +57,8 @@ namespace CollapseLauncher
 
             if (this.RequestedTheme != startTheme)
                 ReloadPageTheme(startTheme);
+
+            ThemeChanger.ChangeTheme(ApplicationTheme.Dark);
         }
 
         private async void CheckRunningGameInstance()
@@ -92,7 +78,6 @@ namespace CollapseLauncher
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
             // LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
 
-            // you can also add items in code behind
             NavigationViewControl.IsSettingsVisible = true;
 
             NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
@@ -139,7 +124,6 @@ namespace CollapseLauncher
             }
         }
 
-        // Update the TitleBar based on the inactive/active state of the app
         private void Current_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs e)
         {
             SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
@@ -157,17 +141,14 @@ namespace CollapseLauncher
 
         private void UpdateTitleBarLayout(CoreApplicationViewTitleBar coreTitleBar)
         {
-            // Update title bar control size as needed to account for system size changes.
             AppTitleBar.Height = coreTitleBar.Height;
 
-            // Ensure the custom title bar does not overlap window caption controls
             Thickness currMargin = AppTitleBar.Margin;
             AppTitleBar.Margin = new Thickness(currMargin.Left, currMargin.Top, coreTitleBar.SystemOverlayRightInset, currMargin.Bottom);
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
-            // set the initial SelectedItem 
             foreach (NavigationViewItemBase item in NavigationViewControl.MenuItems)
             {
                 if (item is NavigationViewItem && item.Tag.ToString() == "launcher")
@@ -183,14 +164,12 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
-                // LauncherFrame.Navigate(typeof(Pages.SettingsPage), null, new DrillInNavigationTransitionInfo());
                 HideBackgroundImage(true, false);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
             else
             {
-                // find NavigationViewItem with Content that equals InvokedItem
                 var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
                 NavView_Navigate(item);
             }
@@ -205,7 +184,6 @@ namespace CollapseLauncher
                 tagStr = "unavailable";
             }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
-            // LauncherFrame.Navigate(sourceType, null, new DrillInNavigationTransitionInfo());
             HideBackgroundImage(hideImage, false);
             previousTag = tagStr;
         }
@@ -215,7 +193,6 @@ namespace CollapseLauncher
         {
             try
             {
-                // Prevent repeated call of pages
                 if (!(previousTag == (string)item.Tag))
                 {
                     switch (item.Tag)
@@ -238,11 +215,9 @@ namespace CollapseLauncher
                                 Navigate(typeof(Pages.CachesPage), true, item);
                             else
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
-                            // throw new NotImplementedException("Caches Page isn't yet implemented for now.");
                             break;
 
                         case "cutscenes":
-                            // Navigate(typeof(Pages.CutscenesPage), true, item);
                             throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
 
                         case "gamesettings":
@@ -265,7 +240,6 @@ namespace CollapseLauncher
             const int expandedIndent = 48;
             int minimalIndent = 104;
 
-            // If the back button is not visible, reduce the TitleBar content indent.
             if (NavigationViewControl.IsBackButtonVisible.Equals(NavigationViewBackButtonVisible.Collapsed))
             {
                 minimalIndent = 48;
@@ -273,7 +247,6 @@ namespace CollapseLauncher
 
             Thickness currMargin = AppTitleBar.Margin;
 
-            // Set the TitleBar margin dependent on NavigationView display mode
             if (sender.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
             {
                 AppTitleBar.Margin = new Thickness(topIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
@@ -299,18 +272,35 @@ namespace CollapseLauncher
                     previousTag = "unavailable";
                     HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(Pages.UnavailablePage));
-                    // LauncherFrame.Navigate(typeof(Pages.UnavailablePage), null, new DrillInNavigationTransitionInfo());
                 }
                 else
                 {
                     previousTag = "crashinfo";
                     HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(Pages.UnhandledExceptionPage));
-                    // LauncherFrame.Navigate(typeof(Pages.UnhandledExceptionPage), null, new SlideNavigationTransitionInfo());
                 }
             });
         }
 
-        private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e) => LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+        private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)
+        {
+            switch (e.FrameTo.Name)
+            {
+                case "HomePage":
+                case "BlankPage":
+                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+                    break;
+                case "RepairPage":
+                    previousTag = "repair";
+                    NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[2];
+                    HideBackgroundImage();
+                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+                    break;
+                default:
+                    HideBackgroundImage();
+                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+                    break;
+            }
+        }
     }
 }

@@ -1,12 +1,112 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
+
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
+
+using Newtonsoft.Json;
+
+using Hi3Helper;
+using Hi3Helper.Data;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
+    #region LauncherUpdateRegion
+    internal static class LauncherUpdateWatcher
+    {
+        public static string UpdateChannelName;
+        public static Prop UpdateProperty;
+        private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
+        public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
+        public static async void StartCheckUpdate()
+        {
+            UpdateChannelName = AppConfig.IsPreview ? "preview" : "stable";
+            string ChannelURL = string.Format(UpdateRepoChannel + "{0}/", UpdateChannelName);
+            string CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            while (true)
+            {
+                if (!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate)
+                {
+                    try
+                    {
+                        MemoryStream RemoteData = new MemoryStream();
+                        await new HttpClientHelper().DownloadFileAsync(ChannelURL + "fileindex.json", RemoteData, new CancellationToken());
+                        string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
+                        UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
+
+                        if (CurrentVersion.ToLower() != UpdateProperty.ver.ToLower())
+                            GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = UpdateProperty.ver });
+                        else
+                            GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = UpdateProperty.ver });
+
+                        ForceInvokeUpdate = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
+                    }
+                }
+                // Delay for 15 mins
+                await Task.Delay(900 * 1000);
+            }
+        }
+
+        public class Prop
+        {
+            public string ver { get; set; }
+            public long time { get; set; }
+            public List<fileProp> f { get; set; }
+        }
+
+        public class fileProp
+        {
+            public string p { get; set; }
+            public string crc { get; set; }
+            public long s { get; set; }
+        }
+    }
+
+    internal class LauncherUpdateInvoker
+    {
+        public static event EventHandler<LauncherUpdateProperty> UpdateEvent;
+        public void GetStatus(LauncherUpdateProperty e) => UpdateEvent?.Invoke(this, e);
+    }
+
+    internal class LauncherUpdateProperty
+    {
+        public bool IsUpdateAvailable { get; set; }
+        public string NewVersionName { get; set; }
+        public bool QuitFromUpdateMenu { get; set; } = false;
+    }
+    #endregion
+    #region ThemeChangeRegion
+    internal static class ThemeChanger
+    {
+        static ThemeChangerInvoker invoker = new ThemeChangerInvoker();
+        public static void ChangeTheme(ApplicationTheme e) => invoker.ChangeTheme(e);
+    }
+
+    internal class ThemeChangerInvoker
+    {
+        public static event EventHandler<ThemeProperty> ThemeEvent;
+        public void ChangeTheme(ApplicationTheme e) => ThemeEvent?.Invoke(this, new ThemeProperty(e));
+    }
+
+    internal class ThemeProperty
+    {
+        internal ThemeProperty(ApplicationTheme e) => Theme = e;
+        public ApplicationTheme Theme { get; private set; }
+    }
+    #endregion
     #region ErrorSenderRegion
     public enum ErrorType { Unhandled, GameError }
 
@@ -49,7 +149,6 @@ namespace CollapseLauncher
         public string ExceptionString { get; private set; }
     }
     #endregion
-
     #region MainFrameRegion
     internal static class MainFrameChanger
     {

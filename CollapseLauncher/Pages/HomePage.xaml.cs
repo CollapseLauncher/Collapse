@@ -1,9 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,30 +10,28 @@ using System.Numerics;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Animation;
+
+using Newtonsoft.Json;
+
 using CollapseLauncher.Dialogs;
 
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
-using Newtonsoft.Json;
-
 using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher.Pages
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public static class HomePageProp
     {
         public static HomePage Current { get; set; }
@@ -75,7 +68,10 @@ namespace CollapseLauncher.Pages
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
+                    ImageCarouselPipsPager.Visibility = Visibility.Visible;
                     ImageCarousel.Translation += Shadow48;
+                    ImageCarouselPipsPager.Translation += Shadow16;
+
                     Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
@@ -129,16 +125,26 @@ namespace CollapseLauncher.Pages
         {
             await Task.Run(() => { });
             Storyboard storyboard = new Storyboard();
+            Storyboard storyboard2 = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
             OpacityAnimation.From = hide ? 1 : 0;
             OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
+            DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
+            OpacityAnimation2.From = hide ? 1 : 0;
+            OpacityAnimation2.To = hide ? 0 : 1;
+            OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.10));
+
             Storyboard.SetTarget(OpacityAnimation, ImageCarousel);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+            Storyboard.SetTarget(OpacityAnimation2, ImageCarouselPipsPager);
+            Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
+            storyboard2.Children.Add(OpacityAnimation2);
 
             storyboard.Begin();
+            storyboard2.Begin();
         }
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e) =>
@@ -245,6 +251,7 @@ namespace CollapseLauncher.Pages
             }
             GameInstallationState = GameInstallStateEnum.NotInstalled;
             UninstallGameButton.IsEnabled = false;
+            RepairGameButton.IsEnabled = false;
             OpenGameFolderButton.IsEnabled = false;
             OpenCacheFolderButton.IsEnabled = false;
         }
@@ -349,15 +356,14 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Existing Installation Not Found {CurrentRegion.ZoneName}");
                     await StartInstallationProcedure(await InstallGameDialogScratch());
                 }
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (TaskCanceledException)
             {
-                CancelInstallationDownload();
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
             }
             catch (OperationCanceledException)
             {
-                CancelInstallationDownload();
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
             }
             catch (Exception ex)
@@ -891,6 +897,8 @@ namespace CollapseLauncher.Pages
                     CancelPreDownload();
                     break;
                 case GameInstallStateEnum.NotInstalled:
+                case GameInstallStateEnum.GameBroken:
+                case GameInstallStateEnum.Installed:
                     CancelInstallationDownload();
                     break;
             }
@@ -907,6 +915,8 @@ namespace CollapseLauncher.Pages
             {
                 PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
                 ResumeDownloadPreBtn.Visibility = Visibility.Visible;
+
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             });
         }
 
@@ -923,7 +933,7 @@ namespace CollapseLauncher.Pages
                 UpdateGameBtn.Visibility = Visibility.Visible;
                 CancelDownloadBtn.Visibility = Visibility.Collapsed;
 
-                OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             });
         }
 
@@ -941,7 +951,6 @@ namespace CollapseLauncher.Pages
                 CancelDownloadBtn.Visibility = Visibility.Collapsed;
 
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                // OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             });
         }
 
@@ -1121,6 +1130,67 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
+        private async void RepairGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (CurrentRegion.IsGenshin ?? false)
+                {
+                    GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+
+                    if (CurrentRegion.UseRightSideProgress ?? false)
+                        await HideImageCarousel(true);
+
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        progressRing.Value = 0;
+                        progressRing.IsIndeterminate = false;
+                        ProgressStatusGrid.Visibility = Visibility.Visible;
+                        InstallGameBtn.Visibility = Visibility.Collapsed;
+                        CancelDownloadBtn.Visibility = Visibility.Visible;
+                        ProgressTimeLeft.Visibility = Visibility.Visible;
+                    });
+
+                    InstallerDownloadTokenSource = new CancellationTokenSource();
+                    CancellationToken token = InstallerDownloadTokenSource.Token;
+
+                    InstallTool = new InstallManagement(DownloadType.FirstInstall,
+                                        GameDirPath,
+                                        appIni.Profile["app"]["DownloadThread"].ToInt(),
+                                        Environment.ProcessorCount,
+                                        token,
+                                        CurrentRegion.IsGenshin ?? false ?
+                                            regionResourceProp.data.game.latest.decompressed_path :
+                                            null,
+                                        regionResourceProp.data.game.latest.version,
+                                        CurrentRegion.ProtoDispatchKey,
+                                        CurrentRegion.GetRegServerNameID(),
+                                        Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+
+                    InstallTool.InstallProgressChanged += InstallToolProgress;
+                    InstallTool.InstallStatusChanged += InstallToolStatus;
+                    await InstallTool.PostInstallVerification(Content);
+                    InstallTool.InstallProgressChanged -= InstallToolProgress;
+                    InstallTool.InstallStatusChanged -= InstallToolStatus;
+
+                    await Dialog_RepairCompleted(Content, InstallTool.GetBrokenFilesCount());
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                }
+                else
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(RepairPage));
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                LogWriteLine($"Repair process has been cancelled!", Hi3Helper.LogType.Warning, true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Repair process has been cancelled due an error!\r\n{ex}", Hi3Helper.LogType.Error, true);
+            }
+        }
+
         private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
         {
             string GameFolder = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
@@ -1185,7 +1255,7 @@ namespace CollapseLauncher.Pages
                 progressRing.Value = e.ProgressPercentage;
                 progressRingPerFile.Value = e.ProgressPercentagePerFile;
                 ProgressStatusSubtitle.Text = $"{SummarizeSizeSimple(e.ProgressDownloadedSize)} / {SummarizeSizeSimple(e.ProgressTotalSizeToDownload)}";
-                ProgressStatusFooter.Text = $"Speed: {SummarizeSizeSimple(e.ProgressSpeed)}";
+                ProgressStatusFooter.Text = $"Speed: {SummarizeSizeSimple(e.ProgressSpeed)}/s";
                 ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
             });
         }
@@ -1252,6 +1322,7 @@ namespace CollapseLauncher.Pages
                 await InstallTool.FinalizeInstallationAsync(Content);
 
                 ApplyGameConfig(GameDirPath);
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                 OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
             catch (OperationCanceledException)

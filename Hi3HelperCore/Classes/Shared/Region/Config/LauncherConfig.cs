@@ -42,6 +42,8 @@ namespace Hi3Helper.Shared.Region
 
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled;
+        public static bool ForceInvokeUpdate = false;
+        public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
         public static void LoadGamePreset()
@@ -78,13 +80,23 @@ namespace Hi3Helper.Shared.Region
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
 
             InitConsoleSetting();
+            InitUpdateSettings();
+        }
+
+        public static void InitUpdateSettings()
+        {
+            if (GetAppConfigValue("DontAskUpdate").ToBoolNullable() == null)
+            {
+                SetAppConfigValue("DontAskUpdate", false);
+                SaveAppConfig();
+            }
         }
 
         public static void InitConsoleSetting()
         {
             if (GetAppConfigValue("EnableConsole").ToBoolNullable() == null)
             {
-                SetAppConfigValue("EnableConsole", true);
+                SetAppConfigValue("EnableConsole", false);
                 SaveAppConfig();
             }
 
@@ -115,10 +127,11 @@ namespace Hi3Helper.Shared.Region
                 { "DownloadThread", new IniValue(8) },
                 { "GameFolder", new IniValue(AppGameFolder) },
 #if DEBUG
-                { "EnableConsole", new IniValue(true) }
+                { "EnableConsole", new IniValue(true) },
 #else
-                { "EnableConsole", new IniValue(false) }
+                { "EnableConsole", new IniValue(false) },
 #endif
+                { "DontAskUpdate", new IniValue(false) },
             });
 
             SaveAppConfig();

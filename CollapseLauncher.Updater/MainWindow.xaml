@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CollapseLauncher.Updater"
         mc:Ignorable="d"
-        Title="MainWindow" Height="181" Width="346" ResizeMode="NoResize">
+        Title="MainWindow" Height="170" Width="346" ResizeMode="NoResize">
     <Grid Margin="8">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56*"/>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical">
-            <TextBlock x:Name="StageStatus" Text="Checking Integrity:" Margin="0,0,0,4" FontWeight="Bold"/>
-            <TextBlock x:Name="ActivityStatus" Text="/CollapseLauncher.dll.config"/>
+            <TextBlock x:Name="StageStatus" Text="Idle:" Margin="0,0,0,4" FontWeight="Bold"/>
+            <TextBlock x:Name="ActivityStatus" Text="-"/>
+            <TextBlock x:Name="ActivitySubStatus" Text="- B / - B" Margin="0,12,0,0" VerticalAlignment="Bottom" FlowDirection="LeftToRight" FontSize="10"/>
         </StackPanel>
-        <StackPanel Margin="0,5,0,0" Grid.Row="1">
+        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
             <Grid Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -26,16 +26,15 @@
                     <TextBlock Text="Time Estimated: "/>
                     <TextBlock x:Name="TimeEstimation" Text="00m00s"/>
                 </StackPanel>
-                <TextBlock x:Name="SpeedStatus" Text="69.42 KB/s" Grid.Column="1" HorizontalAlignment="Right"/>
+                <TextBlock x:Name="SpeedStatus" Text="- B/s" Grid.Column="1" HorizontalAlignment="Right"/>
             </Grid>
             <Grid>
-                <ProgressBar x:Name="progressBar" Value="50" Maximum="100" Height="18"/>
+                <ProgressBar x:Name="progressBar" Value="0" Maximum="100" Height="18"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding Value, ElementName=progressBar}"/>
                     <TextBlock Text="%"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
-        <Button x:Name="CancelButton" Content="Cancel Update" Grid.Row="2" HorizontalAlignment="Stretch" Padding="8,0,8,0"/>
     </Grid>
 </Window>

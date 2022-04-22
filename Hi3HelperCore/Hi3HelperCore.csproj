@@ -2,15 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
-    <DebugType>embedded</DebugType>
+    <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;Publish</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DISABLE_TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DISABLE_TRACE</DefineConstants>
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
@@ -18,6 +24,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Publish|netstandard2.0|AnyCPU'">
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
@@ -29,11 +39,19 @@
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Publish|netstandard2.0|x64'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Publish|net6.0|AnyCPU'">
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
@@ -45,12 +63,8 @@
     <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DISABLE_TRACE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>DISABLE_TRACE</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Publish|net6.0|x64'">
+    <DefineConstants>DISABLE_TRACE;SHOW_STAT_;SHOW_STAT2_;PROTOTYPE_</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

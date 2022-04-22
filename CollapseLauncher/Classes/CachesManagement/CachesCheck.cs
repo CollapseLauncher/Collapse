@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
 using Newtonsoft.Json;
 
 using Hi3Helper;

@@ -141,6 +141,19 @@
                 </Grid>
             </Grid>
         </NavigationView>
-        <Frame x:Name="rootFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1" />
+        <Frame x:Name="rootFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition/>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
+        <Frame x:Name="overlayFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition/>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
     </Grid>
 </Window>

@@ -1,22 +1,18 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI;           // Needed for WindowId
-using Microsoft.UI.Windowing; // Needed for AppWindow
-using WinRT.Interop;          // Needed for XAML/HWND interop
-using System;
+﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+
 using Windows.Graphics;
+
+using WinRT.Interop;
+
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 
 using System.Runtime.InteropServices;
 
@@ -24,14 +20,8 @@ using static CollapseLauncher.AppConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         public MainWindow()
@@ -41,9 +31,8 @@ namespace CollapseLauncher
                 this.InitializeComponent();
 
                 string title = $"Collapse Launcher - v{Assembly.GetExecutingAssembly().GetName().Version} ";
-#if PREVIEW
-                title = title + "[PREVIEW]";
-#endif
+                if (IsPreview)
+                    title = title + "[PREVIEW]";
 #if DEBUG
                 title = title + "[DEBUG]";
 #endif
@@ -66,6 +55,9 @@ namespace CollapseLauncher
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
                     CustomTitleBar.Visibility = Visibility.Collapsed;
+
+                    m_AppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+                    m_AppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
                 }
                 else
                 {
@@ -79,22 +71,15 @@ namespace CollapseLauncher
                     SetTitleBar(CustomTitleBar);
                     Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
                     Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-                    // WindowButtonWin10.Visibility = Visibility.Visible;
-                    // TitleTextBlock.Visibility = Visibility.Collapsed;
-                    /*
-                    SetTitleBar(AppTitleBar);
-                    m_AppWindow.TitleBar.SetDragRectangles(new[] { new RectInt32(0, 0, 256, 48) });
-                    */
                 }
 
                 MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
+                LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
 
                 if (!File.Exists(AppConfigFile))
-                    rootFrame.Navigate(typeof(Pages.StartupPage));
+                    rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
                 else
-                {
-                    rootFrame.Navigate(typeof(MainPage));
-                }
+                    rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
             }
             catch (Exception ex)
             {
@@ -103,12 +88,24 @@ namespace CollapseLauncher
             }
         }
 
+        private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
+        {
+            if (e.QuitFromUpdateMenu)
+            {
+                overlayFrame.Navigate(typeof(Pages.NullPage), null, new EntranceNavigationTransitionInfo());
+                return;
+            }
+
+            if (e.IsUpdateAvailable)
+                overlayFrame.Navigate(typeof(Pages.UpdatePage));
+        }
+
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        private void SetWindowSize(IntPtr hwnd, int width, int height)
+        private void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)
         {
             var dpi = PInvoke.User32.GetDpiForWindow(hwnd);
             float scalingFactor = (float)dpi / 96;
@@ -116,7 +113,7 @@ namespace CollapseLauncher
             height = (int)(height * scalingFactor);
 
             PInvoke.User32.SetWindowPos(hwnd, PInvoke.User32.SpecialWindowHandles.HWND_TOP,
-                                        0, 0, width, height,
+                                        x, y, width, height,
                                         PInvoke.User32.SetWindowPosFlags.SWP_NOMOVE);
         }
 
@@ -136,7 +133,6 @@ namespace CollapseLauncher
             if (AppWindowTitleBar.IsCustomizationSupported()
                 && m_AppWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
-                // Update drag region if the size of the title bar changes.
                 SetDragRegionForCustomTitleBar(m_AppWindow);
             }
         }
@@ -169,7 +165,6 @@ namespace CollapseLauncher
             DisplayArea displayArea = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
             IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
 
-            // Get DPI.
             int result = GetDpiForMonitor(hMonitor, Monitor_DPI_Type.MDT_Default, out uint dpiX, out uint _);
             if (result != 0)
             {
@@ -188,7 +183,6 @@ namespace CollapseLauncher
                 double scaleAdjustment = GetScaleAdjustment();
 
                 RightPaddingColumn.Width = new GridLength(appWindow.TitleBar.RightInset / scaleAdjustment);
-                // LeftPaddingColumn.Width = new GridLength(appWindow.TitleBar.LeftInset / scaleAdjustment);
 
                 List<RectInt32> dragRectsList = new();
 
@@ -216,80 +210,23 @@ namespace CollapseLauncher
             }
         }
 
+        PointInt32 LastPos;
+        int i = 0;
         private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
         {
-            if (args.DidPresenterChange
-                && AppWindowTitleBar.IsCustomizationSupported())
+            // TEMPORARY HACK:
+            // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
+            if (args.DidPresenterChange && !AppWindowTitleBar.IsCustomizationSupported())
             {
-                switch (sender.Presenter.Kind)
-                {
-                    case AppWindowPresenterKind.CompactOverlay:
-                        // Compact overlay - hide custom title bar
-                        // and use the default system title bar instead.
-                        AppTitleBar.Visibility = Visibility.Collapsed;
-                        sender.TitleBar.ResetToDefault();
-                        break;
+                if (m_AppWindow.Position.X > -128 || m_AppWindow.Position.Y > -128)
+                    m_presenter.Restore();
 
-                    case AppWindowPresenterKind.FullScreen:
-                        // Full screen - hide the custom title bar
-                        // and the default system title bar.
-                        AppTitleBar.Visibility = Visibility.Collapsed;
-                        sender.TitleBar.ExtendsContentIntoTitleBar = true;
-                        break;
-
-                    case AppWindowPresenterKind.Overlapped:
-                        // Normal - hide the system title bar
-                        // and use the custom title bar instead.
-                        AppTitleBar.Visibility = Visibility.Visible;
-                        sender.TitleBar.ExtendsContentIntoTitleBar = true;
-                        SetDragRegionForCustomTitleBar(sender);
-                        break;
-
-                    default:
-                        // Use the default system title bar.
-                        sender.TitleBar.ResetToDefault();
-                        break;
-                }
+                sender.Move(LastPos);
+                SetWindowSize(m_windowHandle, 1280, 730);
             }
-        }
 
-        private void SwitchPresenter(object sender, RoutedEventArgs e)
-        {
-            if (m_AppWindow != null)
-            {
-                AppWindowPresenterKind newPresenterKind;
-                switch ((sender as Button).Name)
-                {
-                    case "CompactoverlaytBtn":
-                        newPresenterKind = AppWindowPresenterKind.CompactOverlay;
-                        break;
-
-                    case "FullscreenBtn":
-                        newPresenterKind = AppWindowPresenterKind.FullScreen;
-                        break;
-
-                    case "OverlappedBtn":
-                        newPresenterKind = AppWindowPresenterKind.Overlapped;
-                        break;
-
-                    default:
-                        newPresenterKind = AppWindowPresenterKind.Default;
-                        break;
-                }
-
-                // If the same presenter button was pressed as the
-                // mode we're in, toggle the window back to Default.
-                if (newPresenterKind == m_AppWindow.Presenter.Kind)
-                {
-                    m_AppWindow.SetPresenter(AppWindowPresenterKind.Default);
-                }
-                else
-                {
-                    // Else request a presenter of the selected kind
-                    // to be created and applied to the window.
-                    m_AppWindow.SetPresenter(newPresenterKind);
-                }
-            }
+            if (!(m_AppWindow.Position.X < 0 || m_AppWindow.Position.Y < 0))
+                LastPos = m_AppWindow.Position;
         }
     }
 }

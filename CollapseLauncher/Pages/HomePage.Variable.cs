@@ -1,16 +1,5 @@
-﻿using System;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using Microsoft.UI.Xaml.Controls;
 
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
 namespace CollapseLauncher.Pages

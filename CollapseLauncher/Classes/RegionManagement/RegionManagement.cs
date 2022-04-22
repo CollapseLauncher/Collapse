@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 
 using Hi3Helper.Preset;
 using Hi3Helper.Data;
@@ -48,15 +45,6 @@ namespace CollapseLauncher
                 LoadTimeoutSec += LoadTimeoutJump;
             }
             LoadTimeoutSec = prevTimeout;
-            /*
-            loader = Task.Run(() =>
-            {
-                ChangeBackgroundImageAsRegion(tokenSource.Token);
-                FetchLauncherResourceAsRegion(tokenSource.Token);
-            });
-            TimeOutWatcher();
-            await loader;
-            */
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
             InitRegKey();
             await HideLoadingPopup(true, "Loading Region", CurrentRegion.ZoneName);
@@ -154,8 +142,6 @@ namespace CollapseLauncher
             gameIni.Profile = new IniFile();
             gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Open, FileAccess.ReadWrite);
             gameIni.Profile.Load(gameIni.ProfileStream);
-
-            // CurrentRegion.CheckExistingGame();
         }
 
         public async void ChangeRegion(object sender, RoutedEventArgs e)
@@ -170,11 +156,9 @@ namespace CollapseLauncher
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
-                // LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
                 NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
 
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                // Thread.Sleep(1000);
                 f.Hide();
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionBtn.IsEnabled = true;

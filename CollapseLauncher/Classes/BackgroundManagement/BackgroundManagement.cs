@@ -23,7 +23,6 @@ using ColorThiefDotNet;
 using Newtonsoft.Json;
 
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Hi3Helper.Shared.ClassStruct;
@@ -66,7 +65,6 @@ namespace CollapseLauncher
                 MemoryStream memoryStream = new MemoryStream();
 
                 httpHelper.DownloadFile(CurrentRegion.LauncherSpriteURL, memoryStream, token);
-                // httpClient.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
@@ -95,7 +93,6 @@ namespace CollapseLauncher
                    );
 
             Windows.UI.Color _color = new Windows.UI.Color();
-
             DispatcherQueue.TryEnqueue(() =>
             {
                 if (theme.ToString() == "#FFFFFFFF")
@@ -106,7 +103,14 @@ namespace CollapseLauncher
                     }
                     catch
                     {
-                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
+                        try
+                        {
+                            _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
+                        }
+                        catch
+                        {
+                            _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, false));
+                        }
                     }
 
                     Application.Current.Resources["SystemAccentColor"] = _color;
@@ -116,7 +120,14 @@ namespace CollapseLauncher
                 }
                 else
                 {
-                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
+                    try
+                    {
+                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
+                    }
+                    catch
+                    {
+                        _color = new Windows.UI.Color { R = 255, G = 255, B = 255, A = 255 };
+                    }
 
                     Application.Current.Resources["SystemAccentColor"] = _color;
                     Application.Current.Resources["SystemAccentColorLight1"] = _color;
@@ -180,11 +191,9 @@ namespace CollapseLauncher
             if (!File.Exists(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
                 || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background)
-                // || ConverterTool.CreateMD5(File.Open(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read)) != regionBackgroundProp.data.adv.bg_checksum
                 )
             {
                 httpHelper.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
-                // httpClient.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath);
                 previousPath = regionBackgroundProp.imgLocalPath;
                 return true;
             }
@@ -271,10 +280,6 @@ namespace CollapseLauncher
             if (!(hideImage && BackgroundFront.Opacity == 0))
             {
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                /*
-                OpacityAnimation.From = hideImage ? 1 : (absoluteTransparent ? 0 : 0.5);
-                OpacityAnimation.To = hideImage ? (absoluteTransparent ? 0 : 0.5) : 1;
-                 */
                 OpacityAnimation.From = hideImage ? 1 : 0;
                 OpacityAnimation.To = hideImage ? 0 : 1;
                 OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
