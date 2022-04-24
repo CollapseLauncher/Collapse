@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
@@ -26,7 +27,6 @@ namespace CollapseLauncher
         {
             try
             {
-                LoadAppPreset();
                 LoadGamePreset();
                 LogWriteLine($"Welcome to Collapse Launcher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
@@ -57,8 +57,19 @@ namespace CollapseLauncher
 
             if (this.RequestedTheme != startTheme)
                 ReloadPageTheme(startTheme);
+        }
 
-            ThemeChanger.ChangeTheme(ApplicationTheme.Dark);
+        private ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)
+        {
+            switch (Theme)
+            {
+                default:
+                    return ElementTheme.Default;
+                case AppThemeMode.Dark:
+                    return ElementTheme.Dark;
+                case AppThemeMode.Light:
+                    return ElementTheme.Light;
+            }
         }
 
         private async void CheckRunningGameInstance()

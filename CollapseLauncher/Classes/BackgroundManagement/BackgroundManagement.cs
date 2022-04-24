@@ -87,15 +87,11 @@ namespace CollapseLauncher
 
         private void ApplyAccentColor()
         {
-            var uiSettings = new Windows.UI.ViewManagement.UISettings();
-            var theme = uiSettings.GetColorValue(
-                    Windows.UI.ViewManagement.UIColorType.Background
-                   );
-
             Windows.UI.Color _color = new Windows.UI.Color();
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (theme.ToString() == "#FFFFFFFF")
+                if (AppConfig.CurrentAppTheme == AppThemeMode.Light ||
+                    (AppConfig.CurrentAppTheme == AppThemeMode.Default && AppConfig.SystemAppTheme.ToString() == "#FFFFFFFF"))
                 {
                     try
                     {
@@ -135,7 +131,7 @@ namespace CollapseLauncher
                     Application.Current.Resources["SystemAccentColorLight3"] = _color;
                 }
 
-                ReloadPageTheme(this.RequestedTheme);
+                ReloadPageTheme(ConvertAppThemeToElementTheme(AppConfig.CurrentAppTheme));
             });
         }
 

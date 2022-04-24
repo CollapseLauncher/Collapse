@@ -539,7 +539,7 @@ namespace CollapseLauncher.Pages
             InstallTool = new InstallManagement(DownloadType.FirstInstall,
                                 destinationFolder,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                Environment.ProcessorCount,
+                                GetAppExtractConfigValue(),
                                 token,
                                 CurrentRegion.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
@@ -645,13 +645,13 @@ namespace CollapseLauncher.Pages
                         // sevenZip.LoadLegacy(sourceFile);
 
                         sevenZip.ExtractProgressChanged += ExtractProgress;
-                        sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
+                        sevenZip.ExtractToDirectory(destinationFolder, GetAppExtractConfigValue(), token);
                         break;
                     case ".zip":
                         sevenZip.LoadZip(sourceFile);
 
                         sevenZip.ExtractProgressChanged += ExtractProgress;
-                        sevenZip.ExtractToDirectory(destinationFolder, Environment.ProcessorCount, token);
+                        sevenZip.ExtractToDirectory(destinationFolder, GetAppExtractConfigValue(), token);
                         break;
                 }
             }
@@ -1157,7 +1157,7 @@ namespace CollapseLauncher.Pages
                     InstallTool = new InstallManagement(DownloadType.FirstInstall,
                                         GameDirPath,
                                         appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                        Environment.ProcessorCount,
+                                        GetAppExtractConfigValue(),
                                         token,
                                         CurrentRegion.IsGenshin ?? false ?
                                             regionResourceProp.data.game.latest.decompressed_path :
@@ -1274,7 +1274,7 @@ namespace CollapseLauncher.Pages
             InstallTool = new InstallManagement(DownloadType.Update,
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                Environment.ProcessorCount,
+                                GetAppExtractConfigValue(),
                                 token,
                                 CurrentRegion.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
@@ -1496,7 +1496,7 @@ namespace CollapseLauncher.Pages
                 ProgressStatusTitle.Text = "Verifying Integrity";
             });
 
-            PostInstallCheck InstallCheckTool = new PostInstallCheck(GamePath, fileProp, Environment.ProcessorCount, token);
+            PostInstallCheck InstallCheckTool = new PostInstallCheck(GamePath, fileProp, GetAppExtractConfigValue(), token);
             InstallCheckTool.PostInstallCheckChanged += InstallCheckTool_PostInstallCheckChanged;
             BrokenFiles = InstallCheckTool.StartCheck();
             InstallCheckTool.PostInstallCheckChanged -= InstallCheckTool_PostInstallCheckChanged;

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
+
+using Windows.UI;
 
 using Microsoft.UI.Xaml;
 
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.InvokeProp;
@@ -21,9 +25,19 @@ namespace CollapseLauncher
 #if PREVIEW
             AppConfig.IsPreview = true;
 #endif
+            if (!File.Exists(AppConfigFile))
+                AppConfig.IsFirstInstall = true;
+
             InitializeConsole(true, AppDataFolder);
+
+            LoadAppPreset();
             WriteLog("App Started!", LogType.Scheme);
             LogWriteLine($"Initializing...", LogType.Empty);
+
+            AppConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
+            AppConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+
+            RequestedTheme = (AppConfig.CurrentRequestedAppTheme = AppConfig.GetAppTheme());
 
             try
             {

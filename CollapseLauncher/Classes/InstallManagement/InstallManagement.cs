@@ -793,7 +793,7 @@ namespace CollapseLauncher
                     if (Entry.fileSize >= 10 << 20)
                         DownloadFile(RemotePath, LocalPath, DownloadThread, Token);
                     else
-                        DownloadFile(RemotePath, LocalPath, Token);
+                        DownloadFile(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
                 });
             }
             DownloadProgress -= DownloadProgressAdapter;

@@ -56,6 +56,16 @@ namespace CollapseLauncher
                     m_presenter.IsMaximizable = false;
                     CustomTitleBar.Visibility = Visibility.Collapsed;
 
+                    switch (GetAppTheme())
+                    {
+                        case ApplicationTheme.Light:
+                            m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                            break;
+                        case ApplicationTheme.Dark:
+                            m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                            break;
+                    }
+
                     m_AppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
                     m_AppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
                 }
@@ -69,6 +79,17 @@ namespace CollapseLauncher
                     AppTitleBar.Visibility = Visibility.Collapsed;
                     CustomTitleBar.Visibility = Visibility.Visible;
                     SetTitleBar(CustomTitleBar);
+
+                    switch (GetAppTheme())
+                    {
+                        case ApplicationTheme.Light:
+                            Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                            break;
+                        case ApplicationTheme.Dark:
+                            Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                            break;
+                    }
+
                     Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
                     Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
                 }
@@ -76,7 +97,7 @@ namespace CollapseLauncher
                 MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
 
-                if (!File.Exists(AppConfigFile))
+                if (IsFirstInstall)
                     rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
                 else
                     rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());

@@ -8,3 +8,4 @@ packages/*
 
 CollapseLauncher/Invoker/*
 *.psd
+InstallerProp/Output/*

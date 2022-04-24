@@ -14,6 +14,13 @@ namespace Hi3Helper.Shared.ClassStruct
         public string ProfilePath;
     }
 
+    public enum AppThemeMode
+    {
+        Default = 0,
+        Light = 1,
+        Dark = 2,
+    }
+
     public enum GameInstallStateEnum
     {
         Installed = 0,

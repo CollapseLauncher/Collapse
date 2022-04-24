@@ -81,6 +81,16 @@ namespace Hi3Helper.Shared.Region
 
             InitConsoleSetting();
             InitUpdateSettings();
+            InitMiscSettings();
+        }
+
+        public static void InitMiscSettings()
+        {
+            if (GetAppConfigValue("ThemeMode").ToString() == null)
+            {
+                SetAppConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), 0));
+                SaveAppConfig();
+            }
         }
 
         public static void InitUpdateSettings()
@@ -106,6 +116,7 @@ namespace Hi3Helper.Shared.Region
                 HideConsoleWindow();
         }
 
+        public static int GetAppExtractConfigValue() => GetAppConfigValue("ExtractionThread").ToInt() == 0 ? Environment.ProcessorCount : GetAppConfigValue("ExtractionThread").ToInt();
         public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
         public static void SetAppConfigValue(string key, object? value)
         {
@@ -125,6 +136,7 @@ namespace Hi3Helper.Shared.Region
                 { "CurrentRegion", new IniValue(0) },
                 { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
                 { "DownloadThread", new IniValue(8) },
+                { "ExtractionThread", new IniValue(0) },
                 { "GameFolder", new IniValue(AppGameFolder) },
 #if DEBUG
                 { "EnableConsole", new IniValue(true) },
@@ -132,6 +144,7 @@ namespace Hi3Helper.Shared.Region
                 { "EnableConsole", new IniValue(false) },
 #endif
                 { "DontAskUpdate", new IniValue(false) },
+                { "ThemeMode", new IniValue(AppThemeMode.Default) },
             });
 
             SaveAppConfig();

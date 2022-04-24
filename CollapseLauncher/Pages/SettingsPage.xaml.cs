@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
 using static Hi3Helper.InvokeProp;
@@ -26,6 +29,9 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
+            AppThemeSelection.SelectedIndex = (int)Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+            DownloadThreadsNumBox.Value = GetAppConfigValue("DownloadThread").ToInt();
+            ExtractionThreadsNumBox.Value = GetAppConfigValue("ExtractionThread").ToInt();
         }
 
         public bool EnableConsole { get { return Hi3Helper.Logger.EnableConsole; } }
@@ -130,5 +136,17 @@ namespace CollapseLauncher.Pages
                 }
             });
         }
+
+        private void ChangeThemeSelection(object sender, SelectionChangedEventArgs e)
+        {
+            SetAppConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), (sender as RadioButtons).SelectedIndex));
+            if (AppConfig.IsAppThemeNeedRestart)
+                AppThemeSelectionWarning.Visibility = Visibility.Visible;
+
+            AppConfig.IsAppThemeNeedRestart = true;
+        }
+
+        private void ChangeDownloadThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args) => SetAppConfigValue("DownloadThread", double.IsNaN(sender.Value) ? 8 : sender.Value);
+        private void ChangeExtractThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args) => SetAppConfigValue("ExtractionThread", double.IsNaN(sender.Value) ? 0 : sender.Value);
     }
 }

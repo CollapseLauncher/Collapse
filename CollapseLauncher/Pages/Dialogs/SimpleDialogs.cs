@@ -215,9 +215,9 @@ namespace CollapseLauncher.Dialogs
             await SpawnDialog(
                     "Oops! Game Installation is Corrupted",
                     string.Format(
-                        "Sorry but seems the downloaded Game Installation file."
+                        "Sorry but seems one of downloaded file has been corrupted."
                        + "\r\n\r\nServer Hash: {0}\r\nDownloaded Hash: {1}"
-                       + "\r\n\r\nDo you want to rerdownload the file?", sourceHash, downloadedHash),
+                       + "\r\n\r\nDo you want to redownload the file?", sourceHash, downloadedHash),
                     Content,
                     "No, Cancel",
                     "Yes, Redownload",
