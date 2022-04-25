@@ -112,9 +112,30 @@ namespace Hi3Helper.Preset
             }
             catch
             {
-                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (1 / en-us).", LogType.Warning);
-                return 1;
+                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning);
+                return 2;
             }
+        }
+
+        // WARNING!!!
+        // This feature is only available for Genshin.
+        public void SetVoiceLanguageID(int LangID)
+        {
+            string regValue;
+            RegistryKey keys;
+            GeneralDataProp initValue = new GeneralDataProp();
+            try
+            {
+                keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue("GENERAL_DATA_h2389025596", "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+                initValue = JsonConvert.DeserializeObject<GeneralDataProp>(regValue);
+            }
+            catch
+            {
+                keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+            }
+            initValue.deviceVoiceLanguageType = LangID;
+            keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(initValue, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include }) + '\0'));
         }
 
         // WARNING!!!
@@ -142,9 +163,60 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         class GeneralDataProp
         {
-            public int deviceLanguageType { get; set; }
-            public int deviceVoiceLanguageType { get; set; }
-            public ServerRegionID selectedServerName { get; set; }
+            public string deviceUUID { get; set; } = "";
+            public string userLocalDataVersionId { get; set; } = "";
+            public int deviceLanguageType { get; set; } = 1;
+            public int deviceVoiceLanguageType { get; set; } = 2;
+            public ServerRegionID? selectedServerName { get; set; } = ServerRegionID.os_asia;
+            public int localLevelIndex { get; set; } = 0;
+            public string deviceID { get; set; } = "";
+            public string targetUID { get; set; } = "";
+            public string curAccountName { get; set; } = "";
+            public string uiSaveData { get; set; } = "";
+            public string inputData { get; set; } = "";
+            // Initialize 60 fps limit if it's blank
+            public string graphicsData { get; set; } = "{\"customVolatileGrades\":[{\"key\":1,\"value\":2}]";
+            public string globalPerfData { get; set; } = "";
+            public int miniMapConfig { get; set; } = 1;
+            public bool enableCameraSlope { get; set; } = true;
+            public bool enableCameraCombatLock { get; set; } = true;
+            public bool completionPkg { get; set; } = false;
+            public bool completionPlayGoPkg { get; set; } = false;
+            public bool onlyPlayWithPSPlayer { get; set; } = false;
+            public bool needPlayGoFullPkgPatch { get; set; } = false;
+            public bool resinNotification { get; set; } = true;
+            public bool exploreNotification { get; set; } = true;
+            public int volumeGlobal { get; set; } = 10;
+            public int volumeSFX { get; set; } = 10;
+            public int volumeMusic { get; set; } = 10;
+            public int volumeVoice { get; set; } = 10;
+            public int audioAPI { get; set; } = -1;
+            public int audioDynamicRange { get; set; } = 0;
+            // Use Surround by default if it's blank
+            public int audioOutput { get; set; } = 1;
+            public bool _audioSuccessInit { get; set; } = true;
+            public bool enableAudioChangeAndroidMinimumBufferCapacity { get; set; } = true;
+            public int audioAndroidMiniumBufferCapacity { get; set; } = 2 << 10;
+            public bool motionBlur { get; set; } = true;
+            public bool gyroAiming { get; set; } = false;
+            public bool firstHDRSetting { get; set; } = true;
+            public double maxLuminosity { get; set; } = 0.0f;
+            public double uiPaperWhite { get; set; } = 0.0f;
+            public double scenePaperWhite { get; set; } = 0.0f;
+            public double gammaValue { get; set; } = 2.200000047683716f;
+            public IEnumerable<object> _overrideControllerMapKeyList { get; set; } = new List<object>();
+            public IEnumerable<object> _overrideControllerMapValueList { get; set; } = new List<object>();
+            public int lastSeenPreDownloadTime { get; set; } = 0;
+            public bool mtrCached { get; set; } = false;
+            public bool mtrIsOpen { get; set; } = false;
+            public int mtrMaxTTL { get; set; } = 0x20;
+            public int mtrTimeOut { get; set; } = 0x1388;
+            public int mtrTraceCount { get; set; } = 5;
+            public int mtrAbortTimeOutCount { get; set; } = 3;
+            public int mtrAutoTraceInterval { get; set; } = 0;
+            public int mtrTraceCDEachReason { get; set; } = 0x258;
+            public IEnumerable<object> _customDataKeyList { get; set; } = new List<object>();
+            public IEnumerable<object> _customDataValueList { get; set; } = new List<object>();
         }
 
         void SetFallbackGameFolder(string a, bool tryFallback = false)

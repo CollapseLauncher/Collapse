@@ -24,11 +24,14 @@ namespace CollapseLauncher.Pages
         string GameZipPath;
         string GameZipRemoteHash;
         string GameZipLocalHash;
+        long GameZipSize;
+        long GameZipRequiredSize;
 
         string GameZipVoiceUrl;
         string GameZipVoicePath;
         string GameZipVoiceRemoteHash;
         long GameZipVoiceSize;
+        long GameZipVoiceRequiredSize;
 
         RegionResourceVersion VoicePackFile = new RegionResourceVersion();
         InstallManagement InstallTool;

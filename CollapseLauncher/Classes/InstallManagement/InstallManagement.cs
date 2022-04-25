@@ -93,13 +93,28 @@ namespace CollapseLauncher
             CanSkipExtract = File.Exists(Path.Combine(GameDirPath, "@NoExtraction"));
         }
 
-        public void AddDownloadProperty(string URL, string OutputPath, string OutputDir, string RemoteHash) => DownloadProperty.Add(new DownloadAddressProperty
+        public void AddDownloadProperty(string URL, string OutputPath, string OutputDir, string RemoteHash, long RemoteRequiredSize) => DownloadProperty.Add(new DownloadAddressProperty
         {
             URL = URL,
             Output = OutputPath,
             DirectoryOutput = OutputDir,
             RemoteHash = RemoteHash,
+            RemoteRequiredSize = RemoteRequiredSize
         });
+
+        public async Task CheckDriveFreeSpace(UIElement Content)
+        {
+            DriveInfo _DriveInfo = new DriveInfo(GameDirPath);
+            long RequiredSpace = DownloadProperty.Sum(x => x.RemoteRequiredSize) - DownloadProperty.Sum(x => GetExistingPartialDownloadLength(x.Output));
+            long DiskSpace = new DriveInfo(GameDirPath).TotalFreeSpace;
+
+            if (DiskSpace < RequiredSpace)
+            {
+                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
+                throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace}, Drive: {_DriveInfo.Name}). Cancelling the task!");
+            }
+        }
+
 
         public void StartDownload()
         {
@@ -589,14 +604,25 @@ namespace CollapseLauncher
             // Build data_versions (silence)
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\silence_data_versions");
             ParentURL = $"{QueryProperty.ClientDesignDataSilURL}/AssetBundles";
-            using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                new HttpClientHelper(false).DownloadFile(ParentURL + "/data_versions", fs, Token);
-            
-            BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
+            // Remove read-only and system attribute from silence_data_version that was set by game.
+            try
+            {
+                if (File.Exists(ManifestPath + "_persist"))
+                {
+                    FileInfo _file = new FileInfo(ManifestPath + "_persist");
+                    _file.IsReadOnly = false;
+                }
+                using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
+                    new HttpClientHelper(false).DownloadFile(ParentURL + "/data_versions", fs, Token);
+
+                BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
+            }
+            catch { }
 
             // Build data_versions
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\data_versions");
             ParentURL = $"{QueryProperty.ClientDesignDataURL}/AssetBundles";
+            if (File.Exists(ManifestPath + "_persist")) File.Delete(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 new HttpClientHelper(false).DownloadFile(ParentURL + "/data_versions", fs, Token);
 
@@ -606,6 +632,7 @@ namespace CollapseLauncher
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\res_versions");
             ParentURL = $"{QueryProperty.ClientGameResURL}/StandaloneWindows64";
             ParentAudioURL = $"{QueryProperty.ClientAudioAssetsURL}/StandaloneWindows64";
+            if (File.Exists(ManifestPath + "_persist")) File.Delete(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 new HttpClientHelper(false).DownloadFile(ParentURL + "/release_res_versions_external", fs, Token);
 
@@ -820,6 +847,7 @@ namespace CollapseLauncher
             public string Output;
             public string DirectoryOutput;
             public long RemoteSize;
+            public long RemoteRequiredSize;
             public long LocalSize;
             public long LocalUncompressedSize;
             public bool IsCorrupted = false;

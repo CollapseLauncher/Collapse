@@ -358,6 +358,11 @@ namespace CollapseLauncher.Pages
                 }
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
+            catch (IOException ex)
+            {
+                LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName} because of IO Error!\r\n{ex}", Hi3Helper.LogType.Warning, true);
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
@@ -385,7 +390,9 @@ namespace CollapseLauncher.Pages
             if (string.IsNullOrEmpty(GameDirPath))
                 throw new OperationCanceledException();
 
-            TryAddVoicePack(GetUpdateDiffs());
+            // await TryAddVoicePack(GetUpdateDiffs());
+            await TrySetVoicePack(GetUpdateDiffs());
+            CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
 
             if (IsGameHasVoicePack)
             {
@@ -393,6 +400,7 @@ namespace CollapseLauncher.Pages
                 GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
                 GameZipVoiceRemoteHash = VoicePackFile.md5.ToLower();
                 GameZipVoiceSize = VoicePackFile.package_size;
+                GameZipVoiceRequiredSize = VoicePackFile.size;
             }
 
             while (!await DownloadGameClient(GameDirPath))
@@ -425,23 +433,8 @@ namespace CollapseLauncher.Pages
             gameIni.Profile["launcher"]["game_install_path"] = destinationFolder.Replace('\\', '/');
             SaveGameProfile();
             PrepareGameConfig();
-            // GamePkgVersionVerification();
-        }
-
-        private void GamePkgVersionVerification()
-        {
-            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            string PkgVersionPath = Path.Combine(GamePath, "pkg_version");
-
-            string[] PkgVersionData = File.ReadAllLines(PkgVersionPath);
-            int PkgVersionDataCount = PkgVersionData.Length - 1;
-
-            PkgVersionProperties pkgVersionProperties;
-
-            for (int i = 0; i < PkgVersionDataCount; i++)
-            {
-                pkgVersionProperties = JsonConvert.DeserializeObject<PkgVersionProperties>(PkgVersionData[i]);
-            }
+            if (IsGameHasVoicePack && (CurrentRegion.IsGenshin ?? false))
+                CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
         }
 
         /*
@@ -522,6 +515,7 @@ namespace CollapseLauncher.Pages
             GameZipUrl = regionResourceProp.data.game.latest.path;
             GameZipRemoteHash = regionResourceProp.data.game.latest.md5.ToLower();
             GameZipPath = Path.Combine(destinationFolder, Path.GetFileName(GameZipUrl));
+            GameZipRequiredSize = regionResourceProp.data.game.latest.size;
 
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -549,9 +543,9 @@ namespace CollapseLauncher.Pages
                                 CurrentRegion.GetRegServerNameID(),
                                 Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
 
-            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash);
+            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
             if (IsGameHasVoicePack)
-                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash);
+                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
 
             ProgressStatusGrid.Visibility = Visibility.Visible;
             UpdateGameBtn.Visibility = Visibility.Collapsed;
@@ -561,6 +555,7 @@ namespace CollapseLauncher.Pages
             InstallTool.InstallProgressChanged += InstallToolProgress;
             bool RetryRoutine = true;
 
+            await InstallTool.CheckDriveFreeSpace(Content);
             await InstallTool.CheckExistingDownloadAsync(Content);
 
             while (RetryRoutine)
@@ -1287,9 +1282,11 @@ namespace CollapseLauncher.Pages
             GameZipUrl = diff.path;
             GameZipRemoteHash = diff.md5.ToLower();
             GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
-            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash);
+            GameZipRequiredSize = diff.size;
 
-            TryAddVoicePack(GetUpdateDiffs(false));
+            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
+
+            await TryAddVoicePack(GetUpdateDiffs(false));
 
             if (IsGameHasVoicePack)
             {
@@ -1297,7 +1294,8 @@ namespace CollapseLauncher.Pages
                 GameZipVoiceRemoteHash = VoicePackFile.md5;
                 GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
                 GameZipVoiceSize = VoicePackFile.package_size;
-                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash);
+                GameZipVoiceRequiredSize = VoicePackFile.size;
+                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
             }
 
             try
@@ -1310,6 +1308,7 @@ namespace CollapseLauncher.Pages
                 InstallTool.InstallProgressChanged += InstallToolProgress;
                 bool RetryRoutine = true;
 
+                await InstallTool.CheckDriveFreeSpace(Content);
                 await InstallTool.CheckExistingDownloadAsync(Content);
 
                 while (RetryRoutine)
@@ -1323,7 +1322,12 @@ namespace CollapseLauncher.Pages
 
                 ApplyGameConfig(GameDirPath);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+                // OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
+            }
+            catch (IOException ex)
+            {
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                LogWriteLine($"Update cancelled because of IO Error!\r\n{ex}", Hi3Helper.LogType.Warning);
             }
             catch (OperationCanceledException)
             {
@@ -1684,17 +1688,61 @@ namespace CollapseLauncher.Pages
             File.Delete(patchListPath);
         }
 
-        private void TryAddVoicePack(in RegionResourceVersion diffVer)
+        private async Task TryAddVoicePack(RegionResourceVersion diffVer)
         {
+            int langID;
             if (diffVer.voice_packs != null
                 && diffVer.voice_packs.Count > 0)
             {
                 IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[CurrentRegion.GetVoiceLanguageID()];
+                VoicePackFile = diffVer.voice_packs[langID = CurrentRegion.GetVoiceLanguageID()];
+                VoicePackFile.languageID = langID;
                 return;
             }
             LogWriteLine($"This {CurrentRegion.ProfileName} region doesn't have Voice Pack");
             IsGameHasVoicePack = false;
+        }
+
+        private async Task TrySetVoicePack(RegionResourceVersion diffVer)
+        {
+            int langID;
+            if (diffVer.voice_packs != null
+                && diffVer.voice_packs.Count > 0)
+            {
+                IsGameHasVoicePack = true;
+                VoicePackFile = diffVer.voice_packs[langID = await Dialog_ChooseAudioLanguage(Content, EnumerateAudioLanguageString(diffVer))];
+                VoicePackFile.languageID = langID;
+                return;
+            }
+            LogWriteLine($"This {CurrentRegion.ProfileName} region doesn't have Voice Pack");
+            IsGameHasVoicePack = false;
+        }
+
+        private List<string> EnumerateAudioLanguageString(RegionResourceVersion diffVer)
+        {
+            List<string> value = new List<string>();
+            foreach (RegionResourceVersion Entry in diffVer.voice_packs)
+            {
+                switch (Entry.language)
+                {
+                    case "en-us":
+                        value.Add("English (US)");
+                        break;
+                    case "ja-jp":
+                        value.Add("Japanese");
+                        break;
+                    case "zh-cn":
+                        value.Add("Chinese (Simplified)");
+                        break;
+                    case "ko-kr":
+                        value.Add("Korean");
+                        break;
+                    default:
+                        value.Add(Entry.language);
+                        break;
+                }
+            }
+            return value;
         }
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)
@@ -1708,7 +1756,7 @@ namespace CollapseLauncher.Pages
             GameZipUrl = diffVer.path;
             GameZipRemoteHash = diffVer.md5.ToLower();
 
-            TryAddVoicePack(diffVer);
+            await TryAddVoicePack(diffVer);
 
             if (IsGameHasVoicePack)
             {

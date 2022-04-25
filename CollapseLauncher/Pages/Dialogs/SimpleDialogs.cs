@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.UI.Xaml;
@@ -66,6 +68,33 @@ namespace CollapseLauncher.Dialogs
                     null,
                     null
                 );
+
+        public static async Task<int> Dialog_ChooseAudioLanguage(UIElement Content, List<string> langlist)
+        {
+            // Default: 2 (Japanese)
+            int index = 2;
+            StackPanel Panel = new StackPanel();
+            ComboBox LangBox = new ComboBox()
+            {
+                PlaceholderText = "Select your Audio Language",
+                Width = 256,
+                ItemsSource = langlist,
+                SelectedIndex = index,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            Panel.Children.Add(new TextBlock()
+            {
+                Text = $"Before you install the game, you need to choose which audio language you want to use (Default: Japanese):",
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0,0,0,16)
+            });
+            Panel.Children.Add(LangBox);
+            await SpawnDialog("Choose Audio Language", Panel, Content, null, "Next", null);
+
+            index = LangBox.SelectedIndex;
+
+            return index;
+        }
 
         public static async Task<ContentDialogResult> Dialog_AdditionalDownloadNeeded(UIElement Content, long fileSize) =>
             await SpawnDialog(
@@ -241,12 +270,25 @@ namespace CollapseLauncher.Dialogs
             await SpawnDialog(
                     "Resume Download?",
                     string.Format("You have downloaded {0}/{1} of the game previously.\r\n\r\nDo you want to continue?",
-                                  ConverterTool.SummarizeSizeSimple(partialLength),
-                                  ConverterTool.SummarizeSizeSimple(contentLength)),
+                                  SummarizeSizeSimple(partialLength),
+                                  SummarizeSizeSimple(contentLength)),
                     Content,
                     null,
                     "Yes, Resume",
                     "No, Start from Beginning"
+                );
+
+        public static async Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement Content, long DriveFreeSpace, long RequiredSpace, string DriveLetter) =>
+            await SpawnDialog(
+                    "Disk space is insufficient",
+                    string.Format("You don't have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}.\r\n\r\nPlease make sure you have enough disk space before installing.",
+                                  SummarizeSizeSimple(DriveFreeSpace),
+                                  SummarizeSizeSimple(RequiredSpace),
+                                  DriveLetter),
+                    Content,
+                    null,
+                    "Okay",
+                    null
                 );
 
         public static async Task<ContentDialogResult> Dialog_RelocateFolder(UIElement Content) =>
@@ -284,7 +326,7 @@ namespace CollapseLauncher.Dialogs
                 );
 
         public static async Task<ContentDialogResult> SpawnDialog(
-            string title, string content, UIElement Content,
+            string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary) =>
             await new ContentDialog

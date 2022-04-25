@@ -19,6 +19,7 @@ namespace CollapseLauncher.Pages
         public SettingsPage()
         {
             this.InitializeComponent();
+            LoadAppConfig();
             this.DataContext = this;
 
             string Version = $" {Assembly.GetExecutingAssembly().GetName().Version}";
@@ -137,16 +138,31 @@ namespace CollapseLauncher.Pages
             });
         }
 
+        bool IsFirstChangeThemeSelection = false;
         private void ChangeThemeSelection(object sender, SelectionChangedEventArgs e)
         {
             SetAppConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), (sender as RadioButtons).SelectedIndex));
             if (AppConfig.IsAppThemeNeedRestart)
                 AppThemeSelectionWarning.Visibility = Visibility.Visible;
 
-            AppConfig.IsAppThemeNeedRestart = true;
+            if (IsFirstChangeThemeSelection)
+                AppConfig.IsAppThemeNeedRestart = true;
+            IsFirstChangeThemeSelection = true;
         }
 
-        private void ChangeDownloadThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args) => SetAppConfigValue("DownloadThread", double.IsNaN(sender.Value) ? 8 : sender.Value);
-        private void ChangeExtractThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args) => SetAppConfigValue("ExtractionThread", double.IsNaN(sender.Value) ? 0 : sender.Value);
+        bool IsFirstDownloadThreadsValue = false;
+        private void ChangeDownloadThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            if (IsFirstDownloadThreadsValue)
+                SetAppConfigValue("DownloadThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
+            IsFirstDownloadThreadsValue = true;
+        }
+        bool IsFirstExtractThreadsValue = false;
+        private void ChangeExtractThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            if (IsFirstExtractThreadsValue)
+                SetAppConfigValue("ExtractionThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
+            IsFirstExtractThreadsValue = true;
+        }
     }
 }

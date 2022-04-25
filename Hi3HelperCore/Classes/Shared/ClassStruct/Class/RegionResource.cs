@@ -29,6 +29,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public long package_size { get; set; }
         public string md5 { get; set; }
         public string language { get; set; }
+        public int? languageID { get; set; }
         public bool is_recommended_update { get; set; }
         public string entry { get; set; }
         public List<RegionResourceVersion> voice_packs { get; set; }
