@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.13.0
+AppVersion=1.0.20.1
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.13.0
+VersionInfoVersion=1.0.20.1
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.13.0
-VersionInfoProductTextVersion=1.0.13.0-preview
+VersionInfoProductVersion=1.0.20.1
+VersionInfoProductTextVersion=1.0.20.1-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -87,16 +87,16 @@ Source: "..\..\CollapseLauncher-ReleaseRepo\preview\PInvoke.User32.dll"; DestDir
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\PInvoke.Windows.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\PInvoke.Windows.ShellScalingApi.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\resources.pri"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\preview\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\System.Collections.Immutable.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\System.Drawing.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Validation.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\WinRT.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\7z.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\HPatchZ.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\ironmaiden_logo_256.png"; DestDir: "{app}\Assets"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\AiHappy.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\default.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\config\fileconfig.json"; DestDir: "{app}\config"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\7z.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\HPatchZ.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0

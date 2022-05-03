@@ -88,7 +88,7 @@
                         </TransitionCollection>
                     </Frame.ContentTransitions>
                 </Frame>
-                <Grid x:Name="LoadingPopup" Background="{StaticResource LoadingBrush}" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
+                <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                         <TextBlock x:Name="LoadingTitle" Text="Loading Region" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
