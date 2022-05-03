@@ -43,12 +43,24 @@ namespace CollapseLauncher
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
+                Task.Run(() => CheckRunningGameInstance());
+
                 InitializeStartup().GetAwaiter();
             }
             catch (Exception ex)
             {
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+        }
+
+        private async void CheckRunningGameInstance()
+        {
+            while (true && !App.IsAppKilled)
+            {
+                string execName = Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName);
+                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
+                await Task.Delay(3000);
             }
         }
 
