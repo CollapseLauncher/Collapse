@@ -20,7 +20,7 @@ namespace Hi3Helper.Shared.GameConversion
     {
         private string targetPath;
         private string endpointURL;
-        private HttpClientToolLegacy httpClient;
+        private HttpClientHelper http;
         private Stream stream;
         private CancellationTokenSource tokenSource;
         private Stopwatch sw;
@@ -46,7 +46,7 @@ namespace Hi3Helper.Shared.GameConversion
             this.targetPath = targetPath;
             this.endpointURL = endpointURL;
             this.tokenSource = tokenSource;
-            this.httpClient = new HttpClientToolLegacy();
+            this.http = new HttpClientHelper();
         }
 
         public void StartCheckIntegrity()
@@ -61,15 +61,17 @@ namespace Hi3Helper.Shared.GameConversion
         private void FetchAPI()
         {
             CheckStatus = "Fetching API";
-            httpClient.ProgressChanged += HttpAdaptor;
-            httpClient.DownloadStream(endpointURL, stream = new MemoryStream(), tokenSource.Token);
-            httpClient.ProgressChanged -= HttpAdaptor;
 
-            FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>
-                (Encoding.UTF8.GetString((stream as MemoryStream)
-                .ToArray()));
+            using (stream = new MemoryStream())
+            {
+                http.DownloadProgress += HttpAdapter;
+                http.DownloadFile(endpointURL, stream, tokenSource.Token, -1, -1, false);
+                http.DownloadProgress -= HttpAdapter;
 
-            stream.Dispose();
+                FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>
+                    (Encoding.UTF8.GetString((stream as MemoryStream)
+                    .ToArray()));
+            }
         }
 
         public List<FilePropertiesRemote> GetNecessaryFileList() => BrokenFileIndexesProperty;
@@ -239,9 +241,9 @@ namespace Hi3Helper.Shared.GameConversion
 
         private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
 
-        private void HttpAdaptor(object sender, DownloadProgressChanged e)
+        private void HttpAdapter(object sender, HttpClientHelper._DownloadProgress e)
         {
-            OnProgressChanged(new CheckIntegrityChanged(e.BytesReceived, e.TotalBytesToReceive, sw.Elapsed.TotalSeconds)
+            OnProgressChanged(new CheckIntegrityChanged(e.DownloadedSize, e.TotalSizeToDownload, sw.Elapsed.TotalSeconds)
             {
                 Message = $"{CheckStatus}"
             });

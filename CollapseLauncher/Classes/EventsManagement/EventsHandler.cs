@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -43,7 +43,7 @@ namespace CollapseLauncher
                         string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
                         UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
 
-                        if (CurrentVersion.ToLower() != UpdateProperty.ver.ToLower())
+                        if (CompareIsNewer(CurrentVersion, UpdateProperty.ver))
                             GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = UpdateProperty.ver });
                         else
                             GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = UpdateProperty.ver });
@@ -58,6 +58,24 @@ namespace CollapseLauncher
                 // Delay for 15 mins
                 await Task.Delay(900 * 1000);
             }
+        }
+
+        public static bool CompareIsNewer(string Input, string Output)
+        {
+            byte[] LocalVersion = Input.Split('.')
+                .Select(x => byte.Parse(x))
+                .ToArray();
+
+            byte[] RemoteVersion = Output.Split('.')
+                .Select(x => byte.Parse(x))
+                .ToArray();
+
+            if (RemoteVersion[0] > LocalVersion[0]) return true;
+            if (RemoteVersion[1] > LocalVersion[1]) return true;
+            if (RemoteVersion[2] > LocalVersion[2]) return true;
+            if (RemoteVersion[3] > LocalVersion[3]) return true;
+
+            return false;
         }
 
         public class Prop

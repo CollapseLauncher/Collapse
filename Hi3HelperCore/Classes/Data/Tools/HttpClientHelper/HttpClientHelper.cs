@@ -39,7 +39,7 @@ namespace Hi3Helper.Data
         public async Task DownloadFileAsync(string Input, string Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1) =>
             await DownloadFileAsync(Input, new FileStream(Output, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write), Token, StartOffset, EndOffset);
 
-        public async Task DownloadFileAsync(string Input, Stream Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1)
+        public async Task DownloadFileAsync(string Input, Stream Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1, bool DisposeStream = true)
         {
             this._InputURL = Input;
             this._OutputStream = Output;
@@ -50,6 +50,7 @@ namespace Hi3Helper.Data
             this._LastContinuedSize = 0;
             this._DownloadState = State.Downloading;
             this._IsFileAlreadyCompleted = false;
+            this._DisposeStream = DisposeStream;
 
             try
             {
@@ -82,6 +83,7 @@ namespace Hi3Helper.Data
             this._DownloadState = State.Downloading;
             this._IsFileAlreadyCompleted = false;
             this._UseStreamOutput = false;
+            this._DisposeStream = true;
 
             try
             {
@@ -111,8 +113,8 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void DownloadFile(string Input, Stream Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1) =>
-            DownloadFileAsync(Input, Output, Token, StartOffset, EndOffset).GetAwaiter().GetResult();
+        public void DownloadFile(string Input, Stream Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1, bool DisposeStream = true) =>
+            DownloadFileAsync(Input, Output, Token, StartOffset, EndOffset, DisposeStream).GetAwaiter().GetResult();
         public void DownloadFile(string Input, string Output, CancellationToken Token, long StartOffset = -1, long EndOffset = -1) =>
             DownloadFileAsync(Input, Output, Token, StartOffset, EndOffset).GetAwaiter().GetResult();
         public void DownloadFile(string Input, string Output, int DownloadThread, CancellationToken Token) =>

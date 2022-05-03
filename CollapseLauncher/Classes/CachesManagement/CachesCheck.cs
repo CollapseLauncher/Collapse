@@ -28,7 +28,7 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         ObservableCollection<DataPropertiesUI> brokenCachesListUI = new ObservableCollection<DataPropertiesUI>();
 
-        HttpClientToolLegacy httpClient = new HttpClientToolLegacy();
+        HttpClientHelper http = new HttpClientHelper();
         Stream cachesStream;
         FileInfo cachesFileInfo;
         string[] cacheRegionalCheckName = new string[1] { "sprite" };
@@ -84,7 +84,7 @@ namespace CollapseLauncher.Pages
                         UpdateCachesBtn.Visibility = Visibility.Collapsed;
                         CancelBtn.IsEnabled = false;
                     });
-                    httpClient.ProgressChanged -= DataFetchingProgress;
+                    http.DownloadProgress -= DataFetchingProgress;
                 }
                 catch (Exception ex)
                 {
@@ -100,28 +100,29 @@ namespace CollapseLauncher.Pages
             cachesList = new List<DataProperties>();
             foreach (CachesType type in Enum.GetValues(typeof(CachesType)))
             {
-                cachesStream = new MemoryStream();
-                cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
-                LogWriteLine($"Fetching CachesType: {type}");
+                using (cachesStream = new MemoryStream())
+                {
+                    cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
+                    LogWriteLine($"Fetching CachesType: {type}");
 
-                DispatcherQueue.TryEnqueue(() => CachesStatus.Text = $"Fetching Caches Type: {type}");
+                    DispatcherQueue.TryEnqueue(() => CachesStatus.Text = $"Fetching Caches Type: {type}");
 
-                httpClient.ProgressChanged += DataFetchingProgress;
-                httpClient.DownloadStream(cachesAPIURL, cachesStream, cancellationTokenSource.Token);
-                httpClient.ProgressChanged -= DataFetchingProgress;
+                    http.DownloadProgress += DataFetchingProgress;
+                    http.DownloadFile(cachesAPIURL, cachesStream, cancellationTokenSource.Token, -1, -1, false);
+                    http.DownloadProgress -= DataFetchingProgress;
 
-                cacheCatalog = JsonConvert.DeserializeObject<DataProperties>(
-                    Encoding.UTF8.GetString(
-                        (cachesStream as MemoryStream).GetBuffer()
-                    ));
+                    cacheCatalog = JsonConvert.DeserializeObject<DataProperties>(
+                        Encoding.UTF8.GetString(
+                            (cachesStream as MemoryStream).GetBuffer()
+                        ));
 
-                if (cacheCatalog.HashSalt != null)
-                    Pkcs1Salt = cacheCatalog.HashSalt;
+                    if (cacheCatalog.HashSalt != null)
+                        Pkcs1Salt = cacheCatalog.HashSalt;
 
-                EliminateNonRegionalCaches(cacheCatalog);
+                    EliminateNonRegionalCaches(cacheCatalog);
 
-                cacheCatalog.DataType = type;
-                cachesStream.Dispose();
+                    cacheCatalog.DataType = type;
+                }
 
                 LogWriteLine($"Cache Metadata:"
                     + $"\r\n\t\tDate (Local Time) = {DateTimeOffset.FromUnixTimeSeconds(cacheCatalog.Timestamp).ToLocalTime().ToString("dddd, dd MMMM yyyy HH:mm:ss")}"
@@ -297,7 +298,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void DataFetchingProgress(object sender, DownloadProgressChanged e)
+        private void DataFetchingProgress(object sender, HttpClientHelper._DownloadProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {

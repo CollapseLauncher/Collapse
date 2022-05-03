@@ -39,9 +39,12 @@ namespace Hi3Helper
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        [DllImport(@"Lib\HPatchZ.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int hpatch(string oldFileName, string diffFileName, string outNewFileName,
+        [DllImport(@"Lib\HPatchZ.dll", EntryPoint="hpatch", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,
             bool isLoadOldAll, UIntPtr patchCacheSize, long diffDataOffert, long diffDataSize);
+
+        [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch_cmd_line", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int HPatchCommand(int argc, string[] argv);
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;

@@ -21,7 +21,7 @@ namespace Hi3Helper.Shared.GameConversion
     {
         private string targetPath;
         private string endpointURL;
-        private HttpClientToolLegacy httpClient;
+        private HttpClientHelper http;
         private Stream stream;
         private Stream bufferStream;
         private CancellationTokenSource tokenSource;
@@ -48,7 +48,7 @@ namespace Hi3Helper.Shared.GameConversion
             this.targetPath = targetPath;
             this.endpointURL = endpointURL;
             this.tokenSource = tokenSource;
-            this.httpClient = new HttpClientToolLegacy();
+            this.http = new HttpClientHelper();
             this.BrokenFileIndexesProperty = FileList;
         }
 
@@ -88,30 +88,22 @@ namespace Hi3Helper.Shared.GameConversion
 
             FileInfo = new FileInfo(FilePath);
 
-            if (FileIndex.FT == FileType.Generic)
-                FileURL = endpointURL + FileIndex.N;
-            else
-                FileURL = endpointURL + Path.GetDirectoryName(FileIndex.N).Replace('\\', '/') + $"/{FileIndex.RN}";
-            
+            FileURL = endpointURL + 
+                (FileIndex.FT == FileType.Generic ? FileIndex.N :
+                                                    Path.GetDirectoryName(FileIndex.N).Replace('\\', '/') + $"/{FileIndex.RN}");
+
+            http.DownloadProgress += HttpAdapter;
+
             if (FileIndex.S == 0)
-            {
                 FileInfo.Create();
-            }
             else
-            {
-                if (FileIndex.S > 104857600)
-                {
-                    httpClient.PartialProgressChanged += HttpMultiSessionAdaptor;
-                    httpClient.DownloadFileMultipleSession(FileURL, FilePath, "", DownloadThread, tokenSource.Token);
-                    httpClient.PartialProgressChanged -= HttpMultiSessionAdaptor;
-                }
-                else
-                {
-                    httpClient.ProgressChanged += HttpAdaptor;
-                    httpClient.DownloadStream(FileURL, stream = FileInfo.Create(), tokenSource.Token);
-                    httpClient.ProgressChanged -= HttpAdaptor;
-                }
-            }
+                if (FileIndex.S > 10 << 20)
+                http.DownloadFile(FileURL, FilePath, DownloadThread, tokenSource.Token);
+            else
+                using (stream = FileInfo.Create())
+                    http.DownloadFile(FileURL, stream, tokenSource.Token, -1, -1, false);
+
+            http.DownloadProgress -= HttpAdapter;
         }
 
         private void ConvertBlockFile()
@@ -129,15 +121,14 @@ namespace Hi3Helper.Shared.GameConversion
                 if (FileInfo.Exists && FileInfo.Length != block.BlockSize)
                     FileInfo.Delete();
 
+                http.DownloadProgress += HttpAdapter;
                 if (!FileInfo.Exists)
                 {
                     TotalCount++;
                     CheckStatus = $"Downloading {FileIndex.FT} [{TotalCount}/{TotalCountToRead}]: {block.BlockHash}";
 
-                    httpClient.ProgressChanged += HttpAdaptor;
-                    httpClient.DownloadStream(FileURL, stream = FileInfo.Create(), tokenSource.Token);
-                    httpClient.ProgressChanged -= HttpAdaptor;
-                    stream.Dispose();
+                    using (stream = FileInfo.Create())
+                        http.DownloadFile(FileURL, stream, tokenSource.Token, -1, -1, false);
                 }
                 else
                 {
@@ -146,45 +137,28 @@ namespace Hi3Helper.Shared.GameConversion
                         foreach (var chunk in block.BlockContent)
                         {
                             TotalCount++;
-                            bufferStream = new MemoryStream();
-                            
                             CheckStatus = $"Downloading {FileIndex.FT} [{TotalCount}/{TotalCountToRead}]: {block.BlockHash} -> (0x{chunk._startoffset.ToString("x8")} | S: 0x{chunk._filesize.ToString("x8")})";
 
                             stream.Position = chunk._startoffset;
 
-                            httpClient.ProgressChanged += HttpAdaptor;
-                            httpClient.DownloadStream(FileURL, bufferStream, tokenSource.Token,
-                                chunk._startoffset, chunk._startoffset + chunk._filesize);
-                            httpClient.ProgressChanged -= HttpAdaptor;
-
-                            stream.Write((bufferStream as MemoryStream).GetBuffer(), 0, (int)chunk._filesize);
-                            bufferStream.Dispose();
+                            using (stream = FileInfo.Create())
+                                http.DownloadFile(FileURL, stream, tokenSource.Token, chunk._startoffset, chunk._startoffset + chunk._filesize, false);
                         }
                     }
                 }
+                http.DownloadProgress -= HttpAdapter;
             }
         }
 
-        private void HttpAdaptor(object sender, DownloadProgressChanged e)
+        private void HttpAdapter(object sender, HttpClientHelper._DownloadProgress e)
         {
-            TotalRead += e.CurrentReceived;
+            if (e.DownloadState == HttpClientHelper.State.Downloading)
+                TotalRead += e.CurrentRead;
+
             OnProgressChanged(new ConversionTaskChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
             {
                 Message = $"{CheckStatus}"
             });
-        }
-
-        private void HttpMultiSessionAdaptor(object sender, PartialDownloadProgressChanged e)
-        {
-            if (e.DownloadState == DownloadState.Downloading)
-            {
-                TotalRead += e.CurrentReceived;
-
-                OnProgressChanged(new ConversionTaskChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
-                {
-                    Message = $"{CheckStatus}"
-                });
-            }
         }
 
         protected virtual void OnProgressChanged(ConversionTaskChanged e) => ProgressChanged?.Invoke(this, e);

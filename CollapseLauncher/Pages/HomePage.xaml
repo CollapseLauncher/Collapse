@@ -185,19 +185,23 @@
                             Grid.Column="0" Grid.Row="2" 
                             VerticalAlignment="Stretch"
                             PointerEntered="AnimateGameRegSettingIcon_Start"
-                            PointerExited="AnimateGameRegSettingIcon_End">
+                            PointerExited="AnimateGameRegSettingIcon_End"
+                            Shadow="{StaticResource SharedShadow}">
                         <Button.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <AnimatedIcon x:Name='GameRegionSettingIcon' Width="24">
-                                    <AnimatedIcon.Source>
-                                        <animatedvisuals:AnimatedSettingsVisualSource/>
-                                    </AnimatedIcon.Source>
-                                    <AnimatedIcon.FallbackIconSource>
-                                        <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
-                                    </AnimatedIcon.FallbackIconSource>
-                                </AnimatedIcon>
-                                <TextBlock Text="Game Settings" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
-                            </StackPanel>
+                            <Grid>
+                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource GameSettingsBtnBrush}" Margin="-16"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <AnimatedIcon x:Name='GameRegionSettingIcon' Width="24">
+                                        <AnimatedIcon.Source>
+                                            <animatedvisuals:AnimatedSettingsVisualSource/>
+                                        </AnimatedIcon.Source>
+                                        <AnimatedIcon.FallbackIconSource>
+                                            <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
+                                        </AnimatedIcon.FallbackIconSource>
+                                    </AnimatedIcon>
+                                    <TextBlock Text="Game Settings" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
+                                </StackPanel>
+                            </Grid>
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
@@ -233,6 +237,14 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <SymbolIcon Symbol="Delete"/>
                                                 <TextBlock Text="Uninstall Game" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
+                                    <Button x:Name="ConvertVersionButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <SymbolIcon Symbol="Switch"/>
+                                                <TextBlock Text="Convert Version" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>

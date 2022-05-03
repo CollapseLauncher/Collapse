@@ -52,69 +52,87 @@ namespace CollapseLauncher.Updater
         [STAThread]
         public static void Main(string[] args)
         {
-            argument = args;
-
-            if (argument.Length > 0)
+            try
             {
-                if (argument[0].ToLower() == "reindex" && argument.Length > 2)
+                Hi3Helper.InvokeProp.InitializeConsole();
+                LogWriteLine($"This console is for debugging purposes. It will close itself after all tasks on main thread are completed.");
+                argument = args;
+
+                if (argument.Length > 0)
                 {
-                    new Reindexer(argument[1], argument[2]).RunReindex();
-                    return;
-                }
-
-                if (argument[0].ToLower() == "update")
-                    new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
-
-                if (argument[0].ToLower() == "elevateupdate")
-                {
-                    string execPath = Process.GetCurrentProcess().MainModule.FileName;
-                    string sourcePath = Path.Combine(Path.GetDirectoryName(execPath), Path.GetFileName(execPath));
-                    string elevatedPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
-
-                    if (File.Exists(elevatedPath))
-                        File.Delete(elevatedPath);
-
-                    File.Copy(sourcePath, elevatedPath);
-                    var elevatedProc = new Process()
+                    if (argument[0].ToLower() == "reindex" && argument.Length > 2)
                     {
-                        StartInfo = new ProcessStartInfo
-                        {
-                            FileName = elevatedPath,
-                            Arguments = $"update {argument[1]} {argument[2]}",
-                            UseShellExecute = true,
-                            Verb = "runas"
-                        }
-                    };
-                    try
-                    {
-                        elevatedProc.Start();
-                        elevatedProc.WaitForExit();
+                        new Reindexer(argument[1], argument[2]).RunReindex();
+                        return;
                     }
-                    catch { }
-                    File.Delete(elevatedPath);
+
+                    if (argument[0].ToLower() == "update")
+                        new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
+
+                    if (argument[0].ToLower() == "elevateupdate")
+                    {
+                        string execPath = Process.GetCurrentProcess().MainModule.FileName;
+                        string sourcePath = Path.Combine(Path.GetDirectoryName(execPath), Path.GetFileName(execPath));
+                        string elevatedPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
+
+                        if (File.Exists(elevatedPath))
+                            File.Delete(elevatedPath);
+
+                        File.Copy(sourcePath, elevatedPath);
+                        var elevatedProc = new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = elevatedPath,
+                                Arguments = $"update {argument[1]} {argument[2]}",
+                                UseShellExecute = true,
+                                Verb = "runas"
+                            }
+                        };
+                        try
+                        {
+                            elevatedProc.Start();
+                            elevatedProc.WaitForExit();
+                        }
+                        catch { }
+                        File.Delete(elevatedPath);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex}");
+                Console.ReadLine();
             }
         }
 
         public MainWindow()
         {
-            InitializeComponent();
-
-            this.Title = "Updating Collapse Launcher...";
-
-            updater = new Updater(argument[1], argument[2]);
-            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-            updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-
-            InitLog(false);
-
-            Task.Run(() =>
+            try
             {
-                updater.StartFetch();
-                updater.StartCheck();
-                updater.StartUpdate();
-                updater.FinishUpdate();
-            });
+                InitializeComponent();
+
+                this.Title = "Updating Collapse Launcher...";
+
+                updater = new Updater(argument[1], argument[2]);
+                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
+
+                // InitLog(false);
+
+                Task.Run(() =>
+                {
+                    updater.StartFetch();
+                    updater.StartCheck();
+                    updater.StartUpdate();
+                    updater.FinishUpdate();
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex}");
+                Console.ReadLine();
+            }
         }
 
         private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
@@ -161,7 +179,7 @@ namespace CollapseLauncher.Updater
         public Updater(string TargetFolder, string ChannelName)
         {
             this.ChannelURL = string.Format(RepoURL, ChannelName);
-            this.TargetPath = TargetFolder.Replace('/', '\\');
+            this.TargetPath = NormalizePath(TargetFolder);
             this.TempPath = Path.Combine(TargetPath, "_Temp");
 
             if (Directory.Exists(TempPath))

@@ -27,9 +27,7 @@ namespace CollapseLauncher
             MemoryStream memoryStream = new MemoryStream();
             try
             {
-                httpClient = new HttpClientToolLegacy();
                 httpHelper = new HttpClientHelper(false);
-                httpClient4Img = new HttpClientToolLegacy();
                 regionNewsProp = new HomeMenuPanel();
                 regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
                 regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();

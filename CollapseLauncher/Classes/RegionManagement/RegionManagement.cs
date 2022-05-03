@@ -18,9 +18,7 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        HttpClientToolLegacy httpClient;
         HttpClientHelper httpHelper;
-        HttpClientToolLegacy httpClient4Img;
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
         Task loader = new Task(() => { });
@@ -32,6 +30,7 @@ namespace CollapseLauncher
             loadRegionComplete = false;
             CurrentRegion = ConfigStore.Config[regionIndex];
             previousTag = "launcher";
+            // HideBackgroundImage();
             LoadGameRegionFile();
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "" );
@@ -48,6 +47,7 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
             InitRegKey();
             await HideLoadingPopup(true, "Loading Region", CurrentRegion.ZoneName);
+            // HideBackgroundImage(false);
         }
 
         private async Task<bool> TryGetRegionResource()

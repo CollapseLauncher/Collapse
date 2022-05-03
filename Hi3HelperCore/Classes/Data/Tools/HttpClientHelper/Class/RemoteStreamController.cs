@@ -15,7 +15,8 @@ namespace Hi3Helper.Data
         private int _DownloadBufferSize = 4 << 11; // 8 KiB
 
         private Stream _OutputStream;
-        private bool _UseStreamOutput;
+        private bool _UseStreamOutput,
+                     _DisposeStream;
 
         private Stream GetFileStream(string FileName, bool ForceCreateNew = false) =>
             new FileStream(FileName, ForceCreateNew ? FileMode.Create : FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write);
@@ -40,7 +41,8 @@ namespace Hi3Helper.Data
 
         private Stream SeekStreamToEnd(Stream stream)
         {
-            stream.Seek(0, SeekOrigin.End);
+            if (this._DisposeStream)
+                stream.Seek(0, SeekOrigin.End);
             return stream;
         }
 

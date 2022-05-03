@@ -16,6 +16,7 @@
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
         <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+        <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
         <Border x:Name="AppTitleBar"
                 IsHitTestVisible="True"
                 VerticalAlignment="Top"
@@ -79,11 +80,7 @@
             </NavigationView.MenuItems>
 
             <Grid Margin="0,0,0,0">
-                <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Image.RenderTransform>
-                        <TranslateTransform />
-                    </Image.RenderTransform>
-                </Image>
+                <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>
                         <TransitionCollection>

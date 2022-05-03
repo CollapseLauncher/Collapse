@@ -47,20 +47,18 @@ namespace Hi3Helper.Data
          */
         public void GetDataDict(PresetConfigClasses i, byte dataType)
         {
-            HttpClientToolLegacy downloader = new HttpClientToolLegacy();
+            HttpClientHelper httpTool = new HttpClientHelper();
             string LocalDirPath = Path.Combine(Environment.GetEnvironmentVariable("userprofile"), $"AppData\\LocalLow\\miHoYo\\{Path.GetFileName(i.ConfigRegistryLocation)}\\{(dataType > 0 ? "Resources" : "Data")}");
             string RemotePath = dataType == 1 ? RemoteURL.Event : dataType == 2 ? RemoteURL.Ai : RemoteURL.Data;
             string LocalPath;
             MemoryStream memoryData = new MemoryStream();
 
-            downloader.DownloadStream(
-                dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
+            httpTool.DownloadFile(dataType == 1 ? RemoteURL.EventDictionary : dataType == 2 ? RemoteURL.AiDictionary : RemoteURL.DataDictionary,
                 memoryData,
                 new System.Threading.CancellationToken(),
                 -1,
                 -1,
-                $"Fetch to buffer: {Enum.GetName(typeof(ConfigStore.DataType), dataType)} list"
-                );
+                false);
             
 
 #if NETCOREAPP

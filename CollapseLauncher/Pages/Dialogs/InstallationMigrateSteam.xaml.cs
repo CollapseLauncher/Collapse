@@ -1,11 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Storage;
+﻿using Windows.Storage;
 using Windows.Storage.Pickers;
 using System;
 using System.Collections.Generic;
@@ -14,14 +7,10 @@ using System.Linq;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.InteropServices;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
-using Microsoft.Win32;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
-using CollapseLauncher.Dialogs;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 
 using Hi3Helper.Data;
@@ -32,9 +21,6 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Logger;
 using static Hi3Helper.InvokeProp;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace CollapseLauncher.Dialogs
 {
@@ -59,7 +45,7 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
-        public async void StartMigrationProcess()
+        public async Task StartMigrationProcess()
         {
             try
             {
@@ -399,9 +385,9 @@ namespace CollapseLauncher.Dialogs
                 throw new OperationCanceledException();
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            StartMigrationProcess();
+            await StartMigrationProcess();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace CollapseLauncher.Pages
             CheckFilesBtn.IsEnabled = true;
             RepairFilesBtn.Visibility = Visibility.Collapsed;
 
-            httpClient.ProgressChanged -= DataFetchingProgress;
+            http.DownloadProgress -= DataFetchingProgress;
 
             cancellationTokenSource.Cancel();
         }

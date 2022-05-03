@@ -26,6 +26,7 @@ namespace CollapseLauncher.Pages
             {
                 try
                 {
+                    SpeedStopwatch = Stopwatch.StartNew();
                     cachesRead = 0;
                     cachesCount = 0;
                     cancellationTokenSource = new CancellationTokenSource();
@@ -63,8 +64,11 @@ namespace CollapseLauncher.Pages
                         UpdateCachesBtn.Visibility = Visibility.Collapsed;
                         CancelBtn.IsEnabled = false;
                     });
+                    /*
                     httpClient.ProgressChanged -= CachesDownloadProgress;
                     httpClient.PartialProgressChanged -= CachesPartialDownloadProgress;
+                    */
+                    http.DownloadProgress -= CachesDownloadProgress;
                 }
                 catch (Exception ex)
                 {
@@ -76,6 +80,7 @@ namespace CollapseLauncher.Pages
         private void DownloadCachesUpdate()
         {
             string cachesPathType;
+            int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
             foreach (DataProperties dataType in brokenCachesList)
             {
                 switch (dataType.DataType)
@@ -88,7 +93,7 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                cachesEndpointURL = String.Format(CurrentRegion.CachesEndpointURL, dataType.DataType.ToString().ToLower());
+                cachesEndpointURL = string.Format(CurrentRegion.CachesEndpointURL, dataType.DataType.ToString().ToLower());
                 LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
                 foreach (DataPropertiesContent content in dataType.Content)
                 {
@@ -106,13 +111,15 @@ namespace CollapseLauncher.Pages
                         CachesStatus.Text = $"Downloading {dataType.DataType}: {content.N}";
                     });
 
-                    httpClient.ProgressChanged += CachesDownloadProgress;
-                    httpClient.DownloadStream(cachesURL, cachesStream = cachesFileInfo.Create(), cancellationTokenSource.Token);
-                    httpClient.ProgressChanged -= CachesDownloadProgress;
+                    http.DownloadProgress += CachesDownloadProgress;
+                    if (content.CS >= 10 << 20)
+                        http.DownloadFile(cachesURL, cachesPath, DownloadThread, cancellationTokenSource.Token);
+                    else
+                        using (cachesStream = cachesFileInfo.Create())
+                            http.DownloadFile(cachesURL, cachesStream, cancellationTokenSource.Token, -1, -1, false);
+                    http.DownloadProgress -= CachesDownloadProgress;
 
                     LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
-
-                    cachesStream.Dispose();
 
                     DispatcherQueue.TryEnqueue(() => brokenCachesListUI.RemoveAt(0));
                 }
@@ -153,31 +160,22 @@ namespace CollapseLauncher.Pages
         }
 
         Stopwatch refreshTime = Stopwatch.StartNew();
+        Stopwatch SpeedStopwatch = Stopwatch.StartNew();
         string timeLeftString;
-        private void CachesDownloadProgress(object sender, DownloadProgressChanged e)
+        private void CachesDownloadProgress(object sender, HttpClientHelper._DownloadProgress e)
         {
-            cachesRead += e.CurrentReceived;
+            if (e.DownloadState == HttpClientHelper.State.Downloading)
+                cachesRead += e.CurrentRead;
 
-            if (refreshTime.Elapsed.Milliseconds > 33)
+            if (refreshTime.Elapsed.Milliseconds >= 500)
             {
                 refreshTime = Stopwatch.StartNew();
-                timeLeftString = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / e.CurrentSpeed));
+                timeLeftString = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
             }
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                CachesTotalStatus.Text = $"Downloading: {cachesCount}/{cachesTotalCount} ({SummarizeSizeSimple(e.CurrentSpeed)}/s) - Estimation: {timeLeftString}";
-                CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
-            });
-        }
-        private void CachesPartialDownloadProgress(object sender, PartialDownloadProgressChanged e)
-        {
-            cachesRead += e.CurrentReceived;
-
-            timeLeftString = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / e.CurrentSpeed));
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                CachesTotalStatus.Text = $"Downloading: {cachesCount}/{cachesTotalCount} ({SummarizeSizeSimple(e.CurrentSpeed)}/s) - Estimation: {timeLeftString}";
+                CachesTotalStatus.Text = $"Downloading: {cachesCount}/{cachesTotalCount} ({SummarizeSizeSimple(e.CurrentSpeed)}/s)\t\tEstimation: {timeLeftString}";
                 CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
             });
         }

@@ -120,7 +120,8 @@ namespace CollapseLauncher
         {
             DownloadStopwatch = Stopwatch.StartNew();
             CountTotalToDownload = DownloadProperty.Count;
-            bool IsPerFile = DownloadProperty.Count > 1;
+            // bool IsPerFile = DownloadProperty.Count > 1;
+            bool IsPerFile = true;
 
             InstallStatus = new InstallManagementStatus
             {

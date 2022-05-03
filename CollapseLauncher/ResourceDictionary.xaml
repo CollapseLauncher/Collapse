@@ -35,8 +35,9 @@
                     <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="Black" TintOpacity="0.75" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="NavigationBarBrush" TintColor="Black" TintOpacity="0.5" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="Black" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="LoadingBrush" TintColor="Black" TintOpacity="0.7" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="LoadingBrush" TintColor="Black" TintOpacity="0.0" FallbackColor="Transparent"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -75,8 +76,9 @@
                     <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="White" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.80" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="White" TintOpacity="0.2" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.75" TintLuminosityOpacity="0.8" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
 
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

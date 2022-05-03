@@ -39,7 +39,7 @@ namespace CollapseLauncher.Pages
     {
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
-        HttpClientToolLegacy httpClient = new HttpClientToolLegacy();
+        HttpClientHelper http = new HttpClientHelper();
         MemoryStream memBuffer; 
         byte[] buffer = new byte[0x400000];
 
@@ -49,11 +49,12 @@ namespace CollapseLauncher.Pages
              SingleCurrentReadSize,
              BlockSize,
              BlockCurrentReadSize,
-             BrokenFilesRead,
              BrokenFilesSize;
 
         int TotalIndexedCount,
             TotalCurrentReadCount;
+
+        string CurrentCheckName = "";
 
         private void StartGameCheck(object sender, RoutedEventArgs e)
         {
@@ -79,15 +80,13 @@ namespace CollapseLauncher.Pages
                 try
                 {
                     string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
-                    memBuffer = new MemoryStream();
-
-                    httpClient.ProgressChanged += DataFetchingProgress;
-
-                    httpClient.DownloadStream(indexURL, memBuffer, cancellationTokenSource.Token);
-
-                    httpClient.ProgressChanged -= DataFetchingProgress;
-
-                    FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
+                    using (memBuffer = new MemoryStream())
+                    {
+                        http.DownloadProgress += DataFetchingProgress;
+                        http.DownloadFile(indexURL, memBuffer, cancellationTokenSource.Token, -1, -1, false);
+                        http.DownloadProgress -= DataFetchingProgress;
+                        FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
+                    }
 
                     CheckGameFiles();
                 }
@@ -127,12 +126,8 @@ namespace CollapseLauncher.Pages
                 FilePath = Path.Combine(GameBasePath, NormalizePath(Index.N));
                 FileInfoProp = new FileInfo(FilePath);
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    RepairStatus.Text = $"Checking: {Index.N}";
-                    RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
-                });
-                Console.WriteLine($"Checking {TotalCurrentReadCount}/{TotalIndexedCount}: {Index.N} -> {Index.CRC}");
+                CurrentCheckName = Index.N;
+
                 switch (Index.FT)
                 {
                     case FileType.Generic:
@@ -254,11 +249,7 @@ namespace CollapseLauncher.Pages
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
                             TotalCurrentReadCount++;
 
-                            DispatcherQueue.TryEnqueue(() =>
-                            {
-                                RepairStatus.Text = $"Checking Blk: {block.BlockHash}";
-                                RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
-                            });
+                            CurrentCheckName = block.BlockHash;
 
                             BlockFileStream.Position = chunk._startoffset;
                             BlockFileStream.Read(ChunkBuffer = new byte[chunk._filesize], 0, (int)chunk._filesize);
@@ -398,29 +389,42 @@ namespace CollapseLauncher.Pages
 
         private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
 
+        Stopwatch swRefresh = Stopwatch.StartNew();
         private void GetComputeBlockStatus()
         {
-            long Speed = (long)(BlockCurrentReadSize / sw.Elapsed.TotalSeconds);
-            DispatcherQueue.TryEnqueue(() =>
+            if (swRefresh.ElapsedMilliseconds >= 50)
             {
-                RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
-                RepairPerFileProgressBar.Value = GetPercentageNumber(BlockCurrentReadSize, BlockSize);
-                RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
-            });
+                long Speed = (long)(BlockCurrentReadSize / sw.Elapsed.TotalSeconds);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    RepairStatus.Text = $"Checking Blk: {CurrentCheckName}";
+                    RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
+                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
+                    RepairPerFileProgressBar.Value = GetPercentageNumber(BlockCurrentReadSize, BlockSize);
+                    RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
+                });
+                swRefresh = Stopwatch.StartNew();
+            }
         }
 
         private void GetComputeStatus()
         {
-            long Speed = (long)(SingleCurrentReadSize / sw.Elapsed.TotalSeconds);
-            DispatcherQueue.TryEnqueue(() =>
+            if (swRefresh.ElapsedMilliseconds >= 50)
             {
-                RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
-                RepairPerFileProgressBar.Value = GetPercentageNumber(SingleCurrentReadSize, SingleSize);
-                RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
-            });
+                long Speed = (long)(SingleCurrentReadSize / sw.Elapsed.TotalSeconds);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    RepairStatus.Text = $"Checking: {CurrentCheckName}";
+                    RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
+                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
+                    RepairPerFileProgressBar.Value = GetPercentageNumber(SingleCurrentReadSize, SingleSize);
+                    RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
+                });
+                swRefresh = Stopwatch.StartNew();
+            }
         }
 
-        private void DataFetchingProgress(object sender, DownloadProgressChanged e)
+        private void DataFetchingProgress(object sender, HttpClientHelper._DownloadProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-	<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+	<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>CollapseLauncher</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -12,7 +12,7 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
-	<Version>1.0.13.0</Version>
+	<Version>1.0.20.0</Version>
 	<Configurations>Debug;Release;Publish</Configurations>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
@@ -30,13 +30,9 @@
 
 	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
 		<ItemGroup>
-			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview1'" />
+			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview2'" />
 		</ItemGroup>
 	</Target>
-
-	<ItemGroup>
-	  <None Remove="CollapseLauncher.Updater.exe" />
-	</ItemGroup>
 
 	<ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -99,6 +95,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Pages\Dialogs\InstallationConvert.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Pages\NullPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

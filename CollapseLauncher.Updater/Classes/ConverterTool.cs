@@ -23,7 +23,6 @@ namespace Hi3Helper.Data
         public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
         public static string CreateMD5(Stream fs, CancellationToken token) => BytesToHex(MD5.Create().ComputeHash(fs));
 #endif
-
         public static uint BytesToUInt32Big(byte[] buffer) =>
             (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
             (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8 | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;

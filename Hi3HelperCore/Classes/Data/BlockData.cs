@@ -22,7 +22,7 @@ namespace Hi3Helper.Data
         List<XMFBlockList> BrokenBlocks;
         List<XMFFileProperty> BrokenChunkProp;
         XMFUtils util;
-        readonly HttpClientToolLegacy httpUtil = new HttpClientToolLegacy();
+        readonly HttpClientHelper http = new HttpClientHelper();
 
         public event EventHandler<CheckingBlockProgressChanged> CheckingProgressChanged;
         public event EventHandler<CheckingBlockProgressChangedStatus> CheckingProgressChangedStatus;
@@ -393,7 +393,7 @@ namespace Hi3Helper.Data
 
         void DownloadContent(string url, in MemoryStream destination, in XMFFileProperty chunkProp, long startOffset, long endOffset, CancellationToken token, string message)
         {
-            httpUtil.ProgressChanged += DownloadEventConverterForStream;
+            http.DownloadProgress += DownloadEventConverterForStream;
             OnProgressChanged(new RepairingBlockProgressChangedStatus()
             {
                 BlockHash = blockHash,
@@ -408,9 +408,9 @@ namespace Hi3Helper.Data
                 ChunkOffset = chunkProp.StartOffset
             });
 
-            httpUtil.DownloadStream(url, destination, token, startOffset, endOffset, message);
+            http.DownloadFile(url, destination, token, startOffset, endOffset, false);
 
-            httpUtil.ProgressChanged -= DownloadEventConverterForStream;
+            http.DownloadProgress -= DownloadEventConverterForStream;
 #if (DEBUG)
             LogWriteLine();
 #endif
@@ -418,7 +418,7 @@ namespace Hi3Helper.Data
 
         void DownloadContent(string url, string destination, long startOffset, long endOffset, CancellationToken token)
         {
-            httpUtil.ProgressChanged += DownloadEventConverter;
+            http.DownloadProgress += DownloadEventConverter;
             OnProgressChanged(new RepairingBlockProgressChangedStatus()
             {
                 BlockHash = blockHash,
@@ -429,36 +429,36 @@ namespace Hi3Helper.Data
                 CurrentBlockPos = currentBlockPos
             });
 
-            httpUtil.DownloadFile(url, destination, $"Down: {Path.GetFileNameWithoutExtension(destination).ToUpperInvariant()}", startOffset, endOffset, token);
+            http.DownloadFile(url, destination, token, startOffset, endOffset);
 
-            httpUtil.ProgressChanged -= DownloadEventConverter;
+            http.DownloadProgress -= DownloadEventConverter;
 #if (DEBUG)
             LogWriteLine();
 #endif
         }
 
-        private void DownloadEventConverterForStream(object sender, DownloadProgressChanged e)
+        private void DownloadEventConverterForStream(object sender, HttpClientHelper._DownloadProgress e)
         {
             OnProgressChanged(new RepairingBlockProgressChanged()
             {
-                DownloadReceivedBytes = e.BytesReceived,
-                DownloadTotalSize = e.TotalBytesToReceive,
+                DownloadReceivedBytes = e.DownloadedSize,
+                DownloadTotalSize = e.TotalSizeToDownload,
                 DownloadSpeed = e.CurrentSpeed,
                 TotalBytesRead = totalBytesRead,
                 TotalRepairableSize = totalRepairableSize,
             });
 
 #if (DEBUG)
-            LogWrite($"{e.Message} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.BytesReceived)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
+            LogWrite($"{e.DownloadState} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.DownloadedSize)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
 #endif
         }
 
-        private void DownloadEventConverter(object sender, DownloadProgressChanged e)
+        private void DownloadEventConverter(object sender, HttpClientHelper._DownloadProgress e)
         {
-            totalBytesRead += e.CurrentReceived;
+            totalBytesRead += e.CurrentRead;
             OnProgressChanged(new RepairingBlockProgressChanged()
             {
-                DownloadReceivedBytes = e.BytesReceived,
+                DownloadReceivedBytes = e.DownloadedSize,
                 DownloadTotalSize = downloadSize,
                 DownloadSpeed = e.CurrentSpeed,
                 TotalBytesRead = totalBytesRead,
@@ -466,7 +466,7 @@ namespace Hi3Helper.Data
             });
 
 #if (DEBUG)
-            LogWrite($"{e.Message} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.BytesReceived)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
+            LogWrite($"{e.DownloadState} {(byte)e.ProgressPercentage}% {SummarizeSizeSimple(e.DownloadedSize)} {SummarizeSizeSimple(e.CurrentSpeed)}/s", LogType.NoTag, false, true);
 #endif
         }
 

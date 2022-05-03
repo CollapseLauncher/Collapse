@@ -175,7 +175,7 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
-                HideBackgroundImage(true, false);
+                // HideBackgroundImage(true, false);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
@@ -195,7 +195,7 @@ namespace CollapseLauncher
                 tagStr = "unavailable";
             }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
-            HideBackgroundImage(hideImage, false);
+            // HideBackgroundImage(hideImage, false);
             previousTag = tagStr;
         }
 
@@ -298,7 +298,7 @@ namespace CollapseLauncher
             switch (e.FrameTo.Name)
             {
                 case "HomePage":
-                case "BlankPage":
+                    HideBackgroundImage(false);
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;
                 case "RepairPage":
@@ -308,6 +308,7 @@ namespace CollapseLauncher
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;
                 default:
+                case "BlankPage":
                     HideBackgroundImage();
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;

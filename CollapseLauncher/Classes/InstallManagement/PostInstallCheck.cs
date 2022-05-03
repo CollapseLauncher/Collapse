@@ -29,9 +29,8 @@ namespace CollapseLauncher
 
         string GameBasePath;
 
-        int Thread,
-            Count,
-            ReadCount;
+        int Thread = 0;
+        int ReadCount = 0;
 
         long TotalManifestSize = 0,
              Read = 0;
@@ -105,7 +104,7 @@ namespace CollapseLauncher
                 }
 
                 Read += this.Manifest[i].fileSize;
-                OnProgressChanged(new PostInstallCheckProp(ReadCount, Count, Read, TotalManifestSize, sW.Elapsed.TotalSeconds));
+                OnProgressChanged(new PostInstallCheckProp(ReadCount, 0, Read, TotalManifestSize, sW.Elapsed.TotalSeconds));
             }
         }
 

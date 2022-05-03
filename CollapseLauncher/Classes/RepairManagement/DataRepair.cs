@@ -27,7 +27,7 @@ namespace CollapseLauncher.Pages
         int RepairedFilesCount;
 
         int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
-        int MultipleDownloadSizeStart = 0x1FFFFFF;
+        int MultipleDownloadSizeStart = 10 << 20;
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
@@ -100,7 +100,6 @@ namespace CollapseLauncher.Pages
         MemoryStream RepairMemoryStream;
         private void RepairGenericAudioFiles(FilePropertiesRemote input)
         {
-            RepairedFilesCount++;
             DispatcherQueue.TryEnqueue(() =>
             {
                 RepairStatus.Text = $"Repairing: {input.N}";
@@ -121,39 +120,21 @@ namespace CollapseLauncher.Pages
             }
             else
             {
+                http.DownloadProgress += GenericFilesDownloadProgress;
+
                 if (input.S > MultipleDownloadSizeStart)
-                {
-                    httpClient.PartialProgressChanged += GenericFilesPartialDownloadProgress;
-
-                    httpClient.DownloadFileMultipleSession(
-                        FileURL,
-                        FilePath,
-                        "",
-                        DownloadThread,
-                        cancellationTokenSource.Token
-                        );
-
-                    httpClient.PartialProgressChanged -= GenericFilesPartialDownloadProgress;
-                }
+                    http.DownloadFile(FileURL, FilePath, DownloadThread, cancellationTokenSource.Token);
                 else
-                {
-                    httpClient.ProgressChanged += GenericFilesDownloadProgress;
+                    using (RepairFileStream = RepairFileInfo.Create())
+                        http.DownloadFile(FileURL, RepairFileStream, cancellationTokenSource.Token, -1, -1, false);
 
-                    httpClient.DownloadStream(
-                        FileURL,
-                        RepairFileStream = RepairFileInfo.Create(),
-                        cancellationTokenSource.Token,
-                        -1,
-                        -1
-                        );
-
-                    httpClient.ProgressChanged -= GenericFilesDownloadProgress;
-                }
+                http.DownloadProgress -= GenericFilesDownloadProgress;
             }
             DispatcherQueue.TryEnqueue(() =>
             {
                 NeedRepairListUI.RemoveAt(0);
             });
+            RepairedFilesCount++;
         }
 
         private void RepairBlockFiles(FilePropertiesRemote input)
@@ -172,8 +153,6 @@ namespace CollapseLauncher.Pages
 
                 if (!RepairFileInfo.Exists)
                 {
-                    RepairedFilesCount++;
-
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         RepairStatus.Text = $"Repairing Blk: {block.BlockHash}";
@@ -181,32 +160,22 @@ namespace CollapseLauncher.Pages
                         RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
                     });
 
+                    http.DownloadProgress += GenericFilesDownloadProgress;
+
                     if (block.BlockSize > MultipleDownloadSizeStart)
-                    {
-                        httpClient.PartialProgressChanged += GenericFilesPartialDownloadProgress;
-
-                        httpClient.DownloadFileMultipleSession(FileURL, FilePath, "", GetAppConfigValue("DownloadThread").ToInt(), cancellationTokenSource.Token);
-
-                        httpClient.PartialProgressChanged -= GenericFilesPartialDownloadProgress;
-                    }
+                        http.DownloadFile(FileURL, FilePath, DownloadThread, cancellationTokenSource.Token);
                     else
-                    {
-                        httpClient.ProgressChanged += GenericFilesDownloadProgress;
+                        using (RepairFileStream = RepairFileInfo.Create())
+                            http.DownloadFile(FileURL, RepairFileStream, cancellationTokenSource.Token, -1, -1, false);
 
-                        httpClient.DownloadStream(
-                            FileURL,
-                            RepairFileStream = RepairFileInfo.Create(),
-                            cancellationTokenSource.Token);
-
-                        httpClient.ProgressChanged -= GenericFilesDownloadProgress;
-
-                        RepairFileStream.Dispose();
-                    }
+                    http.DownloadProgress -= GenericFilesDownloadProgress;
 
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         NeedRepairListUI.RemoveAt(0);
                     });
+
+                    RepairedFilesCount++;
                 }
                 else
                 {
@@ -214,8 +183,6 @@ namespace CollapseLauncher.Pages
                     {
                         foreach (var chunk in block.BlockContent)
                         {
-                            RepairedFilesCount++;
-
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 RepairStatus.Text = $"Repairing Blk: {block.BlockHash} | Offset: 0x{chunk._startoffset.ToString("x8")} - Size: 0x{chunk._filesize.ToString("x8")}";
@@ -223,45 +190,38 @@ namespace CollapseLauncher.Pages
                                 RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
                             });
 
-                            RepairMemoryStream = new MemoryStream();
+                            // RepairMemoryStream = new MemoryStream();
                             RepairFileStream.Position = chunk._startoffset;
 
-                            httpClient.ProgressChanged += GenericFilesDownloadProgress;
+                            http.DownloadProgress += GenericFilesDownloadProgress;
+                            http.DownloadFile(FileURL, RepairFileStream, cancellationTokenSource.Token, chunk._startoffset, chunk._startoffset + chunk._filesize, false);
+                            http.DownloadProgress -= GenericFilesDownloadProgress;
 
-                            httpClient.DownloadStream(FileURL, RepairMemoryStream, cancellationTokenSource.Token,
-                                chunk._startoffset, chunk._startoffset + chunk._filesize);
+                            // httpClient.ProgressChanged += GenericFilesDownloadProgress;
 
-                            httpClient.ProgressChanged -= GenericFilesDownloadProgress;
+                            // httpClient.DownloadStream(FileURL, RepairMemoryStream, cancellationTokenSource.Token,
+                            // chunk._startoffset, chunk._startoffset + chunk._filesize);
 
-                            RepairFileStream.Write(RepairMemoryStream.GetBuffer(), 0, (int)chunk._filesize);
+                            // httpClient.ProgressChanged -= GenericFilesDownloadProgress;
 
-                            RepairMemoryStream.Dispose();
+                            // RepairFileStream.Write(RepairMemoryStream.GetBuffer(), 0, (int)chunk._filesize);
+
+                            // RepairMemoryStream.Dispose();
                             DispatcherQueue.TryEnqueue(() =>
                             {
                                 NeedRepairListUI.RemoveAt(0);
                             });
+
+                            RepairedFilesCount++;
                         }
-                        RepairFileStream.Dispose();
                     }
                 }
             }
         }
 
         Stopwatch refreshTime = Stopwatch.StartNew();
-        private void GenericFilesPartialDownloadProgress(object sender, PartialDownloadProgressChanged e)
-        {
-            if (refreshTime.Elapsed.Milliseconds > 33)
-            {
-                refreshTime = Stopwatch.StartNew();
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(e.CurrentSpeed)}/s";
-                    RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 2);
-                });
-            }
-        }
 
-        private void GenericFilesDownloadProgress(object sender, DownloadProgressChanged e)
+        private void GenericFilesDownloadProgress(object sender, HttpClientHelper._DownloadProgress e)
         {
             if (refreshTime.Elapsed.Milliseconds > 33)
             {

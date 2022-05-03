@@ -45,7 +45,6 @@ namespace CollapseLauncher
         {
             try
             {
-                httpClient = new HttpClientToolLegacy(true);
                 httpHelper = new HttpClientHelper(true);
 
                 if (startUp)
@@ -81,7 +80,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Something wrong happen while fetching Background Image\n{ex}");
+                LogWriteLine($"Something wrong happen while fetching Background Image\r\n{ex}");
             }
         }
 
@@ -184,31 +183,55 @@ namespace CollapseLauncher
             if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
                 Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
 
-            if (!File.Exists(regionBackgroundProp.imgLocalPath)
-                || Path.GetFileName(regionBackgroundProp.data.adv.background) != Path.GetFileName(regionBackgroundProp.imgLocalPath)
-                || Path.GetFileName(previousPath) != Path.GetFileName(regionBackgroundProp.data.adv.background)
-                )
+            FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
+
+            if (!fI.Exists)
             {
                 httpHelper.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
                 previousPath = regionBackgroundProp.imgLocalPath;
-                return true;
             }
 
-            return false;
+            return true;
         }
 
         private void ApplyBackground()
         {
             DispatcherQueue.TryEnqueue(() => {
-                HideBackgroundImage();
+                // HideBackgroundImage();
+                BackgroundBackBuffer.Source = BackgroundBitmap;
+                BackgroundBackBuffer.Visibility = Visibility.Visible;
                 BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
                 BackgroundBack.Source = BackgroundBitmap;
                 BackgroundFront.Source = BackgroundBitmap;
 
-                HideBackgroundImage(false);
+                FadeOutBackgroundBuffer();
+
+                // HideBackgroundImage(false);
                 appIni.Profile["app"]["CurrentBackground"] = regionBackgroundProp.imgLocalPath;
 
                 SaveAppConfig();
+            });
+        }
+
+        public async void FadeOutBackgroundBuffer()
+        {
+            Storyboard storyboardBack = new Storyboard();
+
+            DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
+            OpacityAnimationBack.From = 0.30;
+            OpacityAnimationBack.To = 0;
+            OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+
+            Storyboard.SetTarget(OpacityAnimationBack, BackgroundBackBuffer);
+            Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
+            storyboardBack.Children.Add(OpacityAnimationBack);
+
+            storyboardBack.Begin();
+
+            await Task.Delay(250);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                BackgroundBackBuffer.Visibility = Visibility.Collapsed;
             });
         }
 
@@ -267,10 +290,10 @@ namespace CollapseLauncher
             }
         }
 
+        bool BGLastState = true;
         public void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
-            Storyboard storyboardScale = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
 
             if (!(hideImage && BackgroundFront.Opacity == 0))
@@ -294,8 +317,12 @@ namespace CollapseLauncher
                 storyboardBack.Children.Add(OpacityAnimationBack);
             }
 
-            storyboardFront.Begin();
-            storyboardBack.Begin();
+            if (BGLastState != hideImage)
+            {
+                storyboardFront.Begin();
+                storyboardBack.Begin();
+                BGLastState = hideImage;
+            }
         }
 
         public class SystemAccentColorSetting : INotifyPropertyChanged

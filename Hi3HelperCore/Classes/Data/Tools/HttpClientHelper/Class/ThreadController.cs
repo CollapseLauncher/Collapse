@@ -102,26 +102,31 @@ namespace Hi3Helper.Data
         private async Task ThreadChild(long StartOffset, long EndOffset, int ThreadID, bool IgnoreInitSizeCheck = false)
         {
             string LocalPath;
-            Stream LocalStream;
 
             if (_ThreadSingleMode)
                 LocalPath = _OutputPath;
             else
                 LocalPath = string.Format("{0}.{1:000}", _OutputPath, ThreadID + 1);
 
-            using (LocalStream = SeekStreamToEnd(_UseStreamOutput ? _OutputStream : GetFileStream(LocalPath, false)))
-            {
-                bool IsRetryLastChance = false;
-                while (!await TryRetryableContainer(LocalStream, StartOffset, EndOffset,
-                    ThreadID, IsRetryLastChance))
-                {
-                    if (_ThreadPropertyList[ThreadID].CurrentRetry > _ThreadMaxRetry - 1)
-                        IsRetryLastChance = true;
+            if (this._DisposeStream)
+                using (Stream LocalStream = SeekStreamToEnd(_UseStreamOutput ? _OutputStream : GetFileStream(LocalPath, false)))
+                    await ThreadChildStream(LocalStream, StartOffset, EndOffset, ThreadID);
+            else
+                await ThreadChildStream(SeekStreamToEnd(_UseStreamOutput ? _OutputStream : GetFileStream(LocalPath, false)), StartOffset, EndOffset, ThreadID);
+        }
 
-                    LogWriteLine($"Retrying for threadID: {ThreadID} (Retry Attempt: {_ThreadPropertyList[ThreadID].CurrentRetry}/{_ThreadMaxRetry})...", LogType.Warning, true);
-                    await Task.Delay((int)(_ThreadRetryDelay * 1000), _ThreadToken);
-                    _ThreadPropertyList[ThreadID].CurrentRetry++;
-                }
+        private async Task ThreadChildStream(Stream LocalStream, long StartOffset, long EndOffset, int ThreadID)
+        {
+            bool IsRetryLastChance = false;
+            while (!await TryRetryableContainer(LocalStream, StartOffset, EndOffset,
+                ThreadID, IsRetryLastChance))
+            {
+                if (_ThreadPropertyList[ThreadID].CurrentRetry > _ThreadMaxRetry - 1)
+                    IsRetryLastChance = true;
+
+                LogWriteLine($"Retrying for threadID: {ThreadID} (Retry Attempt: {_ThreadPropertyList[ThreadID].CurrentRetry}/{_ThreadMaxRetry})...", LogType.Warning, true);
+                await Task.Delay((int)(_ThreadRetryDelay * 1000), _ThreadToken);
+                _ThreadPropertyList[ThreadID].CurrentRetry++;
             }
         }
 
@@ -146,7 +151,7 @@ namespace Hi3Helper.Data
             {
                 if (!(StartOffset < 0 && EndOffset < 0))
                     RequestRange = new RangeHeaderValue(
-                        StartOffset < 0 || StartOffset == null ? 0 : StartOffset + ExistingSize,
+                        StartOffset < 0 || StartOffset == null ? 0 : (StartOffset >= 0 ? StartOffset : StartOffset + ExistingSize),
                         EndOffset < 0   || EndOffset   == null ? null : EndOffset);
                 else
                     RequestRange = new RangeHeaderValue(ExistingSize, null);
@@ -192,7 +197,7 @@ namespace Hi3Helper.Data
             catch (ArgumentOutOfRangeException ex)
             {
                 LocalStream.Dispose();
-                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!\r\nChunk of this thread is already completed. Ignoring!!\r\n{ex}", LogType.Default, true);
+                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!\r\nChunk of this thread is already completed. Ignoring!!\r\n{ex}", LogType.Default, false);
                 return true;
             }
             catch (InvalidDataException ex)
@@ -204,13 +209,13 @@ namespace Hi3Helper.Data
             catch (TaskCanceledException ex)
             {
                 LocalStream.Dispose();
-                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!", LogType.Error, true);
+                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!", LogType.Error, false);
                 throw new TaskCanceledException(ex.ToString(), ex);
             }
             catch (OperationCanceledException ex)
             {
                 LocalStream.Dispose();
-                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!", LogType.Default, true);
+                LogWriteLine($"Cancel: ThreadID: {ThreadID} has been shutdown!", LogType.Default, false);
                 throw new TaskCanceledException(ex.ToString(), ex);
             }
             catch (Exception ex)

@@ -22,10 +22,12 @@ namespace Hi3Helper.Preset
         }
         public string GetSteamInstallationPath()
         {
-            string returnval;
+            string returnval = "";
             try
             {
-                returnval = (string)Registry.GetValue(SteamInstallRegistryLocation, "InstallLocation", null);
+                List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
+                return ConverterTool.NormalizePath(AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault());
+                // returnval = (string)Registry.GetValue(SteamInstallRegistryLocation, "InstallLocation", null);
             }
             catch
             {
@@ -164,10 +166,10 @@ namespace Hi3Helper.Preset
         class GeneralDataProp
         {
             public string deviceUUID { get; set; } = "";
-            public string userLocalDataVersionId { get; set; } = "";
+            public string userLocalDataVersionId { get; set; } = "0.0.1";
             public int deviceLanguageType { get; set; } = 1;
             public int deviceVoiceLanguageType { get; set; } = 2;
-            public ServerRegionID? selectedServerName { get; set; } = ServerRegionID.os_asia;
+            public ServerRegionID? selectedServerName { get; set; }
             public int localLevelIndex { get; set; } = 0;
             public string deviceID { get; set; } = "";
             public string targetUID { get; set; } = "";
@@ -354,7 +356,9 @@ namespace Hi3Helper.Preset
         public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
         public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string FallbackLanguage { get; set; }
+        public bool IsSteamVersion { get; set; }
         public string SteamInstallRegistryLocation { get; set; }
+        public int SteamGameID { get; set; }
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }
@@ -364,8 +368,10 @@ namespace Hi3Helper.Preset
         public string? CachesEndpointURL { get; set; }
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
-        public bool IsSteamVersion { get; set; }
         public bool? IsGenshin { get; set; }
+        public bool? IsConvertible { get; set; }
+        public List<string> ConvertibleTo { get; set; }
+        public string ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
