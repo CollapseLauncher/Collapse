@@ -7,13 +7,17 @@ using System.Threading;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using Windows.Foundation;
+
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 
 using Newtonsoft.Json;
 
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -194,6 +198,28 @@ namespace CollapseLauncher
         }
         public Type FrameTo { get; private set; }
         public NavigationTransitionInfo Transition { get; private set; }
+    }
+    #endregion
+    #region NotificationPushRegion
+
+    internal static class NotificationSender
+    {
+        static NotificationInvoker invoker = new NotificationInvoker();
+        public static void SendNotification(NotificationInvokerProp e) => invoker.SendNotification(e);
+    }
+
+    internal class NotificationInvoker
+    {
+        public static event EventHandler<NotificationInvokerProp> EventInvoker;
+        public void SendNotification(NotificationInvokerProp e) => EventInvoker?.Invoke(this, e);
+    }
+
+    public class NotificationInvokerProp
+    {
+        public TypedEventHandler<InfoBar, object> CloseAction { get; set; } = null;
+        public UIElement OtherContent { get; set; } = null;
+        public NotificationProp Notification { get; set; }
+        public bool IsAppNotif { get; set; } = true;
     }
     #endregion
 }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
+using Windows.Foundation;
 using Windows.ApplicationModel.Core;
 
 using Microsoft.UI.Xaml;
@@ -13,7 +16,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 
+using Newtonsoft.Json;
+
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -33,17 +39,170 @@ namespace CollapseLauncher
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
                 MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
+                NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
                 InitializeStartup().GetAwaiter();
-                Task.Run(() => CheckRunningGameInstance());
             }
             catch (Exception ex)
             {
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
+        {
+            SpawnNotificationPush(e.Notification.Title, e.Notification.Message, e.Notification.Severity,
+                e.Notification.MsgId, e.Notification.IsClosable ?? true, e.Notification.IsDisposable ?? true, e.CloseAction,
+                e.OtherContent, e.IsAppNotif);
+        }
+
+        private async Task GetAppNotificationPush()
+        {
+            try
+            {
+                await GetNotificationFeed();
+                await Task.Run(() =>
+                {
+                    GetAppUpdateNotification();
+                });
+                PushAppNotification();
+            }
+            catch (JsonReaderException ex)
+            {
+                LogWriteLine($"Error while trying to get Notification Feed\r\n{ex}", LogType.Error, true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while trying to get Notification Feed\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private async Task GetNotificationFeed()
+        {
+            using (MemoryStream buffer = new MemoryStream())
+            {
+                await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (AppConfig.IsPreview ? "preview" : "stable")),
+                    buffer, new CancellationToken(), -1, -1, false);
+                AppConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
+                AppConfig.LoadLocalNotificationData();
+            }
+        }
+
+        private async void PushAppNotification()
+        {
+            TypedEventHandler<InfoBar, object> ClickCloseAction = null;
+            foreach (NotificationProp Entry in AppConfig.NotificationData.AppPush)
+            {
+                switch (Entry.MsgId)
+                {
+                    case 0:
+                        {
+                            ClickCloseAction = new TypedEventHandler<InfoBar, object>((sender, args) =>
+                            {
+                                AppConfig.NotificationData.AddIgnoredMsgIds(0);
+                                AppConfig.SaveLocalNotificationData();
+                            });
+                        }
+                        break;
+                    default:
+                        ClickCloseAction = null;
+                        break;
+                }
+                await Task.Delay(250);
+                SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true, Entry.IsDisposable ?? true, ClickCloseAction, null, true);
+            }
+        }
+
+        private void GetAppUpdateNotification()
+        {
+            string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
+            TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
+            {
+                File.Delete(UpdateNotifFile);
+            });
+
+            if (File.Exists(UpdateNotifFile))
+            {
+                string VerString = File.ReadAllLines(UpdateNotifFile)[0];
+                SpawnNotificationPush(
+                    "Update Completed!",
+                    string.Format("Your launcher version has been updated to {0}! (Release Channel: {1})", VerString, AppConfig.IsPreview ? "Preview" : "Stable"),
+                    InfoBarSeverity.Success,
+                    0xAF,
+                    true,
+                    false,
+                    ClickClose
+                    );
+            }
+        }
+
+        private void SpawnNotificationPush(string Title, string Content, InfoBarSeverity Severity, int MsgId = 0, bool IsClosable = true,
+            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                Grid Container = new Grid
+                {
+                    Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"]
+                };
+
+                StackPanel OtherContentContainer = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    Margin = new Thickness(0, 0, 0, 8)
+                };
+
+                InfoBar Notification = new InfoBar
+                {
+                    Title = Title,
+                    Message = Content,
+                    Margin = new Thickness(-2),
+                    CornerRadius = new CornerRadius(0),
+                    Severity = Severity,
+                    IsClosable = IsClosable,
+                    IsIconVisible = true,
+                    IsOpen = true
+                };
+
+                if (OtherContent != null)
+                    OtherContentContainer.Children.Add(OtherContent);
+
+                if (Disposable)
+                {
+                    CheckBox NeverAskNotif = new CheckBox
+                    {
+                        Content = "Never show me this again",
+                        Tag = $"{MsgId},{IsAppNotif}"
+                    };
+                    NeverAskNotif.Checked += NeverAskNotif_Checked;
+                    NeverAskNotif.Unchecked += NeverAskNotif_Unchecked;
+                    OtherContentContainer.Children.Add(NeverAskNotif);
+                }
+
+                if (Disposable || OtherContent != null)
+                    Notification.Content = OtherContentContainer;
+
+                Notification.CloseButtonClick += CloseClickHandler;
+                Container.Children.Add(Notification);
+                NotificationBar.Children.Add(Container);
+            });
+        }
+
+        private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
+        {
+            string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
+            AppConfig.NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            AppConfig.SaveLocalNotificationData();
+        }
+
+        private void NeverAskNotif_Unchecked(object sender, RoutedEventArgs e)
+        {
+            string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
+            AppConfig.NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            AppConfig.SaveLocalNotificationData();
         }
 
         private void ReloadPageTheme(ElementTheme startTheme)
@@ -72,22 +231,13 @@ namespace CollapseLauncher
             }
         }
 
-        private async void CheckRunningGameInstance()
-        {
-            while (true && !App.IsAppKilled)
-            {
-                string execName = Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName);
-                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(3000);
-            }
-        }
-
         private async Task InitializeStartup()
         {
+            await HideLoadingPopup(false, "Loading", "Launcher API");
             LoadConfig();
+            await GetAppNotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
-            // LauncherFrame.Navigate(typeof(Pages.HomePage), null, new DrillInNavigationTransitionInfo());
 
             NavigationViewControl.IsSettingsVisible = true;
 
@@ -118,46 +268,6 @@ namespace CollapseLauncher
                 return $"Windows {buildNumber[0]} (build: {buildNumber[2]}.{buildNumber[3]})";
         }
 
-        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
-        {
-            UpdateTitleBarLayout(sender);
-        }
-
-        private void CoreTitleBar_IsVisibleChanged(CoreApplicationViewTitleBar sender, object args)
-        {
-            if (sender.IsVisible)
-            {
-                AppTitleBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                AppTitleBar.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void Current_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs e)
-        {
-            SolidColorBrush defaultForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-            SolidColorBrush inactiveForegroundBrush = (SolidColorBrush)Application.Current.Resources["TextFillColorDisabledBrush"];
-
-            if (e.WindowActivationState == WindowActivationState.Deactivated)
-            {
-                AppTitle.Foreground = inactiveForegroundBrush;
-            }
-            else
-            {
-                AppTitle.Foreground = defaultForegroundBrush;
-            }
-        }
-
-        private void UpdateTitleBarLayout(CoreApplicationViewTitleBar coreTitleBar)
-        {
-            AppTitleBar.Height = coreTitleBar.Height;
-
-            Thickness currMargin = AppTitleBar.Margin;
-            AppTitleBar.Margin = new Thickness(currMargin.Left, currMargin.Top, coreTitleBar.SystemOverlayRightInset, currMargin.Bottom);
-        }
-
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
             foreach (NavigationViewItemBase item in NavigationViewControl.MenuItems)
@@ -175,7 +285,6 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
-                // HideBackgroundImage(true, false);
                 previousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
@@ -195,7 +304,6 @@ namespace CollapseLauncher
                 tagStr = "unavailable";
             }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
-            // HideBackgroundImage(hideImage, false);
             previousTag = tagStr;
         }
 

@@ -54,6 +54,7 @@ namespace CollapseLauncher.Pages
             {
                 case ContentDialogResult.Primary:
                     File.Delete(AppConfigFile);
+                    File.Delete(AppNotifIgnoreFile);
                     MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
                     break;
                 default:

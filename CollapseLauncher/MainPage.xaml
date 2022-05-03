@@ -9,7 +9,6 @@
     Background="{ThemeResource MyAcrylicBrush}">
 
     <Page.Resources>
-        <!--This top margin is the height of the custom TitleBar-->
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
         <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
@@ -34,9 +33,6 @@
                     <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
                     <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Grid x:Name="WindowButtonFrameWin11" Background="{ThemeResource SystemAltHighColor}"
-                      Width="8" Height="32" Grid.Column="5" VerticalAlignment="Top"
-                      Margin="323,-4,0,0" CornerRadius="0,0,0,8" Visibility="Collapsed"/>
                 <StackPanel Orientation="Horizontal" CanDrag="True" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
                     <TextBlock x:Name="AppTitle"
                     Text="Collapse Launcher"
@@ -98,6 +94,11 @@
                                    CharacterSpacing="0"/>
                     </StackPanel>
                 </Grid>
+                <StackPanel x:Name="NotificationBar">
+                    <StackPanel.ChildrenTransitions>
+                        <AddDeleteThemeTransition/>
+                    </StackPanel.ChildrenTransitions>
+                </StackPanel>
             </Grid>
         </NavigationView>
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 using Hi3Helper.Preset;
 using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -30,10 +32,9 @@ namespace CollapseLauncher
             loadRegionComplete = false;
             CurrentRegion = ConfigStore.Config[regionIndex];
             previousTag = "launcher";
-            // HideBackgroundImage();
             LoadGameRegionFile();
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
-            DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "" );
+            DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "");
             await HideLoadingPopup(false, "Loading Region", CurrentRegion.ZoneName);
             while (!await TryGetRegionResource())
             {
@@ -46,8 +47,30 @@ namespace CollapseLauncher
             LoadTimeoutSec = prevTimeout;
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
             InitRegKey();
+            PushRegionNotification(CurrentRegion.ProfileName);
             await HideLoadingPopup(true, "Loading Region", CurrentRegion.ZoneName);
             // HideBackgroundImage(false);
+        }
+
+        private async void PushRegionNotification(string RegionProfileName)
+        {
+            await Task.Run(() =>
+            {
+                AppConfig.NotificationData.EliminatePushList();
+                foreach (NotificationProp Entry in AppConfig.NotificationData.RegionPush)
+                {
+                    if (Entry.RegionProfile == RegionProfileName)
+                    {
+                        NotificationSender.SendNotification(new NotificationInvokerProp
+                        {
+                            CloseAction = null,
+                            IsAppNotif = false,
+                            Notification = Entry,
+                            OtherContent = null
+                        });
+                    }
+                }
+            });
         }
 
         private async Task<bool> TryGetRegionResource()

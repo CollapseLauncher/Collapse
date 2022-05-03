@@ -36,6 +36,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameImgFolder = Path.Combine(AppDataFolder, "img");
         public static string AppGameLogsFolder = Path.Combine(AppDataFolder, "logs");
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
+        public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+        public static string AppNotifURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/notification_{0}.json";
         public static string GamePathOnSteam;
 
         public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
@@ -62,7 +64,6 @@ namespace Hi3Helper.Shared.Region
         public static void LoadAppPreset()
         {
             ScreenProp.InitScreenResolution();
-            // GetCurrentScreenResolution();
             GetScreenResolutionString();
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);

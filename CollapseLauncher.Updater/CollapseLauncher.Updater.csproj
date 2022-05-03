@@ -7,6 +7,7 @@
     <UseWPF>true</UseWPF>
     <Configurations>Debug;Release;Publish</Configurations>
     <Platforms>x64</Platforms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
