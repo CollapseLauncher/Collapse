@@ -49,7 +49,7 @@
                                     <StackPanel Width="318">
                                         <TextBlock Text="Download Threads" Style="{StaticResource SubtitleTextBlockStyle}"/>
                                         <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
-                                            This thread will handle how much chunk will be splitted from download files This mechanism is behaving the same as what IDM and aria2c do for downloading.
+                                            This thread will handle how many chunks will be split while downloading files. This mechanism behaves the same as what IDM and aria2c do.
                                         </TextBlock>
                                         <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
                                             <Run Text="Default value:"/>
@@ -61,7 +61,7 @@
                                         </TextBlock>
                                         <TextBlock Text="Extraction Threads" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
                                         <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
-                                            This thread will handle extraction/verification process while installing/repairing the game.
+                                            This thread will handle the extraction/verification process while installing/repairing the game.
                                         </TextBlock>
                                         <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
                                             Note: This setting is no longer effective while installing Honkai Impact 3rd.
@@ -106,7 +106,7 @@
                             </StackPanel>
                             <StackPanel x:Name="UpToDateStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,-3,0,0" VerticalAlignment="Center">
                                 <TextBlock Text="✅" FontSize="20"/>
-                                <TextBlock Text="Your version is up-to-date" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="You are using the latest version." Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
@@ -165,7 +165,7 @@
                     </StackPanel>
                     <TextBlock Text="and completely open-sourced. Any contribution is welcomed." Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
-                <StackPanel Margin="0,16,0,48">
+                <StackPanel Margin="0,16" x:Name="HerLegacy" Visibility="Collapsed">
                     <TextBlock Text="Dedication" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <TextBlock Text="This app is also dedicated for my crush who passed away from fighting" Style="{StaticResource BodyTextBlockStyle}"/>
                     <TextBlock Text="against her's TB disease. This app has been Dedicated with Love for her." Style="{StaticResource BodyTextBlockStyle}"/>
@@ -176,8 +176,40 @@
                         <Run Text="( a.k.a"/>
                         <Run Text="DreadBurst" FontWeight="Bold"/>
                         <Run Text=")"/>
+                    </TextBlock>
+                    <TextBlock Margin="0,8,0,0" Width="360" HorizontalAlignment="Left" TextWrapping="Wrap">
+                        <Run Text="I will cherish every of our single moment we've spent together. I will never forget and remember your care, kindness, intelligent, braveness and cuteness."/>
+                        <LineBreak/>
+                    </TextBlock>
+                    <TextBlock Width="360" HorizontalAlignment="Left" TextWrapping="Wrap">
+                        <Run Text="Yui," FontWeight="Bold"/>
+                    </TextBlock>
+                    <TextBlock Width="360" HorizontalAlignment="Left" TextWrapping="Wrap">
+                        <Run Text="Thank you that you've found me and being a reason for me to change as a better person. I'm really glad about it."/>
+                    </TextBlock>
+                    <TextBlock Width="360" Margin="0,0,0,16" HorizontalAlignment="Left" TextWrapping="Wrap">
+                        <Run Text="Thank you... for everything."/>
+                    </TextBlock>
+                    <TextBlock HorizontalAlignment="Left">
+                        <Run Text="I love you " FontWeight="Bold" Foreground="{StaticResource AccentColor}"/><Run Text=",^__ ,^)" FontWeight="Bold"/>
                         <Hyperlink NavigateUri="https://www.youtube.com/watch?v=4cugGAKsSNY&amp;list=PLLH-gVOGJkTLB_ixlYZ2fo51yPxn3m1LB" UnderlineStyle="None"><Run Text="❤️"/></Hyperlink>
                     </TextBlock>
+                    <TextBlock Width="360" Margin="0,16,0,0" HorizontalAlignment="Left" FontWeight="Bold">
+                        <Run Text="~neon-nyan"/>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
+                               Tag="https://web.facebook.com/kemalsetya.adhisetya/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF081;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://twitter.com/neonnyann/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://github.com/neon-nyan/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://www.reddit.com/user/justanewbie1-ID/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF16D;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://instagram.com/neonnyann/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -49,12 +49,19 @@ namespace CollapseLauncher.Updater
         static string[] argument;
         Updater updater;
 
+        static string execPath = Process.GetCurrentProcess().MainModule.FileName;
+        public static string workingDir = Path.GetDirectoryName(execPath);
+        static string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath));
+        public static string launcherPath = Path.Combine(workingDir, $"CollapseLauncher.exe");
+        static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
+
         [STAThread]
         public static void Main(string[] args)
         {
             try
             {
                 Hi3Helper.InvokeProp.InitializeConsole();
+                Process elevatedProc;
                 LogWriteLine($"This console is for debugging purposes. It will close itself after all tasks on main thread are completed.");
                 argument = args;
 
@@ -66,24 +73,29 @@ namespace CollapseLauncher.Updater
                         return;
                     }
 
+                    if (argument[0].ToLower() == "restartapp")
+                        new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = launcherPath,
+                                WorkingDirectory = workingDir,
+                                UseShellExecute = true
+                            }
+                        }.Start();
+
                     if (argument[0].ToLower() == "update")
                         new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
 
                     if (argument[0].ToLower() == "elevateupdate")
                     {
-                        string execPath = Process.GetCurrentProcess().MainModule.FileName;
-                        string sourcePath = Path.Combine(Path.GetDirectoryName(execPath), Path.GetFileName(execPath));
-                        string elevatedPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
-
-                        if (File.Exists(elevatedPath))
-                            File.Delete(elevatedPath);
-
-                        File.Copy(sourcePath, elevatedPath);
-                        var elevatedProc = new Process()
+                        File.Copy(sourcePath, elevatedPath, true);
+                        elevatedProc = new Process()
                         {
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName = elevatedPath,
+                                WorkingDirectory = workingDir,
                                 Arguments = $"update {argument[1]} {argument[2]}",
                                 UseShellExecute = true,
                                 Verb = "runas"
@@ -92,10 +104,8 @@ namespace CollapseLauncher.Updater
                         try
                         {
                             elevatedProc.Start();
-                            elevatedProc.WaitForExit();
                         }
                         catch { }
-                        File.Delete(elevatedPath);
                     }
                 }
             }
@@ -126,6 +136,12 @@ namespace CollapseLauncher.Updater
                     updater.StartCheck();
                     updater.StartUpdate();
                     updater.FinishUpdate();
+                    Dispatcher.Invoke(() =>
+                    {
+                        SpeedStatus.Visibility = Visibility.Collapsed;
+                        TimeEstimation.Visibility = Visibility.Collapsed;
+                        ActivitySubStatus.Visibility = Visibility.Collapsed;
+                    });
                 });
             }
             catch (Exception ex)
@@ -274,34 +290,58 @@ namespace CollapseLauncher.Updater
 
         public void FinishUpdate()
         {
-            if (UpdateFiles.Count > 0)
+            if (UpdateFiles.Count == 0)
             {
-                string Output;
-                string Temp;
-                foreach (fileProp _entry in UpdateFiles)
-                {
-                    Temp = Path.Combine(TempPath, NormalizePath(_entry.p));
-                    Output = Path.Combine(TargetPath, NormalizePath(_entry.p));
-
-                    if (!Directory.Exists(Path.GetDirectoryName(Output)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(Output));
-
-                    if (File.Exists(Output))
-                        File.Delete(Output);
-
-                    File.Move(Temp, Output);
-                }
+                Status.status = $"You're using the latest version ({FileProp.ver}) now!";
+                Status.message = $"Back to the launcher shortly...";
+                Console.WriteLine(UpdateFiles.Count);
+                UpdateStatus();
+                Suicide();
             }
+
+            string Output;
+            string Temp;
+            foreach (fileProp _entry in UpdateFiles)
+            {
+                Temp = Path.Combine(TempPath, NormalizePath(_entry.p));
+                Output = Path.Combine(TargetPath, NormalizePath(_entry.p));
+
+                if (!Directory.Exists(Path.GetDirectoryName(Output)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(Output));
+
+                if (File.Exists(Output))
+                    File.Delete(Output);
+
+                File.Move(Temp, Output);
+            }
+
             string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
             Directory.Delete(TempPath, true);
 
             Status.status = $"Version has been updated to {FileProp.ver}!";
-            Status.message = $"Please re-open the launcher to see what's new.";
+            Status.message = $"The launcher will re-open your launcher shortly...";
             UpdateStatus();
 
             Progress = new UpdaterProgress(TotalSize, TotalSize, 0, UpdateStopwatch.Elapsed);
             UpdateProgress();
             File.WriteAllText(newVerTagPath, FileProp.ver);
+            Suicide();
+        }
+
+        private async void Suicide()
+        {
+            await Task.Delay(3000);
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = MainWindow.launcherPath,
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    WorkingDirectory = MainWindow.workingDir
+                }
+            }.Start();
+            Environment.Exit(0);
         }
 
         private void Updater_DownloadProgressAdapter(object sender, _DownloadProgress e)

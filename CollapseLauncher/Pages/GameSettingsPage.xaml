@@ -7,6 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource PagesAcrylicBrush}" Loaded="InitializeSettings">
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow"/>
+    </Page.Resources>
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="32,32,32,32" Padding="0,0,0,64">
@@ -152,7 +155,7 @@
                                         </Grid.ColumnDefinitions>
                                         <CheckBox x:Name="GameFXHDRCheckBox" Content="HDR" Grid.Column="0" MinWidth="0"/>
                                         <CheckBox x:Name="GameFXHighQualityCheckBox" Content="High Quality" Grid.Column="1" MinWidth="0"/>
-                                        <CheckBox x:Name="GameFXFXAACheckBox" Content="Anti-Aliasing" Grid.Column="2" HorizontalAlignment="Center" MinWidth="0"/>
+                                        <CheckBox x:Name="GameFXFXAACheckBox" Content="FXAA" Grid.Column="2" HorizontalAlignment="Center" MinWidth="0"/>
                                         <CheckBox x:Name="GameFXDistortionCheckBox" Content="Distortion" Grid.Column="3" HorizontalAlignment="Right" MinWidth="0"/>
                                     </Grid>
                                 </Expander.Content>
@@ -296,13 +299,13 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
-        <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource OverlayAcrylicBrush}" Padding="16" Margin="16" CornerRadius="5">
+        <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource OverlayAcrylicBrush}" HorizontalAlignment="Left" Padding="16" Margin="16" CornerRadius="5">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="ApplyButton" Content="Apply Settings" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click"/>
+                <Button x:Name="ApplyButton" Content="Apply Settings" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{StaticResource SharedShadow}"/>
                 <TextBlock x:Name="ApplyText" Text="Changes have been saved!" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0" Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
-        <Grid x:Name="Overlay" Background="{ThemeResource PagesAcrylicBrush}" Visibility="Collapsed">
+        <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                 <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>

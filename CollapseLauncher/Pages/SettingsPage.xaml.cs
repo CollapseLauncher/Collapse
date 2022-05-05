@@ -22,7 +22,7 @@ namespace CollapseLauncher.Pages
             LoadAppConfig();
             this.DataContext = this;
 
-            string Version = $" {Assembly.GetExecutingAssembly().GetName().Version}";
+            string Version = $" {AppCurrentVersion}";
             if (AppConfig.IsPreview)
                 Version = Version + " Preview";
             else
@@ -164,6 +164,25 @@ namespace CollapseLauncher.Pages
             if (IsFirstExtractThreadsValue)
                 SetAppConfigValue("ExtractionThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
             IsFirstExtractThreadsValue = true;
+        }
+
+        private void ClickTextLinkFromTag(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = (sender as TextBlock).Tag.ToString(),
+                    UseShellExecute = true
+                }
+            }.Start();
+        }
+
+        int EggsAttempt = 1;
+        private void Egg(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            if (EggsAttempt++ >= 3)
+                HerLegacy.Visibility = Visibility.Visible;
         }
     }
 }

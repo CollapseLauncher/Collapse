@@ -26,10 +26,13 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                CurrentVersionLabel.Text = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+                CurrentVersionLabel.Text = $"{LauncherConfig.AppCurrentVersion}";
                 NewVersionLabel.Text = LauncherUpdateWatcher.UpdateProperty.ver;
                 UpdateChannelLabel.Text = AppConfig.IsPreview ? "Preview" : "Stable";
                 AskUpdateCheckbox.IsChecked = LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
+                BuildTimestampLabel.Text = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                                            .AddSeconds(LauncherUpdateWatcher.UpdateProperty.time)
+                                            .ToLocalTime().ToString("f");
             });
 
             await GetReleaseNote();

@@ -27,6 +27,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.GameSettingsManagement;
 
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 
@@ -44,10 +45,6 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         bool IsCheckPreIntegrity = false;
-
-        Vector3 Shadow16 = new Vector3(0, 0, 16);
-        Vector3 Shadow32 = new Vector3(0, 0, 32);
-        Vector3 Shadow48 = new Vector3(0, 0, 48);
 
         public HomePage()
         {
@@ -849,7 +846,7 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.UseShellExecute = true;
                 if (!(CurrentRegion.IsGenshin ?? false))
                 {
-                    proc.StartInfo.Arguments = await Hi3Helper.Shared.Region.GameSettingsManagement.GetLaunchArguments();
+                    proc.StartInfo.Arguments = await GetLaunchArguments();
                     LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 }
                 proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()));
@@ -867,6 +864,15 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentRegion.ZoneName}\r\nTraceback: {ex}", Hi3Helper.LogType.Error, true);
             }
+        }
+
+        public async void StartExclusiveWindowPayload()
+        {
+            IntPtr _windowPtr = Hi3Helper.InvokeProp.GetProcessWindowHandle(CurrentRegion.GameExecutableName);
+            await Task.Delay(1000);
+            new Hi3Helper.InvokeProp.InvokePresence(_windowPtr).HideWindow();
+            await Task.Delay(1000);
+            new Hi3Helper.InvokeProp.InvokePresence(_windowPtr).ShowWindow();
         }
 
         public async void ReadOutputLog()
@@ -903,6 +909,15 @@ namespace CollapseLauncher.Pages
 
                                 while ((line = reader.ReadLine()) != null)
                                 {
+                                    if (RequireWindowExclusivePayload)
+                                    {
+                                        if (line == "MoleMole.MonoGameEntry:Awake()"
+                                            && (CurrentRegion.IsGenshin ?? false))
+                                        {
+                                            StartExclusiveWindowPayload();
+                                            RequireWindowExclusivePayload = false;
+                                        }
+                                    }
                                     LogWriteLine(line, Hi3Helper.LogType.Game, true);
                                 }
 

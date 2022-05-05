@@ -10,6 +10,7 @@ using Microsoft.UI.Composition;
 using System;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Numerics;
 
 using Hi3Helper.Shared.ClassStruct;
 
@@ -28,6 +29,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 this.InitializeComponent();
+                ApplyButton.Translation = Shadow32;
             }
             catch (Exception ex)
             {

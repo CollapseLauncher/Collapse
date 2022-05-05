@@ -26,11 +26,11 @@ namespace Hi3Helper.Data
         private QueryProto DispatchProto = new QueryProto();
         private QueryProperty returnValProp;
 
-        public GenshinDispatchHelper(int RegionID, string DispatchKey, string VersionString = "2.6.0")
+        public GenshinDispatchHelper(int RegionID, string DispatchKey, string VersionString = "2.6.0") : base(false, 1, 1)
         {
-            RegionSubdomain = GetSubdomainByRegionID(RegionID);
+            this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
-            DispatchBaseURL = string.Format(DispatchURLFormula, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
+            this.DispatchBaseURL = string.Format(DispatchURLFormula, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
         }
 
         public void LoadDispatch()

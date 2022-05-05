@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 
 using Windows.UI;
 
@@ -25,6 +26,7 @@ namespace CollapseLauncher
 #if PREVIEW
             AppConfig.IsPreview = true;
 #endif
+            AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             if (!File.Exists(AppConfigFile))
                 AppConfig.IsFirstInstall = true;
 

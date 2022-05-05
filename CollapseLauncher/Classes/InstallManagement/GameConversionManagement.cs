@@ -11,9 +11,12 @@ using Microsoft.UI.Xaml;
 
 using Newtonsoft.Json;
 
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+
+using static Hi3Helper.Logger;
 
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -316,33 +319,67 @@ namespace CollapseLauncher
         public async Task StartConversion()
         {
             ResetSw();
-            string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
-            string OutputPath = TargetProfile.ActualGameDataLocation;
 
-            if (Directory.Exists(OutputPath))
-                Directory.Delete(OutputPath, true);
-
-            Directory.CreateDirectory(OutputPath);
-            ConvertTotalSize = TargetFileManifest.Sum(x => x.FileSize);
-
-            ConvertFsWatcher = new FileSystemWatcher()
+            try
             {
-                Path = OutputPath,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
-                             | NotifyFilters.Size,
-                IncludeSubdirectories = true,
-                EnableRaisingEvents = true
-            };
+                string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
+                string OutputPath = TargetProfile.ActualGameDataLocation;
 
-            ConvertFsWatcher.Created += ConvertFsWatcher_Created;
+                if (Directory.Exists(OutputPath))
+                    Directory.Delete(OutputPath, true);
 
-            await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath));
-            Directory.Delete(IngredientsPath, true);
-            File.Delete(CookbookPath);
-            MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
-            Directory.Delete(SourceProfile.ActualGameDataLocation, true);
+                Directory.CreateDirectory(OutputPath);
+                ConvertTotalSize = TargetFileManifest.Sum(x => x.FileSize);
 
-            ConvertFsWatcher.Created -= ConvertFsWatcher_Created;
+                ConvertFsWatcher = new FileSystemWatcher()
+                {
+                    Path = OutputPath,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
+                                 | NotifyFilters.Size,
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = true
+                };
+
+                ConvertFsWatcher.Created += ConvertFsWatcher_Created;
+
+                await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath));
+                Directory.Delete(IngredientsPath, true);
+                File.Delete(CookbookPath);
+                MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
+                Directory.Delete(SourceProfile.ActualGameDataLocation, true);
+
+                ConvertFsWatcher.Created -= ConvertFsWatcher_Created;
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    RevertBackIngredients(SourceFileManifest);
+                }
+                catch (Exception exf)
+                {
+                    LogWriteLine($"Conversion process has failed and sorry, the files can't be reverted back :(\r\nInner Exception: {ex}\r\nReverting Exception: {exf}", LogType.Error, true);
+                    throw new Exception($"Conversion process has failed and sorry, the files can't be reverted back :(\r\nInner Exception: {ex}\r\nReverting Exception: {exf}", new Exception($"Inner exception: {ex}", ex));
+                }
+                LogWriteLine($"Conversion process has failed! But don't worry, the files have been reverted :D\r\n{ex}", LogType.Error, true);
+                throw new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex);
+            }
+        }
+
+        private void RevertBackIngredients(List<FileProperties> FileManifest)
+        {
+            string InputPath, OutputPath;
+            foreach (FileProperties Entry in FileManifest)
+            {
+                InputPath = Path.Combine(SourceProfile.ActualGameDataLocation, Entry.FileName);
+                OutputPath = Path.Combine(TargetProfile.ActualGameDataLocation + "_Ingredients", Entry.FileName);
+
+                if (!Directory.Exists(Path.GetDirectoryName(InputPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(InputPath));
+
+                if (File.Exists(InputPath))
+                    File.Move(OutputPath, InputPath, true);
+            }
         }
 
         private void MoveMiscSourceFiles(string InputPath, string OutputPath)

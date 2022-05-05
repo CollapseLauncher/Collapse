@@ -27,6 +27,7 @@ namespace Hi3Helper.Shared.Region
     {
         public static RegistryKey RegKey;
         public static bool IsRegKeyExist = true;
+        public static bool RequireWindowExclusivePayload;
 
         public static void InitRegKey()
         {
@@ -34,7 +35,7 @@ namespace Hi3Helper.Shared.Region
             IsRegKeyExist = !(RegKey == null);
         }
 
-        public const string SectionName = "SettingsV2";
+        public static string SectionName = "SettingsV2";
         public static Dictionary<string, IniValue> GameSettingsTemplate = new Dictionary<string, IniValue>
         {
             { "Fullscreen", new IniValue(true) },
@@ -545,6 +546,7 @@ namespace Hi3Helper.Shared.Region
                 if (gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool())
                 {
                     parameter.Append("-window-mode exclusive ");
+                    RequireWindowExclusivePayload = true;
                 }
 
                 Size screenSize = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();

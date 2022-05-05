@@ -30,7 +30,7 @@ namespace CollapseLauncher
             {
                 this.InitializeComponent();
 
-                string title = $"Collapse Launcher - v{Assembly.GetExecutingAssembly().GetName().Version} ";
+                string title = $"Collapse Launcher - v{AppCurrentVersion} ";
                 if (IsPreview)
                     title = title + "[PREVIEW]";
 #if DEBUG

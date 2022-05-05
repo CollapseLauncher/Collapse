@@ -52,6 +52,12 @@
                     <Run x:Name="UpdateChannelLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 </TextBlock>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                <TextBlock FontSize="12">
+                    <Run Text="Compiled on:" FontWeight="Medium"/>
+                    <Run x:Name="BuildTimestampLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                </TextBlock>
+            </StackPanel>
         </StackPanel>
         <Grid Grid.Column="1" Margin="32,24,0,0">
             <Grid.RowDefinitions>

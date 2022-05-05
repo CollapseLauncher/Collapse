@@ -34,7 +34,6 @@ namespace CollapseLauncher
         {
             UpdateChannelName = AppConfig.IsPreview ? "preview" : "stable";
             string ChannelURL = string.Format(UpdateRepoChannel + "{0}/", UpdateChannelName);
-            string CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             while (true)
             {
@@ -47,7 +46,7 @@ namespace CollapseLauncher
                         string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
                         UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
 
-                        if (CompareIsNewer(CurrentVersion, UpdateProperty.ver))
+                        if (CompareVersion(AppCurrentVersion, UpdateProperty.ver))
                             GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = UpdateProperty.ver });
                         else
                             GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = UpdateProperty.ver });
@@ -64,13 +63,15 @@ namespace CollapseLauncher
             }
         }
 
-        public static bool CompareIsNewer(string Input, string Output)
+        public static bool CompareVersion(string CurrentVer, string ComparedVer)
         {
-            byte[] LocalVersion = Input.Split('.')
+            if (CurrentVer == null || ComparedVer == null) return false;
+
+            byte[] LocalVersion = CurrentVer.Split('.')
                 .Select(x => byte.Parse(x))
                 .ToArray();
 
-            byte[] RemoteVersion = Output.Split('.')
+            byte[] RemoteVersion = ComparedVer.Split('.')
                 .Select(x => byte.Parse(x))
                 .ToArray();
 

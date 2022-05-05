@@ -34,7 +34,7 @@ namespace CollapseLauncher
             try
             {
                 LoadGamePreset();
-                LogWriteLine($"Welcome to Collapse Launcher v{Assembly.GetExecutingAssembly().GetName().Version} - {GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
@@ -108,6 +108,7 @@ namespace CollapseLauncher
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
             foreach (NotificationProp Entry in AppConfig.NotificationData.AppPush)
             {
+                // Check for Close Action for certain MsgIds
                 switch (Entry.MsgId)
                 {
                     case 0:
@@ -123,8 +124,12 @@ namespace CollapseLauncher
                         ClickCloseAction = null;
                         break;
                 }
+                if (Entry.ValidForVerBelow == null
+                    || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
+                        && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
+                    || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow))
+                    SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true, Entry.IsDisposable ?? true, ClickCloseAction, null, true);
                 await Task.Delay(250);
-                SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true, Entry.IsDisposable ?? true, ClickCloseAction, null, true);
             }
         }
 
@@ -134,6 +139,13 @@ namespace CollapseLauncher
             TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
             {
                 File.Delete(UpdateNotifFile);
+                try
+                {
+                    string updateElevator = Path.Combine(AppDataFolder, "CollapseLauncher.Updater.Elevated.exe");
+                    if (File.Exists(updateElevator))
+                        File.Delete(updateElevator);
+                }
+                catch { }
             });
 
             if (File.Exists(UpdateNotifFile))

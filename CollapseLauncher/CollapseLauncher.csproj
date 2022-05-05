@@ -11,7 +11,7 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
-	<Version>1.0.20.1</Version>
+	<Version>1.0.20.3</Version>
 	<Configurations>Debug;Release;Publish</Configurations>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
@@ -32,6 +32,10 @@
 			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview2'" />
 		</ItemGroup>
 	</Target>
+
+	<ItemGroup>
+	  <None Remove="Assets\Fonts\FontAwesomeBrand6.otf" />
+	</ItemGroup>
 
 	<ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -87,6 +91,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\BG\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\ironmaiden_logo_256.png">

@@ -2,12 +2,12 @@
   "profiles": {
     "CollapseLauncher.Updater": {
       "commandName": "Project",
-      "commandLineArgs": "update \"C:/myGit/CollapseLauncher/CollapseLauncher/bin/x64/Debug/net6.0-windows10.0.22000.0\" preview",
+      "commandLineArgs": "update \"C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview\" preview",
       "nativeDebugging": true
     },
     "CollapseLauncher.ReindexPreview": {
       "commandName": "Project",
-      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview 1.0.20.1",
+      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview 1.0.20.3",
       "nativeDebugging": true
     },
     "CollapseLauncher.ReindexStable": {

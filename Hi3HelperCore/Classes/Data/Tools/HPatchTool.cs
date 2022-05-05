@@ -16,8 +16,6 @@ namespace Hi3Helper.Data
     public class HPatchUtil
     {
         uint bufSize = 0x10000;
-        bool isPatchDirComplete = false;
-        FileSystemWatcher fsWatcher;
         long WriteSize = 0;
         CancellationToken Token = new CancellationToken();
 
@@ -36,8 +34,8 @@ namespace Hi3Helper.Data
 
         public async Task HPatchDir(string inputPath, string inputManifestURL, string diffFile, string outputPath, CancellationToken Token = new CancellationToken())
         {
+            FileSystemWatcher fsWatcher;
             this.Token = Token;
-            isPatchDirComplete = false;
             string LastOutputPath = outputPath;
 
             List<FileProperties> RecipeList = await BuildManifest(inputManifestURL);
@@ -75,7 +73,8 @@ namespace Hi3Helper.Data
             Directory.Delete(inputPath, true);
 
             Console.WriteLine($"{ConverterTool.SummarizeSizeSimple(WriteSize)}");
-            isPatchDirComplete = true;
+
+            fsWatcher.Created -= FsWatcher_ObjectCreated;
         }
 
         private async Task RepairRecipe(string OutputDir, string inputManifestURL, List<FileProperties> Entries)
@@ -192,7 +191,6 @@ namespace Hi3Helper.Data
             }
         }
 
-
         private async Task<List<FileProperties>> BuildManifest(string manifestURL)
         {
             List<FileProperties> _out = new List<FileProperties>();
@@ -249,7 +247,6 @@ namespace Hi3Helper.Data
 
             return _out;
         }
-
 
         string lastName = null;
         private void FsWatcher_ObjectCreated(object sender, FileSystemEventArgs e)

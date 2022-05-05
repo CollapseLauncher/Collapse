@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Drawing;
+using System.Numerics;
 
 using Hi3Helper.Screen;
 using Hi3Helper.Data;
@@ -19,6 +20,27 @@ namespace Hi3Helper.Shared.Region
 {
     public static class LauncherConfig
     {
+        public static Vector3 Shadow16 = new Vector3(0, 0, 16);
+        public static Vector3 Shadow32 = new Vector3(0, 0, 32);
+        public static Vector3 Shadow48 = new Vector3(0, 0, 48);
+        public enum AppLanguage { EN, ID }
+        public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
+        {
+            { "CurrentRegion", new IniValue(0) },
+            { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
+            { "DownloadThread", new IniValue(8) },
+            { "ExtractionThread", new IniValue(0) },
+            { "GameFolder", new IniValue(AppGameFolder) },
+#if DEBUG
+            { "EnableConsole", new IniValue(true) },
+#else
+            { "EnableConsole", new IniValue(false) },
+#endif
+            { "DontAskUpdate", new IniValue(false) },
+            { "ThemeMode", new IniValue(AppThemeMode.Light) },
+            { "Language", new IniValue(AppLanguage.EN) }
+        };
+
         const string SectionName = "app";
         public static string startupBackgroundPath;
         public static RegionBackgroundProp regionBackgroundProp = new RegionBackgroundProp();
@@ -30,6 +52,7 @@ namespace Hi3Helper.Shared.Region
 
         public static AppIniStruct appIni = new AppIniStruct();
 
+        public static string AppCurrentVersion;
         public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
@@ -78,39 +101,14 @@ namespace Hi3Helper.Shared.Region
             }
 
             LoadAppConfig();
+            CheckAndSetDefaultConfigValue();
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
 
             InitConsoleSetting();
-            InitUpdateSettings();
-            InitMiscSettings();
-        }
-
-        public static void InitMiscSettings()
-        {
-            if (GetAppConfigValue("ThemeMode").ToString() == null)
-            {
-                SetAppConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), 0));
-                SaveAppConfig();
-            }
-        }
-
-        public static void InitUpdateSettings()
-        {
-            if (GetAppConfigValue("DontAskUpdate").ToBoolNullable() == null)
-            {
-                SetAppConfigValue("DontAskUpdate", false);
-                SaveAppConfig();
-            }
         }
 
         public static void InitConsoleSetting()
         {
-            if (GetAppConfigValue("EnableConsole").ToBoolNullable() == null)
-            {
-                SetAppConfigValue("EnableConsole", false);
-                SaveAppConfig();
-            }
-
             if (GetAppConfigValue("EnableConsole").ToBool())
                 ShowConsoleWindow();
             else
@@ -124,29 +122,26 @@ namespace Hi3Helper.Shared.Region
             appIni.Profile[SectionName][key] = new IniValue(value);
             SaveAppConfig();
         }
+        public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile[SectionName][key] = value;
 
         public static void LoadAppConfig() => appIni.Profile.Load(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.Open, FileAccess.Read));
         public static void SaveAppConfig() => appIni.Profile.Save(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.OpenOrCreate, FileAccess.Write));
 
         public static void PrepareAppInstallation() => BuildAppIniProfile();
 
+        public static void CheckAndSetDefaultConfigValue()
+        {
+            foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate)
+            {
+                if (GetAppConfigValue(Entry.Key).Value == null)
+                    SetAppConfigValue(Entry.Key, Entry.Value);
+            }
+            SaveAppConfig();
+        }
+
         static void BuildAppIniProfile()
         {
-            appIni.Profile.Add(SectionName, new Dictionary<string, IniValue>
-            {
-                { "CurrentRegion", new IniValue(0) },
-                { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
-                { "DownloadThread", new IniValue(8) },
-                { "ExtractionThread", new IniValue(0) },
-                { "GameFolder", new IniValue(AppGameFolder) },
-#if DEBUG
-                { "EnableConsole", new IniValue(true) },
-#else
-                { "EnableConsole", new IniValue(false) },
-#endif
-                { "DontAskUpdate", new IniValue(false) },
-                { "ThemeMode", new IniValue(AppThemeMode.Default) },
-            });
+            appIni.Profile.Add(SectionName, AppSettingsTemplate);
 
             SaveAppConfig();
         }
