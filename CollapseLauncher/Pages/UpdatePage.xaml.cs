@@ -73,7 +73,7 @@ namespace CollapseLauncher.Pages
         private void DoUpdateClick(object sender, RoutedEventArgs e)
         {
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"update \"{ExecutableLocation.Replace('\\', '/')}\" {(AppConfig.IsPreview ? "preview" : "stable")}";
+            string UpdateArgument = $"elevateupdate \"{ExecutableLocation.Replace('\\', '/')}\" {(AppConfig.IsPreview ? "preview" : "stable")}";
             Console.WriteLine(UpdateArgument);
             try
             {
