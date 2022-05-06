@@ -32,7 +32,7 @@ namespace CollapseLauncher
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
         public static async void StartCheckUpdate()
         {
-            UpdateChannelName = AppConfig.IsPreview ? "preview" : "stable";
+            UpdateChannelName = IsPreview ? "preview" : "stable";
             string ChannelURL = string.Format(UpdateRepoChannel + "{0}/", UpdateChannelName);
 
             while (true)

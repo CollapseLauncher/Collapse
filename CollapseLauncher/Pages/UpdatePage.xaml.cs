@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -26,10 +27,10 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                CurrentVersionLabel.Text = $"{LauncherConfig.AppCurrentVersion}";
+                CurrentVersionLabel.Text = $"{AppCurrentVersion}";
                 NewVersionLabel.Text = LauncherUpdateWatcher.UpdateProperty.ver;
-                UpdateChannelLabel.Text = AppConfig.IsPreview ? "Preview" : "Stable";
-                AskUpdateCheckbox.IsChecked = LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
+                UpdateChannelLabel.Text = IsPreview ? "Preview" : "Stable";
+                AskUpdateCheckbox.IsChecked = GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
                 BuildTimestampLabel.Text = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                             .AddSeconds(LauncherUpdateWatcher.UpdateProperty.time)
                                             .ToLocalTime().ToString("f");
@@ -43,7 +44,7 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = "Loading Release Notes...");
 
             MemoryStream ResponseStream = new MemoryStream();
-            string ReleaseNoteURL = string.Format(LauncherConfig.UpdateRepoChannel + "changelog_{0}", AppConfig.IsPreview ? "preview" : "stable");
+            string ReleaseNoteURL = string.Format(UpdateRepoChannel + "changelog_{0}", IsPreview ? "preview" : "stable");
 
             try
             {
@@ -61,19 +62,19 @@ namespace CollapseLauncher.Pages
         private void AskUpdateToggle(object sender, RoutedEventArgs e)
         {
             bool AskForUpdateLater = (sender as CheckBox).IsChecked ?? false;
-            LauncherConfig.SetAppConfigValue("DontAskUpdate", AskForUpdateLater);
+            SetAndSaveConfigValue("DontAskUpdate", AskForUpdateLater);
         }
 
         private void RemindMeClick(object sender, RoutedEventArgs e)
         {
-            LauncherConfig.ForceInvokeUpdate = true;
+            ForceInvokeUpdate = true;
             LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { QuitFromUpdateMenu = true });
         }
 
         private void DoUpdateClick(object sender, RoutedEventArgs e)
         {
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"elevateupdate \"{ExecutableLocation.Replace('\\', '/')}\" {(AppConfig.IsPreview ? "preview" : "stable")}";
+            string UpdateArgument = $"elevateupdate \"{ExecutableLocation.Replace('\\', '/')}\" {(IsPreview ? "preview" : "stable")}";
             Console.WriteLine(UpdateArgument);
             try
             {

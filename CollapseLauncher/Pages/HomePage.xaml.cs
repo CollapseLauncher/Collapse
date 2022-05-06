@@ -803,7 +803,7 @@ namespace CollapseLauncher.Pages
                         case ContentDialogResult.Secondary:
                             folder = null;
                             folderPicker.FileTypeFilter.Add("*");
-                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, AppConfig.m_windowHandle);
+                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
                             folder = await folderPicker.PickSingleFolderAsync();
 
                             if (folder != null)
@@ -884,7 +884,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
                 try
                 {
-                    AppConfig.m_presenter.Minimize();
+                    InnerLauncherConfig.m_presenter.Minimize();
                     string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt";
 
                     if (!Directory.Exists(Path.GetDirectoryName(logPath)))
@@ -929,7 +929,7 @@ namespace CollapseLauncher.Pages
                 catch (OperationCanceledException)
                 {
                     LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
-                    AppConfig.m_presenter.Restore();
+                    InnerLauncherConfig.m_presenter.Restore();
                 }
                 catch (Exception ex)
                 {

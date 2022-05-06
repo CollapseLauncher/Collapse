@@ -454,7 +454,7 @@ namespace CollapseLauncher.Dialogs
             gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Create, FileAccess.ReadWrite);
             BuildGameIniProfile();
 
-            SetAppConfigValue("CurrentRegion", ConfigStore.Config.FindIndex(x => x.ProfileName == TargetProfile.ProfileName));
+            SetAndSaveConfigValue("CurrentRegion", ConfigStore.Config.FindIndex(x => x.ProfileName == TargetProfile.ProfileName));
             LoadAppConfig();
         }
 

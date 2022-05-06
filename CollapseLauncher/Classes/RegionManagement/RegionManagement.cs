@@ -56,8 +56,8 @@ namespace CollapseLauncher
         {
             await Task.Run(() =>
             {
-                AppConfig.NotificationData.EliminatePushList();
-                foreach (NotificationProp Entry in AppConfig.NotificationData.RegionPush)
+                InnerLauncherConfig.NotificationData.EliminatePushList();
+                foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.RegionPush)
                 {
                     if (Entry.RegionProfile == RegionProfileName)
                     {

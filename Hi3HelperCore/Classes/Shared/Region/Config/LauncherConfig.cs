@@ -24,22 +24,6 @@ namespace Hi3Helper.Shared.Region
         public static Vector3 Shadow32 = new Vector3(0, 0, 32);
         public static Vector3 Shadow48 = new Vector3(0, 0, 48);
         public enum AppLanguage { EN, ID }
-        public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
-        {
-            { "CurrentRegion", new IniValue(0) },
-            { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
-            { "DownloadThread", new IniValue(8) },
-            { "ExtractionThread", new IniValue(0) },
-            { "GameFolder", new IniValue(AppGameFolder) },
-#if DEBUG
-            { "EnableConsole", new IniValue(true) },
-#else
-            { "EnableConsole", new IniValue(false) },
-#endif
-            { "DontAskUpdate", new IniValue(false) },
-            { "ThemeMode", new IniValue(AppThemeMode.Light) },
-            { "Language", new IniValue(AppLanguage.EN) }
-        };
 
         const string SectionName = "app";
         public static string startupBackgroundPath;
@@ -66,10 +50,30 @@ namespace Hi3Helper.Shared.Region
         public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
 
         public static bool RequireAdditionalDataDownload;
-        public static bool IsThisRegionInstalled;
+        public static bool IsThisRegionInstalled = false;
+        public static bool IsPreview = false;
+        public static bool IsAppThemeNeedRestart = false;
+        public static bool IsFirstInstall = false;
         public static bool ForceInvokeUpdate = false;
         public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
+
+        public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
+        {
+            { "CurrentRegion", new IniValue(0) },
+            { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
+            { "DownloadThread", new IniValue(8) },
+            { "ExtractionThread", new IniValue(0) },
+            { "GameFolder", new IniValue() },
+#if DEBUG
+            { "EnableConsole", new IniValue(true) },
+#else
+            { "EnableConsole", new IniValue(false) },
+#endif
+            { "DontAskUpdate", new IniValue(false) },
+            { "ThemeMode", new IniValue(AppThemeMode.Light) },
+            { "Language", new IniValue(AppLanguage.EN) }
+        };
 
         public static void LoadGamePreset()
         {
@@ -84,27 +88,43 @@ namespace Hi3Helper.Shared.Region
                 ScreenResolutionsList.Add($"{res.Width}x{res.Height}");
         }
 
-        public static void LoadAppPreset()
+        public static void InitAppPreset()
         {
-            ScreenProp.InitScreenResolution();
-            GetScreenResolutionString();
+            IsFirstInstall = !File.Exists(AppConfigFile);
+            InitScreenResSettings();
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);
 
             appIni.Profile = new IniFile();
             appIni.ProfilePath = AppConfigFile;
 
-            if (!File.Exists(appIni.ProfilePath))
+            if (IsFirstInstall)
             {
-                PrepareAppInstallation();
+                appIni.Profile.Add(SectionName, AppSettingsTemplate);
                 SaveAppConfig();
             }
-
-            LoadAppConfig();
-            CheckAndSetDefaultConfigValue();
+            else
+            {
+                LoadAppConfig();
+                CheckAndSetDefaultConfigValue();
+            }
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
 
-            InitConsoleSetting();
+            // The app will also set IsFirstInstall to True if GameFolder value is empty.
+            if (string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString()))
+            {
+                IsFirstInstall = string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
+                return;
+            }
+            // Or if the directory doesn't exist or user doesn't have permission.
+            IsFirstInstall = !(Directory.Exists(GetAppConfigValue("GameFolder").ToString())
+                && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()));
+        }
+
+        private static void InitScreenResSettings()
+        {
+            ScreenProp.InitScreenResolution();
+            GetScreenResolutionString();
         }
 
         public static void InitConsoleSetting()
@@ -117,17 +137,15 @@ namespace Hi3Helper.Shared.Region
 
         public static int GetAppExtractConfigValue() => GetAppConfigValue("ExtractionThread").ToInt() == 0 ? Environment.ProcessorCount : GetAppConfigValue("ExtractionThread").ToInt();
         public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
-        public static void SetAppConfigValue(string key, object? value)
+        public static void SetAndSaveConfigValue(string key, IniValue value)
         {
-            appIni.Profile[SectionName][key] = new IniValue(value);
+            SetAppConfigValue(key, value);
             SaveAppConfig();
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile[SectionName][key] = value;
 
         public static void LoadAppConfig() => appIni.Profile.Load(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.Open, FileAccess.Read));
         public static void SaveAppConfig() => appIni.Profile.Save(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.OpenOrCreate, FileAccess.Write));
-
-        public static void PrepareAppInstallation() => BuildAppIniProfile();
 
         public static void CheckAndSetDefaultConfigValue()
         {
@@ -136,13 +154,6 @@ namespace Hi3Helper.Shared.Region
                 if (GetAppConfigValue(Entry.Key).Value == null)
                     SetAppConfigValue(Entry.Key, Entry.Value);
             }
-            SaveAppConfig();
-        }
-
-        static void BuildAppIniProfile()
-        {
-            appIni.Profile.Add(SectionName, AppSettingsTemplate);
-
             SaveAppConfig();
         }
     }

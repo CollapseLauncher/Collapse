@@ -89,8 +89,8 @@ namespace CollapseLauncher
             Windows.UI.Color _color = new Windows.UI.Color();
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (AppConfig.CurrentAppTheme == AppThemeMode.Light ||
-                    (AppConfig.CurrentAppTheme == AppThemeMode.Default && AppConfig.SystemAppTheme.ToString() == "#FFFFFFFF"))
+                if (InnerLauncherConfig.CurrentAppTheme == AppThemeMode.Light ||
+                    (InnerLauncherConfig.CurrentAppTheme == AppThemeMode.Default && InnerLauncherConfig.SystemAppTheme.ToString() == "#FFFFFFFF"))
                 {
                     try
                     {
@@ -130,7 +130,7 @@ namespace CollapseLauncher
                     Application.Current.Resources["SystemAccentColorLight3"] = _color;
                 }
 
-                ReloadPageTheme(ConvertAppThemeToElementTheme(AppConfig.CurrentAppTheme));
+                ReloadPageTheme(ConvertAppThemeToElementTheme(InnerLauncherConfig.CurrentAppTheme));
             });
         }
 

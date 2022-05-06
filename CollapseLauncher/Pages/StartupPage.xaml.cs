@@ -25,12 +25,13 @@ namespace CollapseLauncher.Pages
             string returnFolder;
 
             folderPicker.FileTypeFilter.Add("*");
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, AppConfig.m_windowHandle);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
 
             switch (await Dialogs.SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
+                    SetAndSaveConfigValue("GameFolder", AppGameFolder);
                     MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     break;
                 case ContentDialogResult.Secondary:
@@ -40,6 +41,7 @@ namespace CollapseLauncher.Pages
                         {
                             AppGameFolder = returnFolder;
                             ErrMsg.Text = "";
+                            SetAndSaveConfigValue("GameFolder", AppGameFolder);
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                         }
                         else

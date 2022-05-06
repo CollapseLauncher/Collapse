@@ -16,7 +16,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 
 using System.Runtime.InteropServices;
 
-using static CollapseLauncher.AppConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 

@@ -24,22 +24,21 @@ namespace CollapseLauncher
         public App()
         {
 #if PREVIEW
-            AppConfig.IsPreview = true;
+            IsPreview = true;
 #endif
             AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            if (!File.Exists(AppConfigFile))
-                AppConfig.IsFirstInstall = true;
 
             InitializeConsole(true, AppDataFolder);
 
-            LoadAppPreset();
+            InitAppPreset();
+            InitConsoleSetting();
             WriteLog("App Started!", LogType.Scheme);
             LogWriteLine($"Initializing...", LogType.Empty);
 
-            AppConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
-            AppConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+            InnerLauncherConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
+            InnerLauncherConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
 
-            RequestedTheme = (AppConfig.CurrentRequestedAppTheme = AppConfig.GetAppTheme());
+            RequestedTheme = (InnerLauncherConfig.CurrentRequestedAppTheme = InnerLauncherConfig.GetAppTheme());
 
             try
             {

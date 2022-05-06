@@ -23,7 +23,7 @@ namespace CollapseLauncher.Pages
             this.DataContext = this;
 
             string Version = $" {AppCurrentVersion}";
-            if (AppConfig.IsPreview)
+            if (IsPreview)
                 Version = Version + " Preview";
             else
                 Version = Version + " Stable";
@@ -44,7 +44,7 @@ namespace CollapseLauncher.Pages
             else
                 HideConsoleWindow();
 
-            SetAppConfigValue("EnableConsole", ((ToggleSwitch)sender).IsOn);
+            SetAndSaveConfigValue("EnableConsole", ((ToggleSwitch)sender).IsOn);
             InitLog(true, AppDataFolder);
         }
 
@@ -122,7 +122,7 @@ namespace CollapseLauncher.Pages
                     UpdateAvailableStatus.Visibility = Visibility.Visible;
                     UpToDateStatus.Visibility = Visibility.Collapsed;
                     CheckUpdateBtn.IsEnabled = true;
-                    UpdateAvailableLabel.Text = e.NewVersionName + (AppConfig.IsPreview ? " Preview" : " Stable");
+                    UpdateAvailableLabel.Text = e.NewVersionName + (IsPreview ? " Preview" : " Stable");
                     CheckUpdateBtn.Content = "Check Update";
                     LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
                     return;
@@ -142,12 +142,12 @@ namespace CollapseLauncher.Pages
         bool IsFirstChangeThemeSelection = false;
         private void ChangeThemeSelection(object sender, SelectionChangedEventArgs e)
         {
-            SetAppConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), (sender as RadioButtons).SelectedIndex));
-            if (AppConfig.IsAppThemeNeedRestart)
+            SetAndSaveConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), (sender as RadioButtons).SelectedIndex));
+            if (IsAppThemeNeedRestart)
                 AppThemeSelectionWarning.Visibility = Visibility.Visible;
 
             if (IsFirstChangeThemeSelection)
-                AppConfig.IsAppThemeNeedRestart = true;
+                IsAppThemeNeedRestart = true;
             IsFirstChangeThemeSelection = true;
         }
 
@@ -155,14 +155,14 @@ namespace CollapseLauncher.Pages
         private void ChangeDownloadThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
             if (IsFirstDownloadThreadsValue)
-                SetAppConfigValue("DownloadThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
+                SetAndSaveConfigValue("DownloadThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
             IsFirstDownloadThreadsValue = true;
         }
         bool IsFirstExtractThreadsValue = false;
         private void ChangeExtractThreadsValue(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
             if (IsFirstExtractThreadsValue)
-                SetAppConfigValue("ExtractionThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
+                SetAndSaveConfigValue("ExtractionThread", (int)(double.IsNaN(sender.Value) ? 0 : sender.Value));
             IsFirstExtractThreadsValue = true;
         }
 

@@ -15,14 +15,11 @@ using Hi3Helper.Shared.ClassStruct;
 
 namespace CollapseLauncher
 {
-    public static class AppConfig
+    public static class InnerLauncherConfig
     {
         public static IntPtr m_windowHandle;
         public static AppWindow m_AppWindow;
         public static OverlappedPresenter m_presenter;
-        public static bool IsPreview = false;
-        public static bool IsAppThemeNeedRestart = false;
-        public static bool IsFirstInstall = false;
         public static ApplicationTheme CurrentRequestedAppTheme;
         public static AppThemeMode CurrentAppTheme;
         public static Color SystemAppTheme;

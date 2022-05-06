@@ -96,17 +96,17 @@ namespace CollapseLauncher
         {
             using (MemoryStream buffer = new MemoryStream())
             {
-                await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (AppConfig.IsPreview ? "preview" : "stable")),
+                await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
                     buffer, new CancellationToken(), -1, -1, false);
-                AppConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
-                AppConfig.LoadLocalNotificationData();
+                InnerLauncherConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
+                InnerLauncherConfig.LoadLocalNotificationData();
             }
         }
 
         private async void PushAppNotification()
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
-            foreach (NotificationProp Entry in AppConfig.NotificationData.AppPush)
+            foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.AppPush)
             {
                 // Check for Close Action for certain MsgIds
                 switch (Entry.MsgId)
@@ -115,8 +115,8 @@ namespace CollapseLauncher
                         {
                             ClickCloseAction = new TypedEventHandler<InfoBar, object>((sender, args) =>
                             {
-                                AppConfig.NotificationData.AddIgnoredMsgIds(0);
-                                AppConfig.SaveLocalNotificationData();
+                                InnerLauncherConfig.NotificationData.AddIgnoredMsgIds(0);
+                                InnerLauncherConfig.SaveLocalNotificationData();
                             });
                         }
                         break;
@@ -153,7 +153,7 @@ namespace CollapseLauncher
                 string VerString = File.ReadAllLines(UpdateNotifFile)[0];
                 SpawnNotificationPush(
                     "Update Completed!",
-                    string.Format("Your launcher version has been updated to {0}! (Release Channel: {1})", VerString, AppConfig.IsPreview ? "Preview" : "Stable"),
+                    string.Format("Your launcher version has been updated to {0}! (Release Channel: {1})", VerString, IsPreview ? "Preview" : "Stable"),
                     InfoBarSeverity.Success,
                     0xAF,
                     true,
@@ -218,15 +218,15 @@ namespace CollapseLauncher
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            AppConfig.NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            AppConfig.SaveLocalNotificationData();
+            InnerLauncherConfig.NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            InnerLauncherConfig.SaveLocalNotificationData();
         }
 
         private void NeverAskNotif_Unchecked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            AppConfig.NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            AppConfig.SaveLocalNotificationData();
+            InnerLauncherConfig.NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            InnerLauncherConfig.SaveLocalNotificationData();
         }
 
         private void ReloadPageTheme(ElementTheme startTheme)
