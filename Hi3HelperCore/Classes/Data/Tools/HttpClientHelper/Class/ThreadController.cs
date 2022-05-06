@@ -160,7 +160,15 @@ namespace Hi3Helper.Data
 
                 ResponseMessage = CheckResponseStatusCode(await _ThreadHttpClient.SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, _ThreadToken));
 
-                DownloadSize = (ResponseMessage.Content.Headers.ContentLength ?? 0) + ExistingSize;
+                long ContentLength = (ResponseMessage.Content.Headers.ContentLength ?? 0);
+
+                DownloadSize = ContentLength + ExistingSize;
+
+                if (ContentLength < ExistingSize)
+                    throw new ArgumentOutOfRangeException($"Existing chunk size on ThreadID: {ThreadID} is bigger than .ContentLength!\r\nExisting chunk size: {ExistingSize}\r\n.ContentLength size: {ContentLength}");
+
+                if (ContentLength == ExistingSize && ResponseMessage.Content.Headers.ContentLength != null)
+                    return true;
 
                 if (_ThreadSingleMode)
                 {
