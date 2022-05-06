@@ -96,7 +96,7 @@ namespace CollapseLauncher.Updater
                             {
                                 FileName = elevatedPath,
                                 WorkingDirectory = workingDir,
-                                Arguments = $"update {argument[1]} {argument[2]}",
+                                Arguments = $"update \"{argument[1]}\" {argument[2]}",
                                 UseShellExecute = true,
                                 Verb = "runas"
                             }
