@@ -111,14 +111,10 @@ namespace Hi3Helper.Shared.Region
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
 
             // The app will also set IsFirstInstall to True if GameFolder value is empty.
-            if (string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString()))
-            {
-                IsFirstInstall = string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
-                return;
-            }
             // Or if the directory doesn't exist or user doesn't have permission.
             IsFirstInstall = !(Directory.Exists(GetAppConfigValue("GameFolder").ToString())
-                && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()));
+                && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()))
+                || string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
         }
 
         private static void InitScreenResSettings()
