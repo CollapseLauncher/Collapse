@@ -144,7 +144,7 @@ namespace Hi3Helper.Data
             try
             {
                 if (!Directory.Exists(input))
-                    Directory.CreateDirectory(input);
+                    return false;
 
                 File.Create(Path.Combine(input, "write_test"), 1, FileOptions.DeleteOnClose).Close();
             }
