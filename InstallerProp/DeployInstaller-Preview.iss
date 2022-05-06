@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.20.3
+AppVersion=1.0.21.3
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.20.3
+VersionInfoVersion=1.0.21.3
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.20.3
-VersionInfoProductTextVersion=1.0.20.3-preview
+VersionInfoProductVersion=1.0.21.3
+VersionInfoProductTextVersion=1.0.21.3-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64

@@ -11,7 +11,7 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
-	<Version>1.0.20.3</Version>
+	<Version>1.0.21.3</Version>
 	<Configurations>Debug;Release;Publish</Configurations>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
