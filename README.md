@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="image" src="https://user-images.githubusercontent.com/30566970/167063527-27ec6f31-b1d3-4a5f-9aff-a86fd554bbe6.png"><br/>
+  <img alt="image" src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/header_github.webp"><br/>
 </p>
 
 Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This launcher not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
