@@ -32,8 +32,8 @@ namespace Hi3Helper
                     Directory.CreateDirectory(logdir);
                 filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
 
-                if (logstream == null)
-                    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
+                // if (logstream == null)
+                //    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
             }
         }
 

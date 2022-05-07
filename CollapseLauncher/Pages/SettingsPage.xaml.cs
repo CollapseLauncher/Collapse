@@ -181,7 +181,7 @@ namespace CollapseLauncher.Pages
         int EggsAttempt = 1;
         private void Egg(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            if (EggsAttempt++ >= 3)
+            if (EggsAttempt++ >= 10)
                 HerLegacy.Visibility = Visibility.Visible;
         }
     }

@@ -38,6 +38,11 @@ namespace CollapseLauncher
 #endif
                 this.Title = title;
 
+                m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
+                m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
+
+                // SetBackdrop(BackdropType.DesktopAcrylic);
+
                 m_AppWindow = GetAppWindowForCurrentWindow();
                 m_AppWindow.Changed += AppWindow_Changed;
 
@@ -96,6 +101,7 @@ namespace CollapseLauncher
 
                 MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+
 
                 if (IsFirstInstall)
                     rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());

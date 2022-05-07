@@ -209,6 +209,8 @@
                                Tag="https://www.reddit.com/user/justanewbie1-ID/"/>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF16D;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://instagram.com/neonnyann/"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://discord.gg/ironmaiden"/>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
             </StackPanel>
