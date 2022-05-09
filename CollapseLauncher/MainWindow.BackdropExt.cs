@@ -68,7 +68,6 @@ namespace CollapseLauncher
         BackdropType m_currentBackdrop;
         MicaController m_micaController;
         DesktopAcrylicController m_acrylicController;
-        /*
         SystemBackdropConfiguration m_configurationSource;
 
         public void SetBackdrop(BackdropType type)
@@ -214,6 +213,5 @@ namespace CollapseLauncher
             }
             SetBackdrop(newType);
         }
-        */
     }
 }

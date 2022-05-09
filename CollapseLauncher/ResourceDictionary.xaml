@@ -18,11 +18,11 @@
                     <AcrylicBrush x:Key="ProgressAcrylicBrush" TintOpacity="0.33" TintColor="Black" />
                     <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintOpacity="0.25" TintColor="Black" />
 
-                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="Black" />
+                    <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0.25" TintColor="Black" FallbackColor="Black" />
 
-                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
+                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" TintLuminosityOpacity="0.0" TintColor="Black" />
 
-                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintOpacity="1" TintColor="Black" />
+                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush"  TintOpacity="0.0" TintLuminosityOpacity="0.50" TintColor="Black" />
 
                     <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0.0" TintColor="Black" />
 
@@ -30,13 +30,13 @@
 
                     <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Black" TintOpacity="0" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="Black" TintOpacity="0.2" TintLuminosityOpacity="0.6" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#AA000000" TintOpacity="0.4" TintLuminosityOpacity="0.5"/>
 
-                    <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="Black" TintOpacity="0.75" FallbackColor="Transparent"/>
-                    <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="Black" TintOpacity="0.75" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="Black" TintOpacity="0.75"/>
+                    <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="Black" TintOpacity="0.0" TintLuminosityOpacity="0.4"/>
 
-                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="Black" TintOpacity="0.5" FallbackColor="Transparent"/>
-                    <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="Black" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="Black" TintOpacity="0.0" TintLuminosityOpacity="0.5"/>
+                    <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="Black" TintOpacity="0.0" TintLuminosityOpacity="0.4" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="LoadingBrush" TintColor="Black" TintOpacity="0.0" FallbackColor="Transparent"/>
                 </ResourceDictionary>
@@ -64,20 +64,20 @@
 
                     <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FFFFFF" />
 
-                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintOpacity="0.0" />
+                    <AcrylicBrush x:Key="PagesAcrylicBrush" TintColor="White" TintOpacity="0" />
 
-                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintOpacity="0.0"  TintLuminosityOpacity="0.80"/>
+                    <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintColor="White" TintOpacity="0.75" TintLuminosityOpacity="0.25"/>
 
-                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0" TintLuminosityOpacity="0.25" TintColor="#FFFFFF" />
+                    <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintOpacity="0" TintLuminosityOpacity="0.5" TintColor="#FFFFFF" />
 
                     <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Transparent" TintOpacity="0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="White" TintOpacity="0.75" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="White" TintOpacity="0.7" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="White" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
-                    <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="White" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.5"/>
 
-                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.80" FallbackColor="Transparent"/>
+                    <AcrylicBrush x:Key="NavigationBarBrush" TintColor="White" TintOpacity="0.75" TintLuminosityOpacity="0.25"/>
                     <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="White" TintOpacity="0.2" FallbackColor="Transparent"/>
 
                     <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>

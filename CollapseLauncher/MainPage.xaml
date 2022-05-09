@@ -5,8 +5,7 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource MyAcrylicBrush}">
+    mc:Ignorable="d">
 
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
@@ -14,8 +13,10 @@
         <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
-        <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
-        <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+        <Grid Visibility="Collapsed">
+            <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+            <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
+        </Grid>
         <Border x:Name="AppTitleBar"
                 IsHitTestVisible="True"
                 VerticalAlignment="Top"

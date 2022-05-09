@@ -13,7 +13,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <!--<Image Grid.Row="0" Grid.RowSpan="2" x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1"/>-->
-        <Grid x:Name="AppTitleBar"  
+        <Grid x:Name="AppTitleBar" 
+            Opacity="0"
             Height="46">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48"/>
@@ -56,7 +57,7 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel x:Name="CustomTitleBar" VerticalAlignment="Top" Height="48" HorizontalAlignment="Right">
+        <StackPanel x:Name="CustomTitleBar" VerticalAlignment="Top" Height="48" HorizontalAlignment="Right" Opacity="0">
             <Grid Height="46" VerticalAlignment="Stretch">
                 <!--<Grid x:Name="DragArea" Background="Transparent" Width="670" Height="46" CanDrag="True"/>-->
                 <Grid x:Name="DragArea" Background="Transparent" Width="842" Height="40" CanDrag="True"/>
@@ -112,7 +113,7 @@
             Grid.Row="1"
             Canvas.ZIndex="0" Visibility="Visible"
             IsPaneOpen="False"
-            Background="{StaticResource NavigationBarBrush}">
+            Opacity="0">
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Home" Content="Launcher" Tag="launcher"/>
             </NavigationView.MenuItems>
@@ -123,11 +124,13 @@
                     </Image.RenderTransform>
                 </Image>-->
                 <Frame x:Name="LauncherFrame">
+                    <!--
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>
                         </TransitionCollection>
                     </Frame.ContentTransitions>
+                    -->
                 </Frame>
                 <Grid x:Name="LoadingPopup" Background="{StaticResource LoadingBrush}" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">

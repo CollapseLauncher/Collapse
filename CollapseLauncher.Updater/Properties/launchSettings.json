@@ -7,12 +7,12 @@
     },
     "CollapseLauncher.ReindexPreview": {
       "commandName": "Project",
-      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview 1.0.21.3",
+      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview 1.0.21.5",
       "nativeDebugging": true
     },
     "CollapseLauncher.ReindexStable": {
       "commandName": "Project",
-      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\stable 1.0.21.3",
+      "commandLineArgs": "reindex C:\\myGit\\CollapseLauncher-ReleaseRepo\\stable 1.0.21.5",
       "nativeDebugging": true
     },
     "CollapseLauncher.ElevateUpdate": {

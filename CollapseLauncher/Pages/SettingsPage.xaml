@@ -5,8 +5,7 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource PagesAcrylicBrush}">
+    mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
@@ -198,11 +197,9 @@
                         <Run Text="~neon-nyan"/>
                     </TextBlock>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Left">
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
                                Tag="https://web.facebook.com/kemalsetya.adhisetya/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF081;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
-                               Tag="https://twitter.com/neonnyann/"/>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://github.com/neon-nyan/"/>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"

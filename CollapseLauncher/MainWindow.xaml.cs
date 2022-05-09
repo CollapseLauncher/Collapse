@@ -41,7 +41,7 @@ namespace CollapseLauncher
                 m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
                 m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
 
-                // SetBackdrop(BackdropType.DesktopAcrylic);
+                SetBackdrop(BackdropType.DesktopAcrylic);
 
                 m_AppWindow = GetAppWindowForCurrentWindow();
                 m_AppWindow.Changed += AppWindow_Changed;

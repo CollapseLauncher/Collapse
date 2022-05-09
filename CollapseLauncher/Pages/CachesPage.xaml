@@ -7,10 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource PagesAcrylicBrush}" Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
+    Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
 
     <Grid>
-        <StackPanel Margin="32,32,32,32">
+        <StackPanel Margin="32,32,32,32" x:Name="PageContent">
             <TextBlock Text="Caches" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -69,7 +69,7 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-        <Grid x:Name="Overlay" Background="{ThemeResource PagesAcrylicBrush}" Visibility="Collapsed">
+        <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                 <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
