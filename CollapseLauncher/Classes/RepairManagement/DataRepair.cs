@@ -126,7 +126,7 @@ namespace CollapseLauncher.Pages
                     http.DownloadFile(FileURL, FilePath, DownloadThread, cancellationTokenSource.Token);
                 else
                     using (RepairFileStream = RepairFileInfo.Create())
-                        http.DownloadFile(FileURL, RepairFileStream, cancellationTokenSource.Token, -1, -1, false);
+                        http.DownloadFile(FileURL, RepairFileStream, cancellationTokenSource.Token, null, null, false);
 
                 http.DownloadProgress -= GenericFilesDownloadProgress;
             }

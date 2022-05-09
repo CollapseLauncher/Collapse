@@ -116,7 +116,7 @@ namespace CollapseLauncher.Pages
                         http.DownloadFile(cachesURL, cachesPath, DownloadThread, cancellationTokenSource.Token);
                     else
                         using (cachesStream = cachesFileInfo.Create())
-                            http.DownloadFile(cachesURL, cachesStream, cancellationTokenSource.Token, -1, -1, false);
+                            http.DownloadFile(cachesURL, cachesStream, cancellationTokenSource.Token, null, null, false);
                     http.DownloadProgress -= CachesDownloadProgress;
 
                     LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);

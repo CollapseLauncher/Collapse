@@ -18,27 +18,6 @@ namespace Hi3Helper.Data
         private bool _UseStreamOutput,
                      _DisposeStream;
 
-        private Stream GetFileStream(string FileName, bool ForceCreateNew = false) =>
-            new FileStream(FileName, ForceCreateNew ? FileMode.Create : FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write);
-
-        private long GetFileSize(string FileName)
-        {
-            FileInfo File = new FileInfo(FileName);
-            return File.Exists ? File.Length : 0;
-        }
-
-        private long GetSlicesSize(string FileName)
-        {
-            long SlicesSize = 0;
-            FileInfo File;
-            for (int i = 0; i < _ThreadNumber; i++)
-            {
-                File = new FileInfo(string.Format("{0}.{1:000}", _OutputPath, i + 1));
-                SlicesSize += File.Exists ? File.Length : 0;
-            }
-            return SlicesSize;
-        }
-
         private Stream SeekStreamToEnd(Stream stream)
         {
             if (this._DisposeStream)
@@ -58,30 +37,17 @@ namespace Hi3Helper.Data
             return Input;
         }
 
-        private void ReadStream(Stream RemoteStream, Stream LocalStream)
+        private async Task ReadStreamAsync(_ThreadProperty Property)
         {
             int read = 0;
             byte[] buffer = new byte[_DownloadBufferSize];
-            while ((read = RemoteStream.Read(buffer, 0, buffer.Length)) > 0)
+            while ((read = await Property.RemoteStream.ReadAsync(buffer, 0, buffer.Length, _ThreadToken)) > 0)
             {
                 _DownloadedSize += read;
                 _LastContinuedSize += read;
-                _ThreadToken.ThrowIfCancellationRequested();
-                LocalStream.Write(buffer, 0, read);
+                Property.LocalStream.Write(buffer, 0, read);
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, read, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
-            }
-        }
-
-        private async Task ReadStreamAsync(Stream RemoteStream, Stream LocalStream)
-        {
-            int read = 0;
-            byte[] buffer = new byte[_DownloadBufferSize];
-            while ((read = await RemoteStream.ReadAsync(buffer, 0, buffer.Length, _ThreadToken)) > 0)
-            {
-                _DownloadedSize += read;
-                _LastContinuedSize += read;
-                LocalStream.Write(buffer, 0, read);
-                UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, read, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
+                Property.CurrentRetry = 1;
             }
         }
     }

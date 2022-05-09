@@ -293,7 +293,7 @@ namespace CollapseLauncher
                 if (Entry.FileSize >= 20 << 20)
                     await DownloadFileAsync(InputURL, OutputPath, 8, Token);
                 else
-                    await DownloadFileAsync(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token, -1, -1, true);
+                    await DownloadFileAsync(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token, null, null, true);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }

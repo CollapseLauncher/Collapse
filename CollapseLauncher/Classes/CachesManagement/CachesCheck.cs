@@ -108,7 +108,7 @@ namespace CollapseLauncher.Pages
                     DispatcherQueue.TryEnqueue(() => CachesStatus.Text = $"Fetching Caches Type: {type}");
 
                     http.DownloadProgress += DataFetchingProgress;
-                    http.DownloadFile(cachesAPIURL, cachesStream, cancellationTokenSource.Token, -1, -1, false);
+                    http.DownloadFile(cachesAPIURL, cachesStream, cancellationTokenSource.Token, null, null, false);
                     http.DownloadProgress -= DataFetchingProgress;
 
                     cacheCatalog = JsonConvert.DeserializeObject<DataProperties>(

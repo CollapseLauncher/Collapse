@@ -83,7 +83,7 @@ namespace CollapseLauncher.Pages
                     using (memBuffer = new MemoryStream())
                     {
                         http.DownloadProgress += DataFetchingProgress;
-                        http.DownloadFile(indexURL, memBuffer, cancellationTokenSource.Token, -1, -1, false);
+                        http.DownloadFile(indexURL, memBuffer, cancellationTokenSource.Token, null, null, false);
                         http.DownloadProgress -= DataFetchingProgress;
                         FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
                     }

@@ -136,6 +136,7 @@ namespace CollapseLauncher
             foreach (DownloadAddressProperty prop in DownloadProperty)
             {
                 CountCurrentDownload++;
+                LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
                 if (!File.Exists(prop.Output))
                     DownloadFile(prop.URL, prop.Output, DownloadThread, Token);
             }

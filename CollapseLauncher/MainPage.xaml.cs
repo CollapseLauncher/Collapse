@@ -97,7 +97,7 @@ namespace CollapseLauncher
             using (MemoryStream buffer = new MemoryStream())
             {
                 await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                    buffer, new CancellationToken(), -1, -1, false);
+                    buffer, new CancellationToken(), null, null, false);
                 InnerLauncherConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
                 InnerLauncherConfig.LoadLocalNotificationData();
             }
