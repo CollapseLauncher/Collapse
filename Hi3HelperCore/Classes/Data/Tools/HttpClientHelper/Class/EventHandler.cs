@@ -31,8 +31,9 @@ namespace Hi3Helper.Data
             public double ProgressPercentage => Math.Round((DownloadedSize / (double)TotalSizeToDownload) * 100, 2);
             public int CurrentRead { get; private set; }
             public long CurrentSpeed => (long)(_LastContinuedSize / _TotalSecond);
-            public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((TotalSizeToDownload - DownloadedSize) / CurrentSpeed));
+            public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((TotalSizeToDownload - DownloadedSize) / UnZeroed(CurrentSpeed)));
             public State DownloadState { get; set; }
+            private long UnZeroed(long Input) => Math.Max(Input, 1);
         }
     }
 }
