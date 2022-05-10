@@ -95,8 +95,7 @@ namespace Hi3Helper.Data
 
             _DownloadedSize += LocalLength;
 
-            if (ThreadProperty.EndOffset <= ThreadProperty.StartOffset
-                || (ThreadProperty.EndOffset == null && ThreadProperty.StartOffset == ThreadProperty.LocalStream.Length))
+            if (ThreadProperty.EndOffset <= ThreadProperty.StartOffset)
             {
                 ThreadProperty.StartOffset = 0;
                 ThreadProperty.EndOffset = EndOffset;
