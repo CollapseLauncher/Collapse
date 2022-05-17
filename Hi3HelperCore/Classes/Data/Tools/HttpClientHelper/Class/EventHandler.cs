@@ -4,7 +4,7 @@ namespace Hi3Helper.Data
 {
     public partial class HttpClientHelper
     {
-        public enum State { Downloading, Merging, Completed, Idle, Cancelled }
+        public enum State { Downloading, Starting, Merging, Completed, Idle, Cancelled }
 
         public event EventHandler<_DownloadProgress> DownloadProgress;
 

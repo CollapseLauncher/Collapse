@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using System.Linq;
 using System.Diagnostics;
 using System.Net.Http;
 
@@ -51,13 +52,16 @@ namespace Hi3Helper.Data
             this._ThreadToken = Token;
             this._ThreadSingleMode = true;
             this._Stopwatch = Stopwatch.StartNew();
+            this._DownloadedSize = 0;
             this._LastContinuedSize = 0;
-            this._DownloadState = State.Downloading;
+            this._TotalSizeToDownload = 0;
+            this._DownloadState = State.Starting;
             this._IsFileAlreadyCompleted = false;
             this._DisposeStream = DisposeStream;
 
             try
             {
+                EnsureAllThreadsStatus();
                 await Task.WhenAll(await StartThreads(StartOffset, EndOffset));
                 this._DownloadState = State.Completed;
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, 0, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
@@ -81,14 +85,17 @@ namespace Hi3Helper.Data
             this._ThreadToken = Token;
             this._ThreadSingleMode = false;
             this._Stopwatch = Stopwatch.StartNew();
+            this._DownloadedSize = 0;
             this._LastContinuedSize = 0;
-            this._DownloadState = State.Downloading;
+            this._TotalSizeToDownload = 0;
+            this._DownloadState = State.Starting;
             this._IsFileAlreadyCompleted = false;
             this._UseStreamOutput = false;
             this._DisposeStream = true;
 
             try
             {
+                EnsureAllThreadsStatus();
                 await Task.WhenAll(await StartThreads(null, null));
 
                 // HACK: Round the size after multidownload finished
@@ -97,7 +104,7 @@ namespace Hi3Helper.Data
 
                 if (!_IsFileAlreadyCompleted)
                 {
-                    MergeSlices();
+                    await Task.Run(() => MergeSlices());
                 }
                 this._DownloadState = State.Completed;
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, 0, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
@@ -110,6 +117,25 @@ namespace Hi3Helper.Data
                 this._DownloadState = State.Cancelled;
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, 0, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
                 throw new TaskCanceledException($"Cancellation for {Input} has been fired!", ex);
+            }
+        }
+
+        private async void EnsureAllThreadsStatus()
+        {
+            bool IsAllThreadRun = false;
+            Console.WriteLine($"Ensure threads status... {_DownloadState}!");
+            while (true)
+            {
+                IsAllThreadRun = _ThreadProperties == null ? false : _ThreadProperties.All(x => x.IsDownloading || x.IsCompleted);
+
+                if (IsAllThreadRun && _ThreadProperties != null)
+                {
+                    _DownloadState = State.Downloading;
+                    Console.WriteLine($"Threads are all loaded! {_DownloadState}...");
+                    return;
+                }
+
+                await Task.Delay(250);
             }
         }
 

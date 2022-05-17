@@ -48,6 +48,7 @@ namespace Hi3Helper.Data
                 Property.LocalStream.Write(buffer, 0, read);
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, read, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
                 Property.CurrentRetry = 1;
+                Property.IsDownloading = true;
             }
         }
     }
