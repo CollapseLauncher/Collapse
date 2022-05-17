@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -24,6 +24,7 @@ using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -152,8 +153,8 @@ namespace CollapseLauncher
             {
                 string VerString = File.ReadAllLines(UpdateNotifFile)[0];
                 SpawnNotificationPush(
-                    "Update Completed!",
-                    string.Format("Your launcher version has been updated to {0}! (Release Channel: {1})", VerString, IsPreview ? "Preview" : "Stable"),
+                    Lang._Misc.UpdateCompleteTitle,
+                    string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
                     InfoBarSeverity.Success,
                     0xAF,
                     true,
@@ -262,19 +263,33 @@ namespace CollapseLauncher
             await GetAppNotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+        }
+
+        private async void InitializeNavigationItems()
+        {
+            await Task.Run(() => { });
 
             NavigationViewControl.IsSettingsVisible = true;
+            NavigationViewControl.MenuItems.Clear();
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+            { Content = Lang._HomePage.PageTitle, Icon = new SymbolIcon(Symbol.Home), Tag = "launcher" });
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Game Repair", Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Caches", Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Cutscenes", Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = "Game Settings", Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
+            if (!(CurrentRegion.IsGenshin ?? false))
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
+
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._GameRepairPage.PageTitle, Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._CachesPage.PageTitle, Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._CutscenesPage.PageTitle, Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._GameSettingsPage.PageTitle, Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
+            }
+
+            NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
         }
 
         public void LoadConfig()

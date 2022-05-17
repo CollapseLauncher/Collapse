@@ -14,28 +14,26 @@
 	<Version>1.0.21.5</Version>
 	<Configurations>Debug;Release;Publish</Configurations>
 	<ApplicationIcon>icon.ico</ApplicationIcon>
+	<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+	<RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DefineConstants>PREVIEW</DefineConstants>
+    <DefineConstants>PREVIEW;MICA</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DefineConstants>PREVIEW</DefineConstants>
+    <DefineConstants>PREVIEW;MICA</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-    <DefineConstants></DefineConstants>
+    <DefineConstants>PREVIEW;MICA</DefineConstants>
     <DebugType>embedded</DebugType>
     <Optimize>True</Optimize>
   </PropertyGroup>
 
 	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
 		<ItemGroup>
-			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview2'" />
+			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview3'" />
 		</ItemGroup>
 	</Target>
-
-	<ItemGroup>
-	  <None Remove="Assets\Fonts\FontAwesomeBrand6.otf" />
-	</ItemGroup>
 
 	<ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />

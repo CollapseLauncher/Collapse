@@ -38,6 +38,7 @@ namespace Hi3Helper.Shared.Region
 
         public static string AppCurrentVersion;
         public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
+        public static string AppLangFolder = Path.Combine(AppFolder, @"Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
         public static string AppGameImgFolder = Path.Combine(AppDataFolder, "img");
@@ -53,6 +54,7 @@ namespace Hi3Helper.Shared.Region
         public static bool IsThisRegionInstalled = false;
         public static bool IsPreview = false;
         public static bool IsAppThemeNeedRestart = false;
+        public static bool IsAppLangNeedRestart = false;
         public static bool IsFirstInstall = false;
         public static bool ForceInvokeUpdate = false;
         public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
@@ -72,7 +74,7 @@ namespace Hi3Helper.Shared.Region
 #endif
             { "DontAskUpdate", new IniValue(false) },
             { "ThemeMode", new IniValue(AppThemeMode.Light) },
-            { "Language", new IniValue(AppLanguage.EN) }
+            { "AppLanguage", new IniValue("en") }
         };
 
         public static void LoadGamePreset()

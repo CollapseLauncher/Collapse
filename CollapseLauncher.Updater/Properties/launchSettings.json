@@ -19,6 +19,11 @@
       "commandName": "Project",
       "commandLineArgs": "elevateupdate C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview preview",
       "nativeDebugging": true
+    },
+    "Profile 1": {
+      "commandName": "Project",
+      "commandLineArgs": "testingwindow",
+      "nativeDebugging": true
     }
   }
 }

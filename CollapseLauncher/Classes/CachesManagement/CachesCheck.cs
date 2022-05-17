@@ -18,6 +18,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -76,8 +77,8 @@ namespace CollapseLauncher.Pages
                     LogWriteLine("Caches Update check cancelled!", LogType.Warning);
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        CachesStatus.Text = $"Operation has been cancelled!";
-                        CachesTotalStatus.Text = "None";
+                        CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
+                        CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                         CachesTotalProgressBar.Value = 0;
                         CheckUpdateBtn.Visibility = Visibility.Visible;
                         CheckUpdateBtn.IsEnabled = true;
@@ -105,7 +106,7 @@ namespace CollapseLauncher.Pages
                     cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
                     LogWriteLine($"Fetching CachesType: {type}");
 
-                    DispatcherQueue.TryEnqueue(() => CachesStatus.Text = $"Fetching Caches Type: {type}");
+                    DispatcherQueue.TryEnqueue(() => CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type));
 
                     http.DownloadProgress += DataFetchingProgress;
                     http.DownloadFile(cachesAPIURL, cachesStream, cancellationTokenSource.Token, null, null, false);
@@ -188,8 +189,8 @@ namespace CollapseLauncher.Pages
                     cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        CachesStatus.Text = $"Checking {dataType.DataType}: {content.N}";
-                        CachesTotalStatus.Text = $"Processing: {cachesCount}/{cachesTotalCount}";
+                        CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusChecking, dataType.DataType, content.N);
+                        CachesTotalStatus.Text = string.Format(Lang._CachesPage.CachesTotalStatusChecking, cachesCount, cachesTotalCount);
                         CachesTotalProgressBar.Value = GetPercentageNumber(cachesCount, cachesTotalCount);
                     });
 
@@ -255,8 +256,8 @@ namespace CollapseLauncher.Pages
                 cachesTotalSize = brokenCachesList.Sum(x => x.Content.Sum(y => y.CS));
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    CachesStatus.Text = $"{cachesTotalCount} cache(s) ({SummarizeSizeSimple(cachesTotalSize)} in size) needs to be updated. Click Update Caches to start updating them.";
-                    CachesTotalStatus.Text = "None";
+                    CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusNeedUpdate, cachesTotalCount, SummarizeSizeSimple(cachesTotalSize));
+                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                     CachesTotalProgressBar.Value = 0;
                     CheckUpdateBtn.Visibility = Visibility.Collapsed;
                     UpdateCachesBtn.Visibility = Visibility.Visible;
@@ -269,8 +270,8 @@ namespace CollapseLauncher.Pages
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    CachesStatus.Text = $"Your caches are updated!";
-                    CachesTotalStatus.Text = "None";
+                    CachesStatus.Text = Lang._CachesPage.CachesStatusUpToDate;
+                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                     CachesTotalProgressBar.Value = 0;
                     CheckUpdateBtn.Visibility = Visibility.Visible;
                     CheckUpdateBtn.IsEnabled = true;
@@ -302,7 +303,7 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                CachesTotalStatus.Text = $"({SummarizeSizeSimple(e.CurrentSpeed)}/s)";
+                CachesTotalStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.CurrentSpeed));
             });
         }
     }

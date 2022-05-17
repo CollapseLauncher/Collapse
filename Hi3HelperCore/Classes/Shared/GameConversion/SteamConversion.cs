@@ -12,6 +12,7 @@ using Force.Crc32;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -84,7 +85,7 @@ namespace Hi3Helper.Shared.GameConversion
         private void ConvertGenericAudioFile()
         {
             TotalCount++;
-            CheckStatus = $"Converting {FileIndex.FT} File [{TotalCount}/{TotalCountToRead}]: {FileIndex.N}";
+            CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile1, FileIndex.FT, TotalCount, TotalCountToRead, FileIndex.N);
 
             FileInfo = new FileInfo(FilePath);
 
@@ -125,7 +126,7 @@ namespace Hi3Helper.Shared.GameConversion
                 if (!FileInfo.Exists)
                 {
                     TotalCount++;
-                    CheckStatus = $"Downloading {FileIndex.FT} [{TotalCount}/{TotalCountToRead}]: {block.BlockHash}";
+                    CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile2, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash);
 
                     using (stream = FileInfo.Create())
                         http.DownloadFile(FileURL, stream, tokenSource.Token, -1, -1, false);
@@ -137,7 +138,7 @@ namespace Hi3Helper.Shared.GameConversion
                         foreach (var chunk in block.BlockContent)
                         {
                             TotalCount++;
-                            CheckStatus = $"Downloading {FileIndex.FT} [{TotalCount}/{TotalCountToRead}]: {block.BlockHash} -> (0x{chunk._startoffset.ToString("x8")} | S: 0x{chunk._filesize.ToString("x8")})";
+                            CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile3, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash, chunk._startoffset.ToString("x8"), chunk._filesize.ToString("x8"));
 
                             stream.Position = chunk._startoffset;
 
@@ -157,7 +158,7 @@ namespace Hi3Helper.Shared.GameConversion
 
             OnProgressChanged(new ConversionTaskChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
             {
-                Message = $"{CheckStatus}"
+                Message = CheckStatus
             });
         }
 

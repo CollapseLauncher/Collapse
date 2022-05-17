@@ -326,7 +326,7 @@ namespace CollapseLauncher
                 string OutputPath = TargetProfile.ActualGameDataLocation;
 
                 if (Directory.Exists(OutputPath))
-                    Directory.Delete(OutputPath, true);
+                    TryDirectoryDelete(OutputPath, true);
 
                 Directory.CreateDirectory(OutputPath);
                 ConvertTotalSize = TargetFileManifest.Sum(x => x.FileSize);
@@ -343,10 +343,10 @@ namespace CollapseLauncher
                 ConvertFsWatcher.Created += ConvertFsWatcher_Created;
 
                 await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath));
-                Directory.Delete(IngredientsPath, true);
-                File.Delete(CookbookPath);
+                TryDirectoryDelete(IngredientsPath, true);
+                TryFileDelete(CookbookPath);
                 MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
-                Directory.Delete(SourceProfile.ActualGameDataLocation, true);
+                TryDirectoryDelete(SourceProfile.ActualGameDataLocation, true);
 
                 ConvertFsWatcher.Created -= ConvertFsWatcher_Created;
             }
@@ -363,6 +363,30 @@ namespace CollapseLauncher
                 }
                 LogWriteLine($"Conversion process has failed! But don't worry, the files have been reverted :D\r\n{ex}", LogType.Error, true);
                 throw new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex);
+            }
+        }
+
+        private void TryFileDelete(string Input)
+        {
+            try
+            {
+                File.Delete(Input);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while trying to delete file \"{Input}\"\r\n{ex}");
+            }
+        }
+
+        private void TryDirectoryDelete(string Input, bool Recursive)
+        {
+            try
+            {
+                Directory.Delete(Input, Recursive);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while trying to delete directory \"{Input}\"{(Recursive ? " recursively!" : "!")}\r\n{ex}");
             }
         }
 

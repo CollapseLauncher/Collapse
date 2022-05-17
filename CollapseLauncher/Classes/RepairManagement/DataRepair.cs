@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
+using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -86,9 +87,9 @@ namespace CollapseLauncher.Pages
                     CheckFilesBtn.Visibility = Visibility.Visible;
                     CheckFilesBtn.IsEnabled = true;
                     RepairFilesBtn.Visibility = Visibility.Collapsed;
-                    RepairStatus.Text = "Repair Completed!";
-                    RepairPerFileStatus.Text = "None";
-                    RepairTotalStatus.Text = "None";
+                    RepairStatus.Text = Lang._GameRepairPage.Status7;
+                    RepairPerFileStatus.Text = Lang._GameRepairPage.StatusNone;
+                    RepairTotalStatus.Text = Lang._GameRepairPage.StatusNone;
                     RepairPerFileProgressBar.Value = 0;
                     RepairTotalProgressBar.Value = 0;
                 });
@@ -102,8 +103,8 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                RepairStatus.Text = $"Repairing: {input.N}";
-                RepairTotalStatus.Text = $"Progress: {RepairedFilesCount}/{BrokenFilesCount}";
+                RepairStatus.Text = string.Format(Lang._GameRepairPage.Status8, input.N);
+                RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, RepairedFilesCount, BrokenFilesCount);
                 RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
             });
 
@@ -155,8 +156,8 @@ namespace CollapseLauncher.Pages
                 {
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        RepairStatus.Text = $"Repairing Blk: {block.BlockHash}";
-                        RepairTotalStatus.Text = $"Progress: {RepairedFilesCount}/{BrokenFilesCount}";
+                        RepairStatus.Text = string.Format(Lang._GameRepairPage.Status9, block.BlockHash);
+                        RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, RepairedFilesCount, BrokenFilesCount);
                         RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
                     });
 
@@ -185,8 +186,8 @@ namespace CollapseLauncher.Pages
                         {
                             DispatcherQueue.TryEnqueue(() =>
                             {
-                                RepairStatus.Text = $"Repairing Blk: {block.BlockHash} | Offset: 0x{chunk._startoffset.ToString("x8")} - Size: 0x{chunk._filesize.ToString("x8")}";
-                                RepairTotalStatus.Text = $"Progress: {RepairedFilesCount}/{BrokenFilesCount}";
+                                RepairStatus.Text = string.Format(Lang._GameRepairPage.Status10, block.BlockHash, chunk._startoffset.ToString("x8"), chunk._filesize.ToString("x8"));
+                                RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, RepairedFilesCount, BrokenFilesCount);
                                 RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
                             });
 
@@ -228,7 +229,7 @@ namespace CollapseLauncher.Pages
                 refreshTime = Stopwatch.StartNew();
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(e.CurrentSpeed)}/s";
+                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.CurrentSpeed));
                     RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 2);
                 });
             }

@@ -10,13 +10,15 @@ using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
+using static CollapseLauncher.Dialogs.SimpleDialogs;
+
 using Newtonsoft.Json;
 
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using static Hi3Helper.Logger;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -116,7 +118,7 @@ namespace CollapseLauncher
         }
 
 
-        public void StartDownload()
+        public async Task StartDownloadAsync()
         {
             DownloadStopwatch = Stopwatch.StartNew();
             CountTotalToDownload = DownloadProperty.Count;
@@ -135,10 +137,11 @@ namespace CollapseLauncher
             CountCurrentDownload = 0;
             foreach (DownloadAddressProperty prop in DownloadProperty)
             {
+                FileInfo file = new FileInfo(prop.Output);
                 CountCurrentDownload++;
                 LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
-                if (!File.Exists(prop.Output))
-                    DownloadFile(prop.URL, prop.Output, DownloadThread, Token);
+                if (!file.Exists || file.Length < prop.LocalSize)
+                    await DownloadFileAsync(prop.URL, prop.Output, DownloadThread, Token);
             }
 
             DownloadProgress -= DownloadStatusAdapter;
@@ -164,7 +167,7 @@ namespace CollapseLauncher
                 CountCurrentDownload++;
                 DownloadLocalPerFileSize = 0;
                 DownloadRemotePerFileSize = DownloadProperty[i].RemoteSize;
-                InstallStatus.StatusTitle = $"Verifying: {CountCurrentDownload}/{CountTotalToDownload}";
+                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Verifying, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
                 UpdateStatus(InstallStatus);
                 if ((DownloadProperty[i].LocalHash = GetMD5FromFile(DownloadProperty[i].Output, Token))
                     != DownloadProperty[i].RemoteHash.ToLower())
@@ -173,8 +176,6 @@ namespace CollapseLauncher
 
             return null;
         }
-
-        public async Task StartDownloadAsync() => await Task.Run(() => StartDownload());
 
         public async Task<bool> StartVerificationAsync(UIElement Content)
         {
@@ -226,9 +227,20 @@ namespace CollapseLauncher
             return ConverterTool.BytesToHex(md5.Hash).ToLower();
         }
 
+        string DownloadStateStr = "";
         private void DownloadStatusAdapter(object sender, _DownloadProgress e)
         {
-            InstallStatus.StatusTitle = $"{e.DownloadState}: {CountCurrentDownload}/{CountTotalToDownload}";
+            switch (e.DownloadState)
+            {
+                case State.Downloading:
+                    DownloadStateStr = Lang._Misc.Downloading;
+                    break;
+                case State.Merging:
+                    DownloadStateStr = Lang._Misc.Merging;
+                    break;
+            }
+
+            InstallStatus.StatusTitle = string.Format("{0}: {1}", DownloadStateStr, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
             UpdateStatus(InstallStatus);
         }
 
@@ -295,7 +307,7 @@ namespace CollapseLauncher
         {
             FileInfo fileInfo;
 
-            if ((fileInfo = new FileInfo(fileOutput)).Exists)
+            if ((fileInfo = new FileInfo(fileOutput)).Exists && fileInfo.Length > 0)
                 return fileInfo.Length;
 
             List<string> partPaths = Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*").ToList();
@@ -328,7 +340,7 @@ namespace CollapseLauncher
             {
                 SevenZipTool ExtractTool = new SevenZipTool();
                 CountCurrentDownload++;
-                InstallStatus.StatusTitle = $"Extracting: {CountCurrentDownload}/{CountTotalToDownload}";
+                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
                 UpdateStatus(InstallStatus);
 
                 ExtractTool.AutoLoad(prop.Output);
@@ -435,7 +447,7 @@ namespace CollapseLauncher
                 FilePatch = FileSource + ".hdiff";
                 FileOutput = FileSource + "_tmp";
 
-                InstallStatus.StatusTitle = $"Patching: {i}/{HPatchList.Count()}";
+                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, i, HPatchList.Count()));
                 UpdateStatus(InstallStatus);
                 InstallProgress = new InstallManagementProgress(DownloadLocalSize, DownloadRemoteSize,
                     DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds);
@@ -524,7 +536,7 @@ namespace CollapseLauncher
             {
                 IsPerFile = false,
                 IsIndetermined = false,
-                StatusTitle = "Integrity Check"
+                StatusTitle = Lang._InstallMgmt.IntegrityCheckTitle
             };
             UpdateStatus(InstallStatus);
 
@@ -806,7 +818,7 @@ namespace CollapseLauncher
             foreach (PkgVersionProperties Entry in EntryIn)
             {
                 FilesRead++;
-                InstallStatus.StatusTitle = $"Addt. Download: {FilesRead}/{BrokenFilesCount}";
+                InstallStatus.StatusTitle = string.Format(Lang._InstallMgmt.AddtDownloadTitle, FilesRead, BrokenFilesCount);
 
                 LocalPath = Path.Combine(GameDirPath, ConverterTool.NormalizePath(Entry.remoteName));
                 RemotePath = Entry.remoteURL;

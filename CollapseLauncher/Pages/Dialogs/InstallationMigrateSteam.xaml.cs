@@ -21,6 +21,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Logger;
 using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -111,7 +112,7 @@ namespace CollapseLauncher.Dialogs
                 Step4.Opacity = 1f;
                 Step4ProgressRing.IsIndeterminate = true;
                 Step4ProgressRing.Value = 0;
-                Step4ProgressStatus.Text = "Waiting for Prompt...";
+                Step4ProgressStatus.Text = Lang._InstallMigrateSteam.Step4Subtitle;
             });
 
             TotalSizeOfBrokenFile = BrokenFileIndexesProperty.Sum(x => x.S)
@@ -146,7 +147,7 @@ namespace CollapseLauncher.Dialogs
                 Step4.Opacity = 1f;
                 Step4ProgressRing.IsIndeterminate = false;
                 Step4ProgressRing.Value = 100;
-                Step4ProgressStatus.Text = "Completed!";
+                Step4ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
@@ -170,7 +171,7 @@ namespace CollapseLauncher.Dialogs
                     Step3.Opacity = 1f;
                     Step3ProgressRing.IsIndeterminate = false;
                     Step3ProgressRing.Value = 0;
-                    Step3ProgressStatus.Text = "Fetching API...";
+                    Step3ProgressStatus.Text = Lang._InstallMigrateSteam.Step3Subtitle;
                 });
 
                 StartCheckIntegrity();
@@ -182,7 +183,7 @@ namespace CollapseLauncher.Dialogs
                     Step3.Opacity = 1f;
                     Step3ProgressRing.IsIndeterminate = false;
                     Step3ProgressRing.Value = 100;
-                    Step3ProgressStatus.Text = "Completed!";
+                    Step3ProgressStatus.Text = Lang._Misc.Completed;
                 });
             });
         }
@@ -198,7 +199,7 @@ namespace CollapseLauncher.Dialogs
                     Step5.Opacity = 1f;
                     Step5ProgressRing.IsIndeterminate = false;
                     Step5ProgressRing.Value = 0;
-                    Step5ProgressStatus.Text = "Fetching API...";
+                    Step5ProgressStatus.Text = Lang._InstallMigrateSteam.Step5Subtitle;
                 });
 
                 StartCheckVerification();
@@ -208,7 +209,7 @@ namespace CollapseLauncher.Dialogs
                     Step5.Opacity = 1f;
                     Step5ProgressRing.IsIndeterminate = false;
                     Step5ProgressRing.Value = 100;
-                    Step5ProgressStatus.Text = "Completed!";
+                    Step5ProgressStatus.Text = Lang._Misc.Completed;
                 });
             });
         }
@@ -240,7 +241,7 @@ namespace CollapseLauncher.Dialogs
             DispatcherQueue.TryEnqueue(() =>
             {
                 Step3ProgressRing.Value = Math.Round(e.ProgressPercentage, 2);
-                Step3ProgressStatus.Text = $"{e.Message} {Math.Round(e.ProgressPercentage, 0)}% ({SummarizeSizeSimple(e.CurrentSpeed)}/s)...";
+                Step3ProgressStatus.Text = string.Format("{0} {1} ({2})...", e.Message, Math.Round(e.ProgressPercentage, 0), string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.CurrentSpeed)));
             });
         }
 
@@ -249,7 +250,7 @@ namespace CollapseLauncher.Dialogs
             DispatcherQueue.TryEnqueue(() =>
             {
                 Step5ProgressRing.Value = Math.Round(e.ProgressPercentage, 2);
-                Step5ProgressStatus.Text = $"{e.Message} {Math.Round(e.ProgressPercentage, 0)}% ({SummarizeSizeSimple(e.CurrentSpeed)}/s)...";
+                Step5ProgressStatus.Text = string.Format("{0} {1} ({2})...", e.Message, Math.Round(e.ProgressPercentage, 0), string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.CurrentSpeed)));
             });
         }
 
@@ -258,7 +259,7 @@ namespace CollapseLauncher.Dialogs
             DispatcherQueue.TryEnqueue(() =>
             {
                 Step4ProgressRing.Value = Math.Round(e.ProgressPercentage, 2);
-                Step4ProgressStatus.Text = $"{e.Message} {Math.Round(e.ProgressPercentage, 0)}% ({SummarizeSizeSimple(e.CurrentSpeed)}/s)...";
+                Step4ProgressStatus.Text = string.Format("{0} {1} ({2})...", e.Message, Math.Round(e.ProgressPercentage, 0), string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.CurrentSpeed)));
             });
         }
 
@@ -273,11 +274,11 @@ namespace CollapseLauncher.Dialogs
                     Step2.Opacity = 1f;
                     Step2ProgressRing.IsIndeterminate = true;
                     Step2ProgressRing.Value = 0;
-                    Step2ProgressStatus.Text = "Migration process will be running in 5 seconds. Please accept the UAC prompt to begin the migration process.";
+                    Step2ProgressStatus.Text = Lang._InstallMigrateSteam.Step2Subtitle1;
                 });
 
                 Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CollapseLauncher.Invoker.exe");
+                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.Invoker.exe");
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = $"movesteam \"{sourcePath}\" \"{targetPath}\" \"{CurrentRegion.SteamInstallRegistryLocation}\" InstallLocation";
                 proc.StartInfo.Verb = "runas";
@@ -290,7 +291,7 @@ namespace CollapseLauncher.Dialogs
 
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    Step2ProgressStatus.Text = "Running...";
+                    Step2ProgressStatus.Text = Lang._InstallMigrateSteam.Step2Subtitle2;
                 });
 
                 await Task.Run(() => proc.WaitForExit());
@@ -299,7 +300,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     Step2ProgressRing.IsIndeterminate = false;
                     Step2ProgressRing.Value = 100;
-                    Step2ProgressStatus.Text = "Completed!";
+                    Step2ProgressStatus.Text = Lang._Misc.Completed;
                 });
             }
             catch (Exception)
@@ -323,12 +324,12 @@ namespace CollapseLauncher.Dialogs
 
                     Step1ProgressRing.IsIndeterminate = false;
                     Step1ProgressRing.Value = 100;
-                    Step1ProgressStatus.Text = "Completed!";
+                    Step1ProgressStatus.Text = Lang._Misc.Completed;
 
                     Step2.Opacity = 1f;
                     Step2ProgressRing.IsIndeterminate = false;
                     Step2ProgressRing.Value = 100;
-                    Step2ProgressStatus.Text = "Skipped!";
+                    Step2ProgressStatus.Text = Lang._Misc.Skipped;
                 });
 
                 return false;
@@ -371,7 +372,7 @@ namespace CollapseLauncher.Dialogs
             {
                 Step1ProgressRing.IsIndeterminate = false;
                 Step1ProgressRing.Value = 100;
-                Step1ProgressStatus.Text = "Completed!";
+                Step1ProgressStatus.Text = Lang._Misc.Completed;
             });
 
             return true;

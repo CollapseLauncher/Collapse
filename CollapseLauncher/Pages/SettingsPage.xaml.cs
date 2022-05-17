@@ -1,13 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -30,6 +35,7 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
+            GetLanguageList();
             AppThemeSelection.SelectedIndex = (int)Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
             DownloadThreadsNumBox.Value = GetAppConfigValue("DownloadThread").ToInt();
             ExtractionThreadsNumBox.Value = GetAppConfigValue("ExtractionThread").ToInt();
@@ -46,6 +52,28 @@ namespace CollapseLauncher.Pages
 
             SetAndSaveConfigValue("EnableConsole", ((ToggleSwitch)sender).IsOn);
             InitLog(true, AppDataFolder);
+        }
+
+        private void GetLanguageList()
+        {
+            List<string> _out = new List<string>();
+            string CurrentLang = GetAppConfigValue("AppLanguage").ToString();
+            int Index = -1;
+            int SelectedIndex = -1;
+            foreach (KeyValuePair<string, LangMetadata> Entry in LanguageNames)
+            {
+                Index++;
+                if (Entry.Value.LangID == CurrentLang)
+                    SelectedIndex = Index;
+
+                _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, Entry.Key, Entry.Value.Author));
+            }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                LanguageSelector.ItemsSource = _out;
+                LanguageSelector.SelectedIndex = SelectedIndex;
+            });
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -183,6 +211,21 @@ namespace CollapseLauncher.Pages
         {
             if (EggsAttempt++ >= 10)
                 HerLegacy.Visibility = Visibility.Visible;
+        }
+
+        bool EnableLanguageChange = false;
+        private void LanguageChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsAppLangNeedRestart)
+                AppLangSelectionWarning.Visibility = Visibility.Visible;
+
+            if (EnableLanguageChange)
+            {
+                SetAndSaveConfigValue("AppLanguage", new IniValue(LanguageNames.Values.ToList()[(sender as ComboBox).SelectedIndex].LangID));
+                AppLangSelectionWarning.Visibility = Visibility.Visible;
+                IsAppLangNeedRestart = true;
+            }
+            EnableLanguageChange = true;
         }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml.Media;
 
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -62,11 +63,11 @@ namespace CollapseLauncher.Dialogs
 
             var cd = new ContentDialog
             {
-                Title = "Locating Target Folder",
-                Content = $"Before starting this process, Do you want to specify the location of the game?",
-                CloseButtonText = "Cancel",
-                PrimaryButtonText = CurrentRegion.MigrateFromBetterHi3Launcher ? "Use current directory" : "Use default directory",
-                SecondaryButtonText = "Yes, Change location",
+                Title = Lang._Dialogs.MigrationTitle,
+                Content = Lang._Dialogs.MigrationSubtitle,
+                CloseButtonText = Lang._Misc.Cancel,
+                PrimaryButtonText = CurrentRegion.MigrateFromBetterHi3Launcher ? Lang._Misc.UseCurrentDir : Lang._Misc.UseDefaultDir,
+                SecondaryButtonText = Lang._Misc.YesChangeLocation,
                 DefaultButton = ContentDialogButton.Primary,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
             };
@@ -109,7 +110,7 @@ namespace CollapseLauncher.Dialogs
                 MigrationTextStatus.Visibility = Visibility.Visible;
 
                 MigrationSubtextStatus.Visibility = Visibility.Collapsed;
-                MigrationTextStatus.Text = "Migration cancelled! Will be return in a moment...";
+                MigrationTextStatus.Text = Lang._InstallMigrate.StepCancelledTitle;
                 MigrationProgressBar.ShowError = true;
             });
             await Task.Delay(delay);
@@ -122,20 +123,20 @@ namespace CollapseLauncher.Dialogs
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                MigrationTextStatus.Text = "Process will start in 5 seconds. Please accept the UAC dialog to start Migration process";
+                MigrationTextStatus.Text = Lang._InstallMigrate.Step1Title;
                 MigrationTextStatus.Visibility = Visibility.Visible;
             });
             await Task.Delay(5000);
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                MigrationTextStatus.Text = "Migration is in progress. You may see a console window pops up. Please wait until the process is completed";
+                MigrationTextStatus.Text = Lang._InstallMigrate.Step2Title;
             });
 
             try
             {
                 Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CollapseLauncher.Invoker.exe");
+                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.Invoker.exe");
                 proc.StartInfo.UseShellExecute = true;
                 if (CurrentRegion.MigrateFromBetterHi3Launcher)
                     proc.StartInfo.Arguments = $"migratebhi3l {CurrentRegion.BetterHi3LauncherConfig.game_info.version} {CurrentRegion.BetterHi3LauncherVerInfoReg} \"{CurrentRegion.BetterHi3LauncherConfig.game_info.install_path}\" \"{targetPath}\"";
@@ -150,7 +151,7 @@ namespace CollapseLauncher.Dialogs
 
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    MigrationTextStatus.Text = "Migration process is done! Will be return in a moment...";
+                    MigrationTextStatus.Text = Lang._InstallMigrate.Step3Title;
                     MigrationSubtextStatus.Visibility = Visibility.Visible;
                 });
 
@@ -169,8 +170,6 @@ namespace CollapseLauncher.Dialogs
 
             await Task.Delay(3000);
             MigrationWatcher.IsMigrationRunning = false;
-
-            LogWriteLine("After Process");
         }
     }
 }

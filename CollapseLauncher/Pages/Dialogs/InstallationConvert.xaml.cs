@@ -37,6 +37,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.InvokeProp;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -89,10 +90,10 @@ namespace CollapseLauncher.Dialogs
                     {
                         await new ContentDialog
                         {
-                            Title = "Select Game",
-                            Content = "Source game isn't Installed! Please choose another game.",
+                            Title = Lang._InstallConvert.SelectDialogTitle,
+                            Content = Lang._InstallConvert.SelectDialogSubtitleNotInstalled,
                             CloseButtonText = null,
-                            PrimaryButtonText = "Okay",
+                            PrimaryButtonText = Lang._Misc.Okay,
                             SecondaryButtonText = null,
                             DefaultButton = ContentDialogButton.Primary,
                             Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
@@ -111,14 +112,14 @@ namespace CollapseLauncher.Dialogs
 
                 await new ContentDialog
                 {
-                    Title = "Conversion Successful",
+                    Title = Lang._InstallConvert.ConvertSuccessTitle,
                     Content = new TextBlock
                     {
-                        Text = string.Format("Game Conversion from {0} to {1} has been successfully completed!", SourceProfile.ZoneName, TargetProfile.ZoneName),
+                        Text = string.Format(Lang._InstallConvert.ConvertSuccessSubtitle, SourceProfile.ZoneName, TargetProfile.ZoneName),
                         TextWrapping = TextWrapping.Wrap
                     },
                     CloseButtonText = null,
-                    PrimaryButtonText = "Okay, back to menu",
+                    PrimaryButtonText = Lang._Misc.OkayBackToMenu,
                     SecondaryButtonText = null,
                     DefaultButton = ContentDialogButton.Primary,
                     Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
@@ -155,7 +156,7 @@ namespace CollapseLauncher.Dialogs
                 Step1.Opacity = 1f;
                 Step1ProgressRing.IsIndeterminate = false;
                 Step1ProgressRing.Value = 100;
-                Step1ProgressStatus.Text = "Completed!";
+                Step1ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
@@ -227,13 +228,13 @@ namespace CollapseLauncher.Dialogs
             {
                 Width = 200,
                 ItemsSource = new List<string>(ConvertibleRegions.Keys),
-                PlaceholderText = "Select Source"
+                PlaceholderText = Lang._InstallConvert.SelectDialogSource
             };
             SourceGame.SelectionChanged += SourceGameChangedArgs;
             TargetGame = new ComboBox
             {
                 Width = 200,
-                PlaceholderText = "Select Target",
+                PlaceholderText = Lang._InstallConvert.SelectDialogTarget,
                 IsEnabled = false
             };
             TargetGame.SelectionChanged += TargetGameChangedArgs;
@@ -245,7 +246,7 @@ namespace CollapseLauncher.Dialogs
             ComboBoxContainer.Children.Add(TargetGame);
             DialogContainer.Children.Add(new TextBlock
             {
-                Text = "Note: This conversion will break the integration with default launcher if you installed this game by migrating it.\r\n\r\nPlease choose your source and target game to be converted:",
+                Text = Lang._InstallConvert.SelectDialogSubtitle,
                 Margin = new Thickness(0, 0, 0, 16),
                 TextWrapping = TextWrapping.Wrap,
             });
@@ -253,11 +254,11 @@ namespace CollapseLauncher.Dialogs
 
             Dialog = new ContentDialog
             {
-                Title = "Select Game",
+                Title = Lang._InstallConvert.SelectDialogTitle,
                 Content = DialogContainer,
                 CloseButtonText = null,
-                PrimaryButtonText = "Cancel",
-                SecondaryButtonText = "Next",
+                PrimaryButtonText = Lang._Misc.Cancel,
+                SecondaryButtonText = Lang._Misc.Next,
                 IsSecondaryButtonEnabled = false,
                 DefaultButton = ContentDialogButton.Secondary,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
@@ -305,7 +306,7 @@ namespace CollapseLauncher.Dialogs
                 Step2.Opacity = 1f;
                 Step2ProgressRing.IsIndeterminate = false;
                 Step2ProgressRing.Value = 0;
-                Step2ProgressStatus.Text = "Fetching API...";
+                Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
             Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, Content);
 
@@ -320,7 +321,7 @@ namespace CollapseLauncher.Dialogs
                 Step2.Opacity = 1f;
                 Step2ProgressRing.IsIndeterminate = false;
                 Step2ProgressRing.Value = 100;
-                Step2ProgressStatus.Text = "Completed!";
+                Step2ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
@@ -343,7 +344,7 @@ namespace CollapseLauncher.Dialogs
                 Step3.Opacity = 1f;
                 Step3ProgressRing.IsIndeterminate = false;
                 Step3ProgressRing.Value = 0;
-                Step3ProgressStatus.Text = "Preparing Ingredients...";
+                Step3ProgressStatus.Text = Lang._InstallConvert.Step3Subtitle;
             });
 
             Converter.ProgressChanged += Step3ProgressEvents;
@@ -357,7 +358,7 @@ namespace CollapseLauncher.Dialogs
                 Step3.Opacity = 1f;
                 Step3ProgressRing.IsIndeterminate = false;
                 Step3ProgressRing.Value = 100;
-                Step3ProgressStatus.Text = "Completed!";
+                Step3ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
@@ -380,7 +381,7 @@ namespace CollapseLauncher.Dialogs
                 Step4.Opacity = 1f;
                 Step4ProgressRing.IsIndeterminate = false;
                 Step4ProgressRing.Value = 0;
-                Step4ProgressStatus.Text = "Starting Conversion...";
+                Step4ProgressStatus.Text = Lang._InstallConvert.Step4Subtitle;
             });
 
             Converter.ProgressChanged += Step4ProgressEvents;
@@ -394,7 +395,7 @@ namespace CollapseLauncher.Dialogs
                 Step4.Opacity = 1f;
                 Step4ProgressRing.IsIndeterminate = false;
                 Step4ProgressRing.Value = 100;
-                Step4ProgressStatus.Text = "Completed!";
+                Step4ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
@@ -416,7 +417,7 @@ namespace CollapseLauncher.Dialogs
                 Step5.Opacity = 1f;
                 Step5ProgressRing.IsIndeterminate = false;
                 Step5ProgressRing.Value = 0;
-                Step5ProgressStatus.Text = "Waiting...";
+                Step5ProgressStatus.Text = Lang._InstallConvert.Step5Subtitle;
             });
 
             Converter.ProgressChanged += Step5ProgressEvents;

@@ -24,6 +24,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -231,16 +232,15 @@ namespace CollapseLauncher.Pages
                                 Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
                                 Path.GetFileName(GetUpdateDiffs(true).path))))
                             {
-                                NotificationBar.Message = $"Pre-Download package for v{regionResourceProp.data.pre_download_game.latest.version} is available! You can download the package while playing the game at the same time.";
+                                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
                             }
                             else
                             {
-                                NotificationBar.Title = "Pre-Download Package has been Downloaded!";
-                                NotificationBar.Message = $"You have downloaded Pre-Download package for v{regionResourceProp.data.pre_download_game.latest.version}!";
+                                NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
+                                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
                                 NotificationBar.IsClosable = true;
-                                // DownloadPreBtn.Visibility = Visibility.Collapsed;
                                 var content = new TextBlock();
-                                content.Text = "Check Integrity";
+                                content.Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn;
 
                                 DownloadPreBtn.Content = content;
                                 IsCheckPreIntegrity = true;
@@ -273,35 +273,44 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            while (true && !App.IsAppKilled)
+            try
             {
-                while (App.IsGameRunning)
+                while (true && !App.IsAppKilled)
                 {
+                    while (App.IsGameRunning)
+                    {
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            if (!App.IsAppKilled)
+                                return;
+
+                            if (StartGameBtn.IsEnabled)
+                                LauncherBtn.Translation -= Shadow16;
+
+                            StartGameBtn.IsEnabled = false;
+                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                            GameStartupSetting.IsEnabled = false;
+                        });
+
+                        await Task.Delay(3000);
+                    }
+
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
+                        if (!App.IsAppKilled)
+                            return;
 
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtn.Content = "Game is Running";
-                        GameStartupSetting.IsEnabled = false;
+                        if (!StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation += Shadow16;
+
+                        StartGameBtn.IsEnabled = true;
+                        StartGameBtn.Content = Lang._HomePage.StartBtn;
+                        GameStartupSetting.IsEnabled = true;
                     });
 
                     await Task.Delay(3000);
                 }
-
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
-
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtn.Content = "Start Game";
-                    GameStartupSetting.IsEnabled = true;
-                });
-
-                await Task.Delay(3000);
-            }
+            } catch (NullReferenceException) { }
         }
 
         private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");
@@ -310,6 +319,19 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                if (CurrentRegion.UseRightSideProgress ?? false)
+                    await HideImageCarousel(true);
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    progressRing.Value = 0;
+                    progressRing.IsIndeterminate = true;
+                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    InstallGameBtn.Visibility = Visibility.Collapsed;
+                    CancelDownloadBtn.Visibility = Visibility.Visible;
+                    ProgressTimeLeft.Visibility = Visibility.Visible;
+                });
+
                 if ((GamePathOnSteam = await Task.Run(() => CurrentRegion.GetSteamInstallationPath())) != null)
                 {
                     switch (await Dialog_ExistingInstallationSteam(Content))
@@ -320,10 +342,10 @@ namespace CollapseLauncher.Pages
                             await CheckMigrationProcess();
                             break;
                         case ContentDialogResult.Secondary:
-                            LogWriteLine($"TODO: Do Install for CollapseLauncher");
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;
                         case ContentDialogResult.None:
+                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                             return;
                     }
                 }
@@ -342,6 +364,7 @@ namespace CollapseLauncher.Pages
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;
                         case ContentDialogResult.None:
+                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                             return;
                     }
                 }
@@ -356,10 +379,10 @@ namespace CollapseLauncher.Pages
                             OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
                             break;
                         case ContentDialogResult.Secondary:
-                            LogWriteLine($"TODO: Do Install for CollapseLauncher");
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;
                         case ContentDialogResult.None:
+                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                             return;
                     }
                 }
@@ -382,6 +405,7 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (Exception ex)
             {
@@ -395,9 +419,6 @@ namespace CollapseLauncher.Pages
             GameDirPath = destinationFolder;
             if (!Directory.Exists(GameDirPath))
                 Directory.CreateDirectory(GameDirPath);
-
-            if (CurrentRegion.UseRightSideProgress ?? false)
-                await HideImageCarousel(true);
 
             if (string.IsNullOrEmpty(GameDirPath))
                 throw new OperationCanceledException();
@@ -561,13 +582,13 @@ namespace CollapseLauncher.Pages
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    ProgressStatusTitle.Text = "Verifying Package";
+                    ProgressStatusTitle.Text = Lang._HomePage.VerifyingPkgTitle;
                 });
             }
 
             using (stream = new FileStream(fileOutput, FileMode.Open, FileAccess.Read))
             {
-                LogWriteLine(string.Format("Verifying downloaded file"));
+                LogWriteLine("Verifying downloaded file");
 
                 fileLength = stream.Length;
                 while ((read = stream.Read(buffer, 0, buffer.Length)) >= buffer.Length)
@@ -596,28 +617,28 @@ namespace CollapseLauncher.Pages
             long speed = (long)(totalRead / sw.Elapsed.TotalSeconds);
             InstallVerifySizeString = SummarizeSizeSimple(totalRead);
             VerifySizeString = SummarizeSizeSimple(fileLength);
-            InstallVerifySpeedString = $"{SummarizeSizeSimple(speed)}/s";
+            InstallVerifySpeedString = SummarizeSizeSimple(speed);
 
             if ((GameInstallationState == GameInstallStateEnum.InstalledHavePreload))
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    ProgressPreStatusSubtitle.Text = $"{InstallVerifySizeString} / {VerifySizeString}";
+                    ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallVerifySizeString, VerifySizeString);
                     LogWrite($"Verifying: {InstallVerifySizeString}", Hi3Helper.LogType.Empty, false, true);
-                    ProgressPreStatusFooter.Text = $"Speed: {InstallVerifySpeedString}";
+                    ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallVerifySpeedString);
                     progressPreBar.Value = Math.Round(((float)totalRead / (float)fileLength) * 100, 2);
-                    ProgressPreTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((totalRead - fileLength) / speed));
+                    ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((totalRead - fileLength) / speed));
                 });
             }
             else
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    ProgressStatusSubtitle.Text = $"{InstallVerifySizeString} / {VerifySizeString}";
+                    ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallVerifySizeString, VerifySizeString);
                     LogWrite($"Verifying: {InstallVerifySizeString}", Hi3Helper.LogType.Empty, false, true);
-                    ProgressStatusFooter.Text = $"Speed: {InstallVerifySpeedString}";
+                    ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallVerifySpeedString);
                     progressRing.Value = Math.Round(((float)totalRead / (float)fileLength) * 100, 2);
-                    ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((totalRead - fileLength) / speed));
+                    ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((totalRead - fileLength) / speed));
                 });
             }
         }
@@ -708,15 +729,15 @@ namespace CollapseLauncher.Pages
 
         private void InstallerDownloadPreStatusChanged(object sender, HttpClientHelper._DownloadProgress e)
         {
-            InstallDownloadSpeedString = $"{SummarizeSizeSimple(e.CurrentSpeed)}/s";
+            InstallDownloadSpeedString = SummarizeSizeSimple(e.CurrentSpeed);
             InstallDownloadSizeString = SummarizeSizeSimple(e.DownloadedSize);
             DownloadSizeString = SummarizeSizeSimple(e.TotalSizeToDownload);
             DispatcherQueue.TryEnqueue(() =>
             {
-                ProgressPreStatusSubtitle.Text = $"{InstallDownloadSizeString} / {DownloadSizeString}";
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
                 LogWrite($"{e.DownloadState}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
-                ProgressPreStatusFooter.Text = $"Speed: {InstallDownloadSpeedString}";
-                ProgressPreTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
                 progressPreBar.IsIndeterminate = false;
             });
@@ -789,39 +810,32 @@ namespace CollapseLauncher.Pages
             StorageFolder folder;
             string returnFolder = "";
 
-            try
+            bool isChoosen = false;
+            while (!isChoosen)
             {
-                bool isChoosen = false;
-                while (!isChoosen)
+                switch (await Dialog_InstallationLocation(Content))
                 {
-                    switch (await Dialog_InstallationLocation(Content))
-                    {
-                        case ContentDialogResult.Primary:
-                            returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
-                            isChoosen = true;
-                            break;
-                        case ContentDialogResult.Secondary:
-                            folder = null;
-                            folderPicker.FileTypeFilter.Add("*");
-                            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
-                            folder = await folderPicker.PickSingleFolderAsync();
+                    case ContentDialogResult.Primary:
+                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
+                        isChoosen = true;
+                        break;
+                    case ContentDialogResult.Secondary:
+                        folder = null;
+                        folderPicker.FileTypeFilter.Add("*");
+                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
+                        folder = await folderPicker.PickSingleFolderAsync();
 
-                            if (folder != null)
-                                if (IsUserHasPermission(returnFolder = folder.Path))
-                                    isChoosen = true;
-                                else
-                                    await Dialog_InsufficientWritePermission(Content, returnFolder);
+                        if (folder != null)
+                            if (IsUserHasPermission(returnFolder = folder.Path))
+                                isChoosen = true;
                             else
-                                isChoosen = false;
-                            break;
-                        case ContentDialogResult.None:
-                            throw new TaskCanceledException();
-                    }
+                                await Dialog_InsufficientWritePermission(Content, returnFolder);
+                        else
+                            isChoosen = false;
+                        break;
+                    case ContentDialogResult.None:
+                        throw new OperationCanceledException();
                 }
-            }
-            catch (TaskCanceledException)
-            {
-                throw new TaskCanceledException();
             }
 
             return returnFolder;
@@ -1101,9 +1115,9 @@ namespace CollapseLauncher.Pages
             {
                 progressRing.Value = e.ProgressPercentage;
                 progressRingPerFile.Value = e.ProgressPercentagePerFile;
-                ProgressStatusSubtitle.Text = $"{SummarizeSizeSimple(e.ProgressDownloadedSize)} / {SummarizeSizeSimple(e.ProgressTotalSizeToDownload)}";
-                ProgressStatusFooter.Text = $"Speed: {SummarizeSizeSimple(e.ProgressSpeed)}/s";
-                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
+                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
+                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
             });
         }
 
@@ -1192,24 +1206,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        void BuildManifestList(string manifestPath, in List<PkgVersionProperties> listInput)
-        {
-            Span<string> _data = File.ReadAllLines(manifestPath);
-            foreach (string data in _data)
-                listInput.Add(JsonConvert.DeserializeObject<PkgVersionProperties>(data));
-        }
-
-        private void InstallCheckTool_PostInstallCheckChanged(object sender, PostInstallCheckProp e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressRing.Value = GetPercentageNumber(e.TotalReadSize, e.TotalCheckSize);
-                ProgressStatusSubtitle.Text = string.Format("{0} / {1}", SummarizeSizeSimple(e.TotalReadSize), SummarizeSizeSimple(e.TotalCheckSize));
-                ProgressStatusFooter.Text = string.Format("Speed: {0}/s", SummarizeSizeSimple(e.CurrentSpeed));
-                ProgressTimeLeft.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((e.TotalReadSize - e.TotalCheckSize) / e.CurrentSpeed));
-            });
-        }
-
         private void TryAddVoicePack(RegionResourceVersion diffVer)
         {
             int langID;
@@ -1250,16 +1246,16 @@ namespace CollapseLauncher.Pages
                 switch (Entry.language)
                 {
                     case "en-us":
-                        value.Add("English (US)");
+                        value.Add(Lang._Misc.LangNameENUS);
                         break;
                     case "ja-jp":
-                        value.Add("Japanese");
+                        value.Add(Lang._Misc.LangNameJP);
                         break;
                     case "zh-cn":
-                        value.Add("Chinese (Simplified)");
+                        value.Add(Lang._Misc.LangNameCN);
                         break;
                     case "ko-kr":
-                        value.Add("Korean");
+                        value.Add(Lang._Misc.LangNameKR);
                         break;
                     default:
                         value.Add(Entry.language);
@@ -1316,8 +1312,8 @@ namespace CollapseLauncher.Pages
             {
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
-                NotificationBar.Title = "Downloading Pre-Download";
-                NotificationBar.Message = "Necessary Package";
+                NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                NotificationBar.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
             });
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
@@ -1336,7 +1332,7 @@ namespace CollapseLauncher.Pages
                 if (IsGameHasVoicePack)
                 {
                     LogWriteLine($"Download Voice Pack URL: {GameZipVoiceUrl}");
-                    DispatcherQueue.TryEnqueue(() => ProgressStatusTitle.Text = "Updating Voice Pack");
+                    DispatcherQueue.TryEnqueue(() => NotificationBar.Message = Lang._HomePage.UpdatingVoicePack);
                     if (!File.Exists(GameZipVoicePath))
                         await HttpTool.DownloadFileAsync(GameZipVoiceUrl, GameZipVoicePath, DowwnloadThread, token);
                 }
@@ -1356,39 +1352,6 @@ namespace CollapseLauncher.Pages
                 returnVal = true;
 
             return returnVal;
-        }
-
-        private void CleanUpAssets(string GamePath)
-        {
-            List<string> unusedFiles = new List<string>();
-            BlockData blockUtil = new BlockData();
-
-            string xmfPath = Path.Combine(GamePath, @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf");
-
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusTitle.Text = "Clean up";
-                ProgressStatusFooter.Visibility = Visibility.Collapsed;
-                ProgressTimeLeft.Visibility = Visibility.Collapsed;
-            });
-
-            int i = 0;
-            blockUtil.Init(new FileStream(xmfPath, FileMode.Open, FileAccess.Read), XMFFileFormat.XMF);
-            blockUtil.CheckForUnusedBlocks(Path.GetDirectoryName(xmfPath));
-            unusedFiles = blockUtil.GetListOfBrokenBlocks(Path.GetDirectoryName(xmfPath));
-            unusedFiles.AddRange(Directory.EnumerateFiles(Path.GetDirectoryName(xmfPath), "Blocks_*.xmf"));
-
-            foreach (string unusedFile in unusedFiles)
-            {
-                i++;
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressStatusSubtitle.Text = $"{i} / {unusedFiles.Count}";
-                    progressRing.Maximum = unusedFiles.Count;
-                    progressRing.Value = i;
-                });
-                File.Delete(unusedFile);
-            }
         }
 
         private async void GameLogWatcher()

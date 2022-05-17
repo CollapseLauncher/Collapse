@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
-using System.IO;
 
 using Windows.Graphics;
 
@@ -41,8 +39,6 @@ namespace CollapseLauncher
                 m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
                 m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
 
-                SetBackdrop(BackdropType.DesktopAcrylic);
-
                 m_AppWindow = GetAppWindowForCurrentWindow();
                 m_AppWindow.Changed += AppWindow_Changed;
 
@@ -52,6 +48,12 @@ namespace CollapseLauncher
                 // Currently only supported on Windows 11.
                 if (AppWindowTitleBar.IsCustomizationSupported())
                 {
+#if MICA
+                    SetBackdrop(BackdropType.Mica);
+#else
+                    SetBackdrop(BackdropType.DesktopAcrylic);
+#endif
+                    SetThemeParameters();
                     var titleBar = m_AppWindow.TitleBar;
                     titleBar.ExtendsContentIntoTitleBar = true;
                     AppTitleBar.Loaded += AppTitleBar_Loaded;
@@ -76,6 +78,8 @@ namespace CollapseLauncher
                 }
                 else
                 {
+                    SetBackdrop(BackdropType.DesktopAcrylic);
+                    SetThemeParameters();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
                     Grid.SetColumn(RegionChangerPanel, 4);

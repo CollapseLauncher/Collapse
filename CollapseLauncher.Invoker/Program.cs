@@ -44,6 +44,9 @@ namespace CollapseLauncher.Invoker
                     case "assignoriginalpath":
                         DoAssignOriginalPath();
                         break;
+                    case "takeownership":
+                        TakeOwnership(argument[1]);
+                        break;
                     case "aswindowhandler":
                         DoAsWindowHandler();
                         break;
@@ -189,6 +192,11 @@ namespace CollapseLauncher.Invoker
 
         static void TakeOwnership(string target)
         {
+            Console.WriteLine("Trying to append ownership of the folder. Please do not close this console window!");
+
+            if (!Directory.Exists(target))
+                Directory.CreateDirectory(target);
+
             Process takeOwner = new Process()
             {
                 StartInfo = new ProcessStartInfo()

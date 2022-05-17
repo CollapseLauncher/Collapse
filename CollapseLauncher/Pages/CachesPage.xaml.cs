@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 using Hi3Helper.Shared.ClassStruct;
 
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -31,15 +32,15 @@ namespace CollapseLauncher.Pages
             {
                 Overlay.Visibility = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = "You can't use this feature since the region isn't yet installed or need to be updated!";
-                OverlaySubtitle.Text = "Please download/update the game first in Homepage Menu!";
+                OverlayTitle.Text = Lang._CachesPage.OverlayNotInstalledTitle;
+                OverlaySubtitle.Text = Lang._CachesPage.OverlayNotInstalledSubtitle;
             }
             else if (App.IsGameRunning)
             {
                 Overlay.Visibility = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
-                OverlayTitle.Text = "Game is Currently Running!";
-                OverlaySubtitle.Text = "Please close the game first to use this feature!";
+                OverlayTitle.Text = Lang._CachesPage.OverlayGameRunningTitle;
+                OverlaySubtitle.Text = Lang._CachesPage.OverlayGameRunningSubtitle;
             }
         }
 

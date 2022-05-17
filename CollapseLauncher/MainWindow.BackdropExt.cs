@@ -23,7 +23,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    class WindowsSystemDispatcherQueueHelper
+    public class WindowsSystemDispatcherQueueHelper
     {
         [StructLayout(LayoutKind.Sequential)]
         struct DispatcherQueueOptions
@@ -58,17 +58,49 @@ namespace CollapseLauncher
     }
     public sealed partial class MainWindow : Window
     {
-        public enum BackdropType
+        public void SetThemeParameters()
         {
-            Mica,
-            DesktopAcrylic,
-            DefaultColor,
+            switch (m_currentBackdrop)
+            {
+#if MICA
+                case BackdropType.Mica:
+                    {
+                        (Application.Current.Resources["PagesSolidAcrylicBrush"] as AcrylicBrush).TintOpacity = 0f;
+                        (Application.Current.Resources["PagesSolidAcrylicBrush"] as AcrylicBrush).TintLuminosityOpacity = 0f;
+                        (Application.Current.Resources["DialogAcrylicBrush"] as AcrylicBrush).TintOpacity = 0f;
+                        (Application.Current.Resources["DialogAcrylicBrush"] as AcrylicBrush).TintLuminosityOpacity = 0.75f;
+                        (Application.Current.Resources["NavigationBarBrush"] as AcrylicBrush).TintOpacity = 0f;
+                        (Application.Current.Resources["NavigationBarBrush"] as AcrylicBrush).TintLuminosityOpacity = 0f;
+                    }
+                    break;
+#endif
+                case BackdropType.DefaultColor:
+                    {
+                        if (CurrentRequestedAppTheme == ApplicationTheme.Dark)
+                        {
+                            Application.Current.Resources["NavigationBarBrush"] = new AcrylicBrush
+                            {
+                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
+                                TintOpacity = 1f,
+                                TintLuminosityOpacity = 0f
+                            };
+                            Application.Current.Resources["PagesSolidAcrylicBrush"] = new AcrylicBrush
+                            {
+                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
+                                TintOpacity = 1f,
+                                TintLuminosityOpacity = 0f
+                            };
+                            Application.Current.Resources["DialogAcrylicBrush"] = new AcrylicBrush
+                            {
+                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
+                                TintOpacity = 0.4f,
+                                TintLuminosityOpacity = 0.5f
+                            };
+                        }
+                    }
+                    break;
+            }
         }
-        WindowsSystemDispatcherQueueHelper m_wsdqHelper;
-        BackdropType m_currentBackdrop;
-        MicaController m_micaController;
-        DesktopAcrylicController m_acrylicController;
-        SystemBackdropConfiguration m_configurationSource;
 
         public void SetBackdrop(BackdropType type)
         {
@@ -96,28 +128,17 @@ namespace CollapseLauncher
             m_configurationSource = null;
 
             if (type == BackdropType.Mica)
-            {
                 if (TrySetMicaBackdrop())
-                {
                     m_currentBackdrop = type;
-                }
                 else
-                {
                     // Mica isn't supported. Try Acrylic.
                     type = BackdropType.DesktopAcrylic;
-                }
-            }
+
             if (type == BackdropType.DesktopAcrylic)
-            {
                 if (TrySetAcrylicBackdrop())
-                {
                     m_currentBackdrop = type;
-                }
-                else
-                {
-                }
-            }
         }
+
         bool TrySetMicaBackdrop()
         {
             if (MicaController.IsSupported())
@@ -178,10 +199,7 @@ namespace CollapseLauncher
             return false; // Acrylic is not supported on this system
         }
 
-        private void Window_Activated(object sender, WindowActivatedEventArgs args)
-        {
-            m_configurationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
-        }
+        private void Window_Activated(object sender, WindowActivatedEventArgs args) => m_configurationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
 
         private void Window_Closed(object sender, WindowEventArgs args)
         {
@@ -199,19 +217,6 @@ namespace CollapseLauncher
             }
             this.Activated -= Window_Activated;
             m_configurationSource = null;
-        }
-
-        void ChangeBackdropButton_Click(object sender, RoutedEventArgs e)
-        {
-            BackdropType newType;
-            switch (m_currentBackdrop)
-            {
-                case BackdropType.Mica: newType = BackdropType.DesktopAcrylic; break;
-                case BackdropType.DesktopAcrylic: newType = BackdropType.DefaultColor; break;
-                default:
-                case BackdropType.DefaultColor: newType = BackdropType.Mica; break;
-            }
-            SetBackdrop(newType);
         }
     }
 }

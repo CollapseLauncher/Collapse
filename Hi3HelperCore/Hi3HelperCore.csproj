@@ -42,11 +42,12 @@
 
   <ItemGroup>
     <None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Pack.ps1" />
-    <None Remove="Lib\7z.dll" />
-    <None Remove="Lib\HPatchZ.dll" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Lang\en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lib\7z.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

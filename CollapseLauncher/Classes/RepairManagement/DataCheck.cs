@@ -20,6 +20,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -58,8 +59,7 @@ namespace CollapseLauncher.Pages
 
         private void StartGameCheck(object sender, RoutedEventArgs e)
         {
-            RepairStatus.Text = "Loading Indexes...";
-            RepairPerFileStatus.Text = "Waiting...";
+            RepairStatus.Text = Lang._GameRepairPage.Status2;
             NeedRepairListUI.Clear();
             cancellationTokenSource = new CancellationTokenSource();
             FileIndexesProperty = new List<FilePropertiesRemote>();
@@ -69,8 +69,8 @@ namespace CollapseLauncher.Pages
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                RepairPerFileStatus.Text = "None";
-                RepairTotalStatus.Text = "None";
+                RepairPerFileStatus.Text = Lang._GameRepairPage.StatusNone;
+                RepairTotalStatus.Text = Lang._GameRepairPage.StatusNone;
                 RepairPerFileProgressBar.Value = 0;
                 RepairTotalProgressBar.Value = 0;
             });
@@ -316,7 +316,7 @@ namespace CollapseLauncher.Pages
             {
                 if (BrokenFilesCount > 0)
                 {
-                    RepairStatus.Text = $"{BrokenFilesCount} file{(BrokenFilesCount > 1 ? "s have" : " has")} been found to be broken ({SummarizeSizeSimple(BrokenFilesSize)} in total size). Click Repair Game to begin the repair process";
+                    RepairStatus.Text = string.Format(Lang._GameRepairPage.Status3, BrokenFilesCount, SummarizeSizeSimple(BrokenFilesSize));
                     RepairFilesBtn.Visibility = Visibility.Visible;
                     CheckFilesBtn.Visibility = Visibility.Collapsed;
                     CancelBtn.IsEnabled = false;
@@ -324,12 +324,12 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    RepairStatus.Text = $"No broken file detected!";
+                    RepairStatus.Text = Lang._GameRepairPage.Status4;
                     CheckFilesBtn.IsEnabled = true;
                     CancelBtn.IsEnabled = false;
                 }
-                RepairPerFileStatus.Text = "None";
-                RepairTotalStatus.Text = "None";
+                RepairPerFileStatus.Text = Lang._GameRepairPage.StatusNone;
+                RepairTotalStatus.Text = Lang._GameRepairPage.StatusNone;
                 RepairPerFileProgressBar.Value = 0;
                 RepairTotalProgressBar.Value = 0;
             });
@@ -397,9 +397,9 @@ namespace CollapseLauncher.Pages
                 long Speed = (long)(BlockCurrentReadSize / sw.Elapsed.TotalSeconds);
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RepairStatus.Text = $"Checking Blk: {CurrentCheckName}";
-                    RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
-                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
+                    RepairStatus.Text = string.Format(Lang._GameRepairPage.Status5, CurrentCheckName);
+                    RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
+                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
                     RepairPerFileProgressBar.Value = GetPercentageNumber(BlockCurrentReadSize, BlockSize);
                     RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
                 });
@@ -414,9 +414,9 @@ namespace CollapseLauncher.Pages
                 long Speed = (long)(SingleCurrentReadSize / sw.Elapsed.TotalSeconds);
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RepairStatus.Text = $"Checking: {CurrentCheckName}";
-                    RepairTotalStatus.Text = $"Progress: {TotalCurrentReadCount}/{TotalIndexedCount}";
-                    RepairPerFileStatus.Text = $"Speed: {SummarizeSizeSimple(Speed)}/s";
+                    RepairStatus.Text = string.Format(Lang._GameRepairPage.Status6, CurrentCheckName);
+                    RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
+                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
                     RepairPerFileProgressBar.Value = GetPercentageNumber(SingleCurrentReadSize, SingleSize);
                     RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
                 });
@@ -429,7 +429,7 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 1);
-                RepairPerFileStatus.Text = $"Fetching ({SummarizeSizeSimple(e.CurrentSpeed)}/s)";
+                RepairPerFileStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.CurrentSpeed));
             });
         }
     }

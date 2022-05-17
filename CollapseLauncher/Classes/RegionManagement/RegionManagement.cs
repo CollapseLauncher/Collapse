@@ -12,6 +12,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.GameSettingsManagement;
@@ -39,7 +40,7 @@ namespace CollapseLauncher
             while (!await TryGetRegionResource())
             {
                 int lastTimeout = LoadTimeoutSec;
-                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = $"Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...");
+                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, CurrentRegion.ZoneName, lastTimeout * 2));
                 LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...", Hi3Helper.LogType.Warning);
 
                 LoadTimeoutSec += LoadTimeoutJump;
@@ -48,7 +49,8 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
             InitRegKey();
             PushRegionNotification(CurrentRegion.ProfileName);
-            await HideLoadingPopup(true, "Loading Region", CurrentRegion.ZoneName);
+            await HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            InitializeNavigationItems();
             // HideBackgroundImage(false);
         }
 
@@ -104,7 +106,7 @@ namespace CollapseLauncher
                 try
                 {
                     await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
-                    DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "It takes a bit longer than expected. Please ensure that your connection is stable.");
+                    DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = Lang._MainPage.RegionLoadingSubtitleTooLong);
                     if (!loadRegionComplete)
                     {
                         await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
@@ -116,34 +118,6 @@ namespace CollapseLauncher
                 catch
                 {
                     return;
-                }
-            }
-        }
-
-        private async void TimeOutWatcher()
-        {
-            bool isLoading = true;
-            while (isLoading)
-            {
-                if (loader.IsCompleted || loader.IsCompletedSuccessfully)
-                {
-                    LogWriteLine("Timeout completed!");
-                    isLoading = false;
-                }
-                else
-                {
-                    await Task.Delay(5000);
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        if (!(loader.IsCompleted || loader.IsCompletedSuccessfully))
-                        {
-                            LoadingFooter.Text = "It takes a bit longer than expected (> 5 seconds). Please ensure that your connection is stable.";
-                        }
-                        else
-                        {
-                            LoadingFooter.Text = "";
-                        }
-                    });
                 }
             }
         }
@@ -179,8 +153,6 @@ namespace CollapseLauncher
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
-                NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
                 f.Hide();
                 ChangeRegionConfirmBtn.IsEnabled = false;

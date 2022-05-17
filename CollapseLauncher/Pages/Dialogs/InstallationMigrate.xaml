@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -17,16 +18,16 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="Migrating..." Grid.Column="0"
+        <TextBlock Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageTitle}" Grid.Column="0"
                    Style="{StaticResource TitleLargeTextBlockStyle}"/>
         <StackPanel Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Orientation="Vertical">
             <TextBlock x:Name="MigrationSubtextStatus" Grid.Column="0"
                    Style="{StaticResource BodyTextBlockStyle}" Margin="0,-38,0,0"
                    HorizontalAlignment="Center">
                 <Span>
-                    <Run>Please</Run>
-                    <Run Text="DO NOT" FontWeight="Black"/>
-                    <Run>switch to another Page or Quit while Migration process is running</Run>
+                    <Run Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageFooter1}"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageFooter2}" FontWeight="Black"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageFooter3}"/>
                 </Span>
             </TextBlock>
             <TextBlock x:Name="MigrationTextStatus" Text="Please specify the location of the game" Grid.Column="0"

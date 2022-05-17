@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
@@ -11,7 +12,7 @@
 
     <Grid>
         <StackPanel Margin="32,32,32,32" x:Name="PageContent">
-            <TextBlock Text="Repair" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
+            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="422"/>
@@ -34,18 +35,17 @@
                     ItemsSource="{x:Bind NeedRepairListUI}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
-                            <control:DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Tag="FileName" Width="296" FontSize="13"/>
-                            <control:DataGridTextColumn Header="Data Type" Binding="{Binding DataType}" Tag="DataType" FontSize="13"/>
-                            <control:DataGridTextColumn Header="Data Source" Binding="{Binding FileSource}" Tag="Source" Width="436" FontSize="13"/>
-                            <control:DataGridTextColumn Header="File Size" Binding="{Binding FileSizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
-                            <!--<control:DataGridTextColumn Header="Offset" Binding="{Binding Offset}" Tag="Offset" Width="128" FontSize="13"/>-->
-                            <control:DataGridTextColumn Header="Cur. CRC" Binding="{Binding CurrCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
-                            <control:DataGridTextColumn Header="CRC" Binding="{Binding ExpctCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding FileName}" Tag="FileName" Width="296" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding DataType}" Tag="DataType" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding FileSource}" Tag="Source" Width="436" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding FileSizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding CurrCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding ExpctCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
                         </control:DataGrid.Columns>
                     </control:DataGrid>
                 </Grid>
                 <StackPanel Grid.Row="1">
-                    <TextBlock x:Name="RepairStatus" Text="Click Check Files to run the analysis" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
+                    <TextBlock x:Name="RepairStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="192"/>
@@ -53,27 +53,27 @@
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Per File Progress" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PerProgressTitle1}" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
                             <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="RepairPerFileStatus" Text="None" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="RepairPerFileStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="{Binding Value, ElementName=RepairPerFileProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                             </control:DockPanel>
                             <ProgressBar x:Name="RepairPerFileProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="32,0">
-                            <TextBlock Text="Total Progress"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.TotalProgressTitle1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
                             <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="RepairTotalStatus" Text="None" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="RepairTotalStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="{Binding Value, ElementName=RepairTotalProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                             </control:DockPanel>
                             <ProgressBar x:Name="RepairTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                            <Button x:Name="RepairFilesBtn" Content="Repair Files" Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameRepair"/>
-                            <Button x:Name="CheckFilesBtn" Content="Check Files" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameCheck"/>
-                            <Button x:Name="CancelBtn" IsEnabled="False" Content="Cancel" Width="72" Margin="16,0,0,0" Click="CancelOperation"/>
+                            <Button x:Name="RepairFilesBtn" Content="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameRepair"/>
+                            <Button x:Name="CheckFilesBtn" Content="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2}" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameCheck"/>
+                            <Button x:Name="CancelBtn" IsEnabled="False" Content="{x:Bind helper:Locale.Lang._Misc.Cancel}" Width="72" Margin="16,0,0,0" Click="CancelOperation"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

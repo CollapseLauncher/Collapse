@@ -64,10 +64,6 @@ namespace CollapseLauncher.Pages
                         UpdateCachesBtn.Visibility = Visibility.Collapsed;
                         CancelBtn.IsEnabled = false;
                     });
-                    /*
-                    httpClient.ProgressChanged -= CachesDownloadProgress;
-                    httpClient.PartialProgressChanged -= CachesPartialDownloadProgress;
-                    */
                     http.DownloadProgress -= CachesDownloadProgress;
                 }
                 catch (Exception ex)
@@ -112,7 +108,7 @@ namespace CollapseLauncher.Pages
                     });
 
                     http.DownloadProgress += CachesDownloadProgress;
-                    if (content.CS >= 10 << 20)
+                    if (content.CS >= 4 << 20)
                         http.DownloadFile(cachesURL, cachesPath, DownloadThread, cancellationTokenSource.Token);
                     else
                         using (cachesStream = cachesFileInfo.Create())

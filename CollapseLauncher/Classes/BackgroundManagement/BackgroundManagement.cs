@@ -287,6 +287,7 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
+                await Task.Delay(250);
             }
         }
 

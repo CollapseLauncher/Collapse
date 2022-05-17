@@ -12,6 +12,7 @@ using Force.Crc32;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.GameConversion
@@ -60,7 +61,7 @@ namespace Hi3Helper.Shared.GameConversion
 
         private void FetchAPI()
         {
-            CheckStatus = "Fetching API";
+            CheckStatus = Lang._InstallMigrateSteam.Step3Subtitle;
 
             using (stream = new MemoryStream())
             {
@@ -110,7 +111,7 @@ namespace Hi3Helper.Shared.GameConversion
         private void CheckGenericAudioFile()
         {
             TotalCount++;
-            CheckStatus = $"Checking {FileIndex.FT} File [{TotalCount}/{TotalCountToRead}]: {FileIndex.N}";
+            CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerCheckFile, FileIndex.FT, TotalCount, TotalCountToRead, FileIndex.N);
             if (!FileInfo.Exists)
             {
                 TotalRead += FileIndex.S;
@@ -137,7 +138,7 @@ namespace Hi3Helper.Shared.GameConversion
                 if (!FileInfo.Exists || FileInfo.Length != block.BlockSize)
                 {
                     TotalCount++;
-                    CheckStatus = $"Checking {FileIndex.FT}: {block.BlockHash}";
+                    CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerCheckBlock1, FileIndex.FT, block.BlockHash);
                     TotalRead += block.BlockSize;
                     TotalCount += block.BlockContent.Count;
 
@@ -151,7 +152,7 @@ namespace Hi3Helper.Shared.GameConversion
 
                     OnProgressChanged(new CheckIntegrityChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
                     {
-                        Message = $"{CheckStatus}"
+                        Message = CheckStatus
                     });
                 }
                 else
@@ -161,7 +162,7 @@ namespace Hi3Helper.Shared.GameConversion
                         BrokenChunk = new List<XMFDictionaryClasses.XMFFileProperty>();
                         foreach (var chunk in block.BlockContent)
                         {
-                            CheckStatus = $"Checking {FileIndex.FT} [{TotalCount}/{TotalCountToRead}]: {block.BlockHash} -> (0x{chunk._startoffset.ToString("x8")} | S: 0x{chunk._filesize.ToString("x8")})";
+                            CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerCheckBlock2, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash, chunk._startoffset.ToString("x8"), chunk._filesize.ToString("x8"));
                             TotalCount++;
                             tokenSource.Token.ThrowIfCancellationRequested();
 
@@ -174,7 +175,7 @@ namespace Hi3Helper.Shared.GameConversion
 
                             OnProgressChanged(new CheckIntegrityChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
                             {
-                                Message = $"{CheckStatus}"
+                                Message = CheckStatus
                             });
 
                             if (!string.Equals(FileCRC, chunk._filecrc32))
@@ -223,7 +224,7 @@ namespace Hi3Helper.Shared.GameConversion
                     TotalRead += read;
                     OnProgressChanged(new CheckIntegrityChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
                     {
-                        Message = $"{CheckStatus}"
+                        Message = CheckStatus
                     });
                 }
 
@@ -232,7 +233,7 @@ namespace Hi3Helper.Shared.GameConversion
 
                 OnProgressChanged(new CheckIntegrityChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
                 {
-                    Message = $"{CheckStatus}"
+                    Message = CheckStatus
                 });
             }
 
@@ -245,7 +246,7 @@ namespace Hi3Helper.Shared.GameConversion
         {
             OnProgressChanged(new CheckIntegrityChanged(e.DownloadedSize, e.TotalSizeToDownload, sw.Elapsed.TotalSeconds)
             {
-                Message = $"{CheckStatus}"
+                Message = CheckStatus
             });
         }
 

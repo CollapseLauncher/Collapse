@@ -13,6 +13,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.InvokeProp;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -34,6 +35,8 @@ namespace CollapseLauncher
             InitConsoleSetting();
             WriteLog("App Started!", LogType.Scheme);
             LogWriteLine($"Initializing...", LogType.Empty);
+            TryParseLocalizations();
+            LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
 
             InnerLauncherConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
             InnerLauncherConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());

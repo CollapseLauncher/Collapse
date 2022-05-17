@@ -2,11 +2,20 @@
 using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
 
 using Windows.UI;
 
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Composition.SystemBackdrops;
 
 using Newtonsoft.Json;
 
@@ -17,6 +26,19 @@ namespace CollapseLauncher
 {
     public static class InnerLauncherConfig
     {
+        public enum BackdropType
+        {
+            Mica,
+            DesktopAcrylic,
+            DefaultColor,
+        }
+
+        public static WindowsSystemDispatcherQueueHelper m_wsdqHelper;
+        public static BackdropType m_currentBackdrop;
+        public static MicaController m_micaController;
+        public static DesktopAcrylicController m_acrylicController;
+        public static SystemBackdropConfiguration m_configurationSource;
+
         public static IntPtr m_windowHandle;
         public static AppWindow m_AppWindow;
         public static OverlappedPresenter m_presenter;

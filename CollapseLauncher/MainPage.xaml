@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -13,7 +14,7 @@
         <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
-        <Grid Visibility="Collapsed">
+        <Grid x:Name="Background" Visibility="Collapsed">
             <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
             <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.40"/>
         </Grid>
@@ -46,12 +47,12 @@
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Game region will be changed. Do you want to continue?" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
+                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
                                         <Button x:Name="ChangeRegionBtn" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
                                             <Button.Content>
                                                 <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
                                                     <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
-                                                    <TextBlock >Yes, Change It</TextBlock>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}">Yes, Change It</TextBlock>
                                                 </Grid>
                                             </Button.Content>
                                         </Button>
@@ -73,7 +74,7 @@
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Content="Launcher" Tag="launcher"/>
+                <!--<NavigationViewItem Icon="Home" Content="{x:Bind helper:Locale.Lang._HomePage.PageTitle}" Tag="launcher"/>-->
             </NavigationView.MenuItems>
 
             <Grid Margin="0,0,0,0">
@@ -88,7 +89,7 @@
                 <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                        <TextBlock x:Name="LoadingTitle" Text="Loading Region" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                         <TextBlock x:Name="LoadingFooter" Text=""
                                    Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0"
