@@ -28,7 +28,7 @@ namespace CollapseLauncher.Pages
         int RepairedFilesCount;
 
         int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
-        int MultipleDownloadSizeStart = 10 << 20;
+        int MultipleDownloadSizeStart = 4 << 20;
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
@@ -116,9 +116,7 @@ namespace CollapseLauncher.Pages
                 FileURL = GameBaseURL + Path.GetDirectoryName(input.N).Replace('\\', '/') + $"/{input.RN}";
 
             if (input.S == 0)
-            {
                 RepairFileInfo.Create();
-            }
             else
             {
                 http.DownloadProgress += GenericFilesDownloadProgress;
