@@ -58,8 +58,8 @@ namespace CollapseLauncher
                         LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
                     }
                 }
-                // Delay for 15 mins
-                await Task.Delay(900 * 1000);
+                // Delay for 1 hour
+                await Task.Delay(3600 * 1000);
             }
         }
 
