@@ -23,7 +23,7 @@ using static Hi3Helper.Locale;
 namespace CollapseLauncher
 {
     public enum DownloadType { Update, FirstInstall, PreDownload }
-    internal class InstallManagement : HttpClientHelper
+    internal partial class InstallManagement : HttpClientHelper
     {
         public event EventHandler<InstallManagementStatus> InstallStatusChanged;
         public event EventHandler<InstallManagementProgress> InstallProgressChanged;
@@ -33,6 +33,9 @@ namespace CollapseLauncher
 
         private InstallManagementStatus InstallStatus;
         private InstallManagementProgress InstallProgress;
+        private DeltaPatchProperty PatchProp;
+        private PresetConfigClasses SourceProfile;
+        private UIElement Content;
 
         private DownloadType ModeType;
         private CancellationToken Token;
@@ -51,6 +54,7 @@ namespace CollapseLauncher
         private bool CanDeleteZip = true;
         private bool CanSkipVerif = false;
         private bool CanSkipExtract = false;
+        private bool CanDeltaPatch = false;
 
         private Stopwatch DownloadStopwatch;
 
@@ -67,12 +71,14 @@ namespace CollapseLauncher
         private List<DownloadAddressProperty> DownloadProperty;
         private GenshinDispatchHelper DispatchReader;
 
-        public InstallManagement(DownloadType downloadType, string GameDirPath, int downloadThread,
+        public InstallManagement(UIElement Content, DownloadType downloadType, PresetConfigClasses SourceProfile, string GameDirPath, int downloadThread,
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
             string GameVerString = "", string DispatchKey = null, int RegionID = 0,
             string ExecutablePrefix = "BH3")
         {
+            this.Content = Content;
+            this.SourceProfile = SourceProfile;
             this.ModeType = downloadType;
             this.DownloadThread = downloadThread;
             this.ExtractionThread = extractionThread;
@@ -85,6 +91,8 @@ namespace CollapseLauncher
             this.DispatchServerID = RegionID;
             this.ExecutablePrefix = ExecutablePrefix;
 
+            this.SourceProfile.ActualGameDataLocation = GameDirPath;
+
             ApplyParameter();
         }
 
@@ -93,6 +101,19 @@ namespace CollapseLauncher
             CanDeleteZip = !File.Exists(Path.Combine(GameDirPath, "@NoDeleteZip"));
             CanSkipVerif = File.Exists(Path.Combine(GameDirPath, "@NoVerification"));
             CanSkipExtract = File.Exists(Path.Combine(GameDirPath, "@NoExtraction"));
+            CanDeltaPatch = CheckDeltaPatchUpdate();
+        }
+
+        private bool CheckDeltaPatchUpdate()
+        {
+            string[] GamePaths = Directory.GetFiles(this.GameDirPath, "*.patch", SearchOption.TopDirectoryOnly);
+            if (GamePaths.Count() == 0) return false;
+
+            PatchProp = new DeltaPatchProperty(GamePaths.First());
+            if (PatchProp.ProfileName != this.SourceProfile.ProfileName) return false;
+            if (this.ModeType != DownloadType.Update) return false;
+
+            return true;
         }
 
         public void AddDownloadProperty(string URL, string OutputPath, string OutputDir, string RemoteHash, long RemoteRequiredSize) => DownloadProperty.Add(new DownloadAddressProperty
@@ -120,6 +141,16 @@ namespace CollapseLauncher
 
         public async Task StartDownloadAsync()
         {
+            if (CanDeltaPatch)
+            {
+                switch (await Dialog_DeltaPatchFileDetected(Content, PatchProp.SourceVer, PatchProp.TargetVer))
+                {
+                    case ContentDialogResult.None:
+                        throw new TaskCanceledException();
+                }
+                return;
+            }
+
             DownloadStopwatch = Stopwatch.StartNew();
             CountTotalToDownload = DownloadProperty.Count;
             // bool IsPerFile = DownloadProperty.Count > 1;
@@ -179,6 +210,7 @@ namespace CollapseLauncher
 
         public async Task<bool> StartVerificationAsync(UIElement Content)
         {
+            if (CanDeltaPatch) return false;
             DownloadAddressProperty VerificationResult = await Task.Run(() => StartVerification());
 
             if (VerificationResult != null)
@@ -332,12 +364,19 @@ namespace CollapseLauncher
         {
             DownloadStopwatch = Stopwatch.StartNew();
             DownloadLocalSize = 0;
-            DownloadRemoteSize = DownloadProperty.Sum(x => CalculateUncompressedSize(ref x));
 
             CountCurrentDownload = 0;
+
+            if (CanDeltaPatch && ModeType == DownloadType.Update)
+            {
+                RunPatch();
+                return;
+            }
+
             foreach (DownloadAddressProperty prop in
                 CanSkipExtract ? new List<DownloadAddressProperty>() : DownloadProperty)
             {
+                DownloadRemoteSize = DownloadProperty.Sum(x => CalculateUncompressedSize(ref x));
                 SevenZipTool ExtractTool = new SevenZipTool();
                 CountCurrentDownload++;
                 InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
@@ -353,7 +392,16 @@ namespace CollapseLauncher
                 if (CanDeleteZip)
                     File.Delete(prop.Output);
             }
-        
+        }
+
+        private void RunPatch()
+        {
+            CountCurrentDownload = 1;
+            CountTotalToDownload = 1;
+
+            StartPreparation();
+            RepairIngredients(VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
+            StartConversion();
         }
 
         long LastSize = 0;
@@ -398,7 +446,8 @@ namespace CollapseLauncher
                 StashOldBlock();
             });
 
-            await PostInstallVerification(Content);
+            if (!CanDeltaPatch)
+                await PostInstallVerification(Content);
         }
 
         private long GetHdiffSize(in IEnumerable<string> List)
@@ -871,6 +920,29 @@ namespace CollapseLauncher
 
         private void UpdateProgress(InstallManagementProgress e) => InstallProgressChanged?.Invoke(this, e);
         private void UpdateStatus(InstallManagementStatus e) => InstallStatusChanged?.Invoke(this, e);
+
+        public class DeltaPatchProperty
+        {
+            public DeltaPatchProperty(string PatchFile)
+            {
+                ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(PatchFile).Split('_');
+                this.MD5hash = strings[5];
+                this.ZipHash = strings[4];
+                this.ProfileName = strings[0];
+                this.SourceVer = strings[1];
+                this.TargetVer = strings[2];
+                this.PatchCompr = strings[3];
+                this.PatchPath = PatchFile;
+            }
+
+            public string ZipHash { get; set; }
+            public string MD5hash { get; set; }
+            public string ProfileName { get; set; }
+            public string SourceVer { get; set; }
+            public string TargetVer { get; set; }
+            public string PatchCompr { get; set; }
+            public string PatchPath { get; set; }
+        }
     }
 
     public class InstallManagementStatus

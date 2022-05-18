@@ -137,6 +137,9 @@ namespace CollapseLauncher
             if (type == BackdropType.DesktopAcrylic)
                 if (TrySetAcrylicBackdrop())
                     m_currentBackdrop = type;
+
+            if (m_currentBackdrop == BackdropType.DefaultColor)
+                LogWriteLine("Your Windows doesn't support Mica/Acrylic SystemBackdrop yet!");
         }
 
         bool TrySetMicaBackdrop()

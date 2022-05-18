@@ -98,7 +98,7 @@ namespace CollapseLauncher.Pages
                 {
                     UseShellExecute = true,
                     FileName = "explorer.exe",
-                    Arguments = AppDataFolder
+                    Arguments = AppGameFolder
                 }
             }.Start();
         }

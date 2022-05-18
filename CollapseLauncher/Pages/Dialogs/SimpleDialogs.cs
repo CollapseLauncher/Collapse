@@ -18,6 +18,16 @@ namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
+        public static async Task<ContentDialogResult> Dialog_DeltaPatchFileDetected(UIElement Content, string sourceVer, string targetVer) =>
+               await SpawnDialog(
+                       Lang._Dialogs.DeltaPatchDetectedTitle,
+                       string.Format(Lang._Dialogs.DeltaPatchDetectedSubtitle, sourceVer, targetVer),
+                       Content,
+                       Lang._Misc.Cancel,
+                       Lang._Misc.Yes,
+                       null,
+                       ContentDialogButton.Primary
+                   );
         public static async Task<ContentDialogResult> Dialog_PreDownloadPackageVerified(UIElement Content, string hash) =>
                await SpawnDialog(
                        Lang._Dialogs.PreloadVerifiedTitle,

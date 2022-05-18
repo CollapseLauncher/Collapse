@@ -196,7 +196,11 @@ namespace Hi3Helper.Data
             {
                 LogWriteLine($"I/O Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}", LogType.Warning, true);
                 if (IsLastRetry)
+                {
+                    ThreadProperty.LocalStream.Dispose();
+                    ThreadProperty.IsDownloading = false;
                     throw new IOException($"ThreadID: {ThreadProperty.ThreadID} has exceeded Max. Retry: {ThreadProperty.CurrentRetry - 1}/{_ThreadMaxRetry}. CANCELLING!!", ex);
+                }
 
                 return false;
             }
@@ -204,7 +208,11 @@ namespace Hi3Helper.Data
             {
                 LogWriteLine($"Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}", LogType.Warning, true);
                 if (IsLastRetry)
+                {
+                    ThreadProperty.LocalStream.Dispose();
+                    ThreadProperty.IsDownloading = false;
                     throw new HttpRequestException($"ThreadID: {ThreadProperty.ThreadID} has exceeded Max. Retry: {ThreadProperty.CurrentRetry - 1}/{_ThreadMaxRetry}. CANCELLING!!", ex);
+                }
 
                 return false;
             }

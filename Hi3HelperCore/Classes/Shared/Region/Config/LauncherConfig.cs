@@ -23,6 +23,8 @@ namespace Hi3Helper.Shared.Region
         public static Vector3 Shadow16 = new Vector3(0, 0, 16);
         public static Vector3 Shadow32 = new Vector3(0, 0, 32);
         public static Vector3 Shadow48 = new Vector3(0, 0, 48);
+        // Format in milliseconds
+        public static int RefreshTime = 250;
         public enum AppLanguage { EN, ID }
 
         const string SectionName = "app";
@@ -41,8 +43,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppLangFolder = Path.Combine(AppFolder, @"Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
-        public static string AppGameImgFolder = Path.Combine(AppDataFolder, "img");
-        public static string AppGameLogsFolder = Path.Combine(AppDataFolder, "logs");
+        public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
+        public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
         public static string AppNotifURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/notification_{0}.json";
@@ -117,6 +119,8 @@ namespace Hi3Helper.Shared.Region
             IsFirstInstall = !(Directory.Exists(GetAppConfigValue("GameFolder").ToString())
                 && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()))
                 || string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
+
+            AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
         }
 
         private static void InitScreenResSettings()

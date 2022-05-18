@@ -16,7 +16,6 @@ namespace Hi3Helper.Data
         {
             this._DownloadedSize = 0;
             this._LastContinuedSize = 0;
-            this._DownloadState = State.Merging;
             this._Stopwatch = Stopwatch.StartNew();
 
             byte[] Buffer = new byte[_MergeBufferSize];
@@ -36,6 +35,7 @@ namespace Hi3Helper.Data
                     {
                         while ((Read = SliceStream.Read(Buffer, 0, Buffer.Length)) > 0)
                         {
+                            this._DownloadState = State.Merging;
                             _ThreadToken.ThrowIfCancellationRequested();
                             _DownloadedSize += Read;
                             _LastContinuedSize += Read;

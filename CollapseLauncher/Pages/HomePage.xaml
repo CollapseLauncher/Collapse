@@ -39,39 +39,68 @@
                             <PopupThemeTransition/>
                         </InfoBar.Transitions>
                         <InfoBar.Content>
-                            <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed" Margin="0,0,38,24">
-                                <Grid.ChildrenTransitions>
-                                    <PopupThemeTransition/>
-                                </Grid.ChildrenTransitions>
-                                <Grid HorizontalAlignment="Stretch">
-                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                                    <TextBlock x:Name="ProgressPreStatusSubtitle" Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" FontSize="12" HorizontalAlignment="Left"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,38,0">
+                                <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
+                                    <Grid.ChildrenTransitions>
+                                        <PopupThemeTransition/>
+                                    </Grid.ChildrenTransitions>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                        <TextBlock x:Name="ProgressPreStatusSubtitle" Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" FontSize="12" HorizontalAlignment="Left"/>
+                                                    </StackPanel>
+                                                    <TextBlock x:Name="ProgressPreStatusFooter" Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" FontSize="12" FontWeight="Bold" Margin="0,4,0,0"/>
                                                 </StackPanel>
-                                                <TextBlock x:Name="ProgressPreStatusFooter" Text="{x:Bind helper:Locale.Lang._Misc.SpeedPlaceholder}" FontSize="12" FontWeight="Bold" Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                                                <TextBlock Text="{Binding Value, ElementName=progressPreBar}" FontWeight="Bold" FontSize="12"/>
-                                                <TextBlock Text="%" FontWeight="Bold" FontSize="12"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="2">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="12"/>
-                                                <TextBlock x:Name="ProgressPreTimeLeft" Text="-" HorizontalAlignment="Right" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                        </Grid>
-                                        <ProgressBar x:Name="progressPreBar" Value="0" IsIndeterminate="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Maximum="100" Margin="0,8,0,16"/>
-                                        <Button x:Name="PauseDownloadPreBtn" Click="CancelInstallationProcedure" Content="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Visible"/>
-                                        <Button x:Name="ResumeDownloadPreBtn" Content="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" Click="PredownloadDialog" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
-                                    </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                                    <TextBlock Text="{Binding Value, ElementName=progressPreBar}" FontWeight="Bold" FontSize="12"/>
+                                                    <TextBlock Text="%" FontWeight="Bold" FontSize="12"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.TimeRemain}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="12"/>
+                                                    <TextBlock x:Name="ProgressPreTimeLeft" Text="-" HorizontalAlignment="Right" FontWeight="Bold" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                            </Grid>
+                                            <ProgressBar x:Name="progressPreBar" Value="0" IsIndeterminate="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Maximum="100" Margin="0,8,0,16"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                                <Grid x:Name="ProgressPrePerFileStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed" Margin="0,0,0,24">
+                                    <Grid.ChildrenTransitions>
+                                        <PopupThemeTransition/>
+                                    </Grid.ChildrenTransitions>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock x:Name="ProgressPrePerFileStatusFooter" Text="Downloading" FontSize="12" FontWeight="Bold"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                                    <TextBlock Text="{Binding Value, ElementName=progressPrePerFileBar}" FontWeight="Bold" FontSize="12"/>
+                                                    <TextBlock Text="%" FontWeight="Bold" FontSize="12"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock x:Name="ProgressPrePerFileStatusSubtitle" Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" FontSize="12" HorizontalAlignment="Right"/>
+                                                </StackPanel>
+                                            </Grid>
+                                            <ProgressBar x:Name="progressPrePerFileBar" Value="0" IsIndeterminate="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Maximum="100" Margin="0,8,0,16"/>
+                                            <Button x:Name="PauseDownloadPreBtn" Click="CancelInstallationProcedure" Content="{x:Bind helper:Locale.Lang._HomePage.PauseDownloadBtn}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Visible"/>
+                                            <Button x:Name="ResumeDownloadPreBtn" Content="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" Click="PredownloadDialog" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </StackPanel>
                         </InfoBar.Content>
                         <InfoBar.ActionButton>
                             <Button x:Name="DownloadPreBtn" Style="{StaticResource AccentButtonStyle}" Visibility="Visible" Click="PredownloadDialog">

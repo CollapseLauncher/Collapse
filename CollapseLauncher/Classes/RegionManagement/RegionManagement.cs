@@ -33,6 +33,8 @@ namespace CollapseLauncher
             loadRegionComplete = false;
             CurrentRegion = ConfigStore.Config[regionIndex];
             previousTag = "launcher";
+            NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.IsSettingsVisible = false;
             LoadGameRegionFile();
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "");

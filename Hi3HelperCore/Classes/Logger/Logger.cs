@@ -22,11 +22,9 @@ namespace Hi3Helper
 
             if (enableLog)
             {
-                logdir = Path.Combine(
-                    string.IsNullOrEmpty(defaultLogLocation) ?
+                logdir = string.IsNullOrEmpty(defaultLogLocation) ?
                         Directory.GetCurrentDirectory()
-                      : defaultLogLocation,
-                    "logs");
+                      : defaultLogLocation;
 
                 if (!Directory.Exists(logdir))
                     Directory.CreateDirectory(logdir);
