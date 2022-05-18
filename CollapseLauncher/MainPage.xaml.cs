@@ -35,7 +35,7 @@ namespace CollapseLauncher
             try
             {
                 LoadGamePreset();
-                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {App.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
@@ -295,16 +295,6 @@ namespace CollapseLauncher
         public void LoadConfig()
         {
             ComboBoxGameRegion.ItemsSource = GameConfigName;
-        }
-
-        private string GetVersionString()
-        {
-            OperatingSystem osDetail = Environment.OSVersion;
-            ushort[] buildNumber = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
-            if (buildNumber[2] >= 22000)
-                return $"Windows 11 (build: {buildNumber[2]}.{buildNumber[3]})";
-            else
-                return $"Windows {buildNumber[0]} (build: {buildNumber[2]}.{buildNumber[3]})";
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
