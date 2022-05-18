@@ -16,6 +16,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 using static Hi3Helper.Data.ConverterTool;
@@ -59,13 +60,13 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> SourceFileRemote;
             List<FilePropertiesRemote> TargetFileRemote;
             ConvertSw = Stopwatch.StartNew();
-            ConvertStatus = "Preparing Ingredients";
+            ConvertStatus = Lang._InstallConvert.Step3Title;
 
             string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
 
             using (MemoryStream buffer = new MemoryStream())
             {
-                ConvertDetail = "Fetching Source API";
+                ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
                 await DownloadFileAsync(SourceBaseURL + "index.json", buffer, new CancellationToken());
                 DownloadProgress -= FetchIngredientsAPI_Progress;
@@ -73,7 +74,7 @@ namespace CollapseLauncher
             }
             using (MemoryStream buffer = new MemoryStream())
             {
-                ConvertDetail = "Fetching Target API";
+                ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
                 await DownloadFileAsync(TargetBaseURL + "index.json", buffer, new CancellationToken());
                 DownloadProgress -= FetchIngredientsAPI_Progress;
@@ -97,7 +98,7 @@ namespace CollapseLauncher
             string InputPath;
             string OutputPath;
 
-            ConvertStatus = "Preparing Ingredients";
+            ConvertStatus = Lang._InstallConvert.Step3Title;
 
             foreach (FileProperties Entry in FileManifest)
             {
@@ -137,11 +138,11 @@ namespace CollapseLauncher
             string LocalHash;
             string OutputPath;
 
-            ConvertStatus = "Verifying Ingredients";
+            ConvertStatus = Lang._InstallConvert.Step3Title2;
             foreach (FileProperties Entry in FileManifest)
             {
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                ConvertDetail = $"Checking: {Entry.FileName} ({Entry.FileSizeStr})";
+                ConvertDetail = string.Format("{0}: {1}", Lang._Misc.CheckingFile, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
                 UpdateProgress(CurRead, TotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
                 if (File.Exists(OutputPath))
                 {
@@ -246,8 +247,8 @@ namespace CollapseLauncher
         public async Task StartDownloadRecipe()
         {
             ResetSw();
-            ConvertStatus = "Downloading Recipe";
-            ConvertDetail = $"Downloading recipe for conversion from {SourceProfile.ZoneName} to {TargetProfile.ZoneName}";
+            ConvertStatus = Lang._InstallConvert.CookbookDownloadTitle;
+            ConvertDetail = string.Format(Lang._InstallConvert.CookbookDownloadSubtitle, SourceProfile.ZoneName, TargetProfile.ZoneName);
 
             if (File.Exists(CookbookPath))
                 if (new FileInfo(CookbookPath).Length == GetContentLength(CookbookURL))
@@ -275,14 +276,14 @@ namespace CollapseLauncher
             string InputURL;
             RepairTotalSize = BrokenFile.Sum(x => x.FileSize);
 
-            ConvertStatus = "Repairing Ingredients";
+            ConvertStatus = Lang._InstallConvert.Step3Title1;
             foreach (FileProperties Entry in BrokenFile)
             {
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
                 InputURL = SourceBaseURL + Entry.FileName;
 
-                ConvertDetail = $"Downloading: {Entry.FileName} ({Entry.FileSizeStr})";
+                ConvertDetail = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
 
@@ -427,7 +428,7 @@ namespace CollapseLauncher
         {
             if (!Directory.Exists(e.FullPath))
             {
-                ConvertDetail = $"Converting: {e.Name}";
+                ConvertDetail = string.Format(Lang._Misc.Converting, e.Name);
                 UpdateProgress(ConvertRead, ConvertTotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
                 if (lastName != null)
                     ConvertRead += new FileInfo(lastName).Length;
@@ -480,16 +481,16 @@ namespace CollapseLauncher
             private double Unzeroed(double i) => i == 0 ? 1 : i;
             public string ProgressStatus => _StatusMsg;
             public string ProgressDetail => string.Format(
-                "[{0}] ({1})\r\n{2}...",
-                UseCountUnit ? $"{StartCount}/{EndCount}" :
-                               $"{SummarizeSizeSimple(StartSize)}/{SummarizeSizeSimple(EndSize)}",
-                UseCountUnit ? $"{Percentage}%" :
-                               string.Format("{0}% {1}/s - {2} left",
-                                             Percentage,
-                                             SummarizeSizeSimple(ProgressSpeed),
-                                             string.Format("{0:%h}h{0:%m}m{0:%s}s", RemainingTime)),
-                _DetailMsg
-                );
+                            "[{0}] ({1})\r\n{2}...",
+                            UseCountUnit ? string.Format(Lang._Misc.PerFromTo, StartCount, EndCount) :
+                                           string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(StartSize), SummarizeSizeSimple(EndSize)),
+                            UseCountUnit ? $"{Percentage}%" :
+                                           string.Format("{0}% {1} - {2}",
+                                                         Percentage,
+                                                         string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(ProgressSpeed)),
+                                                         string.Format(Lang._Misc.TimeRemainHMSFormat, RemainingTime)),
+                            _DetailMsg
+                            );
         }
     }
 }

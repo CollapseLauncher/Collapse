@@ -9,6 +9,7 @@
             public class LangInstallManagement
             {
                 public string IntegrityCheckTitle { get; set; } = LangFallback?._InstallMgmt.IntegrityCheckTitle;
+                public string PreparePatchTitle { get; set; } = LangFallback?._InstallMgmt.PreparePatchTitle;
                 public string AddtDownloadTitle { get; set; } = LangFallback?._InstallMgmt.AddtDownloadTitle;
             }
         }

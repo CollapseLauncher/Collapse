@@ -16,6 +16,7 @@
                 public string TimeRemainHMSFormat { get; set; } = LangFallback?._Misc.TimeRemainHMSFormat;
                 public string TimeRemainHMSFormatPlaceholder { get; set; } = LangFallback?._Misc.TimeRemainHMSFormatPlaceholder;
                 public string Speed { get; set; } = LangFallback?._Misc.Speed;
+                public string SpeedPerSec { get; set; } = LangFallback?._Misc.SpeedPerSec;
                 public string SpeedPlaceholder { get; set; } = LangFallback?._Misc.SpeedPlaceholder;
                 public string PerFromTo { get; set; } = LangFallback?._Misc.PerFromTo;
                 public string PerFromToPlaceholder { get; set; } = LangFallback?._Misc.PerFromToPlaceholder;
@@ -55,11 +56,16 @@
                 public string Idle { get; set; } = LangFallback?._Misc.Idle;
                 public string Cancelled { get; set; } = LangFallback?._Misc.Cancelled;
                 public string Extracting { get; set; } = LangFallback?._Misc.Extracting;
+                public string Converting { get; set; } = LangFallback?._Misc.Converting;
                 public string Patching { get; set; } = LangFallback?._Misc.Patching;
                 public string Verifying { get; set; } = LangFallback?._Misc.Verifying;
                 public string Completed { get; set; } = LangFallback?._Misc.Completed;
                 public string Skipped { get; set; } = LangFallback?._Misc.Skipped;
                 public string NotRunning { get; set; } = LangFallback?._Misc.NotRunning;
+                public string MovingFile { get; set; } = LangFallback?._Misc.MovingFile;
+                public string CheckingFile { get; set; } = LangFallback?._Misc.CheckingFile;
+                public string RepairingFile { get; set; } = LangFallback?._Misc.RepairingFile;
+                public string ApplyingPatch { get; set; } = LangFallback?._Misc.ApplyingPatch;
             }
         }
         #endregion

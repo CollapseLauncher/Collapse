@@ -44,16 +44,17 @@
   // HomePage Content
   "_HomePage": {
     "PageTitle": "Launcher",
-    "PreloadTitle": "Pre-Download is Available!",
-    "PreloadNotifTitle": "Pre-Download package for v{0} is available! You can download the package while playing the game at the same time.",
-    "PreloadNotifSubtitle": "Pre-Download package for v{0} is available! You can download the package while playing the game at the same time.",
-    "PreloadNotifCompleteTitle": "Pre-Download package has been downloaded!",
-    "PreloadNotifCompleteSubtitle": "You have downloaded Pre-Download package for v{0}!",
+    "PreloadTitle": "Preload is Available!",
+    "PreloadNotifTitle": "Preload package for v{0} is available! You can download the package while playing the game at the same time.",
+    "PreloadNotifSubtitle": "Preload package for v{0} is available! You can download the package while playing the game at the same time.",
+    "PreloadNotifCompleteTitle": "Preload package has been downloaded!",
+    "PreloadNotifCompleteSubtitle": "You have downloaded preload package for v{0}!",
     "PreloadNotifIntegrityCheckBtn": "Check Integrity",
     "StartBtn": "Start Game",
     "StartBtnRunning": "Game is Running",
     "VerifyingPkgTitle": "Verifying Package",
-    "PreloadDownloadNotifbarTitle": "Downloading Pre-Download",
+    "PreloadDownloadNotifbarTitle": "Downloading Preload",
+    "PreloadDownloadNotifbarVerifyTitle": "Verifying Preload",
     "PreloadDownloadNotifbarSubtitle": "Necessary Package",
     "UpdatingVoicePack": "Updating Voice Pack",
     "InstallBtn": "Install Game",
@@ -62,7 +63,7 @@
     "ResumeDownloadBtn": "Resume Download",
     "PauseCancelDownloadBtn": "Pause/Cancel Download",
     "PauseCancelBtn": "Pause/Cancel",
-    "DownloadBtn": "Pause Download",
+    "DownloadBtn": "Download Preload",
     "GameSettingsBtn": "Game Settings",
     "GameSettings_Panel1": "Quick Settings",
     "GameSettings_Panel1OpenGameFolder": "Open Game Folder",
@@ -276,6 +277,7 @@
     "TimeRemainHMSFormat": "{0:%h}h{0:%m}m{0:%s}s left",
     "TimeRemainHMSFormatPlaceholder": "--h--m--s left",
     "Speed": "Speed: {0}/s",
+    "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Speed: - /s",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
@@ -321,15 +323,22 @@
     "Idle": "Idle",
     "Cancelled": "Cancelled",
     "Extracting": "Extracting",
+    "Converting": "Converting",
     "Patching": "Patching",
     "Verifying": "Verifying",
     "Completed": "Completed",
     "Skipped": "Skipped",
-    "NotRunning": "Not Running"
+    "NotRunning": "Not Running",
+    "MovingFile": "Moving File",
+    "CheckingFile": "Checking File",
+    "RepairingFile": "Repairing File",
+    "ApplyingPatch": "Applying Patch"
   },
 
   // Dialogs Content
   "_Dialogs": {
+    "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
+    "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember, you might still need to download some files in-game as usual.\r\n\r\nDo you want to continue?",
     "PreloadVerifiedTitle": "Pre-Download Package is Verified!",
     "PreloadVerifiedSubtitle": "Your Pre-Download Package is Ready and Verified!\r\nHash: {0}",
     "LocateInstallTitle": "Locating Installation Folder",
@@ -347,7 +356,7 @@
     "RepairCompletedSubtitle": "{0} file(s) have been repaired.",
     "RepairCompletedSubtitleNoBroken": "No files are broken.",
     "ExtremeGraphicsSettingsWarnTitle": "Very High Setting Selected!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting to Very High!\r\nRemember that Very High setting is basically 2x Render Scale with MSAA Enabled and it's VERY UNOPTIMIZED!\r\n\r\nAre you sure to use this setting?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting to Very High!\r\nRemember that Very High setting is basically 2x Render Scale with MSAA Enabled and it's VERY UNOPTIMIZED! (unless you have a NASA Super Computer to run it).\r\n\r\nAre you sure to use this setting?",
     "ExistingInstallTitle": "Existing Installation is Detected!",
     "ExistingInstallSubtitle": "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\nIt's recommended to migrate the game to CollapseLauncher.\r\nHowever, you can still use Official Launcher to start the game.\r\n\r\nDo you want to continue?",
     "ExistingInstallBHI3LTitle": "Existing Installation on BetterHI3Launcher is Detected!",
@@ -377,6 +386,7 @@
   // InstallMgmt Content
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Integrity Check",
+    "PreparePatchTitle": "Preparing Patch",
     "AddtDownloadTitle": "Addt. Download: {0}/{1}"
   },
 
@@ -387,6 +397,8 @@
     "Step2Title": "Downloading Recipe",
     "Step2Subtitle": "Fetching API...",
     "Step3Title": "Preparing Ingredients",
+    "Step3Title1": "Repairing Ingredients",
+    "Step3Title2": "Verifying Ingredients",
     "Step3Subtitle": "Preparing Ingredients",
     "Step4Title": "Conversion Task",
     "Step4Subtitle": "Starting Conversion...",
@@ -402,7 +414,9 @@
     "SelectDialogSubtitle": "Note: This conversion will break the integration with default launcher if you installed this game by migrating it.\r\n\r\nPlease choose your source and target game to be converted:",
     "SelectDialogSubtitleNotInstalled": "Source game isn't Installed! Please choose another game.",
     "ConvertSuccessTitle": "Conversion Successful",
-    "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!"
+    "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
+    "CookbookDownloadTitle": "Downloading Recipe",
+    "CookbookDownloadSubtitle": "Downloading recipe for conversion from {0} to {1}"
   },
 
   // InstallMigrateSteam Content

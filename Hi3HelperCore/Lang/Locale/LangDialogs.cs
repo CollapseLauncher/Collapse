@@ -8,6 +8,8 @@
             public LangDialogs _Dialogs { get; set; } = LangFallback?._Dialogs;
             public class LangDialogs
             {
+                public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
+                public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string LocateInstallTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
                 public string LocateInstallSubtitle { get; set; } = LangFallback?._Dialogs.LocateInstallSubtitle;

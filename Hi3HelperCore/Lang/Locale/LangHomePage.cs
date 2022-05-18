@@ -20,6 +20,7 @@
                 public string VerifyingPkgTitle { get; set; } = LangFallback?._HomePage.VerifyingPkgTitle;
                 public string VerifyingPkgSubtitle { get; set; } = LangFallback?._HomePage.VerifyingPkgSubtitle;
                 public string PreloadDownloadNotifbarTitle { get; set; } = LangFallback?._HomePage.PreloadDownloadNotifbarTitle;
+                public string PreloadDownloadNotifbarVerifyTitle { get; set; } = LangFallback?._HomePage.PreloadDownloadNotifbarVerifyTitle;
                 public string PreloadDownloadNotifbarSubtitle { get; set; } = LangFallback?._HomePage.PreloadDownloadNotifbarSubtitle;
                 public string UpdatingVoicePack { get; set; } = LangFallback?._HomePage.UpdatingVoicePack;
                 public string InstallBtn { get; set; } = LangFallback?._HomePage.InstallBtn;

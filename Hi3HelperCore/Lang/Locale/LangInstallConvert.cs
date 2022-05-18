@@ -13,6 +13,8 @@
                 public string Step2Title { get; set; } = LangFallback?._InstallConvert.Step2Title;
                 public string Step2Subtitle { get; set; } = LangFallback?._InstallConvert.Step2Subtitle;
                 public string Step3Title { get; set; } = LangFallback?._InstallConvert.Step3Title;
+                public string Step3Title1 { get; set; } = LangFallback?._InstallConvert.Step3Title1;
+                public string Step3Title2 { get; set; } = LangFallback?._InstallConvert.Step3Title2;
                 public string Step3Subtitle { get; set; } = LangFallback?._InstallConvert.Step3Subtitle;
                 public string Step4Title { get; set; } = LangFallback?._InstallConvert.Step4Title;
                 public string Step4Subtitle { get; set; } = LangFallback?._InstallConvert.Step4Subtitle;
@@ -29,6 +31,8 @@
                 public string SelectDialogSubtitleNotInstalled { get; set; } = LangFallback?._InstallConvert.SelectDialogSubtitleNotInstalled;
                 public string ConvertSuccessTitle { get; set; } = LangFallback?._InstallConvert.ConvertSuccessTitle;
                 public string ConvertSuccessSubtitle { get; set; } = LangFallback?._InstallConvert.ConvertSuccessSubtitle;
+                public string CookbookDownloadTitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadTitle;
+                public string CookbookDownloadSubtitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadSubtitle;
             }
         }
         #endregion
