@@ -177,7 +177,7 @@ namespace CollapseLauncher
         private QuantizedColor GetColorFromPaletteByTheme(byte paletteOrder = 0, bool alwaysLight = true) =>
             new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
         private QuantizedColor GetColorFromPaletteByThemeLow(byte paletteOrder = 0, bool alwaysLight = true) =>
-            new ColorThief().GetPalette(ThumbnailBitmap, 50, 50).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
+            new ColorThief().GetPalette(ThumbnailBitmap, 50, 100).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
         private QuantizedColor GetSingleColorPalette() => new ColorThief().GetColor(ThumbnailBitmap);
 
         private bool DownloadBackgroundImage()
