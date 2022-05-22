@@ -104,7 +104,7 @@ namespace CollapseLauncher
                         }
                         catch
                         {
-                            _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, false));
+                            _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
                         }
                     }
 
@@ -176,6 +176,8 @@ namespace CollapseLauncher
         private QuantizedColor GetColorFromPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap, 10)[paletteOrder];
         private QuantizedColor GetColorFromPaletteByTheme(byte paletteOrder = 0, bool alwaysLight = true) =>
             new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
+        private QuantizedColor GetColorFromPaletteByThemeLow(byte paletteOrder = 0, bool alwaysLight = true) =>
+            new ColorThief().GetPalette(ThumbnailBitmap, 50, 50).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
         private QuantizedColor GetSingleColorPalette() => new ColorThief().GetColor(ThumbnailBitmap);
 
         private bool DownloadBackgroundImage()
