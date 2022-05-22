@@ -96,6 +96,7 @@ namespace Hi3Helper.Shared.Region
         {
             IsFirstInstall = !File.Exists(AppConfigFile);
             InitScreenResSettings();
+
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);
 
@@ -120,7 +121,14 @@ namespace Hi3Helper.Shared.Region
                 && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()))
                 || string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
 
-            AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
+            try
+            {
+                AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
+            }
+            catch (ArgumentNullException)
+            {
+                IsFirstInstall = true;
+            }
         }
 
         private static void InitScreenResSettings()
