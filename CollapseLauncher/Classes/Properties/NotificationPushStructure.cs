@@ -38,8 +38,11 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public void EliminatePushList()
         {
-            AppPush.RemoveAll(x => AppPushIgnoreMsgIds.Any(y => x.MsgId == y));
-            RegionPush.RemoveAll(x => RegionPushIgnoreMsgIds.Any(y => x.MsgId == y));
+            if (AppPush != null || RegionPush != null)
+            {
+                AppPush.RemoveAll(x => AppPushIgnoreMsgIds.Any(y => x.MsgId == y));
+                RegionPush.RemoveAll(x => RegionPushIgnoreMsgIds.Any(y => x.MsgId == y));
+            }
         }
     }
 }

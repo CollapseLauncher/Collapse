@@ -58,6 +58,7 @@ namespace CollapseLauncher
 
         private async void PushRegionNotification(string RegionProfileName)
         {
+            if (InnerLauncherConfig.NotificationData.RegionPush == null) return;
             await Task.Run(() =>
             {
                 InnerLauncherConfig.NotificationData.EliminatePushList();

@@ -93,20 +93,44 @@ namespace CollapseLauncher
             }
         }
 
+        bool IsLoadNotifComplete = false;
         private async Task GetNotificationFeed()
         {
-            using (MemoryStream buffer = new MemoryStream())
+            try
             {
-                await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                    buffer, new CancellationToken(), null, null, false);
-                InnerLauncherConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
-                InnerLauncherConfig.LoadLocalNotificationData();
+                IsLoadNotifComplete = false;
+                InnerLauncherConfig.NotificationData = new NotificationPush();
+                CancellationTokenSource TokenSource = new CancellationTokenSource();
+                RunTimeoutCancel(TokenSource);
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
+                        buffer, TokenSource.Token, null, null, false);
+                    InnerLauncherConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
+                    IsLoadNotifComplete = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
+            }
+            InnerLauncherConfig.LoadLocalNotificationData();
+        }
+
+        private async void RunTimeoutCancel(CancellationTokenSource Token)
+        {
+            await Task.Delay(5000);
+            if (!IsLoadNotifComplete)
+            {
+                LogWriteLine("Cancel to load notification push! > 5 seconds", LogType.Error, true);
+                Token.Cancel();
             }
         }
 
         private async void PushAppNotification()
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
+            if (InnerLauncherConfig.NotificationData.AppPush == null) return;
             foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.AppPush)
             {
                 // Check for Close Action for certain MsgIds
@@ -261,6 +285,7 @@ namespace CollapseLauncher
             await HideLoadingPopup(false, "Loading", "Launcher API");
             LoadConfig();
             await GetAppNotificationPush();
+            // InnerLauncherConfig.NotificationData = new NotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
         }
