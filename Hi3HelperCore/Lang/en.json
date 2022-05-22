@@ -35,7 +35,7 @@
     "RegionLoadingTitle": "Loading Region",
     "RegionLoadingAPITitle1": "Loading",
     "RegionLoadingAPITitle2": "Launcher API",
-    "RegionLoadingSubtitleTimeOut": "Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...",
+    "RegionLoadingSubtitleTimeOut": "Loading Region {0} has timed-out (> {1} seconds). Retrying...",
     "RegionLoadingSubtitleTooLong": "It takes a bit longer than expected. Please ensure that your connection is stable.",
     "NavCtrlTitleSettings": "App Settings",
     "NotifNeverAsk": "Never show me this again"
