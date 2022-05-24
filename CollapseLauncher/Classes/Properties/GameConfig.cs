@@ -33,6 +33,7 @@ namespace CollapseLauncher
             DefaultColor,
         }
 
+        public static BackdropManagement m_backDrop;
         public static WindowsSystemDispatcherQueueHelper m_wsdqHelper;
         public static BackdropType m_currentBackdrop;
         public static MicaController m_micaController;

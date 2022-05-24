@@ -2,10 +2,16 @@
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Threading;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 using Windows.UI;
 
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
+
+using WinRT;
 
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -20,39 +26,68 @@ namespace CollapseLauncher
 {
     public partial class App : Application
     {
+
         public static bool IsAppKilled = false;
         public static bool IsGameRunning = false;
+
+        public static void Main(string[] args)
+        {
+#if PREVIEW
+            IsPreview = true;
+#endif
+            AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            InitializeConsole(true, AppGameLogsFolder);
+
+            try
+            {
+                InitAppPreset();
+                InitConsoleSetting();
+                Console.WriteLine($"App Version: {AppCurrentVersion} {(IsPreview ? "Preview" : "Stable")} Started!\r\nOS Version: {GetVersionString()}\r\nCurrent Username: {Environment.UserName}");
+                Console.WriteLine($"Initializing...", LogType.Empty);
+                
+                InitializeAppSettings();
+
+                ComWrappersSupport.InitializeComWrappers();
+                Start(new ApplicationInitializationCallback((p) =>
+                {
+                    SynchronizationContext.SetSynchronizationContext(
+                        new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread()));
+
+                    new App();
+                }));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}", LogType.Error, true);
+                Console.WriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
+                Console.ReadLine();
+            }
+        }
+
+        public static void InitializeAppSettings()
+        {
+            InitLog(true, AppGameLogsFolder);
+            TryParseLocalizations();
+            LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
+        }
 
         public App()
         {
             try
             {
-#if PREVIEW
-                IsPreview = true;
-#endif
-                AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
-                InitializeConsole(true, AppGameLogsFolder);
-                LogWriteLine($"Initializing...", LogType.Empty);
-
-                InitAppPreset();
-
-                InitializeConsole(true, AppGameLogsFolder);
-
-                InitConsoleSetting();
-                WriteLog($"App Version: {AppCurrentVersion} {(IsPreview ? "Preview" : "Stable")} Started! -> {GetVersionString()}", LogType.Scheme);
-                TryParseLocalizations();
-                LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
+                this.InitializeComponent();
 
                 InnerLauncherConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
                 InnerLauncherConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+                RequestedTheme = InnerLauncherConfig.CurrentRequestedAppTheme = InnerLauncherConfig.GetAppTheme();
 
-                RequestedTheme = (InnerLauncherConfig.CurrentRequestedAppTheme = InnerLauncherConfig.GetAppTheme());
-                this.InitializeComponent();
+                m_window = new MainWindow();
+                m_window.Activate();
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!!!\r\n{ex}\r\n\r\nPlease report this problem by open an issue in https://github.com/neon-nyan/CollapseLauncher/issues", LogType.Error, true);
+                LogWriteLine($"FATAL ERROR ON APP INITIALIZER LEVEL!!!\r\n{ex}", LogType.Error, true);
+                LogWriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
                 Console.ReadLine();
             }
         }
@@ -67,12 +102,6 @@ namespace CollapseLauncher
                 return $"Windows {buildNumber[0]} (build: {buildNumber[2]}.{buildNumber[3]})";
         }
 
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
-        {
-            m_window = new MainWindow();
-            m_window.Activate();
-        }
-
-        private Window m_window;
+        private MainWindow m_window;
     }
 }

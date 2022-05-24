@@ -19,7 +19,6 @@ using Microsoft.UI.Composition.SystemBackdrops;
 
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -56,51 +55,12 @@ namespace CollapseLauncher
             }
         }
     }
-    public sealed partial class MainWindow : Window
+
+    public class BackdropManagement
     {
-        public void SetThemeParameters()
-        {
-            switch (m_currentBackdrop)
-            {
-#if MICA
-                case BackdropType.Mica:
-                    {
-                        (Application.Current.Resources["PagesSolidAcrylicBrush"] as AcrylicBrush).TintOpacity = 0f;
-                        (Application.Current.Resources["PagesSolidAcrylicBrush"] as AcrylicBrush).TintLuminosityOpacity = 0f;
-                        (Application.Current.Resources["DialogAcrylicBrush"] as AcrylicBrush).TintOpacity = 0f;
-                        (Application.Current.Resources["DialogAcrylicBrush"] as AcrylicBrush).TintLuminosityOpacity = 0.75f;
-                        (Application.Current.Resources["NavigationBarBrush"] as AcrylicBrush).TintOpacity = 0f;
-                        (Application.Current.Resources["NavigationBarBrush"] as AcrylicBrush).TintLuminosityOpacity = 0f;
-                    }
-                    break;
-#endif
-                case BackdropType.DefaultColor:
-                    {
-                        if (CurrentRequestedAppTheme == ApplicationTheme.Dark)
-                        {
-                            Application.Current.Resources["NavigationBarBrush"] = new AcrylicBrush
-                            {
-                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
-                                TintOpacity = 1f,
-                                TintLuminosityOpacity = 0f
-                            };
-                            Application.Current.Resources["PagesSolidAcrylicBrush"] = new AcrylicBrush
-                            {
-                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
-                                TintOpacity = 1f,
-                                TintLuminosityOpacity = 0f
-                            };
-                            Application.Current.Resources["DialogAcrylicBrush"] = new AcrylicBrush
-                            {
-                                TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
-                                TintOpacity = 0.4f,
-                                TintLuminosityOpacity = 0.5f
-                            };
-                        }
-                    }
-                    break;
-            }
-        }
+        public Window window { get; set; }
+
+        public BackdropManagement(Window window) => this.window = window;
 
         public void SetBackdrop(BackdropType type)
         {
@@ -123,8 +83,8 @@ namespace CollapseLauncher
                 m_acrylicController.Dispose();
                 m_acrylicController = null;
             }
-            this.Activated -= Window_Activated;
-            this.Closed -= Window_Closed;
+            window.Activated -= Window_Activated;
+            window.Closed -= Window_Closed;
             m_configurationSource = null;
 
             if (type == BackdropType.Mica)
@@ -148,12 +108,12 @@ namespace CollapseLauncher
             {
                 // Hooking up the policy object
                 m_configurationSource = new SystemBackdropConfiguration();
-                this.Activated += Window_Activated;
-                this.Closed += Window_Closed;
+                window.Activated += Window_Activated;
+                window.Closed += Window_Closed;
 
                 // Initial configuration state.
                 m_configurationSource.IsInputActive = true;
-                switch (((FrameworkElement)this.Content).ActualTheme)
+                switch (((FrameworkElement)window.Content).ActualTheme)
                 {
                     case ElementTheme.Dark: m_configurationSource.Theme = SystemBackdropTheme.Dark; break;
                     case ElementTheme.Light: m_configurationSource.Theme = SystemBackdropTheme.Light; break;
@@ -164,7 +124,7 @@ namespace CollapseLauncher
 
                 // Enable the system backdrop.
                 // Note: Be sure to have "using WinRT;" to support the Window.As<...>() call.
-                m_micaController.AddSystemBackdropTarget(this.As<Microsoft.UI.Composition.ICompositionSupportsSystemBackdrop>());
+                m_micaController.AddSystemBackdropTarget(window.As<Microsoft.UI.Composition.ICompositionSupportsSystemBackdrop>());
                 m_micaController.SetSystemBackdropConfiguration(m_configurationSource);
                 return true; // succeeded
             }
@@ -178,23 +138,23 @@ namespace CollapseLauncher
             {
                 // Hooking up the policy object
                 m_configurationSource = new SystemBackdropConfiguration();
-                this.Activated += Window_Activated;
-                this.Closed += Window_Closed;
+                window.Activated += Window_Activated;
+                window.Closed += Window_Closed;
 
                 // Initial configuration state.
                 m_configurationSource.IsInputActive = true;
-                switch (((FrameworkElement)this.Content).ActualTheme)
+                switch (((FrameworkElement)window.Content).ActualTheme)
                 {
                     case ElementTheme.Dark: m_configurationSource.Theme = SystemBackdropTheme.Dark; break;
                     case ElementTheme.Light: m_configurationSource.Theme = SystemBackdropTheme.Light; break;
                     case ElementTheme.Default: m_configurationSource.Theme = SystemBackdropTheme.Default; break;
                 }
 
-                m_acrylicController = new Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController();
+                m_acrylicController = new DesktopAcrylicController();
 
                 // Enable the system backdrop.
                 // Note: Be sure to have "using WinRT;" to support the Window.As<...>() call.
-                m_acrylicController.AddSystemBackdropTarget(this.As<Microsoft.UI.Composition.ICompositionSupportsSystemBackdrop>());
+                m_acrylicController.AddSystemBackdropTarget(window.As<Microsoft.UI.Composition.ICompositionSupportsSystemBackdrop>());
                 m_acrylicController.SetSystemBackdropConfiguration(m_configurationSource);
                 return true; // succeeded
             }
@@ -218,7 +178,7 @@ namespace CollapseLauncher
                 m_acrylicController.Dispose();
                 m_acrylicController = null;
             }
-            this.Activated -= Window_Activated;
+            window.Activated -= Window_Activated;
             m_configurationSource = null;
         }
     }

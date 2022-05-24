@@ -16,6 +16,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+using static CollapseLauncher.InnerLauncherConfig;
+
 namespace CollapseLauncher.Dialogs
 {
     public static class MigrationWatcher

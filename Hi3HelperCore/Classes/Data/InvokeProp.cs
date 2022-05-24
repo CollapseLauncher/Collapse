@@ -9,12 +9,30 @@ namespace Hi3Helper
 {
     public static class InvokeProp
     {
-        public static IntPtr m_windowHandle;
+        // Reference:
+        // https://pinvoke.net/default.aspx/Enums.SystemMetric
+        public enum SystemMetric : int
+        {
+            SM_CXSCREEN = 0,
+            SM_CYSCREEN = 1
+        }
+
+        // Reference:
+        // https://pinvoke.net/default.aspx/Enums/SetWindowPosFlags.html
+        public enum SetWindowPosFlags : uint
+        {
+            SWP_NOMOVE = 2,
+        }
+        public enum SpecialWindowHandles
+        {
+            HWND_TOP = 0,
+            HWND_BOTTOM = 1,
+            HWND_TOPMOST = -1,
+            HWND_NOTOPMOST = -2
+        }
+
         public static IntPtr m_consoleHandle;
 
-        private const int STD_OUTPUT_HANDLE = -11;
-        private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
-        private const uint DISABLE_NEWLINE_AUTO_RETURN = 0x0008;
         public enum HandleEnum
         {
             SW_HIDE = 0,
@@ -39,14 +57,26 @@ namespace Hi3Helper
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
-        [DllImport("Kernel32")]
+        [DllImport("Kernel32.dll")]
         public static extern void AllocConsole();
 
-        [DllImport("Kernel32")]
+        [DllImport("Kernel32.dll")]
         public static extern void FreeConsole();
 
         [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(int nIndex);
+
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+        
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+
+        [DllImport("user32.dll")]
+        public static extern int GetDpiForWindow(IntPtr hWnd);
 
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,
@@ -54,9 +84,6 @@ namespace Hi3Helper
 
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch_cmd_line", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatchCommand(int argc, string[] argv);
-
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;

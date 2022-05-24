@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary Source="ResourceDictionary.xaml"/>
+                <ResourceDictionary Source="/XAMLs/ResourceDictionary.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="FontAwesome">/Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>

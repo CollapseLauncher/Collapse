@@ -1,112 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-	<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <RootNamespace>CollapseLauncher</RootNamespace>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x64</Platforms>
-    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
-    <UseWinUI>true</UseWinUI>
-    <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-	<WindowsPackageType>None</WindowsPackageType>
-	<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
-	<Version>1.0.22.3</Version>
-	<Configurations>Debug;Release;Publish</Configurations>
-	<ApplicationIcon>icon.ico</ApplicationIcon>
-	<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-	<RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DefineConstants>PREVIEW;MICA</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DefineConstants>PREVIEW;MICA</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-    <DefineConstants>PREVIEW;MICA</DefineConstants>
-    <DebugType>embedded</DebugType>
-    <Optimize>True</Optimize>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0-windows10.0.18362.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Platforms>x64</Platforms>
+		<UseWinUI>true</UseWinUI>
+		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+		<WindowsPackageType>None</WindowsPackageType>
+		<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Publish'">
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA</DefineConstants>
+	</PropertyGroup>
 
-	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
-		<ItemGroup>
-			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview3'" />
-		</ItemGroup>
-	</Target>
+    <ItemGroup>
+        <Content Include="config\fileconfig.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="icon.ico" />
+    </ItemGroup>
 
-	<ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="CollapseLauncher.Invoker.deps.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CollapseLauncher.Invoker.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CollapseLauncher.Invoker.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CollapseLauncher.Invoker.runtimeconfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CollapseLauncher.Updater.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="config\fileconfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="icon.ico" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
+        <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+        <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621-preview" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview3" />
+        <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.4.22229.4" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-    <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview3" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22616-preview" />
-    <PackageReference Include="PInvoke.User32" Version="0.7.104" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.3.22175.4" />
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
+    </ItemGroup>
 
-  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-       Tools extension to be activated for this project even if the Windows App SDK Nuget
-       package has not yet been restored -->
-  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
-    <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Assets\BG\AiHappy.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\BG\default.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\ironmaiden_logo_256.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Pages\Dialogs\InstallationConvert.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Pages\NullPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Pages\UpdatePage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Update="Assets\BG\AiHappy.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Assets\BG\default.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Assets\ironmaiden_logo_256.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>

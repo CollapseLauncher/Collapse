@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-using PInvoke;
-
 using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
 
 namespace Hi3Helper.Screen
 {
@@ -38,8 +37,8 @@ namespace Hi3Helper.Screen
 
         public static Size GetScreenSize() => new Size
         {
-            Width = User32.GetSystemMetrics(User32.SystemMetric.SM_CXSCREEN),
-            Height = User32.GetSystemMetrics(User32.SystemMetric.SM_CYSCREEN)
+            Width = GetSystemMetrics((int)SystemMetric.SM_CXSCREEN),
+            Height = GetSystemMetrics((int)SystemMetric.SM_CYSCREEN)
         };
     }
 

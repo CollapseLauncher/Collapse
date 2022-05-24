@@ -70,13 +70,13 @@
                                         AutomationProperties.Name="Minimize"
                                         AutomationProperties.AutomationId="_MinimizeButton"
                                         Grid.Column="0"
-                                        Content="M 0 0 H 10" Click="Minimize"/>
+                                        Content="M 0 0 H 10"/>
                         <Button x:Name="CloseButton"
                                         Style="{StaticResource WindowCaptionButton}"
                                         AutomationProperties.Name="Close"
                                         AutomationProperties.AutomationId="_CloseButton"
                                         Grid.Column="1"
-                                        Content="M 0 0 L 10 10 M 10 0 L 0 10" Click="Close">
+                                        Content="M 0 0 L 10 10 M 10 0 L 0 10">
                             <Button.Resources>
                                 <ResourceDictionary>
                                     <ResourceDictionary.ThemeDictionaries>

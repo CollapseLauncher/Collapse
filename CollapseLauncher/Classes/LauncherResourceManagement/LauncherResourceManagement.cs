@@ -127,7 +127,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) httpHelper.DownloadFile(URL, cachePath, 4, new CancellationToken());
+            if (!File.Exists(cachePath)) httpHelper.DownloadFile(URL, cachePath, new CancellationToken());
 
             return cachePath;
         }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
+using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 
 using Hi3Helper.Data;

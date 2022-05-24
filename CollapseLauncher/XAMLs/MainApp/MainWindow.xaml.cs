@@ -14,9 +14,11 @@ using Microsoft.UI.Xaml.Media.Animation;
 
 using System.Runtime.InteropServices;
 
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -27,85 +29,14 @@ namespace CollapseLauncher
             try
             {
                 this.InitializeComponent();
+                InitializeWindowSettings();
 
                 string title = $"Collapse Launcher - v{AppCurrentVersion} ";
                 if (IsPreview)
-                    title = title + "[PREVIEW]";
+                    this.Title = title += "[PREVIEW]";
 #if DEBUG
-                title = title + "[DEBUG]";
+                    this.Title = title += "[DEBUG]";
 #endif
-                this.Title = title;
-
-                m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
-                m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-
-                m_AppWindow = GetAppWindowForCurrentWindow();
-                m_AppWindow.Changed += AppWindow_Changed;
-
-                SetWindowSize(m_windowHandle, 1280, 730);
-
-                // Check to see if customization is supported.
-                // Currently only supported on Windows 11.
-                if (AppWindowTitleBar.IsCustomizationSupported())
-                {
-#if MICA
-                    SetBackdrop(BackdropType.Mica);
-#else
-                    SetBackdrop(BackdropType.DesktopAcrylic);
-#endif
-                    SetThemeParameters();
-                    var titleBar = m_AppWindow.TitleBar;
-                    titleBar.ExtendsContentIntoTitleBar = true;
-                    AppTitleBar.Loaded += AppTitleBar_Loaded;
-                    AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-
-                    m_presenter.IsResizable = false;
-                    m_presenter.IsMaximizable = false;
-                    CustomTitleBar.Visibility = Visibility.Collapsed;
-
-                    switch (GetAppTheme())
-                    {
-                        case ApplicationTheme.Light:
-                            m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
-                            break;
-                        case ApplicationTheme.Dark:
-                            m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-                            break;
-                    }
-
-                    m_AppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
-                    m_AppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
-                }
-                else
-                {
-                    SetBackdrop(BackdropType.DesktopAcrylic);
-                    SetThemeParameters();
-                    m_presenter.IsResizable = false;
-                    m_presenter.IsMaximizable = false;
-                    Grid.SetColumn(RegionChangerPanel, 4);
-                    RegionChangerPanel.HorizontalAlignment = HorizontalAlignment.Right;
-                    ExtendsContentIntoTitleBar = true;
-                    AppTitleBar.Visibility = Visibility.Collapsed;
-                    CustomTitleBar.Visibility = Visibility.Visible;
-                    SetTitleBar(CustomTitleBar);
-
-                    switch (GetAppTheme())
-                    {
-                        case ApplicationTheme.Light:
-                            Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
-                            break;
-                        case ApplicationTheme.Dark:
-                            Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-                            break;
-                    }
-
-                    Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-                    Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-                }
-
-                MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
-                LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-
 
                 if (IsFirstInstall)
                     rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
@@ -117,6 +48,80 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 Console.ReadLine();
             }
+        }
+
+        public void InitializeWindowSettings()
+        {
+            m_backDrop = new BackdropManagement(this);
+            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
+            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
+
+            m_AppWindow = GetAppWindowForCurrentWindow();
+            m_AppWindow.Changed += AppWindow_Changed;
+
+            SetWindowSize(m_windowHandle, 1280, 730);
+
+            // Check to see if customization is supported.
+            // Currently only supported on Windows 11.
+            if (AppWindowTitleBar.IsCustomizationSupported())
+            {
+#if MICA
+                m_backDrop.SetBackdrop(BackdropType.Mica);
+#else
+                m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
+#endif
+                SetThemeParameters();
+                var titleBar = m_AppWindow.TitleBar;
+                titleBar.ExtendsContentIntoTitleBar = true;
+                AppTitleBar.Loaded += AppTitleBar_Loaded;
+                AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+
+                m_presenter.IsResizable = false;
+                m_presenter.IsMaximizable = false;
+                CustomTitleBar.Visibility = Visibility.Collapsed;
+
+                switch (GetAppTheme())
+                {
+                    case ApplicationTheme.Light:
+                        m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                        break;
+                    case ApplicationTheme.Dark:
+                        m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                        break;
+                }
+
+                m_AppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+                m_AppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+            }
+            else
+            {
+                m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
+                SetThemeParameters();
+                m_presenter.IsResizable = false;
+                m_presenter.IsMaximizable = false;
+                Grid.SetColumn(RegionChangerPanel, 4);
+                RegionChangerPanel.HorizontalAlignment = HorizontalAlignment.Right;
+                ExtendsContentIntoTitleBar = true;
+                AppTitleBar.Visibility = Visibility.Collapsed;
+                CustomTitleBar.Visibility = Visibility.Visible;
+                SetTitleBar(CustomTitleBar);
+
+                switch (GetAppTheme())
+                {
+                    case ApplicationTheme.Light:
+                        Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                        break;
+                    case ApplicationTheme.Dark:
+                        Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                        break;
+                }
+
+                Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+                Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+            }
+
+            MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
+            LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
@@ -136,20 +141,17 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        private void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)
         {
-            var dpi = PInvoke.User32.GetDpiForWindow(hwnd);
+            var dpi = GetDpiForWindow(hwnd);
             float scalingFactor = (float)dpi / 96;
             width = (int)(width * scalingFactor);
             height = (int)(height * scalingFactor);
 
-            PInvoke.User32.SetWindowPos(hwnd, PInvoke.User32.SpecialWindowHandles.HWND_TOP,
+            SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
                                         x, y, width, height,
-                                        PInvoke.User32.SetWindowPosFlags.SWP_NOMOVE);
+                                        SetWindowPosFlags.SWP_NOMOVE);
         }
-
-        private void Minimize(object sender, RoutedEventArgs e) => m_presenter.Minimize();
-        private void Close(object sender, RoutedEventArgs e) => Application.Current.Exit();
 
         private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
         {

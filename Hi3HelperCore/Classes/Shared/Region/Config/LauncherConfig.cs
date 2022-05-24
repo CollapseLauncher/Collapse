@@ -115,15 +115,20 @@ namespace Hi3Helper.Shared.Region
             }
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
 
+            bool IsGameFolderExist = Directory.Exists(GetAppConfigValue("GameFolder").ToString());
+
             // The app will also set IsFirstInstall to True if GameFolder value is empty.
             // Or if the directory doesn't exist or user doesn't have permission.
-            IsFirstInstall = !(Directory.Exists(GetAppConfigValue("GameFolder").ToString())
+            IsFirstInstall = !(IsGameFolderExist
                 && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()))
                 || string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
 
             try
             {
-                AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
+                if (IsGameFolderExist)
+                    AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
+                else
+                    AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
             }
             catch (ArgumentNullException)
             {
