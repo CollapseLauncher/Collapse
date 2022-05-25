@@ -26,6 +26,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
+    <Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
+    <Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
+    <Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
+    <EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
+    <EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
+    <EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
+    <EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
+    <None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
+    <None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
+    <None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
+    <None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Lang\en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

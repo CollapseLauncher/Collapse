@@ -11,8 +11,6 @@ using System.IO.Compression;
 
 using SevenZipExtractor;
 
-using master._7zip.Legacy;
-
 namespace Hi3Helper.Data
 {
     public enum ArchiveType { SevenZip, Zip, AutoLoad7Zip }
@@ -22,8 +20,6 @@ namespace Hi3Helper.Data
         {
             public int start { get; set; }
             public int end { get; set; }
-            public CArchiveDatabaseEx db { get; set; }
-            public ArchiveReader x { get; set; }
             public ZipArchive xZip { get; set; }
             public FileStream fs { get; set; }
         }
@@ -31,9 +27,6 @@ namespace Hi3Helper.Data
         string inputFilePath;
         ArchiveType inputFileType;
         FileStream inputFileStream;
-
-        CArchiveDatabaseEx archiveDB;
-        ArchiveReader archiveReader;
         ArchiveFile archiveReader7Zip;
 
         ZipArchive archiveReaderZip;
@@ -43,10 +36,8 @@ namespace Hi3Helper.Data
             extractedCount;
 
         // Public entity
-        public List<CFileItem> archiveEntries;
         public IList<Entry> archiveEntries7Zip;
         public ReadOnlyCollection<ZipArchiveEntry> archiveEntriesZip;
-        public List<CFileItem> failedEntries = new List<CFileItem>();
         public int entriesCount,
                    filesCount,
                    foldersCount;
@@ -123,19 +114,7 @@ namespace Hi3Helper.Data
         public void Dispose()
         {
             inputFileStream.Dispose();
-            archiveDB?.Clear();
-            archiveReader?.Close();
             archiveReaderZip?.Dispose();
-            archiveEntries?.Clear();
-            failedEntries?.Clear();
-        }
-
-        public void ExtractSingleFile(string outputFile, int fileIndex)
-        {
-            this.thread = 1;
-
-            if (!archiveEntries[fileIndex].IsDir)
-                archiveReader.OpenStream(archiveDB, fileIndex, null).CopyTo(new FileStream(outputFile, FileMode.Create, FileAccess.Write));
         }
 
         Stopwatch stopWatch;
