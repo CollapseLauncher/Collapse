@@ -276,40 +276,35 @@ namespace CollapseLauncher.Pages
             {
                 while (App.IsGameRunning)
                 {
-                    try
+                    DispatcherQueue.TryEnqueue(() =>
                     {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            if (!App.IsAppKilled)
-                                return;
+                        if (App.IsAppKilled)
+                            return;
 
-                            if (StartGameBtn.IsEnabled)
-                                LauncherBtn.Translation -= Shadow16;
+                        if (StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation -= Shadow16;
 
-                            StartGameBtn.IsEnabled = false;
-                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
-                            GameStartupSetting.IsEnabled = false;
-                        });
-
-                        await Task.Delay(3000);
-
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            if (!App.IsAppKilled)
-                                return;
-
-                            if (!StartGameBtn.IsEnabled)
-                                LauncherBtn.Translation += Shadow16;
-
-                            StartGameBtn.IsEnabled = true;
-                            StartGameBtn.Content = Lang._HomePage.StartBtn;
-                            GameStartupSetting.IsEnabled = true;
-                        });
-                    }
-                    catch (NullReferenceException) { return; }
-
-                    await Task.Delay(3000);
+                        StartGameBtn.IsEnabled = false;
+                        StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                        GameStartupSetting.IsEnabled = false;
+                    });
+                    await Task.Delay(500);
                 }
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (App.IsAppKilled)
+                        return;
+
+                    if (!StartGameBtn.IsEnabled)
+                        LauncherBtn.Translation += Shadow16;
+
+                    StartGameBtn.IsEnabled = true;
+                    StartGameBtn.Content = Lang._HomePage.StartBtn;
+                    GameStartupSetting.IsEnabled = true;
+                });
+
+                await Task.Delay(500);
             }
         }
 
