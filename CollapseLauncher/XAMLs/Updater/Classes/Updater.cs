@@ -44,11 +44,6 @@ namespace CollapseLauncher
             this.ChannelURL = string.Format(RepoURL, ChannelName);
             this.TargetPath = NormalizePath(TargetFolder);
             this.TempPath = Path.Combine(TargetPath, "_Temp");
-
-            if (Directory.Exists(TempPath))
-                Directory.Delete(TempPath, true);
-
-            Directory.CreateDirectory(TempPath);
         }
 
         public void StartFetch()
@@ -72,6 +67,11 @@ namespace CollapseLauncher
 
         public void StartCheck()
         {
+            if (Directory.Exists(TempPath))
+                Directory.Delete(TempPath, true);
+
+            Directory.CreateDirectory(TempPath);
+
             Status.status = "Verifying:";
             Status.newver = FileProp.ver;
             TotalSize = FileProp.f.Sum(x => x.s);
