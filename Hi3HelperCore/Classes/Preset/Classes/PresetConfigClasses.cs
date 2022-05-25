@@ -33,7 +33,6 @@ namespace Hi3Helper.Preset
             {
                 return null;
             }
-            return returnval;
         }
 
         public void SetSteamInstallationPath(string input) => Registry.SetValue(SteamInstallRegistryLocation, "InstallLocation", input, RegistryValueKind.String);

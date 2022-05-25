@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using Windows.UI;
+using Windows.UI.ViewManagement;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Dispatching;
@@ -22,15 +23,17 @@ using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 
+using static CollapseLauncher.ArgumentParser;
+using static CollapseLauncher.InnerLauncherConfig;
+
 namespace CollapseLauncher
 {
     public partial class App : Application
     {
-
         public static bool IsAppKilled = false;
         public static bool IsGameRunning = false;
 
-        public static void Main(string[] args)
+        public static void Main(params string[] args)
         {
 #if PREVIEW
             IsPreview = true;
@@ -46,6 +49,39 @@ namespace CollapseLauncher
                 Console.WriteLine($"Initializing...", LogType.Empty);
                 
                 InitializeAppSettings();
+                ParseArguments(args);
+
+                switch (m_appMode)
+                {
+                    case AppMode.ElevateUpdater:
+                        RunElevateUpdate();
+                        return;
+                    case AppMode.Reindex:
+                        new Reindexer(m_arguments.Reindexer.AppPath, m_arguments.Reindexer.Version).RunReindex();
+                        return;
+                    case AppMode.InvokerTakeOwnership:
+                        new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
+                        return;
+                    case AppMode.InvokerMigrate:
+                        if (m_arguments.Migrate.IsBHI3L)
+                            new Migrate().DoMigrationBHI3L(
+                                m_arguments.Migrate.GameVer,
+                                m_arguments.Migrate.RegLoc,
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
+                        else
+                            new Migrate().DoMigration(
+                                m_arguments.Migrate.InputPath,
+                                m_arguments.Migrate.OutputPath);
+                        return;
+                    case AppMode.InvokerMoveSteam:
+                        new Migrate().DoMoveSteam(
+                            m_arguments.Migrate.InputPath,
+                            m_arguments.Migrate.OutputPath,
+                            m_arguments.Migrate.GameVer,
+                            m_arguments.Migrate.KeyName);
+                        return;
+                }
 
                 ComWrappersSupport.InitializeComWrappers();
                 Start(new ApplicationInitializationCallback((p) =>
@@ -69,6 +105,8 @@ namespace CollapseLauncher
             InitLog(true, AppGameLogsFolder);
             TryParseLocalizations();
             LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
+            SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
+            CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
         }
 
         public App()
@@ -76,12 +114,18 @@ namespace CollapseLauncher
             try
             {
                 this.InitializeComponent();
+                RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
 
-                InnerLauncherConfig.SystemAppTheme = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Background);
-                InnerLauncherConfig.CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
-                RequestedTheme = InnerLauncherConfig.CurrentRequestedAppTheme = InnerLauncherConfig.GetAppTheme();
+                switch (m_appMode)
+                {
+                    case AppMode.Updater:
+                        m_window = new UpdaterWindow();
+                        break;
+                    case AppMode.Launcher:
+                        m_window = new MainWindow();
+                        break;
+                }
 
-                m_window = new MainWindow();
                 m_window.Activate();
             }
             catch (Exception ex)
@@ -90,6 +134,27 @@ namespace CollapseLauncher
                 LogWriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
                 Console.ReadLine();
             }
+        }
+
+        public static void RunElevateUpdate()
+        {
+            File.Copy(UpdaterWindow.sourcePath, UpdaterWindow.elevatedPath, true);
+            Process elevatedProc = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = UpdaterWindow.elevatedPath,
+                    WorkingDirectory = UpdaterWindow.workingDir,
+                    Arguments = $"update --input \"{m_arguments.Updater.AppPath}\" --channel {m_arguments.Updater.UpdateChannel}",
+                    UseShellExecute = true,
+                    Verb = "runas"
+                }
+            };
+            try
+            {
+                elevatedProc.Start();
+            }
+            catch { }
         }
 
         public static string GetVersionString()
@@ -102,6 +167,6 @@ namespace CollapseLauncher
                 return $"Windows {buildNumber[0]} (build: {buildNumber[2]}.{buildNumber[3]})";
         }
 
-        private MainWindow m_window;
+        private Window m_window;
     }
 }

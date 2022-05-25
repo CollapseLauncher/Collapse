@@ -33,6 +33,25 @@ namespace CollapseLauncher
             DefaultColor,
         }
 
+        public enum AppMode
+        {
+            Launcher,
+            Updater,
+            ElevateUpdater,
+            Reindex,
+            InvokerMigrate,
+            InvokerTakeOwnership,
+            InvokerMoveSteam
+        }
+
+        public enum AppReleaseChannel
+        {
+            Stable,
+            Preview
+        }
+
+        public static AppMode m_appMode;
+        public static Arguments m_arguments = new Arguments();
         public static BackdropManagement m_backDrop;
         public static WindowsSystemDispatcherQueueHelper m_wsdqHelper;
         public static BackdropType m_currentBackdrop;

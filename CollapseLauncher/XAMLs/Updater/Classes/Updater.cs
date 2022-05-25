@@ -6,14 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+
 
 using Hi3Helper.Data;
 
@@ -22,156 +15,10 @@ using Newtonsoft.Json;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 
-namespace CollapseLauncher.Updater
+using static CollapseLauncher.UpdaterWindow;
+
+namespace CollapseLauncher
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    enum UpdaterStatus { Reindex, Update }
-
-    class Prop
-    {
-        public string ver { get; set; }
-        public long time { get; set; }
-        public List<fileProp> f { get; set; }
-    }
-
-    class fileProp
-    {
-        public string p { get; set; }
-        public string crc { get; set; }
-        public long s { get; set; }
-    }
-
-    public partial class MainWindow : Window
-    {
-        static UpdaterStatus status;
-        static string[] argument;
-        Updater updater;
-
-        static string execPath = Process.GetCurrentProcess().MainModule.FileName;
-        public static string workingDir = Path.GetDirectoryName(execPath);
-        static string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath));
-        public static string launcherPath = Path.Combine(workingDir, $"CollapseLauncher.exe");
-        static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
-
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            try
-            {
-                Hi3Helper.InvokeProp.InitializeConsole();
-                Process elevatedProc;
-                LogWriteLine($"This console is for debugging purposes. It will close itself after all tasks on main thread are completed.");
-                argument = args;
-
-                if (argument.Length > 0)
-                {
-                    if (argument[0].ToLower() == "reindex" && argument.Length > 2)
-                    {
-                        new Reindexer(argument[1], argument[2]).RunReindex();
-                        return;
-                    }
-
-                    if (argument[0].ToLower() == "restartapp")
-                        new Process()
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                FileName = launcherPath,
-                                WorkingDirectory = workingDir,
-                                UseShellExecute = true
-                            }
-                        }.Start();
-
-                    if (argument[0].ToLower() == "update")
-                        new Application() { StartupUri = new Uri("MainWindow.xaml", UriKind.Relative) }.Run();
-
-                    if (argument[0].ToLower() == "elevateupdate")
-                    {
-                        File.Copy(sourcePath, elevatedPath, true);
-                        elevatedProc = new Process()
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                FileName = elevatedPath,
-                                WorkingDirectory = workingDir,
-                                Arguments = $"update \"{argument[1]}\" {argument[2]}",
-                                UseShellExecute = true,
-                                Verb = "runas"
-                            }
-                        };
-                        try
-                        {
-                            elevatedProc.Start();
-                        }
-                        catch { }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{ex}");
-                Console.ReadLine();
-            }
-        }
-
-        public MainWindow()
-        {
-            try
-            {
-                InitializeComponent();
-
-                this.Title = "Updating Collapse Launcher...";
-
-                updater = new Updater(argument[1], argument[2]);
-                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-
-                // InitLog(false);
-
-                Task.Run(() =>
-                {
-                    updater.StartFetch();
-                    updater.StartCheck();
-                    updater.StartUpdate();
-                    updater.FinishUpdate();
-                    Dispatcher.Invoke(() =>
-                    {
-                        SpeedStatus.Visibility = Visibility.Collapsed;
-                        TimeEstimation.Visibility = Visibility.Collapsed;
-                        ActivitySubStatus.Visibility = Visibility.Collapsed;
-                    });
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{ex}");
-                Console.ReadLine();
-            }
-        }
-
-        private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                StageStatus.Text = e.status;
-                ActivityStatus.Text = e.message;
-            });
-        }
-
-        private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                progressBar.Value = e.ProgressPercentage;
-                ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.DownloadedSize)} / {SummarizeSizeSimple(e.TotalSizeToDownload)}";
-                SpeedStatus.Text = $"{SummarizeSizeSimple(e.CurrentSpeed)}/s";
-                TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
-            });
-        }
-    }
-
     public class Updater : HttpClientHelper
     {
         string ChannelURL;
@@ -226,6 +73,7 @@ namespace CollapseLauncher.Updater
         public void StartCheck()
         {
             Status.status = "Verifying:";
+            Status.newver = FileProp.ver;
             TotalSize = FileProp.f.Sum(x => x.s);
             Progress = new UpdaterProgress(Read, TotalSize, 0, UpdateStopwatch.Elapsed);
             string LocalHash, RemoteHash, FilePath;
@@ -335,10 +183,10 @@ namespace CollapseLauncher.Updater
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = MainWindow.launcherPath,
+                    FileName = launcherPath,
                     UseShellExecute = true,
                     Verb = "runas",
-                    WorkingDirectory = MainWindow.workingDir
+                    WorkingDirectory = workingDir
                 }
             }.Start();
             Environment.Exit(0);
@@ -348,18 +196,32 @@ namespace CollapseLauncher.Updater
         {
             if (e.DownloadState == State.Downloading)
                 Read += e.CurrentRead;
-            
+
             Progress = new UpdaterProgress(Read, TotalSize, e.CurrentRead, UpdateStopwatch.Elapsed);
             UpdateProgress();
         }
 
         public void UpdateStatus() => UpdaterStatusChanged?.Invoke(this, Status);
         public void UpdateProgress() => UpdaterProgressChanged?.Invoke(this, Progress);
+        public class Prop
+        {
+            public string ver { get; set; }
+            public long time { get; set; }
+            public List<fileProp> f { get; set; }
+        }
+
+        public class fileProp
+        {
+            public string p { get; set; }
+            public string crc { get; set; }
+            public long s { get; set; }
+        }
 
         public class UpdaterStatus
         {
             public string status { get; set; }
             public string message { get; set; }
+            public string newver { get; set; }
         }
 
         public class UpdaterProgress
@@ -381,44 +243,6 @@ namespace CollapseLauncher.Updater
             public int CurrentRead { get; private set; }
             public long CurrentSpeed => (long)(DownloadedSize / _TotalSecond);
             public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((TotalSizeToDownload - DownloadedSize) / CurrentSpeed));
-        }
-    }
-
-    public class Reindexer
-    {
-        string filePath;
-        string clientVer;
-        long reindexTime;
-
-        public Reindexer(string filePath, string clientVer)
-        {
-            Hi3Helper.InvokeProp.InitializeConsole();
-            this.filePath = NormalizePath(filePath);
-            this.reindexTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            this.clientVer = clientVer;
-
-            if (File.Exists(Path.Combine(this.filePath, "fileindex.json")))
-                File.Delete(Path.Combine(this.filePath, "fileindex.json"));
-        }
-
-        public void RunReindex()
-        {
-            int baseLength = filePath.Length + 1;
-            string nameRoot, fileCrc;
-            Prop Prop = new Prop() { ver = this.clientVer, time = this.reindexTime, f = new List<fileProp>() };
-            FileStream fileStream;
-            foreach (string file in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
-            {
-                if (Path.GetFileName(file) != "CollapseLauncher.Updater.exe")
-                {
-                    nameRoot = file.Substring(baseLength).Replace('\\', '/');
-                    fileCrc = CreateMD5(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-                    Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
-                    LogWriteLine($"{nameRoot} -> {fileCrc}");
-                }
-            }
-
-            File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"), JsonConvert.SerializeObject(Prop, Formatting.Indented));
         }
     }
 }

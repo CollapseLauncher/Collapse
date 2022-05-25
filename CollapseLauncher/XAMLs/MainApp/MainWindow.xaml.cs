@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Windows.Graphics;
@@ -129,11 +130,33 @@ namespace CollapseLauncher
             if (e.QuitFromUpdateMenu)
             {
                 overlayFrame.Navigate(typeof(Pages.NullPage), null, new EntranceNavigationTransitionInfo());
+                HideRootFrame(false);
                 return;
             }
 
             if (e.IsUpdateAvailable)
+            {
                 overlayFrame.Navigate(typeof(Pages.UpdatePage));
+                HideRootFrame(true);
+            }
+        }
+
+        public async void HideRootFrame(bool hide)
+        {
+            Storyboard storyboardBack = new Storyboard();
+
+            DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
+            OpacityAnimationBack.From = hide?1:0;
+            OpacityAnimationBack.To = hide?0:1;
+            OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+
+            Storyboard.SetTarget(OpacityAnimationBack, rootFrame);
+            Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
+            storyboardBack.Children.Add(OpacityAnimationBack);
+
+            storyboardBack.Begin();
+
+            await Task.Delay(250);
         }
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)

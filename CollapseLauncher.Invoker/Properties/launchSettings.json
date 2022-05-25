@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "CollapseLauncher.Invoker": {
-      "commandName": "Project",
-      "commandLineArgs": "justmove \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\HonkaiImpact3rd\" \"C:\\Users\\neon-nyan\\AppData\\LocalLow\\CollapseLauncher\\GameFolder\\Hi3Global\\HonkaiImpact3rd\""
-    }
-  }
-}

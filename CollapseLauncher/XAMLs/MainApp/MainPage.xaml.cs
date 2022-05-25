@@ -166,7 +166,7 @@ namespace CollapseLauncher
                 File.Delete(UpdateNotifFile);
                 try
                 {
-                    string updateElevator = Path.Combine(AppDataFolder, "CollapseLauncher.Updater.Elevated.exe");
+                    string updateElevator = Path.Combine(AppDataFolder, "CollapseLauncher.Elevated.exe");
                     if (File.Exists(updateElevator))
                         File.Delete(updateElevator);
                 }
@@ -308,8 +308,8 @@ namespace CollapseLauncher
                 { Content = Lang._GameRepairPage.PageTitle, Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._CachesPage.PageTitle, Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._CutscenesPage.PageTitle, Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
+                // NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                // { Content = Lang._CutscenesPage.PageTitle, Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GameSettingsPage.PageTitle, Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
             }

@@ -2,11 +2,34 @@
   "profiles": {
     "WSL": {
       "commandName": "WSL2",
-      "environmentVariables": {},
       "distributionName": ""
     },
-    "CollapseLauncher": {
+    "Updater": {
       "commandName": "Project",
+      "commandLineArgs": "update --input \"H:\\Data\\test\" --channel Preview",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": true
+    },
+    "Elevate Updater": {
+      "commandName": "Project",
+      "commandLineArgs": "elevateupdate --input \"H:\\Data\\test\" --channel Preview",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": true
+    },
+    "Reindexer": {
+      "commandName": "Project",
+      "commandLineArgs": "reindex --input \"C:\\myGit\\CollapseLauncher-ReleaseRepo\\preview\" --upver 1.0.22.3",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": true
+    },
+    "Collapse Launcher": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": true
+    },
+    "Take Ownership": {
+      "commandName": "Project",
+      "commandLineArgs": "takeownership --input \"H:\\Data\\Games\\miHoYoGames\"",
       "remoteDebugEnabled": false,
       "nativeDebugging": true
     }

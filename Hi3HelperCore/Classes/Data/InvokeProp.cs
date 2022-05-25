@@ -42,6 +42,14 @@ namespace Hi3Helper
             SW_SHOW = 5,
         }
 
+        public enum Monitor_DPI_Type : int
+        {
+            MDT_Effective_DPI = 0,
+            MDT_Angular_DPI = 1,
+            MDT_Raw_DPI = 2,
+            MDT_Default = MDT_Effective_DPI
+        }
+
         [DllImport("kernel32.dll")]
         private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
@@ -77,6 +85,9 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public static extern int GetDpiForWindow(IntPtr hWnd);
+
+        [DllImport("Shcore.dll", SetLastError = true)]
+        public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
 
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,

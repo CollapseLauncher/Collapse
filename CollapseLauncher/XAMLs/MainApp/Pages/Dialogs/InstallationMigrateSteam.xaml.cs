@@ -279,9 +279,9 @@ namespace CollapseLauncher.Dialogs
                 });
 
                 Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.Invoker.exe");
+                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"movesteam \"{sourcePath}\" \"{targetPath}\" \"{CurrentRegion.SteamInstallRegistryLocation}\" InstallLocation";
+                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentRegion.SteamInstallRegistryLocation}\" --keyname InstallLocation";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");

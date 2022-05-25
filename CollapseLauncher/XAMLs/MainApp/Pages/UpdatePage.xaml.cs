@@ -74,7 +74,7 @@ namespace CollapseLauncher.Pages
         private void DoUpdateClick(object sender, RoutedEventArgs e)
         {
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"elevateupdate \"{ExecutableLocation.Replace('\\', '/')}\" {(IsPreview ? "preview" : "stable")}";
+            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {(IsPreview ? "Preview" : "Stable")}";
             Console.WriteLine(UpdateArgument);
             try
             {
@@ -83,7 +83,7 @@ namespace CollapseLauncher.Pages
                     StartInfo = new ProcessStartInfo
                     {
                         UseShellExecute = true,
-                        FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.Updater.exe"),
+                        FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.exe"),
                         Arguments = UpdateArgument,
                         Verb = "runas"
                     }

@@ -154,10 +154,10 @@ namespace CollapseLauncher.Pages
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = Path.Combine(AppFolder, "CollapseLauncher.Invoker.exe"),
+                    FileName = Path.Combine(AppFolder, "CollapseLauncher.exe"),
                     UseShellExecute = true,
                     Verb = "runas",
-                    Arguments = $"takeownership \"{path}\""
+                    Arguments = $"takeownership --input \"{path}\""
                 }
             };
 

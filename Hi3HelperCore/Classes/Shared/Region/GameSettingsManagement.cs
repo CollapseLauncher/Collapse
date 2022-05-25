@@ -586,6 +586,9 @@ namespace Hi3Helper.Shared.Region
                 }
             }
 
+            if (!GetAppConfigValue("EnableConsole").ToBool())
+                parameter.Append("-nolog ");
+
             return parameter.ToString();
         }
 

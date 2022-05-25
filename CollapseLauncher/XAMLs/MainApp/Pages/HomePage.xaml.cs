@@ -272,13 +272,13 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            try
+            while (true && !App.IsAppKilled)
             {
-                while (true && !App.IsAppKilled)
+                while (App.IsGameRunning)
                 {
-                    while (App.IsGameRunning)
+                    DispatcherQueue.TryEnqueue(() =>
                     {
-                        DispatcherQueue.TryEnqueue(() =>
+                        try
                         {
                             if (!App.IsAppKilled)
                                 return;
@@ -289,12 +289,16 @@ namespace CollapseLauncher.Pages
                             StartGameBtn.IsEnabled = false;
                             StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
                             GameStartupSetting.IsEnabled = false;
-                        });
+                        }
+                        catch (NullReferenceException) { }
+                    });
 
-                        await Task.Delay(3000);
-                    }
+                    await Task.Delay(3000);
+                }
 
-                    DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    try
                     {
                         if (!App.IsAppKilled)
                             return;
@@ -305,11 +309,12 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.IsEnabled = true;
                         StartGameBtn.Content = Lang._HomePage.StartBtn;
                         GameStartupSetting.IsEnabled = true;
-                    });
+                    }
+                    catch (NullReferenceException) { }
+                });
 
-                    await Task.Delay(3000);
-                }
-            } catch (NullReferenceException) { }
+                await Task.Delay(3000);
+            }
         }
 
         private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");

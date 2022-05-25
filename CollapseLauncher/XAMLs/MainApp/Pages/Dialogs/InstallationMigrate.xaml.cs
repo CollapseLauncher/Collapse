@@ -138,12 +138,12 @@ namespace CollapseLauncher.Dialogs
             try
             {
                 Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.Invoker.exe");
+                proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
                 if (CurrentRegion.MigrateFromBetterHi3Launcher)
-                    proc.StartInfo.Arguments = $"migratebhi3l {CurrentRegion.BetterHi3LauncherConfig.game_info.version} {CurrentRegion.BetterHi3LauncherVerInfoReg} \"{CurrentRegion.BetterHi3LauncherConfig.game_info.install_path}\" \"{targetPath}\"";
+                    proc.StartInfo.Arguments = $"migratebhi3l --gamever {CurrentRegion.BetterHi3LauncherConfig.game_info.version} --regloc {CurrentRegion.BetterHi3LauncherVerInfoReg} --input \"{CurrentRegion.BetterHi3LauncherConfig.game_info.install_path}\" --output \"{targetPath}\"";
                 else
-                    proc.StartInfo.Arguments = $"migrate \"{CurrentRegion.ActualGameLocation}\" \"{targetPath}\"";
+                    proc.StartInfo.Arguments = $"migrate --input \"{CurrentRegion.ActualGameLocation}\" --output \"{targetPath}\"";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
