@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -20,8 +21,10 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class StartupPage : Page
     {
+        bool AbortTransition = false;
         public StartupPage()
         {
+            AbortTransition = false;
             this.InitializeComponent();
         }
 
@@ -39,7 +42,7 @@ namespace CollapseLauncher.Pages
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
-                    SetAndSaveConfigValue("GameFolder", AppGameFolder);
+                    SetAppConfigValue("GameFolder", AppGameFolder);
                     Selected = true;
                     break;
                 case ContentDialogResult.Secondary:
@@ -49,7 +52,7 @@ namespace CollapseLauncher.Pages
                         {
                             AppGameFolder = returnFolder;
                             ErrMsg.Text = "";
-                            SetAndSaveConfigValue("GameFolder", AppGameFolder);
+                            SetAppConfigValue("GameFolder", AppGameFolder);
                             Selected = true;
                         }
                         else
@@ -65,7 +68,11 @@ namespace CollapseLauncher.Pages
                 await AppendFolderPermission(AppGameFolder);
                 await HideLoadingPopup(true, Lang._StartupPage.OverlayPrepareFolderTitle, Lang._StartupPage.OverlayPrepareFolderSubtitle);
 
-                MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                if (!AbortTransition)
+                {
+                    SaveAppConfig();
+                    MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                }
             }
         }
 
@@ -150,19 +157,27 @@ namespace CollapseLauncher.Pages
 
         private async Task AppendFolderPermission(string path)
         {
-            Process proc = new Process
+            try
             {
-                StartInfo = new ProcessStartInfo
+                Process proc = new Process
                 {
-                    FileName = Path.Combine(AppFolder, "CollapseLauncher.exe"),
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    Arguments = $"takeownership --input \"{path}\""
-                }
-            };
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = Path.Combine(AppFolder, "CollapseLauncher.exe"),
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        Arguments = $"takeownership --input \"{path}\""
+                    }
+                };
 
-            proc.Start();
-            await proc.WaitForExitAsync();
+                proc.Start();
+                await proc.WaitForExitAsync();
+            }
+            catch (Win32Exception)
+            {
+                AbortTransition = true;
+                MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+            }
         }
     }
 }
