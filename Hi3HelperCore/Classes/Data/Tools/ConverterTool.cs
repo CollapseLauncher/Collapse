@@ -15,6 +15,7 @@ namespace Hi3Helper.Data
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
         public static string CreateMD5(Stream fs) => BytesToHex(MD5.Create().ComputeHash(fs));
+        public static async Task<string> CreateMD5Async(Stream fs) => BytesToHex(await MD5.Create().ComputeHashAsync(fs));
         public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer), 0);
 #if (NETCOREAPP)
         public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
@@ -44,6 +45,29 @@ namespace Hi3Helper.Data
 
         public static string NormalizePath(string i) => 
             Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
+
+        public static uint ConcatUint(uint a, uint b)
+        {
+            uint pow = 1;
+
+            while (pow < b)
+                pow = ((pow << 2) + pow) << 1;
+
+            return a * pow + b;
+        }
+
+        public static uint SumBinaryUint(uint a, uint b)
+        {
+            uint mask = uint.MaxValue;
+
+            while ((mask & b) != 0)
+            {
+                mask <<= 1;
+                a <<= 1;
+            }
+
+            return a | b;
+        }
 
         internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 

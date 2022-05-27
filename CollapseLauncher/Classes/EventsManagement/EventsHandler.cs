@@ -19,6 +19,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -67,6 +68,8 @@ namespace CollapseLauncher
         {
             if (CurrentVer == null || ComparedVer == null) return false;
 
+            uint concatLocalVer = 0, concatRemoteVer = 0;
+
             byte[] LocalVersion = CurrentVer.Split('.')
                 .Select(x => byte.Parse(x))
                 .ToArray();
@@ -75,12 +78,13 @@ namespace CollapseLauncher
                 .Select(x => byte.Parse(x))
                 .ToArray();
 
-            if (RemoteVersion[0] > LocalVersion[0]) return true;
-            if (RemoteVersion[1] > LocalVersion[1]) return true;
-            if (RemoteVersion[2] > LocalVersion[2]) return true;
-            if (RemoteVersion[3] > LocalVersion[3]) return true;
+            for (int i = 0; i < LocalVersion.Length; i++)
+            {
+                concatLocalVer = ConcatUint(concatLocalVer, LocalVersion[i]);
+                concatRemoteVer = ConcatUint(concatRemoteVer, RemoteVersion[i]);
+            }
 
-            return false;
+            return concatRemoteVer > concatLocalVer;
         }
 
         public class Prop
