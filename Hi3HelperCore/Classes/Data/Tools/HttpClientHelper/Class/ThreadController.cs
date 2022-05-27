@@ -124,7 +124,7 @@ namespace Hi3Helper.Data
         {
             IList<_ThreadProperty> _out = new List<_ThreadProperty>();
 
-            _TotalSizeToDownload = TryGetContentLength();
+            _TotalSizeToDownload = await TryGetContentLength();
             long _SliceSize = _TotalSizeToDownload / _ThreadNumber;
             long _PrevStartSize = 0;
             long? _StartOffset = 0, _EndOffset = 0;
@@ -165,13 +165,13 @@ namespace Hi3Helper.Data
             return _out;
         }
 
-        private long TryGetContentLength()
+        private async Task<long> TryGetContentLength()
         {
             while (true)
             {
                 try
                 {
-                    return GetContentLength(_InputURL, _ThreadToken) ?? 0;
+                    return await GetContentLength(_InputURL, _ThreadToken) ?? 0;
                 }
                 catch (HttpRequestException ex)
                 {
@@ -255,10 +255,9 @@ namespace Hi3Helper.Data
             return true;
         }
 
-        public long? GetContentLength(string input, CancellationToken token = new CancellationToken())
+        public async Task<long?> GetContentLength(string input, CancellationToken token = new CancellationToken())
         {
-            HttpResponseMessage response = SendAsync(new HttpRequestMessage() { RequestUri = new Uri(input) }, HttpCompletionOption.ResponseHeadersRead, token)
-                .GetAwaiter().GetResult();
+            HttpResponseMessage response = await SendAsync(new HttpRequestMessage() { RequestUri = new Uri(input) }, HttpCompletionOption.ResponseHeadersRead, token);
 
             return response.Content.Headers.ContentLength;
         }

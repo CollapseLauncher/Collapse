@@ -251,7 +251,7 @@ namespace CollapseLauncher
             ConvertDetail = string.Format(Lang._InstallConvert.CookbookDownloadSubtitle, SourceProfile.ZoneName, TargetProfile.ZoneName);
 
             if (File.Exists(CookbookPath))
-                if (new FileInfo(CookbookPath).Length == GetContentLength(CookbookURL))
+                if (new FileInfo(CookbookPath).Length == await GetContentLength(CookbookURL))
                     return;
 
             DownloadProgress += RecipeDownload_Progress;

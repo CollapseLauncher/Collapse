@@ -296,7 +296,7 @@ namespace CollapseLauncher
          * Return true if download is completed
          * Return false if download is uncompleted
          */
-        public bool CheckExistingDownload()
+        public async Task<bool> CheckExistingDownload()
         {
             DownloadLocalSize = 0;
             DownloadRemoteSize = 0;
@@ -304,7 +304,7 @@ namespace CollapseLauncher
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
                 DownloadLocalSize += (DownloadProperty[i].LocalSize = GetExistingPartialDownloadLength(DownloadProperty[i].Output));
-                DownloadRemoteSize += (DownloadProperty[i].RemoteSize = GetContentLength(DownloadProperty[i].URL) ?? 0);
+                DownloadRemoteSize += (DownloadProperty[i].RemoteSize = await GetContentLength(DownloadProperty[i].URL) ?? 0);
             }
 
             return DownloadLocalSize == 0 ? true : DownloadLocalSize == DownloadRemoteSize;
@@ -312,7 +312,7 @@ namespace CollapseLauncher
 
         public async Task CheckExistingDownloadAsync(UIElement Content)
         {
-            if (!CheckExistingDownload())
+            if (!await CheckExistingDownload())
             {
                 switch (await Dialog_ExistingDownload(Content, DownloadLocalSize, DownloadRemoteSize))
                 {

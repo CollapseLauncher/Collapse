@@ -216,7 +216,7 @@ namespace CollapseLauncher
             ResetSw();
 
             if (File.Exists(CookbookPath))
-                if (new FileInfo(CookbookPath).Length == GetContentLength(CookbookURL))
+                if (new FileInfo(CookbookPath).Length == await GetContentLength(CookbookURL))
                     return;
 
             DownloadProgress += RecipeDownload_Progress;
