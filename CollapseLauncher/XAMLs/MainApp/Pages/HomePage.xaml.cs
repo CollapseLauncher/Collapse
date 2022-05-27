@@ -228,9 +228,7 @@ namespace CollapseLauncher.Pages
                             StartGameBtn.Visibility = Visibility.Visible;
                             NotificationBar.IsOpen = true;
 
-                            if (!File.Exists(
-                                Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
-                                Path.GetFileName(GetUpdateDiffs(true).path))))
+                           if (!IsPreDownloadCompleted())
                             {
                                 NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
                             }
@@ -268,6 +266,19 @@ namespace CollapseLauncher.Pages
             OpenGameFolderButton.IsEnabled = false;
             OpenCacheFolderButton.IsEnabled = false;
             ConvertVersionButton.IsEnabled = false;
+        }
+
+        private bool IsPreDownloadCompleted()
+        {
+            bool IsPrimaryDataExist = File.Exists(
+                                        Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
+                                        Path.GetFileName(GetUpdateDiffs(true).path)));
+            TryAddVoicePack(GetUpdateDiffs(true));
+            bool IsSecondaryDataExist = IsGameHasVoicePack ? File.Exists(
+                                        Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
+                                        Path.GetFileName(VoicePackFile.path))) : true;
+
+            return IsPrimaryDataExist && IsSecondaryDataExist;
         }
 
         private async void CheckRunningGameInstance()
