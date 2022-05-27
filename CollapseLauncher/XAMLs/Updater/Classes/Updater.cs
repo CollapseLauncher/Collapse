@@ -46,9 +46,8 @@ namespace CollapseLauncher
             this.TempPath = Path.Combine(TargetPath, "_Temp");
         }
 
-        public void StartFetch()
+        public async Task StartFetch()
         {
-            string data = "";
             MemoryStream _databuf = new MemoryStream();
 
             Status = new UpdaterStatus
@@ -59,13 +58,12 @@ namespace CollapseLauncher
             UpdateStatus();
             UpdateStopwatch = Stopwatch.StartNew();
 
-            DownloadFile(ChannelURL + "fileindex.json", _databuf, TokenSource.Token);
+            await DownloadFileAsync(ChannelURL + "fileindex.json", _databuf, TokenSource.Token);
 
-            data = Encoding.UTF8.GetString(_databuf.ToArray());
-            FileProp = JsonConvert.DeserializeObject<Prop>(data);
+            FileProp = JsonConvert.DeserializeObject<Prop>(Encoding.UTF8.GetString(_databuf.ToArray()));
         }
 
-        public void StartCheck()
+        public async Task StartCheck()
         {
             if (Directory.Exists(TempPath))
                 Directory.Delete(TempPath, true);
@@ -90,7 +88,7 @@ namespace CollapseLauncher
                 {
                     using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
                     {
-                        LocalHash = CreateMD5(fs).ToUpper();
+                        LocalHash = (await CreateMD5Async(fs)).ToUpper();
                         if (LocalHash != RemoteHash)
                             UpdateFiles.Add(_entry);
                     }
@@ -104,7 +102,7 @@ namespace CollapseLauncher
             }
         }
 
-        public void StartUpdate()
+        public async Task StartUpdate()
         {
             if (UpdateFiles.Count == 0) return;
             Read = 0;
@@ -128,15 +126,15 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(Path.GetDirectoryName(Output));
 
                 if (_entry.s >= (20 << 20))
-                    DownloadFile(URL, Output, 8, TokenSource.Token);
+                    await DownloadFileAsync(URL, Output, 8, TokenSource.Token);
                 else
-                    DownloadFile(URL, Output, TokenSource.Token);
+                    await DownloadFileAsync(URL, Output, TokenSource.Token);
             }
 
             DownloadProgress -= Updater_DownloadProgressAdapter;
         }
 
-        public void FinishUpdate()
+        public async Task FinishUpdate()
         {
             if (UpdateFiles.Count == 0)
             {
@@ -144,9 +142,11 @@ namespace CollapseLauncher
                 Status.message = $"Back to the launcher shortly...";
                 Console.WriteLine(UpdateFiles.Count);
                 UpdateStatus();
-                Suicide();
+                await Suicide();
+                return;
             }
 
+            /*
             string Output;
             string Temp;
             foreach (fileProp _entry in UpdateFiles)
@@ -162,9 +162,10 @@ namespace CollapseLauncher
 
                 File.Move(Temp, Output);
             }
+            Directory.Delete(TempPath, true);
+            */
 
             string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
-            Directory.Delete(TempPath, true);
 
             Status.status = $"Version has been updated to {FileProp.ver}!";
             Status.message = $"The launcher will re-open your launcher shortly...";
@@ -173,17 +174,17 @@ namespace CollapseLauncher
             Progress = new UpdaterProgress(TotalSize, TotalSize, 0, UpdateStopwatch.Elapsed);
             UpdateProgress();
             File.WriteAllText(newVerTagPath, FileProp.ver);
-            Suicide();
+            await Suicide();
         }
 
-        private async void Suicide()
+        private async Task Suicide()
         {
             await Task.Delay(3000);
             new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = launcherPath,
+                    FileName = applyPath,
                     UseShellExecute = true,
                     Verb = "runas",
                     WorkingDirectory = workingDir

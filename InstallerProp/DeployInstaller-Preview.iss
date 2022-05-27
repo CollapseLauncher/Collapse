@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.22.3
+AppVersion=1.0.22.6
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.22.3
+VersionInfoVersion=1.0.22.6
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.22.3
-VersionInfoProductTextVersion=1.0.22.3-preview
+VersionInfoProductVersion=1.0.22.6
+VersionInfoProductTextVersion=1.0.22.6-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -38,6 +38,10 @@ Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.Wi
 Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.WindowsAppRuntime.Singleton.1.1-preview3.msix"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
 Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\MSIX.inventory"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Aiursoft.HSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\ApplyUpdate.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\ApplyUpdate.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\ApplyUpdate.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\ApplyUpdate.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\clretwrc.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\clrjit.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\CollapseLauncher.deps.json"; DestDir: "{app}"; Flags: ignoreversion

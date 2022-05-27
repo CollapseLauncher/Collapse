@@ -12,7 +12,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Configurations>Debug;Release;Publish</Configurations>
-		<Version>1.0.22.5</Version>
+		<Version>1.0.22.6</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
@@ -22,12 +22,29 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA</DefineConstants>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="ApplyUpdate.deps.json" />
+	  <None Remove="ApplyUpdate.dll" />
+	  <None Remove="ApplyUpdate.exe" />
+	  <None Remove="ApplyUpdate.runtimeconfig.json" />
 	  <None Remove="Microsoft.WindowsAppRuntime.Bootstrap.dll" />
 	</ItemGroup>
 
     <ItemGroup>
+        <Content Include="ApplyUpdate.deps.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="ApplyUpdate.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="ApplyUpdate.exe">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="ApplyUpdate.runtimeconfig.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="config\fileconfig.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -70,5 +87,9 @@
         <Content Update="Assets\ironmaiden_logo_256.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Deps\" />
     </ItemGroup>
 </Project>

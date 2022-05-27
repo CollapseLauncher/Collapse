@@ -138,12 +138,11 @@ namespace CollapseLauncher
 
         public static void RunElevateUpdate()
         {
-            File.Copy(UpdaterWindow.sourcePath, UpdaterWindow.elevatedPath, true);
             Process elevatedProc = new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = UpdaterWindow.elevatedPath,
+                    FileName = UpdaterWindow.sourcePath,
                     WorkingDirectory = UpdaterWindow.workingDir,
                     Arguments = $"update --input \"{m_arguments.Updater.AppPath}\" --channel {m_arguments.Updater.UpdateChannel}",
                     UseShellExecute = true,

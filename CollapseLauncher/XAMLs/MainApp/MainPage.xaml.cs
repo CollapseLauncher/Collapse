@@ -160,32 +160,48 @@ namespace CollapseLauncher
 
         private void GetAppUpdateNotification()
         {
-            string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
-            TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
+            try
             {
-                File.Delete(UpdateNotifFile);
-                try
+                string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
+                TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
                 {
-                    string updateElevator = Path.Combine(AppDataFolder, "CollapseLauncher.Elevated.exe");
-                    if (File.Exists(updateElevator))
-                        File.Delete(updateElevator);
-                }
-                catch { }
-            });
+                    File.Delete(UpdateNotifFile);
+                });
 
-            if (File.Exists(UpdateNotifFile))
-            {
-                string VerString = File.ReadAllLines(UpdateNotifFile)[0];
-                SpawnNotificationPush(
-                    Lang._Misc.UpdateCompleteTitle,
-                    string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
-                    InfoBarSeverity.Success,
-                    0xAF,
-                    true,
-                    false,
-                    ClickClose
-                    );
+                if (File.Exists(UpdateNotifFile))
+                {
+                    string updateElevatorTemp = Path.Combine(AppFolder, "_Temp", "ApplyUpdate.exe");
+                    string updateElevator = Path.Combine(AppFolder, "ApplyUpdate.exe");
+
+                    string VerString = File.ReadAllLines(UpdateNotifFile)[0];
+                    SpawnNotificationPush(
+                        Lang._Misc.UpdateCompleteTitle,
+                        string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
+                        InfoBarSeverity.Success,
+                        0xAF,
+                        true,
+                        false,
+                        ClickClose
+                        );
+
+                    string target;
+                    string fold = Path.Combine(AppFolder, "_Temp");
+                    if (Directory.Exists(fold))
+                    {
+                        foreach (string file in Directory.EnumerateFiles(fold))
+                        {
+                            if (Path.GetFileNameWithoutExtension(file).Contains("ApplyUpdate"))
+                            {
+                                target = Path.Combine(AppFolder, Path.GetFileName(file));
+                                File.Move(file, target, true);
+                            }
+                        }
+
+                        Directory.Delete(fold, true);
+                    }
+                }
             }
+            catch { }
         }
 
         private void SpawnNotificationPush(string Title, string Content, InfoBarSeverity Severity, int MsgId = 0, bool IsClosable = true,

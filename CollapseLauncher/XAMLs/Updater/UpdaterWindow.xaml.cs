@@ -32,13 +32,12 @@ namespace CollapseLauncher
         public static string execPath = Process.GetCurrentProcess().MainModule.FileName;
         public static string workingDir = Path.GetDirectoryName(execPath);
         public static string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath));
-        public static string launcherPath = Path.Combine(workingDir, $"CollapseLauncher.exe");
+        public static string applyPath = Path.Combine(workingDir, $"ApplyUpdate.exe");
+        public static string applyElevatedPath = Path.Combine(workingDir, $"ApplyUpdate.Elevated.exe");
         public static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
 
         public UpdaterWindow()
         {
-            try
-            {
                 this.InitializeComponent();
                 InitializeWindowSettings();
 
@@ -49,27 +48,31 @@ namespace CollapseLauncher
                     this.Title = title += "[DEBUG]";
 #endif
 
+                UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
+                CurrentVersionLabel.Text = AppCurrentVersion;
+                
+                StartAsyncRoutine();
+        }
+
+        private async void StartAsyncRoutine()
+        {
+            try
+            {
                 Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower());
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
-                UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-                CurrentVersionLabel.Text = AppCurrentVersion;
-
-                Task.Run(() =>
+                await updater.StartFetch();
+                await updater.StartCheck();
+                await updater.StartUpdate();
+                DispatcherQueue.TryEnqueue(() =>
                 {
-                    updater.StartFetch();
-                    updater.StartCheck();
-                    updater.StartUpdate();
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        SpeedStatus.Visibility = Visibility.Collapsed;
-                        TimeEstimation.Visibility = Visibility.Collapsed;
-                        ActivitySubStatus.Visibility = Visibility.Collapsed;
-                        ProgressStatus.Visibility = Visibility.Collapsed;
-                    });
-                    updater.FinishUpdate();
+                    SpeedStatus.Visibility = Visibility.Collapsed;
+                    TimeEstimation.Visibility = Visibility.Collapsed;
+                    ActivitySubStatus.Visibility = Visibility.Collapsed;
+                    ProgressStatus.Visibility = Visibility.Collapsed;
                 });
+                await updater.FinishUpdate();
             }
             catch (Exception ex)
             {
