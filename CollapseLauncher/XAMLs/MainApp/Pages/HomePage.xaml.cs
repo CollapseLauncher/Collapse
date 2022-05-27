@@ -1321,24 +1321,32 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                DispatcherQueue.TryEnqueue(async () =>
-                {
-                    if (CurrentRegion.UseRightSideProgress ?? false)
-                        await HideImageCarousel(true);
-                    DownloadPreBtn.Visibility = Visibility.Collapsed;
-                    ProgressPreStatusGrid.Visibility = Visibility.Visible;
-                    ProgressPrePerFileStatusGrid.Visibility = Visibility.Visible;
-                    NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
-                    NotificationBar.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
-                });
 
                 InstallTool.InstallStatusChanged += InstallerDownloadPreStatusChanged;
                 InstallTool.InstallProgressChanged += InstallerDownloadPreProgressChanged;
 
                 while (RetryRoutine)
                 {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        DownloadPreBtn.Visibility = Visibility.Collapsed;
+                        ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                        ProgressPrePerFileStatusGrid.Visibility = Visibility.Visible;
+                        NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                        NotificationBar.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+                    });
+
                     await InstallTool.StartDownloadAsync();
-                    DispatcherQueue.TryEnqueue(() => NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle );
+
+                    if (CurrentRegion.UseRightSideProgress ?? false)
+                        await HideImageCarousel(true);
+
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        PauseDownloadPreBtn.IsEnabled = false;
+                        NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
+                    });
+
                     RetryRoutine = await InstallTool.StartVerificationAsync(Content);
                 }
 
