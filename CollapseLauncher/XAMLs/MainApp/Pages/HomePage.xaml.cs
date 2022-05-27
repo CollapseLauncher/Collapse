@@ -748,7 +748,7 @@ namespace CollapseLauncher.Pages
                 PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
                 ResumeDownloadPreBtn.Visibility = Visibility.Visible;
 
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                // MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             });
         }
 
@@ -1259,6 +1259,7 @@ namespace CollapseLauncher.Pages
         {
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
+            (sender as Button).IsEnabled = false;
             NotificationBar.IsClosable = false;
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
@@ -1309,8 +1310,10 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue.TryEnqueue(async () =>
                 {
+                    if (CurrentRegion.UseRightSideProgress ?? false)
+                        await HideImageCarousel(true);
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
                     ProgressPreStatusGrid.Visibility = Visibility.Visible;
                     ProgressPrePerFileStatusGrid.Visibility = Visibility.Visible;
