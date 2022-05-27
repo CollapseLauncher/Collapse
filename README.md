@@ -32,6 +32,7 @@ For now, this launcher only supports these versions of the game:
 This launcher also supports other game client, including:
 * Genshin Impact (Global Release)
 * 原神 / Yuan Shen (Mainland China's Genshin)
+* ~~Honkai: Star Rail~~ (Waiting for Official Release)
 
 Some feature like Game Data Repair and Preload Download is available for this game but other things like Game Settings, Game Mirror Server and Caches Download aren't available for this Game Client.
 
