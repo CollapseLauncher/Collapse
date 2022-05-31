@@ -18,11 +18,13 @@
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA</DefineConstants>
 		<Optimize>True</Optimize>
+		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="ApplyUpdate.deps.json" />
