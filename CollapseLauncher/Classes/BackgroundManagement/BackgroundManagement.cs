@@ -294,7 +294,7 @@ namespace CollapseLauncher
         }
 
         bool BGLastState = true;
-        public void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        public async void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
@@ -325,6 +325,8 @@ namespace CollapseLauncher
                 storyboardFront.Begin();
                 storyboardBack.Begin();
                 BGLastState = hideImage;
+
+                await Task.Delay(250);
             }
         }
 

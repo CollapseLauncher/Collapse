@@ -35,7 +35,7 @@ namespace CollapseLauncher
             try
             {
                 LoadGamePreset();
-                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {App.GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
@@ -486,6 +486,7 @@ namespace CollapseLauncher
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;
                 default:
+                case "UnhandledExceptionPage":
                 case "BlankPage":
                     HideBackgroundImage();
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);

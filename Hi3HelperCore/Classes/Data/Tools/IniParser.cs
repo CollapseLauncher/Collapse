@@ -275,7 +275,7 @@ namespace Hi3Helper.Data
         private static readonly IniValue _default = new IniValue();
         public static IniValue Default { get { return _default; } }
     }
-    [DebuggerStepThrough]
+
     public class IniFile : IEnumerable<KeyValuePair<string, IniSection>>, IDictionary<string, IniSection>
     {
         private Dictionary<string, IniSection> sections;

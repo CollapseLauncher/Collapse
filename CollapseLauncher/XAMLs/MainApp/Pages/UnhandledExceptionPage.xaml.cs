@@ -17,7 +17,10 @@ namespace CollapseLauncher.Pages
 
         private void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {
-            DataPackage data = new DataPackage();
+            DataPackage data = new DataPackage()
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
             data.SetText(ErrorSender.ExceptionContent);
             Clipboard.SetContent(data);
             CopyThrow.Content = "Copied to Clipboard!";

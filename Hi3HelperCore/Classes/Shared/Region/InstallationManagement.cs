@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 
 using Hi3Helper.Data;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -38,10 +39,18 @@ namespace Hi3Helper.Shared.Region
 
         public static void LoadGameConfig()
         {
-            gameIni.Config = new IniFile();
-            gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
-            if (File.Exists(gameIni.ConfigPath))
-                gameIni.Config.Load(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.Open, FileAccess.Read));
+            try
+            {
+                gameIni.Config = new IniFile();
+                gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
+                if (File.Exists(gameIni.ConfigPath))
+                    gameIni.Config.Load(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.Open, FileAccess.Read));
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"The Game Profile config.ini seems to be messed up. Please check your Game Profile \"config.ini\" located in this folder:\r\n{gameIni.ProfilePath}\r\n{ex}", LogType.Error, true);
+                throw new Exception($"The Game Profile config.ini seems to be messed up. Please check your Game Profile \"config.ini\" located in this folder:\r\n{gameIni.ProfilePath}", ex);
+            }
         }
         public static void SaveGameConfig() => gameIni.Config.Save(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.OpenOrCreate, FileAccess.Write));
 
