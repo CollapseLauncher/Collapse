@@ -48,12 +48,11 @@ namespace Hi3Helper.Data
 
         public static uint ConcatUint(uint a, uint b)
         {
-            uint pow = 1;
-
-            while (pow < b)
-                pow = ((pow << 2) + pow) << 1;
-
-            return a * pow + b;
+            uint c0 = 10, c1 = 100, c2 = 1000, c3 = 10000, c4 = 100000,
+                    c5 = 1000000, c6 = 10000000, c7 = 100000000, c8 = 1000000000;
+            a *= b < c0 ? c0 : b < c1 ? c1 : b < c2 ? c2 : b < c3 ? c3 :
+                 b < c4 ? c4 : b < c5 ? c5 : b < c6 ? c6 : b < c7 ? c7 : c8;
+            return a + b;
         }
 
         public static uint SumBinaryUint(uint a, uint b)

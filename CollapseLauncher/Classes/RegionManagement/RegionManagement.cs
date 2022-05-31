@@ -64,7 +64,10 @@ namespace CollapseLauncher
                 InnerLauncherConfig.NotificationData.EliminatePushList();
                 foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.RegionPush)
                 {
-                    if (Entry.RegionProfile == RegionProfileName)
+                    if (Entry.RegionProfile == RegionProfileName && (Entry.ValidForVerBelow == null
+                            || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
+                            && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
+                            || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)))
                     {
                         NotificationSender.SendNotification(new NotificationInvokerProp
                         {

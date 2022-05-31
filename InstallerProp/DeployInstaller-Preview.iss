@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.22.6
+AppVersion=1.0.23.1
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.22.6
+VersionInfoVersion=1.0.23.1
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.22.6
-VersionInfoProductTextVersion=1.0.22.6-preview
+VersionInfoProductVersion=1.0.23.1
+VersionInfoProductTextVersion=1.0.23.1-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -268,7 +268,6 @@ Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\ironmaiden_logo_256.p
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\AiHappy.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\default.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\Fonts\FontAwesomeBrand6.otf"; DestDir: "{app}\Assets\Fonts"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\preview\config\fileconfig.json"; DestDir: "{app}\config"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lang\en.json"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\7z.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\HPatchZ.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
@@ -284,8 +283,7 @@ Name: "{app}\prequesties\WindowsAppSDK-Installer-x64"
 Name: "{app}\Lib"     
 Name: "{app}\Lang"
 Name: "{app}\Assets"
-Name: "{app}\Assets\BG"
-Name: "{app}\config"    
+Name: "{app}\Assets\BG" 
 Name: "{app}\Assets\Fonts"
 
 [Run]

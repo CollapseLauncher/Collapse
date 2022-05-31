@@ -17,14 +17,15 @@ namespace Hi3Helper.Data
         private State _DownloadState;
         private bool _IsFileAlreadyCompleted = false;
 
-        public HttpClientHelper(bool IgnoreCompression = false, int maxRetryCount = 5, float maxRetryTimeout = 1)
+        public HttpClientHelper(bool IgnoreCompression = false, bool ignoreSslCertificate = false, int maxRetryCount = 5, float maxRetryTimeout = 1)
             : base(new HttpClientHandler
-        {
-            AllowAutoRedirect = true,
-            UseCookies = true,
-            MaxConnectionsPerServer = 32,
-            AutomaticDecompression = IgnoreCompression ? DecompressionMethods.None : DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None
-        })
+            {
+                AllowAutoRedirect = true,
+                UseCookies = true,
+                MaxConnectionsPerServer = 32,
+                AutomaticDecompression = IgnoreCompression ? DecompressionMethods.None : DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
+                ServerCertificateCustomValidationCallback = ignoreSslCertificate ? (message, cert, chain, errors) => { return true; } : null
+            })
         {
             this._Stopwatch = new Stopwatch();
             this._OutputStream = new MemoryStream();
@@ -105,6 +106,7 @@ namespace Hi3Helper.Data
                 if (!_IsFileAlreadyCompleted)
                 {
                     await Task.Run(() => MergeSlices());
+                    DisposeAllThreadsStream();
                 }
                 this._DownloadState = State.Completed;
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, 0, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
@@ -115,8 +117,16 @@ namespace Hi3Helper.Data
             {
                 _Stopwatch.Stop();
                 this._DownloadState = State.Cancelled;
+
+                DisposeAllThreadsStream();
+
                 UpdateProgress(new _DownloadProgress(_DownloadedSize, _TotalSizeToDownload, 0, _LastContinuedSize, _Stopwatch.Elapsed, _DownloadState));
                 throw new TaskCanceledException($"Cancellation for {Input} has been fired!", ex);
+            }
+            catch (Exception ex)
+            {
+                DisposeAllThreadsStream();
+                throw new Exception($"Unexpected error has occured!\r\n{ex}", ex);
             }
         }
 

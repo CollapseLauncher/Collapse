@@ -26,7 +26,7 @@ namespace Hi3Helper.Data
         private QueryProto DispatchProto = new QueryProto();
         private QueryProperty returnValProp;
 
-        public GenshinDispatchHelper(int RegionID, string DispatchKey, string VersionString = "2.6.0") : base(false, 1, 1)
+        public GenshinDispatchHelper(int RegionID, string DispatchKey, string VersionString = "2.6.0") : base(false, false, 1, 1)
         {
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;

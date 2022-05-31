@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollapseLauncher", "Collaps
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore", "Hi3HelperCore\Hi3HelperCore.csproj", "{102DC1D2-B1A9-46AF-B56C-A124013747B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplyUpdate", "ApplyUpdate\ApplyUpdate.csproj", "{5F932364-CDA4-4104-919B-C6DD247849C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplyUpdate", "ApplyUpdate\ApplyUpdate.csproj", "{5F932364-CDA4-4104-919B-C6DD247849C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

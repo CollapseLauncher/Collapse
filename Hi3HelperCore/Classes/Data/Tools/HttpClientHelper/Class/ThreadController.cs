@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -22,8 +23,10 @@ namespace Hi3Helper.Data
         private bool _ThreadSingleMode = false;
         private IEnumerable<_ThreadProperty> _ThreadProperties;
 
-        private class _ThreadProperty
+        private class _ThreadProperty : HttpClient
         {
+            public string URL { get; set; }
+            public CancellationToken ThreadToken { get; set; }
             public int ThreadID { get; set; }
             public long? StartOffset { get; set; }
             public long? EndOffset { get; set; }
@@ -33,6 +36,31 @@ namespace Hi3Helper.Data
             public Stream RemoteStream { get; set; }
             public bool IsDownloading { get; set; } = false;
             public bool IsCompleted { get; set; } = false;
+
+            public new void Dispose()
+            {
+                LocalStream?.Dispose();
+                RemoteStream?.Dispose();
+                HttpMessage?.Dispose();
+            }
+
+            private HttpResponseMessage CheckResponseStatusCode(HttpResponseMessage Input)
+            {
+                if (Input.StatusCode == HttpStatusCode.RequestedRangeNotSatisfiable)
+                    throw new InvalidDataException($"Return Code: {(int)Input.StatusCode} ({Input.StatusCode}) from {Input.RequestMessage?.RequestUri}. File may already completed or Server cannot respond ContentLength. Ignoring!");
+                if (!Input.IsSuccessStatusCode)
+                    throw new HttpRequestException($"Error Occured while Reading Response from {Input.RequestMessage?.RequestUri} with Return Code: {(int)Input.StatusCode} ({Input.StatusCode})");
+
+                return Input;
+            }
+
+            public async Task RetryRequest()
+            {
+                StartOffset = LocalStream.Length;
+                HttpRequestMessage _RequestMessage = new HttpRequestMessage() { RequestUri = new Uri(URL) };
+                _RequestMessage.Headers.Range = new RangeHeaderValue(StartOffset, EndOffset);
+                this.HttpMessage = CheckResponseStatusCode(await SendAsync(_RequestMessage, HttpCompletionOption.ResponseHeadersRead, ThreadToken));
+            }
         }
 
         private async Task<IEnumerable<Task>> StartThreads(long? StartOffset, long? EndOffset)
@@ -47,28 +75,20 @@ namespace Hi3Helper.Data
             {
                 _out.Add(Task.Run(async () =>
                 {
-                    using (ThreadProperty.HttpMessage)
+                    ThreadProperty.RemoteStream = await GetRemoteStream(ThreadProperty.HttpMessage);
+                    bool IsRetryLastChance = false;
+                    while (!await TryRunRetryableTask(ThreadProperty, IsRetryLastChance))
                     {
-                        using (ThreadProperty.RemoteStream = await GetRemoteStream(ThreadProperty.HttpMessage))
-                        {
-                            bool IsRetryLastChance = false;
-                            while (!await TryRunRetryableTask(ThreadProperty, IsRetryLastChance))
-                            {
-                                if (ThreadProperty.CurrentRetry > _ThreadMaxRetry - 1)
-                                    IsRetryLastChance = true;
+                        if (ThreadProperty.CurrentRetry > _ThreadMaxRetry - 1)
+                            IsRetryLastChance = true;
 
-                                LogWriteLine($"Retrying for threadID: {ThreadProperty.ThreadID} (Retry Attempt: {ThreadProperty.CurrentRetry}/{_ThreadMaxRetry})...", LogType.Warning, true);
-                                await Task.Delay((int)(_ThreadRetryDelay * 1000), _ThreadToken);
-                                ThreadProperty.CurrentRetry++;
-                            }
-
-                            if (_DisposeStream)
-                                ThreadProperty.LocalStream.Dispose();
-
-                            ThreadProperty.IsDownloading = false;
-                            ThreadProperty.IsCompleted = true;
-                        }
+                        Console.WriteLine($"Retrying for threadID: {ThreadProperty.ThreadID} (Retry Attempt: {ThreadProperty.CurrentRetry}/{_ThreadMaxRetry})...");
+                        await Task.Delay((int)(_ThreadRetryDelay * 1000), _ThreadToken);
+                        ThreadProperty.CurrentRetry++;
                     }
+
+                    ThreadProperty.IsDownloading = false;
+                    ThreadProperty.IsCompleted = true;
                 }));
             }
 
@@ -91,7 +111,9 @@ namespace Hi3Helper.Data
             HttpRequestMessage RequestMessage = new HttpRequestMessage() { RequestUri = new Uri(_InputURL) };
             _ThreadProperty ThreadProperty = new _ThreadProperty()
             {
+                URL = _InputURL,
                 ThreadID = 0,
+                ThreadToken = _ThreadToken,
                 CurrentRetry = 1,
                 LocalStream = this._UseStreamOutput ? _OutputStream : SeekStreamToEnd(_OutputStream),
                 StartOffset = this._UseStreamOutput ? StartOffset ?? 0 : (StartOffset == null ? LocalLength : LocalLength + StartOffset),
@@ -111,7 +133,7 @@ namespace Hi3Helper.Data
 
             ThreadProperty.HttpMessage = CheckResponseStatusCode(await SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, _ThreadToken));
 
-            _TotalSizeToDownload += IsIgnore ? ThreadProperty.HttpMessage.Content.Headers.ContentLength ?? 0 : 
+            _TotalSizeToDownload += IsIgnore ? ThreadProperty.HttpMessage.Content.Headers.ContentLength ?? 0 :
                 (ThreadProperty.HttpMessage.Content.Headers.ContentLength ?? 0) + LocalLength;
 
             if (IsIgnore)
@@ -123,46 +145,64 @@ namespace Hi3Helper.Data
         private async Task<IList<_ThreadProperty>> GetMultipleThreadProperties()
         {
             IList<_ThreadProperty> _out = new List<_ThreadProperty>();
-
             _TotalSizeToDownload = await TryGetContentLength();
-            long _SliceSize = _TotalSizeToDownload / _ThreadNumber;
-            long _PrevStartSize = 0;
-            long? _StartOffset = 0, _EndOffset = 0;
-            for (int i = 0; i < (_ThreadSingleMode ? 1 : _ThreadNumber); i++)
+
+            long _SliceSize = (long)Math.Ceiling((double)_TotalSizeToDownload / _ThreadNumber);
+
+            for (long i = 0, thread = 0; thread < _ThreadNumber; i += _SliceSize, thread++)
             {
-                HttpRequestMessage _RequestMessage = new HttpRequestMessage() { RequestUri = new Uri(_InputURL) };
                 _ThreadProperty ThreadProperty = new _ThreadProperty()
                 {
-                    ThreadID = i,
+                    URL = _InputURL,
+                    ThreadID = (int)thread,
+                    ThreadToken = _ThreadToken,
                     CurrentRetry = 1,
-                    LocalStream = SeekStreamToEnd(new FileStream(string.Format("{0}.{1:000}", _OutputPath, i + 1), FileMode.OpenOrCreate, FileAccess.Write))
+                    LocalStream = SeekStreamToEnd(new FileStream(string.Format("{0}.{1:000}", _OutputPath, thread + 1), FileMode.OpenOrCreate, FileAccess.Write))
                 };
                 _DownloadedSize += ThreadProperty.LocalStream.Length;
-                ThreadProperty.StartOffset = _StartOffset = Math.Min(_PrevStartSize, _PrevStartSize += _SliceSize + 1);
-                ThreadProperty.EndOffset = _EndOffset = i + 1 == _ThreadNumber ? _TotalSizeToDownload - 1 : ThreadProperty.StartOffset + _SliceSize;
+                ThreadProperty.StartOffset = i + ThreadProperty.LocalStream.Length;
+                ThreadProperty.EndOffset = thread + 1 == _ThreadNumber ? _TotalSizeToDownload - 1 : (i + _SliceSize) - 1;
 
-                ThreadProperty.StartOffset += ThreadProperty.LocalStream.Length;
+                await CheckAndSetRangeValidation(ThreadProperty, _out, (int)thread);
+            }
+
+            return _out;
+        }
+
+        private async Task CheckAndSetRangeValidation(_ThreadProperty ThreadProperty, IList<_ThreadProperty> ListOut, int ThreadID)
+        {
+            try
+            {
+                if ((ThreadProperty.EndOffset - ThreadProperty.StartOffset == -1)
+                    || (ThreadID + 1 == _ThreadNumber ? ThreadProperty.EndOffset == ThreadProperty.StartOffset : false))
+                {
+                    ThreadProperty.LocalStream.Dispose();
+                    return;
+                }
 
                 if (ThreadProperty.EndOffset - ThreadProperty.StartOffset < -1)
                 {
-                    LogWriteLine($"Chunk on ThreadID: {i} seems to be corrupted (< expected size). Redownloading it!", LogType.Warning);
+                    Console.WriteLine($"Chunk on ThreadID: {ThreadID} seems to be corrupted (< expected size). Redownloading it!");
                     _DownloadedSize -= ThreadProperty.LocalStream.Length;
                     ThreadProperty.StartOffset -= ThreadProperty.LocalStream.Length;
                     ThreadProperty.LocalStream.Dispose();
-                    ThreadProperty.LocalStream = new FileStream(string.Format("{0}.{1:000}", _OutputPath, i + 1), FileMode.Create, FileAccess.Write);
+                    ThreadProperty.LocalStream = new FileStream(string.Format("{0}.{1:000}", _OutputPath, ThreadID + 1), FileMode.Create, FileAccess.Write);
                 }
 
                 if (ThreadProperty.EndOffset - ThreadProperty.StartOffset > -1)
                 {
+                    HttpRequestMessage _RequestMessage = new HttpRequestMessage() { RequestUri = new Uri(_InputURL) };
                     _RequestMessage.Headers.Range = new RangeHeaderValue(ThreadProperty.StartOffset, ThreadProperty.EndOffset);
                     ThreadProperty.HttpMessage = CheckResponseStatusCode(await SendAsync(_RequestMessage, HttpCompletionOption.ResponseHeadersRead, _ThreadToken));
-
-                    _out.Add(ThreadProperty);
                 }
-                else
-                    ThreadProperty.LocalStream.Dispose();
+
+                ListOut.Add(ThreadProperty);
             }
-            return _out;
+            catch (Exception ex)
+            {
+                ThreadProperty.Dispose();
+                throw new Exception($"{ex}", ex);
+            }
         }
 
         private async Task<long> TryGetContentLength()
@@ -178,7 +218,7 @@ namespace Hi3Helper.Data
                     if (_ThreadRetryAttempt > _ThreadMaxRetry)
                         throw new HttpRequestException(ex.ToString(), ex);
 
-                    LogWriteLine($"Error while fetching File Size (Retry Attempt: {_ThreadRetryAttempt})...", LogType.Warning, true);
+                    Console.WriteLine($"Error while fetching File Size (Retry Attempt: {_ThreadRetryAttempt})...");
                     Task.Delay((int)(_ThreadRetryDelay * 1000), _ThreadToken).GetAwaiter().GetResult();
                     _ThreadRetryAttempt++;
                 }
@@ -189,15 +229,18 @@ namespace Hi3Helper.Data
         {
             try
             {
-                LogWriteLine($"ThreadID: {ThreadProperty.ThreadID}, Start: {ThreadProperty.StartOffset}, EndOffset: {ThreadProperty.EndOffset}, Size: {ThreadProperty.EndOffset - ThreadProperty.StartOffset}");
+                Console.WriteLine($"ThreadID: {ThreadProperty.ThreadID}, Start: {ThreadProperty.StartOffset}, EndOffset: {ThreadProperty.EndOffset}, Size: {ThreadProperty.EndOffset - ThreadProperty.StartOffset}");
                 await ReadStreamAsync(ThreadProperty);
+
+                if (_DisposeStream)
+                    ThreadProperty.Dispose();
             }
             catch (IOException ex)
             {
-                LogWriteLine($"I/O Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}", LogType.Warning, true);
+                Console.WriteLine($"I/O Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}");
+                await ThreadProperty.RetryRequest();
                 if (IsLastRetry)
                 {
-                    ThreadProperty.LocalStream.Dispose();
                     ThreadProperty.IsDownloading = false;
                     throw new IOException($"ThreadID: {ThreadProperty.ThreadID} has exceeded Max. Retry: {ThreadProperty.CurrentRetry - 1}/{_ThreadMaxRetry}. CANCELLING!!", ex);
                 }
@@ -206,10 +249,10 @@ namespace Hi3Helper.Data
             }
             catch (HttpRequestException ex)
             {
-                LogWriteLine($"Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}", LogType.Warning, true);
+                Console.WriteLine($"Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}");
+                await ThreadProperty.RetryRequest();
                 if (IsLastRetry)
                 {
-                    ThreadProperty.LocalStream.Dispose();
                     ThreadProperty.IsDownloading = false;
                     throw new HttpRequestException($"ThreadID: {ThreadProperty.ThreadID} has exceeded Max. Retry: {ThreadProperty.CurrentRetry - 1}/{_ThreadMaxRetry}. CANCELLING!!", ex);
                 }
@@ -218,37 +261,32 @@ namespace Hi3Helper.Data
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                ThreadProperty.LocalStream.Dispose();
                 ThreadProperty.IsDownloading = false;
-                LogWriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!\r\nChunk of this thread is already completed. Ignoring!!\r\n{ex}", LogType.Default, false);
+                Console.WriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!\r\nChunk of this thread is already completed. Ignoring!!\r\n{ex}");
                 return true;
             }
             catch (InvalidDataException ex)
             {
-                ThreadProperty.LocalStream.Dispose();
                 ThreadProperty.IsDownloading = false;
-                LogWriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!\r\n{ex}", LogType.Warning, true);
-                return true;
+                Console.WriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!\r\nThread doesn't receive valid data!\r\n{ex}");
+                throw new InvalidDataException($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!\r\nThread doesn't receive valid data!", ex);
             }
             catch (TaskCanceledException ex)
             {
-                ThreadProperty.LocalStream.Dispose();
                 ThreadProperty.IsDownloading = false;
-                LogWriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!", LogType.Error, false);
+                Console.WriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!");
                 throw new TaskCanceledException(ex.ToString(), ex);
             }
             catch (OperationCanceledException ex)
             {
-                ThreadProperty.LocalStream.Dispose();
                 ThreadProperty.IsDownloading = false;
-                LogWriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!", LogType.Default, false);
+                Console.WriteLine($"Cancel: ThreadID: {ThreadProperty.ThreadID} has been shutdown!");
                 throw new TaskCanceledException(ex.ToString(), ex);
             }
             catch (Exception ex)
             {
-                ThreadProperty.LocalStream.Dispose();
                 ThreadProperty.IsDownloading = false;
-                LogWriteLine($"Unknown Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}", LogType.Error, true);
+                Console.WriteLine($"Unknown Error on ThreadID: {ThreadProperty.ThreadID}\r\n{ex}");
                 throw new Exception(ex.ToString(), ex);
             }
 

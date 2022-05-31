@@ -62,7 +62,7 @@ namespace CollapseLauncher
                     DownloadLocalContinueSize = 0,
                     DownloadRemoteSize = 0;
 
-        public int  CountCurrentDownload = 0,
+        public int CountCurrentDownload = 0,
                     CountTotalToDownload = 0;
 
         public long DownloadLocalPerFileSize = 0,
@@ -75,7 +75,7 @@ namespace CollapseLauncher
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
             string GameVerString = "", string DispatchKey = null, int RegionID = 0,
-            string ExecutablePrefix = "BH3")
+            string ExecutablePrefix = "BH3") : base(true, false, 10)
         {
             this.Content = Content;
             this.SourceProfile = SourceProfile;
@@ -114,7 +114,8 @@ namespace CollapseLauncher
                 PatchProp = new DeltaPatchProperty(GamePaths.First());
                 if (PatchProp.ProfileName != this.SourceProfile.ProfileName) return false;
                 if (this.ModeType != DownloadType.Update) return false;
-            } catch (IndexOutOfRangeException) { return false; }
+            }
+            catch (IndexOutOfRangeException) { return false; }
 
             return true;
         }
@@ -346,7 +347,7 @@ namespace CollapseLauncher
                 return fileInfo.Length;
 
             List<string> partPaths = Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*").ToList();
-            
+
             if (partPaths.Count == 0)
                 return 0;
 
@@ -611,6 +612,10 @@ namespace CollapseLauncher
             long Size = BrokenFiles.Sum(x => x.fileSize);
             if (BrokenFiles.Count > 0)
             {
+                LogWriteLine($"Total File: {BrokenFiles.Count} with size {ConverterTool.SummarizeSizeSimple(Size)}", LogType.Default, true);
+                foreach (PkgVersionProperties Entry in BrokenFiles)
+                    LogWriteLine($"{Entry.remoteName};{Entry.fileSize}", LogType.Default, true);
+
                 switch (await Dialog_AdditionalDownloadNeeded(Content, Size))
                 {
                     case ContentDialogResult.None:
@@ -680,6 +685,9 @@ namespace CollapseLauncher
                 }
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                     new HttpClientHelper(false).DownloadFile(ParentURL + "/data_versions", fs, Token);
+#if DEBUG
+                LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}");
+#endif
 
                 BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
             }
@@ -691,6 +699,9 @@ namespace CollapseLauncher
             if (File.Exists(ManifestPath + "_persist")) File.Delete(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 new HttpClientHelper(false).DownloadFile(ParentURL + "/data_versions", fs, Token);
+#if DEBUG
+            LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}");
+#endif
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
 
@@ -701,6 +712,9 @@ namespace CollapseLauncher
             if (File.Exists(ManifestPath + "_persist")) File.Delete(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 new HttpClientHelper(false).DownloadFile(ParentURL + "/release_res_versions_external", fs, Token);
+#if DEBUG
+            LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}");
+#endif
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent", "", ParentURL, true, ParentAudioURL);
 
@@ -752,7 +766,11 @@ namespace CollapseLauncher
                             case ".pck":
                                 if (Entry.remoteName.Contains("English(US)"))
                                 {
-                                    Entry.remoteURL = $"{parentAudioURL}/AudioAssets/{Entry.remoteName}";
+                                    if (Entry.isPatch)
+                                        Entry.remoteURL = $"{parentURL}/AudioAssets/{Entry.remoteName}";
+                                    else
+                                        Entry.remoteURL = $"{parentAudioURL}/AudioAssets/{Entry.remoteName}";
+
                                     if (parentPath != "")
                                         Entry.remoteName = $"{parentPath.Replace('\\', '/')}/AudioAssets/{Entry.remoteName}";
 
@@ -879,15 +897,19 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(Path.GetDirectoryName(LocalPath));
 
                 UpdateStatus(InstallStatus);
-                await Task.Run(() =>
+                // Use Parallel Download if file size >= 40 MiB
+                // Else, use Serial Download
+                try
                 {
-                    // Use Parallel Download if file size >= 40 MiB
-                    // Else, use Serial Download
                     if (Entry.fileSize >= 10 << 20)
-                        DownloadFile(RemotePath, LocalPath, DownloadThread, Token);
+                        await DownloadFileAsync(RemotePath, LocalPath, DownloadThread, Token);
                     else
-                        DownloadFile(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
-                });
+                        await DownloadFileAsync(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"{ex}", LogType.Error, true);
+                }
             }
             DownloadProgress -= DownloadProgressAdapter;
 

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Hi3Helper.Data
 {
@@ -30,11 +31,17 @@ namespace Hi3Helper.Data
         private HttpResponseMessage CheckResponseStatusCode(HttpResponseMessage Input)
         {
             if (Input.StatusCode == HttpStatusCode.RequestedRangeNotSatisfiable)
-                throw new InvalidDataException($"Return Code: {(int)Input.StatusCode} ({Input.StatusCode}). File may already completed or Server cannot respond ContentLength. Ignoring!");
+                throw new InvalidDataException($"Return Code: {(int)Input.StatusCode} ({Input.StatusCode}) from {Input.RequestMessage?.RequestUri}. File may already completed or Server cannot respond ContentLength. Ignoring!");
             if (!Input.IsSuccessStatusCode)
                 throw new HttpRequestException($"Error Occured while Reading Response from {Input.RequestMessage?.RequestUri} with Return Code: {(int)Input.StatusCode} ({Input.StatusCode})");
 
             return Input;
+        }
+
+        private void DisposeAllThreadsStream()
+        {
+            if (_ThreadProperties != null)
+                (_ThreadProperties as List<_ThreadProperty>).ForEach(x => x.Dispose());
         }
 
         private async Task ReadStreamAsync(_ThreadProperty Property)
