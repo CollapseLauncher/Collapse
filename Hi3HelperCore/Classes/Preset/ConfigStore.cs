@@ -30,6 +30,7 @@ namespace Hi3Helper.Preset
         }
 
         public static void LoadConfigFromFile(string input) => Config = JsonConvert.DeserializeObject<List<PresetConfigClasses>>(File.ReadAllText(input));
+        public static void LoadConfigTemplate() => Config = GameConfigurationTemplate.GameConfigTemplate;
 
         public static string GetMirrorAddressByIndex(PresetConfigClasses h, DataType i)
         {

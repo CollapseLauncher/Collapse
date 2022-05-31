@@ -82,7 +82,8 @@ namespace Hi3Helper.Shared.Region
         public static void LoadGamePreset()
         {
             AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
-            LoadConfigFromFile(Path.Combine(AppFolder, "config", "fileconfig.json"));
+            LoadConfigTemplate();
+            // LoadConfigFromFile(Path.Combine(AppFolder, "config", "fileconfig.json"));
             GameConfigName = Config.Select(x => x.ZoneName).ToList();
         }
 

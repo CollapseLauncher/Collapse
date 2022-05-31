@@ -12,7 +12,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Configurations>Debug;Release;Publish</Configurations>
-		<Version>1.0.22.7</Version>
+		<Version>1.0.22.8</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
@@ -44,9 +44,6 @@
         </Content>
         <Content Include="ApplyUpdate.runtimeconfig.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="config\fileconfig.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="icon.ico" />
         <Content Include="Microsoft.WindowsAppRuntime.Bootstrap.dll">
