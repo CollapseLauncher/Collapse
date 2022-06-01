@@ -62,22 +62,6 @@ namespace CollapseLauncher
 
                 UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
                 CurrentVersionLabel.Text = AppCurrentVersion;
-
-                // InitLog(false);
-
-                Task.Run(() =>
-                {
-                    updater.StartFetch();
-                    updater.StartCheck();
-                    updater.StartUpdate();
-                    updater.FinishUpdate();
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        SpeedStatus.Visibility = Visibility.Collapsed;
-                        TimeEstimation.Visibility = Visibility.Collapsed;
-                        ActivitySubStatus.Visibility = Visibility.Collapsed;
-                    });
-                });
             }
             catch (Exception ex)
             {
