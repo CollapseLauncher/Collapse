@@ -423,6 +423,12 @@ namespace CollapseLauncher.Pages
         private async Task StartInstallationProcedure(string destinationFolder)
         {
             GameDirPath = destinationFolder;
+            if (CheckExistingGame(destinationFolder))
+            {
+                CancelInstallationDownload();
+                return;
+            }
+
             if (!Directory.Exists(GameDirPath))
                 Directory.CreateDirectory(GameDirPath);
 
@@ -448,6 +454,60 @@ namespace CollapseLauncher.Pages
             ApplyGameConfig(GameDirPath);
 
             CancelInstallationDownload();
+        }
+
+        private bool CheckExistingGame(string destinationFolder)
+        {
+            bool isExist = false;
+            string targetPath = null, iniPath = null;
+            // Phase 1 Check
+            targetPath = Path.Combine(destinationFolder, CurrentRegion.GameExecutableName);
+            iniPath = Path.Combine(destinationFolder, "config.ini");
+
+            if (File.Exists(targetPath) && File.Exists(iniPath))
+            {
+                gameIni.Config = new IniFile();
+                gameIni.ConfigPath = iniPath;
+                gameIni.ConfigStream = new FileStream(iniPath, FileMode.Open, FileAccess.Read);
+                gameIni.Config.Load(gameIni.ConfigStream);
+                isExist = true;
+
+                return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);
+            }
+
+            // Phase 2 Check
+            targetPath = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName, CurrentRegion.GameExecutableName);
+            iniPath = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName, "config.ini");
+
+            if (File.Exists(targetPath) && File.Exists(iniPath))
+            {
+                gameIni.Config = new IniFile();
+                gameIni.ConfigPath = iniPath;
+                gameIni.ConfigStream = new FileStream(iniPath, FileMode.Open, FileAccess.Read);
+                gameIni.Config.Load(gameIni.ConfigStream);
+                isExist = true;
+
+                return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);
+            }
+
+            return false;
+        }
+
+        private bool CheckExistingGameVerAndSet(string targetPath, string iniPath, bool isExist)
+        {
+            if (!isExist)
+                return false;
+
+            // if (gameIni.Config["General"]["game_version"].ToString() != regionResourceProp.data.game.latest.version)
+            //     return false;
+
+            gameIni.Profile["launcher"]["game_install_path"] = Path.GetDirectoryName(targetPath).Replace('\\', '/');
+            SaveGameProfile();
+            // PrepareGameConfig();
+            if (CurrentRegion.IsGenshin ?? false)
+                CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
+
+            return true;
         }
 
         private void ApplyGameConfig(string destinationFolder)
