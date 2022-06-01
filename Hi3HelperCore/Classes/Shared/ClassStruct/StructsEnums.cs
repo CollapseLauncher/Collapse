@@ -7,6 +7,13 @@ using Hi3Helper.Data;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
+    public enum AppBGMode
+    {
+        Desktop,
+        Custom,
+        Default
+    }
+
     public struct AppIniStruct
     {
         public IniFile Profile;

@@ -89,6 +89,9 @@ namespace Hi3Helper
         [DllImport("Shcore.dll", SetLastError = true)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
 
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,
             bool isLoadOldAll, UIntPtr patchCacheSize, long diffDataOffert, long diffDataSize);

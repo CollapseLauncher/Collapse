@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows;
 
 using Windows.UI;
+using Windows.Foundation;
 
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -62,6 +63,9 @@ namespace CollapseLauncher
         public static IntPtr m_windowHandle;
         public static AppWindow m_AppWindow;
         public static OverlappedPresenter m_presenter;
+        public static Size m_actualMainFrameSize;
+        public static double m_appDPIScale;
+        public static string m_appCurrentFrameName;
         public static ApplicationTheme CurrentRequestedAppTheme;
         public static AppThemeMode CurrentAppTheme;
         public static Color SystemAppTheme;

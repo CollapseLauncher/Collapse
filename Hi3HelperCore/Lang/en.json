@@ -232,13 +232,17 @@
 
     "Language": "App Language",
     "LanguageEntry": "{0} by {1}",
+    "AppLang_ApplyNeedRestart": "*You need to restart the app to take effect the language.",
 
     "AppThemes": "App Themes",
     "AppThemes_Default": "Default (Use system settings)",
     "AppThemes_Light": "Light",
     "AppThemes_Dark": "Dark",
     "AppThemes_ApplyNeedRestart": "*You need to restart the app to take effect the theme.",
-    "AppLang_ApplyNeedRestart": "*You need to restart the app to take effect the language.",
+
+    "AppBG": "App Background",
+    "AppBG_Checkbox": "Use Custom Background",
+    "AppBG_Note": "Note: Image must be in .png, .jpg, .tiff or .bmp format and size less than 4096x4096",
 
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
@@ -323,6 +327,7 @@
     "NoKeepInstallIt": "No, Keep install it",
     "NoIgnoreIt": "No, Ignore it",
     "NoOtherLocation": "No, Keep install it",
+    "NotSelected": "Not Selected",
 
     "LangNameENUS": "English (US)",
     "LangNameJP": "Japanese",
@@ -339,6 +344,7 @@
     "Verifying": "Verifying",
     "Completed": "Completed",
     "Skipped": "Skipped",
+    "Select": "Select",
     "NotRunning": "Not Running",
     "MovingFile": "Moving File",
     "CheckingFile": "Checking File",

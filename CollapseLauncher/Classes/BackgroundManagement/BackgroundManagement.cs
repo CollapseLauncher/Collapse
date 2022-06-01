@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using System.Runtime.CompilerServices;
 
 using Microsoft.UI;
@@ -18,16 +16,22 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
+
 using ColorThiefDotNet;
 
 using Newtonsoft.Json;
 
 using Hi3Helper.Data;
 
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using Hi3Helper.Shared.ClassStruct;
 
 using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -39,40 +43,35 @@ namespace CollapseLauncher
         private readonly Size ThumbnailSize = new Size(32, 32);
 
         // Always use startupBackgroundPath on startup.
-        private bool startUp = true;
         private string previousPath = startupBackgroundPath;
-        private void ChangeBackgroundImageAsRegion(CancellationToken token)
+        private async Task ChangeBackgroundImageAsRegion(CancellationToken token)
         {
             try
             {
                 httpHelper = new HttpClientHelper(true);
 
-                if (startUp)
-                {
-                    regionBackgroundProp = new RegionBackgroundProp { imgLocalPath = startupBackgroundPath };
-                    if (File.Exists(startupBackgroundPath))
-                    {
-                        ApplyBackground();
-
-                        GenerateThumbnail();
-                        ApplyAccentColor();
-                    }
-
-                    startUp = false;
-                }
-
                 MemoryStream memoryStream = new MemoryStream();
 
-                httpHelper.DownloadFile(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+                SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
 
-                if (DownloadBackgroundImage())
-                    ApplyBackground();
+                await DownloadBackgroundImage();
 
-                GenerateThumbnail();
-                ApplyAccentColor();
+                if (GetAppConfigValue("UseCustomBG").ToBool())
+                {
+                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                    if (string.IsNullOrEmpty(BGPath))
+                        regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                    else
+                        regionBackgroundProp.imgLocalPath = BGPath;
+                }
+
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                await BackgroundImgChanger.WaitForBackgroundToLoad();
+                ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
             }
             catch (OperationCanceledException)
             {
@@ -89,8 +88,8 @@ namespace CollapseLauncher
             Windows.UI.Color _color = new Windows.UI.Color();
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (InnerLauncherConfig.CurrentAppTheme == AppThemeMode.Light ||
-                    (InnerLauncherConfig.CurrentAppTheme == AppThemeMode.Default && InnerLauncherConfig.SystemAppTheme.ToString() == "#FFFFFFFF"))
+                if (CurrentAppTheme == AppThemeMode.Light ||
+                    (CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"))
                 {
                     try
                     {
@@ -104,7 +103,14 @@ namespace CollapseLauncher
                         }
                         catch
                         {
-                            _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
+                            try
+                            {
+                                _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
+                            }
+                            catch
+                            {
+                                _color = new Windows.UI.Color { R = 0, G = 0, B = 0, A = 0 };
+                            }
                         }
                     }
 
@@ -136,35 +142,82 @@ namespace CollapseLauncher
 
         private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
-        private void GenerateThumbnail()
+        private async Task<BitmapImage> GetResizedBitmap(string path)
+        {
+            BitmapImage retBitmap = new BitmapImage();
+
+            using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
+
+                BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
+
+                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
+
+                (
+                    encoder.BitmapTransform.ScaledWidth,
+                    encoder.BitmapTransform.ScaledHeight
+                ) = GetPreservedImageRatio(
+                    (uint)((double)m_actualMainFrameSize.Width * 1.45 * m_appDPIScale),
+                    (uint)((double)m_actualMainFrameSize.Height * 1.45 * m_appDPIScale),
+                    decoder.PixelWidth,
+                    decoder.PixelHeight);
+
+                await encoder.FlushAsync();
+                resizedStream.Seek(0);
+
+                retBitmap = Bitmap2BitmapImage(resizedStream.AsStreamForRead());
+            }
+
+            return retBitmap;
+        }
+
+        private BitmapImage Bitmap2BitmapImage(Stream image)
+        {
+            BitmapImage ret = new BitmapImage();
+            ret.SetSource(image.AsRandomAccessStream());
+            return ret;
+        }
+
+        // Reference:
+        // https://stackoverflow.com/questions/1940581/c-sharp-image-resizing-to-different-size-while-preserving-aspect-ratio
+        private (uint, uint) GetPreservedImageRatio(uint canvasWidth, uint canvasHeight, uint imgWidth, uint imgHeight)
+        {
+            double ratioX = (double)canvasWidth / imgWidth;
+            double ratioY = (double)canvasHeight / imgHeight;
+            double ratio = ratioX < ratioY ? ratioX : ratioY;
+
+            return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
+        }
+
+        private async Task GenerateThumbnail()
         {
             try
             {
-                Task.Run(async () =>
+                using (IRandomAccessStream fileStream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
                 {
-                    using (IRandomAccessStream fileStream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
-                    {
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
+                    var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                        InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
+                    InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
 
-                        BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
+                    BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
 
-                        encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Linear;
+                    encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
 
-                        encoder.BitmapTransform.ScaledHeight = (uint)ThumbnailSize.Width;
-                        encoder.BitmapTransform.ScaledWidth = (uint)ThumbnailSize.Height;
+                    encoder.BitmapTransform.ScaledHeight = (uint)ThumbnailSize.Width;
+                    encoder.BitmapTransform.ScaledWidth = (uint)ThumbnailSize.Height;
 
-                        await encoder.FlushAsync();
-                        resizedStream.Seek(0);
+                    await encoder.FlushAsync();
+                    resizedStream.Seek(0);
 
-                        ThumbnailStream = new MemoryStream();
-                        resizedStream.AsStream().CopyTo(ThumbnailStream);
+                    ThumbnailStream = new MemoryStream();
+                    await resizedStream.AsStream().CopyToAsync(ThumbnailStream);
 
-                        ThumbnailBitmap = new Bitmap(ThumbnailStream);
-                        ThumbnailStream.Dispose();
-                    }
-                }).GetAwaiter().GetResult();
+                    ThumbnailBitmap = new Bitmap(ThumbnailStream);
+                    ThumbnailStream.Dispose();
+                }
             }
             catch (Exception ex)
             {
@@ -175,12 +228,12 @@ namespace CollapseLauncher
         private IEnumerable<QuantizedColor> GetPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap);
         private QuantizedColor GetColorFromPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap, 10)[paletteOrder];
         private QuantizedColor GetColorFromPaletteByTheme(byte paletteOrder = 0, bool alwaysLight = true) =>
-            new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
+            new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToList()[paletteOrder];
         private QuantizedColor GetColorFromPaletteByThemeLow(byte paletteOrder = 0, bool alwaysLight = true) =>
-            new ColorThief().GetPalette(ThumbnailBitmap, 50, 100).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
+            new ColorThief().GetPalette(ThumbnailBitmap, 50, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
         private QuantizedColor GetSingleColorPalette() => new ColorThief().GetColor(ThumbnailBitmap);
 
-        private bool DownloadBackgroundImage()
+        private async Task DownloadBackgroundImage()
         {
             if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
                 Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
@@ -188,52 +241,65 @@ namespace CollapseLauncher
             FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
 
             if (!fI.Exists)
-            {
-                httpHelper.DownloadFile(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
-                previousPath = regionBackgroundProp.imgLocalPath;
-            }
+                await httpHelper.DownloadFileAsync(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
 
-            return true;
+            previousPath = regionBackgroundProp.imgLocalPath;
         }
 
-        private void ApplyBackground()
+        private async Task ApplyBackground(bool rescale = true)
         {
             DispatcherQueue.TryEnqueue(() => {
-                // HideBackgroundImage();
                 BackgroundBackBuffer.Source = BackgroundBitmap;
                 BackgroundBackBuffer.Visibility = Visibility.Visible;
+                BackgroundFrontBuffer.Source = BackgroundBitmap;
+                BackgroundFrontBuffer.Visibility = Visibility.Visible;
+            });
+
+            if (rescale)
+                BackgroundBitmap = await GetResizedBitmap(regionBackgroundProp.imgLocalPath);
+            else
                 BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
+
+            DispatcherQueue.TryEnqueue(() => {
                 BackgroundBack.Source = BackgroundBitmap;
                 BackgroundFront.Source = BackgroundBitmap;
-
-                FadeOutBackgroundBuffer();
-
-                // HideBackgroundImage(false);
-                appIni.Profile["app"]["CurrentBackground"] = regionBackgroundProp.imgLocalPath;
-
-                SaveAppConfig();
             });
+
+            FadeOutBackgroundBuffer();
         }
 
         public async void FadeOutBackgroundBuffer()
         {
             Storyboard storyboardBack = new Storyboard();
+            Storyboard storyboardFront = new Storyboard();
 
             DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
             OpacityAnimationBack.From = 0.30;
             OpacityAnimationBack.To = 0;
             OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
 
+            DoubleAnimation OpacityAnimationFront = new DoubleAnimation();
+            OpacityAnimationFront.From = 1;
+            OpacityAnimationFront.To = 0;
+            OpacityAnimationFront.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+
             Storyboard.SetTarget(OpacityAnimationBack, BackgroundBackBuffer);
             Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
             storyboardBack.Children.Add(OpacityAnimationBack);
 
+            Storyboard.SetTarget(OpacityAnimationFront, BackgroundFrontBuffer);
+            Storyboard.SetTargetProperty(OpacityAnimationFront, "Opacity");
+            storyboardFront.Children.Add(OpacityAnimationFront);
+
             storyboardBack.Begin();
+            if (m_appCurrentFrameName == "HomePage")
+                storyboardFront.Begin();
 
             await Task.Delay(250);
             DispatcherQueue.TryEnqueue(() =>
             {
                 BackgroundBackBuffer.Visibility = Visibility.Collapsed;
+                BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
             });
         }
 

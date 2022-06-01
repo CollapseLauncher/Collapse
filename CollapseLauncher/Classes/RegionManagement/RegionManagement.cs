@@ -78,25 +78,22 @@ namespace CollapseLauncher
                         });
                     }
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         private async Task<bool> TryGetRegionResource()
         {
             try
             {
-                await Task.Run(() =>
-                {
-                    tokenSource = new CancellationTokenSource();
-                    RetryWatcher();
+                tokenSource = new CancellationTokenSource();
+                RetryWatcher();
 
-                    ChangeBackgroundImageAsRegion(tokenSource.Token);
-                    FetchLauncherResourceAsRegion(tokenSource.Token);
+                await FetchLauncherResourceAsRegion(tokenSource.Token);
+                await ChangeBackgroundImageAsRegion(tokenSource.Token);
 
-                    tokenSource.Cancel();
+                tokenSource.Cancel();
 
-                    loadRegionComplete = true;
-                });
+                loadRegionComplete = true;
             }
             catch (OperationCanceledException)
             {

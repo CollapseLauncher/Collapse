@@ -38,7 +38,6 @@ namespace CollapseLauncher
 #if DEBUG
                     this.Title = title += "[DEBUG]";
 #endif
-
                 if (IsFirstInstall)
                     rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
                 else
@@ -56,6 +55,7 @@ namespace CollapseLauncher
             m_backDrop = new BackdropManagement(this);
             m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
             m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
+            m_appDPIScale = GetScaleAdjustment();
 
             m_AppWindow = GetAppWindowForCurrentWindow();
             m_AppWindow.Changed += AppWindow_Changed;
@@ -236,7 +236,7 @@ namespace CollapseLauncher
             if (AppWindowTitleBar.IsCustomizationSupported()
                 && appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
-                double scaleAdjustment = GetScaleAdjustment();
+                double scaleAdjustment = m_appDPIScale;
 
                 RightPaddingColumn.Width = new GridLength(appWindow.TitleBar.RightInset / scaleAdjustment);
 

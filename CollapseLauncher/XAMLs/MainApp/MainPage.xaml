@@ -79,7 +79,8 @@
 
             <Grid Margin="0,0,0,0">
                 <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
-                <Frame x:Name="LauncherFrame">
+                <Image x:Name="BackgroundFrontBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
+                <Frame x:Name="LauncherFrame" Width="1216" Height="674">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>

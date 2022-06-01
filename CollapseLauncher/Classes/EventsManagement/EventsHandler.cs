@@ -227,4 +227,37 @@ namespace CollapseLauncher
         public bool IsAppNotif { get; set; } = true;
     }
     #endregion
+    #region BackgroundRegion
+    internal static class BackgroundImgChanger
+    {
+        static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
+        public static async Task WaitForBackgroundToLoad() => await invoker.WaitForBackgroundToLoad();
+        public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker.ChangeBackground(ImgPath, IsCustom);
+    }
+
+    internal class BackgroundImgChangerInvoker
+    {
+        public static event EventHandler<BackgroundImgProperty> ImgEvent;
+        BackgroundImgProperty property;
+        public async Task WaitForBackgroundToLoad()
+        {
+            while (!property.IsImageLoaded)
+                await Task.Delay(33);
+        }
+        public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
+    }
+
+    internal class BackgroundImgProperty
+    {
+        internal BackgroundImgProperty(string ImgPath, bool IsCustom)
+        {
+            this.ImgPath = ImgPath;
+            this.IsCustom = IsCustom;
+        }
+
+        public bool IsImageLoaded { get; set; } = false;
+        public string ImgPath { get; private set; }
+        public bool IsCustom { get; private set; }
+    }
+    #endregion
 }

@@ -40,6 +40,7 @@ namespace Hi3Helper.Shared.Region
 
         public static string AppCurrentVersion;
         public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
+        public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, @"Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
@@ -76,7 +77,9 @@ namespace Hi3Helper.Shared.Region
 #endif
             { "DontAskUpdate", new IniValue(false) },
             { "ThemeMode", new IniValue(AppThemeMode.Light) },
-            { "AppLanguage", new IniValue("en") }
+            { "AppLanguage", new IniValue("en") },
+            { "UseCustomBG", new IniValue(false) },
+            { "CustomBGPath", new IniValue() }
         };
 
         public static void LoadGamePreset()

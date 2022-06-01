@@ -18,6 +18,9 @@
                 public string AppThemes_Light { get; set; } = LangFallback?._SettingsPage.AppThemes_Light;
                 public string AppThemes_Dark { get; set; } = LangFallback?._SettingsPage.AppThemes_Dark;
                 public string AppThemes_ApplyNeedRestart { get; set; } = LangFallback?._SettingsPage.AppThemes_ApplyNeedRestart;
+                public string AppBG { get; set; } = LangFallback?._SettingsPage.AppBG;
+                public string AppBG_Checkbox { get; set; } = LangFallback?._SettingsPage.AppBG_Checkbox;
+                public string AppBG_Note { get; set; } = LangFallback?._SettingsPage.AppBG_Note;
                 public string AppLang_ApplyNeedRestart { get; set; } = LangFallback?._SettingsPage.AppLang_ApplyNeedRestart;
                 public string AppThreads { get; set; } = LangFallback?._SettingsPage.AppThreads;
                 public string AppThreads_Download { get; set; } = LangFallback?._SettingsPage.AppThreads_Download;

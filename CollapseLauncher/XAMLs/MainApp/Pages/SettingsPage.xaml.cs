@@ -5,9 +5,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
+using Windows.Storage;
+using Windows.Storage.Pickers;
+
+using WinRT.Interop;
 
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
@@ -21,6 +28,42 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class SettingsPage : Page
     {
+        public bool IsBGCustom
+        {
+            get
+            {
+                bool IsEnabled = GetAppConfigValue("UseCustomBG").ToBool();
+                string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                if (!string.IsNullOrEmpty(BGPath))
+                    BGPathDisplay.Text = BGPath;
+                else
+                    BGPathDisplay.Text = Lang._Misc.NotSelected;
+
+                BGSelector.IsEnabled = IsEnabled;
+                return IsEnabled;
+            }
+            set
+            {
+                SetAndSaveConfigValue("UseCustomBG", new IniValue(value));
+                if (!value)
+                {
+                    BGPathDisplay.Text = Lang._Misc.NotSelected;
+                    regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, false);
+                }
+                else
+                {
+                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                    if (string.IsNullOrEmpty(BGPath))
+                        regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                    else
+                        regionBackgroundProp.imgLocalPath = BGPath;
+                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                }
+                BGSelector.IsEnabled = value;
+            }
+        }
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -229,6 +272,27 @@ namespace CollapseLauncher.Pages
                     UseShellExecute = true
                 }
             }.Start();
+        }
+
+        private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
+        {
+            IEnumerable<string> allowedFileType = new string[] { ".jpg", ".jpeg", ".jfif", ".png", ".bmp", ".tiff" };
+            FileOpenPicker filePicker = new FileOpenPicker();
+            StorageFile file;
+
+            foreach (string type in allowedFileType)
+                filePicker.FileTypeFilter.Add(type);
+
+            InitializeWithWindow.Initialize(filePicker, InnerLauncherConfig.m_windowHandle);
+
+            file = await filePicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                regionBackgroundProp.imgLocalPath = file.Path;
+                SetAndSaveConfigValue("CustomBGPath", file.Path);
+                BGPathDisplay.Text = file.Path;
+                BackgroundImgChanger.ChangeBackground(file.Path);
+            }
         }
 
         int EggsAttempt = 1;

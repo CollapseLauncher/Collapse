@@ -23,9 +23,9 @@
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer>
-        <StackPanel Margin="32,32,32,32">
+        <StackPanel Margin="32,32,32,32" HorizontalAlignment="Left">
             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-            <StackPanel x:Name="AppSettings" Margin="0,16">
+            <StackPanel x:Name="AppSettings" Margin="0,16" HorizontalAlignment="Left">
                 <StackPanel>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" IsOn="{Binding EnableConsole}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" Toggled="ConsoleToggle"/>
@@ -42,6 +42,24 @@
                             <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}" IsChecked="{Binding IsChecked}"/>
                         </RadioButtons>
                         <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                    </StackPanel>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                    <StackPanel Margin="0,0,0,16" HorizontalAlignment="Left">
+                        <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
+                        <StackPanel Orientation="Horizontal" Margin="-2,8,0,0">
+                            <Button x:Name="BGSelector" IsEnabled="False" Click="SelectBackgroundImg">
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Symbol="Pictures"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock x:Name="BGPathDisplay" Text="" VerticalAlignment="Center" Width="384" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note}"
+                                   Width="368" TextWrapping="Wrap"
+                                   HorizontalAlignment="Left"
+                                   Margin="0,16,0,0" FontSize="12"
+                                   FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
@@ -199,17 +217,17 @@
                     </TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Left">
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
                                Tag="https://web.facebook.com/kemalsetya.adhisetya/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://github.com/neon-nyan/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://www.reddit.com/user/justanewbie1-ID/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF16D;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF16D;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://instagram.com/neonnyann/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://discord.gg/ironmaiden"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

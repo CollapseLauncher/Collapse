@@ -26,6 +26,8 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 
+using static CollapseLauncher.InnerLauncherConfig;
+
 namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
@@ -38,9 +40,13 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
+
+                m_actualMainFrameSize = new Size(LauncherFrame.Width, LauncherFrame.Height);
+
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
                 MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
                 NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
+                BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
@@ -53,6 +59,29 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
+        {
+            e.IsImageLoaded = false;
+            regionBackgroundProp.imgLocalPath = e.ImgPath;
+            if (e.IsCustom)
+                SetAndSaveConfigValue("CustomBGPath", regionBackgroundProp.imgLocalPath);
+
+            try
+            {
+                await ApplyBackground();
+            }
+            catch (Exception ex)
+            {
+                regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                await ApplyBackground(false);
+                LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
+            }
+
+            await GenerateThumbnail();
+            ApplyAccentColor();
+            e.IsImageLoaded = true;
         }
 
         private async void CheckRunningGameInstance()
@@ -99,14 +128,14 @@ namespace CollapseLauncher
             try
             {
                 IsLoadNotifComplete = false;
-                InnerLauncherConfig.NotificationData = new NotificationPush();
+                NotificationData = new NotificationPush();
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
                 using (MemoryStream buffer = new MemoryStream())
                 {
                     await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
                         buffer, TokenSource.Token, null, null, false);
-                    InnerLauncherConfig.NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
+                    NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
                     IsLoadNotifComplete = true;
                 }
             }
@@ -114,7 +143,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
-            InnerLauncherConfig.LoadLocalNotificationData();
+            LoadLocalNotificationData();
         }
 
         private async void RunTimeoutCancel(CancellationTokenSource Token)
@@ -130,8 +159,8 @@ namespace CollapseLauncher
         private async void PushAppNotification()
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
-            if (InnerLauncherConfig.NotificationData.AppPush == null) return;
-            foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.AppPush)
+            if (NotificationData.AppPush == null) return;
+            foreach (NotificationProp Entry in NotificationData.AppPush)
             {
                 // Check for Close Action for certain MsgIds
                 switch (Entry.MsgId)
@@ -140,8 +169,8 @@ namespace CollapseLauncher
                         {
                             ClickCloseAction = new TypedEventHandler<InfoBar, object>((sender, args) =>
                             {
-                                InnerLauncherConfig.NotificationData.AddIgnoredMsgIds(0);
-                                InnerLauncherConfig.SaveLocalNotificationData();
+                                NotificationData.AddIgnoredMsgIds(0);
+                                SaveLocalNotificationData();
                             });
                         }
                         break;
@@ -259,15 +288,15 @@ namespace CollapseLauncher
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            InnerLauncherConfig.NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            InnerLauncherConfig.SaveLocalNotificationData();
+            NotificationData.AddIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            SaveLocalNotificationData();
         }
 
         private void NeverAskNotif_Unchecked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
-            InnerLauncherConfig.NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
-            InnerLauncherConfig.SaveLocalNotificationData();
+            NotificationData.RemoveIgnoredMsgIds(int.Parse(Data[0]), bool.Parse(Data[1]));
+            SaveLocalNotificationData();
         }
 
         private void ReloadPageTheme(ElementTheme startTheme)
@@ -495,6 +524,7 @@ namespace CollapseLauncher
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;
             }
+            m_appCurrentFrameName = e.FrameTo.Name;
         }
     }
 }

@@ -47,6 +47,7 @@
                 public string NoKeepInstallIt { get; set; } = LangFallback?._Misc.NoKeepInstallIt;
                 public string NoIgnoreIt { get; set; } = LangFallback?._Misc.NoIgnoreIt;
                 public string NoOtherLocation { get; set; } = LangFallback?._Misc.NoOtherLocation;
+                public string NotSelected { get; set; } = LangFallback?._Misc.NotSelected;
                 public string LangNameENUS { get; set; } = LangFallback?._Misc.LangNameENUS;
                 public string LangNameJP { get; set; } = LangFallback?._Misc.LangNameJP;
                 public string LangNameCN { get; set; } = LangFallback?._Misc.LangNameCN;
@@ -61,6 +62,7 @@
                 public string Verifying { get; set; } = LangFallback?._Misc.Verifying;
                 public string Completed { get; set; } = LangFallback?._Misc.Completed;
                 public string Skipped { get; set; } = LangFallback?._Misc.Skipped;
+                public string Select { get; set; } = LangFallback?._Misc.Select;
                 public string NotRunning { get; set; } = LangFallback?._Misc.NotRunning;
                 public string MovingFile { get; set; } = LangFallback?._Misc.MovingFile;
                 public string CheckingFile { get; set; } = LangFallback?._Misc.CheckingFile;
