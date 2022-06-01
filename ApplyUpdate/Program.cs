@@ -18,7 +18,7 @@ namespace ApplyUpdate
             string TempFolder = Path.Combine(workingDir, "_Temp");
             if (Directory.Exists(TempFolder))
             {
-                foreach (string file in Directory.EnumerateFiles(TempFolder))
+                foreach (string file in Directory.EnumerateFiles(TempFolder, "*", SearchOption.AllDirectories))
                 {
                     BasePath = file.Substring(TempFolder.Length + 1);
                     TargetPath = Path.Combine(workingDir, BasePath);
