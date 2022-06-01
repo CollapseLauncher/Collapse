@@ -27,6 +27,16 @@
     "OverlayPrepareFolderSubtitle": "Applying permission..."
   },
 
+  // DisconnectedPage Content
+  "_DisconnectedPage": {
+    "PageTitle": "Disconnected Page",
+    "Header1": "Your Internet is",
+    "Header2": "Disconnected",
+    "Footer1": "Please check your internet connection and click",
+    "Footer2": "Paimon",
+    "Footer3": "to Retry."
+  },
+
   // MainPage Content
   "_MainPage": {
     "PageTitle": "Root Page",

@@ -12,7 +12,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Configurations>Debug;Release;Publish</Configurations>
-		<Version>1.0.23.1</Version>
+		<Version>1.0.23.2</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;MICA;PREVIEW</DefineConstants>
@@ -27,11 +27,15 @@
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Remove="Assets\Fonts\FontAwesomeRegular6.otf" />
+	</ItemGroup>
+	<ItemGroup>
 	  <None Remove="ApplyUpdate.deps.json" />
 	  <None Remove="ApplyUpdate.dll" />
 	  <None Remove="ApplyUpdate.exe" />
 	  <None Remove="ApplyUpdate.runtimeconfig.json" />
 	  <None Remove="Microsoft.WindowsAppRuntime.Bootstrap.dll" />
+	  <None Remove="XAMLs\MainApp\DisconnectedPage.xaml" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -80,6 +84,9 @@
         <Content Update="Assets\BG\default.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Update="Assets\BG\PaimonSleep.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -90,5 +97,11 @@
 
     <ItemGroup>
       <Folder Include="Deps\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="XAMLs\MainApp\DisconnectedPage.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      </Page>
     </ItemGroup>
 </Project>

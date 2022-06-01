@@ -303,7 +303,10 @@ namespace CollapseLauncher
             await GetAppNotificationPush();
             // InnerLauncherConfig.NotificationData = new NotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
-            MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+            if (regionResourceProp.data != null)
+                MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+            else
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
         }
 
         private async void InitializeNavigationItems()
