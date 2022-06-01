@@ -10,7 +10,8 @@
                 <ResourceDictionary Source="/XAMLs/ResourceDictionary.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="FontAwesome">/Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
+            <FontFamily x:Key="FontAwesomeBrand">/Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
+            <FontFamily x:Key="FontAwesome">/Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
