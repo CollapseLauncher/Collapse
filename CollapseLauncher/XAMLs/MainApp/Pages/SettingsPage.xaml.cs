@@ -126,6 +126,31 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = false;
         }
 
+        private void ForceUpdate(object sender, RoutedEventArgs e)
+        {
+            string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {(IsPreview ? "Preview" : "Stable")}";
+            Console.WriteLine(UpdateArgument);
+            try
+            {
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.exe"),
+                        Arguments = UpdateArgument,
+                        Verb = "runas"
+                    }
+                }.Start();
+                App.Current.Exit();
+            }
+            catch
+            {
+                return;
+            }
+        }
+
         private void CheckUpdate(object sender, RoutedEventArgs e)
         {
             UpdateLoadingStatus.Visibility = Visibility.Visible;
