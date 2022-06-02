@@ -583,7 +583,7 @@ namespace CollapseLauncher
 
         public async Task PostInstallVerification(UIElement Content)
         {
-            if (DecompressedRemotePath == null) return;
+            if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
 
             InstallStatus = new InstallManagementStatus
             {
