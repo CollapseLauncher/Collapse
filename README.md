@@ -14,9 +14,27 @@ Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This la
 * Delta-Patch Update Mechanism for smaller update on Honkai Impact 3rd.
 * Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
 
-This launcher requires [**.NET Core 7 Preview 4 Desktop Runtime**](https://download.visualstudio.microsoft.com/download/pr/2b2a2f05-2381-4073-a774-80368dcfdef9/b63ad4ee1e933e45b9fefbbd2a5291ea/dotnet-sdk-7.0.100-preview.4.22252.9-win-x64.exe) and [**WinUI 3 (WindowsAppSDK Runtime 1.1)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe) in order to run.
+# Download Ready-to-use build
+[<img src="https://user-images.githubusercontent.com/30566970/172436129-f46b2aaf-d36c-498d-ae24-59f17b53bdf2.png"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.23.4-stable/CL-1.0.23.4_Installer.exe)
+> **Note**: The version for this build is 1.0.23.4 (Released on: June 7th, 2022)
 
-Unfortunately, this launcher only supports x64-bit version of Windows 10 (Build 1809 or later) or Windows 11 (Any Build) due to WinUI 3 limitation. ([**Read More Here**](https://microsoft.github.io/microsoft-ui-xaml/about.html))
+[<img src="https://user-images.githubusercontent.com/30566970/172436165-b68a8e4d-1d25-4801-9889-dd1ba5f6dead.png"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.23.4-pre/CL-1.0.23.4-preview_Installer.exe)
+> **Note**: The version for this build is 1.0.23.4 (Released on: June 7th, 2022).
+> To see all releases, please [**go here**](https://github.com/neon-nyan/CollapseLauncher/releases).
+
+# Prequesties for Ready-to-use build
+- OS: **Windows 10 1809 Update (build 17763)** and later or **Windows 11 (Any builds)**
+- Architecture: **x64/AMD64**
+- Internet Access: **Yes**
+
+***
+
+# Prequesties for self-build/development environment
+To develop and build it for yourself, you need to install [**.NET Core 7 Preview 4 SDK**](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.100-preview.4-windows-x64-installer) and [**WinUI 3 (WindowsAppSDK 1.1 Runtime)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe)
+
+And also Visual Studio 2019 or Later with WindowsAppSDK 1.1 C# Extension installed. For the extension for each version, please refer to this link:
+- [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2019-cs)
+- [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2022-cs)
  
 # Supported Game Client
 For now, this launcher only supports these versions of the game:
@@ -43,3 +61,6 @@ Any contribution in this project are welcome.
 - [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
 - [**HSharp**](https://github.com/Anduin2017/HSharp) by Anduin2017/Aiursoft
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
+
+# How to support us?
+For now, we don't have a way to open a fund to support this project. But you can support us by sharing this project to your friends or your community and as a disclaimer, this project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
