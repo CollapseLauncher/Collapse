@@ -1,16 +1,12 @@
-﻿using System;
-using System.Reflection;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
-using System.Text;
-
+﻿using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages

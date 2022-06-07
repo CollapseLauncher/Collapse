@@ -1,25 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
-using Microsoft.UI.Xaml;
-
-using Newtonsoft.Json;
-
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-
+using Microsoft.UI.Xaml;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -28,22 +22,19 @@ namespace CollapseLauncher
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
-        UIElement ParentUI;
         List<FileProperties> SourceFileManifest;
-        List<FileProperties> TargetFileManifest;
+
+        Stopwatch ConvertSw;
 
         string IngredientPath;
-        string SourceBaseURL, TargetBaseURL;
-        string CookbookURL;
-        string CookbookPath;
-        Stopwatch ConvertSw;
+        string SourceBaseURL;
         private void ResetSw() => ConvertSw = Stopwatch.StartNew();
-        string ConvertStatus, ConvertDetail;
+        string ConvertStatus;
 
         public void StartPreparation()
         {
             List<FilePropertiesRemote> SourceFileRemote;
-            ConvertSw = Stopwatch.StartNew();
+            ResetSw();
             ConvertStatus = Lang._InstallMgmt.PreparePatchTitle;
             IngredientPath = SourceProfile.ActualGameDataLocation + "_Ingredients";
             SourceBaseURL = string.Format(DecompressedRemotePath, $"BH3_v{PatchProp.SourceVer}_{PatchProp.ZipHash}");
@@ -165,7 +156,7 @@ namespace CollapseLauncher
         private List<FileProperties> BuildManifest(List<FilePropertiesRemote> FileRemote)
         {
             List<FileProperties> _out = new List<FileProperties>();
-            
+
             foreach (FilePropertiesRemote Entry in FileRemote)
             {
                 switch (Entry.FT)
@@ -209,25 +200,6 @@ namespace CollapseLauncher
             }
 
             return _out;
-        }
-
-        public async Task StartDownloadRecipe()
-        {
-            ResetSw();
-
-            if (File.Exists(CookbookPath))
-                if (new FileInfo(CookbookPath).Length == await GetContentLength(CookbookURL))
-                    return;
-
-            DownloadProgress += RecipeDownload_Progress;
-            await DownloadFileAsync(CookbookURL, CookbookPath, GetAppConfigValue("DownloadThread").ToInt(), Token);
-            DownloadProgress -= RecipeDownload_Progress;
-        }
-
-        private void RecipeDownload_Progress(object sender, _DownloadProgress e)
-        {
-            UpdateProgress(e.DownloadedSize, e.TotalSizeToDownload, 1, 1, ConvertSw.Elapsed,
-                ConvertStatus, ConvertDetail);
         }
 
         long RepairRead = 0;

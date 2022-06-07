@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.UI.Xaml.Controls;
-
-using Newtonsoft.Json;
-
+﻿using Aiursoft.HSharp.Methods;
+using Aiursoft.HSharp.Models;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
-
+using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
-using Aiursoft.HSharp.Methods;
-using Aiursoft.HSharp.Models;
 
 namespace CollapseLauncher
 {

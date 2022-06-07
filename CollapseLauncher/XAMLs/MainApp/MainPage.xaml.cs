@@ -1,32 +1,23 @@
-using System;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
-using Windows.Foundation;
-using Windows.ApplicationModel.Core;
-
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-
 using Newtonsoft.Json;
-
-using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -301,15 +292,22 @@ namespace CollapseLauncher
 
         private void ReloadPageTheme(ElementTheme startTheme)
         {
-            if (this.RequestedTheme == ElementTheme.Dark)
-                this.RequestedTheme = ElementTheme.Light;
-            else if (this.RequestedTheme == ElementTheme.Light)
-                this.RequestedTheme = ElementTheme.Default;
-            else if (this.RequestedTheme == ElementTheme.Default)
-                this.RequestedTheme = ElementTheme.Dark;
+            try
+            {
+                if (this.RequestedTheme == ElementTheme.Dark)
+                    this.RequestedTheme = ElementTheme.Light;
+                else if (this.RequestedTheme == ElementTheme.Light)
+                    this.RequestedTheme = ElementTheme.Default;
+                else if (this.RequestedTheme == ElementTheme.Default)
+                    this.RequestedTheme = ElementTheme.Dark;
 
-            if (this.RequestedTheme != startTheme)
-                ReloadPageTheme(startTheme);
+                if (this.RequestedTheme != startTheme)
+                    ReloadPageTheme(startTheme);
+            }
+            catch (ArgumentException ex)
+            {
+                LogWriteLine($"TODO: Investigate issue while theme is getting reloaded\r\n{ex}", LogType.Error, true);
+            }
         }
 
         private ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)

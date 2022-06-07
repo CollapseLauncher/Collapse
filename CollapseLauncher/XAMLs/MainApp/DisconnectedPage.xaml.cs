@@ -1,11 +1,8 @@
-using System;
-
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-
 using Hi3Helper;
-
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Animation;
+using System;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher

@@ -1,19 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.IO;
-
+﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Locale;
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using static CollapseLauncher.Pages.RepairData;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -146,7 +142,7 @@ namespace CollapseLauncher.Pages
                 RepairFileInfo = new FileInfo(FilePath);
 
                 FileExistingLength = RepairFileInfo.Exists ? RepairFileInfo.Length : 0;
-                
+
                 if (RepairFileInfo.Exists && RepairFileInfo.Length != block.BlockSize)
                     RepairFileInfo.Delete();
 

@@ -1,25 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
-using Microsoft.UI.Xaml;
-
-using Newtonsoft.Json;
-
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-
+using Microsoft.UI.Xaml;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -198,7 +193,7 @@ namespace CollapseLauncher
         private List<FileProperties> BuildManifest(List<FilePropertiesRemote> FileRemote)
         {
             List<FileProperties> _out = new List<FileProperties>();
-            
+
             foreach (FilePropertiesRemote Entry in FileRemote)
             {
                 switch (Entry.FT)

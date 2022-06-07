@@ -1,27 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Threading;
-using System.Windows;
-
-using Windows.UI;
-using Windows.Foundation;
-
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Composition.SystemBackdrops;
-
-using Newtonsoft.Json;
-
+﻿using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Windows.Foundation;
+using Windows.UI;
 
 namespace CollapseLauncher
 {
@@ -106,7 +93,7 @@ namespace CollapseLauncher
                 { AppPushIgnoreMsgIds = new List<int>(), RegionPushIgnoreMsgIds = new List<int>() }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
             string Data = File.ReadAllText(LauncherConfig.AppNotifIgnoreFile);
-            NotificationPush LocalNotificationData  = JsonConvert.DeserializeObject<NotificationPush>(Data);
+            NotificationPush LocalNotificationData = JsonConvert.DeserializeObject<NotificationPush>(Data);
             if (NotificationData != null)
             {
                 NotificationData.AppPushIgnoreMsgIds = LocalNotificationData.AppPushIgnoreMsgIds;

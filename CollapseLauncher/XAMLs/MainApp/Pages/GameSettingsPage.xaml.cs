@@ -1,25 +1,14 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Hosting;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Composition;
 using System;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.Numerics;
-
-using Hi3Helper.Shared.ClassStruct;
-
+using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
-
-using static Hi3Helper.Shared.Region.GameSettingsManagement;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.GameSettingsManagement;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -82,7 +71,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task LoadGameSettingsUI() => 
+        private async Task LoadGameSettingsUI() =>
         await Task.Run(() =>
         {
             DispatcherQueue.TryEnqueue(() =>

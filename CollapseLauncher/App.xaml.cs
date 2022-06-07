@@ -1,34 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Microsoft.Windows.AppLifecycle;
-using Windows.ApplicationModel.Activation;
-using Windows.Storage;
-
-using Windows.UI;
-using Windows.UI.ViewManagement;
-
+﻿using Hi3Helper;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Dispatching;
-
-using WinRT;
-
-using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.InvokeProp;
-
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-
-using static CollapseLauncher.ArgumentParser;
+using System;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {

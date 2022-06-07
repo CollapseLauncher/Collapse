@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-
-
-using Hi3Helper.Data;
-
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -76,7 +70,7 @@ namespace CollapseLauncher.Dialogs
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0,0,0,16)
+                Margin = new Thickness(0, 0, 0, 16)
             });
             Panel.Children.Add(LangBox);
             await SpawnDialog(Lang._Dialogs.ChooseAudioLangTitle, Panel, Content, null, Lang._Misc.Next, null);

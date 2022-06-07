@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
-
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
-using Hi3Helper.Preset;
 
 namespace CollapseLauncher
 {

@@ -1,37 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
+﻿using ColorThiefDotNet;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
-
-using ColorThiefDotNet;
-
-using Newtonsoft.Json;
-
-using Hi3Helper.Data;
-
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -41,9 +32,6 @@ namespace CollapseLauncher
         private Bitmap ThumbnailBitmap;
         private Stream ThumbnailStream;
         private readonly Size ThumbnailSize = new Size(32, 32);
-
-        // Always use startupBackgroundPath on startup.
-        private string previousPath = startupBackgroundPath;
         private async Task ChangeBackgroundImageAsRegion(CancellationToken token)
         {
             try
@@ -242,13 +230,12 @@ namespace CollapseLauncher
 
             if (!fI.Exists)
                 await httpHelper.DownloadFileAsync(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
-
-            previousPath = regionBackgroundProp.imgLocalPath;
         }
 
         private async Task ApplyBackground(bool rescale = true)
         {
-            DispatcherQueue.TryEnqueue(() => {
+            DispatcherQueue.TryEnqueue(() =>
+            {
                 BackgroundBackBuffer.Source = BackgroundBitmap;
                 BackgroundBackBuffer.Visibility = Visibility.Visible;
                 BackgroundFrontBuffer.Source = BackgroundBitmap;
@@ -260,7 +247,8 @@ namespace CollapseLauncher
             else
                 BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
 
-            DispatcherQueue.TryEnqueue(() => {
+            DispatcherQueue.TryEnqueue(() =>
+            {
                 BackgroundBack.Source = BackgroundBitmap;
                 BackgroundFront.Source = BackgroundBitmap;
             });

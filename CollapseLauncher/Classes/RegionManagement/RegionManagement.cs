@@ -1,21 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Preset;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Logger;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameSettingsManagement;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {

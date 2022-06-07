@@ -1,16 +1,12 @@
-﻿using System.IO;
-
+﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Locale;
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
-
+using System.IO;
 using static CollapseLauncher.Pages.RepairData;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {

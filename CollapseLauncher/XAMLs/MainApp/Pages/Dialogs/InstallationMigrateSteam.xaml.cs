@@ -1,28 +1,24 @@
-﻿using Windows.Storage;
-using Windows.Storage.Pickers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.GameConversion;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using static CollapseLauncher.InnerLauncherConfig;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-
-using Hi3Helper.Data;
-using Hi3Helper.Shared.GameConversion;
-using Hi3Helper.Shared.ClassStruct;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
-using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {

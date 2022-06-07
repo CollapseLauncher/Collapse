@@ -1,8 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Shared.ClassStruct;
-
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 

@@ -1,36 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Numerics;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-
+﻿using CollapseLauncher.Dialogs;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
-
-using Newtonsoft.Json;
-
-using CollapseLauncher.Dialogs;
-
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
-using static Hi3Helper.Shared.Region.GameSettingsManagement;
-
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.GameSettingsManagement;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -228,7 +218,7 @@ namespace CollapseLauncher.Pages
                             StartGameBtn.Visibility = Visibility.Visible;
                             NotificationBar.IsOpen = true;
 
-                           if (!IsPreDownloadCompleted())
+                            if (!IsPreDownloadCompleted())
                             {
                                 NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
                             }
@@ -793,7 +783,7 @@ namespace CollapseLauncher.Pages
 
                     if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(logPath));
-                    
+
                     if (!File.Exists(logPath))
                         File.Create(logPath).Close();
 

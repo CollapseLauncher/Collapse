@@ -1,31 +1,25 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Force.Crc32;
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-using Force.Crc32;
-
-using Newtonsoft.Json;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
-
+using System.Threading;
+using System.Threading.Tasks;
+using static CollapseLauncher.Pages.RepairData;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
-using static CollapseLauncher.Pages.RepairData;
 
 namespace CollapseLauncher.Pages
 {
@@ -41,7 +35,7 @@ namespace CollapseLauncher.Pages
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
         HttpClientHelper http = new HttpClientHelper();
-        MemoryStream memBuffer; 
+        MemoryStream memBuffer;
         byte[] buffer = new byte[0x400000];
 
         long TotalIndexedSize,

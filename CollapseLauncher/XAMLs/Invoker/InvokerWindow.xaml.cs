@@ -1,29 +1,17 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
-using System.Diagnostics;
-using System.Collections.Generic;
-
-using Windows.Graphics;
-
-using WinRT.Interop;
-
-using Microsoft.UI;
+﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-
-using System.Runtime.InteropServices;
-
-using static Hi3Helper.Logger;
+using System;
+using System.Diagnostics;
+using System.IO;
+using Windows.Graphics;
+using WinRT.Interop;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
-using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -53,7 +41,7 @@ namespace CollapseLauncher
                 if (IsPreview)
                     this.Title = title += "[PREVIEW]";
 #if DEBUG
-                    this.Title = title += "[DEBUG]";
+                this.Title = title += "[DEBUG]";
 #endif
 
                 Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower());

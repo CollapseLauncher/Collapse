@@ -1,20 +1,16 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.IO;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Controls;
-
 using WinRT.Interop;
-
-using static Hi3Helper.Locale;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages

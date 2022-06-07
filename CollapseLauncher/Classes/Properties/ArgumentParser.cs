@@ -1,20 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-using System.Threading;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.CommandLine;
-
-using Windows.UI;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Dispatching;
-
-using WinRT;
-
-using static Hi3Helper.Logger;
 
 using static CollapseLauncher.InnerLauncherConfig;
 

@@ -10,8 +10,9 @@
 		<WindowsPackageType>None</WindowsPackageType>
 		<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Configurations>Debug;Release;Publish</Configurations>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Version>1.0.23.3</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -26,17 +27,6 @@
 		<Optimize>True</Optimize>
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Content Remove="Assets\Fonts\FontAwesomeRegular6.otf" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="ApplyUpdate.deps.json" />
-	  <None Remove="ApplyUpdate.dll" />
-	  <None Remove="ApplyUpdate.exe" />
-	  <None Remove="ApplyUpdate.runtimeconfig.json" />
-	  <None Remove="Microsoft.WindowsAppRuntime.Bootstrap.dll" />
-	  <None Remove="XAMLs\MainApp\DisconnectedPage.xaml" />
-	</ItemGroup>
 
     <ItemGroup>
         <Content Include="ApplyUpdate.deps.json">
@@ -52,9 +42,6 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="icon.ico" />
-        <Content Include="Microsoft.WindowsAppRuntime.Bootstrap.dll">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -97,11 +84,5 @@
 
     <ItemGroup>
       <Folder Include="Deps\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Page Update="XAMLs\MainApp\DisconnectedPage.xaml">
-        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      </Page>
     </ItemGroup>
 </Project>

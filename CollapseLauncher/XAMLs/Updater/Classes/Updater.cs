@@ -1,21 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using Hi3Helper.Data;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
-
-
-using Hi3Helper.Data;
-
-using Newtonsoft.Json;
-
-using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
-
 using static CollapseLauncher.UpdaterWindow;
+using static Hi3Helper.Data.ConverterTool;
 
 namespace CollapseLauncher
 {

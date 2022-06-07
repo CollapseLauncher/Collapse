@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.IO;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-
-using Newtonsoft.Json;
-
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
-using static Hi3Helper.Logger;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
+using System.Threading.Tasks;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
@@ -141,7 +137,6 @@ namespace CollapseLauncher
                 throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace}, Drive: {_DriveInfo.Name}). Cancelling the task!");
             }
         }
-
 
         public async Task StartDownloadAsync()
         {

@@ -1,27 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-
+﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-
 using WinRT.Interop;
-
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
-
+using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages

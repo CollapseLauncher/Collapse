@@ -1,22 +1,7 @@
-﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.IO;
-
-using Windows.Graphics;
-
-using WinRT;
-using WinRT.Interop;
-
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
+﻿using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Composition.SystemBackdrops;
-
+using System.Runtime.InteropServices;
+using WinRT;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 

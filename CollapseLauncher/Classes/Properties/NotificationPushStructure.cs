@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.UI.Xaml.Controls;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -23,7 +23,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public List<NotificationProp> RegionPush { get; set; }
         public List<int> AppPushIgnoreMsgIds { get; set; }
         public List<int> RegionPushIgnoreMsgIds { get; set; }
-        
+
         public void AddIgnoredMsgIds(int MsgId, bool IsAppPush = true)
         {
             if ((IsAppPush ? !AppPushIgnoreMsgIds.Contains(MsgId) : !RegionPushIgnoreMsgIds.Contains(MsgId)))

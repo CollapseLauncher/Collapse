@@ -1,22 +1,17 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-
 using Windows.Storage;
 using Windows.Storage.Pickers;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-
-using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Logger;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
-using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {

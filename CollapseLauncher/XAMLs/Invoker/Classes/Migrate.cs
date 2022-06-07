@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Diagnostics;
-
-using Microsoft.Win32;
-
-using Newtonsoft.Json;
-
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace CollapseLauncher
 {

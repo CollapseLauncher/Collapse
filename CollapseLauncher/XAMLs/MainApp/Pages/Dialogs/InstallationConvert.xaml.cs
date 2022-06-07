@@ -1,44 +1,22 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Storage;
-using Windows.Storage.Pickers;
+using Newtonsoft.Json;
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
-using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.InteropServices;
-
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-using Microsoft.Win32;
-
-using Newtonsoft.Json;
-
-using CollapseLauncher.Dialogs;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
-
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
-using Hi3Helper.Shared.GameConversion;
-using Hi3Helper.Shared.ClassStruct;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
-using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.InstallationManagement;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -47,17 +25,13 @@ namespace CollapseLauncher.Dialogs
 {
     public partial class InstallationConvert : Page
     {
-        string SourcePath;
         string SourceDataIntegrityURL;
-        string TargetPath;
         string TargetDataIntegrityURL;
-        string TargetINIPath;
         string GameVersion;
         PresetConfigClasses SourceProfile;
         PresetConfigClasses TargetProfile;
         GameConversionManagement Converter;
         IniFile SourceIniFile;
-        string EndpointURL;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         List<FilePropertiesRemote> BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
         Dictionary<string, PresetConfigClasses> ConvertibleRegions;
@@ -79,7 +53,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                EndpointURL = string.Format(CurrentRegion.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                string EndpointURL = string.Format(CurrentRegion.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
                 bool IsAskContinue = true;
                 while (IsAskContinue)
                 {
@@ -145,7 +119,7 @@ namespace CollapseLauncher.Dialogs
         {
             SourceProfile.ActualGameDataLocation = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
             TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation), $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
-            TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
+            string TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
             SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
             TargetDataIntegrityURL = await FetchDataIntegrityURL(TargetProfile);
 

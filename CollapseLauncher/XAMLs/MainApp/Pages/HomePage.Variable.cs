@@ -1,23 +1,10 @@
-﻿using Microsoft.UI.Xaml.Controls;
-
-using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
-        public struct AdditionalFile
-        {
-            public string path;
-            public long size;
-            public string md5;
-        }
-
-        string ProgressStatusTitleName;
-
-        long TotalPackageDownloadSize = 0;
-        long DownloadedSize = 0;
-
         string GameDirPath;
 
         string GameZipUrl;

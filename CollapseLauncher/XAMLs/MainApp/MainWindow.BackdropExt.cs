@@ -1,25 +1,7 @@
-﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.IO;
-
-using Windows.Graphics;
-
-using WinRT;
-using WinRT.Interop;
-
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Composition.SystemBackdrops;
 
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {

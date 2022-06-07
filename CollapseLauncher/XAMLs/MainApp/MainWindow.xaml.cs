@@ -1,25 +1,19 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Windows.Graphics;
-
-using WinRT.Interop;
-
-using Microsoft.UI;
+﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-
+using System.Threading.Tasks;
+using Windows.Graphics;
+using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.InvokeProp;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -36,7 +30,7 @@ namespace CollapseLauncher
                 if (IsPreview)
                     this.Title = title += "[PREVIEW]";
 #if DEBUG
-                    this.Title = title += "[DEBUG]";
+                this.Title = title += "[DEBUG]";
 #endif
                 if (IsFirstInstall)
                     rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
@@ -146,8 +140,8 @@ namespace CollapseLauncher
             Storyboard storyboardBack = new Storyboard();
 
             DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
-            OpacityAnimationBack.From = hide?1:0;
-            OpacityAnimationBack.To = hide?0:1;
+            OpacityAnimationBack.From = hide ? 1 : 0;
+            OpacityAnimationBack.To = hide ? 0 : 1;
             OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
 
             Storyboard.SetTarget(OpacityAnimationBack, rootFrame);
