@@ -142,18 +142,32 @@ namespace CollapseLauncher
             {
                 rootCommand.AddOption(o_GameVer = new Option<string>(new string[] { "--gamever", "-g" }, "Game version string (in x.x.x format)") { IsRequired = true });
                 rootCommand.AddOption(o_RegLoc = new Option<string>(new string[] { "--regloc", "-r" }, "Location of game registry in BetterHI3Launcher keys") { IsRequired = true });
+                rootCommand.SetHandler((string Input, string Output, string GameVer, string RegLoc) =>
+                {
+                    m_arguments.Migrate = new ArgumentMigrate
+                    {
+                        InputPath = Input,
+                        OutputPath = Output,
+                        GameVer = GameVer,
+                        RegLoc = RegLoc,
+                        IsBHI3L = true
+                    };
+                }, o_Input, o_Output, o_GameVer, o_RegLoc);
+
+                return;
             }
-            rootCommand.SetHandler((string Input, string Output, string GameVer, string RegLoc) =>
+
+            rootCommand.SetHandler((string Input, string Output) =>
             {
                 m_arguments.Migrate = new ArgumentMigrate
                 {
                     InputPath = Input,
                     OutputPath = Output,
-                    GameVer = GameVer,
-                    RegLoc = RegLoc,
-                    IsBHI3L = isBHI3L
+                    GameVer = null,
+                    RegLoc = null,
+                    IsBHI3L = false
                 };
-            }, o_Input, o_Output, o_GameVer, o_RegLoc);
+            }, o_Input, o_Output);
         }
 
         public static void ParseMoveSteamArguments(params string[] args)
