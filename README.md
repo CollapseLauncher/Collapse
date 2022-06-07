@@ -6,11 +6,9 @@ Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This la
 * Caches Download (or aka. "Updating Settings" in-game).
 * Game Data Repair (with less data needed than Data Repair feature in-game).
 * Changing Game Settings (like: Graphics Settings and Audio Settings) without opening the game.
-* Cutscenes Download and Subtitle Fix feature (Coming Soon).
 * Multi-Region Game Download (supporting: Southeast Asia, Global, TW/HK/MO, Mainland China and Korea version).
 * Steam to Global version conversion (without re-downloading the whole game).
 * Global to SEA version (or vice versa) conversion.
-* Enabling Game Mirror Server to be used for game (Powered by: Hi3Mirror)(Coming Soon).
 * Multi-session Download for Game Download/Installation.
 * Multi-thread Game Extraction for faster installation.
 * Delta-Patch Update Mechanism for smaller update on Honkai Impact 3rd.
