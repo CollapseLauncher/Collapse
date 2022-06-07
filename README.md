@@ -63,4 +63,6 @@ Any contribution in this project are welcome.
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
 
 # How to support us?
-For now, we don't have a way to open a fund to support this project. But you can support us by sharing this project to your friends or your community and as a disclaimer, this project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
+For now, we don't have a way to open a fund to support this project. But you can support us by sharing this project to your friends or your community.
+
+**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
