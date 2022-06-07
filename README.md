@@ -21,7 +21,7 @@ Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This la
 [<img src="https://user-images.githubusercontent.com/30566970/172436165-b68a8e4d-1d25-4801-9889-dd1ba5f6dead.png"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.23.4-pre/CL-1.0.23.4-preview_Installer.exe)
 > **Note**: The version for this build is 1.0.23.4 (Released on: June 7th, 2022).
 
-To see all releases, please [**go here**](https://github.com/neon-nyan/CollapseLauncher/releases).
+To see all releases, please [**go to here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
 # Prequesties for Ready-to-use build
 - OS: **Windows 10 1809 Update (build 17763)** and later or **Windows 11 (Any builds)**
@@ -31,9 +31,10 @@ To see all releases, please [**go here**](https://github.com/neon-nyan/CollapseL
 ***
 
 # Prequesties for self-build/development environment
-To develop and build it for yourself, you need to install [**.NET Core 7 Preview 4 SDK**](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.100-preview.4-windows-x64-installer) and [**WinUI 3 (WindowsAppSDK 1.1 Runtime)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe)
+To develop and build it for yourself, you need to install [**.NET Core 6 (6.0.300)**](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-6.0.300-windows-x64-installer) and [**WinUI 3 (WindowsAppSDK 1.1 Runtime)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe)
 
-And also Visual Studio 2019 or Later with WindowsAppSDK 1.1 C# Extension installed. For the extension for each version, please refer to this link:
+You may also need Visual Studio 2019 or Later with WindowsAppSDK 1.1 C# Extension installed.
+Please refer to this link to download the extension for your Visual Studio version:
 - [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2019-cs)
 - [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2022-cs)
  
