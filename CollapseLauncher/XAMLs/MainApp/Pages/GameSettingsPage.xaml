@@ -169,6 +169,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2GI}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
@@ -184,6 +185,14 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2LOD}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <ComboBox x:Name="LevelOfDetailSelector" Margin="0,8,0,8" Width="128">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>

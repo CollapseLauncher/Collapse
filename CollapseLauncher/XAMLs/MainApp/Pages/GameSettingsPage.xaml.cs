@@ -123,7 +123,8 @@ namespace CollapseLauncher.Pages
 
                 GlobalIlluminationSelector.SelectedIndex = gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
                 AmbientOcclusionSelector.SelectedIndex = gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
-                GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["VolumetricLight"].ToBool();
+                LevelOfDetailSelector.SelectedIndex = gameIni.Settings[SectionName]["LodLevel"].ToInt();
+                GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["LodGrade"].ToBool();
 
                 if (GameFXPostProcCheckBox.IsChecked ?? true)
                 {
@@ -200,6 +201,7 @@ namespace CollapseLauncher.Pages
                 gameIni.Settings[SectionName]["UseDistortion"] = GameFXDistortionCheckBox.IsChecked ?? false;
                 gameIni.Settings[SectionName]["GlobalIllumination"] = GlobalIlluminationSelector.SelectedIndex == 1;
                 gameIni.Settings[SectionName]["AmbientOcclusion"] = AmbientOcclusionSelector.SelectedIndex;
+                gameIni.Settings[SectionName]["LodGrade"] = LevelOfDetailSelector.SelectedIndex;
                 gameIni.Settings[SectionName]["VolumetricLight"] = GameVolumetricLightCheckBox.IsChecked ?? false;
 
                 gameIni.Settings[SectionName]["FullscreenExclusive"] = GameResolutionFullscreenExclusive.IsChecked ?? false;

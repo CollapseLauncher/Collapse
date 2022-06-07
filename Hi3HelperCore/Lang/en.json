@@ -188,10 +188,11 @@
     "Graphics_FXDistort": "Distortion",
 
     // Graphics: APHO2 Graphics Settings Panel
-    "Graphics_APHO2Panel": "A Post-Honkai Odyssey 2 Graphics Settings",
+    "Graphics_APHO2Panel": "APHO2 & New Chapter Graphics Settings",
     "Graphics_APHO2GI": "Global Illumination",
     "Graphics_APHO2VL": "Volumetric Lighting",
     "Graphics_APHO2AO": "Ambient Occlusion",
+    "Graphics_APHO2LOD": "Level Of Detail",
 
     "SpecDisabled": "Disabled",
     "SpecLow": "Low",

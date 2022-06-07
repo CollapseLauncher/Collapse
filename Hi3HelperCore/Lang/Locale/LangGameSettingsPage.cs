@@ -39,6 +39,7 @@
                 public string Graphics_APHO2GI { get; set; } = LangFallback?._GameSettingsPage.Graphics_APHO2GI;
                 public string Graphics_APHO2VL { get; set; } = LangFallback?._GameSettingsPage.Graphics_APHO2VL;
                 public string Graphics_APHO2AO { get; set; } = LangFallback?._GameSettingsPage.Graphics_APHO2AO;
+                public string Graphics_APHO2LOD { get; set; } = LangFallback?._GameSettingsPage.Graphics_APHO2LOD;
                 public string SpecDisabled { get; set; } = LangFallback?._GameSettingsPage.SpecDisabled;
                 public string SpecLow { get; set; } = LangFallback?._GameSettingsPage.SpecLow;
                 public string SpecMedium { get; set; } = LangFallback?._GameSettingsPage.SpecMedium;

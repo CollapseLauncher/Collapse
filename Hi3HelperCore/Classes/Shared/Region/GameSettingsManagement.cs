@@ -50,6 +50,7 @@ namespace Hi3Helper.Shared.Region
             { "HighQualityPostFX", new IniValue(true) },
             { "UseHDR", new IniValue(true) },
             { "UseDistortion", new IniValue(true) },
+            { "LodGrade", new IniValue(0) },
 
             { "BGMVolume", new IniValue(3) },
             { "SoundEffectVolume", new IniValue(3) },
@@ -109,6 +110,7 @@ namespace Hi3Helper.Shared.Region
                         case "HighQualityPostFX":
                         case "UseHDR":
                         case "UseDistortion":
+                        case "LodGrade":
                             GetOrCreatePersonalGraphicsSettingsValue(keyValue.Key);
                             break;
 
@@ -235,6 +237,13 @@ namespace Hi3Helper.Shared.Region
             HIGH = 2
         }
 
+        public enum EnumQualityLOD
+        {
+            High = 0,
+            Medium = 1,
+            Low = 2
+        }
+
         public enum EnumQualityCloseableOLH
         {
             DISABLED = 0,
@@ -288,6 +297,7 @@ namespace Hi3Helper.Shared.Region
             public EnumQuality PostFXGrade { get; set; }
             public bool UseHDR { get; set; }
             public bool UseDistortion { get; set; }
+            public ushort LodGrade { get; set; }
         }
 
         private static void GetOrCreatePersonalGraphicsSettingsValue(in string key)
@@ -383,6 +393,9 @@ namespace Hi3Helper.Shared.Region
                     case "UseDistortion":
                         value = new IniValue(data.UseDistortion);
                         break;
+                    case "LodGrade":
+                        value = new IniValue(data.LodGrade);
+                        break;
                 }
             }
             catch { }
@@ -408,6 +421,7 @@ namespace Hi3Helper.Shared.Region
                 PostFXGrade = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool()),
                 UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),
                 UseDistortion = gameIni.Settings[SectionName]["UseDistortion"].ToBool(),
+                LodGrade = (ushort)gameIni.Settings[SectionName]["LodGrade"].ToInt(),
             }, new Newtonsoft.Json.Converters.StringEnumConverter()) + '\0';
 
             SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
