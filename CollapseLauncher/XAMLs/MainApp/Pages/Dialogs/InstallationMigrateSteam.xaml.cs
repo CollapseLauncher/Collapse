@@ -75,13 +75,13 @@ namespace CollapseLauncher.Dialogs
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
-                OperationCancelled();
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
 
         public void ApplyConfiguration()

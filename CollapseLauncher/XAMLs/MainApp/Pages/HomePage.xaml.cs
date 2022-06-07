@@ -344,9 +344,8 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             MigrationWatcher.IsMigrationRunning = true;
-                            MainFrameChanger.ChangeMainFrame(typeof(InstallationMigrateSteam));
-                            await CheckMigrationProcess();
-                            break;
+                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrateSteam));
+                            return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;
@@ -361,11 +360,9 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             MigrationWatcher.IsMigrationRunning = true;
-                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
                             CurrentRegion.MigrateFromBetterHi3Launcher = true;
-                            await CheckMigrationProcess();
-                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                            break;
+                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
+                            return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;
@@ -380,10 +377,8 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             MigrationWatcher.IsMigrationRunning = true;
-                            OverlapFrame.Navigate(typeof(InstallationMigrate), null, new DrillInNavigationTransitionInfo());
-                            await CheckMigrationProcess();
-                            OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
-                            break;
+                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
+                            return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
                             break;

@@ -36,7 +36,6 @@ namespace CollapseLauncher.Dialogs
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 targetPath = await AskMigrationTarget();
@@ -45,12 +44,14 @@ namespace CollapseLauncher.Dialogs
             {
                 LogWriteLine($"Migration process is cancelled for Game Region: {CurrentRegion.ZoneName}");
                 MigrationWatcher.IsMigrationRunning = false;
+                MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                 return;
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Error occured while migrating Game Region: {CurrentRegion.ZoneName}\r\nTraceback: {ex}");
                 MigrationWatcher.IsMigrationRunning = false;
+                MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                 return;
             }
 
@@ -166,12 +167,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception)
             {
-                await MigrationCancelled(3000, true);
-                MigrationWatcher.IsMigrationRunning = false;
+                await MigrationCancelled(10, true);
             }
 
             await Task.Delay(3000);
             MigrationWatcher.IsMigrationRunning = false;
+            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
     }
 }
