@@ -69,13 +69,13 @@ namespace CollapseLauncher
 
         public static void ParseUpdaterArguments(params string[] args)
         {
-            rootCommand.AddArgument(new Argument("update", "Update the app or change the Release Channel of the app") { HelpName = null });
+            rootCommand.AddArgument(new Argument<string>("update", "Update the app or change the Release Channel of the app") { HelpName = null });
             AddUpdaterOptions();
         }
 
         public static void ParseElevateUpdaterArguments(params string[] args)
         {
-            rootCommand.AddArgument(new Argument("elevateupdate", "Elevate updater to run as administrator") { HelpName = null });
+            rootCommand.AddArgument(new Argument<string>("elevateupdate", "Elevate updater to run as administrator") { HelpName = null });
             AddUpdaterOptions();
         }
 
@@ -97,7 +97,7 @@ namespace CollapseLauncher
         public static void ParseReindexerArguments(params string[] args)
         {
             Option o_Input, o_Ver;
-            rootCommand.AddArgument(new Argument("reindex", "Reindex the update files") { HelpName = null });
+            rootCommand.AddArgument(new Argument<string>("reindex", "Reindex the update files") { HelpName = null });
             rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true });
             rootCommand.AddOption(o_Ver = new Option<string>(new string[] { "--upver", "-u" }, "Update version of the app") { IsRequired = true });
             rootCommand.SetHandler((string Input, string Version) =>
@@ -113,7 +113,7 @@ namespace CollapseLauncher
         public static void ParseTakeOwnershipArguments(params string[] args)
         {
             Option o_Input;
-            rootCommand.AddArgument(new Argument("takeownership", "Take ownership of the folder") { HelpName = null });
+            rootCommand.AddArgument(new Argument<string>("takeownership", "Take ownership of the folder") { HelpName = null });
             rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the folder to be taken") { IsRequired = true });
             rootCommand.SetHandler((string Input) =>
             {
@@ -127,9 +127,9 @@ namespace CollapseLauncher
         public static void ParseMigrateArguments(bool isBHI3L = false, params string[] args)
         {
             if (!isBHI3L)
-                rootCommand.AddArgument(new Argument("migrate", "Migrate Game from one installation to another location") { HelpName = null });
+                rootCommand.AddArgument(new Argument<string>("migrate", "Migrate Game from one installation to another location") { HelpName = null });
             else
-                rootCommand.AddArgument(new Argument("migratebhi3l", "Migrate Game from BetterHi3Launcher to another location") { HelpName = null });
+                rootCommand.AddArgument(new Argument<string>("migratebhi3l", "Migrate Game from BetterHi3Launcher to another location") { HelpName = null });
             AddMigrateOptions(isBHI3L);
         }
 
@@ -173,7 +173,7 @@ namespace CollapseLauncher
         public static void ParseMoveSteamArguments(params string[] args)
         {
             Option o_Input, o_Output, o_KeyName = null, o_RegLoc = null;
-            rootCommand.AddArgument(new Argument("movesteam", "Migrate Game from Steam to another location") { HelpName = null });
+            rootCommand.AddArgument(new Argument<string>("movesteam", "Migrate Game from Steam to another location") { HelpName = null });
             rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Installation Source") { IsRequired = true });
             rootCommand.AddOption(o_Output = new Option<string>(new string[] { "--output", "-o" }, "Installation Target") { IsRequired = true });
             rootCommand.AddOption(o_KeyName = new Option<string>(new string[] { "--keyname", "-k" }, "Registry key name") { IsRequired = true });
