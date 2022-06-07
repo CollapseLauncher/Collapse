@@ -46,7 +46,7 @@ namespace CollapseLauncher
             try
             {
                 InitAppPreset();
-                InitConsoleSetting();
+                InitConsoleSetting(true);
                 Console.WriteLine($"App Version: {AppCurrentVersion} {(IsPreview ? "Preview" : "Stable")} Started!\r\nOS Version: {GetVersionString()}\r\nCurrent Username: {Environment.UserName}");
                 Console.WriteLine($"Initializing...", LogType.Empty);
 
@@ -55,6 +55,9 @@ namespace CollapseLauncher
 
                 switch (m_appMode)
                 {
+                    case AppMode.Launcher:
+                        InitConsoleSetting();
+                        return;
                     case AppMode.ElevateUpdater:
                         RunElevateUpdate();
                         return;

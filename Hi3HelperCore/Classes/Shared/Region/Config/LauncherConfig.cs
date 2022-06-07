@@ -146,9 +146,9 @@ namespace Hi3Helper.Shared.Region
             GetScreenResolutionString();
         }
 
-        public static void InitConsoleSetting()
+        public static void InitConsoleSetting(bool forceShowConsole = false)
         {
-            if (GetAppConfigValue("EnableConsole").ToBool())
+            if (GetAppConfigValue("EnableConsole").ToBool() || forceShowConsole)
                 ShowConsoleWindow();
             else
                 HideConsoleWindow();
