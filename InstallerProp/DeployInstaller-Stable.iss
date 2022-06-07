@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.21.3
+AppVersion=1.0.23.4
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.21.3
+VersionInfoVersion=1.0.23.4
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.21.3
-VersionInfoProductTextVersion=1.0.21.3
+VersionInfoProductVersion=1.0.23.4
+VersionInfoProductTextVersion=1.0.23.4
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -28,88 +28,9 @@ DisableWelcomePage=False
 ArchitecturesInstallIn64BitMode=x64
 LicenseFile=..\LICENSE
 
-[Files]
-Source: "..\build\prequesties\Install.bat"; DestDir: "{app}\prequesties"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\InstallRuntime.ps1"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\RemoveRuntime.ps1"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.WindowsAppRuntime.1.1-preview2.msix"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.WindowsAppRuntime.DDLM.1.1-preview2.msix"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.WindowsAppRuntime.Main.1.1-preview2.msix"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\Microsoft.WindowsAppRuntime.Singleton.1.1-preview2.msix"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
-Source: "..\build\prequesties\WindowsAppSDK-Installer-x64\win10-x64\MSIX.inventory"; DestDir: "{app}\prequesties\WindowsAppSDK-Installer-x64\win10-x64"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Aiursoft.HSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.deps.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.Invoker.deps.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.Invoker.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.Invoker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.Invoker.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CollapseLauncher.Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\ColorCode.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\ColorCode.WinUI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\ColorThief.Netstandard.v20.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.DataGrid.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Input.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Layout.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Markdown.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Media.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.Controls.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\CommunityToolkit.WinUI.UI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Crc32.NET.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Google.Protobuf.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Hi3HelperCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Graphics.Canvas.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Graphics.Canvas.Interop.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.InteractiveExperiences.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Win32.SystemEvents.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.ApplicationModel.Resources.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.AppLifecycle.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.AppNotifications.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.PushNotifications.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.SDK.NET.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.System.Power.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.Windows.System.Projection.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.WindowsAppRuntime.Bootstrap.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Microsoft.WinUI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\PInvoke.Kernel32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\PInvoke.User32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\PInvoke.Windows.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\PInvoke.Windows.ShellScalingApi.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\resources.pri"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\System.Collections.Immutable.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\System.Drawing.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Validation.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\WinRT.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Assets\ironmaiden_logo_256.png"; DestDir: "{app}\Assets"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Assets\BG\AiHappy.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Assets\BG\default.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Assets\Fonts\FontAwesomeBrand6.otf"; DestDir: "{app}\Assets\Fonts"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\config\fileconfig.json"; DestDir: "{app}\config"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Lib\7z.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\Lib\HPatchZ.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
-
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 Name: "{userdesktop}\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
-[PreCompile]
-Name: "{app}\prequesties"
-Name: "{app}\prequesties\WindowsAppSDK-Installer-x64"
-
-Name: "{app}\Lib"
-Name: "{app}\Assets"
-Name: "{app}\Assets\BG"
-Name: "{app}\config"
-
-[Run]
-
-Filename: "{app}\prequesties\Install.bat"; Description: "Install Prequesties (Mandatory)"
+[Files]
+Source: "..\..\CollapseLauncher-ReleaseRepo\stable\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
