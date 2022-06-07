@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.IO;
-using System.Diagnostics;
-using System.Threading;
-
-using Newtonsoft.Json;
-using Force.Crc32;
-
+﻿using Force.Crc32;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using static Hi3Helper.Locale;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
 
 namespace Hi3Helper.Shared.GameConversion
 {

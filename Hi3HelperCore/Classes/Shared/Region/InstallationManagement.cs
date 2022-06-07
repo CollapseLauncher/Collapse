@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Hi3Helper.Data;
+using System;
 using System.IO;
-
-using Hi3Helper.Data;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.Region

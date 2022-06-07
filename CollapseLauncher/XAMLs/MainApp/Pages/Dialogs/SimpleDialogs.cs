@@ -22,10 +22,11 @@ namespace CollapseLauncher.Dialogs
                        null,
                        ContentDialogButton.Primary
                    );
-        public static async Task<ContentDialogResult> Dialog_PreDownloadPackageVerified(UIElement Content, string hash) =>
+
+        public static async Task<ContentDialogResult> Dialog_PreDownloadPackageVerified(UIElement Content) =>
                await SpawnDialog(
                        Lang._Dialogs.PreloadVerifiedTitle,
-                       string.Format(Lang._Dialogs.PreloadVerifiedTitle, hash),
+                       Lang._Dialogs.PreloadVerifiedSubtitle,
                        Content,
                        Lang._Misc.Close,
                        null,

@@ -1,15 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using SevenZipExtractor;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
-
-using SevenZipExtractor;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hi3Helper.Data
 {
@@ -44,7 +42,7 @@ namespace Hi3Helper.Data
         public long totalUncompressedSize,
                     totalCompressedSize,
                     totalExtractedSize = 0;
-        
+
         public void AutoLoad(string inputFile)
         {
             switch (Path.GetExtension(inputFile).ToLower())

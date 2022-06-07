@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Hi3Helper.Shared.ClassStruct;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Newtonsoft.Json;
-
-using Hi3Helper.Shared.ClassStruct;
-
 using static Hi3Helper.InvokeProp;
 
 namespace Hi3Helper.Data

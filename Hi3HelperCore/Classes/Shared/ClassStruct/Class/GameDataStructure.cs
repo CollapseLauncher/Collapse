@@ -1,7 +1,6 @@
-﻿using System.Linq;
+﻿using Hi3Helper.Preset;
 using System.Collections.Generic;
-
-using Hi3Helper.Preset;
+using System.Linq;
 using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.ClassStruct

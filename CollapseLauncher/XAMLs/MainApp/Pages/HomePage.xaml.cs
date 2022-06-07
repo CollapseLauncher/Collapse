@@ -1239,7 +1239,7 @@ namespace CollapseLauncher.Pages
                 InstallTool.InstallProgressChanged -= InstallerDownloadPreProgressChanged;
                 InstallTool.InstallStatusChanged -= InstallerDownloadPreStatusChanged;
 
-                await Dialog_PreDownloadPackageVerified(Content, GameZipLocalHash);
+                await Dialog_PreDownloadPackageVerified(Content);
 
                 OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }

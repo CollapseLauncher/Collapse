@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Hi3Helper.Data;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
-using Microsoft.Win32;
-using Hi3Helper.Data;
-using Newtonsoft.Json;
-
+using System.Text;
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
@@ -22,7 +21,6 @@ namespace Hi3Helper.Preset
         }
         public string GetSteamInstallationPath()
         {
-            string returnval = "";
             try
             {
                 List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
@@ -33,16 +31,6 @@ namespace Hi3Helper.Preset
             {
                 return null;
             }
-        }
-
-        public void SetSteamInstallationPath(string input) => Registry.SetValue(SteamInstallRegistryLocation, "InstallLocation", input, RegistryValueKind.String);
-
-        public void SetGameLocationParameters(string gameLocation)
-        {
-            ActualGameLocation = gameLocation;
-            UsedLanguage = GetUsedLanguage(ConfigRegistryLocation, "MIHOYOSDK_NOTICE_LANGUAGE_", FallbackLanguage);
-            SetFallbackGameFolder(gameLocation);
-            SetGameVersion();
         }
 
         public void SetGameVersion()
@@ -149,7 +137,7 @@ namespace Hi3Helper.Preset
                 RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
                 value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
                 regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
-                
+
                 return (int)JsonConvert.DeserializeObject<GeneralDataProp>(regValue).selectedServerName;
             }
             catch
@@ -158,7 +146,6 @@ namespace Hi3Helper.Preset
                 return 0;
             }
         }
-
 
         // WARNING!!!
         // This feature is only available for Genshin.
@@ -361,10 +348,12 @@ namespace Hi3Helper.Preset
         public string GameDirectoryName { get; set; }
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }
+#nullable enable
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }
         public string? CachesEndpointURL { get; set; }
+#nullable disable
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public List<string> LanguageAvailable { get; set; }
         public bool? IsGenshin { get; set; }

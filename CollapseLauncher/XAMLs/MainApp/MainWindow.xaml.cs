@@ -261,7 +261,6 @@ namespace CollapseLauncher
         }
 
         PointInt32 LastPos;
-        int i = 0;
         private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
         {
             // TEMPORARY HACK:

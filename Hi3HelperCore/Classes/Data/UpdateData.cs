@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text;
-using System.IO;
+﻿using Hi3Helper.Preset;
 using Newtonsoft.Json;
-using Hi3Helper.Preset;
-
-using static Hi3Helper.Logger;
+using System;
+using System.IO;
+using System.Text;
 using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Data
@@ -59,7 +57,7 @@ namespace Hi3Helper.Data
                 -1,
                 -1,
                 false);
-            
+
 
 #if NETCOREAPP
             Span<string> DictData = Encoding.UTF8.GetString(memoryData.ToArray()).Split('\n');

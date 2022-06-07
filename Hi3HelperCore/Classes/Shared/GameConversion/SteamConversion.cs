@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.IO;
-using System.Diagnostics;
-using System.Threading;
-
-using Newtonsoft.Json;
-using Force.Crc32;
-
+﻿using Force.Crc32;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using static Hi3Helper.Locale;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.GameConversion
@@ -24,7 +19,6 @@ namespace Hi3Helper.Shared.GameConversion
         private string endpointURL;
         private HttpClientHelper http;
         private Stream stream;
-        private Stream bufferStream;
         private CancellationTokenSource tokenSource;
         private Stopwatch sw;
 
@@ -37,11 +31,9 @@ namespace Hi3Helper.Shared.GameConversion
         private int TotalCountToRead, TotalCount;
         private int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
 
-        private string FilePath, FileCRC, FileURL;
+        private string FilePath, FileURL;
         private FileInfo FileInfo;
         private FilePropertiesRemote FileIndex;
-        private Crc32Algorithm FileCRCTool;
-        private byte[] buffer = new byte[0x400000];
 
         public SteamConversion(string targetPath, string endpointURL, List<FilePropertiesRemote> FileList, CancellationTokenSource tokenSource)
         {
@@ -89,7 +81,7 @@ namespace Hi3Helper.Shared.GameConversion
 
             FileInfo = new FileInfo(FilePath);
 
-            FileURL = endpointURL + 
+            FileURL = endpointURL +
                 (FileIndex.FT == FileType.Generic ? FileIndex.N :
                                                     Path.GetDirectoryName(FileIndex.N).Replace('\\', '/') + $"/{FileIndex.RN}");
 

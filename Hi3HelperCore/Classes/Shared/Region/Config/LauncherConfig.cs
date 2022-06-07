@@ -1,20 +1,15 @@
-﻿using System;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using Hi3Helper.Screen;
+using Hi3Helper.Shared.ClassStruct;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
 using System.Numerics;
-
-using Hi3Helper.Screen;
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
-
-using static Hi3Helper.Preset.ConfigStore;
 using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Logger;
-
-using Aiursoft.HSharp.Models;
+using static Hi3Helper.Preset.ConfigStore;
 
 namespace Hi3Helper.Shared.Region
 {

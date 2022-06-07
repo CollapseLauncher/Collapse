@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Hi3Helper.Shared.ClassStruct
+﻿namespace Hi3Helper.Shared.ClassStruct
 {
     public class RegionBackgroundProp
     {

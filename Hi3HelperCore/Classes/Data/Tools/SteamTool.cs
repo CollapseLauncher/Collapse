@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Microsoft.Win32;
 
 namespace Hi3Helper.Data
 {

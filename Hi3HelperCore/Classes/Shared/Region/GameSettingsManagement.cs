@@ -1,23 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.ComponentModel;
-
+﻿using Hi3Helper.Data;
+using Hi3Helper.Screen;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-
-using Hi3Helper.Screen;
-using Hi3Helper.Data;
-
-using static Hi3Helper.Logger;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.InstallationManagement;
-
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 
@@ -93,7 +85,7 @@ namespace Hi3Helper.Shared.Region
                 if (gameIni.Settings[SectionName][keyValue.Key].Value == null)
                 {
                     LogWriteLine($"{SectionName} Key: {keyValue.Key} is empty!", LogType.NoTag);
-                    
+
                     switch (keyValue.Key)
                     {
                         // Registry: ScreenSettingData
@@ -150,7 +142,7 @@ namespace Hi3Helper.Shared.Region
             SavePersonalAudioSettingsValue();
         });
 
-        private static string GetRegistryValue(in string key) => Encoding.UTF8.GetString((byte[])RegKey.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames)).Replace("\0","");
+        private static string GetRegistryValue(in string key) => Encoding.UTF8.GetString((byte[])RegKey.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames)).Replace("\0", "");
 
         public static void SaveRegistryValue(in string reglocation, in string key, in object value, in RegistryValueKind kind) => RegKey.SetValue(key, value, kind);
 

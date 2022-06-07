@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Hi3Helper.Data;
 using System.IO;
-
-using Hi3Helper.Data;
 
 namespace Hi3Helper.Shared.ClassStruct
 {

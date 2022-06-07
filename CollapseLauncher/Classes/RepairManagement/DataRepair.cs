@@ -15,12 +15,6 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {
-        long RepairSingleFileSize,
-             RepairSingleFileRead,
-             RepairTotalFileSize,
-             RepairTotalFileRead,
-             FileExistingLength;
-
         int RepairedFilesCount;
 
         int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
@@ -55,11 +49,8 @@ namespace CollapseLauncher.Pages
                     RepairTotalProgressBar.Value = 0;
                 });
 
-                RepairTotalFileRead = 0;
-                RepairedFilesCount = 0;
                 foreach (var BrokenFile in BrokenFileIndexesProperty)
                 {
-                    RepairSingleFileRead = 0;
                     FilePath = Path.Combine(GameBasePath, NormalizePath(BrokenFile.N));
                     if (!Directory.Exists(Path.GetDirectoryName(FilePath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
@@ -94,7 +85,6 @@ namespace CollapseLauncher.Pages
 
         FileInfo RepairFileInfo;
         FileStream RepairFileStream;
-        MemoryStream RepairMemoryStream;
         private void RepairGenericAudioFiles(FilePropertiesRemote input)
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -141,7 +131,7 @@ namespace CollapseLauncher.Pages
                 FilePath = Path.Combine(GameBasePath, BlockBasePath, block.BlockHash + ".wmv");
                 RepairFileInfo = new FileInfo(FilePath);
 
-                FileExistingLength = RepairFileInfo.Exists ? RepairFileInfo.Length : 0;
+                long FileExistingLength = RepairFileInfo.Exists ? RepairFileInfo.Length : 0;
 
                 if (RepairFileInfo.Exists && RepairFileInfo.Length != block.BlockSize)
                     RepairFileInfo.Delete();

@@ -357,7 +357,7 @@
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
     "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember, you might still need to download some files in-game as usual.\r\n\r\nDo you want to continue?",
     "PreloadVerifiedTitle": "Pre-Download Package is Verified!",
-    "PreloadVerifiedSubtitle": "Your Pre-Download Package is Ready and Verified!\r\nHash: {0}",
+    "PreloadVerifiedSubtitle": "Your Pre-Download Package is Ready and Verified!",
     "LocateInstallTitle": "Locating Installation Folder",
     "LocateInstallSubtitle": "Before Installing the Game, Do you want to specify the location of the game?",
     "UnauthorizedDirTitle": "Unauthorized Location Choosen",

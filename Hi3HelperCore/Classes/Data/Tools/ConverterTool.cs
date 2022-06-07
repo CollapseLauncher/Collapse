@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Force.Crc32;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Numerics;
-using Force.Crc32;
 
 namespace Hi3Helper.Data
 {
@@ -29,13 +29,13 @@ namespace Hi3Helper.Data
 
         public static uint BytesToUInt32Big(byte[] buffer) =>
             (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
-            (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8  | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;
+            (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8 | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;
 
         public static ushort BytesToUInt16Big(byte[] buffer) => (ushort)((BitConverter.ToUInt16(buffer, 0) & 0xFFU) << 8 | (BitConverter.ToUInt16(buffer, 0) & 0xFF00U) >> 8);
 
         public static uint ToUInt32Big(uint value) =>
             (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
-            (value & 0x00FF0000U) >> 8  | (value & 0xFF000000U) >> 24;
+            (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
 
         public static double GetPercentageNumber(double cur, double max, int round = 2) => Math.Round((100 * cur) / max, round);
 
@@ -43,7 +43,7 @@ namespace Hi3Helper.Data
 
         public static string BytesToMD5(byte[] stream) => BytesToHex(MD5.Create().ComputeHash(stream));
 
-        public static string NormalizePath(string i) => 
+        public static string NormalizePath(string i) =>
             Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
 
         public static uint ConcatUint(uint a, uint b)
@@ -172,7 +172,7 @@ namespace Hi3Helper.Data
                 if (!Directory.Exists(input))
                     Directory.CreateDirectory(input);
 
-                File.Create(Path.Combine(input, "write_test"), 1,FileOptions.DeleteOnClose).Close();
+                File.Create(Path.Combine(input, "write_test"), 1, FileOptions.DeleteOnClose).Close();
             }
             catch (UnauthorizedAccessException)
             {

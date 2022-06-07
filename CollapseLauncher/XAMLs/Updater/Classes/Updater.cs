@@ -228,8 +228,6 @@ namespace CollapseLauncher
                 this._TotalSecond = TimeSpan.TotalSeconds;
                 this.CurrentRead = CurrentRead;
             }
-
-            private long _LastContinuedSize = 0;
             private double _TotalSecond = 0;
 
             public long DownloadedSize { get; private set; }

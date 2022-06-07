@@ -1,12 +1,6 @@
-﻿using System;
+﻿using Hi3Helper.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-
-using Hi3Helper.Data;
-
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.Region

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using static System.Convert;
-
-using Google.Protobuf;
-using Hi3Helper.Data;
-using Hi3Helper.Preset;
+﻿using Hi3Helper.Preset;
 using Newtonsoft.Json;
-using Hi3Helper.Shared.ClassStruct;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading;
+using static System.Convert;
 
 namespace Hi3Helper.Data
 {

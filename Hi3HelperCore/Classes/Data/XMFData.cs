@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Hi3Helper.Preset;
-
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 

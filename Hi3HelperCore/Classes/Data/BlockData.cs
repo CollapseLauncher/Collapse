@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
 using System.IO;
-using Hi3Helper.Preset;
-
-using static Hi3Helper.Logger;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Data
 {

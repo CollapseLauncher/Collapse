@@ -10,7 +10,6 @@ namespace CollapseLauncher.Pages
         string GameZipUrl;
         string GameZipPath;
         string GameZipRemoteHash;
-        string GameZipLocalHash;
         long GameZipRequiredSize;
 
         string GameZipVoiceUrl;

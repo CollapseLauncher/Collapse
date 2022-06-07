@@ -11,6 +11,7 @@
                 public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
+                public string PreloadVerifiedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedSubtitle;
                 public string LocateInstallTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
                 public string LocateInstallSubtitle { get; set; } = LangFallback?._Dialogs.LocateInstallSubtitle;
                 public string UnauthorizedDirTitle { get; set; } = LangFallback?._Dialogs.UnauthorizedDirTitle;
