@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.23.1
+AppVersion=1.0.23.3
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.23.1
+VersionInfoVersion=1.0.23.3
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for Honkai Impact 3rd
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.23.1
-VersionInfoProductTextVersion=1.0.23.1-preview
+VersionInfoProductVersion=1.0.23.3
+VersionInfoProductTextVersion=1.0.23.3-RC2-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -65,6 +65,7 @@ Source: "..\..\CollapseLauncher-ReleaseRepo\preview\CommunityToolkit.WinUI.UI.dl
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\coreclr.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Crc32.NET.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\createdump.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\fileindex.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Google.Protobuf.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Hi3HelperCore.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Hi3HelperCore.pdb"; DestDir: "{app}"; Flags: ignoreversion
@@ -267,6 +268,7 @@ Source: "..\..\CollapseLauncher-ReleaseRepo\preview\WinRT.Runtime.dll"; DestDir:
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\ironmaiden_logo_256.png"; DestDir: "{app}\Assets"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\AiHappy.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\default.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\BG\PaimonSleep.png"; DestDir: "{app}\Assets\BG"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Assets\Fonts\FontAwesomeBrand6.otf"; DestDir: "{app}\Assets\Fonts"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lang\en.json"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\Lib\7z.dll"; DestDir: "{app}\Lib"; Flags: ignoreversion
@@ -279,7 +281,6 @@ Name: "{userdesktop}\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe";
 [PreCompile]
 Name: "{app}\prequesties"
 Name: "{app}\prequesties\WindowsAppSDK-Installer-x64"
-
 Name: "{app}\Lib"     
 Name: "{app}\Lang"
 Name: "{app}\Assets"

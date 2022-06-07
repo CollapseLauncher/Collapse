@@ -32,6 +32,11 @@
       "commandLineArgs": "takeownership --input \"H:\\Data\\Games\\miHoYoGames\"",
       "remoteDebugEnabled": false,
       "nativeDebugging": true
+    },
+    "Migrate": {
+      "commandName": "Project",
+      "commandLineArgs": "migrate --input \"C:\\Program Files\\Honkai Impact 3 sea\" --output \"H:\\Games\\miHoYoGames\\Hi3SEA\"",
+      "nativeDebugging": false
     }
   }
 }
