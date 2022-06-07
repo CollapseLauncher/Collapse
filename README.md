@@ -14,7 +14,7 @@ Collapse Launcher is a launcher specifically made for Honkai Impact 3rd. This la
 * Delta-Patch Update Mechanism for smaller update on Honkai Impact 3rd.
 * Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
 
-This launcher requires [**.NET Core 7 Preview 4 Desktop Runtime**](https://download.visualstudio.microsoft.com/download/pr/2b2a2f05-2381-4073-a774-80368dcfdef9/b63ad4ee1e933e45b9fefbbd2a5291ea/dotnet-sdk-7.0.100-preview.4.22252.9-win-x64.exe) and [**WinUI 3 (WindowsAppSDK Runtime 1.1 Preview 3)**](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.22.3-rc1-pre/prequesties-20220507.7z) in order to run.
+This launcher requires [**.NET Core 7 Preview 4 Desktop Runtime**](https://download.visualstudio.microsoft.com/download/pr/2b2a2f05-2381-4073-a774-80368dcfdef9/b63ad4ee1e933e45b9fefbbd2a5291ea/dotnet-sdk-7.0.100-preview.4.22252.9-win-x64.exe) and [**WinUI 3 (WindowsAppSDK Runtime 1.1)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe) in order to run.
 
 Unfortunately, this launcher only supports x64-bit version of Windows 10 (Build 1809 or later) or Windows 11 (Any Build) due to WinUI 3 limitation. ([**Read More Here**](https://microsoft.github.io/microsoft-ui-xaml/about.html))
  
