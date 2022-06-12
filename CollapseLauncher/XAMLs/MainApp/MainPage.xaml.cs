@@ -31,6 +31,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
+                SetThemeParameters();
 
                 m_actualMainFrameSize = new Size(LauncherFrame.Width, LauncherFrame.Height);
 
@@ -330,10 +331,7 @@ namespace CollapseLauncher
             await GetAppNotificationPush();
             // InnerLauncherConfig.NotificationData = new NotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
-            if (regionResourceProp.data != null)
-                MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
-            else
-                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+            MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
         }
 
         private async void InitializeNavigationItems()

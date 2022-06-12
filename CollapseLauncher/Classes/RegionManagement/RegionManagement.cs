@@ -20,7 +20,6 @@ namespace CollapseLauncher
         HttpClientHelper httpHelper;
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
-        Task loader = new Task(() => { });
         int LoadTimeoutSec = 10;
         int LoadTimeoutJump = 2;
         public async Task LoadRegion(int regionIndex = 0)
@@ -48,6 +47,11 @@ namespace CollapseLauncher
             InitRegKey();
             PushRegionNotification(CurrentRegion.ProfileName);
             await HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            if (regionResourceProp.data == null)
+            {
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                return;
+            }
             InitializeNavigationItems();
             // HideBackgroundImage(false);
         }

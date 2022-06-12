@@ -131,7 +131,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FX}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,16,0,8"/>
-                                <Expander Margin="0,8,0,8" Width="420" HorizontalContentAlignment="Stretch"
+                                <Expander Margin="0,8,0,8" Width="514" HorizontalContentAlignment="Stretch"
                                    x:Name="GameFXPostProcExpander">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
@@ -206,7 +206,6 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-
                         <StackPanel Grid.Column="0">
                             <StackPanel x:Name="AudioSettingsPanelLeft" Margin="0,16,64,16">
                                 <StackPanel>
@@ -310,11 +309,22 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
+                    <MenuFlyoutSeparator Margin="0,48"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Title}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" HorizontalAlignment="Stretch" Margin="0,0,0,16"/>
+                    <TextBlock>
+                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}"/>
+                        <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" FontWeight="Bold"/></Hyperlink>
+                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer3}"/>
+                    </TextBlock>
                 </StackPanel>
             </ScrollViewer>
-            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" HorizontalAlignment="Left" Padding="16" Margin="16" CornerRadius="5">
+            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{StaticResource MyAcrylicBrush}" HorizontalAlignment="Stretch" Padding="16">
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="ApplyButton" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{StaticResource SharedShadow}"/>
+                    <Button x:Name="ApplyButton" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{StaticResource SharedShadow}">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}"/>
+                    </Button>
                     <TextBlock x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0" Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>

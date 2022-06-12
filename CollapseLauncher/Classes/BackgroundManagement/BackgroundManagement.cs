@@ -361,8 +361,8 @@ namespace CollapseLauncher
                 OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
 
                 DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
-                OpacityAnimationBack.From = hideImage ? 0.50 : 0.30;
-                OpacityAnimationBack.To = hideImage ? 0.30 : 0.50;
+                OpacityAnimationBack.From = hideImage ? 1 : 0.30;
+                OpacityAnimationBack.To = hideImage ? 0.30 : 1;
                 OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
 
                 Storyboard.SetTarget(OpacityAnimation, BackgroundFront);

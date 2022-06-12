@@ -103,7 +103,9 @@ namespace CollapseLauncher
 
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
+#if !DISABLETRANSPARENT
             m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
+#endif
             ExtendsContentIntoTitleBar = true;
 
             SetTitleBar(DragArea);

@@ -81,7 +81,8 @@
     "GameSettings_Panel2": "Game Installation",
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
-    "GameSettings_Panel2ConvertVersion": "Convert Version"
+    "GameSettings_Panel2ConvertVersion": "Convert Version",
+    "GameSettings_Panel3": "Custom Start-up Args"
   },
 
   // GameRepairPage
@@ -202,7 +203,7 @@
     "SpecMaximum": "Maximum",
 
     "Audio_Title": "Audio Settings",
-    // Audio: Audio Panel 1
+    // Audio: Audio Panel
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VOLang": "Voice Over Language",
@@ -221,7 +222,14 @@
     "OverlayGameRunningTitle": "Game is Currently Running!",
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
     "OverlayFirstTimeTitle": "You haven't play this game for the first time!",
-    "OverlayFirstTimeSubtitle": "Please run the game first and then come back to use this feature."
+    "OverlayFirstTimeSubtitle": "Please run the game first and then come back to use this feature.",
+
+    "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
+    // Custom Arguments: Custom Arguments Panel
+    "CustomArgs_Subtitle": "Start-up Arguments",
+    "CustomArgs_Footer1": "For more information about the Start-up Argument, please check",
+    "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
+    "CustomArgs_Footer3": "to see more parameters."
   },
 
   // CutscenesPage

@@ -278,6 +278,10 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
+                                    <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>

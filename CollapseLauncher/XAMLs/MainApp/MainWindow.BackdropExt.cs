@@ -25,12 +25,21 @@ namespace CollapseLauncher
 #endif
                 case BackdropType.DefaultColor:
                     {
+#if !DISABLETRANSPARENT
+                        if (CurrentRequestedAppTheme == ApplicationTheme.Light)
+                            Application.Current.Resources["NavigationBarBrush"] = new AcrylicBrush
+                            {
+                                TintColor = new Windows.UI.Color { A = 244, R = 255, G = 255, B = 255 },
+                                TintOpacity = 0f,
+                                TintLuminosityOpacity = 0f
+                            };
+
                         if (CurrentRequestedAppTheme == ApplicationTheme.Dark)
                         {
                             Application.Current.Resources["NavigationBarBrush"] = new AcrylicBrush
                             {
                                 TintColor = new Windows.UI.Color { A = 244, R = 34, G = 34, B = 34 },
-                                TintOpacity = 1f,
+                                TintOpacity = 0f,
                                 TintLuminosityOpacity = 0f
                             };
                             Application.Current.Resources["PagesSolidAcrylicBrush"] = new AcrylicBrush
@@ -46,6 +55,7 @@ namespace CollapseLauncher
                                 TintLuminosityOpacity = 0.5f
                             };
                         }
+#endif
                     }
                     break;
             }

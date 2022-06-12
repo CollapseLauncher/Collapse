@@ -124,13 +124,11 @@
                     </Image.RenderTransform>
                 </Image>-->
                 <Frame x:Name="LauncherFrame">
-                    <!--
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>
                         </TransitionCollection>
                     </Frame.ContentTransitions>
-                    -->
                 </Frame>
                 <Grid x:Name="LoadingPopup" Background="{StaticResource LoadingBrush}" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">

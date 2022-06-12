@@ -1,8 +1,10 @@
 ﻿using Hi3Helper.Data;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.Region
@@ -42,6 +44,9 @@ namespace Hi3Helper.Shared.Region
                 gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
                 if (File.Exists(gameIni.ConfigPath))
                     gameIni.Config.Load(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.Open, FileAccess.Read));
+
+                if (!(CurrentRegion.IsGenshin ?? false))
+                    Task.Run(() => CheckExistingGameSettings());
             }
             catch (Exception ex)
             {

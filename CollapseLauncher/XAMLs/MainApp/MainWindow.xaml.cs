@@ -62,6 +62,8 @@ namespace CollapseLauncher
             {
 #if MICA
                 m_backDrop.SetBackdrop(BackdropType.Mica);
+#elif DISABLETRANSPARENT
+                m_backDrop.SetBackdrop(BackdropType.DefaultColor);
 #else
                 m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
 #endif
@@ -90,7 +92,11 @@ namespace CollapseLauncher
             }
             else
             {
+#if DISABLETRANSPARENT
+                m_backDrop.SetBackdrop(BackdropType.DefaultColor);
+#else
                 m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
+#endif
                 SetThemeParameters();
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;

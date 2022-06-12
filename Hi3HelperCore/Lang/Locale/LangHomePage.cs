@@ -38,6 +38,7 @@
                 public string GameSettings_Panel2RepairGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2RepairGame;
                 public string GameSettings_Panel2UninstallGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2UninstallGame;
                 public string GameSettings_Panel2ConvertVersion { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ConvertVersion;
+                public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
             }
         }
         #endregion

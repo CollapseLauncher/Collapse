@@ -40,12 +40,13 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                this.InitializeComponent();
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
                 CheckIfRightSideProgress();
                 LoadGameConfig();
+
+                this.InitializeComponent();
                 CheckCurrentGameState();
 
                 SocMedPanel.Translation += Shadow32;
@@ -248,6 +249,11 @@ namespace CollapseLauncher.Pages
                 }
                 if (CurrentRegion.IsGenshin ?? false)
                     OpenCacheFolderButton.IsEnabled = false;
+
+                if (!(CurrentRegion.IsGenshin ?? false))
+                {
+                    CustomStartupArgs.Visibility = Visibility.Visible;
+                }
                 return;
             }
             GameInstallationState = GameInstallStateEnum.NotInstalled;
@@ -256,6 +262,7 @@ namespace CollapseLauncher.Pages
             OpenGameFolderButton.IsEnabled = false;
             OpenCacheFolderButton.IsEnabled = false;
             ConvertVersionButton.IsEnabled = false;
+            CustomArgsTextBox.IsEnabled = false;
         }
 
         private bool IsPreDownloadCompleted()
@@ -273,39 +280,46 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            while (true && !App.IsAppKilled)
+            try
             {
-                while (App.IsGameRunning)
+                while (true && !App.IsAppKilled)
                 {
+                    while (App.IsGameRunning)
+                    {
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            if (App.IsAppKilled)
+                                return;
+
+                            if (StartGameBtn.IsEnabled)
+                                LauncherBtn.Translation -= Shadow16;
+
+                            StartGameBtn.IsEnabled = false;
+                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                            GameStartupSetting.IsEnabled = false;
+                        });
+                        await Task.Delay(500);
+                    }
+
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         if (App.IsAppKilled)
                             return;
 
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
+                        if (!StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation += Shadow16;
 
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
-                        GameStartupSetting.IsEnabled = false;
+                        StartGameBtn.IsEnabled = true;
+                        StartGameBtn.Content = Lang._HomePage.StartBtn;
+                        GameStartupSetting.IsEnabled = true;
                     });
+
                     await Task.Delay(500);
                 }
-
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    if (App.IsAppKilled)
-                        return;
-
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
-
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtn.Content = Lang._HomePage.StartBtn;
-                    GameStartupSetting.IsEnabled = true;
-                });
-
-                await Task.Delay(500);
+            }
+            catch
+            {
+                return;
             }
         }
 
@@ -1258,6 +1272,12 @@ namespace CollapseLauncher.Pages
             }
 
             WatchOutputLog.Cancel();
+        }
+
+        public string CustomArgsValue
+        {
+            get => GetGameConfigValue("CustomArgs").ToString();
+            set => SetAndSaveGameConfigValue("CustomArgs", value);
         }
     }
 }

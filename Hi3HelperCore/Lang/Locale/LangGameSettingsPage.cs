@@ -64,6 +64,11 @@
                 public string OverlayGameRunningSubtitle { get; set; } = LangFallback?._GameSettingsPage.OverlayGameRunningSubtitle;
                 public string OverlayFirstTimeTitle { get; set; } = LangFallback?._GameSettingsPage.OverlayFirstTimeTitle;
                 public string OverlayFirstTimeSubtitle { get; set; } = LangFallback?._GameSettingsPage.OverlayFirstTimeSubtitle;
+                public string CustomArgs_Title { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Title;
+                public string CustomArgs_Subtitle { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Subtitle;
+                public string CustomArgs_Footer1 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer1;
+                public string CustomArgs_Footer2 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer2;
+                public string CustomArgs_Footer3 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer3;
             }
         }
         #endregion

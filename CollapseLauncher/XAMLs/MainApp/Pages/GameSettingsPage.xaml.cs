@@ -167,7 +167,7 @@ namespace CollapseLauncher.Pages
 
                 await SetGraphicsSettingsIni();
                 await SetAudioSettingsIni();
-                await SaveGameSettings();
+                SaveGameSettings();
             }
             catch (Exception ex)
             {
@@ -397,6 +397,12 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        public string CustomArgsValue
+        {
+            get => GetGameConfigValue("CustomArgs").ToString();
+            set => SetGameConfigValue("CustomArgs", value);
         }
     }
 }
