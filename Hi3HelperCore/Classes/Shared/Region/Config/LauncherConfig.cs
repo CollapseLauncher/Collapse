@@ -71,7 +71,7 @@ namespace Hi3Helper.Shared.Region
             { "EnableConsole", new IniValue(false) },
 #endif
             { "DontAskUpdate", new IniValue(false) },
-            { "ThemeMode", new IniValue(AppThemeMode.Light) },
+            { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", new IniValue("en") },
             { "UseCustomBG", new IniValue(false) },
             { "CustomBGPath", new IniValue() }
