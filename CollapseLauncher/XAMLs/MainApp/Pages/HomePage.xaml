@@ -117,7 +117,8 @@
                         x:Name="SocMedPanel"
                         Background="{ThemeResource SocMedPanelAcrylicBrush}"
                         Orientation="Vertical" HorizontalAlignment="Right"
-                        CornerRadius="12" Padding="0,4"
+                        CornerRadius="12,0,0,12" Padding="0,4"
+                        Margin="0,0,-32,0"
                         Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                         VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}">
                         <StackPanel.Transitions>
@@ -221,7 +222,7 @@
                             <Grid>
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource GameSettingsBtnBrush}" Margin="-16"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <AnimatedIcon x:Name='GameRegionSettingIcon' Width="24">
+                                    <AnimatedIcon x:Name='GameRegionSettingIcon' Width="20">
                                         <AnimatedIcon.Source>
                                             <animatedvisuals:AnimatedSettingsVisualSource/>
                                         </AnimatedIcon.Source>

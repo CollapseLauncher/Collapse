@@ -49,7 +49,7 @@ namespace CollapseLauncher.Pages
                 this.InitializeComponent();
                 CheckCurrentGameState();
 
-                SocMedPanel.Translation += Shadow32;
+                SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
 
