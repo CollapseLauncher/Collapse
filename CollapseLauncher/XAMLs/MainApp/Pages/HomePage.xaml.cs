@@ -18,9 +18,9 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.GameSettingsManagement;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Shared.Region.GameConfig;
 
 namespace CollapseLauncher.Pages
 {
