@@ -2,7 +2,9 @@
   <img alt="image" src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/header_github.webp"><br/>
 </p>
 
-**Collapse Launcher** is a launcher specifically made for **Honkai Impact 3rd**. This launcher will not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher don't have, including:
+**Collapse Launcher** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **all miHoYo Games**.
+
+**Collapse Launcher** has some advanced features for **Honkai Impact 3rd** that not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
 * Caches Download (or aka. "Updating Settings" in-game).
 * Game Data Repair (with less data needed than Data Repair feature in-game).
 * Changing Game Settings (like: Graphics Settings and Audio Settings) without opening the game.
@@ -13,7 +15,11 @@
 * Multi-thread Game Extraction for faster installation.
 * Delta-Patch Update Mechanism for smaller update on Honkai Impact 3rd.
 * Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
- 
+
+Not only that, this launcher has also some advanced features for **Genshin Impact** like:
+* Choosing your voice-line language at first-install so you don't have to download it inside the game.
+* Repair the game files entirely including game caches, cutscenes, audio pack and persistent files.
+
 # Supported Game Client
 For now, this launcher is only supporting these versions of the game:
 * Southeast Asia
