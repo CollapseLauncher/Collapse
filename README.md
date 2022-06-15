@@ -60,7 +60,7 @@ Please refer to this link to download the extension for your Visual Studio versi
 - [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2019-cs)
 - [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2022-cs)
 
-# Third-party repositories and references being used on this project
+# Third-party repositories and references being used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
 - [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
 - [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
