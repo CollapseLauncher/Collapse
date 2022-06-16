@@ -239,8 +239,8 @@
     "Debug": "调试",
     "Debug_Console": "显示控制台",
 
-    "Language": "程序中的语言",
-    "LanguageEntry": "{0}由{1}编写",
+    "Language": "语言设置",
+    "LanguageEntry": "{0} by {1}",
     "AppLang_ApplyNeedRestart": "*你需要重新启动程序以使语言生效。",
 
     "AppThemes": "主题",
@@ -253,7 +253,7 @@
     "AppBG_Checkbox": "使用自定义背景",
     "AppBG_Note": "注意：图片必须是.png/.jpg/.tiff或.bmp格式，尺寸小于4096x4096。",
 
-    "AppThreads": "应用主题",
+    "AppThreads": "程序线程",
     "AppThreads_Download": "下载线程",
     "AppThreads_Extract": "读取线程",
     "AppThreads_Help1": "这个线程将处理在下载文件时要分割多少块(多线程下载)。这个机制的行为与IDM和aria2的行为相同。",
@@ -287,8 +287,8 @@
     "About_Copyright4": " license. All rights reserved.",
 
     "Disclaimer": "免责声明",
-    "Disclaimer1": "本程序不隶属于",
-    "Disclaimer2": "旗下，也不以任何方式",
+    "Disclaimer1": "本程序与",
+    "Disclaimer2": "没有任何关系",
     "Disclaimer3": "并完全开放源代码。我们欢迎任何贡献。"
   },
 
