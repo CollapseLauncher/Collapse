@@ -359,6 +359,7 @@ namespace CollapseLauncher
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
+            (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
         }
 
         public void LoadConfig()
