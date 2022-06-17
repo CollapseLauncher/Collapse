@@ -1,3 +1,16 @@
+# Announcement Regarding to Hi3Mirror Project Temporary Suspension
+
+We are really sorry that Hi3Mirror Services is temporarily stopped and suspend all its services (including Game Private Mirror, Caches API, Game Repair API, and Game Version Conversion API) and make some functionalities on Collapse Launcher unusable.
+
+Once again, we are apologize regarding to this inconvenience. We are trying to bring this service up as soon as possible and hope we can bring this service up before June 22nd 2022. Thank you for your understanding and support.
+
+For further announcement regearing to this, please visit its [**main wiki page**](https://github.com/neon-nyan/Hi3MirrorWiki).
+
+Sincerely,
+**@neon-nyan**
+
+*** 
+
 <p align="center">
   <img alt="image" src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/header_github.webp"><br/>
 </p>
@@ -69,6 +82,9 @@ Please refer to this link to download the extension for your Visual Studio versi
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
 
 # How to support us?
-For now, we don't have a way to open a fund to support this project. But you can support us by sharing this project to your friends or your community.
+For now, we are starting to open a fund and only Indonesian Digital Wallet is available. This fund will help this and other project's continuity and also to improve the services of all its features.
+
+> ### DANA
+> @neon-nyan / +62 838-7541-2241
 
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
