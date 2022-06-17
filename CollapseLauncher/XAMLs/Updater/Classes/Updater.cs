@@ -174,6 +174,17 @@ namespace CollapseLauncher
         private async Task Suicide()
         {
             await Task.Delay(3000);
+
+            string prefix = Path.GetFileNameWithoutExtension(applyPath);
+
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(TempPath, "*", SearchOption.TopDirectoryOnly))
+                    if (file.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+                        File.Move(file, Path.Combine(TargetPath, Path.GetFileName(file)), true);
+            }
+            catch { }
+
             new Process()
             {
                 StartInfo = new ProcessStartInfo
@@ -181,6 +192,7 @@ namespace CollapseLauncher
                     FileName = applyPath,
                     UseShellExecute = true,
                     Verb = "runas",
+                    Arguments = $"\"{TargetPath}\"",
                     WorkingDirectory = workingDir
                 }
             }.Start();

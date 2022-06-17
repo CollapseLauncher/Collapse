@@ -551,6 +551,7 @@ namespace CollapseLauncher.Pages
                                     null,
                                 regionResourceProp.data.game.latest.version,
                                 CurrentRegion.ProtoDispatchKey,
+                                CurrentRegion.GameDispatchURL,
                                 CurrentRegion.GetRegServerNameID(),
                                 Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
 
@@ -922,6 +923,7 @@ namespace CollapseLauncher.Pages
                                             null,
                                         regionResourceProp.data.game.latest.version,
                                         CurrentRegion.ProtoDispatchKey,
+                                        CurrentRegion.GameDispatchURL,
                                         CurrentRegion.GetRegServerNameID(),
                                         Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
 
@@ -1045,6 +1047,7 @@ namespace CollapseLauncher.Pages
                                     CurrentRegion.ZipFileURL,
                                 regionResourceProp.data.game.latest.version,
                                 CurrentRegion.ProtoDispatchKey,
+                                CurrentRegion.GameDispatchURL,
                                 CurrentRegion.GetRegServerNameID(),
                                 Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
 
@@ -1198,6 +1201,7 @@ namespace CollapseLauncher.Pages
                                     null,
                                 regionResourceProp.data.game.latest.version,
                                 CurrentRegion.ProtoDispatchKey,
+                                CurrentRegion.GameDispatchURL,
                                 CurrentRegion.GetRegServerNameID(),
                                 Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
 

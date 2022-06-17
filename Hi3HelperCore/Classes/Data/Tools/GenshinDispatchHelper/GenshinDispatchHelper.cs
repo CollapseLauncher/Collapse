@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using static System.Convert;
 
 namespace Hi3Helper.Data
 {
     public class GenshinDispatchHelper : HttpClientHelper
     {
-        private string DispatchURLFormula = "https://{0}.yuanshen.com/query_cur_region?version={1}&platform=3&channel_id=1&dispatchSeed={2}";
         private string DispatchBaseURL { get; set; }
         private string RegionSubdomain { get; set; }
         private string ChannelName = "OSRELWin";
@@ -19,18 +19,20 @@ namespace Hi3Helper.Data
 
         private QueryProto DispatchProto = new QueryProto();
         private QueryProperty returnValProp;
+        private CancellationToken cancelToken;
 
-        public GenshinDispatchHelper(int RegionID, string DispatchKey, string VersionString = "2.6.0") : base(false, false, 1, 1)
+        public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken()) : base(false, false, 1, 1)
         {
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
-            this.DispatchBaseURL = string.Format(DispatchURLFormula, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
+            this.DispatchBaseURL = string.Format(DispatchURLPrefix, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
+            this.cancelToken = cancelToken;
         }
 
-        public void LoadDispatch()
+        public async Task LoadDispatch()
         {
             MemoryStream response = new MemoryStream();
-            DownloadFile(DispatchBaseURL, response, new CancellationToken());
+            await DownloadFileAsync(DispatchBaseURL, response, cancelToken);
             string responseData = Encoding.UTF8.GetString(response.ToArray());
             response.Dispose();
 
@@ -59,7 +61,7 @@ namespace Hi3Helper.Data
 
             ParseGameResPkgProp(ref returnValProp);
             ParseDesignDataURL(ref returnValProp);
-            ParseAudioAssetsURL(ref returnValProp);
+            await ParseAudioAssetsURL(returnValProp);
         }
 
         private void ParseDesignDataURL(ref QueryProperty ValProp)
@@ -81,10 +83,10 @@ namespace Hi3Helper.Data
             ValProp.ClientDesignDataSil = JsonConvert.DeserializeObject<PkgVersionProperties>(DispatchProto.Dispatcher.ClientDesignDatalistSlnt);
         }
 
-        private void ParseAudioAssetsURL(ref QueryProperty ValProp)
+        private async Task ParseAudioAssetsURL(QueryProperty ValProp)
         {
             MemoryStream response = new MemoryStream();
-            DownloadFile(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, new CancellationToken());
+            await DownloadFileAsync(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, cancelToken);
             string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
             response.Dispose();
 

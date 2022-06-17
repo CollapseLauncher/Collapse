@@ -11,6 +11,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DISABLE_TRACE</DefineConstants>
 	<Optimize>True</Optimize>
+	<DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">

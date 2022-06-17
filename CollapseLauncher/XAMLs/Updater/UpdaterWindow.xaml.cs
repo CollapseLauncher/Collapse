@@ -21,7 +21,7 @@ namespace CollapseLauncher
         public static string workingDir = Path.GetDirectoryName(execPath);
         public static string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath));
         public static string applyPath = Path.Combine(workingDir, $"ApplyUpdate.exe");
-        public static string applyElevatedPath = Path.Combine(workingDir, $"ApplyUpdate.Elevated.exe");
+        public static string applyElevatedPath = Path.Combine(workingDir, "_Temp", $"ApplyUpdate.exe");
         public static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
 
         public UpdaterWindow()
