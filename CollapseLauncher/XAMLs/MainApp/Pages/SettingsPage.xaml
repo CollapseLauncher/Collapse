@@ -85,7 +85,7 @@
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
                                             <Run Text="2 - 32" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
                                             </TextBlock>
-                                            <TextBlock Text="Extraction Threads" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help5}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help6}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
@@ -131,7 +131,7 @@
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </StackPanel>
-                            <Button x:Name="ForceUpdateBtn" Content="Force Update" Click="ForceUpdate" Margin="0,8,0,0"/>
+                            <Button x:Name="ForceUpdateBtn" Content="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Click="ForceUpdate" Margin="0,8,0,0"/>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">

@@ -266,6 +266,7 @@
     "Update": "Check Updates",
     "Update_CurVer": "Current Version:",
     "Update_CheckBtn": "Check Update",
+    "Update_ForceBtn": "Force Update",
     "Update_NewVer1": "Update to",
     "Update_NewVer2": "is available!",
     "Update_LatestVer": "You are using the latest version.",
