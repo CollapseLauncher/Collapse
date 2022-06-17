@@ -33,7 +33,7 @@
                 <StackPanel x:Name="AppSettings" Margin="0,16" HorizontalAlignment="Left">
                     <StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="Disabled" OnContent="Enabled" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                             <ComboBox x:Name="LanguageSelector" MinWidth="200" SelectionChanged="LanguageChanged"/>

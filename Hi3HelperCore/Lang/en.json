@@ -358,7 +358,12 @@
     "MovingFile": "Moving File",
     "CheckingFile": "Checking File",
     "RepairingFile": "Repairing File",
-    "ApplyingPatch": "Applying Patch"
+    "ApplyingPatch": "Applying Patch",
+    "Disabled": "Disabled",
+    "Enabled": "Enabled",
+
+    "BuildChannelPreview": "Preview",
+    "BuildChannelStable": "Stable"
   },
 
   // Dialogs Content
@@ -488,5 +493,21 @@
     "PageFooter1": "Please",
     "PageFooter2": "DO NOT",
     "PageFooter3": "switch to another page or close the launcher while the process is running"
+  },
+
+  // UpdatePage Content
+  "_UpdatePage": {
+    "PageTitle1": "UPDATE",
+    "PageTitle2": "IS AVAILABLE!",
+    "VerCurLabel": "Current Version:",
+    "VerNewLabel": "New Version:",
+    "VerChannelLabel": "Update Channel:",
+    "VerDateLabel": "Compiled on:",
+    "ReleaseNote": "Release Notes",
+    "NeverShowNotification": "Never show me this update notification again",
+    "RemindLaterBtn": "Remind me later",
+    "UpdateNowBtn": "Update Now",
+    "LoadingRelease": "Loading Release Notes...",
+    "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}"
   }
 }
