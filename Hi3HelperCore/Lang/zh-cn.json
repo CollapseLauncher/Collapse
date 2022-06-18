@@ -3,7 +3,6 @@
   "LanguageName": "简体中文",
   "LanguageID": "zh-cn",
   "Author": "misaka10843",
-
   // StartupPage Content
   "_StartupPage": {
     "PageTitle": "第一次启动页面",
@@ -26,7 +25,6 @@
     "OverlayPrepareFolderTitle": "准备程序文件夹",
     "OverlayPrepareFolderSubtitle": "申请权限..."
   },
-
   // DisconnectedPage Content
   "_DisconnectedPage": {
     "PageTitle": "断开链接",
@@ -36,7 +34,6 @@
     "Footer2": "派蒙",
     "Footer3": "重试。"
   },
-
   // MainPage Content
   "_MainPage": {
     "PageTitle": "主页面",
@@ -50,7 +47,6 @@
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不要再给我看这个"
   },
-
   // HomePage Content
   "_HomePage": {
     "PageTitle": "启动器",
@@ -84,7 +80,6 @@
     "GameSettings_Panel2ConvertVersion": "转换版本",
     "GameSettings_Panel3": "自定义启动参数"
   },
-
   // GameRepairPage
   "_GameRepairPage": {
     "PageTitle": "游戏修复",
@@ -117,7 +112,6 @@
     "OverlayGameRunningTitle": "游戏正在运行!",
     "OverlayGameRunningSubtitle": "请先关闭游戏以使用此功能!"
   },
-
   // CachesPage Content
   "_CachesPage": {
     "PageTitle": "缓存更新",
@@ -144,16 +138,13 @@
     "OverlayGameRunningTitle": "游戏正在运行!",
     "OverlayGameRunningSubtitle": "请先关闭游戏以使用此功能!"
   },
-
   // CutscenesPage
   "_CutscenesPage": {
     "PageTitle": "场景"
   },
-
   // GameSettingsPage
   "_GameSettingsPage": {
     "PageTitle": "游戏设置",
-
     "Graphics_Title": "图形设置",
     // Graphics: Resolution Panel
     "Graphics_ResolutionPanel": "游戏分辨率",
@@ -163,18 +154,15 @@
     "Graphics_ResCustom": "使用自定义分辨率",
     "Graphics_ResCustomW": "宽",
     "Graphics_ResCustomH": "高",
-
     // Graphics: FPS Panel
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "战斗中",
     "Graphics_FPSInMenu": "主菜单",
-
     // Graphics: API Panel
     "Graphics_APIPanel": "图形API",
     "Graphics_APIHelp1": "这个游戏有几个API模式，包括。",
     "Graphics_APIHelp2": "注：",
     "Graphics_APIHelp3": "使用DirectX 12可能会在某些阶段导致崩溃，因为游戏不是用DirectX 12 API原生编译的。",
-
     // Graphics: Global Graphics Settings Panel
     "Graphics_SpecPanel": "全局图形设置",
     "Graphics_Render": "渲染精度",
@@ -187,21 +175,18 @@
     "Graphics_FXHQ": "高质量",
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "失真",
-
     // Graphics: APHO2 Graphics Settings Panel
     "Graphics_APHO2Panel": "APHO2与图形设置",
     "Graphics_APHO2GI": "全局照明",
     "Graphics_APHO2VL": "体积照明",
     "Graphics_APHO2AO": "环境遮蔽",
     "Graphics_APHO2LOD": "细节等级",
-
     "SpecDisabled": "禁用",
     "SpecLow": "低",
     "SpecMedium": "中等",
     "SpecHigh": "高",
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
-
     "Audio_Title": "音频设置",
     // Audio: Audio Panel
     "Audio_BGM": "背景音乐音量",
@@ -213,17 +198,14 @@
     "Audio_VO": "配音音量",
     "Audio_Elf": "Elf(精灵)配音音量",
     "Audio_Cutscenes": "场景音量",
-
     "ApplyBtn": "应用设置",
     "SettingsApplied": "更改已被保存!",
-
     "OverlayNotInstalledTitle": "由于该区服尚未安装或需要更新，您无法使用该功能!",
     "OverlayNotInstalledSubtitle": "请先在首页菜单中下载/更新游戏!",
     "OverlayGameRunningTitle": "游戏正在运行!",
     "OverlayGameRunningSubtitle": "请先关闭游戏以使用此功能!",
     "OverlayFirstTimeTitle": "你还没有第一次运行这个游戏!",
     "OverlayFirstTimeSubtitle": "请先运行游戏，然后再回来使用此功能。",
-
     "CustomArgs_Title": "自定义启动参数（高级）",
     // Custom Arguments: Custom Arguments Panel
     "CustomArgs_Subtitle": "启动参数",
@@ -231,28 +213,22 @@
     "CustomArgs_Footer2": "Unity Standalone命令行文档",
     "CustomArgs_Footer3": "来查看更多的参数。"
   },
-
   // CutscenesPage
   "_SettingsPage": {
     "PageTitle": "程序设置",
-
     "Debug": "调试",
     "Debug_Console": "显示控制台",
-
     "Language": "语言设置",
     "LanguageEntry": "{0} by {1}",
     "AppLang_ApplyNeedRestart": "*你需要重新启动程序以使语言生效。",
-
     "AppThemes": "主题",
     "AppThemes_Default": "默认（使用系统设置）",
     "AppThemes_Light": "浅色",
     "AppThemes_Dark": "深色",
     "AppThemes_ApplyNeedRestart": "*你需要重新启动程序以使主题生效。",
-
     "AppBG": "程序背景",
     "AppBG_Checkbox": "使用自定义背景",
     "AppBG_Note": "注意：图片必须是.png/.jpg/.tiff或.bmp格式，尺寸小于4096x4096。",
-
     "AppThreads": "程序线程",
     "AppThreads_Download": "下载线程",
     "AppThreads_Extract": "读取线程",
@@ -262,36 +238,31 @@
     "AppThreads_Help4": "0 (自动侦测)",
     "AppThreads_Help5": "这个线程将在安装/修复游戏时处理读取/验证过程。",
     "AppThreads_Help6": "注意：在安装崩坏三时，该设置不再有效。",
-
     "Update": "检查更新",
     "Update_CurVer": "当前版本：",
     "Update_CheckBtn": "检查更新",
+    "Update_ForceBtn": "强制更新",
     "Update_NewVer1": "更新至",
     "Update_NewVer2": "可用!",
     "Update_LatestVer": "你正在使用最新的版本。",
-
     "AppFiles": "程序文件管理",
     "AppFiles_OpenDataFolderBtn": "打开程序数据文件夹",
     "AppFiles_RelocateDataFolderBtn": "重新定位程序数据文件夹",
     "AppFiles_ClearLogBtn": "清除日志文件",
     "AppFiles_ClearImgCachesBtn": "清除图像文件",
-
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献",
-
     "About": "关于",
     // 版权信息可以不用翻译|Copyright information can be used without translation
     "About_Copyright1": "© 2022 Created by",
     "About_Copyright2": " neon-nyan [14372096 SEA]",
     "About_Copyright3": "Under",
     "About_Copyright4": " license. All rights reserved.",
-
     "Disclaimer": "免责声明",
     "Disclaimer1": "本程序与",
     "Disclaimer2": "没有任何关系",
     "Disclaimer3": "并完全开放源代码。我们欢迎任何贡献。"
   },
-
   // Misc Content
   "_Misc": {
     "UpdateCompleteTitle": "更新完成!",
@@ -306,7 +277,6 @@
     "SpeedPlaceholder": "速度: - /s",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
-
     // Buttons Texts
     "Cancel": "取消",
     "Close": "关闭",
@@ -321,7 +291,6 @@
     "Next": "下一页",
     "Prev": "上一页",
     "Uninstall": "卸载",
-
     "Yes": "是",
     "YesRedownload": "是的，重新下载",
     "YesResume": "是的，恢复",
@@ -330,7 +299,6 @@
     "YesConvertIt": "是的，转换",
     "YesIHaveBeefyPC": "是的，我有强大的电脑!",
     "YesChangeLocation": "是的，改变位置",
-
     "No": "不",
     "NoStartFromBeginning": "不，从头开始",
     "NoCancel": "不，取消",
@@ -338,12 +306,10 @@
     "NoIgnoreIt": "不，忽略它",
     "NoOtherLocation": "不，继续安装",
     "NotSelected": "未选择",
-
     "LangNameENUS": "英语(美国)",
     "LangNameJP": "日语",
     "LangNameCN": "中文(简体)",
     "LangNameKR": "韩语",
-
     "Downloading": "下载中",
     "Merging": "合并中",
     "Idle": "闲置",
@@ -359,9 +325,12 @@
     "MovingFile": "移动文件",
     "CheckingFile": "检查文件",
     "RepairingFile": "修复文件",
-    "ApplyingPatch": "应用补丁"
+    "ApplyingPatch": "应用补丁",
+    "Disabled": "关闭",
+    "Enabled": "开启",
+    "BuildChannelPreview": "预览版",
+    "BuildChannelStable": "正式版"
   },
-
   // Dialogs Content
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告。检测到Delta补丁更新!",
@@ -409,14 +378,12 @@
     "MigrationTitle": "定位目标文件夹",
     "MigrationSubtitle": "在开始这个过程之前，你是否要指定游戏的位置？"
   },
-
   // InstallMgmt Content
   "_InstallMgmt": {
     "IntegrityCheckTitle": "完整性检查",
     "PreparePatchTitle": "准备补丁",
     "AddtDownloadTitle": "添加下载：{0}/{1}"
   },
-
   // InstallConvert Content
   "_InstallConvert": {
     "PageTitle": "跨版本转换",
@@ -445,7 +412,6 @@
     "CookbookDownloadTitle": "正在下载配方",
     "CookbookDownloadSubtitle": "正在下载从{0}转换到{1}的配方"
   },
-
   // InstallMigrateSteam Content
   "_InstallMigrateSteam": {
     "PageTitle": "Steam转换",
@@ -478,7 +444,6 @@
     "InnerConvertFile2": "正在下载{0}[{1}/{2}]: {3}",
     "InnerConvertFile3": "下载{0}[{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
-
   // InstallMigrate Content
   "_InstallMigrate": {
     "PageTitle": "游戏迁移",
@@ -489,5 +454,20 @@
     "PageFooter1": "请注意",
     "PageFooter2": "请勿",
     "PageFooter3": "进程运行时，请切换到其他页面或关闭启动器"
+  },
+  // UpdatePage Content
+  "_UpdatePage": {
+    "PageTitle1": "有可用",
+    "PageTitle2": "更新!",
+    "VerCurLabel": "当前版本：",
+    "VerNewLabel": "最新版本：",
+    "VerChannelLabel": "更新通道：",
+    "VerDateLabel": "编译于：",
+    "ReleaseNote": "版本说明",
+    "NeverShowNotification": "不要再向我显示这个更新通知",
+    "RemindLaterBtn": "稍后提醒我",
+    "UpdateNowBtn": "现在更新",
+    "LoadingRelease": "正在加载版本说明...",
+    "LoadingReleaseFailed": "获取版本发行说明时出错。\r\n{0}"
   }
 }
