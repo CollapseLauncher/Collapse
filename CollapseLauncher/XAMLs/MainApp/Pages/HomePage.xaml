@@ -13,6 +13,21 @@
         <ThemeShadow x:Name="SharedShadow"/>
     </Page.Resources>
     <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Dark">
+                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="Light">
+                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="Default">
+                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
         <Frame x:Name="OverlapFrame" Canvas.ZIndex="1" x:FieldModifier="public">
             <Frame.ContentTransitions>
                 <TransitionCollection>
@@ -35,15 +50,15 @@
                     Severity="Informational" Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
                     Message=""
                     HorizontalAlignment="Left" Grid.ColumnSpan="2">
-                        <InfoBar.Transitions>
+                        <!--<InfoBar.Transitions>
                             <PopupThemeTransition/>
-                        </InfoBar.Transitions>
+                        </InfoBar.Transitions>-->
                         <InfoBar.Content>
                             <StackPanel Orientation="Vertical" Margin="0,0,38,0">
                                 <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
-                                    <Grid.ChildrenTransitions>
+                                    <!--<Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>
+                                    </Grid.ChildrenTransitions>-->
                                     <Grid HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                             <Grid Margin="0,0,0,8">
@@ -72,9 +87,9 @@
                                     </Grid>
                                 </Grid>
                                 <Grid x:Name="ProgressPrePerFileStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed" Margin="0,0,0,24">
-                                    <Grid.ChildrenTransitions>
+                                    <!--<Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>
+                                    </Grid.ChildrenTransitions>-->
                                     <Grid HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                             <Grid Margin="0,0,0,8">
@@ -121,19 +136,19 @@
                         Margin="0,0,-32,0"
                         Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                         VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}">
-                        <StackPanel.Transitions>
+                        <!--<StackPanel.Transitions>
                             <PopupThemeTransition/>
-                        </StackPanel.Transitions>
+                        </StackPanel.Transitions>-->
                         <ScrollViewer x:Name="SocMedPanelScrollView" MaxHeight="336" VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
-                                <ItemsControl.Transitions>
+                                <!--<ItemsControl.Transitions>
                                     <PopupThemeTransition/>
-                                </ItemsControl.Transitions>
+                                </ItemsControl.Transitions>-->
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
-                                     PointerEntered="FadeInSocMedButton" PointerExited="FadeOutSocMedButton" Tag="{Binding URL}" Click="OpenSocMedLink"
-                                     Shadow="{StaticResource SharedShadow}">
+                                             PointerEntered="FadeInSocMedButton" PointerExited="FadeOutSocMedButton" Tag="{Binding URL}" Click="OpenSocMedLink"
+                                             Shadow="{StaticResource SharedShadow}" ToolTipService.ToolTip="{Binding URL}">
                                             <Button.Resources>
                                                 <Storyboard x:Name="EnterStoryboard">
                                                     <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1"/>
@@ -154,45 +169,45 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-260,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-55,0,0" Orientation="Vertical" HorizontalAlignment="Left">
                         <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
-                            MaxWidth="458" Height="213"
-                            CornerRadius="10" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
+                            MaxWidth="414" Height="192" 
+                            CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
                             <FlipView.ItemTemplate>
                                 <DataTemplate>
-                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" PointerPressed="OpenImageLinkFromTag"/>
+                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding URL}" PointerPressed="OpenImageLinkFromTag"/>
                                 </DataTemplate>
                             </FlipView.ItemTemplate>
                         </FlipView>
                         <Grid x:Name="ImageCarouselPipsPager"
-                              Padding="4,12" Margin="12,0,0,0" CornerRadius="8"
+                              Padding="4,4" Margin="10,-14,10,0" CornerRadius="8"
                               Shadow="{StaticResource SharedShadow}"
                               Background="{StaticResource CarouselPipsAcrylicBrush}"
-                              HorizontalAlignment="Center" Visibility="Collapsed"
+                              HorizontalAlignment="Right" Visibility="Collapsed"
                               VerticalAlignment="Center">
                             <PipsPager
-                              HorizontalAlignment="Center"
+                              Margin="0,0,0,0"
                               VerticalAlignment="Center"
-                              Margin="0, 0, 0, 0"
+                              PreviousButtonVisibility="Visible"
+                              NextButtonVisibility="Visible"
                               NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
                               SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
-                              Orientation="Vertical"/>
+                              Orientation="Horizontal"/>
                         </Grid>
                     </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid Width="250" Height="250">
-                            <Grid.ChildrenTransitions>
+                            <!--<Grid.ChildrenTransitions>
                                 <PopupThemeTransition/>
-                            </Grid.ChildrenTransitions>
+                            </Grid.ChildrenTransitions>-->
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
                             <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
                             <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Maximum="100"/>
-
                             <Grid x:Name="progressPerFile" Visibility="Collapsed">
                                 <ProgressRing x:Name="progressRingAcrBG2"  Value="{Binding Value, ElementName=progressRingPerFile}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}" HorizontalAlignment="Center"

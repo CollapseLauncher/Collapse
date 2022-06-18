@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.IO;
 using System.Diagnostics;
 
@@ -14,8 +15,13 @@ namespace ApplyUpdate
 
         static void Main(string[] args)
         {
-            string BasePath, TargetPath;
-            string TempFolder = Path.Combine(workingDir, "_Temp");
+            string BasePath, TargetPath, TempFolder;
+            if (args.Length == 0)
+                TempFolder = Path.Combine(workingDir, "_Temp");
+            else
+                TempFolder = Path.Combine(args[0], "_Temp");
+            Console.WriteLine("Put 5 seconds delay before applying update...");
+            Thread.Sleep(5000);
             if (Directory.Exists(TempFolder))
             {
                 foreach (string file in Directory.EnumerateFiles(TempFolder, "*", SearchOption.AllDirectories))

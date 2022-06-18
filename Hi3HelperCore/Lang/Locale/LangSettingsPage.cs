@@ -34,6 +34,7 @@
                 public string Update { get; set; } = LangFallback?._SettingsPage.Update;
                 public string Update_CurVer { get; set; } = LangFallback?._SettingsPage.Update_CurVer;
                 public string Update_CheckBtn { get; set; } = LangFallback?._SettingsPage.Update_CheckBtn;
+                public string Update_ForceBtn { get; set; } = LangFallback?._SettingsPage.Update_ForceBtn;
                 public string Update_NewVer1 { get; set; } = LangFallback?._SettingsPage.Update_NewVer1;
                 public string Update_NewVer2 { get; set; } = LangFallback?._SettingsPage.Update_NewVer2;
                 public string Update_LatestVer { get; set; } = LangFallback?._SettingsPage.Update_LatestVer;

@@ -68,6 +68,10 @@
                 public string CheckingFile { get; set; } = LangFallback?._Misc.CheckingFile;
                 public string RepairingFile { get; set; } = LangFallback?._Misc.RepairingFile;
                 public string ApplyingPatch { get; set; } = LangFallback?._Misc.ApplyingPatch;
+                public string Disabled { get; set; } = LangFallback?._Misc.Disabled;
+                public string Enabled { get; set; } = LangFallback?._Misc.Enabled;
+                public string BuildChannelPreview { get; set; } = LangFallback?._Misc.BuildChannelPreview;
+                public string BuildChannelStable { get; set; } = LangFallback?._Misc.BuildChannelStable;
             }
         }
         #endregion

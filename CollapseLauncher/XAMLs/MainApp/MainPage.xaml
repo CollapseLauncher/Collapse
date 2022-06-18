@@ -68,7 +68,7 @@
         <NavigationView x:Name="NavigationViewControl"
             IsTitleBarAutoPaddingEnabled="False"
             IsBackButtonVisible="Collapsed"
-            IsSettingsVisible="false"
+            IsSettingsVisible="true"
             Header=""
             Margin="0,0,0,0"
             PaneDisplayMode="LeftMinimal"

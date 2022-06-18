@@ -45,25 +45,25 @@ namespace CollapseLauncher
             this.TotalManifestSize = this.Manifest.Sum(x => x.fileSize);
         }
 
-        public List<PkgVersionProperties> StartCheck()
+        public async Task<List<PkgVersionProperties>> StartCheck()
         {
             BrokenManifest = new List<PkgVersionProperties>();
             sW = Stopwatch.StartNew();
             Read = 0;
             GetThreadChildren();
-            StartThreadChildren();
+            await StartThreadChildren();
 
             return BrokenManifest;
         }
 
-        void StartThreadChildren()
+        async Task StartThreadChildren()
         {
             List<Task> threads = new List<Task>();
 
             foreach (ThreadProperty p in ThreadChildren)
                 threads.Add(Task.Run(() => ThreadChild(p)));
 
-            Task.WhenAll(threads).GetAwaiter().GetResult();
+            await Task.WhenAll(threads);
             threads.Clear();
         }
 

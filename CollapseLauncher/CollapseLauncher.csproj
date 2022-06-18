@@ -13,7 +13,7 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<Version>1.0.23.5</Version>
+		<Version>1.0.23.7</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
@@ -21,24 +21,22 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
 		<Optimize>True</Optimize>
+		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT</DefineConstants>
 		<Optimize>True</Optimize>
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="ApplyUpdate.exe.config" />
+	</ItemGroup>
 
     <ItemGroup>
-        <Content Include="ApplyUpdate.deps.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="ApplyUpdate.dll">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="ApplyUpdate.exe">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="ApplyUpdate.runtimeconfig.json">
+        <Content Include="ApplyUpdate.exe.config">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="icon.ico" />
@@ -49,7 +47,7 @@
         <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
         <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25131-preview" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
         <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.4.22229.4" />
     </ItemGroup>

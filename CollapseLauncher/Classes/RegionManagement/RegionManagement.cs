@@ -33,7 +33,7 @@ namespace CollapseLauncher
             LoadGameRegionFile();
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "");
-            await HideLoadingPopup(false, "Loading Region", CurrentRegion.ZoneName);
+            await HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
             while (!await TryGetRegionResource())
             {
                 int lastTimeout = LoadTimeoutSec;
@@ -53,7 +53,6 @@ namespace CollapseLauncher
                 return;
             }
             InitializeNavigationItems();
-            // HideBackgroundImage(false);
         }
 
         private async void PushRegionNotification(string RegionProfileName)

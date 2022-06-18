@@ -349,6 +349,7 @@ namespace Hi3Helper.Preset
         public string GameExecutableName { get; set; }
         public string ZipFileURL { get; set; }
 #nullable enable
+        public string? GameDispatchURL { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }

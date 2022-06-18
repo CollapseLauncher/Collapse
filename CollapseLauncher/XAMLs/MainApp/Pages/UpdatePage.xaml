@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -32,29 +33,29 @@
                HorizontalAlignment="Left" Opacity="0.30"
                Width="480" Grid.ColumnSpan="2"/>
         <StackPanel Grid.Column="0">
-            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="UPDATE" FontWeight="Light" FontSize="96"/>
-            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="IS AVAILABLE!" FontWeight="ExtraBold" FontSize="44" Margin="0,-22,0,0"/>
+            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" FontWeight="Light" FontSize="96"/>
+            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" FontWeight="ExtraBold" FontSize="44" Margin="0,-22,0,0"/>
             <StackPanel Orientation="Horizontal" Margin="0,48,0,0">
                 <TextBlock FontSize="16">
-                    <Run Text="Current Version:"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}"/>
                     <Run x:Name="CurrentVersionLabel" Text="1.0.10.0" FontWeight="Bold"/>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,-4,0,0">
                 <TextBlock FontSize="32">
-                    <Run Text="New Version:" FontWeight="Medium"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerNewLabel}" FontWeight="Medium"/>
                     <Run x:Name="NewVersionLabel" Text="1.0.12.0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                 <TextBlock>
-                    <Run Text="Update Channel:" FontWeight="Medium"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerChannelLabel}" FontWeight="Medium"/>
                     <Run x:Name="UpdateChannelLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <TextBlock FontSize="12">
-                    <Run Text="Compiled on:" FontWeight="Medium"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerDateLabel}" FontWeight="Medium"/>
                     <Run x:Name="BuildTimestampLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 </TextBlock>
             </StackPanel>
@@ -65,7 +66,7 @@
                 <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <TextBlock Text="Release Notes" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" Style="{StaticResource TitleTextBlockStyle}"/>
                 <TextBox x:Name="ReleaseNotesBox"
                      IsReadOnly="True"
                      TextWrapping="Wrap"
@@ -74,13 +75,13 @@
                      Height="480"
                      AcceptsReturn="True"
                      Margin="0,16,0,0"/>
-                <CheckBox x:Name="AskUpdateCheckbox" Content="Never show me this update notification again" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,16,0,0"
+                <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,16,0,0"
                           Checked="AskUpdateToggle"
                           Unchecked="AskUpdateToggle"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-                <HyperlinkButton Content="Remind me later" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
-                <Button Content="Update now" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick"/>
+                <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
+                <Button Content="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick"/>
             </StackPanel>
         </Grid>
     </Grid>
