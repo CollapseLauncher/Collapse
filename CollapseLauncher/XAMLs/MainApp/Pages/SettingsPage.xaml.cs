@@ -294,13 +294,8 @@ namespace CollapseLauncher.Pages
             set
             {
                 SetAndSaveConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), value));
-
-                if (IsAppThemeNeedRestart)
-                    AppThemeSelectionWarning.Visibility = Visibility.Visible;
-
-                if (IsFirstChangeThemeSelection)
-                    IsAppThemeNeedRestart = true;
-                IsFirstChangeThemeSelection = true;
+                AppThemeSelectionWarning.Visibility = Visibility.Visible;
+                IsAppThemeNeedRestart = true;
             }
         }
         public int CurrentAppThreadDownloadValue

@@ -13,7 +13,7 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<Version>1.0.23.7</Version>
+		<Version>1.0.24.0</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
@@ -58,7 +58,7 @@
 
 	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
 		<ItemGroup>
-			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1-preview3'" />
+			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1.1'" />
 		</ItemGroup>
 	</Target>
 

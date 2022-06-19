@@ -35,7 +35,6 @@ namespace CollapseLauncher.Pages
         public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
-
         public HomePage()
         {
             try
@@ -64,12 +63,7 @@ namespace CollapseLauncher.Pages
                     Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
-                Task.Run(() =>
-                {
-                    try
-                    { CheckRunningGameInstance(); }
-                    catch (Exception) { }
-                });
+                CheckRunningGameInstance();
             }
             catch (Exception ex)
             {
@@ -280,47 +274,34 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            try
+            await Task.Delay(1);
+            DispatcherQueue.TryEnqueue(async () =>
             {
-                while (true && !App.IsAppKilled)
+                try
                 {
                     while (App.IsGameRunning)
                     {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            if (App.IsAppKilled)
-                                return;
+                        if (StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation -= Shadow16;
 
-                            if (StartGameBtn.IsEnabled)
-                                LauncherBtn.Translation -= Shadow16;
+                        StartGameBtn.IsEnabled = false;
+                        StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                        GameStartupSetting.IsEnabled = false;
 
-                            StartGameBtn.IsEnabled = false;
-                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
-                            GameStartupSetting.IsEnabled = false;
-                        });
-                        await Task.Delay(500);
+                        await Task.Delay(100);
                     }
 
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        if (App.IsAppKilled)
-                            return;
+                    if (!StartGameBtn.IsEnabled)
+                        LauncherBtn.Translation += Shadow16;
 
-                        if (!StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation += Shadow16;
+                    StartGameBtn.IsEnabled = true;
+                    StartGameBtn.Content = Lang._HomePage.StartBtn;
+                    GameStartupSetting.IsEnabled = true;
 
-                        StartGameBtn.IsEnabled = true;
-                        StartGameBtn.Content = Lang._HomePage.StartBtn;
-                        GameStartupSetting.IsEnabled = true;
-                    });
-
-                    await Task.Delay(500);
+                    await Task.Delay(100);
                 }
-            }
-            catch
-            {
-                return;
-            }
+                catch { return; }
+            });
         }
 
         private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");
