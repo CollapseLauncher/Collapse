@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -136,6 +137,9 @@
                         Margin="0,0,-32,0"
                         Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                         VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}">
+                        <StackPanel.Resources>
+                            <localPage:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+                        </StackPanel.Resources>
                         <!--<StackPanel.Transitions>
                             <PopupThemeTransition/>
                         </StackPanel.Transitions>-->
@@ -148,7 +152,16 @@
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
                                              PointerEntered="FadeInSocMedButton" PointerExited="FadeOutSocMedButton" Tag="{Binding URL}" Click="OpenSocMedLink"
-                                             Shadow="{StaticResource SharedShadow}" ToolTipService.ToolTip="{Binding URL}">
+                                             Shadow="{StaticResource SharedShadow}">
+                                            <ToolTipService.ToolTip>
+                                                <StackPanel>
+                                                    <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={StaticResource NullToVisibilityConverter}}">
+                                                        <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" Visibility="{Binding IsDescriptionExist, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                                </StackPanel>
+                                            </ToolTipService.ToolTip>
                                             <Button.Resources>
                                                 <Storyboard x:Name="EnterStoryboard">
                                                     <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1"/>
@@ -175,7 +188,7 @@
                             CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
                             <FlipView.ItemTemplate>
                                 <DataTemplate>
-                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding URL}" PointerPressed="OpenImageLinkFromTag"/>
+                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                 </DataTemplate>
                             </FlipView.ItemTemplate>
                         </FlipView>

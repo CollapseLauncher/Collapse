@@ -1,5 +1,9 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using System;
+using System.Globalization;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 
 namespace CollapseLauncher.Pages
 {
@@ -22,5 +26,12 @@ namespace CollapseLauncher.Pages
         InstallManagement InstallTool;
 
         bool IsGameHasVoicePack;
+    }
+
+    public class NullVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string input) => (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 }
