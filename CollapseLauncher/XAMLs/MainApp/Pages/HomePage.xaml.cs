@@ -119,31 +119,20 @@ namespace CollapseLauncher.Pages
         private async Task HideImageCarousel(bool hide)
         {
             Storyboard storyboard = new Storyboard();
-            Storyboard storyboard2 = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
             OpacityAnimation.From = hide ? 1 : 0;
             OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
-            DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
-            OpacityAnimation2.From = hide ? 1 : 0;
-            OpacityAnimation2.To = hide ? 0 : 1;
-            OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.10));
-
-            Storyboard.SetTarget(OpacityAnimation, ImageCarousel);
+            Storyboard.SetTarget(OpacityAnimation, ImageCarouselAndPostPanel);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-            Storyboard.SetTarget(OpacityAnimation2, ImageCarouselPipsPager);
-            Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
-            storyboard2.Children.Add(OpacityAnimation2);
 
             storyboard.Begin();
-            storyboard2.Begin();
             await Task.Delay(100);
             DispatcherQueue.TryEnqueue(() =>
             {
-                ImageCarousel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
-                ImageCarouselPipsPager.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+                ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
             });
         }
 
