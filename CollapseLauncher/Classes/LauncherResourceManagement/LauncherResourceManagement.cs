@@ -30,8 +30,6 @@ namespace CollapseLauncher
 
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherResourceURL, memoryStream, token);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
-
-                await GetLauncherAdvInfo(token);
             }
             catch (OperationCanceledException)
             {
@@ -44,7 +42,7 @@ namespace CollapseLauncher
             memoryStream.Dispose();
         }
 
-        public async Task GetLauncherAdvInfo(CancellationToken token)
+        public async Task GetLauncherAdvInfoOld(CancellationToken token)
         {
             if (CurrentRegion.LauncherInfoURL == null) return;
 
@@ -125,18 +123,6 @@ namespace CollapseLauncher
             }
 
             return panel;
-        }
-
-        public async Task<string> GetCachedSprites(string URL)
-        {
-            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-            if (!Directory.Exists(cacheFolder))
-                Directory.CreateDirectory(cacheFolder);
-
-            if (!File.Exists(cachePath)) await httpHelper.DownloadFileAsync(URL, cachePath, new CancellationToken());
-
-            return cachePath;
         }
     }
 }

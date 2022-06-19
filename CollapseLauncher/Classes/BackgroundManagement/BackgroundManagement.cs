@@ -59,6 +59,10 @@ namespace CollapseLauncher
 
                 BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
+
+                await GetLauncherAdvInfo(token);
+                await GetLauncherCarouselInfo(token);
+
                 ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
             }
             catch (OperationCanceledException)
@@ -69,6 +73,47 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Something wrong happen while fetching Background Image\r\n{ex}");
             }
+        }
+
+        public async Task GetLauncherAdvInfo(CancellationToken token)
+        {
+            if (regionBackgroundProp.data.icon.Count == 0) return;
+
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
+                regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img),
+                    IconHover = await GetCachedSprites(item.img_hover),
+                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img),
+                    QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
+                    Description = string.IsNullOrEmpty(item.title) || CurrentRegion.IsHideSocMedDesc ? item.url : item.title
+                });
+        }
+
+        public async Task GetLauncherCarouselInfo(CancellationToken token)
+        {
+            if (regionBackgroundProp.data.banner.Count == 0) return;
+
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
+                regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img),
+                    Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
+                });
+        }
+
+        public async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())
+        {
+            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
+            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(cacheFolder))
+                Directory.CreateDirectory(cacheFolder);
+
+            if (!File.Exists(cachePath)) await httpHelper.DownloadFileAsync(URL, cachePath, token);
+
+            return cachePath;
         }
 
         private void ApplyAccentColor()

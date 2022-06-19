@@ -12,6 +12,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public RegionResourceLatest game { get; set; }
         public RegionResourceLatest pre_download_game { get; set; }
         public RegionBackgroundProp adv { get; set; }
+        public List<RegionSocMedProp> banner { get; set; }
         public List<RegionSocMedProp> icon { get; set; }
     }
 
@@ -47,6 +48,11 @@ namespace Hi3Helper.Shared.ClassStruct
         public string URL { get; set; }
         public string Icon { get; set; }
         public string IconHover { get; set; }
+        public string QR { get; set; }
+        public string QR_Description { get; set; }
+        public bool IsQRExist => !string.IsNullOrEmpty(QR);
+        public string Description { get; set; }
+        public bool IsDescriptionExist => !string.IsNullOrEmpty(Description);
     }
 
     public class RegionBackgroundProp
@@ -60,6 +66,11 @@ namespace Hi3Helper.Shared.ClassStruct
         public string icon_id { get; set; }
         public string img { get; set; }
         public string img_hover { get; set; }
+        public string qr_img { get; set; }
+        public string qr_desc { get; set; }
         public string url { get; set; }
+        public string name { get; set; }
+        public string title { get; set; }
+        public string show_time { get; set; }
     }
 }
