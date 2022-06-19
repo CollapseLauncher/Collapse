@@ -41,7 +41,7 @@ namespace CollapseLauncher
                 MemoryStream memoryStream = new MemoryStream();
 
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
-                regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                regionBackgroundProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
                 SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);

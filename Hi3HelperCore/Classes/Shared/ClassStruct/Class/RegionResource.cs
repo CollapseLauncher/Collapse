@@ -5,11 +5,14 @@ namespace Hi3Helper.Shared.ClassStruct
     public class RegionResourceProp
     {
         public RegionResourceGame data { get; set; }
+        public string imgLocalPath { get; set; } = string.Empty;
     }
     public class RegionResourceGame
     {
         public RegionResourceLatest game { get; set; }
         public RegionResourceLatest pre_download_game { get; set; }
+        public RegionBackgroundProp adv { get; set; }
+        public List<RegionSocMedProp> icon { get; set; }
     }
 
     public class RegionResourceLatest
@@ -44,5 +47,19 @@ namespace Hi3Helper.Shared.ClassStruct
         public string URL { get; set; }
         public string Icon { get; set; }
         public string IconHover { get; set; }
+    }
+
+    public class RegionBackgroundProp
+    {
+        public string background { get; set; }
+        public string bg_checksum { get; set; }
+    }
+
+    public class RegionSocMedProp
+    {
+        public string icon_id { get; set; }
+        public string img { get; set; }
+        public string img_hover { get; set; }
+        public string url { get; set; }
     }
 }
