@@ -136,7 +136,10 @@ namespace CollapseLauncher.Pages
             });
         }
 
-        private void OpenSocMedLink(object sender, RoutedEventArgs e) =>
+        private void OpenSocMedLink(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(((Button)sender).Tag.ToString())) return;
+
             new Process()
             {
                 StartInfo = new ProcessStartInfo()
@@ -145,6 +148,7 @@ namespace CollapseLauncher.Pages
                     FileName = ((Button)sender).Tag.ToString()
                 }
             }.Start();
+        }
 
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e) =>
             new Process()
