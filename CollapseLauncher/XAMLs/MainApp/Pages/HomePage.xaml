@@ -52,15 +52,15 @@
                     Severity="Informational" Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
                     Message=""
                     HorizontalAlignment="Left" Grid.ColumnSpan="2">
-                        <!--<InfoBar.Transitions>
+                        <InfoBar.Transitions>
                             <PopupThemeTransition/>
-                        </InfoBar.Transitions>-->
+                        </InfoBar.Transitions>
                         <InfoBar.Content>
                             <StackPanel Orientation="Vertical" Margin="0,0,38,0">
                                 <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
-                                    <!--<Grid.ChildrenTransitions>
+                                    <Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>-->
+                                    </Grid.ChildrenTransitions>
                                     <Grid HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                             <Grid Margin="0,0,0,8">
@@ -89,9 +89,9 @@
                                     </Grid>
                                 </Grid>
                                 <Grid x:Name="ProgressPrePerFileStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed" Margin="0,0,0,24">
-                                    <!--<Grid.ChildrenTransitions>
+                                    <Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>-->
+                                    </Grid.ChildrenTransitions>
                                     <Grid HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                             <Grid Margin="0,0,0,8">
@@ -141,14 +141,14 @@
                         <StackPanel.Resources>
                             <localPage:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
                         </StackPanel.Resources>
-                        <!--<StackPanel.Transitions>
+                        <StackPanel.Transitions>
                             <PopupThemeTransition/>
-                        </StackPanel.Transitions>-->
+                        </StackPanel.Transitions>
                         <ScrollViewer x:Name="SocMedPanelScrollView" MaxHeight="336" VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
-                                <!--<ItemsControl.Transitions>
+                                <ItemsControl.Transitions>
                                     <PopupThemeTransition/>
-                                </ItemsControl.Transitions>-->
+                                </ItemsControl.Transitions>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
@@ -158,9 +158,9 @@
                                                 <StackPanel>
                                                     <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={StaticResource NullToVisibilityConverter}}">
                                                         <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"/>
                                                     </StackPanel>
-                                                    <TextBlock Text="{Binding Description}" HorizontalAlignment="Center"
+                                                    <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" TextWrapping="Wrap"
                                                                Visibility="{Binding IsDescriptionExist, Converter={StaticResource NullToVisibilityConverter}}"/>
                                                 </StackPanel>
                                             </ToolTipService.ToolTip>
@@ -215,6 +215,9 @@
                         <Grid x:Name="PostPanel" Padding="8" Width="414" Visibility="Collapsed"
                               MaxHeight="150" Margin="0,16,0,0" CornerRadius="8"
                               Background="{StaticResource PostAcrylicBrush}" Shadow="{StaticResource SharedShadow}">
+                            <Grid.ScaleTransition>
+                                <Vector3Transition/>
+                            </Grid.ScaleTransition>
                             <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
                                 <PivotItem>
                                     <PivotItem.Header>
@@ -283,13 +286,13 @@
                         </Grid>
                     </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid Width="250" Height="250">
-                            <!--<Grid.ChildrenTransitions>
+                            <Grid.ChildrenTransitions>
                                 <PopupThemeTransition/>
-                            </Grid.ChildrenTransitions>-->
+                            </Grid.ChildrenTransitions>
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
