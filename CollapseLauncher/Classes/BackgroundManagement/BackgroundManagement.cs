@@ -383,28 +383,5 @@ namespace CollapseLauncher
                 await Task.Delay(250);
             }
         }
-
-        public class SystemAccentColorSetting : INotifyPropertyChanged
-        {
-            private SolidColorBrush systemAccentColor = new SolidColorBrush(Colors.Red);
-            public SolidColorBrush SystemAccentColor
-            {
-                get
-                {
-                    return systemAccentColor;
-                }
-                set
-                {
-                    systemAccentColor = value; OnPropertyChanged();
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            {
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }
