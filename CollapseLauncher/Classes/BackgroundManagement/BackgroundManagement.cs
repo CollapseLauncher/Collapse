@@ -60,8 +60,10 @@ namespace CollapseLauncher
                 BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
 
+                ResetRegionProp();
                 await GetLauncherAdvInfo(token);
                 await GetLauncherCarouselInfo(token);
+                GetLauncherPostInfo();
 
                 ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
             }
@@ -75,10 +77,18 @@ namespace CollapseLauncher
             }
         }
 
+        public void ResetRegionProp()
+        {
+            regionNewsProp.sideMenuPanel = null;
+            regionNewsProp.imageCarouselPanel = null;
+            regionNewsProp.articlePanel = null;
+        }
+
         public async Task GetLauncherAdvInfo(CancellationToken token)
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
+            regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
                 regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
                 {
@@ -95,6 +105,7 @@ namespace CollapseLauncher
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
+            regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
                 regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
                 {
@@ -102,6 +113,26 @@ namespace CollapseLauncher
                     Icon = await GetCachedSprites(item.img),
                     Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
                 });
+        }
+
+        public void GetLauncherPostInfo()
+        {
+            if (regionBackgroundProp.data.post.Count == 0) return;
+
+            regionNewsProp.articlePanel = new PostCarouselTypes();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.post)
+                switch (item.type)
+                {
+                    case PostCarouselType.POST_TYPE_ACTIVITY:
+                        regionNewsProp.articlePanel.Events.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_ANNOUNCE:
+                        regionNewsProp.articlePanel.Notices.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_INFO:
+                        regionNewsProp.articlePanel.Info.Add(item);
+                        break;
+                }
         }
 
         public async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())

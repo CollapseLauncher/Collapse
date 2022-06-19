@@ -25,8 +25,6 @@ namespace CollapseLauncher
             {
                 httpHelper = new HttpClientHelper(false);
                 regionNewsProp = new HomeMenuPanel();
-                regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
-                regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
 
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherResourceURL, memoryStream, token);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));

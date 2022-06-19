@@ -17,6 +17,7 @@
                     <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="0.33" TintColor="Black" />
                     <AcrylicBrush x:Key="ProgressAcrylicBrush" TintOpacity="0.33" TintColor="Black" />
                     <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintOpacity="0.25" TintColor="Black" />
+                    <AcrylicBrush x:Key="PostAcrylicBrush" TintOpacity="0.60" TintColor="Black" />
 
                     <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0.25" TintColor="Black" FallbackColor="Black" />
                     <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintOpacity="0.25" TintColor="Black" FallbackColor="Black" />
@@ -65,6 +66,7 @@
                     <AcrylicBrush x:Key="CustomAcrylicBrush" TintOpacity="1" TintColor="#FFFFFF" />
                     <AcrylicBrush x:Key="ProgressAcrylicBrush" TintOpacity="0.75" TintColor="#FFFFFF" />
                     <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintOpacity="0.75" TintColor="#FFFFFF" />
+                    <AcrylicBrush x:Key="PostAcrylicBrush" TintOpacity="0.75" TintColor="#FFFFFF" />
 
                     <AcrylicBrush x:Key="OverlayAcrylicBrush" TintOpacity="0" TintColor="#FFFFFF" />
                     <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintOpacity="0" TintColor="#FFFFFF" />

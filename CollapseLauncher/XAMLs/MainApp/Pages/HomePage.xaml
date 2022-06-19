@@ -5,6 +5,7 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
+    xmlns:regionShared="using:Hi3Helper.Shared.Region"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -182,23 +183,24 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,-55,0,0" Orientation="Vertical" HorizontalAlignment="Left">
-                        <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
+                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0,148,0,0" Orientation="Vertical" HorizontalAlignment="Left">
+                        <StackPanel HorizontalAlignment="Left">
+                            <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
                             MaxWidth="414" Height="192" 
                             CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
-                            <FlipView.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
-                                </DataTemplate>
-                            </FlipView.ItemTemplate>
-                        </FlipView>
-                        <Grid x:Name="ImageCarouselPipsPager"
+                                <FlipView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                    </DataTemplate>
+                                </FlipView.ItemTemplate>
+                            </FlipView>
+                            <Grid x:Name="ImageCarouselPipsPager"
                               Padding="4,4" Margin="10,-14,10,0" CornerRadius="8"
                               Shadow="{StaticResource SharedShadow}"
                               Background="{StaticResource CarouselPipsAcrylicBrush}"
                               HorizontalAlignment="Right" Visibility="Collapsed"
                               VerticalAlignment="Center">
-                            <PipsPager
+                                <PipsPager
                               Margin="0,0,0,0"
                               VerticalAlignment="Center"
                               PreviousButtonVisibility="Visible"
@@ -206,6 +208,76 @@
                               NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
                               SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
                               Orientation="Horizontal"/>
+                            </Grid>
+                        </StackPanel>
+                        <Grid x:Name="PostPanel" Padding="8" Width="414" Visibility="Collapsed"
+                              MaxHeight="150" Margin="0,16,0,0" CornerRadius="8"
+                              Background="{StaticResource PostAcrylicBrush}" Shadow="{StaticResource SharedShadow}">
+                            <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
+                                <PivotItem>
+                                    <PivotItem.Header>
+                                        <TextBlock Text="Events" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                    </PivotItem.Header>
+                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
+                                        <StackPanel Margin="0,0,16,0">
+                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
+                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </PivotItem>
+                                <PivotItem>
+                                    <PivotItem.Header>
+                                        <TextBlock Text="Notices" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                    </PivotItem.Header>
+                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
+                                        <StackPanel Margin="0,0,16,0">
+                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
+                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </PivotItem>
+                                <PivotItem>
+                                    <PivotItem.Header>
+                                        <TextBlock Text="Info" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                    </PivotItem.Header>
+                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
+                                        <StackPanel Margin="0,0,16,0">
+                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
+                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </PivotItem>
+                            </Pivot>
                         </Grid>
                     </StackPanel>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">

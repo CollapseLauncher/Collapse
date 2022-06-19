@@ -52,7 +52,7 @@ namespace CollapseLauncher.Pages
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
 
-                if (MenuPanels.imageCarouselPanel.Count != 0)
+                if (MenuPanels.imageCarouselPanel != null)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
@@ -61,6 +61,12 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Translation += Shadow16;
 
                     Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
+                }
+
+                if (MenuPanels.articlePanel != null)
+                {
+                    PostPanel.Visibility = Visibility.Visible;
+                    PostPanel.Translation += Shadow16;
                 }
 
                 CheckRunningGameInstance();

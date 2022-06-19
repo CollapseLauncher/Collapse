@@ -14,6 +14,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public RegionBackgroundProp adv { get; set; }
         public List<RegionSocMedProp> banner { get; set; }
         public List<RegionSocMedProp> icon { get; set; }
+        public List<RegionSocMedProp> post { get; set; }
     }
 
     public class RegionResourceLatest
@@ -41,6 +42,14 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         public List<MenuPanelProp> sideMenuPanel { get; set; }
         public List<MenuPanelProp> imageCarouselPanel { get; set; }
+        public PostCarouselTypes articlePanel { get; set; }
+    }
+
+    public class PostCarouselTypes
+    {
+        public List<RegionSocMedProp> Events { get; set; } = new List<RegionSocMedProp>();
+        public List<RegionSocMedProp> Notices { get; set; } = new List<RegionSocMedProp>();
+        public List<RegionSocMedProp> Info { get; set; } = new List<RegionSocMedProp>();
     }
 
     public class MenuPanelProp
@@ -61,6 +70,13 @@ namespace Hi3Helper.Shared.ClassStruct
         public string bg_checksum { get; set; }
     }
 
+    public enum PostCarouselType
+    {
+        POST_TYPE_INFO,
+        POST_TYPE_ACTIVITY,
+        POST_TYPE_ANNOUNCE
+    }
+
     public class RegionSocMedProp
     {
         public string icon_id { get; set; }
@@ -72,5 +88,6 @@ namespace Hi3Helper.Shared.ClassStruct
         public string name { get; set; }
         public string title { get; set; }
         public string show_time { get; set; }
+        public PostCarouselType type { get; set; }
     }
 }
