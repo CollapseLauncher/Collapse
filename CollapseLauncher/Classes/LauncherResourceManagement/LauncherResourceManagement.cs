@@ -31,32 +31,7 @@ namespace CollapseLauncher
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherResourceURL, memoryStream, token);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
-                if (CurrentRegion.LauncherInfoURL != null)
-                {
-                    await httpHelper.DownloadFileAsync(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
-                    HDoc infoProp = new HDoc();
-                    await Task.Run(() =>
-                    {
-                        infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
-                    });
-                    try
-                    {
-                        regionNewsProp.sideMenuPanel = await GetSideMenuPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
-                    }
-                    catch
-                    {
-                        regionNewsProp.sideMenuPanel = await GetSideMenuPanelV2(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
-                    }
-
-                    try
-                    {
-                        regionNewsProp.imageCarouselPanel = await GetCarouselPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]);
-                    }
-                    catch (Exception)
-                    {
-                        LogWriteLine($"This region {CurrentRegion.ZoneName} doesn't have banner to load");
-                    }
-                }
+                await GetLauncherAdvInfo(token);
             }
             catch (OperationCanceledException)
             {
@@ -67,6 +42,38 @@ namespace CollapseLauncher
                 LogWriteLine($"Cannot connect to the internet while fetching launcher resource.\r\n{ex}");
             }
             memoryStream.Dispose();
+        }
+
+        public async Task GetLauncherAdvInfo(CancellationToken token)
+        {
+            if (CurrentRegion.LauncherInfoURL == null) return;
+
+            MemoryStream memoryStream = new MemoryStream();
+
+            await httpHelper.DownloadFileAsync(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
+            HDoc infoProp = new HDoc();
+            await Task.Run(async () =>
+            {
+                infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
+
+                try
+                {
+                    regionNewsProp.sideMenuPanel = await GetSideMenuPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
+                }
+                catch
+                {
+                    regionNewsProp.sideMenuPanel = await GetSideMenuPanelV2(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
+                }
+
+                try
+                {
+                    regionNewsProp.imageCarouselPanel = await GetCarouselPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]);
+                }
+                catch (Exception)
+                {
+                    LogWriteLine($"This region {CurrentRegion.ZoneName} doesn't have banner to load");
+                }
+            });
         }
 
         public async Task<List<MenuPanelProp>> GetSideMenuPanel(HTag input)
