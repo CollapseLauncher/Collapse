@@ -216,7 +216,7 @@
                             <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
                                 <PivotItem>
                                     <PivotItem.Header>
-                                        <TextBlock Text="Events" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
                                     <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
                                         <StackPanel Margin="0,0,16,0">
@@ -237,7 +237,7 @@
                                 </PivotItem>
                                 <PivotItem>
                                     <PivotItem.Header>
-                                        <TextBlock Text="Notices" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
                                     <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
                                         <StackPanel Margin="0,0,16,0">
@@ -258,7 +258,7 @@
                                 </PivotItem>
                                 <PivotItem>
                                     <PivotItem.Header>
-                                        <TextBlock Text="Info" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
                                     <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
                                         <StackPanel Margin="0,0,16,0">
