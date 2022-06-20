@@ -72,7 +72,7 @@ namespace Hi3Helper.Shared.Region
 #endif
             { "DontAskUpdate", new IniValue(false) },
             { "ThemeMode", new IniValue(AppThemeMode.Default) },
-            { "AppLanguage", new IniValue("en") },
+            { "AppLanguage", new IniValue("en-us") },
             { "UseCustomBG", new IniValue(false) },
             { "CustomBGPath", new IniValue() }
         };
@@ -132,6 +132,7 @@ namespace Hi3Helper.Shared.Region
             catch (ArgumentNullException)
             {
                 IsFirstInstall = true;
+
             }
         }
 

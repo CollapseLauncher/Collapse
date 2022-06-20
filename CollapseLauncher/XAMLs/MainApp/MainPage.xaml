@@ -44,7 +44,7 @@
                     Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
                     <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="16,4,0,0" Orientation="Horizontal">
                         <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
-                        <Button Content="Change" Margin="8,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                        <Button Content="{x:Bind helper:Locale.Lang._Misc.Change}" Margin="8,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel>
@@ -66,14 +66,12 @@
             </Grid>
         </Border>
         <NavigationView x:Name="NavigationViewControl"
-            IsTitleBarAutoPaddingEnabled="False"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="true"
-            Header=""
             Margin="0,0,0,0"
             PaneDisplayMode="LeftMinimal"
-            DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
-            Canvas.ZIndex="0" Visibility="Visible" IsPaneOpen="False" Background="{StaticResource NavigationBarBrush}"
+            Visibility="Visible" IsPaneOpen="False"
+            Background="{StaticResource NavigationBarBrush}"
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
             <Grid Margin="0,0,0,0">
