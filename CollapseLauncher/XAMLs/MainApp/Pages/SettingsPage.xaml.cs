@@ -139,7 +139,6 @@ namespace CollapseLauncher.Pages
             UpdateAvailableStatus.Visibility = Visibility.Collapsed;
             UpToDateStatus.Visibility = Visibility.Collapsed;
             CheckUpdateBtn.IsEnabled = false;
-            CheckUpdateBtn.Content = "Checking...";
 
             ForceInvokeUpdate = true;
 
@@ -151,14 +150,13 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                CheckUpdateBtn.IsEnabled = true;
                 if (e.IsUpdateAvailable)
                 {
                     UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                     UpdateAvailableStatus.Visibility = Visibility.Visible;
                     UpToDateStatus.Visibility = Visibility.Collapsed;
-                    CheckUpdateBtn.IsEnabled = true;
                     UpdateAvailableLabel.Text = e.NewVersionName + (IsPreview ? " Preview" : " Stable");
-                    CheckUpdateBtn.Content = "Check Update";
                     LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
                     return;
                 }
@@ -167,8 +165,6 @@ namespace CollapseLauncher.Pages
                     UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                     UpdateAvailableStatus.Visibility = Visibility.Collapsed;
                     UpToDateStatus.Visibility = Visibility.Visible;
-                    CheckUpdateBtn.Content = "Check Update";
-                    CheckUpdateBtn.IsEnabled = false;
                     LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
                 }
             });

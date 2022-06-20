@@ -1,7 +1,7 @@
 {
   // Translation Metadata
   "LanguageName": "English",
-  "LanguageID": "en",
+  "LanguageID": "en-US",
   "Author": "neon-nyan",
 
   // StartupPage Content
@@ -235,7 +235,7 @@
     "CustomArgs_Footer3": "to see more parameters."
   },
 
-  // CutscenesPage
+  // SettingsPage
   "_SettingsPage": {
     "PageTitle": "App Settings",
 
@@ -350,6 +350,7 @@
     "Downloading": "Downloading",
     "Merging": "Merging",
     "Idle": "Idle",
+    "Change": "Change",
     "Cancelled": "Cancelled",
     "Extracting": "Extracting",
     "Converting": "Converting",
@@ -386,16 +387,16 @@
     "AddtDownloadNeededTitle": "Additional Download is Needed",
     "AddtDownloadNeededSubtitle": "You have to download atleast {0} of additional/persistent files. Although you can skip and download it in-game instead.\nDo you want to continue?",
     "AddtDownloadCompletedTitle": "Additional Download is Completed!",
-    "AddtDownloadCompletedSubtitle": "Aditional/Persistent Download has been completed! You can now enjoy your game.\nHappy gaming!",
+    "AddtDownloadCompletedSubtitle": "Additonal/Persistent Download has been completed! You can now enjoy your game.\nHappy gaming!",
     "RepairCompletedTitle": "Repair Process is Completed!",
     "RepairCompletedSubtitle": "{0} file(s) have been repaired.",
     "RepairCompletedSubtitleNoBroken": "No files are broken.",
     "ExtremeGraphicsSettingsWarnTitle": "Very High Setting Selected!",
     "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting to Very High!\r\nRemember that Very High setting is basically 2x Render Scale with MSAA Enabled and it's VERY UNOPTIMIZED! (unless you have a NASA Super Computer to run it).\r\n\r\nAre you sure to use this setting?",
     "ExistingInstallTitle": "Existing Installation is Detected!",
-    "ExistingInstallSubtitle": "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\nIt's recommended to migrate the game to CollapseLauncher.\r\nHowever, you can still use Official Launcher to start the game.\r\n\r\nDo you want to continue?",
+    "ExistingInstallSubtitle": "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\nIt's recommended to migrate the game to Collapse Launcher.\r\nHowever, you can still use Official Launcher to start the game.\r\n\r\nDo you want to continue?",
     "ExistingInstallBHI3LTitle": "Existing Installation on BetterHI3Launcher is Detected!",
-    "ExistingInstallBHI3LSubtitle": "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\nIt's recommended to migrate the game to CollapseLauncher.\r\nHowever, you can still use BetterHi3Launcher to start the game.\r\n\r\nDo you want to continue?",
+    "ExistingInstallBHI3LSubtitle": "Game is already been installed on this location:\r\n\r\n{0}\r\n\r\nIt's recommended to migrate the game to Collapse Launcher.\r\nHowever, you can still use BetterHi3Launcher to start the game.\r\n\r\nDo you want to continue?",
     "ExistingInstallSteamTitle": "Existing Installation on Steam is Detected!",
     "ExistingInstallSteamSubtitle": "Game is already been installed on Steam in this location:\r\n\r\n{0}\r\n\r\nDo you want to convert this version to Normal Global version?\nNote: Once you converted it, you can't log-in with your steam account and only miHoYo/HoYoverse account login method is available.\r\n\r\nDo you want to continue?",
     "SteamConvertNeedMigrateTitle": "Folder Migration is Needed",
