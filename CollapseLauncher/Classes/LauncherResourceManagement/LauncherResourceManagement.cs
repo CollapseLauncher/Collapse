@@ -1,13 +1,9 @@
-﻿using Aiursoft.HSharp.Methods;
-using Aiursoft.HSharp.Models;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
