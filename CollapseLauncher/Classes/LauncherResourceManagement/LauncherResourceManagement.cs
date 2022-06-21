@@ -25,38 +25,9 @@ namespace CollapseLauncher
             {
                 httpHelper = new HttpClientHelper(false);
                 regionNewsProp = new HomeMenuPanel();
-                regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
-                regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
 
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherResourceURL, memoryStream, token);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
-
-                if (CurrentRegion.LauncherInfoURL != null)
-                {
-                    await httpHelper.DownloadFileAsync(CurrentRegion.LauncherInfoURL, memoryStream = new MemoryStream(), token);
-                    HDoc infoProp = new HDoc();
-                    await Task.Run(() =>
-                    {
-                        infoProp = HtmlConvert.DeserializeHtml(Encoding.UTF8.GetString(memoryStream.ToArray()));
-                    });
-                    try
-                    {
-                        regionNewsProp.sideMenuPanel = await GetSideMenuPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
-                    }
-                    catch
-                    {
-                        regionNewsProp.sideMenuPanel = await GetSideMenuPanelV2(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div", 1]);
-                    }
-
-                    try
-                    {
-                        regionNewsProp.imageCarouselPanel = await GetCarouselPanel(infoProp["html"]["body"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]["div"]);
-                    }
-                    catch (Exception)
-                    {
-                        LogWriteLine($"This region {CurrentRegion.ZoneName} doesn't have banner to load");
-                    }
-                }
             }
             catch (OperationCanceledException)
             {
@@ -67,69 +38,6 @@ namespace CollapseLauncher
                 LogWriteLine($"Cannot connect to the internet while fetching launcher resource.\r\n{ex}");
             }
             memoryStream.Dispose();
-        }
-
-        public async Task<List<MenuPanelProp>> GetSideMenuPanel(HTag input)
-        {
-            List<MenuPanelProp> panel = new List<MenuPanelProp>();
-            foreach (var tag in input)
-            {
-                panel.Add(new MenuPanelProp
-                {
-                    URL = tag.Properties["href"],
-                    Icon = await GetCachedSprites(tag.Where(x => x.Properties.ContainsValue("home-menu__icon")).First().Properties["src"]),
-                    IconHover = await GetCachedSprites(tag.Where(x => x.Properties.ContainsValue("home-menu__icon--hover")).First().Properties["src"])
-                });
-            }
-
-            return panel;
-        }
-
-        public async Task<List<MenuPanelProp>> GetCarouselPanel(HTag input)
-        {
-            List<MenuPanelProp> panel = new List<MenuPanelProp>();
-            foreach (var tag in input)
-            {
-                panel.Add(new MenuPanelProp
-                {
-                    URL = tag["a"].Properties["href"],
-                    Icon = await GetCachedSprites(tag["a"]["img"].Properties["src"])
-                });
-            }
-
-            return panel;
-        }
-
-        public async Task<List<MenuPanelProp>> GetSideMenuPanelV2(HTag input)
-        {
-            List<MenuPanelProp> panel = new List<MenuPanelProp>();
-            foreach (var tag in input.Where(x => x.TagName == "div"))
-            {
-                try
-                {
-                    panel.Add(new MenuPanelProp
-                    {
-                        Icon = await GetCachedSprites(tag.Where(x => x.Properties.ContainsValue("home-menu__icon")).First().Properties["src"]),
-                        IconHover = await GetCachedSprites(tag.Where(x => x.Properties.ContainsValue("home-menu__icon--hover")).First().Properties["src"]),
-                        URL = tag.Where(x => x.Properties.ContainsValue("home-menu-popover")).First()["a"].Properties["href"]
-                    });
-                }
-                catch { }
-            }
-
-            return panel;
-        }
-
-        public async Task<string> GetCachedSprites(string URL)
-        {
-            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-            if (!Directory.Exists(cacheFolder))
-                Directory.CreateDirectory(cacheFolder);
-
-            if (!File.Exists(cachePath)) await httpHelper.DownloadFileAsync(URL, cachePath, new CancellationToken());
-
-            return cachePath;
         }
     }
 }

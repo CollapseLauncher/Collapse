@@ -359,6 +359,7 @@ namespace Hi3Helper.Preset
         public List<string> LanguageAvailable { get; set; }
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
+        public bool IsHideSocMedDesc { get; set; } = true;
         public List<string> ConvertibleTo { get; set; }
         public string ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }

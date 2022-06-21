@@ -35,7 +35,6 @@ namespace CollapseLauncher.Pages
         public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
-
         public HomePage()
         {
             try
@@ -53,7 +52,7 @@ namespace CollapseLauncher.Pages
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
 
-                if (MenuPanels.imageCarouselPanel.Count != 0)
+                if (MenuPanels.imageCarouselPanel != null)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
@@ -64,12 +63,13 @@ namespace CollapseLauncher.Pages
                     Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
-                Task.Run(() =>
+                if (MenuPanels.articlePanel != null)
                 {
-                    try
-                    { CheckRunningGameInstance(); }
-                    catch (Exception) { }
-                });
+                    PostPanel.Visibility = Visibility.Visible;
+                    PostPanel.Translation += Shadow16;
+                }
+
+                CheckRunningGameInstance();
             }
             catch (Exception ex)
             {
@@ -119,35 +119,27 @@ namespace CollapseLauncher.Pages
         private async Task HideImageCarousel(bool hide)
         {
             Storyboard storyboard = new Storyboard();
-            Storyboard storyboard2 = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
             OpacityAnimation.From = hide ? 1 : 0;
             OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
-            DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
-            OpacityAnimation2.From = hide ? 1 : 0;
-            OpacityAnimation2.To = hide ? 0 : 1;
-            OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.10));
-
-            Storyboard.SetTarget(OpacityAnimation, ImageCarousel);
+            Storyboard.SetTarget(OpacityAnimation, ImageCarouselAndPostPanel);
             Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-            Storyboard.SetTarget(OpacityAnimation2, ImageCarouselPipsPager);
-            Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
             storyboard.Children.Add(OpacityAnimation);
-            storyboard2.Children.Add(OpacityAnimation2);
 
             storyboard.Begin();
-            storyboard2.Begin();
             await Task.Delay(100);
             DispatcherQueue.TryEnqueue(() =>
             {
-                ImageCarousel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
-                ImageCarouselPipsPager.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+                ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
             });
         }
 
-        private void OpenSocMedLink(object sender, RoutedEventArgs e) =>
+        private void OpenSocMedLink(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(((Button)sender).Tag.ToString())) return;
+
             new Process()
             {
                 StartInfo = new ProcessStartInfo()
@@ -156,6 +148,7 @@ namespace CollapseLauncher.Pages
                     FileName = ((Button)sender).Tag.ToString()
                 }
             }.Start();
+        }
 
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e) =>
             new Process()
@@ -280,47 +273,34 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            try
+            await Task.Delay(1);
+            DispatcherQueue.TryEnqueue(async () =>
             {
-                while (true && !App.IsAppKilled)
+                try
                 {
                     while (App.IsGameRunning)
                     {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            if (App.IsAppKilled)
-                                return;
+                        if (StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation -= Shadow16;
 
-                            if (StartGameBtn.IsEnabled)
-                                LauncherBtn.Translation -= Shadow16;
+                        StartGameBtn.IsEnabled = false;
+                        StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                        GameStartupSetting.IsEnabled = false;
 
-                            StartGameBtn.IsEnabled = false;
-                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
-                            GameStartupSetting.IsEnabled = false;
-                        });
-                        await Task.Delay(500);
+                        await Task.Delay(100);
                     }
 
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        if (App.IsAppKilled)
-                            return;
+                    if (!StartGameBtn.IsEnabled)
+                        LauncherBtn.Translation += Shadow16;
 
-                        if (!StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation += Shadow16;
+                    StartGameBtn.IsEnabled = true;
+                    StartGameBtn.Content = Lang._HomePage.StartBtn;
+                    GameStartupSetting.IsEnabled = true;
 
-                        StartGameBtn.IsEnabled = true;
-                        StartGameBtn.Content = Lang._HomePage.StartBtn;
-                        GameStartupSetting.IsEnabled = true;
-                    });
-
-                    await Task.Delay(500);
+                    await Task.Delay(100);
                 }
-            }
-            catch
-            {
-                return;
-            }
+                catch { return; }
+            });
         }
 
         private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");

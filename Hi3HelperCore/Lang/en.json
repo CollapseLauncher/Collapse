@@ -82,7 +82,10 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Version",
-    "GameSettings_Panel3": "Custom Start-up Args"
+    "GameSettings_Panel3": "Custom Start-up Args",
+    "PostPanel_Events": "Events",
+    "PostPanel_Notices": "Notices",
+    "PostPanel_Info": "Info"
   },
 
   // GameRepairPage

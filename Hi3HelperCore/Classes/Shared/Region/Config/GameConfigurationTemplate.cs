@@ -28,9 +28,8 @@ namespace Hi3Helper.Preset
                 CachesListAPIURL = "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
                 CachesEndpointURL = "http://ali-hk-bundle-os01.oss-cn-hongkong.aliyuncs.com/asset_bundle/overseas01/1.1/{0}/editor_compressed/",
                 CachesListGameVerID = 0,
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=9",
-                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=tEGNtVhN&launcher_id=9&sub_channel_id=1",
-                LauncherInfoURL = "https://honkaiimpact3.mihoyo.com/launcher/9/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?key=tEGNtVhN&filter_adv=false&language=en-us&launcher_id=9",
+                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=tEGNtVhN&launcher_id=9&sub_channel_id=1"
             },
             new PresetConfigClasses
             {
@@ -56,9 +55,8 @@ namespace Hi3Helper.Preset
                 CachesListAPIURL = "https://prophost.ironmaid.xyz/api/updatepackage?platform=0&datatype={0}&gamever={1}&usenewformat=true",
                 CachesEndpointURL = "http://d2wztyirwsuyyo.cloudfront.net/asset_bundle/eur01/1.1/{0}/editor_compressed/",
                 CachesListGameVerID = 1,
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=en-us&launcher_id=10",
-                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=dpz65xJ3&launcher_id=10&sub_channel_id=1",
-                LauncherInfoURL = "https://honkaiimpact3.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?key=dpz65xJ3&filter_adv=false&language=en-us&launcher_id=10",
+                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?key=dpz65xJ3&channel_id=1&launcher_id=10&sub_channel_id=1"
             },
             new PresetConfigClasses
             {
@@ -80,9 +78,9 @@ namespace Hi3Helper.Preset
                 CachesEndpointURL = "http://bh3rd.oss-cn-shanghai.aliyuncs.com/asset_bundle/pc01/1.0/{0}/editor_compressed/",
                 CachesListGameVerID = 2,
                 UseRightSideProgress = true,
-                LauncherSpriteURL = "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/content?filter_adv=true&language=zh-cn&launcher_id=4",
+                IsHideSocMedDesc = false,
+                LauncherSpriteURL = "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/content?key=SyvuPnqL&filter_adv=false&language=zh-cn&launcher_id=4",
                 LauncherResourceURL = "https://sdk-static.mihoyo.com/bh3_cn/mdk/launcher/api/resource?channel_id=1&key=SyvuPnqL&launcher_id=4&sub_channel_id=1",
-                LauncherInfoURL = "https://www.bh3.com/launcher/4/zh-cn?api_url=https%3A%2F%2Fapi-sdk.mihoyo.com%2Fbh3_cn&prev=false",
             },
             new PresetConfigClasses
             {
@@ -99,9 +97,8 @@ namespace Hi3Helper.Preset
                 GameDirectoryName = "Games",
                 GameExecutableName = "BH3.exe",
                 BetterHi3LauncherVerInfoReg = "VersionInfoTW",
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=zh-tw&launcher_id=8",
-                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=demhUTcW&launcher_id=8&sub_channel_id=1",
-                LauncherInfoURL = "https://honkaiimpact3.mihoyo.com/launcher/8/zh-tw?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?key=demhUTcW&filter_adv=false&language=zh-tw&launcher_id=8",
+                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=demhUTcW&launcher_id=8&sub_channel_id=1"
             },
             new PresetConfigClasses
             {
@@ -118,9 +115,8 @@ namespace Hi3Helper.Preset
                 GameDirectoryName = "Games",
                 GameExecutableName = "BH3.exe",
                 BetterHi3LauncherVerInfoReg = "VersionInfoKR",
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?filter_adv=true&language=ko-kr&launcher_id=11",
-                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=PRg571Xh&launcher_id=11&sub_channel_id=1",
-                LauncherInfoURL = "https://honkaiimpact3.mihoyo.com/launcher/11/ko-kr?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fbh3_global&prev=false",
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/content?key=PRg571Xh&filter_adv=false&language=ko-kr&launcher_id=11",
+                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/bh3_global/mdk/launcher/api/resource?channel_id=1&key=PRg571Xh&launcher_id=11&sub_channel_id=1"
             },
             new PresetConfigClasses
             {
@@ -137,9 +133,9 @@ namespace Hi3Helper.Preset
                 GameDispatchURL = "https://{0}.yuanshen.com/query_cur_region?version={1}&platform=3&channel_id=1&dispatchSeed={2}",
                 GameExecutableName = "GenshinImpact.exe",
                 ProtoDispatchKey = "10616738251919d2",
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=true&key=gcStgarh&language=en-us&launcher_id=10",
-                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0",
-                LauncherInfoURL = "https://genshin.mihoyo.com/launcher/10/en-us?api_url=https%3A%2F%2Fapi-os-takumi.mihoyo.com%2Fhk4e_global&key=gcStgarh&prev=false",
+                IsHideSocMedDesc = false,
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=false&key=gcStgarh&language=en-us&launcher_id=10",
+                LauncherResourceURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0"
             },
             new PresetConfigClasses
             {
@@ -154,9 +150,9 @@ namespace Hi3Helper.Preset
                 UseRightSideProgress = true,
                 GameDirectoryName = "Genshin Impact game",
                 GameExecutableName = "YuanShen.exe",
-                LauncherSpriteURL = "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/content?filter_adv=true&key=eYd89JmJ&language=zh-cn&launcher_id=18",
-                LauncherResourceURL = "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/resource?channel_id=1&key=eYd89JmJ&launcher_id=18&sub_channel_id=1",
-                LauncherInfoURL = "https://ys.mihoyo.com/launcher/18/zh-cn?api_url=https%3A%2F%2Fapi-sdk.mihoyo.com%2Fhk4e_cn&key=eYd89JmJ&prev=false",
+                IsHideSocMedDesc = false,
+                LauncherSpriteURL = "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/content?filter_adv=false&key=eYd89JmJ&language=zh-cn&launcher_id=18",
+                LauncherResourceURL = "https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/resource?channel_id=1&key=eYd89JmJ&launcher_id=18&sub_channel_id=1"
             }
         };
     }

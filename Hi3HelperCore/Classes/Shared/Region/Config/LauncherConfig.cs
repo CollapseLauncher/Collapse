@@ -24,7 +24,7 @@ namespace Hi3Helper.Shared.Region
 
         const string SectionName = "app";
         public static string startupBackgroundPath;
-        public static RegionBackgroundProp regionBackgroundProp = new RegionBackgroundProp();
+        public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
         public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
         public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();

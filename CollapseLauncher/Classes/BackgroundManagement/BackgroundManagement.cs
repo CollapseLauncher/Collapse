@@ -41,7 +41,7 @@ namespace CollapseLauncher
                 MemoryStream memoryStream = new MemoryStream();
 
                 await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
-                regionBackgroundProp = JsonConvert.DeserializeObject<RegionBackgroundProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                regionBackgroundProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
                 SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
@@ -59,6 +59,12 @@ namespace CollapseLauncher
 
                 BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
+
+                ResetRegionProp();
+                await GetLauncherAdvInfo(token);
+                await GetLauncherCarouselInfo(token);
+                GetLauncherPostInfo();
+
                 ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
             }
             catch (OperationCanceledException)
@@ -69,6 +75,76 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Something wrong happen while fetching Background Image\r\n{ex}");
             }
+        }
+
+        public void ResetRegionProp()
+        {
+            regionNewsProp.sideMenuPanel = null;
+            regionNewsProp.imageCarouselPanel = null;
+            regionNewsProp.articlePanel = null;
+        }
+
+        public async Task GetLauncherAdvInfo(CancellationToken token)
+        {
+            if (regionBackgroundProp.data.icon.Count == 0) return;
+
+            regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
+                regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img),
+                    IconHover = await GetCachedSprites(item.img_hover),
+                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img),
+                    QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
+                    Description = string.IsNullOrEmpty(item.title) || CurrentRegion.IsHideSocMedDesc ? item.url : item.title
+                });
+        }
+
+        public async Task GetLauncherCarouselInfo(CancellationToken token)
+        {
+            if (regionBackgroundProp.data.banner.Count == 0) return;
+
+            regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
+                regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img),
+                    Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
+                });
+        }
+
+        public void GetLauncherPostInfo()
+        {
+            if (regionBackgroundProp.data.post.Count == 0) return;
+
+            regionNewsProp.articlePanel = new PostCarouselTypes();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.post)
+                switch (item.type)
+                {
+                    case PostCarouselType.POST_TYPE_ACTIVITY:
+                        regionNewsProp.articlePanel.Events.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_ANNOUNCE:
+                        regionNewsProp.articlePanel.Notices.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_INFO:
+                        regionNewsProp.articlePanel.Info.Add(item);
+                        break;
+                }
+        }
+
+        public async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())
+        {
+            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
+            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(cacheFolder))
+                Directory.CreateDirectory(cacheFolder);
+
+            if (!File.Exists(cachePath)) await httpHelper.DownloadFileAsync(URL, cachePath, token);
+
+            return cachePath;
         }
 
         private void ApplyAccentColor()
@@ -381,29 +457,6 @@ namespace CollapseLauncher
                 BGLastState = hideImage;
 
                 await Task.Delay(250);
-            }
-        }
-
-        public class SystemAccentColorSetting : INotifyPropertyChanged
-        {
-            private SolidColorBrush systemAccentColor = new SolidColorBrush(Colors.Red);
-            public SolidColorBrush SystemAccentColor
-            {
-                get
-                {
-                    return systemAccentColor;
-                }
-                set
-                {
-                    systemAccentColor = value; OnPropertyChanged();
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            {
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

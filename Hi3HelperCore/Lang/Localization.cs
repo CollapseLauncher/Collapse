@@ -15,7 +15,11 @@ namespace Hi3Helper
             LangFallback = JsonConvert.DeserializeObject<LocalizationParams>(File.ReadAllText(LanguageNames.Where(x => x.Value.LangID == "en").First().Value.LangFilePath));
             try
             {
-                Lang = JsonConvert.DeserializeObject<LocalizationParams>(File.ReadAllText(LanguageNames.Where(x => x.Value.LangID == appLang).First().Value.LangFilePath));
+                Lang = JsonConvert.DeserializeObject<LocalizationParams>(
+                    File.ReadAllText(LanguageNames
+                        .Where(x => x.Value.LangID == appLang)
+                        .First().Value.LangFilePath));
+
                 LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");
             }
             catch (Exception ex)

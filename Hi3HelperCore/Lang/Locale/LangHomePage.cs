@@ -39,6 +39,9 @@
                 public string GameSettings_Panel2UninstallGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2UninstallGame;
                 public string GameSettings_Panel2ConvertVersion { get; set; } = LangFallback?._HomePage.GameSettings_Panel2ConvertVersion;
                 public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
+                public string PostPanel_Events { get; set; } = LangFallback?._HomePage.PostPanel_Events;
+                public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
+                public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;
             }
         }
         #endregion
