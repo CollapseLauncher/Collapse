@@ -26,7 +26,8 @@ WizardImageFile=..\InstallerProp\WizardBannerDesign.bmp
 WizardSmallImageFile=..\InstallerProp\WizardBannerDesignSmall.bmp
 DisableWelcomePage=False
 ArchitecturesInstallIn64BitMode=x64
-LicenseFile=..\LICENSE
+LicenseFile=..\LICENSE          
+SetupIconFile=..\CollapseLauncher\icon.ico
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
