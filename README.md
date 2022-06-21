@@ -1,16 +1,3 @@
-# Announcement Regarding to Hi3Mirror Project Temporary Suspension
-
-We are really sorry that Hi3Mirror Services is temporarily stopped and suspend all its services (including Game Private Mirror, Caches API, Game Repair API, and Game Version Conversion API) and make some functionalities on Collapse Launcher unusable.
-
-Once again, we are apologize regarding to this inconvenience. We are trying to bring this service up as soon as possible and hope we can bring this service up before June 22nd 2022. Thank you for your understanding and support.
-
-For further announcement regearing to this, please visit its [**main wiki page**](https://github.com/neon-nyan/Hi3MirrorWiki).
-
-Sincerely,
-**@neon-nyan**
-
-*** 
-
 <p align="center">
   <img alt="image" src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/header_github.webp"><br/>
 </p>
