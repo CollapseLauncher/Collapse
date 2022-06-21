@@ -363,6 +363,8 @@ namespace Hi3Helper.Preset
         public List<string> ConvertibleTo { get; set; }
         public string ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
+        public bool LauncherSpriteURLMultiLang { get; set; } = false;
+        public string LauncherSpriteURLMultiLangFallback { get; set; } = "en-us";
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
         public string LauncherInfoURL { get; set; }

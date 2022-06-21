@@ -168,7 +168,14 @@ namespace Hi3Helper.Shared.Region
 
         public static void SetGameConfigValue(string key, IniValue value) => gameIni.Settings[SectionName][key] = value;
 
-        private static string GetRegistryValue(in string key) => Encoding.UTF8.GetString((byte[])RegKey.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames)).Replace("\0", "");
+        private static string GetRegistryValue(in string key)
+        {
+            if (RegKey == null) return null;
+#nullable enable
+            object? data = RegKey.GetValue(key, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+#nullable disable
+            return Encoding.UTF8.GetString((byte[])data).Replace("\0", "");
+        }
 
         public static void SaveRegistryValue(in string reglocation, in string key, in object value, in RegistryValueKind kind) => RegKey.SetValue(key, value, kind);
 
@@ -195,8 +202,11 @@ namespace Hi3Helper.Shared.Region
             IniValue value = GameSettingsTemplate[key];
             try
             {
-                ScreenSettingData screenData = JsonConvert.DeserializeObject<ScreenSettingData>
-                                               (GetRegistryValue(ScreenSettingDataReg));
+                string RegData = GetRegistryValue(ScreenSettingDataReg);
+
+                if (RegData == null) return;
+
+                ScreenSettingData screenData = JsonConvert.DeserializeObject<ScreenSettingData>(RegData);
                 switch (key)
                 {
                     case "Fullscreen":
@@ -330,8 +340,11 @@ namespace Hi3Helper.Shared.Region
             IniValue value = GameSettingsTemplate[key];
             try
             {
-                PersonalGraphicsSettingV2 data = JsonConvert.DeserializeObject<PersonalGraphicsSettingV2>
-                                               (GetRegistryValue(PersonalGraphicsSettingV2Reg));
+                string RegData = GetRegistryValue(ScreenSettingDataReg);
+
+                if (RegData == null) return;
+
+                PersonalGraphicsSettingV2 data = JsonConvert.DeserializeObject<PersonalGraphicsSettingV2>(RegData);
                 #region Unused
                 /*
                 switch (key)
@@ -489,8 +502,11 @@ namespace Hi3Helper.Shared.Region
             IniValue value = GameSettingsTemplate[key];
             try
             {
-                PersonalAudioSetting data = JsonConvert.DeserializeObject<PersonalAudioSetting>
-                                               (GetRegistryValue(PersonalAudioSettingReg));
+                string RegData = GetRegistryValue(PersonalAudioSettingReg);
+
+                if (RegData == null) return;
+
+                PersonalAudioSetting data = JsonConvert.DeserializeObject<PersonalAudioSetting>(RegData);
 
                 switch (key)
                 {

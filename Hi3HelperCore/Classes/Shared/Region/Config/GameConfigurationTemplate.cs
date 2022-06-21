@@ -134,7 +134,8 @@ namespace Hi3Helper.Preset
                 GameExecutableName = "GenshinImpact.exe",
                 ProtoDispatchKey = "10616738251919d2",
                 IsHideSocMedDesc = false,
-                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=false&key=gcStgarh&language=en-us&launcher_id=10",
+                LauncherSpriteURLMultiLang = true,
+                LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=false&key=gcStgarh&language={0}&launcher_id=10",
                 LauncherResourceURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0"
             },
             new PresetConfigClasses

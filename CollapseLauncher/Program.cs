@@ -4,6 +4,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using System;
+using System.Globalization;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -126,7 +127,13 @@ namespace CollapseLauncher
         {
             InitLog(true, AppGameLogsFolder);
             TryParseLocalizations();
-            LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
+            if (IsFirstInstall)
+            {
+                LoadLocalization(CultureInfo.CurrentUICulture.Name);
+                SetAppConfigValue("AppLanguage", Lang.LanguageID);
+            }
+            else
+                LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
         }

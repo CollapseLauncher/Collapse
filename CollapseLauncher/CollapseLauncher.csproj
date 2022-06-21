@@ -43,7 +43,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aiursoft.HSharp" Version="2.2.2" />
         <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
         <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25131-preview" />

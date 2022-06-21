@@ -22,6 +22,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -38,10 +39,9 @@ namespace CollapseLauncher
             {
                 httpHelper = new HttpClientHelper(true);
 
-                MemoryStream memoryStream = new MemoryStream();
-
-                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
-                regionBackgroundProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
+                    await TryGetMultiLangResourceProp(token) :
+                    await TryGetSingleLangResourceProp(token);
 
                 regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
                 SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
@@ -75,6 +75,46 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Something wrong happen while fetching Background Image\r\n{ex}");
             }
+        }
+
+        bool PassFirstTry = false;
+        public async Task<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken token)
+        {
+            RegionResourceProp ret = new RegionResourceProp();
+            bool NoData = true;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                if (!PassFirstTry)
+                {
+                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token);
+                    ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
+
+                    NoData = ret.data.adv == null;
+                }
+
+                if (NoData)
+                {
+                    PassFirstTry = true;
+                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token);
+                    ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
+                }
+            }
+
+            PassFirstTry = false;
+
+            return ret;
+        }
+
+        public async Task<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token)
+        {
+            RegionResourceProp ret = new RegionResourceProp();
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+                ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
+            }
+
+            return ret;
         }
 
         public void ResetRegionProp()

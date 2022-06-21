@@ -12,12 +12,15 @@ namespace Hi3Helper
     {
         public static void LoadLocalization(string appLang)
         {
-            LangFallback = JsonConvert.DeserializeObject<LocalizationParams>(File.ReadAllText(LanguageNames.Where(x => x.Value.LangID == "en").First().Value.LangFilePath));
+            LangFallback = JsonConvert.DeserializeObject<LocalizationParams>(File
+                .ReadAllText(LanguageNames
+                    .Where(x => x.Value.LangID.ToLower() == "en" || x.Value.LangID.ToLower() == "en-us")
+                    .First().Value.LangFilePath));
             try
             {
                 Lang = JsonConvert.DeserializeObject<LocalizationParams>(
                     File.ReadAllText(LanguageNames
-                        .Where(x => x.Value.LangID == appLang)
+                        .Where(x => x.Value.LangID.ToLower() == appLang.ToLower())
                         .First().Value.LangFilePath));
 
                 LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");

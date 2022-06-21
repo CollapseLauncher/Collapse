@@ -907,6 +907,9 @@ namespace CollapseLauncher
                 // Else, use Serial Download
                 try
                 {
+                    if (File.Exists(LocalPath))
+                        TryUnassignDeleteROPersistFile(LocalPath);
+
                     if (Entry.fileSize >= 10 << 20)
                         await DownloadFileAsync(RemotePath, LocalPath, DownloadThread, Token);
                     else
