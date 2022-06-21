@@ -39,8 +39,8 @@ namespace CollapseLauncher.Pages
 
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        CachesStatus.Text = "Caches Update Completed!";
-                        CachesTotalStatus.Text = "None";
+                        CachesStatus.Text = Lang._Misc.Completed;
+                        CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                         CachesTotalProgressBar.Value = 0;
                         UpdateCachesBtn.IsEnabled = true;
                         CheckUpdateBtn.IsEnabled = true;
