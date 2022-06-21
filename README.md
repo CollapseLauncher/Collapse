@@ -2,9 +2,12 @@
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner.webp"/>
 </p>
 
-**Collapse Launcher** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **miHoYo Games**.
+**Collapse** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **miHoYo Games**.
 
-**Collapse Launcher** has some advanced features for **Honkai Impact 3rd** that not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
+# Why called Collapse?
+Collapse was came from Honkai Impact 3 name in Chinese and Japanese translation. The word came from [崩坏] or Bēng huài in Chinese and also [崩壊] or Houkai in Japanese, means "Collapse". That's why we are choosing this as our launcher name.
+
+**Collapse** has some advanced features for **Honkai Impact 3rd** that not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
 * Caches Download (or aka. "Updating Settings" in-game).
 * Game Data Repair (with less data needed than Data Repair feature in-game).
 * Changing Game Settings (like: Graphics Settings and Audio Settings) without opening the game.
