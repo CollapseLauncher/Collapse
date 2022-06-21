@@ -38,6 +38,6 @@ namespace CollapseLauncher
             }
         }
 
-        private Window m_window;
+        public static Window m_window;
     }
 }

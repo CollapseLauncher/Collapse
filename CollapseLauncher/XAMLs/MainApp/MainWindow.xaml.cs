@@ -24,7 +24,6 @@ namespace CollapseLauncher
             try
             {
                 this.InitializeComponent();
-                InitializeWindowSettings();
 
                 string title = $"Collapse Launcher - v{AppCurrentVersion} ";
                 if (IsPreview)
@@ -33,9 +32,16 @@ namespace CollapseLauncher
                 this.Title = title += "[DEBUG]";
 #endif
                 if (IsFirstInstall)
-                    rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
+                {
+                    TryInitWindowHandler();
+                    ExtendsContentIntoTitleBar = false;
+                    SetWindowSize(m_windowHandle, 360, 230);
+                    m_presenter.IsResizable = false;
+                    m_presenter.IsMaximizable = false;
+                    rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
+                }
                 else
-                    rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+                    StartMainPage();
             }
             catch (Exception ex)
             {
@@ -44,7 +50,19 @@ namespace CollapseLauncher
             }
         }
 
-        public void InitializeWindowSettings()
+        public void StartSetupPage()
+        {
+            InitializeWindowSettings();
+            rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
+        }
+
+        public void StartMainPage()
+        {
+            InitializeWindowSettings();
+            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+        }
+
+        public void TryInitWindowHandler()
         {
             m_backDrop = new BackdropManagement(this);
             m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
@@ -53,7 +71,11 @@ namespace CollapseLauncher
 
             m_AppWindow = GetAppWindowForCurrentWindow();
             m_AppWindow.Changed += AppWindow_Changed;
+        }
 
+        public void InitializeWindowSettings()
+        {
+            TryInitWindowHandler();
             SetWindowSize(m_windowHandle, 1280, 730);
 
             // Check to see if customization is supported.
@@ -106,23 +128,27 @@ namespace CollapseLauncher
                 AppTitleBar.Visibility = Visibility.Collapsed;
                 CustomTitleBar.Visibility = Visibility.Visible;
                 SetTitleBar(CustomTitleBar);
-
-                switch (GetAppTheme())
-                {
-                    case ApplicationTheme.Light:
-                        Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
-                        break;
-                    case ApplicationTheme.Dark:
-                        Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-                        break;
-                }
-
-                Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
-                Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+                SetLegacyTitleBarColor();
             }
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+        }
+
+        private void SetLegacyTitleBarColor()
+        {
+            switch (GetAppTheme())
+            {
+                case ApplicationTheme.Light:
+                    Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                    break;
+                case ApplicationTheme.Dark:
+                    Application.Current.Resources["WindowCaptionForeground"] = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                    break;
+            }
+
+            Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
+            Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 });
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
