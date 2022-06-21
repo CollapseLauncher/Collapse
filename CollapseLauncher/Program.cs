@@ -129,7 +129,7 @@ namespace CollapseLauncher
             TryParseLocalizations();
             if (IsFirstInstall)
             {
-                LoadLocalization("zh-CN");
+                LoadLocalization(CultureInfo.CurrentUICulture.Name);
                 SetAppConfigValue("AppLanguage", Lang.LanguageID);
             }
             else
