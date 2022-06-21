@@ -73,6 +73,9 @@ namespace Hi3Helper.Preset
             try
             {
                 RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+
+                if (keys == null) return FallbackLanguage;
+
                 foreach (string valueName in keys.GetValueNames())
                     if (valueName.Contains("MIHOYOSDK_NOTICE_LANGUAGE_"))
                         value = valueName;

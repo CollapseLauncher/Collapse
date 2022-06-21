@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="CollapseLauncher.StartupLanguageSelect"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{StaticResource PagesSolidAcrylicBrush}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+        <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
+        <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
+    </Page.Resources>
+    <Grid x:Name="MainPageGrid" Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition/>
+            <RowDefinition Height="48"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Please select your language to start this launcher for the first time!"
+                   Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                   TextWrapping="Wrap"/>
+        <ComboBox PlaceholderText="Select your language" Grid.Row="1"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
+        <Button x:Name="NextBtn" Content="Next" Grid.Row="2" HorizontalAlignment="Stretch" IsEnabled="False"
+                VerticalAlignment="Bottom" Style="{StaticResource AccentButtonStyle}" Click="NextBtn_Click"/>
+    </Grid>
+</Page>

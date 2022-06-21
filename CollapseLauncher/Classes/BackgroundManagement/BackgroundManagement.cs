@@ -86,7 +86,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token);
+                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token, DisposeStream: false);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -95,7 +95,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token);
+                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token, DisposeStream: false);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -110,7 +110,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token, DisposeStream: false);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
