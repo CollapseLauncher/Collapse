@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner.webp"/>
 </p>
 
-**Collapse Launcher** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **all miHoYo Games**.
+**Collapse Launcher** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **miHoYo Games**.
 
 **Collapse Launcher** has some advanced features for **Honkai Impact 3rd** that not only provides you a feature to download and launch the game, but also some advanced features that the Official Launcher doesn't have, including:
 * Caches Download (or aka. "Updating Settings" in-game).
