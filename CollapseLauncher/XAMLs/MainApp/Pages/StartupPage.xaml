@@ -18,7 +18,7 @@
                 <StackPanel.Transitions>
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
-                <Image Source="/Assets/ironmaiden_logo_256.png" Width="160" Height="160" HorizontalAlignment="Left"/>
+                <Image Source="/Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{StaticResource DisplayTextBlockStyle}"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
             </StackPanel>
