@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -101,7 +102,7 @@ namespace CollapseLauncher.Pages
 
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        CachesStatus.Text = $"Downloading {dataType.DataType}: {content.N}";
+                        CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N);
                     });
 
                     http.DownloadProgress += CachesDownloadProgress;
@@ -163,12 +164,14 @@ namespace CollapseLauncher.Pages
             if (refreshTime.Elapsed.Milliseconds >= 500)
             {
                 refreshTime = Stopwatch.StartNew();
-                timeLeftString = string.Format("{0:%h}h{0:%m}m{0:%s}s left", TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
+                timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
             }
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                CachesTotalStatus.Text = $"Downloading: {cachesCount}/{cachesTotalCount} ({SummarizeSizeSimple(e.CurrentSpeed)}/s)\t\tEstimation: {timeLeftString}";
+                CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
+                                       + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.CurrentSpeed))
+                                       + $"{timeLeftString}";
                 CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
             });
         }
