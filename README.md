@@ -1,4 +1,6 @@
-# Placeholder: We are still working for the new banner
+<p align="center">
+  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner.webp"/>
+</p>
 
 **Collapse Launcher** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **all miHoYo Games**.
 
