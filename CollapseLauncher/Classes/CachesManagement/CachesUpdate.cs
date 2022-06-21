@@ -54,8 +54,8 @@ namespace CollapseLauncher.Pages
                     LogWriteLine("Caches Update check cancelled!", LogType.Warning);
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        CachesStatus.Text = $"Operation has been cancelled!";
-                        CachesTotalStatus.Text = "None";
+                        CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
+                        CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                         CachesTotalProgressBar.Value = 0;
                         CheckUpdateBtn.Visibility = Visibility.Visible;
                         CheckUpdateBtn.IsEnabled = true;
@@ -171,7 +171,7 @@ namespace CollapseLauncher.Pages
             {
                 CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
                                        + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.CurrentSpeed))
-                                       + $"{timeLeftString}";
+                                       + $" | {timeLeftString}";
                 CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
             });
         }

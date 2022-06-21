@@ -30,6 +30,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="ApplyUpdate.exe.config" />
+	  <None Remove="XAMLs\StartUp\StartupLanguageSelect.xaml" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -81,5 +82,11 @@
 
     <ItemGroup>
       <Folder Include="Deps\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
+        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      </Page>
     </ItemGroup>
 </Project>

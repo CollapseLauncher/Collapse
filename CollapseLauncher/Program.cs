@@ -4,7 +4,6 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using System;
-using System.Globalization;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -35,7 +34,7 @@ namespace CollapseLauncher
             {
                 InitAppPreset();
                 InitConsoleSetting(true);
-                Console.WriteLine(string.Format("App Version: {0} {4} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
+                Console.WriteLine(string.Format("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
                     AppCurrentVersion,
                     GetVersionString(),
                     Environment.UserName,
