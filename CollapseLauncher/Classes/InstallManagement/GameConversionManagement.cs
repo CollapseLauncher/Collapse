@@ -250,8 +250,27 @@ namespace CollapseLauncher
                     return;
 
             DownloadProgress += RecipeDownload_Progress;
-            await DownloadFileAsync(CookbookURL, CookbookPath, GetAppConfigValue("DownloadThread").ToInt(), Token);
+
+            await DownloadFileAsync(CookbookURL, CleanUpPreviousChunkFiles(CookbookPath), GetAppConfigValue("DownloadThread").ToInt(), Token);
             DownloadProgress -= RecipeDownload_Progress;
+        }
+
+        public string CleanUpPreviousChunkFiles(string CookbookPath)
+        {
+            string CookbookFolder = Path.GetDirectoryName(CookbookPath);
+
+            foreach (string Path in Directory.EnumerateFiles(Path.GetDirectoryName(CookbookPath), string.Format("{0}*", Path.GetFileNameWithoutExtension(CookbookPath))))
+            {
+                try
+                {
+                    FileInfo a = new FileInfo(Path);
+                    a.IsReadOnly = false;
+                    a.Delete();
+                }
+                catch { }
+            }
+
+            return CookbookPath;
         }
 
         private void RecipeDownload_Progress(object sender, _DownloadProgress e)
