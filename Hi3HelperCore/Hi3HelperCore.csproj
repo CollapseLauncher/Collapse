@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Platforms>x64</Platforms>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Configurations>Debug;Release;Publish</Configurations>
   </PropertyGroup>
 

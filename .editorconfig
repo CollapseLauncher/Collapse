@@ -1,13 +1,4 @@
 ﻿[*.cs]
 
-# SYSLIB0014: Type or member is obsolete
-dotnet_diagnostic.SYSLIB0014.severity = none
-
-# IDE0090: Use 'new(...)'
-csharp_style_implicit_object_creation_when_type_is_apparent = false
-
-# IDE0066: Convert switch statement to expression
-csharp_style_prefer_switch_expression = false
-
-# IDE0056: Use index operator
-csharp_style_prefer_index_operator = false
+# CA1416: Validate platform compatibility
+dotnet_diagnostic.CA1416.severity = none
