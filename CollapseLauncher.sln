@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore", "Hi3HelperC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplyUpdate", "ApplyUpdate\ApplyUpdate.csproj", "{5F932364-CDA4-4104-919B-C6DD247849C9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore.Http", "Hi3HelperCore.Http\Hi3HelperCore.Http.csproj", "{D8FF6154-B6FB-4876-A3ED-6DF0706156A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
