@@ -1,28 +1,24 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -63,6 +59,7 @@ namespace CollapseLauncher
                 ResetRegionProp();
                 await GetLauncherAdvInfo(token);
                 await GetLauncherCarouselInfo(token);
+                await GetLauncherEventInfo(token);
                 GetLauncherPostInfo();
 
                 ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
@@ -122,6 +119,7 @@ namespace CollapseLauncher
             regionNewsProp.sideMenuPanel = null;
             regionNewsProp.imageCarouselPanel = null;
             regionNewsProp.articlePanel = null;
+            regionNewsProp.eventPanel = null;
         }
 
         public async Task GetLauncherAdvInfo(CancellationToken token)
@@ -153,6 +151,17 @@ namespace CollapseLauncher
                     Icon = await GetCachedSprites(item.img),
                     Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
                 });
+        }
+
+        public async Task GetLauncherEventInfo(CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
+
+            regionNewsProp.eventPanel = new RegionBackgroundProp
+            {
+                url = regionBackgroundProp.data.adv.url,
+                icon = await GetCachedSprites(regionBackgroundProp.data.adv.icon)
+            };
         }
 
         public void GetLauncherPostInfo()

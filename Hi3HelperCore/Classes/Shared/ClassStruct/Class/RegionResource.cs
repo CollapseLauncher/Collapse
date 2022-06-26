@@ -43,6 +43,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public List<MenuPanelProp> sideMenuPanel { get; set; }
         public List<MenuPanelProp> imageCarouselPanel { get; set; }
         public PostCarouselTypes articlePanel { get; set; }
+        public RegionBackgroundProp eventPanel { get; set; }
     }
 
     public class PostCarouselTypes
@@ -68,6 +69,8 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         public string background { get; set; }
         public string bg_checksum { get; set; }
+        public string icon { get; set; }
+        public string url { get; set; }
     }
 
     public enum PostCarouselType

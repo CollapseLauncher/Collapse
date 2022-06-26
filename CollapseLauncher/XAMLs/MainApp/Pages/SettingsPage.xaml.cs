@@ -225,7 +225,6 @@ namespace CollapseLauncher.Pages
             EnableLanguageChange = true;
         }
 
-        bool IsFirstChangeThemeSelection = false;
         public bool IsBGCustom
         {
             get

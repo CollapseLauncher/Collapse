@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,9 +19,9 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Shared.Region.GameConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -69,6 +70,8 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow16;
                 }
 
+                TryLoadEventPanelImage();
+
                 CheckRunningGameInstance();
             }
             catch (Exception ex)
@@ -76,6 +79,21 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void TryLoadEventPanelImage()
+        {
+            if (regionNewsProp.eventPanel == null) return;
+
+            await Task.Run(() =>
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    ImageEventImgGrid.Visibility = Visibility.Visible;
+                    ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
+                    ImageEventImg.Tag = regionNewsProp.eventPanel.url;
+                });
+            });
         }
 
         public async void ResetLastTimeSpan() => await Task.Run(() => LastTimeSpan = Stopwatch.StartNew());
@@ -1262,6 +1280,19 @@ namespace CollapseLauncher.Pages
         {
             get => GetGameConfigValue("CustomArgs").ToString();
             set => SetAndSaveGameConfigValue("CustomArgs", value);
+        }
+
+        private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
+        {
+            if ((sender as Image).Tag == null) return;
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = (sender as Image).Tag.ToString()
+                }
+            }.Start();
         }
     }
 }
