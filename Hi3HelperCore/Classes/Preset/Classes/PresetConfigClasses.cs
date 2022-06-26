@@ -24,7 +24,9 @@ namespace Hi3Helper.Preset
             try
             {
                 List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
-                return ConverterTool.NormalizePath(AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault());
+                string ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
+                if (ret == null) return null;
+                return ConverterTool.NormalizePath(ret);
                 // returnval = (string)Registry.GetValue(SteamInstallRegistryLocation, "InstallLocation", null);
             }
             catch
