@@ -36,6 +36,7 @@ namespace CollapseLauncher
                     TryInitWindowHandler();
                     ExtendsContentIntoTitleBar = false;
                     SetWindowSize(m_windowHandle, 360, 230);
+                    SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
                     rootFrame.Navigate(typeof(StartupLanguageSelect), null, new DrillInNavigationTransitionInfo());
