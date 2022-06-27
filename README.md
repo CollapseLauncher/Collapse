@@ -69,6 +69,7 @@ Please refer to this link to download the extension for your Visual Studio versi
 - [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
 - [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
+- [**Hi3HelperCore.Http**](https://github.com/neon-nyan/Hi3HelperCore.Http) by neon-nyan
 
 # How to support us?
 For now, we are starting to open a fund and only Indonesian Digital Wallet is available. This fund will help this and other project's continuity and also to improve the services of all its features.
