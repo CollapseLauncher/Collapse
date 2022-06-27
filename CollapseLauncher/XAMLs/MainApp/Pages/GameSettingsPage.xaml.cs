@@ -124,7 +124,7 @@ namespace CollapseLauncher.Pages
                 GlobalIlluminationSelector.SelectedIndex = gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
                 AmbientOcclusionSelector.SelectedIndex = gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
                 LevelOfDetailSelector.SelectedIndex = gameIni.Settings[SectionName]["LodLevel"].ToInt();
-                GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["LodGrade"].ToBool();
+                GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["VolumetricLight"].ToBool();
 
                 if (GameFXPostProcCheckBox.IsChecked ?? true)
                 {
