@@ -140,6 +140,7 @@ namespace Hi3Helper.Preset
             {
                 string regValue, value = string.Empty;
                 RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                if (keys == null) return 0;
                 value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
                 regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
 
