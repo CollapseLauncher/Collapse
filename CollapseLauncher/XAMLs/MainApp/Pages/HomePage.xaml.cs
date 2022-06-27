@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Dialogs;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -32,7 +33,7 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class HomePage : Page
     {
-        HttpClientHelper HttpTool = new HttpClientHelper();
+        Http HttpTool = new Http();
         public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
@@ -586,15 +587,15 @@ namespace CollapseLauncher.Pages
         string DownloadSizeString;
         string DownloadPerSizeString;
 
-        private void InstallerDownloadPreStatusChanged(object sender, HttpClientHelper._DownloadProgress e)
+        private void InstallerDownloadPreStatusChanged(object sender, DownloadEvent e)
         {
-            InstallDownloadSpeedString = SummarizeSizeSimple(e.CurrentSpeed);
-            InstallDownloadSizeString = SummarizeSizeSimple(e.DownloadedSize);
-            DownloadSizeString = SummarizeSizeSimple(e.TotalSizeToDownload);
+            InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
+            InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
+            DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
             DispatcherQueue.TryEnqueue(() =>
             {
                 ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                LogWrite($"{e.DownloadState}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
+                LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
                 ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
                 ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);

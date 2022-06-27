@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using static Hi3Helper.Data.ConverterTool;
 
 namespace CollapseLauncher
 {
-    public class Updater : HttpClientHelper
+    public class Updater : Http
     {
         string ChannelURL;
         string TargetPath;
@@ -33,28 +34,33 @@ namespace CollapseLauncher
         private long Read = 0,
                      TotalSize = 0;
 
-        public Updater(string TargetFolder, string ChannelName)
+        private byte DownloadThread;
+
+        public Updater(string TargetFolder, string ChannelName, byte DownloadThread)
         {
             this.ChannelURL = string.Format(RepoURL, ChannelName);
             this.TargetPath = NormalizePath(TargetFolder);
             this.TempPath = Path.Combine(TargetPath, "_Temp");
+            this.DownloadThread = DownloadThread;
         }
 
         public async Task StartFetch()
         {
-            MemoryStream _databuf = new MemoryStream();
-
-            Status = new UpdaterStatus
+            using (MemoryStream _databuf = new MemoryStream())
             {
-                status = "Fetching Update",
-                message = "Connecting to Update Repository..."
-            };
-            UpdateStatus();
-            UpdateStopwatch = Stopwatch.StartNew();
 
-            await DownloadFileAsync(ChannelURL + "fileindex.json", _databuf, TokenSource.Token);
+                Status = new UpdaterStatus
+                {
+                    status = "Fetching Update",
+                    message = "Connecting to Update Repository..."
+                };
+                UpdateStatus();
+                UpdateStopwatch = Stopwatch.StartNew();
 
-            FileProp = JsonConvert.DeserializeObject<Prop>(Encoding.UTF8.GetString(_databuf.ToArray()));
+                await DownloadStream(ChannelURL + "fileindex.json", _databuf, TokenSource.Token);
+
+                FileProp = JsonConvert.DeserializeObject<Prop>(Encoding.UTF8.GetString(_databuf.GetBuffer()));
+            }
         }
 
         public async Task StartCheck()
@@ -120,9 +126,12 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(Path.GetDirectoryName(Output));
 
                 if (_entry.s >= (20 << 20))
-                    await DownloadFileAsync(URL, Output, 8, TokenSource.Token);
+                {
+                    await DownloadMultisession(URL, Output, true, DownloadThread, TokenSource.Token);
+                    await MergeMultisession(Output, DownloadThread, TokenSource.Token);
+                }
                 else
-                    await DownloadFileAsync(URL, Output, TokenSource.Token);
+                    await Download(URL, Output, TokenSource.Token);
             }
 
             DownloadProgress -= Updater_DownloadProgressAdapter;
@@ -199,12 +208,12 @@ namespace CollapseLauncher
             Environment.Exit(0);
         }
 
-        private void Updater_DownloadProgressAdapter(object sender, _DownloadProgress e)
+        private void Updater_DownloadProgressAdapter(object sender, DownloadEvent e)
         {
-            if (e.DownloadState == State.Downloading)
-                Read += e.CurrentRead;
+            if (e.State != MultisessionState.Merging)
+                Read += e.Read;
 
-            Progress = new UpdaterProgress(Read, TotalSize, e.CurrentRead, UpdateStopwatch.Elapsed);
+            Progress = new UpdaterProgress(Read, TotalSize, e.Read, UpdateStopwatch.Elapsed);
             UpdateProgress();
         }
 
@@ -233,7 +242,7 @@ namespace CollapseLauncher
 
         public class UpdaterProgress
         {
-            public UpdaterProgress(long DownloadedSize, long TotalSizeToDownload, int CurrentRead, TimeSpan TimeSpan)
+            public UpdaterProgress(long DownloadedSize, long TotalSizeToDownload, long CurrentRead, TimeSpan TimeSpan)
             {
                 this.DownloadedSize = DownloadedSize;
                 this.TotalSizeToDownload = TotalSizeToDownload;
@@ -245,7 +254,7 @@ namespace CollapseLauncher
             public long DownloadedSize { get; private set; }
             public long TotalSizeToDownload { get; private set; }
             public double ProgressPercentage => Math.Round((DownloadedSize / (double)TotalSizeToDownload) * 100, 2);
-            public int CurrentRead { get; private set; }
+            public long CurrentRead { get; private set; }
             public long CurrentSpeed => (long)(DownloadedSize / _TotalSecond);
             public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((TotalSizeToDownload - DownloadedSize) / CurrentSpeed));
         }

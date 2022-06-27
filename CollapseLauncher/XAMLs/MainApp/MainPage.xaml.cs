@@ -1,4 +1,5 @@
 using Hi3Helper;
+using Hi3Helper.Http;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -125,8 +126,8 @@ namespace CollapseLauncher
                 RunTimeoutCancel(TokenSource);
                 using (MemoryStream buffer = new MemoryStream())
                 {
-                    await new HttpClientHelper().DownloadFileAsync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                        buffer, TokenSource.Token, null, null, false);
+                    await new Http().DownloadStream(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
+                        buffer, TokenSource.Token);
                     NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
                     IsLoadNotifComplete = true;
                 }

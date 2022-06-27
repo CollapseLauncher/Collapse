@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -45,7 +46,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await new HttpClientHelper().DownloadFileAsync(ReleaseNoteURL, ResponseStream, new CancellationToken());
+                await new Http().DownloadStream(ReleaseNoteURL, ResponseStream, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
 
                 DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Content);

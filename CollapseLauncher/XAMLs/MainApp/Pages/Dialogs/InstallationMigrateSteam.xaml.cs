@@ -135,7 +135,7 @@ namespace CollapseLauncher.Dialogs
                 Step4ProgressRing.Value = 0;
             });
 
-            await Task.Run(() => StartConversionTask());
+            await StartConversionTask();
 
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -148,12 +148,12 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private void StartConversionTask()
+        private async Task StartConversionTask()
         {
             SteamConversion conversionTool = new SteamConversion(targetPath, endpointURL, BrokenFileIndexesProperty, tokenSource);
 
             conversionTool.ProgressChanged += ConversionProgressChanged;
-            conversionTool.StartConverting();
+            await conversionTool.StartConverting();
             conversionTool.ProgressChanged -= ConversionProgressChanged;
         }
 

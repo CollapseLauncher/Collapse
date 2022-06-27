@@ -12,12 +12,14 @@ namespace CollapseLauncher
         string filePath;
         string clientVer;
         long reindexTime;
+        byte downloadThread;
 
-        public Reindexer(string filePath, string clientVer) : base(filePath, "")
+        public Reindexer(string filePath, string clientVer, byte downloadThread) : base(filePath, "", downloadThread)
         {
             this.filePath = NormalizePath(filePath);
             this.reindexTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             this.clientVer = clientVer;
+            this.downloadThread = downloadThread;
 
             if (File.Exists(Path.Combine(this.filePath, "fileindex.json")))
                 File.Delete(Path.Combine(this.filePath, "fileindex.json"));

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -17,7 +18,7 @@ namespace Hi3Helper.Shared.GameConversion
     {
         private string targetPath;
         private string endpointURL;
-        private HttpClientHelper http;
+        private Http.Http http;
         private Stream stream;
         private CancellationTokenSource tokenSource;
         private Stopwatch sw;
@@ -29,7 +30,7 @@ namespace Hi3Helper.Shared.GameConversion
         private string CheckStatus;
         private long TotalSizeToRead, TotalRead;
         private int TotalCountToRead, TotalCount;
-        private int DownloadThread = GetAppConfigValue("DownloadThread").ToInt();
+        private byte DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
 
         private string FilePath, FileURL;
         private FileInfo FileInfo;
@@ -41,11 +42,11 @@ namespace Hi3Helper.Shared.GameConversion
             this.targetPath = targetPath;
             this.endpointURL = endpointURL;
             this.tokenSource = tokenSource;
-            this.http = new HttpClientHelper();
+            this.http = new Http.Http();
             this.BrokenFileIndexesProperty = FileList;
         }
 
-        public void StartConverting()
+        public async Task StartConverting()
         {
             sw = Stopwatch.StartNew();
 
@@ -65,7 +66,7 @@ namespace Hi3Helper.Shared.GameConversion
                 {
                     case FileType.Generic:
                     case FileType.Audio:
-                        ConvertGenericAudioFile();
+                        await ConvertGenericAudioFile();
                         break;
                     case FileType.Blocks:
                         ConvertBlockFile();
@@ -74,7 +75,7 @@ namespace Hi3Helper.Shared.GameConversion
             }
         }
 
-        private void ConvertGenericAudioFile()
+        private async Task ConvertGenericAudioFile()
         {
             TotalCount++;
             CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile1, FileIndex.FT, TotalCount, TotalCountToRead, FileIndex.N);
@@ -90,16 +91,21 @@ namespace Hi3Helper.Shared.GameConversion
             if (FileIndex.S == 0)
                 FileInfo.Create();
             else
+            {
                 if (FileIndex.S > 10 << 20)
-                http.DownloadFile(FileURL, FilePath, DownloadThread, tokenSource.Token);
-            else
-                using (stream = FileInfo.Create())
-                    http.DownloadFile(FileURL, stream, tokenSource.Token, -1, -1, false);
+                {
+                    await http.DownloadMultisession(FileURL, FilePath, true, DownloadThread, tokenSource.Token);
+                    await http.MergeMultisession(FilePath, DownloadThread, tokenSource.Token);
+                }
+                else
+                    using (stream = FileInfo.Create())
+                        await http.DownloadStream(FileURL, stream, tokenSource.Token);
+            }
 
             http.DownloadProgress -= HttpAdapter;
         }
 
-        private void ConvertBlockFile()
+        private async Task ConvertBlockFile()
         {
             string BlockBasePath = NormalizePath(FileIndex.N);
             long FileExistingLength;
@@ -121,7 +127,7 @@ namespace Hi3Helper.Shared.GameConversion
                     CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile2, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash);
 
                     using (stream = FileInfo.Create())
-                        http.DownloadFile(FileURL, stream, tokenSource.Token, -1, -1, false);
+                        await http.DownloadStream(FileURL, stream, tokenSource.Token);
                 }
                 else
                 {
@@ -134,8 +140,12 @@ namespace Hi3Helper.Shared.GameConversion
 
                             stream.Position = chunk._startoffset;
 
-                            using (stream = FileInfo.Create())
-                                http.DownloadFile(FileURL, stream, tokenSource.Token, chunk._startoffset, chunk._startoffset + chunk._filesize, false);
+                            using (MemoryStream mStream = new MemoryStream())
+                            {
+                                await http.DownloadStream(FileURL, mStream, tokenSource.Token, chunk._startoffset, chunk._startoffset + chunk._filesize);
+                                stream.Position = chunk._startoffset;
+                                await stream.WriteAsync(mStream.GetBuffer(), tokenSource.Token);
+                            }
                         }
                     }
                 }
@@ -143,10 +153,10 @@ namespace Hi3Helper.Shared.GameConversion
             }
         }
 
-        private void HttpAdapter(object sender, HttpClientHelper._DownloadProgress e)
+        private void HttpAdapter(object sender, Http.DownloadEvent e)
         {
-            if (e.DownloadState == HttpClientHelper.State.Downloading)
-                TotalRead += e.CurrentRead;
+            if (e.State != Http.MultisessionState.Merging)
+                TotalRead += e.Read;
 
             OnProgressChanged(new ConversionTaskChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)
             {

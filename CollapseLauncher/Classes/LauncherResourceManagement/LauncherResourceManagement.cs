@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -16,14 +17,16 @@ namespace CollapseLauncher
     {
         public async Task FetchLauncherResourceAsRegion(CancellationToken token)
         {
-            MemoryStream memoryStream = new MemoryStream();
             try
             {
-                httpHelper = new HttpClientHelper(false);
-                regionNewsProp = new HomeMenuPanel();
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    httpHelper = new Http();
+                    regionNewsProp = new HomeMenuPanel();
 
-                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherResourceURL, memoryStream, token);
-                regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                    await httpHelper.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, token);
+                    regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                }
             }
             catch (OperationCanceledException)
             {
@@ -33,7 +36,6 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Cannot connect to the internet while fetching launcher resource.\r\n{ex}");
             }
-            memoryStream.Dispose();
         }
     }
 }

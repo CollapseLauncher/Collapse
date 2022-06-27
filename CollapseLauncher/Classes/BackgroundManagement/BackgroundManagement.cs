@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using Hi3Helper.Http;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -33,7 +34,7 @@ namespace CollapseLauncher
         {
             try
             {
-                httpHelper = new HttpClientHelper(true);
+                httpHelper = new Http();
 
                 regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
                     await TryGetMultiLangResourceProp(token) :
@@ -83,7 +84,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token, DisposeStream: false);
+                    await httpHelper.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -92,7 +93,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await httpHelper.DownloadFileAsync(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token, DisposeStream: false);
+                    await httpHelper.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -107,7 +108,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await httpHelper.DownloadFileAsync(CurrentRegion.LauncherSpriteURL, memoryStream, token, DisposeStream: false);
+                await httpHelper.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
@@ -191,7 +192,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await httpHelper.DownloadFileAsync(URL, cachePath, token);
+            if (!File.Exists(cachePath)) await httpHelper.Download(URL, cachePath, token);
 
             return cachePath;
         }
@@ -354,7 +355,10 @@ namespace CollapseLauncher
             FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
 
             if (!fI.Exists)
-                await httpHelper.DownloadFileAsync(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
+            {
+                await httpHelper.DownloadMultisession(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, false, 4, tokenSource.Token);
+                await httpHelper.MergeMultisession(regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
+            }
         }
 
         private async Task ApplyBackground(bool rescale = true)

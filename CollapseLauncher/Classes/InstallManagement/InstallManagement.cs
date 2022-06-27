@@ -12,6 +12,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -19,7 +20,7 @@ using static Hi3Helper.Logger;
 namespace CollapseLauncher
 {
     public enum DownloadType { Update, FirstInstall, PreDownload }
-    internal partial class InstallManagement : HttpClientHelper
+    internal partial class InstallManagement : Http
     {
         public event EventHandler<InstallManagementStatus> InstallStatusChanged;
         public event EventHandler<InstallManagementProgress> InstallProgressChanged;
@@ -35,8 +36,8 @@ namespace CollapseLauncher
 
         private DownloadType ModeType;
         private CancellationToken Token;
-        private int DownloadThread,
-                    ExtractionThread;
+        private byte DownloadThread,
+                     ExtractionThread;
 
         private string GameDirPath = string.Empty,
                        DecompressedRemotePath,
@@ -73,13 +74,13 @@ namespace CollapseLauncher
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
             string GameVerString = "", string DispatchKey = null, string DispatchURLPrefix = null, int RegionID = 0,
-            string ExecutablePrefix = "BH3") : base(true, false, 10)
+            string ExecutablePrefix = "BH3") : base(true, 10)
         {
             this.Content = Content;
             this.SourceProfile = SourceProfile;
             this.ModeType = downloadType;
-            this.DownloadThread = downloadThread;
-            this.ExtractionThread = extractionThread;
+            this.DownloadThread = (byte)downloadThread;
+            this.ExtractionThread = (byte)extractionThread;
             this.Token = token;
             this.DownloadProperty = new List<DownloadAddressProperty>();
             this.GameDirPath = GameDirPath;
@@ -172,9 +173,13 @@ namespace CollapseLauncher
             {
                 FileInfo file = new FileInfo(prop.Output);
                 CountCurrentDownload++;
+                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
                 LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
                 if (!file.Exists || file.Length < prop.LocalSize)
-                    await DownloadFileAsync(prop.URL, prop.Output, DownloadThread, Token);
+                {
+                    await DownloadMultisession(prop.URL, prop.Output, true, DownloadThread, Token);
+                    await MergeMultisession(prop.Output, DownloadThread, Token);
+                }
             }
 
             DownloadProgress -= DownloadStatusAdapter;
@@ -262,14 +267,14 @@ namespace CollapseLauncher
         }
 
         string DownloadStateStr = "";
-        private void DownloadStatusAdapter(object sender, _DownloadProgress e)
+        private void DownloadStatusAdapter(object sender, DownloadEvent e)
         {
-            switch (e.DownloadState)
+            switch (e.State)
             {
-                case State.Downloading:
+                case MultisessionState.Downloading:
                     DownloadStateStr = Lang._Misc.Downloading;
                     break;
-                case State.Merging:
+                case MultisessionState.Merging:
                     DownloadStateStr = Lang._Misc.Merging;
                     break;
             }
@@ -278,15 +283,15 @@ namespace CollapseLauncher
             UpdateStatus(InstallStatus);
         }
 
-        private void DownloadProgressAdapter(object sender, _DownloadProgress e)
+        private void DownloadProgressAdapter(object sender, DownloadEvent e)
         {
-            if (e.DownloadState == State.Downloading)
-                DownloadLocalSize += e.CurrentRead;
+            if (e.State != MultisessionState.Merging)
+                DownloadLocalSize += e.Read;
 
-            DownloadLocalPerFileSize = e.DownloadedSize;
-            DownloadRemotePerFileSize = e.TotalSizeToDownload;
+            DownloadLocalPerFileSize = e.SizeDownloaded;
+            DownloadRemotePerFileSize = e.SizeToBeDownloaded;
             InstallProgress = new InstallManagementProgress(DownloadLocalSize, DownloadRemoteSize,
-                DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds, true, e.CurrentSpeed);
+                DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds, true, e.Speed);
 
             UpdateProgress(InstallProgress);
         }
@@ -362,7 +367,7 @@ namespace CollapseLauncher
                     fileInfo.Delete();
         }
 
-        public void StartInstall()
+        public async Task StartInstall()
         {
             DownloadStopwatch = Stopwatch.StartNew();
             DownloadLocalSize = 0;
@@ -371,7 +376,7 @@ namespace CollapseLauncher
 
             if (CanDeltaPatch && ModeType == DownloadType.Update)
             {
-                RunPatch();
+                await RunPatch();
                 return;
             }
 
@@ -387,7 +392,7 @@ namespace CollapseLauncher
                 ExtractTool.AutoLoad(prop.Output);
 
                 ExtractTool.ExtractProgressChanged += ExtractProgressAdapter;
-                ExtractTool.ExtractToDirectory(GameDirPath, ExtractionThread, Token);
+                await ExtractTool.ExtractToDirectory(GameDirPath, ExtractionThread, Token);
                 ExtractTool.ExtractProgressChanged -= ExtractProgressAdapter;
 
                 ExtractTool.Dispose();
@@ -396,14 +401,14 @@ namespace CollapseLauncher
             }
         }
 
-        private void RunPatch()
+        private async Task RunPatch()
         {
             CountCurrentDownload = 1;
             CountTotalToDownload = 1;
 
-            StartPreparation();
-            RepairIngredients(VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
-            StartConversion();
+            await StartPreparation();
+            await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
+            await Task.Run(() => StartConversion());
         }
 
         long LastSize = 0;
@@ -430,7 +435,7 @@ namespace CollapseLauncher
             UpdateProgress(InstallProgress);
         }
 
-        public async Task StartInstallAsync() => await Task.Run(() => StartInstall());
+        public async Task StartInstallAsync() => await StartInstall();
 
         public long CalculateUncompressedSize(ref DownloadAddressProperty Input) =>
             Input.LocalUncompressedSize = new SevenZipTool().GetUncompressedSize(Input.Output);
@@ -630,7 +635,7 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(GameDirPath, "pkg_version");
             if (!File.Exists(ManifestPath))
-                await DownloadFileAsync(DecompressedRemotePath + "/pkg_version", ManifestPath, Token);
+                await Download(DecompressedRemotePath + "/pkg_version", ManifestPath, Token);
             BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", DecompressedRemotePath);
 
             // Build local audio entry.
@@ -675,7 +680,7 @@ namespace CollapseLauncher
             {
                 if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                    await DownloadFileAsync(ParentURL + "/data_versions", fs, Token);
+                    await DownloadStream(ParentURL + "/data_versions", fs, Token);
 #if DEBUG
                 LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}");
 #endif
@@ -689,7 +694,7 @@ namespace CollapseLauncher
             ParentURL = $"{QueryProperty.ClientDesignDataURL}/AssetBundles";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await DownloadFileAsync(ParentURL + "/data_versions", fs, Token);
+                await DownloadStream(ParentURL + "/data_versions", fs, Token);
 #if DEBUG
             LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}");
 #endif
@@ -702,7 +707,7 @@ namespace CollapseLauncher
             ParentAudioURL = $"{QueryProperty.ClientAudioAssetsURL}/StandaloneWindows64";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await DownloadFileAsync(ParentURL + "/release_res_versions_external", fs, Token);
+                await DownloadStream(ParentURL + "/release_res_versions_external", fs, Token);
 #if DEBUG
             LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}");
 #endif
@@ -911,9 +916,12 @@ namespace CollapseLauncher
                         TryUnassignDeleteROPersistFile(LocalPath);
 
                     if (Entry.fileSize >= 10 << 20)
-                        await DownloadFileAsync(RemotePath, LocalPath, DownloadThread, Token);
+                    {
+                        await DownloadMultisession(RemotePath, LocalPath, true, DownloadThread, Token);
+                        await MergeMultisession(LocalPath, DownloadThread, Token);
+                    }
                     else
-                        await DownloadFileAsync(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
+                        await DownloadStream(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
                 }
                 catch (Exception ex)
                 {

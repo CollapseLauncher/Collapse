@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static CollapseLauncher.Pages.RepairData;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -34,7 +35,7 @@ namespace CollapseLauncher.Pages
     {
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
-        HttpClientHelper http = new HttpClientHelper();
+        Http http = new Http();
         MemoryStream memBuffer;
         byte[] buffer = new byte[0x400000];
 
@@ -51,7 +52,7 @@ namespace CollapseLauncher.Pages
 
         string CurrentCheckName = "";
 
-        private void StartGameCheck(object sender, RoutedEventArgs e)
+        private async void StartGameCheck(object sender, RoutedEventArgs e)
         {
             RepairStatus.Text = Lang._GameRepairPage.Status2;
             NeedRepairListUI.Clear();
@@ -69,32 +70,29 @@ namespace CollapseLauncher.Pages
                 RepairTotalProgressBar.Value = 0;
             });
 
-            Task.Run(() =>
+            try
             {
-                try
+                string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                using (memBuffer = new MemoryStream())
                 {
-                    string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
-                    using (memBuffer = new MemoryStream())
-                    {
-                        http.DownloadProgress += DataFetchingProgress;
-                        http.DownloadFile(indexURL, memBuffer, cancellationTokenSource.Token, null, null, false);
-                        http.DownloadProgress -= DataFetchingProgress;
-                        FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
-                    }
+                    http.DownloadProgress += DataFetchingProgress;
+                    await http.DownloadStream(indexURL, memBuffer, cancellationTokenSource.Token);
+                    http.DownloadProgress -= DataFetchingProgress;
+                    FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
+                }
 
-                    CheckGameFiles();
-                }
-                catch (OperationCanceledException)
-                {
-                    LogWriteLine($"Game Check Cancelled!");
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"{ex}", LogType.Error, true);
-                    ErrorSender.SendException(ex);
-                }
-                sw.Stop();
-            });
+                await Task.Run(() => CheckGameFiles());
+            }
+            catch (OperationCanceledException)
+            {
+                LogWriteLine($"Game Check Cancelled!");
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
+            sw.Stop();
         }
 
         Stopwatch sw = new Stopwatch();
@@ -418,12 +416,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void DataFetchingProgress(object sender, HttpClientHelper._DownloadProgress e)
+        private void DataFetchingProgress(object sender, DownloadEvent e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
                 RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 1);
-                RepairPerFileStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.CurrentSpeed));
+                RepairPerFileStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
             });
         }
     }

@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameConfig;
@@ -17,7 +18,7 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        HttpClientHelper httpHelper;
+        Http httpHelper;
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
         int LoadTimeoutSec = 10;

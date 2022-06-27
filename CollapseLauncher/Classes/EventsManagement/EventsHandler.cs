@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -37,10 +38,12 @@ namespace CollapseLauncher
                 {
                     try
                     {
-                        MemoryStream RemoteData = new MemoryStream();
-                        await new HttpClientHelper().DownloadFileAsync(ChannelURL + "fileindex.json", RemoteData, new CancellationToken());
-                        string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
-                        UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
+                        using (MemoryStream RemoteData = new MemoryStream())
+                        {
+                            await new Http().DownloadStream(ChannelURL + "fileindex.json", RemoteData, new CancellationToken());
+                            string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
+                            UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
+                        }
 
                         if (CompareVersion(AppCurrentVersion, UpdateProperty.ver))
                             GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = UpdateProperty.ver });

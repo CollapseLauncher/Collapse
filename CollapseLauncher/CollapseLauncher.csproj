@@ -53,6 +53,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Hi3HelperCore.Http\Hi3HelperCore.Http.csproj" />
         <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
     </ItemGroup>
 

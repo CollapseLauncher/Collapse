@@ -44,7 +44,9 @@ namespace CollapseLauncher
                 this.Title = title += "[DEBUG]";
 #endif
 
-                Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower());
+                Updater updater = new Updater(m_arguments.Updater.AppPath,
+                    m_arguments.Updater.UpdateChannel.ToString().ToLower(),
+                    (byte)GetAppConfigValue("DownloadThread").ToInt());
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 

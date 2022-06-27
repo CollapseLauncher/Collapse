@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 
@@ -19,7 +20,7 @@ namespace Hi3Helper.Shared.GameConversion
     {
         private string targetPath;
         private string endpointURL;
-        private HttpClientHelper http;
+        private Http.Http http;
         private Stream stream;
         private CancellationTokenSource tokenSource;
         private Stopwatch sw;
@@ -45,26 +46,26 @@ namespace Hi3Helper.Shared.GameConversion
             this.targetPath = targetPath;
             this.endpointURL = endpointURL;
             this.tokenSource = tokenSource;
-            this.http = new HttpClientHelper();
+            this.http = new Http.Http();
         }
 
-        public void StartCheckIntegrity()
+        public async Task StartCheckIntegrity()
         {
             File.Create(Path.Combine(targetPath, "_conversion_unfinished")).Close();
-            FetchAPI();
-            CheckGameFiles();
+            await FetchAPI();
+            await Task.Run(() => CheckGameFiles());
             stream.Dispose();
             FileIndexesProperty.Clear();
         }
 
-        private void FetchAPI()
+        private async Task FetchAPI()
         {
             CheckStatus = Lang._InstallMigrateSteam.Step3Subtitle;
 
             using (stream = new MemoryStream())
             {
                 http.DownloadProgress += HttpAdapter;
-                http.DownloadFile(endpointURL, stream, tokenSource.Token, -1, -1, false);
+                await http.DownloadStream(endpointURL, stream, tokenSource.Token);
                 http.DownloadProgress -= HttpAdapter;
 
                 FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>
@@ -240,9 +241,9 @@ namespace Hi3Helper.Shared.GameConversion
 
         private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
 
-        private void HttpAdapter(object sender, HttpClientHelper._DownloadProgress e)
+        private void HttpAdapter(object sender, Http.DownloadEvent e)
         {
-            OnProgressChanged(new CheckIntegrityChanged(e.DownloadedSize, e.TotalSizeToDownload, sw.Elapsed.TotalSeconds)
+            OnProgressChanged(new CheckIntegrityChanged(e.SizeDownloaded, e.SizeToBeDownloaded, sw.Elapsed.TotalSeconds)
             {
                 Message = CheckStatus
             });

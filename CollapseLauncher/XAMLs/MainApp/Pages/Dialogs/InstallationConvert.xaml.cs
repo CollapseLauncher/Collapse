@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -139,7 +140,7 @@ namespace CollapseLauncher.Dialogs
             RegionResourceProp _Entry;
             using (MemoryStream s = new MemoryStream())
             {
-                await new HttpClientHelper().DownloadFileAsync(Profile.LauncherResourceURL, s, tokenSource.Token, null, null, false);
+                await new Http().DownloadStream(Profile.LauncherResourceURL, s, tokenSource.Token);
                 _Entry = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(s.ToArray()));
             }
 

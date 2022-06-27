@@ -116,7 +116,7 @@ namespace Hi3Helper.Data
         }
 
         Stopwatch stopWatch;
-        public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken())
+        public async Task ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken())
         {
             stopWatch = Stopwatch.StartNew();
 
@@ -143,10 +143,10 @@ Initializing...", inputFilePath, outputDirectory,
                 switch (inputFileType)
                 {
                     case ArchiveType.SevenZip:
-                        StartAuto7ZipThread(outputDirectory, token);
+                        await StartAuto7ZipThread(outputDirectory, token);
                         break;
                     case ArchiveType.Zip:
-                        StartZipThreads(outputDirectory, thread, token);
+                        await StartZipThreads(outputDirectory, thread, token);
                         break;
                 }
             }
@@ -168,18 +168,21 @@ Initializing...", inputFilePath, outputDirectory,
             Console.WriteLine($"Extracted: {extractedCount} | Listed Entry: {filesCount}");
         }
 
-        private void StartAuto7ZipThread(string OutputDirectory, CancellationToken Token)
+        private async Task StartAuto7ZipThread(string OutputDirectory, CancellationToken Token)
         {
             stopWatch = Stopwatch.StartNew();
             string _outPath;
             archiveReader7Zip.ExtractProgress += ArchiveReaderAuto7ZipAdapter;
             using (archiveReader7Zip)
             {
-                archiveReader7Zip.Extract(entry =>
+                await Task.Run(() =>
                 {
-                    _outPath = Path.Combine(OutputDirectory, entry.FileName);
-                    return _outPath;
-                }, Token);
+                    archiveReader7Zip.Extract(entry =>
+                    {
+                        _outPath = Path.Combine(OutputDirectory, entry.FileName);
+                        return _outPath;
+                    }, Token);
+                });
             }
             archiveReader7Zip.ExtractProgress -= ArchiveReaderAuto7ZipAdapter;
         }
@@ -189,7 +192,7 @@ Initializing...", inputFilePath, outputDirectory,
             OnProgressChanged(new ExtractProgress(extractedCount, filesCount, (long)e.TotalRead, (long)e.TotalSize, stopWatch.Elapsed.TotalSeconds));
         }
 
-        private void StartZipThreads(string outputDirectory, int thread, CancellationToken token)
+        private async Task StartZipThreads(string outputDirectory, int thread, CancellationToken token)
         {
             List<Task> tasks = new List<Task>();
             List<Task> fallbackTasks = new List<Task>();
@@ -215,7 +218,7 @@ Initializing...", inputFilePath, outputDirectory,
                 threadID++;
             }
 
-            Task.WhenAll(fallbackTasks).GetAwaiter().GetResult();
+            await Task.WhenAll(fallbackTasks);
             fallbackTasks.Clear();
         }
 

@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -18,7 +19,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    internal partial class InstallManagement : HttpClientHelper
+    internal partial class InstallManagement : Http
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
@@ -31,7 +32,7 @@ namespace CollapseLauncher
         private void ResetSw() => ConvertSw = Stopwatch.StartNew();
         string ConvertStatus;
 
-        public void StartPreparation()
+        public async Task StartPreparation()
         {
             List<FilePropertiesRemote> SourceFileRemote;
             ResetSw();
@@ -52,7 +53,7 @@ namespace CollapseLauncher
             using (MemoryStream buffer = new MemoryStream())
             {
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                DownloadFile(SourceBaseURL + "index.json", buffer, Token);
+                await DownloadStream(SourceBaseURL + "index.json", buffer, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -106,7 +107,7 @@ namespace CollapseLauncher
             }
         }
 
-        private List<FileProperties> VerifyIngredients(List<FileProperties> FileManifest, string GamePath)
+        private async Task<List<FileProperties>> VerifyIngredients(List<FileProperties> FileManifest, string GamePath)
         {
             ResetSw();
             List<FileProperties> BrokenManifest = new List<FileProperties>();
@@ -138,8 +139,8 @@ namespace CollapseLauncher
                     {
                         Token.ThrowIfCancellationRequested();
                         LocalHash = Entry.DataType != FileType.Blocks ?
-                            BytesToCRC32Simple(fs) :
-                            CreateMD5(fs);
+                            await BytesToCRC32SimpleAsync(fs) :
+                            await CreateMD5Async(fs);
 
                         if (LocalHash.ToLower() != Entry.CurrCRC)
                             BrokenManifest.Add(Entry);
@@ -204,7 +205,7 @@ namespace CollapseLauncher
 
         long RepairRead = 0;
         long RepairTotalSize = 0;
-        private void RepairIngredients(List<FileProperties> BrokenFile, string GamePath)
+        private async Task RepairIngredients(List<FileProperties> BrokenFile, string GamePath)
         {
             if (BrokenFile.Count == 0) return;
 
@@ -234,30 +235,33 @@ namespace CollapseLauncher
 
                 DownloadProgress += RepairIngredients_Progress;
                 if (Entry.FileSize >= 20 << 20)
-                    DownloadFile(InputURL, OutputPath, 8, Token);
+                {
+                    await DownloadMultisession(InputURL, OutputPath, true, this.DownloadThread, Token);
+                    await MergeMultisession(OutputPath, this.DownloadThread, Token);
+                }
                 else
-                    DownloadFile(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token, null, null, true);
+                    await DownloadStream(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }
 
-        private void RepairIngredients_Progress(object sender, _DownloadProgress e)
+        private void RepairIngredients_Progress(object sender, DownloadEvent e)
         {
-            if (e.DownloadState != State.Merging)
-                RepairRead += e.CurrentRead;
+            if (e.State != MultisessionState.Merging)
+                RepairRead += e.Read;
 
             DownloadLocalSize = RepairRead;
             DownloadRemoteSize = RepairTotalSize;
             UpdateProgress(InstallProgress = new InstallManagementProgress(
                 DownloadLocalSize, DownloadRemoteSize,
-                e.DownloadedSize, e.TotalSizeToDownload,
+                e.SizeDownloaded, e.SizeToBeDownloaded,
                 DownloadStopwatch.Elapsed.TotalSeconds, true));
         }
 
-        private void FetchIngredientsAPI_Progress(object sender, _DownloadProgress e)
+        private void FetchIngredientsAPI_Progress(object sender, DownloadEvent e)
         {
-            DownloadLocalSize = e.DownloadedSize;
-            DownloadRemoteSize = e.TotalSizeToDownload;
+            DownloadLocalSize = e.SizeDownloaded;
+            DownloadRemoteSize = e.SizeToBeDownloaded;
             UpdateProgress(InstallProgress = new InstallManagementProgress(
                 DownloadLocalSize, DownloadRemoteSize,
                 DownloadLocalPerFileSize, DownloadRemotePerFileSize,

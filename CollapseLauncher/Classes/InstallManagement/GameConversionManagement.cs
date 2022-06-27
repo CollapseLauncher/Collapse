@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -19,7 +20,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class GameConversionManagement : HttpClientHelper
+    public class GameConversionManagement : Http
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
@@ -35,6 +36,7 @@ namespace CollapseLauncher
         CancellationToken Token = new CancellationToken();
         private void ResetSw() => ConvertSw = Stopwatch.StartNew();
         string ConvertStatus, ConvertDetail;
+        byte DownloadThread;
 
         public GameConversionManagement(PresetConfigClasses SourceProfile, PresetConfigClasses TargetProfile,
             string SourceBaseURL, string TargetBaseURL, string GameVersion, UIElement ParentUI)
@@ -43,6 +45,7 @@ namespace CollapseLauncher
             this.TargetProfile = TargetProfile;
             this.SourceBaseURL = SourceBaseURL;
             this.TargetBaseURL = TargetBaseURL;
+            this.DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
             this.ParentUI = ParentUI;
             this.CookbookURL = string.Format(SourceProfile.ConvertibleCookbookURL,
                 $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
@@ -63,7 +66,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadFileAsync(SourceBaseURL + "index.json", buffer, new CancellationToken());
+                await DownloadStream(SourceBaseURL + "index.json", buffer, new CancellationToken());
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -71,7 +74,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadFileAsync(TargetBaseURL + "index.json", buffer, new CancellationToken());
+                await DownloadStream(TargetBaseURL + "index.json", buffer, new CancellationToken());
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 TargetFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -251,15 +254,15 @@ namespace CollapseLauncher
 
             DownloadProgress += RecipeDownload_Progress;
 
-            await DownloadFileAsync(CookbookURL, CleanUpPreviousChunkFiles(CookbookPath), GetAppConfigValue("DownloadThread").ToInt(), Token);
+            await DownloadMultisession(CookbookURL, CookbookPath, true, DownloadThread, Token);
+            await MergeMultisession(CookbookPath, DownloadThread, Token);
             DownloadProgress -= RecipeDownload_Progress;
         }
 
         public string CleanUpPreviousChunkFiles(string CookbookPath)
         {
-            string CookbookFolder = Path.GetDirectoryName(CookbookPath);
-
-            foreach (string Path in Directory.EnumerateFiles(Path.GetDirectoryName(CookbookPath), string.Format("{0}*", Path.GetFileNameWithoutExtension(CookbookPath))))
+            foreach (string Path in Directory.EnumerateFiles(Path.GetDirectoryName(CookbookPath),
+                string.Format("{0}*", Path.GetFileNameWithoutExtension(Path.GetDirectoryName(CookbookPath)))))
             {
                 try
                 {
@@ -273,9 +276,9 @@ namespace CollapseLauncher
             return CookbookPath;
         }
 
-        private void RecipeDownload_Progress(object sender, _DownloadProgress e)
+        private void RecipeDownload_Progress(object sender, DownloadEvent e)
         {
-            UpdateProgress(e.DownloadedSize, e.TotalSizeToDownload, 1, 1, ConvertSw.Elapsed,
+            UpdateProgress(e.SizeDownloaded, e.SizeToBeDownloaded, 1, 1, ConvertSw.Elapsed,
                 ConvertStatus, ConvertDetail);
         }
 
@@ -306,24 +309,28 @@ namespace CollapseLauncher
 
                 DownloadProgress += RepairIngredients_Progress;
                 if (Entry.FileSize >= 20 << 20)
-                    await DownloadFileAsync(InputURL, OutputPath, 8, Token);
+                {
+                    await DownloadMultisession(InputURL, OutputPath, true, DownloadThread, Token);
+                    await MergeMultisession(OutputPath, DownloadThread, Token);
+                }
                 else
-                    await DownloadFileAsync(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token, null, null, true);
+                    await DownloadStream(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }
 
-        private void RepairIngredients_Progress(object sender, _DownloadProgress e)
+        private void RepairIngredients_Progress(object sender, DownloadEvent e)
         {
-            if (e.DownloadState != State.Merging)
-                RepairRead += e.CurrentRead;
+            if (SessionState != MultisessionState.Merging)
+                RepairRead += e.Read;
+
             UpdateProgress(RepairRead, RepairTotalSize, 1, 1, ConvertSw.Elapsed,
                 ConvertStatus, ConvertDetail);
         }
 
-        private void FetchIngredientsAPI_Progress(object sender, _DownloadProgress e)
+        private void FetchIngredientsAPI_Progress(object sender, DownloadEvent e)
         {
-            UpdateProgress(e.DownloadedSize, e.TotalSizeToDownload, 1, 1, ConvertSw.Elapsed,
+            UpdateProgress(e.SizeDownloaded, e.SizeToBeDownloaded, 1, 1, ConvertSw.Elapsed,
                 ConvertStatus, ConvertDetail);
         }
 
