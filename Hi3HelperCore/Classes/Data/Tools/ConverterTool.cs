@@ -14,6 +14,7 @@ namespace Hi3Helper.Data
         static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
+        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => BytesToHex(await CRCEncoder.ComputeHashAsync(buffer));
         public static string CreateMD5(Stream fs) => BytesToHex(MD5.Create().ComputeHash(fs));
         public static async Task<string> CreateMD5Async(Stream fs) => BytesToHex(await MD5.Create().ComputeHashAsync(fs));
         public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer), 0);
