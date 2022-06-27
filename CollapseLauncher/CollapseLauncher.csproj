@@ -84,10 +84,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Deps\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
         <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       </Page>
