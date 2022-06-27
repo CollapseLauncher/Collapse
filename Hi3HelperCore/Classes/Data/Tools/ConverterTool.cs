@@ -14,17 +14,12 @@ namespace Hi3Helper.Data
         static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
         public static string BytesToCRC32Simple(Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
-        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => BytesToHex(await CRCEncoder.ComputeHashAsync(buffer));
+        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => BytesToHex(await Task.Run(() => CRCEncoder.ComputeHash(buffer)));
         public static string CreateMD5(Stream fs) => BytesToHex(MD5.Create().ComputeHash(fs));
-        public static async Task<string> CreateMD5Async(Stream fs) => BytesToHex(await MD5.Create().ComputeHashAsync(fs));
+        public static async Task<string> CreateMD5Async(Stream fs) => BytesToHex(await Task.Run(() => MD5.Create().ComputeHash(fs)));
         public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer), 0);
-#if (NETCOREAPP)
-        public static string BytesToHex(in ReadOnlySpan<byte> bytes) => Convert.ToHexString(bytes);
-        public static async Task<string> CreateMD5(Stream fs, CancellationToken token) => BytesToHex(await MD5.Create().ComputeHashAsync(fs, token));
-#else
-        public static string BytesToHex(in byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
+        public static string BytesToHex(byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
         public static string CreateMD5(Stream fs, CancellationToken token) => BytesToHex(MD5.Create().ComputeHash(fs));
-#endif
 
         public static double Unzeroed(double i) => i == 0 ? 1 : i;
 
