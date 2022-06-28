@@ -323,13 +323,13 @@ namespace CollapseLauncher
                     case ContentDialogResult.Primary:
                         break;
                     case ContentDialogResult.Secondary:
-                        ResetDownload();
+                        await ResetDownload();
                         break;
                 }
             }
         }
 
-        public void ResetDownload()
+        public async Task ResetDownload()
         {
             DownloadLocalSize = 0;
             FileInfo fileInfo;
@@ -338,7 +338,7 @@ namespace CollapseLauncher
             {
                 if ((fileInfo = new FileInfo(DownloadProperty[i].Output)).Exists)
                     fileInfo.Delete();
-                RemoveExistingPartialDownload(DownloadProperty[i].Output);
+                await DeleteMultisessionChunks(DownloadProperty[i].Output);
             }
         }
 
@@ -356,15 +356,6 @@ namespace CollapseLauncher
 
             return partPaths
                    .Sum(x => (fileInfo = new FileInfo(x)).Exists ? fileInfo.Length : 0);
-        }
-
-        public void RemoveExistingPartialDownload(string fileOutput)
-        {
-            FileInfo fileInfo;
-
-            foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*"))
-                if ((fileInfo = new FileInfo(file)).Exists)
-                    fileInfo.Delete();
         }
 
         public async Task StartInstall()
