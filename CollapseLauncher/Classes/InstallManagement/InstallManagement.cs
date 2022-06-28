@@ -358,7 +358,7 @@ namespace CollapseLauncher
                    .Sum(x => (fileInfo = new FileInfo(x)).Exists ? fileInfo.Length : 0);
         }
 
-        public async Task StartInstall()
+        public void StartInstall()
         {
             DownloadStopwatch = Stopwatch.StartNew();
             DownloadLocalSize = 0;
@@ -367,7 +367,7 @@ namespace CollapseLauncher
 
             if (CanDeltaPatch && ModeType == DownloadType.Update)
             {
-                await RunPatch();
+                Task.Run(() => RunPatch());
                 return;
             }
 
@@ -383,7 +383,7 @@ namespace CollapseLauncher
                 ExtractTool.AutoLoad(prop.Output);
 
                 ExtractTool.ExtractProgressChanged += ExtractProgressAdapter;
-                await ExtractTool.ExtractToDirectory(GameDirPath, ExtractionThread, Token);
+                ExtractTool.ExtractToDirectory(GameDirPath, ExtractionThread, Token);
                 ExtractTool.ExtractProgressChanged -= ExtractProgressAdapter;
 
                 ExtractTool.Dispose();
@@ -426,7 +426,7 @@ namespace CollapseLauncher
             UpdateProgress(InstallProgress);
         }
 
-        public async Task StartInstallAsync() => await StartInstall();
+        public async Task StartInstallAsync() => await Task.Run(() => StartInstall());
 
         public long CalculateUncompressedSize(ref DownloadAddressProperty Input) =>
             Input.LocalUncompressedSize = new SevenZipTool().GetUncompressedSize(Input.Output);

@@ -30,6 +30,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="ApplyUpdate.exe.config" />
+	  <None Remove="Lib\7z.dll" />
+	  <None Remove="Lib\HPatchZ.dll" />
 	  <None Remove="XAMLs\StartUp\StartupLanguageSelect.xaml" />
 	</ItemGroup>
 
@@ -41,6 +43,12 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="icon.ico" />
+        <Content Include="Lib\7z.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Lib\HPatchZ.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
