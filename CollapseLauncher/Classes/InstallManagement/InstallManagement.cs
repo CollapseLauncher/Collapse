@@ -177,7 +177,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
                 if (!file.Exists || file.Length < prop.LocalSize)
                 {
-                    await DownloadMultisession(prop.URL, prop.Output, true, DownloadThread, Token);
+                    await DownloadMultisession(prop.URL, prop.Output, false, DownloadThread, Token);
                     await MergeMultisession(prop.Output, DownloadThread, Token);
                 }
             }
