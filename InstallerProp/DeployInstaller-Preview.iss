@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.30.0
+AppVersion=1.0.30.2
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.30.0
+VersionInfoVersion=1.0.30.2
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for miHoYo's Games
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.30.0
-VersionInfoProductTextVersion=1.0.30.0-preview
+VersionInfoProductVersion=1.0.30.2
+VersionInfoProductTextVersion=1.0.30.2-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
