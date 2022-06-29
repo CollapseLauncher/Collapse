@@ -83,7 +83,7 @@
                                             </TextBlock>
                                             <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
-                                            <Run Text="2 - 32" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                            <Run Text="2 - 8" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
                                             </TextBlock>
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help5}"/>
@@ -102,7 +102,7 @@
                             </Button>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,16" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="32" SpinButtonPlacementMode="Compact"/>
+                            <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="8" SpinButtonPlacementMode="Compact"/>
                             <NumberBox x:Name="ExtractionThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Margin="16,0,0,0" Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" Minimum="0" Maximum="128" Width="128" SpinButtonPlacementMode="Compact"/>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>

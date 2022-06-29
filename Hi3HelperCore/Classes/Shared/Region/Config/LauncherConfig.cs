@@ -2,6 +2,7 @@
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
+using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -62,7 +63,7 @@ namespace Hi3Helper.Shared.Region
         {
             { "CurrentRegion", new IniValue(0) },
             { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
-            { "DownloadThread", new IniValue(8) },
+            { "DownloadThread", new IniValue(4) },
             { "ExtractionThread", new IniValue(0) },
             { "GameFolder", new IniValue() },
 #if DEBUG
@@ -169,6 +170,8 @@ namespace Hi3Helper.Shared.Region
                 if (GetAppConfigValue(Entry.Key).Value == null)
                     SetAppConfigValue(Entry.Key, Entry.Value);
             }
+            if (GetAppConfigValue("DownloadThread").ToInt() > 8)
+                SetAppConfigValue("DownloadThread", 8);
             SaveAppConfig();
         }
     }
