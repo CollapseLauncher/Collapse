@@ -22,6 +22,7 @@ namespace Hi3Helper.Data
         public static string CreateMD5(Stream fs, CancellationToken token) => BytesToHex(MD5.Create().ComputeHash(fs));
 
         public static double Unzeroed(double i) => i == 0 ? 1 : i;
+        public static double UnInfinity(double i) => double.IsInfinity(i) ? 0.0001f : i;
 
         public static uint BytesToUInt32Big(byte[] buffer) =>
             (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |

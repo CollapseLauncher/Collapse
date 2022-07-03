@@ -213,7 +213,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
-                    RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 2);
+                    RepairPerFileProgressBar.Value = Math.Round(UnInfinity(e.ProgressPercentage), 2);
                 });
             }
         }

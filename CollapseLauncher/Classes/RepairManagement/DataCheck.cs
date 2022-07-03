@@ -420,7 +420,7 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                RepairPerFileProgressBar.Value = Math.Round(e.ProgressPercentage, 1);
+                RepairPerFileProgressBar.Value = UnInfinity(e.ProgressPercentage);
                 RepairPerFileStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
             });
         }
