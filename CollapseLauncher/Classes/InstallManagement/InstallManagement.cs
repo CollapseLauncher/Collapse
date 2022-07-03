@@ -367,7 +367,7 @@ namespace CollapseLauncher
 
             if (CanDeltaPatch && ModeType == DownloadType.Update)
             {
-                Task.Run(() => RunPatch());
+                RunPatch().GetAwaiter().GetResult();
                 return;
             }
 
