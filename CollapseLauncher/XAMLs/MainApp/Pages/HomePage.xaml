@@ -49,9 +49,10 @@
                     </Grid.ColumnDefinitions>
                     <InfoBar x:Name="NotificationBar" Background="{StaticResource InfoBarInformationBrush}"
                     IsOpen="False" IsClosable="False"
-                    Severity="Informational" Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
-                    Message=""
-                    HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                    Severity="Informational"
+                    Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
+                    Message="" Shadow="{StaticResource SharedShadow}"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2">
                         <InfoBar.Transitions>
                             <PopupThemeTransition/>
                         </InfoBar.Transitions>

@@ -19,6 +19,8 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Windows.UI.WebUI;
+using Microsoft.Web.WebView2.Core;
 
 namespace CollapseLauncher
 {
@@ -40,6 +42,7 @@ namespace CollapseLauncher
                 MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
                 NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
                 BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
+                SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
@@ -53,6 +56,8 @@ namespace CollapseLauncher
                 ErrorSender.SendException(ex);
             }
         }
+
+        private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e) => SpawnWebView2Panel(e.URL);
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
@@ -233,7 +238,7 @@ namespace CollapseLauncher
             {
                 Grid Container = new Grid
                 {
-                    Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"]
+                    // Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"]
                 };
 
                 StackPanel OtherContentContainer = new StackPanel
@@ -246,13 +251,19 @@ namespace CollapseLauncher
                 {
                     Title = Title,
                     Message = Content,
-                    Margin = new Thickness(-2),
-                    CornerRadius = new CornerRadius(0),
+                    Margin = new Thickness(4,4,4,0),
+                    CornerRadius = new CornerRadius(8),
                     Severity = Severity,
                     IsClosable = IsClosable,
                     IsIconVisible = true,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"],
+                    Shadow = SharedShadow,
+                    Translation = Shadow16,
                     IsOpen = true
                 };
+
+                Notification.Closed += ((a, b) => { a.Translation -= Shadow16; });
 
                 if (OtherContent != null)
                     OtherContentContainer.Children.Add(OtherContent);
@@ -277,6 +288,7 @@ namespace CollapseLauncher
                 NotificationBar.Children.Add(Container);
             });
         }
+
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
@@ -524,5 +536,48 @@ namespace CollapseLauncher
             }
             m_appCurrentFrameName = e.FrameTo.Name;
         }
+
+        private async void SpawnWebView2Panel(Uri URL)
+        {
+            try
+            {
+                Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
+                WebView2Panel.Visibility = Visibility.Visible;
+                WebView2Panel.Translation += Shadow32;
+                await WebViewWindow.EnsureCoreWebView2Async();
+                WebViewWindow.Source = URL;
+                // WebViewWindow.CoreWebView2Initialized += WebViewWindow_CoreWebView2Initialized;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while initialize WebView2\r\n{ex}", LogType.Error, true);
+                WebViewWindow.Close();
+            }
+        }
+
+        private bool WebView_IsBackable => WebViewWindow.CanGoBack;
+        private string WebView_GetSourceName
+        {
+            get
+            {
+                if (WebViewWindow.IsLoaded)
+                    return WebViewWindow.CoreWebView2.DocumentTitle;
+
+                return WebViewWindow.Source.ToString();
+            }
+        }
+
+        private void WebViewBackBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoBack();
+        private void WebViewForwardBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoForward();
+        private void WebViewReloadBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.Reload();
+        private void WebViewCloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // WebViewWindow.Close();
+            SpawnWebView2Panel(new Uri("edge://newtab/"));
+            WebView2Panel.Visibility = Visibility.Collapsed;
+            WebView2Panel.Translation -= Shadow32;
+        }
+        private void WebViewWindow_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args) => sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+        private void CoreWebView2_DocumentTitleChanged(Microsoft.Web.WebView2.Core.CoreWebView2 sender, object args) => WebViewWindowTitle.Text = sender.DocumentTitle;
     }
 }

@@ -169,7 +169,10 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-        private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e) =>
+        private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
+        {
+            SpawnWebView2.SpawnWebView2Window(((Image)sender).Tag.ToString());
+            /*
             new Process()
             {
                 StartInfo = new ProcessStartInfo()
@@ -178,6 +181,24 @@ namespace CollapseLauncher.Pages
                     FileName = ((Image)sender).Tag.ToString()
                 }
             }.Start();
+            */
+        }
+
+        private void OpenTextBlockLinkFromTag(object sender, PointerRoutedEventArgs e)
+        {
+            SpawnWebView2.SpawnWebView2Window(((TextBlock)sender).Tag.ToString());
+
+            /*
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = ((Image)sender).Tag.ToString()
+                }
+            }.Start();
+            */
+        }
 
         private void CheckIfRightSideProgress()
         {
@@ -229,6 +250,8 @@ namespace CollapseLauncher.Pages
                         {
                             InstallGameBtn.Visibility = Visibility.Collapsed;
                             StartGameBtn.Visibility = Visibility.Visible;
+                            NotificationBar.Translation += Shadow48;
+                            NotificationBar.Closed += NotificationBar_Closed;
                             NotificationBar.IsOpen = true;
 
                             if (!IsPreDownloadCompleted())
@@ -276,6 +299,8 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
         }
+
+        private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args) => sender.Translation -= Shadow48;
 
         private bool IsPreDownloadCompleted()
         {

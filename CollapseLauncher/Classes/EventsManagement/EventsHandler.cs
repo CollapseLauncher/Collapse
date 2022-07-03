@@ -258,4 +258,24 @@ namespace CollapseLauncher
         public bool IsCustom { get; private set; }
     }
     #endregion
+    #region SpawnWebView2Region
+    internal static class SpawnWebView2
+    {
+        static SpawnWebView2Invoker invoker = new SpawnWebView2Invoker();
+        public static void SpawnWebView2Window(string URL) => invoker.SpawnWebView2Window(URL);
+    }
+
+    internal class SpawnWebView2Invoker
+    {
+        public static event EventHandler<SpawnWebView2Property> SpawnEvent;
+        public void SpawnWebView2Window(string URL) => SpawnEvent?.Invoke(this, new SpawnWebView2Property(URL));
+    }
+
+    internal class SpawnWebView2Property
+    {
+        internal SpawnWebView2Property(string URL) => this.URL = new Uri(URL);
+
+        public Uri URL { get; set; }
+    }
+    #endregion
 }

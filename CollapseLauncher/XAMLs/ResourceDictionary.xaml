@@ -46,6 +46,8 @@
                     <AcrylicBrush x:Key="LoadingBrush" TintColor="Black" TintOpacity="0.0" FallbackColor="Transparent"/>
                     <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
                     <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
+                    <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#FF222222" TintOpacity="0.75" TintLuminosityOpacity="0.75"/>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -92,6 +94,8 @@
                     <AcrylicBrush x:Key="LoadingBrush" TintColor="White" TintOpacity="0.0" TintLuminosityOpacity="0.0" FallbackColor="Transparent"/>
                     <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.5"/>
                     <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.5"/>
+                    <AcrylicBrush x:Key="WebView2GridBackground" TintColor="White" TintOpacity="0" TintLuminosityOpacity="0.5"/>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
