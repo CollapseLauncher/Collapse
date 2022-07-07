@@ -502,8 +502,8 @@
 
   // UpdatePage Content
   "_UpdatePage": {
-    "PageTitle1": "PEMBARUAN",
-    "PageTitle2": "TELAH TERSEDIA!",
+    "PageTitle1": "UPDATE",
+    "PageTitle2": "TERSEDIA!",
     "VerCurLabel": "Versi Saat Ini:",
     "VerNewLabel": "Versi Baru:",
     "VerChannelLabel": "Kanal Pembaruan:",
