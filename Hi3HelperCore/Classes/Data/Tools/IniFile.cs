@@ -326,7 +326,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(string path, bool ordered = false)
+        public void Load(string path, bool ordered = true)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -334,7 +334,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(Stream stream, bool ordered = false)
+        public void Load(Stream stream, bool ordered = true)
         {
             using (var reader = new StreamReader(stream))
             {
@@ -342,7 +342,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(StreamReader reader, bool ordered = false)
+        public void Load(StreamReader reader, bool ordered = true)
         {
             IniSection section = null;
 
