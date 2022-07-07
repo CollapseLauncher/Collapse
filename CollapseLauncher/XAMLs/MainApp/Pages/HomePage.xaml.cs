@@ -200,6 +200,22 @@ namespace CollapseLauncher.Pages
             */
         }
 
+        private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
+        {
+            SpawnWebView2.SpawnWebView2Window(((Button)sender).Tag.ToString());
+
+            /*
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = ((Image)sender).Tag.ToString()
+                }
+            }.Start();
+            */
+        }
+
         private void CheckIfRightSideProgress()
         {
             if (CurrentRegion.UseRightSideProgress ?? false)
@@ -1311,6 +1327,9 @@ namespace CollapseLauncher.Pages
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
         {
             if ((sender as Image).Tag == null) return;
+            SpawnWebView2.SpawnWebView2Window((sender as Image).Tag.ToString());
+
+            /*
             new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -1319,6 +1338,7 @@ namespace CollapseLauncher.Pages
                     FileName = (sender as Image).Tag.ToString()
                 }
             }.Start();
+            */
         }
     }
 }

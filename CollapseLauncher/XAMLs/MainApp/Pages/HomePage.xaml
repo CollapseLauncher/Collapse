@@ -235,12 +235,18 @@
                                             <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid ToolTipService.ToolTip="{Binding title}">
-                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
-                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
-                                                        </Grid>
+                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                            <Button.Template>
+                                                                <ControlTemplate>
+                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                    </Grid>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
@@ -256,12 +262,18 @@
                                             <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid ToolTipService.ToolTip="{Binding title}">
-                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
-                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
-                                                        </Grid>
+                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                            <Button.Template>
+                                                                <ControlTemplate>
+                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                    </Grid>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
@@ -277,12 +289,18 @@
                                             <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid ToolTipService.ToolTip="{Binding title}">
-                                                            <TextBlock TextTrimming="CharacterEllipsis" HorizontalAlignment="Left" Margin="0,0,56,0">
-                                                                <Hyperlink UnderlineStyle="None" NavigateUri="{Binding url}"><Run Text="{Binding title}" Foreground="{StaticResource TextFillColorPrimary}"/></Hyperlink>
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource AccentColor}"/>
-                                                        </Grid>
+                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                            <Button.Template>
+                                                                <ControlTemplate>
+                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                    </Grid>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>

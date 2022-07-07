@@ -157,14 +157,12 @@ namespace CollapseLauncher
             if (e.QuitFromUpdateMenu)
             {
                 overlayFrame.Navigate(typeof(Pages.NullPage), null, new EntranceNavigationTransitionInfo());
-                HideRootFrame(false);
                 return;
             }
 
             if (e.IsUpdateAvailable)
             {
                 overlayFrame.Navigate(typeof(Pages.UpdatePage));
-                HideRootFrame(true);
             }
         }
 

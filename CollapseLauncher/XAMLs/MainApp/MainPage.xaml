@@ -102,14 +102,15 @@
                 </StackPanel>
             </Grid>
         </NavigationView>
-        <Grid x:Name="WebView2Panel" Margin="16" Background="{StaticResource WebView2GridBackground}"
-                      Shadow="{StaticResource SharedShadow}" CornerRadius="8" Visibility="Collapsed">
+        <Grid x:Name="WebView2Panel" Background="{StaticResource WebView2GridBackground}"
+              Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
+              Canvas.ZIndex="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="24"/>
                 <RowDefinition Height="64"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="WebViewWindowTitle" Margin="16,10" Grid.Row="0" FontWeight="Bold" FontSize="13" Grid.RowSpan="2"/>
+            <TextBlock x:Name="WebViewWindowTitle" Margin="16,12" Grid.Row="0" FontWeight="Bold" FontSize="13" Grid.RowSpan="2"/>
             <Grid x:Name="WebViewNavPanel" Grid.Row="1" Margin="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
