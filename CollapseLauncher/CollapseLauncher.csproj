@@ -13,7 +13,7 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<Version>1.0.32.2</Version>
+		<Version>1.0.33.0</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
@@ -46,8 +46,8 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
         <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25140-preview" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.1" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25151-preview" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.2" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
         <PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.5.22301.12" />
     </ItemGroup>
