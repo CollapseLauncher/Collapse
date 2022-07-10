@@ -15,8 +15,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -741,7 +741,6 @@ namespace CollapseLauncher.Pages
 
         private async Task<string> InstallGameDialogScratch()
         {
-            FolderPicker folderPicker = new FolderPicker();
             StorageFolder folder;
             string returnFolder = "";
 
@@ -755,10 +754,7 @@ namespace CollapseLauncher.Pages
                         isChoosen = true;
                         break;
                     case ContentDialogResult.Secondary:
-                        folder = null;
-                        folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
-                        folder = await folderPicker.PickSingleFolderAsync();
+                        folder = await (m_window as MainWindow).GetFolderPicker();
 
                         if (folder != null)
                             if (IsUserHasPermission(returnFolder = folder.Path))

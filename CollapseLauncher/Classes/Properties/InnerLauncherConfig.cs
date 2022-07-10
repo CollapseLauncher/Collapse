@@ -47,6 +47,8 @@ namespace CollapseLauncher
         public static DesktopAcrylicController m_acrylicController;
         public static SystemBackdropConfiguration m_configurationSource;
 
+
+        public static Window m_window;
         public static IntPtr m_windowHandle;
         public static AppWindow m_AppWindow;
         public static OverlappedPresenter m_presenter;

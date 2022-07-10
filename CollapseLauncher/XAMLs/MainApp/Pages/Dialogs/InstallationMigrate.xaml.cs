@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -55,7 +54,6 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<string> AskMigrationTarget()
         {
-            FolderPicker folderPicker = new FolderPicker();
             StorageFolder folder;
             string returnFolder = "";
 
@@ -75,9 +73,7 @@ namespace CollapseLauncher.Dialogs
             switch (await cd.ShowAsync())
             {
                 case ContentDialogResult.Secondary:
-                    folderPicker.FileTypeFilter.Add("*");
-                    WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
-                    folder = await folderPicker.PickSingleFolderAsync();
+                    folder = await (m_window as MainWindow).GetFolderPicker();
 
                     if (folder == null)
                         await MigrationCancelled(3000);

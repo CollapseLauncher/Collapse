@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -308,7 +307,6 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<bool> DoCheckPermission()
         {
-            FolderPicker folderPicker = new FolderPicker();
             StorageFolder folder;
 
             DispatcherQueue.TryEnqueue(() => Step1.Opacity = 1f);
@@ -347,9 +345,7 @@ namespace CollapseLauncher.Dialogs
                         targetPath = Path.Combine(choosenFolder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:
-                        folderPicker.FileTypeFilter.Add("*");
-                        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
-                        folder = await folderPicker.PickSingleFolderAsync();
+                        folder = await (m_window as MainWindow).GetFolderPicker();
 
                         if (folder == null)
                             OperationCancelled();

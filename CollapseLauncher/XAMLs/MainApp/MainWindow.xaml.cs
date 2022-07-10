@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Graphics;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
@@ -182,6 +184,16 @@ namespace CollapseLauncher
             storyboardBack.Begin();
 
             await Task.Delay(250);
+        }
+
+        public async Task<StorageFolder> GetFolderPicker()
+        {
+            FolderPicker folderPicker = new FolderPicker();
+
+            folderPicker.FileTypeFilter.Add("*");
+            InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
+
+            return await folderPicker.PickSingleFolderAsync();
         }
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)

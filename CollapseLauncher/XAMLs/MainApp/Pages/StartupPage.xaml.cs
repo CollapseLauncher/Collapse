@@ -7,8 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -26,14 +25,9 @@ namespace CollapseLauncher.Pages
 
         private async void ChooseFolder(object sender, RoutedEventArgs e)
         {
-            FolderPicker folderPicker = new FolderPicker();
             StorageFolder folder;
             string returnFolder;
             bool Selected = false;
-
-            folderPicker.FileTypeFilter.Add("*");
-            InitializeWithWindow.Initialize(folderPicker, InnerLauncherConfig.m_windowHandle);
-
             switch (await Dialogs.SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
@@ -42,7 +36,7 @@ namespace CollapseLauncher.Pages
                     Selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    folder = await folderPicker.PickSingleFolderAsync();
+                    folder = await (m_window as MainWindow).GetFolderPicker();
                     if (folder != null)
                         if (IsUserHasPermission(returnFolder = folder.Path))
                         {
