@@ -457,8 +457,8 @@
                                         <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
                                     </StackPanel>
                                     <StackPanel x:Name="MiscPanel">
-                                        <TextBlock Text="Miscellaneous" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="Show Events Panel" OnContent="Show Events Panel" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Flyout>
