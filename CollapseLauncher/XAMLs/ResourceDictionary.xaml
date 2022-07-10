@@ -35,7 +35,7 @@
 
                     <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="Black" TintOpacity="0" FallbackColor="Transparent"/>
 
-                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#AA000000" TintOpacity="0.0" TintLuminosityOpacity="0.4"/>
+                    <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
 
                     <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FF111111" TintOpacity="0.0" TintLuminosityOpacity="0.6"/>
                     <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.6"/>
