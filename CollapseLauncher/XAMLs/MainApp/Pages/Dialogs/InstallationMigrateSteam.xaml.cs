@@ -93,7 +93,7 @@ namespace CollapseLauncher.Dialogs
                     { "sub_channel", new IniValue(1) },
                     { "sdk_version", new IniValue() },
             });
-            gameIni.Config.Save(gameIni.ConfigStream = new FileStream(Path.Combine(targetPath, "config.ini"), FileMode.Create, FileAccess.Write));
+            gameIni.Config.Save(Path.Combine(targetPath, "config.ini"));
 
             File.Delete(Path.Combine(targetPath, "_conversion_unfinished"));
         }

@@ -166,7 +166,12 @@ namespace Hi3Helper.Data
             return libraries;
         }
 
-        private static string GetSteamPath() => ((string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", "C:/Program Files (x86)/Steam")).Replace('\\', '/');
+        private static string GetSteamPath()
+        {
+            object a = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", "C:/Program Files (x86)/Steam");
+            if (a == null) return null;
+            return ((string)a).Replace('\\', '/');
+        }
 
         public class AppInfo
         {

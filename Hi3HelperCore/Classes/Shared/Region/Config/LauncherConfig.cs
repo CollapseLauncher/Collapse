@@ -75,6 +75,7 @@ namespace Hi3Helper.Shared.Region
             { "ThemeMode", new IniValue(AppThemeMode.Default) },
             { "AppLanguage", new IniValue("en-us") },
             { "UseCustomBG", new IniValue(false) },
+            { "ShowEventsPanel", new IniValue(true) },
             { "CustomBGPath", new IniValue() }
         };
 
@@ -160,8 +161,8 @@ namespace Hi3Helper.Shared.Region
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile[SectionName][key] = value;
 
-        public static void LoadAppConfig() => appIni.Profile.Load(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.Open, FileAccess.Read));
-        public static void SaveAppConfig() => appIni.Profile.Save(appIni.ProfileStream = new FileStream(appIni.ProfilePath, FileMode.OpenOrCreate, FileAccess.Write));
+        public static void LoadAppConfig() => appIni.Profile.Load(appIni.ProfilePath);
+        public static void SaveAppConfig() => appIni.Profile.Save(appIni.ProfilePath);
 
         public static void CheckAndSetDefaultConfigValue()
         {

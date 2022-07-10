@@ -158,7 +158,7 @@ namespace CollapseLauncher.Dialogs
                 return false;
 
             SourceIniFile = new IniFile();
-            SourceIniFile.Load(new FileStream(INIPath, FileMode.Open, FileAccess.Read));
+            SourceIniFile.Load(INIPath);
             try
             {
                 GamePath = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
@@ -427,7 +427,6 @@ namespace CollapseLauncher.Dialogs
             string IniPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName);
             gameIni.ProfilePath = Path.Combine(IniPath, "config.ini");
             gameIni.Profile = new IniFile();
-            gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Create, FileAccess.ReadWrite);
             BuildGameIniProfile();
 
             SetAndSaveConfigValue("CurrentRegion", ConfigStore.Config.FindIndex(x => x.ProfileName == TargetProfile.ProfileName));

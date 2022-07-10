@@ -74,8 +74,7 @@ namespace Hi3Helper.Shared.Region
         public static void PrepareGameSettings()
         {
             gameIni.Settings = new IniFile();
-            gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            gameIni.Settings.Load(gameIni.SettingsStream);
+            gameIni.Settings.Load(gameIni.SettingsPath);
         }
 
         private static async Task UpdateGameExistingSettings() =>
@@ -139,8 +138,8 @@ namespace Hi3Helper.Shared.Region
         public static async void SaveGameSettings() =>
         await Task.Run(() =>
         {
-            gameIni.Settings.Save(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
-            gameIni.Settings.Load(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.Open, FileAccess.Read));
+            gameIni.Settings.Save(gameIni.SettingsPath);
+            gameIni.Settings.Load(gameIni.SettingsPath);
 
             SaveWindowValue();
             SavePersonalGraphicsSettingsValue();
@@ -162,8 +161,8 @@ namespace Hi3Helper.Shared.Region
         public static void SetAndSaveGameConfigValue(string key, IniValue value)
         {
             SetGameConfigValue(key, value);
-            gameIni.Settings.Save(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.OpenOrCreate, FileAccess.ReadWrite));
-            gameIni.Settings.Load(gameIni.SettingsStream = new FileStream(gameIni.SettingsPath, FileMode.Open, FileAccess.Read));
+            gameIni.Settings.Save(gameIni.SettingsPath);
+            gameIni.Settings.Load(gameIni.SettingsPath);
         }
 
         public static void SetGameConfigValue(string key, IniValue value) => gameIni.Settings[SectionName][key] = value;

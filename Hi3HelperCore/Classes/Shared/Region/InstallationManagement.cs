@@ -14,7 +14,6 @@ namespace Hi3Helper.Shared.Region
         public struct GameIniStruct
         {
             public IniFile Profile, Config, Settings;
-            public Stream ProfileStream, ConfigStream, SettingsStream;
             public string ProfilePath, ConfigPath, SettingsPath;
         }
 
@@ -24,7 +23,6 @@ namespace Hi3Helper.Shared.Region
         public static void PrepareInstallation()
         {
             gameIni.Profile = new IniFile();
-            gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Create, FileAccess.ReadWrite);
             BuildGameIniProfile();
         }
 
@@ -32,7 +30,6 @@ namespace Hi3Helper.Shared.Region
         {
             gameIni.Config = new IniFile();
             gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
-            gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.OpenOrCreate, FileAccess.Write);
             BuildGameIniConfig();
         }
 
@@ -43,7 +40,7 @@ namespace Hi3Helper.Shared.Region
                 gameIni.Config = new IniFile();
                 gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
                 if (File.Exists(gameIni.ConfigPath))
-                    gameIni.Config.Load(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.Open, FileAccess.Read));
+                    gameIni.Config.Load(gameIni.ConfigPath);
 
                 if (!(CurrentRegion.IsGenshin ?? false))
                     Task.Run(() => CheckExistingGameSettings());
@@ -54,9 +51,9 @@ namespace Hi3Helper.Shared.Region
                 throw new Exception($"The Game Profile config.ini seems to be messed up. Please check your Game Profile \"config.ini\" located in this folder:\r\n{gameIni.ProfilePath}", ex);
             }
         }
-        public static void SaveGameConfig() => gameIni.Config.Save(gameIni.ConfigStream = new FileStream(gameIni.ConfigPath, FileMode.OpenOrCreate, FileAccess.Write));
+        public static void SaveGameConfig() => gameIni.Config.Save(gameIni.ConfigPath);
 
-        public static void LoadGameProfile() => appIni.Profile.Load(gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Open, FileAccess.Read));
-        public static void SaveGameProfile() => gameIni.Profile.Save(gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.OpenOrCreate, FileAccess.Write));
+        public static void LoadGameProfile() => appIni.Profile.Load(gameIni.ProfilePath);
+        public static void SaveGameProfile() => gameIni.Profile.Save(gameIni.ProfilePath);
     }
 }

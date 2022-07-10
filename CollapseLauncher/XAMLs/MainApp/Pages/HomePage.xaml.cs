@@ -507,8 +507,7 @@ namespace CollapseLauncher.Pages
             {
                 gameIni.Config = new IniFile();
                 gameIni.ConfigPath = iniPath;
-                gameIni.ConfigStream = new FileStream(iniPath, FileMode.Open, FileAccess.Read);
-                gameIni.Config.Load(gameIni.ConfigStream);
+                gameIni.Config.Load(gameIni.ConfigPath);
                 isExist = true;
 
                 return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);
@@ -522,8 +521,7 @@ namespace CollapseLauncher.Pages
             {
                 gameIni.Config = new IniFile();
                 gameIni.ConfigPath = iniPath;
-                gameIni.ConfigStream = new FileStream(iniPath, FileMode.Open, FileAccess.Read);
-                gameIni.Config.Load(gameIni.ConfigStream);
+                gameIni.Config.Load(gameIni.ConfigPath);
                 isExist = true;
 
                 return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);

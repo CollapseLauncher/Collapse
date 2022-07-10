@@ -83,7 +83,7 @@ namespace CollapseLauncher
                     { "sub_channel", new IniValue(1) },
                     { "sdk_version", new IniValue() },
                 });
-                iniFile.Save(new FileStream(Path.Combine(targetGame, "config.ini"), FileMode.OpenOrCreate, FileAccess.ReadWrite));
+                iniFile.Save(Path.Combine(targetGame, "config.ini"));
             }
 
             StartTakingOwnership(targetGame);

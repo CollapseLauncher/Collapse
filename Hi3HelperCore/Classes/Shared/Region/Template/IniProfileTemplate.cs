@@ -20,7 +20,7 @@ namespace Hi3Helper.Shared.Region
                 { "exit_type", new IniValue(2) }
             });
 
-            gameIni.Profile.Save(gameIni.ProfileStream);
+            gameIni.Profile.Save(gameIni.ProfilePath);
         }
 
         public static void BuildGameIniConfig()
@@ -34,7 +34,7 @@ namespace Hi3Helper.Shared.Region
                 { "sdk_version", new IniValue() }
             });
 
-            gameIni.Config.Save(gameIni.ConfigStream);
+            gameIni.Config.Save(gameIni.ConfigPath);
         }
     }
 }

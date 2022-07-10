@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -58,15 +59,9 @@ namespace Hi3Helper.Data
             }
         }
 
-        public IniValue(string value)
-        {
-            Value = value;
-        }
+        public IniValue(string value) => Value = value;
 
-        public IniValue(Size value)
-        {
-            Value = $"{value.Width}x{value.Height}";
-        }
+        public IniValue(Size value) => Value = $"{value.Width}x{value.Height}";
 
         public Size ToSize()
         {
@@ -189,15 +184,9 @@ namespace Hi3Helper.Data
             return false;
         }
 
-        public string GetString()
-        {
-            return GetString(true, false);
-        }
+        public string GetString() => GetString(true, false);
 
-        public string GetString(bool preserveWhitespace)
-        {
-            return GetString(true, preserveWhitespace);
-        }
+        public string GetString(bool preserveWhitespace) => GetString(true, preserveWhitespace);
 
         public string GetString(bool allowOuterQuotes, bool preserveWhitespace)
         {
@@ -217,69 +206,36 @@ namespace Hi3Helper.Data
             }
         }
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value;
 
-        public static implicit operator IniValue(byte o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(byte o) => new IniValue(o);
 
-        public static implicit operator IniValue(short o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(short o) => new IniValue(o);
 
-        public static implicit operator IniValue(int o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(int o) => new IniValue(o);
 
-        public static implicit operator IniValue(sbyte o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(sbyte o) => new IniValue(o);
 
-        public static implicit operator IniValue(ushort o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(ushort o) => new IniValue(o);
 
-        public static implicit operator IniValue(uint o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(uint o) => new IniValue(o);
 
-        public static implicit operator IniValue(float o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(float o) => new IniValue(o);
 
-        public static implicit operator IniValue(double o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(double o) => new IniValue(o);
 
-        public static implicit operator IniValue(bool o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(bool o) => new IniValue(o);
 
-        public static implicit operator IniValue(string o)
-        {
-            return new IniValue(o);
-        }
+        public static implicit operator IniValue(string o) => new IniValue(o);
 
         private static readonly IniValue _default = new IniValue();
-        public static IniValue Default { get { return _default; } }
+        public static IniValue Default => _default;
     }
 
-    public class IniFile : IEnumerable<KeyValuePair<string, IniSection>>, IDictionary<string, IniSection>
+    public class IniFile : IDictionary<string, IniSection>
     {
-        private Dictionary<string, IniSection> sections;
         public IEqualityComparer<string> StringComparer;
+        private IDictionary<string, IniSection> sections;
 
         public bool SaveEmptySections;
 
@@ -302,7 +258,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Save(Stream stream)
+        private void Save(Stream stream)
         {
             using (var writer = new StreamWriter(stream))
             {
@@ -310,7 +266,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Save(StreamWriter writer)
+        private void Save(StreamWriter writer)
         {
             foreach (var section in sections)
             {
@@ -321,12 +277,11 @@ namespace Hi3Helper.Data
                     {
                         writer.WriteLine(string.Format("{0}={1}", kvp.Key, kvp.Value));
                     }
-                    writer.WriteLine("");
                 }
             }
         }
 
-        public void Load(string path, bool ordered = true)
+        public void Load(string path, bool ordered = false)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -334,7 +289,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(Stream stream, bool ordered = true)
+        private void Load(Stream stream, bool ordered)
         {
             using (var reader = new StreamReader(stream))
             {
@@ -342,7 +297,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(StreamReader reader, bool ordered = true)
+        private void Load(StreamReader reader, bool ordered)
         {
             IniSection section = null;
 
@@ -398,30 +353,16 @@ namespace Hi3Helper.Data
             return true;
         }
 
-        public bool ContainsSection(string section)
-        {
-            return sections.ContainsKey(section);
-        }
+        public bool ContainsSection(string section) => sections.ContainsKey(section);
 
-        public bool TryGetSection(string section, out IniSection result)
-        {
-            return sections.TryGetValue(section, out result);
-        }
+        public bool TryGetSection(string section, out IniSection result) => sections.TryGetValue(section, out result);
 
-        bool IDictionary<string, IniSection>.TryGetValue(string key, out IniSection value)
-        {
-            return TryGetSection(key, out value);
-        }
+        bool IDictionary<string, IniSection>.TryGetValue(string key, out IniSection value) => TryGetSection(key, out value);
 
-        public bool Remove(string section)
-        {
-            return sections.Remove(section);
-        }
+        public bool Remove(string section) => sections.Remove(section);
 
-        public IniSection Add(string section, Dictionary<string, IniValue> values, bool ordered = false)
-        {
-            return Add(section, new IniSection(values, StringComparer) { Ordered = ordered });
-        }
+        public IniSection Add(string section, Dictionary<string, IniValue> values, bool ordered = false) => 
+            Add(section, new IniSection(values, StringComparer) { Ordered = ordered });
 
         public IniSection Add(string section, IniSection value)
         {
@@ -440,70 +381,31 @@ namespace Hi3Helper.Data
             return value;
         }
 
-        void IDictionary<string, IniSection>.Add(string key, IniSection value)
-        {
-            Add(key, value);
-        }
+        void IDictionary<string, IniSection>.Add(string key, IniSection value) => Add(key, value);
 
-        bool IDictionary<string, IniSection>.ContainsKey(string key)
-        {
-            return ContainsSection(key);
-        }
+        bool IDictionary<string, IniSection>.ContainsKey(string key) => ContainsSection(key);
 
-        public ICollection<string> Keys
-        {
-            get { return sections.Keys; }
-        }
+        public ICollection<string> Keys => sections.Keys;
 
-        public ICollection<IniSection> Values
-        {
-            get { return sections.Values; }
-        }
+        public ICollection<IniSection> Values => sections.Values;
 
-        void ICollection<KeyValuePair<string, IniSection>>.Add(KeyValuePair<string, IniSection> item)
-        {
-            ((IDictionary<string, IniSection>)sections).Add(item);
-        }
+        void ICollection<KeyValuePair<string, IniSection>>.Add(KeyValuePair<string, IniSection> item) => sections.Add(item);
 
-        public void Clear()
-        {
-            sections.Clear();
-        }
+        public void Clear() => sections.Clear();
 
-        bool ICollection<KeyValuePair<string, IniSection>>.Contains(KeyValuePair<string, IniSection> item)
-        {
-            return ((IDictionary<string, IniSection>)sections).Contains(item);
-        }
+        bool ICollection<KeyValuePair<string, IniSection>>.Contains(KeyValuePair<string, IniSection> item) => sections.Contains(item);
 
-        void ICollection<KeyValuePair<string, IniSection>>.CopyTo(KeyValuePair<string, IniSection>[] array, int arrayIndex)
-        {
-            ((IDictionary<string, IniSection>)sections).CopyTo(array, arrayIndex);
-        }
+        void ICollection<KeyValuePair<string, IniSection>>.CopyTo(KeyValuePair<string, IniSection>[] array, int arrayIndex) => sections.CopyTo(array, arrayIndex);
 
-        public int Count
-        {
-            get { return sections.Count; }
-        }
+        public int Count => sections.Count;
 
-        bool ICollection<KeyValuePair<string, IniSection>>.IsReadOnly
-        {
-            get { return ((IDictionary<string, IniSection>)sections).IsReadOnly; }
-        }
+        bool ICollection<KeyValuePair<string, IniSection>>.IsReadOnly => sections.IsReadOnly;
 
-        bool ICollection<KeyValuePair<string, IniSection>>.Remove(KeyValuePair<string, IniSection> item)
-        {
-            return ((IDictionary<string, IniSection>)sections).Remove(item);
-        }
+        bool ICollection<KeyValuePair<string, IniSection>>.Remove(KeyValuePair<string, IniSection> item) => sections.Remove(item);
 
-        public IEnumerator<KeyValuePair<string, IniSection>> GetEnumerator()
-        {
-            return sections.GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<string, IniSection>> GetEnumerator() => sections.GetEnumerator();
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IniSection this[string section]
         {
@@ -544,19 +446,13 @@ namespace Hi3Helper.Data
 
         class CaseInsensitiveStringComparer : IEqualityComparer<string>
         {
-            public bool Equals(string x, string y)
-            {
-                return String.Compare(x, y, true) == 0;
-            }
+            public bool Equals(string x, string y) => string.Compare(x, y, true) == 0;
 
-            public int GetHashCode(string obj)
-            {
-                return obj.ToLowerInvariant().GetHashCode();
-            }
+            public int GetHashCode(string obj) => obj.ToLowerInvariant().GetHashCode();
         }
     }
     [DebuggerStepThrough]
-    public class IniSection : IEnumerable<KeyValuePair<string, IniValue>>, IDictionary<string, IniValue>
+    public class IniSection : IDictionary<string, IniValue>
     {
         private Dictionary<string, IniValue> values;
 
@@ -859,18 +755,12 @@ namespace Hi3Helper.Data
             }
         }
 
-        public bool ContainsKey(string key)
-        {
-            return values.ContainsKey(key);
-        }
+        public bool ContainsKey(string key) => values.ContainsKey(key);
 
         /// <summary>
         /// Returns this IniSection's collection of keys. If the IniSection is ordered, the keys will be returned in order.
         /// </summary>
-        public ICollection<string> Keys
-        {
-            get { return Ordered ? (ICollection<string>)orderedKeys : values.Keys; }
-        }
+        public ICollection<string> Keys => Ordered ? orderedKeys as ICollection<string> : values.Keys;
 
         public bool Remove(string key)
         {
@@ -889,21 +779,12 @@ namespace Hi3Helper.Data
             return ret;
         }
 
-        public bool TryGetValue(string key, out IniValue value)
-        {
-            return values.TryGetValue(key, out value);
-        }
+        public bool TryGetValue(string key, out IniValue value) => values.TryGetValue(key, out value);
 
         /// <summary>
         /// Returns the values in this IniSection. These values are always out of order. To get ordered values from an IniSection call GetOrderedValues instead.
         /// </summary>
-        public ICollection<IniValue> Values
-        {
-            get
-            {
-                return values.Values;
-            }
-        }
+        public ICollection<IniValue> Values => values.Values;
 
         void ICollection<KeyValuePair<string, IniValue>>.Add(KeyValuePair<string, IniValue> item)
         {
@@ -923,25 +804,14 @@ namespace Hi3Helper.Data
             }
         }
 
-        bool ICollection<KeyValuePair<string, IniValue>>.Contains(KeyValuePair<string, IniValue> item)
-        {
-            return ((IDictionary<string, IniValue>)values).Contains(item);
-        }
+        bool ICollection<KeyValuePair<string, IniValue>>.Contains(KeyValuePair<string, IniValue> item) => ((IDictionary<string, IniValue>)values).Contains(item);
 
-        void ICollection<KeyValuePair<string, IniValue>>.CopyTo(KeyValuePair<string, IniValue>[] array, int arrayIndex)
-        {
+        void ICollection<KeyValuePair<string, IniValue>>.CopyTo(KeyValuePair<string, IniValue>[] array, int arrayIndex) =>
             ((IDictionary<string, IniValue>)values).CopyTo(array, arrayIndex);
-        }
 
-        public int Count
-        {
-            get { return values.Count; }
-        }
+        public int Count => values.Count;
 
-        bool ICollection<KeyValuePair<string, IniValue>>.IsReadOnly
-        {
-            get { return ((IDictionary<string, IniValue>)values).IsReadOnly; }
-        }
+        bool ICollection<KeyValuePair<string, IniValue>>.IsReadOnly => ((IDictionary<string, IniValue>)values).IsReadOnly;
 
         bool ICollection<KeyValuePair<string, IniValue>>.Remove(KeyValuePair<string, IniValue> item)
         {
@@ -960,17 +830,7 @@ namespace Hi3Helper.Data
             return ret;
         }
 
-        public IEnumerator<KeyValuePair<string, IniValue>> GetEnumerator()
-        {
-            if (Ordered)
-            {
-                return GetOrderedEnumerator();
-            }
-            else
-            {
-                return values.GetEnumerator();
-            }
-        }
+        public IEnumerator<KeyValuePair<string, IniValue>> GetEnumerator() => Ordered ? GetOrderedEnumerator() : values.GetEnumerator();
 
         private IEnumerator<KeyValuePair<string, IniValue>> GetOrderedEnumerator()
         {
@@ -980,12 +840,9 @@ namespace Hi3Helper.Data
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEqualityComparer<string> Comparer { get { return values.Comparer; } }
+        public IEqualityComparer<string> Comparer => values.Comparer;
 
         public IniValue this[string name]
         {
@@ -1008,14 +865,8 @@ namespace Hi3Helper.Data
             }
         }
 
-        public static implicit operator IniSection(Dictionary<string, IniValue> dict)
-        {
-            return new IniSection(dict);
-        }
+        public static implicit operator IniSection(Dictionary<string, IniValue> dict) => new IniSection(dict);
 
-        public static explicit operator Dictionary<string, IniValue>(IniSection section)
-        {
-            return section.values;
-        }
+        public static explicit operator Dictionary<string, IniValue>(IniSection section) => section.values;
     }
 }
