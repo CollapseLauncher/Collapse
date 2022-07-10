@@ -1,24 +1,12 @@
 using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
-using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using Windows.Foundation;
+using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -54,6 +42,6 @@ namespace CollapseLauncher
             }
         }
 
-        private void NextBtn_Click(object sender, RoutedEventArgs e) => (App.m_window as MainWindow).StartSetupPage();
+        private void NextBtn_Click(object sender, RoutedEventArgs e) => (m_window as MainWindow).StartSetupPage();
     }
 }

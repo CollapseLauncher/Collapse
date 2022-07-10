@@ -1,11 +1,11 @@
 using Hi3Helper;
 using Hi3Helper.Http;
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
@@ -19,8 +19,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Windows.UI.WebUI;
-using Microsoft.Web.WebView2.Core;
 
 namespace CollapseLauncher
 {
@@ -251,7 +249,7 @@ namespace CollapseLauncher
                 {
                     Title = Title,
                     Message = Content,
-                    Margin = new Thickness(4,4,4,0),
+                    Margin = new Thickness(4, 4, 4, 0),
                     CornerRadius = new CornerRadius(8),
                     Severity = Severity,
                     IsClosable = IsClosable,
@@ -342,7 +340,6 @@ namespace CollapseLauncher
             await HideLoadingPopup(false, "Loading", "Launcher API");
             LoadConfig();
             await GetAppNotificationPush();
-            // InnerLauncherConfig.NotificationData = new NotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
         }
@@ -515,11 +512,11 @@ namespace CollapseLauncher
             try
             {
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
+                WebViewWindow.Visibility = Visibility.Visible;
                 WebView2Panel.Visibility = Visibility.Visible;
                 WebView2Panel.Translation += Shadow32;
                 await WebViewWindow.EnsureCoreWebView2Async();
                 WebViewWindow.Source = URL;
-                // WebViewWindow.CoreWebView2Initialized += WebViewWindow_CoreWebView2Initialized;
             }
             catch (Exception ex)
             {
@@ -528,25 +525,29 @@ namespace CollapseLauncher
             }
         }
 
-        private bool WebView_IsBackable => WebViewWindow.CanGoBack;
-        private string WebView_GetSourceName
-        {
-            get
-            {
-                if (WebViewWindow.IsLoaded)
-                    return WebViewWindow.CoreWebView2.DocumentTitle;
+        private void WebViewWindow_PageLoaded(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args) => WebViewLoadingStatus.IsIndeterminate = false;
 
-                return WebViewWindow.Source.ToString();
-            }
-        }
+        private void WebViewWindow_PageLoading(WebView2 sender, CoreWebView2NavigationStartingEventArgs args) => WebViewLoadingStatus.IsIndeterminate = true;
 
         private void WebViewBackBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoBack();
         private void WebViewForwardBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoForward();
         private void WebViewReloadBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.Reload();
+        private void WebViewOpenExternalBtn_Click(object sender, RoutedEventArgs e)
+        {
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = WebViewWindow.Source.ToString()
+                }
+            }.Start();
+        }
+
         private void WebViewCloseBtn_Click(object sender, RoutedEventArgs e)
         {
-            // WebViewWindow.Close();
-            SpawnWebView2Panel(new Uri("edge://newtab/"));
+            WebViewWindow.Visibility = Visibility.Collapsed;
+            WebViewWindow.Reload();
             WebView2Panel.Visibility = Visibility.Collapsed;
             WebView2Panel.Translation -= Shadow32;
         }

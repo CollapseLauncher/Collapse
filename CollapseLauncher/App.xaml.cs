@@ -37,7 +37,5 @@ namespace CollapseLauncher
                 Console.ReadLine();
             }
         }
-
-        public static Window m_window;
     }
 }

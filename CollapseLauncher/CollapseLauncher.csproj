@@ -13,7 +13,7 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<Version>1.0.33.0</Version>
+		<Version>1.0.33.1</Version>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
@@ -30,6 +30,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="ApplyUpdate.exe.config" />
+	  <None Remove="Assets\BG\PaimonWhat.png" />
 	  <None Remove="XAMLs\StartUp\StartupLanguageSelect.xaml" />
 	</ItemGroup>
 
@@ -71,6 +72,9 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Update="Assets\BG\PaimonSleep.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Assets\BG\PaimonWhat.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Update="Assets\CollapseLauncherLogo.png">

@@ -222,90 +222,129 @@
                         <Grid x:Name="PostPanel" Padding="8" Width="414" Visibility="Collapsed"
                               MaxHeight="150" Margin="0,16,0,0" CornerRadius="8"
                               Background="{StaticResource PostAcrylicBrush}" Shadow="{StaticResource SharedShadow}">
-                            <Grid.ScaleTransition>
-                                <Vector3Transition/>
-                            </Grid.ScaleTransition>
                             <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
                                 <PivotItem>
                                     <PivotItem.Header>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Events}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
-                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
-                                        <StackPanel Margin="0,0,16,0">
-                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
-                                                            <Button.Template>
-                                                                <ControlTemplate>
-                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
-                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                    <Grid>
+                                        <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostEventPanelVisible}">
+                                            <StackPanel Margin="0,0,16,0">
+                                                <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                                <Button.Template>
+                                                                    <ControlTemplate>
+                                                                        <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
                                                                            Foreground="{StaticResource TextFillColorPrimary}"/>
-                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
-                                                                    </Grid>
-                                                                </ControlTemplate>
-                                                            </Button.Template>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                        </Grid>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                        <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}">
+                                            <Grid>
+                                                <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                           Width="100" TextWrapping="Wrap"
+                                                           TextAlignment="Right"
+                                                           Margin="0,0,108,0"
+                                                           Opacity="0.75"
+                                                           FontWeight="Bold"/>
+                                            </Grid>
                                         </StackPanel>
-                                    </ScrollViewer>
+                                    </Grid>
                                 </PivotItem>
                                 <PivotItem>
                                     <PivotItem.Header>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Notices}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
-                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
-                                        <StackPanel Margin="0,0,16,0">
-                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
-                                                            <Button.Template>
-                                                                <ControlTemplate>
-                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
-                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                    <Grid>
+                                        <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostNoticePanelVisible}">
+                                            <StackPanel Margin="0,0,16,0">
+                                                <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                                <Button.Template>
+                                                                    <ControlTemplate>
+                                                                        <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
                                                                            Foreground="{StaticResource TextFillColorPrimary}"/>
-                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
-                                                                    </Grid>
-                                                                </ControlTemplate>
-                                                            </Button.Template>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                        </Grid>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                        <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}">
+                                            <Grid>
+                                                <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                           Width="100" TextWrapping="Wrap"
+                                                           TextAlignment="Right"
+                                                           Margin="0,0,108,0"
+                                                           Opacity="0.75"
+                                                           FontWeight="Bold"/>
+                                            </Grid>
                                         </StackPanel>
-                                    </ScrollViewer>
+                                    </Grid>
                                 </PivotItem>
                                 <PivotItem>
                                     <PivotItem.Header>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_Info}" FontSize="16" FontWeight="Bold" Margin="0,0,0,-8"/>
                                     </PivotItem.Header>
-                                    <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0">
-                                        <StackPanel Margin="0,0,16,0">
-                                            <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
-                                                            <Button.Template>
-                                                                <ControlTemplate>
-                                                                    <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
-                                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
+                                    <Grid>
+                                        <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostInfoPanelVisible}">
+                                            <StackPanel Margin="0,0,16,0">
+                                                <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag">
+                                                                <Button.Template>
+                                                                    <ControlTemplate>
+                                                                        <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                                            <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
                                                                            Foreground="{StaticResource TextFillColorPrimary}"/>
-                                                                        <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
-                                                                    </Grid>
-                                                                </ControlTemplate>
-                                                            </Button.Template>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                                                            <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
+                                                                        </Grid>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                        <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}">
+                                            <Grid>
+                                                <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                           Width="100" TextWrapping="Wrap"
+                                                           TextAlignment="Right"
+                                                           Margin="0,0,108,0"
+                                                           Opacity="0.75"
+                                                           FontWeight="Bold"/>
+                                            </Grid>
                                         </StackPanel>
-                                    </ScrollViewer>
+                                    </Grid>
                                 </PivotItem>
                             </Pivot>
                         </Grid>

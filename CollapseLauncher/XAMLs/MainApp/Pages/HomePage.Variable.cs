@@ -1,9 +1,9 @@
-﻿using System;
-using System.Globalization;
-using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using System;
 
 namespace CollapseLauncher.Pages
 {
@@ -26,12 +26,18 @@ namespace CollapseLauncher.Pages
         InstallManagement InstallTool;
 
         bool IsGameHasVoicePack;
+
+        public Visibility IsPostEventPanelVisible => LauncherConfig.regionNewsProp.articlePanel?.Events.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostEventPanelEmpty => LauncherConfig.regionNewsProp.articlePanel?.Events.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelVisible => LauncherConfig.regionNewsProp.articlePanel?.Notices.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostNoticePanelEmpty => LauncherConfig.regionNewsProp.articlePanel?.Notices.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelVisible => LauncherConfig.regionNewsProp.articlePanel?.Info.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility IsPostInfoPanelEmpty => LauncherConfig.regionNewsProp.articlePanel?.Info.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public class NullVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
-
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 }
