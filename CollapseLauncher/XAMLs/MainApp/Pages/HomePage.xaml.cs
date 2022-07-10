@@ -7,6 +7,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -54,21 +58,24 @@ namespace CollapseLauncher.Pages
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
 
-                if (MenuPanels.imageCarouselPanel != null)
+                if (MenuPanels.imageCarouselPanel != null
+                    && MenuPanels.articlePanel != null)
                 {
                     ImageCarousel.SelectedIndex = 0;
+                    ShowEventsPanelToggle.IsEnabled = true;
                     ImageCarousel.Visibility = Visibility.Visible;
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
+                    PostPanel.Visibility = Visibility.Visible;
                     ImageCarousel.Translation += Shadow48;
                     ImageCarouselPipsPager.Translation += Shadow16;
+                    PostPanel.Translation += Shadow16;
 
                     Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
-                if (MenuPanels.articlePanel != null)
+                if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                 {
-                    PostPanel.Visibility = Visibility.Visible;
-                    PostPanel.Translation += Shadow16;
+                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
                 }
 
                 TryLoadEventPanelImage();
@@ -137,6 +144,12 @@ namespace CollapseLauncher.Pages
 
         private async Task HideImageCarousel(bool hide)
         {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (!hide)
+                    ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
+            });
+
             Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
             OpacityAnimation.From = hide ? 1 : 0;
