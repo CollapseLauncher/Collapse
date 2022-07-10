@@ -32,47 +32,33 @@ namespace CollapseLauncher
         private readonly Size ThumbnailSize = new Size(32, 32);
         private async Task ChangeBackgroundImageAsRegion(CancellationToken token)
         {
-            try
+            regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
+                await TryGetMultiLangResourceProp(token) :
+                await TryGetSingleLangResourceProp(token);
+
+            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+            SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
+
+            await DownloadBackgroundImage();
+
+            if (GetAppConfigValue("UseCustomBG").ToBool())
             {
-                httpHelper = new Http();
-
-                regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
-                    await TryGetMultiLangResourceProp(token) :
-                    await TryGetSingleLangResourceProp(token);
-
-                regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
-                SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
-
-                await DownloadBackgroundImage();
-
-                if (GetAppConfigValue("UseCustomBG").ToBool())
-                {
-                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                    if (string.IsNullOrEmpty(BGPath))
-                        regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                    else
-                        regionBackgroundProp.imgLocalPath = BGPath;
-                }
-
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
-                await BackgroundImgChanger.WaitForBackgroundToLoad();
-
-                ResetRegionProp();
-                await GetLauncherAdvInfo(token);
-                await GetLauncherCarouselInfo(token);
-                await GetLauncherEventInfo(token);
-                GetLauncherPostInfo();
-
-                ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+                string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                if (string.IsNullOrEmpty(BGPath))
+                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                else
+                    regionBackgroundProp.imgLocalPath = BGPath;
             }
-            catch (OperationCanceledException)
-            {
-                throw new OperationCanceledException($"Background Image fetch canceled!");
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Something wrong happen while fetching Background Image\r\n{ex}");
-            }
+
+            BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+            await BackgroundImgChanger.WaitForBackgroundToLoad();
+
+            await GetLauncherAdvInfo(token);
+            await GetLauncherCarouselInfo(token);
+            await GetLauncherEventInfo(token);
+            GetLauncherPostInfo();
+
+            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         bool PassFirstTry = false;

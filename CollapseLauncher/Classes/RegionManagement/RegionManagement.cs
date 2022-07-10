@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Hi3Helper.Http;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -18,7 +19,7 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        Http httpHelper;
+        Http httpHelper = new Http(default, 4, 250);
         CancellationTokenSource tokenSource;
         bool loadRegionComplete;
         int LoadTimeoutSec = 10;
@@ -35,6 +36,7 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
             DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "");
             await HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            ResetRegionProp();
             while (!await TryGetRegionResource())
             {
                 int lastTimeout = LoadTimeoutSec;
@@ -85,11 +87,12 @@ namespace CollapseLauncher
         {
             try
             {
+                regionNewsProp = new HomeMenuPanel();
                 tokenSource = new CancellationTokenSource();
                 RetryWatcher();
 
-                await FetchLauncherResourceAsRegion(tokenSource.Token);
                 await ChangeBackgroundImageAsRegion(tokenSource.Token);
+                await FetchLauncherResourceAsRegion(tokenSource.Token);
 
                 tokenSource.Cancel();
 
@@ -98,6 +101,10 @@ namespace CollapseLauncher
             catch (OperationCanceledException)
             {
                 return false;
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
             }
             return true;
         }
@@ -140,8 +147,7 @@ namespace CollapseLauncher
                 PrepareInstallation();
 
             gameIni.Profile = new IniFile();
-            gameIni.ProfileStream = new FileStream(gameIni.ProfilePath, FileMode.Open, FileAccess.ReadWrite);
-            gameIni.Profile.Load(gameIni.ProfileStream);
+            gameIni.Profile.Load(gameIni.ProfilePath);
         }
 
         public async void ChangeRegion(object sender, RoutedEventArgs e)

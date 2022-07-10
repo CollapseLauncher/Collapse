@@ -44,9 +44,9 @@ namespace CollapseLauncher
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
-                Task.Run(() => CheckRunningGameInstance());
+                CheckRunningGameInstance();
 
-                InitializeStartup().GetAwaiter();
+                InitializeStartup();
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace CollapseLauncher
             {
                 string execName = Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(3000);
+                await Task.Delay(250);
             }
         }
 
@@ -97,7 +97,7 @@ namespace CollapseLauncher
                 e.OtherContent, e.IsAppNotif);
         }
 
-        private async Task GetAppNotificationPush()
+        private async void GetAppNotificationPush()
         {
             try
             {
@@ -144,10 +144,10 @@ namespace CollapseLauncher
 
         private async void RunTimeoutCancel(CancellationTokenSource Token)
         {
-            await Task.Delay(5000);
+            await Task.Delay(10000);
             if (!IsLoadNotifComplete)
             {
-                LogWriteLine("Cancel to load notification push! > 5 seconds", LogType.Error, true);
+                LogWriteLine("Cancel to load notification push! > 10 seconds", LogType.Error, true);
                 Token.Cancel();
             }
         }
@@ -335,19 +335,17 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task InitializeStartup()
+        private async void InitializeStartup()
         {
-            await HideLoadingPopup(false, "Loading", "Launcher API");
+            // await HideLoadingPopup(false, "Loading", "Launcher API");
             LoadConfig();
-            await GetAppNotificationPush();
+            GetAppNotificationPush();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
         }
 
-        private async void InitializeNavigationItems()
+        private void InitializeNavigationItems()
         {
-            await Task.Run(() => { });
-
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
 

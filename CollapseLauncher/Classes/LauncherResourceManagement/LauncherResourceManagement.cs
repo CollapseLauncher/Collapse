@@ -17,24 +17,10 @@ namespace CollapseLauncher
     {
         public async Task FetchLauncherResourceAsRegion(CancellationToken token)
         {
-            try
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    httpHelper = new Http();
-                    regionNewsProp = new HomeMenuPanel();
-
-                    await httpHelper.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, token);
-                    regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                throw new OperationCanceledException($"Fetching launcher resource is canceled!");
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Cannot connect to the internet while fetching launcher resource.\r\n{ex}");
+                await httpHelper.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, token);
+                regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
             }
         }
     }
