@@ -79,7 +79,7 @@ namespace CollapseLauncher
         public void InitializeWindowSettings()
         {
             TryInitWindowHandler();
-            SetWindowSize(m_windowHandle, 1280, 730);
+            SetWindowSize(m_windowHandle);
 
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
@@ -201,7 +201,7 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        public void SetWindowSize(IntPtr hwnd, int width, int height, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width = 1280, int height = 730, int x = 0, int y = 0)
         {
             var dpi = GetDpiForWindow(hwnd);
             float scalingFactor = (float)dpi / 96;
@@ -314,7 +314,7 @@ namespace CollapseLauncher
                     m_presenter.Restore();
 
                 sender.Move(LastPos);
-                SetWindowSize(m_windowHandle, 1280, 730);
+                SetWindowSize(m_windowHandle);
             }
 
             if (!(m_AppWindow.Position.X < 0 || m_AppWindow.Position.Y < 0))
