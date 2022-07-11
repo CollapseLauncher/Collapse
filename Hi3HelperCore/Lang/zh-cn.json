@@ -78,7 +78,13 @@
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换版本",
-    "GameSettings_Panel3": "自定义启动参数"
+    "GameSettings_Panel3": "自定义启动参数",
+    "GameSettings_Panel4": "混合",
+    "GameSettings_Panel4ShowEventsPanel": "显示事件面板",
+    "PostPanel_Events": "事件",
+    "PostPanel_Notices": "通知",
+    "PostPanel_Info": "信息",
+    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
   },
   // GameRepairPage
   "_GameRepairPage": {
@@ -313,6 +319,7 @@
     "Downloading": "下载中",
     "Merging": "合并中",
     "Idle": "闲置",
+    "Change": "更改",
     "Cancelled": "已取消",
     "Extracting": "提取中",
     "Converting": "转换中",
