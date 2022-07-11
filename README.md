@@ -78,3 +78,6 @@ For now, we are starting to open a fund and only Indonesian Digital Wallet is av
 > @neon-nyan / +62 838-7541-2241
 
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
+
+# UI Design Overview
+![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/AdvPanel1-6.webp)
