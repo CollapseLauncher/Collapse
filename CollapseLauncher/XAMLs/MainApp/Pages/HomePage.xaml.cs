@@ -264,50 +264,50 @@ namespace CollapseLauncher.Pages
                     GameInstallationState = GameInstallStateEnum.GameBroken;
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        UpdateGameBtn.Visibility = Visibility.Visible;
-                        StartGameBtn.Visibility = Visibility.Collapsed;
-                    });
+                    // Temporarily Disable RepairGameButton for Genshin
+                    if (CurrentRegion.IsGenshin ?? false)
+                        RepairGameButton.IsEnabled = false;
+                    UpdateGameBtn.Visibility = Visibility.Visible;
+                    StartGameBtn.Visibility = Visibility.Collapsed;
                     GameInstallationState = GameInstallStateEnum.NeedsUpdate;
                 }
                 else
                 {
                     if (regionResourceProp.data.pre_download_game != null)
                     {
-                        DispatcherQueue.TryEnqueue(() =>
+                        // Temporarily Disable RepairGameButton for Genshin
+                        if (CurrentRegion.IsGenshin ?? false)
+                            RepairGameButton.IsEnabled = false;
+                        InstallGameBtn.Visibility = Visibility.Collapsed;
+                        StartGameBtn.Visibility = Visibility.Visible;
+                        NotificationBar.Translation += Shadow48;
+                        NotificationBar.Closed += NotificationBar_Closed;
+                        NotificationBar.IsOpen = true;
+
+                        if (!IsPreDownloadCompleted())
                         {
-                            InstallGameBtn.Visibility = Visibility.Collapsed;
-                            StartGameBtn.Visibility = Visibility.Visible;
-                            NotificationBar.Translation += Shadow48;
-                            NotificationBar.Closed += NotificationBar_Closed;
-                            NotificationBar.IsOpen = true;
+                            NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                        }
+                        else
+                        {
+                            NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
+                            NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                            NotificationBar.IsClosable = true;
+                            var content = new TextBlock();
+                            content.Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn;
 
-                            if (!IsPreDownloadCompleted())
-                            {
-                                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
-                            }
-                            else
-                            {
-                                NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
-                                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
-                                NotificationBar.IsClosable = true;
-                                var content = new TextBlock();
-                                content.Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn;
-
-                                DownloadPreBtn.Content = content;
-                            }
-                        });
+                            DownloadPreBtn.Content = content;
+                        }
 
                         GameInstallationState = GameInstallStateEnum.InstalledHavePreload;
                     }
                     else
                     {
-                        DispatcherQueue.TryEnqueue(() =>
-                        {
-                            InstallGameBtn.Visibility = Visibility.Collapsed;
-                            StartGameBtn.Visibility = Visibility.Visible;
-                        });
+                        // Temporarily Disable RepairGameButton for Genshin
+                        if (CurrentRegion.IsGenshin ?? false)
+                            RepairGameButton.IsEnabled = false;
+                        InstallGameBtn.Visibility = Visibility.Collapsed;
+                        StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;
                     }
                 }

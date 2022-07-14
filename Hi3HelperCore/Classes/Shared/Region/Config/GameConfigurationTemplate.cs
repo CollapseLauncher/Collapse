@@ -132,7 +132,7 @@ namespace Hi3Helper.Preset
                 GameDirectoryName = "Genshin Impact game",
                 GameDispatchURL = "https://{0}.yuanshen.com/query_cur_region?version={1}&platform=3&channel_id=1&dispatchSeed={2}",
                 GameExecutableName = "GenshinImpact.exe",
-                ProtoDispatchKey = "10616738251919d2",
+                ProtoDispatchKey = "caffbdd6d7460dff",
                 IsHideSocMedDesc = false,
                 LauncherSpriteURLMultiLang = true,
                 LauncherSpriteURL = "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=false&key=gcStgarh&language={0}&launcher_id=10",

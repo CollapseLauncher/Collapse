@@ -577,7 +577,10 @@ namespace CollapseLauncher
 
         public async Task PostInstallVerification(UIElement Content)
         {
-            if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
+            // Temporarily disable the PostInstallVerification for both Post Install Check and
+            // Repair Mechanism.
+            // if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
+            return;
 
             InstallStatus = new InstallManagementStatus
             {
