@@ -48,11 +48,12 @@ namespace Hi3Helper.Data
             switch (Path.GetExtension(inputFile).ToLower())
             {
                 case ".7z":
+                case ".zip":
                     LoadAuto7Zip(inputFile);
                     break;
-                case ".zip":
-                    LoadZip(inputFile);
-                    break;
+                // case ".zip":
+                //     LoadZip(inputFile);
+                //     break;
                 default:
                     throw new FormatException($"Format {Path.GetExtension(inputFile)} is unsupported!");
             }
@@ -99,11 +100,12 @@ namespace Hi3Helper.Data
             switch (Path.GetExtension(inputFile).ToLower())
             {
                 case ".7z":
+                case ".zip":
                     LoadAuto7Zip(inputFile);
                     return totalUncompressedSize;
-                case ".zip":
-                    LoadZip(inputFile);
-                    return totalUncompressedSize;
+                // case ".zip":
+                //    LoadZip(inputFile);
+                //    return totalUncompressedSize;
                 default:
                     throw new FormatException($"Format {Path.GetExtension(inputFile)} is unsupported!");
             }
@@ -215,7 +217,7 @@ Initializing...", inputFilePath, outputDirectory,
                 threadID++;
             }
 
-            Task.WhenAll(fallbackTasks);
+            Task.WhenAll(fallbackTasks).GetAwaiter().GetResult();
             fallbackTasks.Clear();
         }
 
@@ -261,6 +263,7 @@ Initializing...", inputFilePath, outputDirectory,
                 {
                     try
                     {
+                        Console.WriteLine(j.xZip.Entries[i].Name);
                         using (Stream stream = j.xZip.Entries[i].Open())
                             WriteStream(stream, localStream, j.xZip.Entries[i].Length, token);
                     }
@@ -297,7 +300,7 @@ Initializing...", inputFilePath, outputDirectory,
         {
             using (input) using (output)
             {
-                token.ThrowIfCancellationRequested();
+                // token.ThrowIfCancellationRequested();
                 input.CopyTo(output);
 
                 totalExtractedSize += fileSize;
