@@ -74,6 +74,8 @@ namespace Hi3Helper.Shared.Region
         public static void PrepareGameSettings()
         {
             gameIni.Settings = new IniFile();
+            if (!File.Exists(gameIni.SettingsPath))
+                gameIni.Settings.Save(gameIni.SettingsPath);
             gameIni.Settings.Load(gameIni.SettingsPath);
         }
 
@@ -339,7 +341,7 @@ namespace Hi3Helper.Shared.Region
             IniValue value = GameSettingsTemplate[key];
             try
             {
-                string RegData = GetRegistryValue(ScreenSettingDataReg);
+                string RegData = GetRegistryValue(PersonalGraphicsSettingV2Reg);
 
                 if (RegData == null) return;
 
