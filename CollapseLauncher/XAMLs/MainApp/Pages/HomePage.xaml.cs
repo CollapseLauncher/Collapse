@@ -310,26 +310,29 @@ namespace CollapseLauncher.Pages
             {
                 try
                 {
-                    while (App.IsGameRunning)
+                    while (true)
                     {
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
+                        while (App.IsGameRunning)
+                        {
+                            if (StartGameBtn.IsEnabled)
+                                LauncherBtn.Translation -= Shadow16;
 
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
-                        GameStartupSetting.IsEnabled = false;
+                            StartGameBtn.IsEnabled = false;
+                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                            GameStartupSetting.IsEnabled = false;
+
+                            await Task.Delay(100);
+                        }
+
+                        if (!StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation += Shadow16;
+
+                        StartGameBtn.IsEnabled = true;
+                        StartGameBtn.Content = Lang._HomePage.StartBtn;
+                        GameStartupSetting.IsEnabled = true;
 
                         await Task.Delay(100);
                     }
-
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
-
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtn.Content = Lang._HomePage.StartBtn;
-                    GameStartupSetting.IsEnabled = true;
-
-                    await Task.Delay(100);
                 }
                 catch { return; }
             });
