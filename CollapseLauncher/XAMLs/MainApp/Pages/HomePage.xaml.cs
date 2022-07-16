@@ -7,10 +7,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -185,48 +181,11 @@ namespace CollapseLauncher.Pages
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
             SpawnWebView2.SpawnWebView2Window(((Image)sender).Tag.ToString());
-            /*
-            new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = ((Image)sender).Tag.ToString()
-                }
-            }.Start();
-            */
-        }
-
-        private void OpenTextBlockLinkFromTag(object sender, PointerRoutedEventArgs e)
-        {
-            SpawnWebView2.SpawnWebView2Window(((TextBlock)sender).Tag.ToString());
-
-            /*
-            new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = ((Image)sender).Tag.ToString()
-                }
-            }.Start();
-            */
         }
 
         private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
         {
             SpawnWebView2.SpawnWebView2Window(((Button)sender).Tag.ToString());
-
-            /*
-            new Process()
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = ((Image)sender).Tag.ToString()
-                }
-            }.Start();
-            */
         }
 
         private void CheckIfRightSideProgress()

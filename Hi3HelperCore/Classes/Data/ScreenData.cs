@@ -27,8 +27,6 @@ namespace Hi3Helper.Screen
 
                 i++;
             }
-
-            // LogWriteLine($"Supported Screen Resolutions: {string.Join(", ", screenResolutions.Select(p => $"{p.Width}x{p.Height}"))}", LogType.Scheme);
         }
 
         public static Size GetScreenSize() => new Size
@@ -36,13 +34,5 @@ namespace Hi3Helper.Screen
             Width = GetSystemMetrics((int)SystemMetric.SM_CXSCREEN),
             Height = GetSystemMetrics((int)SystemMetric.SM_CYSCREEN)
         };
-    }
-
-    public struct ScreenResolution
-    {
-        public uint Width;
-        public uint Height;
-
-        public override string ToString() => $"{Width}x{Height}";
     }
 }
