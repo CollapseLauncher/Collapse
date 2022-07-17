@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hi3Helper.Preset;
+using System.Collections.Generic;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -92,5 +93,29 @@ namespace Hi3Helper.Shared.ClassStruct
         public string title { get; set; }
         public string show_time { get; set; }
         public PostCarouselType type { get; set; }
+    }
+
+    public class YSDispatchInfo
+    {
+        public string content { get; set; }
+        public string sign { get; set; }
+    }
+
+    public class QueryProperty
+    {
+        public string GameVoiceLangID { get; set; }
+        public string ClientGameResURL { get; set; }
+        public string ClientDesignDataURL { get; set; }
+        public string ClientDesignDataSilURL { get; set; }
+        public string ClientAudioAssetsURL { get; set; }
+        public int AudioRevisionNum { get; set; }
+        public int DataRevisionNum { get; set; }
+        public int ResRevisionNum { get; set; }
+        public int SilenceRevisionNum { get; set; }
+        public string GameVersion { get; set; }
+        public string ChannelName { get; set; }
+        public IEnumerable<PkgVersionProperties> ClientGameRes { get; set; }
+        public PkgVersionProperties ClientDesignData { get; set; }
+        public PkgVersionProperties ClientDesignDataSil { get; set; }
     }
 }

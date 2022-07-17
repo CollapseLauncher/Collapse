@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -29,36 +30,57 @@ namespace Hi3Helper.Data
             this.cancelToken = cancelToken;
         }
 
-        public async Task LoadDispatch()
+        private async Task<byte[]> LoadRemoteDispatch()
         {
             using (MemoryStream response = new MemoryStream())
             {
                 await DownloadStream(DispatchBaseURL, response, cancelToken);
-                string responseData = Encoding.UTF8.GetString(response.ToArray());
 
-                DispatchProto = QueryProto.Parser.ParseFrom(FromBase64String(responseData));
-                returnValProp = new QueryProperty()
-                {
-                    GameVoiceLangID = DispatchProto.Dispatcher.GameAudiolang,
-                    ClientGameResURL = string.Format("{0}/output_{1}_{2}/client",
-                                        DispatchProto.Dispatcher.ClientGameResurl,
-                                        DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
-                                        DispatchProto.Dispatcher.DispatcherInternal.ClientGameReshash),
-                    ClientDesignDataURL = string.Format("{0}/output_{1}_{2}/client/General",
-                                        DispatchProto.Dispatcher.ClientDesignDataurl,
-                                        DispatchProto.Dispatcher.ClientDesignDatanum,
-                                        DispatchProto.Dispatcher.ClientDesignDatahash),
-                    ClientDesignDataSilURL = string.Format("{0}/output_{1}_{2}/client_silence/General",
-                                            DispatchProto.Dispatcher.ClientDesignDataurl,
-                                            DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
-                                            DispatchProto.Dispatcher.ClientDesignDatahashSlnt),
-                    DataRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanum,
-                    SilenceRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
-                    ResRevisionNum = DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
-                    ChannelName = this.ChannelName,
-                    GameVersion = this.Version
-                };
+                return response.GetBuffer();
             }
+        }
+
+        public async Task<YSDispatchInfo> LoadDispatchInfo()
+        {
+            YSDispatchInfo DispatcherDataInfo;
+            using (MemoryStream Stream = new MemoryStream())
+            {
+                await DownloadStream(DispatchBaseURL, Stream, cancelToken);
+                string Data = Encoding.UTF8.GetString(Stream.GetBuffer());
+                DispatcherDataInfo = JsonConvert.DeserializeObject<YSDispatchInfo>(Data);
+            }
+
+            return DispatcherDataInfo;
+        }
+
+        public async Task LoadDispatch(byte[] CustomDispatchData = null)
+        {
+            byte[] ProtoData = CustomDispatchData == null
+                ? FromBase64String(Encoding.UTF8.GetString(await LoadRemoteDispatch()))
+                : CustomDispatchData;
+
+            DispatchProto = QueryProto.Parser.ParseFrom(ProtoData);
+            returnValProp = new QueryProperty()
+            {
+                GameVoiceLangID = DispatchProto.Dispatcher.GameAudiolang,
+                ClientGameResURL = string.Format("{0}/output_{1}_{2}/client",
+                                    DispatchProto.Dispatcher.ClientGameResurl,
+                                    DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
+                                    DispatchProto.Dispatcher.DispatcherInternal.ClientGameReshash),
+                ClientDesignDataURL = string.Format("{0}/output_{1}_{2}/client/General",
+                                    DispatchProto.Dispatcher.ClientDesignDataurl,
+                                    DispatchProto.Dispatcher.ClientDesignDatanum,
+                                    DispatchProto.Dispatcher.ClientDesignDatahash),
+                ClientDesignDataSilURL = string.Format("{0}/output_{1}_{2}/client_silence/General",
+                                        DispatchProto.Dispatcher.ClientDesignDataurl,
+                                        DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
+                                        DispatchProto.Dispatcher.ClientDesignDatahashSlnt),
+                DataRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanum,
+                SilenceRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
+                ResRevisionNum = DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
+                ChannelName = this.ChannelName,
+                GameVersion = this.Version
+            };
 
             ParseGameResPkgProp(ref returnValProp);
             ParseDesignDataURL(ref returnValProp);
@@ -100,24 +122,6 @@ namespace Hi3Helper.Data
         }
 
         public QueryProperty GetResult() => returnValProp;
-
-        public class QueryProperty
-        {
-            public string GameVoiceLangID { get; set; }
-            public string ClientGameResURL { get; set; }
-            public string ClientDesignDataURL { get; set; }
-            public string ClientDesignDataSilURL { get; set; }
-            public string ClientAudioAssetsURL { get; set; }
-            public int AudioRevisionNum { get; set; }
-            public int DataRevisionNum { get; set; }
-            public int ResRevisionNum { get; set; }
-            public int SilenceRevisionNum { get; set; }
-            public string GameVersion { get; set; }
-            public string ChannelName { get; set; }
-            public IEnumerable<PkgVersionProperties> ClientGameRes { get; set; }
-            public PkgVersionProperties ClientDesignData { get; set; }
-            public PkgVersionProperties ClientDesignDataSil { get; set; }
-        }
 
         private string GetSubdomainByRegionID(int RegionID)
         {

@@ -12,6 +12,9 @@ namespace Hi3Helper.Preset
 {
     public class PresetConfigClasses
     {
+        public long LastUpdated { get; set; }
+        public List<PresetConfigClasses> Metadata { get; set; }
+
         public enum ServerRegionID
         {
             os_usa = 0,

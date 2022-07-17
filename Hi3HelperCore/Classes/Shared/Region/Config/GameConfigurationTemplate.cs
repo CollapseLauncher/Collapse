@@ -4,6 +4,11 @@ namespace Hi3Helper.Preset
 {
     public static class GameConfigurationTemplate
     {
+        public static PresetConfigClasses GameConfigTemplate = new PresetConfigClasses()
+        {
+            LastUpdated = 202207180203
+        };
+
         public static List<PresetConfigClasses> GameConfigTemplate = new List<PresetConfigClasses>
         {
             new PresetConfigClasses
@@ -130,7 +135,7 @@ namespace Hi3Helper.Preset
                 IsGenshin = true,
                 UseRightSideProgress = true,
                 GameDirectoryName = "Genshin Impact game",
-                GameDispatchURL = "https://{0}.yuanshen.com/query_cur_region?version={1}&platform=3&channel_id=1&dispatchSeed={2}",
+                GameDispatchURL = "https://{0}.yuanshen.com/query_cur_region?version={1}&platform=3&binary=1&time=256&channel_id=1&sub_channel_id=1&account_type=1&dispatchSeed={2}&key_id=3",
                 GameExecutableName = "GenshinImpact.exe",
                 ProtoDispatchKey = "caffbdd6d7460dff",
                 IsHideSocMedDesc = false,
