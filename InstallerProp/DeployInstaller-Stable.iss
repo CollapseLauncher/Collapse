@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse Launcher
-AppVersion=1.0.33.1
+AppVersion=1.0.33.6
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.33.1
+VersionInfoVersion=1.0.33.6
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse Launcher - An advanced launcher for miHoYo Games
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.33.1
-VersionInfoProductTextVersion=1.0.33.1
+VersionInfoProductVersion=1.0.33.6
+VersionInfoProductTextVersion=1.0.33.6
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -26,8 +26,12 @@ WizardImageFile=..\InstallerProp\WizardBannerDesign.bmp
 WizardSmallImageFile=..\InstallerProp\WizardBannerDesignSmall.bmp
 DisableWelcomePage=False
 ArchitecturesInstallIn64BitMode=x64
-LicenseFile=..\LICENSE          
+LicenseFile=..\LICENSE
 SetupIconFile=..\CollapseLauncher\icon.ico
+LZMAUseSeparateProcess=yes
+LZMADictionarySize=1048576
+LZMAMatchFinder=BT
+LZMANumFastBytes=128
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
