@@ -373,11 +373,11 @@ namespace CollapseLauncher
             }
 
             TryUnassignReadOnlyFiles();
+            DownloadRemoteSize = DownloadProperty.Sum(x => CalculateUncompressedSize(ref x));
 
             foreach (DownloadAddressProperty prop in
                 CanSkipExtract ? new List<DownloadAddressProperty>() : DownloadProperty)
             {
-                DownloadRemoteSize = DownloadProperty.Sum(x => CalculateUncompressedSize(ref x));
                 SevenZipTool ExtractTool = new SevenZipTool();
                 CountCurrentDownload++;
                 InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
