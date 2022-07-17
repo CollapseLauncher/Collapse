@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,7 +14,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -47,46 +47,46 @@ namespace CollapseLauncher.Pages
 
         private async Task DoCachesCheck()
         {
-                try
+            try
+            {
+                cachesRead = 0;
+                cachesCount = 0;
+                cachesTotalCount = 0;
+                cachesTotalSize = 0;
+                cancellationTokenSource = new CancellationTokenSource();
+                DispatcherQueue.TryEnqueue(() =>
                 {
-                    cachesRead = 0;
-                    cachesCount = 0;
-                    cachesTotalCount = 0;
-                    cachesTotalSize = 0;
-                    cancellationTokenSource = new CancellationTokenSource();
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        CachesDataTableGrid.Visibility = Visibility.Collapsed;
-                        brokenCachesListUI.Clear();
-                        CancelBtn.Visibility = Visibility.Visible;
-                        CheckUpdateBtn.IsEnabled = false;
-                        CancelBtn.IsEnabled = true;
-                    });
-                    cachesLanguage = CurrentRegion.GetGameLanguage();
-                    await FetchCachesAPI();
-                    DispatcherQueue.TryEnqueue(() => CachesDataTableGrid.Visibility = Visibility.Visible);
-                    await CheckCachesIntegrity();
-                }
-                catch (OperationCanceledException)
+                    CachesDataTableGrid.Visibility = Visibility.Collapsed;
+                    brokenCachesListUI.Clear();
+                    CancelBtn.Visibility = Visibility.Visible;
+                    CheckUpdateBtn.IsEnabled = false;
+                    CancelBtn.IsEnabled = true;
+                });
+                cachesLanguage = CurrentRegion.GetGameLanguage();
+                await FetchCachesAPI();
+                DispatcherQueue.TryEnqueue(() => CachesDataTableGrid.Visibility = Visibility.Visible);
+                await CheckCachesIntegrity();
+            }
+            catch (OperationCanceledException)
+            {
+                LogWriteLine("Caches Update check cancelled!", LogType.Warning);
+                DispatcherQueue.TryEnqueue(() =>
                 {
-                    LogWriteLine("Caches Update check cancelled!", LogType.Warning);
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
-                        CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                        CachesTotalProgressBar.Value = 0;
-                        CheckUpdateBtn.Visibility = Visibility.Visible;
-                        CheckUpdateBtn.IsEnabled = true;
-                        UpdateCachesBtn.Visibility = Visibility.Collapsed;
-                        CancelBtn.IsEnabled = false;
-                    });
-                    http.DownloadProgress -= DataFetchingProgress;
-                }
-                catch (Exception ex)
-                {
-                    ErrorSender.SendException(ex);
-                    LogWriteLine(ex.ToString(), LogType.Error, true);
-                }
+                    CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
+                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                    CachesTotalProgressBar.Value = 0;
+                    CheckUpdateBtn.Visibility = Visibility.Visible;
+                    CheckUpdateBtn.IsEnabled = true;
+                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                    CancelBtn.IsEnabled = false;
+                });
+                http.DownloadProgress -= DataFetchingProgress;
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                LogWriteLine(ex.ToString(), LogType.Error, true);
+            }
         }
 
         private async Task FetchCachesAPI()

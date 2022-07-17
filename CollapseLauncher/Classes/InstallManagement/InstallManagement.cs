@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Http;
+using Hi3Helper.Shared.ClassStruct;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -371,6 +372,8 @@ namespace CollapseLauncher
                 return;
             }
 
+            TryUnassignReadOnlyFiles();
+
             foreach (DownloadAddressProperty prop in
                 CanSkipExtract ? new List<DownloadAddressProperty>() : DownloadProperty)
             {
@@ -389,6 +392,16 @@ namespace CollapseLauncher
                 ExtractTool.Dispose();
                 if (CanDeleteZip)
                     File.Delete(prop.Output);
+            }
+        }
+
+        private void TryUnassignReadOnlyFiles()
+        {
+            foreach (string File in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
+            {
+                FileInfo fileInfo = new FileInfo(File);
+                if (fileInfo.IsReadOnly)
+                    fileInfo.IsReadOnly = false;
             }
         }
 
@@ -659,7 +672,7 @@ namespace CollapseLauncher
             // Load Dispatcher Data
             DispatchReader = new GenshinDispatchHelper(DispatchServerID, DispatchKey, DispatchURLPrefix, GameVersionString, Token);
             await DispatchReader.LoadDispatch();
-            GenshinDispatchHelper.QueryProperty QueryProperty = DispatchReader.GetResult();
+            QueryProperty QueryProperty = DispatchReader.GetResult();
 
             string ManifestPath, ParentURL, ParentAudioURL;
 
@@ -726,7 +739,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void SavePersistentRevision(in GenshinDispatchHelper.QueryProperty dispatchQuery)
+        private void SavePersistentRevision(in QueryProperty dispatchQuery)
         {
             string PersistentPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent");
 
