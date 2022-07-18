@@ -970,6 +970,16 @@ namespace CollapseLauncher
                     else
                         await DownloadStream(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
                 }
+                catch (TaskCanceledException ex)
+                {
+                    LogWriteLine($"Download on {Entry.remoteURL} has been cancelled!\r\n{ex}", LogType.Warning, true);
+                    throw new OperationCanceledException($"Download on {Entry.remoteURL} has been cancelled!", ex);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    LogWriteLine($"Download on {Entry.remoteURL} has been cancelled!\r\n{ex}", LogType.Warning, true);
+                    throw new OperationCanceledException($"Download on {Entry.remoteURL} has been cancelled!", ex);
+                }
                 catch (Exception ex)
                 {
                     LogWriteLine($"{ex}", LogType.Error, true);
