@@ -36,6 +36,12 @@ namespace Hi3Helper.EncTool
 
         public mhyEncTool() { }
 
+        public mhyEncTool(string _i)
+        {
+            this._778 = _i;
+            this._ooh = RSA.Create();
+        }
+
         public mhyEncTool(string _i, string MasterKey)
         {
             this._778 = _i;
