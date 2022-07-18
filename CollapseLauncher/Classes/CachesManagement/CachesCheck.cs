@@ -156,7 +156,7 @@ namespace CollapseLauncher.Pages
             string hash;
             List<DataPropertiesContent> brokenCaches;
             brokenCachesList = new List<DataProperties>();
-            byte[] salt = new mhyEncTool(Pkcs1Salt).GetSalt();
+            byte[] salt = new mhyEncTool(Pkcs1Salt, AppGameConfig.MasterKey).GetSalt();
             hashTool = new HMACSHA1(salt);
 
             foreach (DataProperties dataType in cachesList)
