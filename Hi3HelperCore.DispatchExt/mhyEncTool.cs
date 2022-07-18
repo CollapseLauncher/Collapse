@@ -97,7 +97,7 @@ namespace Hi3Helper.EncTool
                             num = ((int)num2 * -1711149688) ^ -181350819;
                             continue;
                         case 7u:
-                            _0041 = _f8j51(_);
+                            _0041 = _f8j51(this._MasterKey);
                             at = HTb(_778);
                             num = ((int)num2 * -1995578406) ^ 0x57CB1D8;
                             continue;
