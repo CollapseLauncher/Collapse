@@ -21,7 +21,6 @@ namespace Hi3Helper.Shared.Region
         public static Vector3 Shadow48 = new Vector3(0, 0, 48);
         // Format in milliseconds
         public static int RefreshTime = 250;
-        public enum AppLanguage { EN, ID }
 
         const string SectionName = "app";
         public static string startupBackgroundPath;
@@ -46,6 +45,14 @@ namespace Hi3Helper.Shared.Region
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
         public static string AppNotifURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/notification_{0}.json";
         public static string GamePathOnSteam;
+
+        public static string AppGameConfigURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadata_{0}.json";
+        // public static string AppGameConfigURLPrefix = "http://127.0.0.1/metadata_{0}.json";
+        public static long AppGameConfigLastUpdate;
+        public static List<PresetConfigClasses> AppGameConfigList;
+        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
+        public static string AppGameConfigStampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stamp.json"); }
+        public static string AppGameConfigMetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadata.json"); }
 
         public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
 
@@ -82,9 +89,8 @@ namespace Hi3Helper.Shared.Region
         public static void LoadGamePreset()
         {
             AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
-            LoadConfigTemplate();
+            // LoadConfigTemplate();
             // LoadConfigFromFile(Path.Combine(AppFolder, "config", "fileconfig.json"));
-            GameConfigName = Config.Select(x => x.ZoneName).ToList();
         }
 
         public static void GetScreenResolutionString()
