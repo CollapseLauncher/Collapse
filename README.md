@@ -21,7 +21,7 @@ Collapse was came from **Honkai Impact** name in Chinese and Japanese. The word 
 
 Not only that, this launcher has also some advanced features for **Genshin Impact** like:
 * Choosing your voice-line language at first-install so you don't have to download it inside the game.
-* ~~Repair the game files entirely including game caches, cutscenes, audio pack and persistent files.~~ Temporarily disabled due to changes on Genshin's Dispatcher structure.
+* Repair the game files entirely including game caches, cutscenes, audio pack and persistent. (Only available on the latest preview build now [1.0.35.1])
 
 # Supported Game Client
 For now, this launcher is only supporting these versions of the game:
