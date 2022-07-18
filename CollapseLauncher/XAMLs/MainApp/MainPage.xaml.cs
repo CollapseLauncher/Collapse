@@ -362,7 +362,7 @@ namespace CollapseLauncher
             bool IsUpdate = await CheckForNewMetadata();
             if (IsUpdate)
             {
-                TextBlock Text = new TextBlock { Text = "Update Metadata", VerticalAlignment = VerticalAlignment.Center };
+                TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtn, VerticalAlignment = VerticalAlignment.Center };
                 Button UpdateMetadatabtn = new Button
                 {
                     Content = Text,
@@ -372,7 +372,7 @@ namespace CollapseLauncher
 
                 UpdateMetadatabtn.Click += (async (a, b) =>
                 {
-                    TextBlock Text = new TextBlock { Text = "Updating metadata...", VerticalAlignment = VerticalAlignment.Center };
+                    TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtnUpdating, VerticalAlignment = VerticalAlignment.Center };
                     ProgressRing LoadBar = new ProgressRing
                     {
                         IsIndeterminate = true,
@@ -400,8 +400,8 @@ namespace CollapseLauncher
                 });
 
                 SpawnNotificationPush(
-                    "Launcher Metadata Update Has Been Detected",
-                    "Launcher has detected new metadata. We recommend you to proceed the update in order to ensure that the launcher could communicate with the server. Click on \"Update Metadata\" to update.",
+                    Lang._MainPage.MetadataUpdateTitle,
+                    Lang._MainPage.MetadataUpdateSubtitle,
                     InfoBarSeverity.Informational,
                     -886135731,
                     true,
