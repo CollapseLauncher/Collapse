@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner.webp"/>
+  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner20220719.webp"/>
 </p>
 
 **Collapse** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **miHoYo Games**.
