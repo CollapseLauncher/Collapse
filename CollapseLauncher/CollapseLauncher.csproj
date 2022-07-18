@@ -54,6 +54,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Hi3HelperCore.DispatchExt\Hi3HelperCore.EncTool.csproj" />
         <ProjectReference Include="..\Hi3HelperCore.Http\Hi3HelperCore.Http.csproj" />
         <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
     </ItemGroup>

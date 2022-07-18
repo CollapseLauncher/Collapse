@@ -469,7 +469,7 @@
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE118;" FontSize="16"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                                 </StackPanel>
                             </Button.Content>
                         </Button>
@@ -477,13 +477,19 @@
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE117;" FontSize="16"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}" Margin="8,0,0,0"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.UpdateBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="StartGameBtn" Content="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="StartGamme"/>
-                        <Button x:Name="CancelDownloadBtn" Content="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="CancelInstallationProcedure"/>
-                        <Button x:Name="ResumeDownloadBtn" Content="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
+                        <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="StartGamme">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium"/>
+                        </Button>
+                        <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="CancelInstallationProcedure">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" FontWeight="Medium"/>
+                        </Button>
+                        <Button x:Name="ResumeDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" FontWeight="Medium"/>
+                        </Button>
                     </Grid>
                 </Grid>
             </Frame.Content>

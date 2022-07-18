@@ -1,5 +1,5 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -156,7 +156,7 @@ namespace CollapseLauncher.Pages
             string hash;
             List<DataPropertiesContent> brokenCaches;
             brokenCachesList = new List<DataProperties>();
-            byte[] salt = new mhySHASaltTool(Pkcs1Salt).GetSalt();
+            byte[] salt = new mhyEncTool(Pkcs1Salt).GetSalt();
             hashTool = new HMACSHA1(salt);
 
             foreach (DataProperties dataType in cachesList)
