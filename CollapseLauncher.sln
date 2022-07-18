@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore.Http", "Hi3He
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G-Game-Dispatcher-Test", "G-Game-Dispatcher-Test\G-Game-Dispatcher-Test.csproj", "{26FAF7E5-6228-4931-A8C1-97EA2CDD3E00}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore.EncTool", "Hi3HelperCore.DispatchExt\Hi3HelperCore.EncTool.csproj", "{32413993-E384-46CA-84A4-F7975D78543C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3HelperCore.EncTool", "Hi3HelperCore.EncTool\Hi3HelperCore.EncTool.csproj", "{32413993-E384-46CA-84A4-F7975D78543C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
