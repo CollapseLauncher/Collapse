@@ -225,8 +225,8 @@ namespace CollapseLauncher.Pages
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
                     // Temporarily Disable RepairGameButton for Genshin
-                    if (CurrentRegion.IsGenshin ?? false)
-                        RepairGameButton.IsEnabled = false;
+                    // if (CurrentRegion.IsGenshin ?? false)
+                    //     RepairGameButton.IsEnabled = false;
                     UpdateGameBtn.Visibility = Visibility.Visible;
                     StartGameBtn.Visibility = Visibility.Collapsed;
                     GameInstallationState = GameInstallStateEnum.NeedsUpdate;
@@ -236,8 +236,8 @@ namespace CollapseLauncher.Pages
                     if (regionResourceProp.data.pre_download_game != null)
                     {
                         // Temporarily Disable RepairGameButton for Genshin
-                        if (CurrentRegion.IsGenshin ?? false)
-                            RepairGameButton.IsEnabled = false;
+                        // if (CurrentRegion.IsGenshin ?? false)
+                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         NotificationBar.Translation += Shadow48;
@@ -264,8 +264,8 @@ namespace CollapseLauncher.Pages
                     else
                     {
                         // Temporarily Disable RepairGameButton for Genshin
-                        if (CurrentRegion.IsGenshin ?? false)
-                            RepairGameButton.IsEnabled = false;
+                        // if (CurrentRegion.IsGenshin ?? false)
+                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;

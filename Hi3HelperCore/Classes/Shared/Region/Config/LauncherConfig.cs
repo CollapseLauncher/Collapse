@@ -49,7 +49,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadata_{0}.json";
         // public static string AppGameConfigURLPrefix = "http://127.0.0.1/metadata_{0}.json";
         public static long AppGameConfigLastUpdate;
-        public static List<PresetConfigClasses> AppGameConfigList;
+        public static PresetConfigClasses AppGameConfig;
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigStampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stamp.json"); }
         public static string AppGameConfigMetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadata.json"); }

@@ -43,8 +43,8 @@ namespace Hi3Helper.Preset
         {
             PresetConfigClasses Metadata = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigStampPath));
             AppGameConfigLastUpdate = Metadata.LastUpdated;
-            Metadata = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigMetadataPath));
-            Config = Metadata.Metadata;
+            AppGameConfig = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigMetadataPath));
+            Config = AppGameConfig.Metadata;
             GameConfigName = Config.Select(x => x.ZoneName).ToList();
         }
 

@@ -13,10 +13,14 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Http;
+// Load YSDispatch from this namespace
+using Hi3Helper.EncTool;
 using Hi3Helper.Shared.ClassStruct;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// Load CurrentConfig from here
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -592,8 +596,8 @@ namespace CollapseLauncher
         {
             // Temporarily disable the PostInstallVerification for both Post Install Check and
             // Repair Mechanism.
-            // if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
-            return;
+            if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
+            // return;
 
             InstallStatus = new InstallManagementStatus
             {
@@ -666,12 +670,48 @@ namespace CollapseLauncher
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets", "", DecompressedRemotePath);
         }
 
+        private async Task InitializeNewGenshinDispatch()
+        {
+            try
+            {
+                // Load Dispatcher Data
+                DispatchReader = new GenshinDispatchHelper(DispatchServerID, DispatchKey, DispatchURLPrefix, GameVersionString, Token);
+
+                // As per 2.8 update, the dispatch must be decrypted first.
+                // Grab Genshin and Master Key to decrypt first
+                string MasterKey = AppGameConfig.MasterKey;
+                int MasterKeyBitLength = AppGameConfig.MasterKeyBitLength;
+                string GenshinKey = CurrentRegion.DispatcherKey;
+                int GenshinKeyBitLength = CurrentRegion.DispatcherKeyBitLength ?? 0;
+
+                YSDispatchDec Decryptor = new YSDispatchDec();
+                Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+                Decryptor.DecryptStringWithMasterKey(ref GenshinKey);
+                Decryptor.InitYSDecoder(GenshinKey, RSAEncryptionPadding.Pkcs1, GenshinKeyBitLength);
+
+                // Init Genshin Key to Inner RSA class
+                Decryptor.InitRSA();
+
+                // Load Dispatch Info in JSON
+                YSDispatchInfo DispatcherData = await DispatchReader.LoadDispatchInfo();
+                // Get Protobuf Encrypted content and decrypt it. Then load it to LoadDispatch.
+                byte[] ProtoDecrypted = Decryptor.DecryptYSDispatch(DispatcherData.content);
+                await DispatchReader.LoadDispatch(ProtoDecrypted);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while loading the dispatcher! :(\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
+        }
+
         private async Task BuildPersistentManifest(List<PkgVersionProperties> Entries,
             Dictionary<string, PkgVersionProperties> HashtableManifest)
         {
-            // Load Dispatcher Data
-            DispatchReader = new GenshinDispatchHelper(DispatchServerID, DispatchKey, DispatchURLPrefix, GameVersionString, Token);
-            await DispatchReader.LoadDispatch();
+            // Initialize Dispatch First
+            await InitializeNewGenshinDispatch();
+
+            // Load dispatch info as QueryProperty
             QueryProperty QueryProperty = DispatchReader.GetResult();
 
             string ManifestPath, ParentURL, ParentAudioURL;
