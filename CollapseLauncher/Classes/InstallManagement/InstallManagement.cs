@@ -607,6 +607,8 @@ namespace CollapseLauncher
             };
             UpdateStatus(InstallStatus);
 
+            TryUnassignReadOnlyFiles();
+
             Dictionary<string, PkgVersionProperties> HashtableManifest = new Dictionary<string, PkgVersionProperties>();
 
             Entries = new List<PkgVersionProperties>();
