@@ -44,7 +44,7 @@ Some features like Game Data Repair and Preload Download are available for this 
 > **Note**: The version for this build is 1.0.33.6-Hotfix (Released on: July 17th, 2022)
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.35.1-pre/CL-1.0.35.1-preview_Installer.exe)
-> **Note**: The version for this build is 1.0.35.1 (Released on: June 19th, 2022).
+> **Note**: The version for this build is 1.0.35.1 (Released on: July 19th, 2022).
 
 To see all releases, please [**go to here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
