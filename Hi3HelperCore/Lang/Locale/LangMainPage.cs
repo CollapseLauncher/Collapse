@@ -17,6 +17,10 @@
                 public string RegionLoadingSubtitleTimeOut { get; set; } = LangFallback?._MainPage.RegionLoadingSubtitleTimeOut;
                 public string RegionLoadingSubtitleTooLong { get; set; } = LangFallback?._MainPage.RegionLoadingSubtitleTooLong;
                 public string NotifNeverAsk { get; set; } = LangFallback?._MainPage.NotifNeverAsk;
+                public string MetadataUpdateTitle { get; set; } = LangFallback?._MainPage.MetadataUpdateTitle;
+                public string MetadataUpdateSubtitle { get; set; } = LangFallback?._MainPage.MetadataUpdateSubtitle;
+                public string MetadataUpdateBtn { get; set; } = LangFallback?._MainPage.MetadataUpdateBtn;
+                public string MetadataUpdateBtnUpdating { get; set; } = LangFallback?._MainPage.MetadataUpdateBtnUpdating;
             }
         }
         #endregion

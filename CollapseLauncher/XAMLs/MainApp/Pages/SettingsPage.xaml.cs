@@ -65,6 +65,11 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     File.Delete(AppConfigFile);
                     File.Delete(AppNotifIgnoreFile);
+                    try
+                    {
+                        Directory.Delete(AppGameConfigMetadataFolder, true);
+                    }
+                    catch { }
                     MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
                     break;
                 default:

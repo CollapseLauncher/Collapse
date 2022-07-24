@@ -48,7 +48,11 @@
     "RegionLoadingSubtitleTimeOut": "Loading Region {0} has timed-out (> {1} seconds). Retrying...",
     "RegionLoadingSubtitleTooLong": "It takes a bit longer than expected. Please ensure that your connection is stable.",
     "NavCtrlTitleSettings": "App Settings",
-    "NotifNeverAsk": "Never show me this again"
+    "NotifNeverAsk": "Never show me this again",
+    "MetadataUpdateTitle": "Launcher Metadata Update is Available",
+    "MetadataUpdateSubtitle": "New metadata for the launcher is available! We recommend you to proceed the update in order to ensure that the launcher could communicate with the miHoYo/HoYoverse servers. Click on \"Update Metadata\" to update.",
+    "MetadataUpdateBtn": "Update Metadata",
+    "MetadataUpdateBtnUpdating": "Updating Metadata..."
   },
 
   // HomePage Content

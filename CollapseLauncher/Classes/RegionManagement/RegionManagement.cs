@@ -24,6 +24,7 @@ namespace CollapseLauncher
         bool loadRegionComplete;
         int LoadTimeoutSec = 10;
         int LoadTimeoutJump = 2;
+
         public async Task LoadRegion(int regionIndex = 0)
         {
             int prevTimeout = LoadTimeoutSec;

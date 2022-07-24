@@ -48,7 +48,11 @@
     "RegionLoadingSubtitleTimeOut": "Terjadi masa tenggang saat membaca wilayah {0} (> {1} detik). Mencoba lagi...",
     "RegionLoadingSubtitleTooLong": "Proses memakan waktu lebih lama dari perkiraan. Pastikan bahwa koneksimu stabil.",
     "NavCtrlTitleSettings": "Pengaturan App",
-    "NotifNeverAsk": "Jangan munculkan ini lagi"
+    "NotifNeverAsk": "Jangan munculkan ini lagi",
+    "MetadataUpdateTitle": "Pembaruan Metadata Launcher Tersedia",
+    "MetadataUpdateSubtitle": "Metadata baru untuk launcher telah tersedia! Kamu direkomendasikan untuk memperbarui metadata agar launcher tetap dapat terhubung dengan server miHoYo/HoYoverse. Klik \"Perbarui Metadata\" untuk memperbarui.",
+    "MetadataUpdateBtn": "Perbarui Metadata",
+    "MetadataUpdateBtnUpdating": "Memperbarui Metadata..."
   },
 
   // HomePage Content
@@ -126,7 +130,7 @@
 
   // CachesPage Content
   "_CachesPage": {
-    "PageTitle": "Perbaruan Cache",
+    "PageTitle": "Pembaruan Cache",
     "ListCol1": "Name",
     "ListCol2": "Tipe",
     "ListCol3": "Asal",
@@ -426,7 +430,7 @@
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Cek Integritas",
     "PreparePatchTitle": "Menyiapkan Patch",
-    "AddtDownloadTitle": "Unduhan Tambahan: {0}/{1}"
+    "AddtDownloadTitle": "Mengunduh: {0}/{1}"
   },
 
   // InstallConvert Content

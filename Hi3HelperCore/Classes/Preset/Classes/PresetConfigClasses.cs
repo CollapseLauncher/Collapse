@@ -12,6 +12,11 @@ namespace Hi3Helper.Preset
 {
     public class PresetConfigClasses
     {
+        public long LastUpdated { get; set; }
+        public List<PresetConfigClasses> Metadata { get; set; }
+        public string MasterKey { get; set; }
+        public int MasterKeyBitLength { get; set; }
+
         public enum ServerRegionID
         {
             os_usa = 0,
@@ -19,6 +24,7 @@ namespace Hi3Helper.Preset
             os_asia = 2,
             os_cht = 3
         }
+
         public string GetSteamInstallationPath()
         {
             try
@@ -32,21 +38,6 @@ namespace Hi3Helper.Preset
             catch
             {
                 return null;
-            }
-        }
-
-        public void SetGameVersion()
-        {
-            try
-            {
-                IniFile ini = new IniFile();
-                ini.Load(Path.Combine(ActualGameDataLocation, "config.ini"));
-
-                GameVersion = ini["General"]["game_version"].ToString().Replace('.', '_');
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"There's something wrong while reading config.ini file.\r\nTraceback: {e}");
             }
         }
 
@@ -343,12 +334,10 @@ namespace Hi3Helper.Preset
         public string UpdateDictionaryAddress { get; set; }
         public string BlockDictionaryAddress { get; set; }
         public string GameVersion { get; set; }
-        public string UsedLanguage { get; set; }
         public string BetterHi3LauncherVerInfoReg { get; set; }
         public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
         public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string FallbackLanguage { get; set; }
-        public bool IsSteamVersion { get; set; }
         public string SteamInstallRegistryLocation { get; set; }
         public int SteamGameID { get; set; }
         public string GameDirectoryName { get; set; }
@@ -362,7 +351,6 @@ namespace Hi3Helper.Preset
         public string? CachesEndpointURL { get; set; }
 #nullable disable
         public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
-        public List<string> LanguageAvailable { get; set; }
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
@@ -373,7 +361,8 @@ namespace Hi3Helper.Preset
         public string LauncherSpriteURLMultiLangFallback { get; set; } = "en-us";
         public string LauncherSpriteURL { get; set; }
         public string LauncherResourceURL { get; set; }
-        public string LauncherInfoURL { get; set; }
+        public string DispatcherKey { get; set; }
+        public int? DispatcherKeyBitLength { get; set; }
     }
 
     public class BHI3LInfo

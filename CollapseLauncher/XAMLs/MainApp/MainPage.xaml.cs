@@ -18,6 +18,7 @@ using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigStore;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -270,7 +271,7 @@ namespace CollapseLauncher
                 {
                     CheckBox NeverAskNotif = new CheckBox
                     {
-                        Content = "Never show me this again",
+                        Content = Lang._MainPage.NotifNeverAsk,
                         Tag = $"{MsgId},{IsAppNotif}"
                     };
                     NeverAskNotif.Checked += NeverAskNotif_Checked;
@@ -337,11 +338,78 @@ namespace CollapseLauncher
 
         private async void InitializeStartup()
         {
-            // await HideLoadingPopup(false, "Loading", "Launcher API");
-            LoadConfig();
             GetAppNotificationPush();
+
+            bool IsMetaStampExist = IsMetadataStampExist();
+            bool IsMetaContentExist = IsMetadataContentExist();
+
+            if (!IsMetaStampExist || !IsMetaContentExist)
+            {
+                LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
+                await HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
+                await DownloadMetadataFiles(true, true);
+            }
+
+            LoadConfigTemplate();
+            LoadRegionSelectorItems();
             await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
+            CheckMetadataUpdateInBackground();
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+        }
+
+        private async void CheckMetadataUpdateInBackground()
+        {
+            bool IsUpdate = await CheckForNewMetadata();
+            if (IsUpdate)
+            {
+                TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtn, VerticalAlignment = VerticalAlignment.Center };
+                Button UpdateMetadatabtn = new Button
+                {
+                    Content = Text,
+                    Margin = new Thickness(0, 0, 0, 16),
+                    Style = (Application.Current.Resources["AccentButtonStyle"] as Style)
+                };
+
+                UpdateMetadatabtn.Click += (async (a, b) =>
+                {
+                    TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtnUpdating, VerticalAlignment = VerticalAlignment.Center };
+                    ProgressRing LoadBar = new ProgressRing
+                    {
+                        IsIndeterminate = true,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(0,0,8,0),
+                        Width = 16,
+                        Height = 16
+                    };
+                    StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal};
+                    StackPane.Children.Add(LoadBar);
+                    StackPane.Children.Add(Text);
+                    (a as Button).Content = StackPane;
+                    (a as Button).IsEnabled = false;
+
+                    try
+                    {
+                        await DownloadMetadataFiles(true, true);
+                        MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
+                        ErrorSender.SendException(ex, ErrorType.Unhandled);
+                    }
+                });
+
+                SpawnNotificationPush(
+                    Lang._MainPage.MetadataUpdateTitle,
+                    Lang._MainPage.MetadataUpdateSubtitle,
+                    InfoBarSeverity.Informational,
+                    -886135731,
+                    true,
+                    false,
+                    null,
+                    UpdateMetadatabtn
+                    );
+            }
         }
 
         private void InitializeNavigationItems()
@@ -370,7 +438,7 @@ namespace CollapseLauncher
             (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
         }
 
-        public void LoadConfig()
+        public void LoadRegionSelectorItems()
         {
             ComboBoxGameRegion.ItemsSource = GameConfigName;
         }

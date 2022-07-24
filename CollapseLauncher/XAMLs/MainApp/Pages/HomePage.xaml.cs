@@ -2,6 +2,7 @@
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -224,8 +225,8 @@ namespace CollapseLauncher.Pages
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
                     // Temporarily Disable RepairGameButton for Genshin
-                    if (CurrentRegion.IsGenshin ?? false)
-                        RepairGameButton.IsEnabled = false;
+                    // if (CurrentRegion.IsGenshin ?? false)
+                    //     RepairGameButton.IsEnabled = false;
                     UpdateGameBtn.Visibility = Visibility.Visible;
                     StartGameBtn.Visibility = Visibility.Collapsed;
                     GameInstallationState = GameInstallStateEnum.NeedsUpdate;
@@ -235,8 +236,8 @@ namespace CollapseLauncher.Pages
                     if (regionResourceProp.data.pre_download_game != null)
                     {
                         // Temporarily Disable RepairGameButton for Genshin
-                        if (CurrentRegion.IsGenshin ?? false)
-                            RepairGameButton.IsEnabled = false;
+                        // if (CurrentRegion.IsGenshin ?? false)
+                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         NotificationBar.Translation += Shadow48;
@@ -263,8 +264,8 @@ namespace CollapseLauncher.Pages
                     else
                     {
                         // Temporarily Disable RepairGameButton for Genshin
-                        if (CurrentRegion.IsGenshin ?? false)
-                            RepairGameButton.IsEnabled = false;
+                        // if (CurrentRegion.IsGenshin ?? false)
+                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;
@@ -306,6 +307,7 @@ namespace CollapseLauncher.Pages
         private async void CheckRunningGameInstance()
         {
             await Task.Delay(1);
+            TextBlock StartBtnText = new TextBlock() { FontWeight = FontWeights.Medium };
             DispatcherQueue.TryEnqueue(async () =>
             {
                 try
@@ -318,7 +320,8 @@ namespace CollapseLauncher.Pages
                                 LauncherBtn.Translation -= Shadow16;
 
                             StartGameBtn.IsEnabled = false;
-                            StartGameBtn.Content = Lang._HomePage.StartBtnRunning;
+                            StartBtnText.Text = Lang._HomePage.StartBtnRunning;
+                            StartGameBtn.Content = StartBtnText;
                             GameStartupSetting.IsEnabled = false;
 
                             await Task.Delay(100);
@@ -328,7 +331,8 @@ namespace CollapseLauncher.Pages
                             LauncherBtn.Translation += Shadow16;
 
                         StartGameBtn.IsEnabled = true;
-                        StartGameBtn.Content = Lang._HomePage.StartBtn;
+                        StartBtnText.Text = Lang._HomePage.StartBtn;
+                        StartGameBtn.Content = StartBtnText;
                         GameStartupSetting.IsEnabled = true;
 
                         await Task.Delay(100);
