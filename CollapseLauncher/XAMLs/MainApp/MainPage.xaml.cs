@@ -42,7 +42,8 @@ namespace CollapseLauncher
                 NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
                 BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
                 SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
-
+                ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
+                
                 LauncherUpdateWatcher.StartCheckUpdate();
 
                 CheckRunningGameInstance();
@@ -54,6 +55,12 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
+        {
+            HideBackgroundImage(!e.Hide);
+            await HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
         }
 
         private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e) => SpawnWebView2Panel(e.URL);

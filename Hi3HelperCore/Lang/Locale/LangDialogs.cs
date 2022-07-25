@@ -2,7 +2,7 @@
 {
     public static partial class Locale
     {
-        #region Misc
+        #region Dialogs
         public partial class LocalizationParams
         {
             public LangDialogs _Dialogs { get; set; } = LangFallback?._Dialogs;
@@ -52,6 +52,14 @@
                 public string UninstallGameSubtitle { get; set; } = LangFallback?._Dialogs.UninstallGameSubtitle;
                 public string MigrationTitle { get; set; } = LangFallback?._Dialogs.MigrationTitle;
                 public string MigrationSubtitle { get; set; } = LangFallback?._Dialogs.MigrationSubtitle;
+                public string NeedInstallMediaPackTitle { get; set; } = LangFallback?._Dialogs.NeedInstallMediaPackTitle;
+                public string NeedInstallMediaPackSubtitle1 { get; set; } = LangFallback?._Dialogs.NeedInstallMediaPackSubtitle1;
+                public string NeedInstallMediaPackSubtitle2 { get; set; } = LangFallback?._Dialogs.NeedInstallMediaPackSubtitle2;
+                public string InstallMediaPackCompleteTitle { get; set; } = LangFallback?._Dialogs.InstallMediaPackCompleteTitle;
+                public string InstallMediaPackCompleteSubtitle { get; set; } = LangFallback?._Dialogs.InstallMediaPackCompleteSubtitle;
+                public string InstallingMediaPackTitle { get; set; } = LangFallback?._Dialogs.InstallingMediaPackTitle;
+                public string InstallingMediaPackSubtitle { get; set; } = LangFallback?._Dialogs.InstallingMediaPackSubtitle;
+                public string InstallingMediaPackSubtitleFinished { get; set; } = LangFallback?._Dialogs.InstallingMediaPackSubtitleFinished;
             }
         }
         #endregion

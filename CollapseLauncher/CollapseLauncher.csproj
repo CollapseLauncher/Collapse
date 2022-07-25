@@ -31,6 +31,7 @@
 	<ItemGroup>
 	  <None Remove="ApplyUpdate.exe.config" />
 	  <None Remove="Assets\BG\PaimonWhat.png" />
+	  <None Remove="Misc\InstallMediaPack.cmd" />
 	  <None Remove="XAMLs\StartUp\StartupLanguageSelect.xaml" />
 	</ItemGroup>
 
@@ -42,6 +43,9 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="icon.ico" />
+        <Content Include="Misc\InstallMediaPack.cmd">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

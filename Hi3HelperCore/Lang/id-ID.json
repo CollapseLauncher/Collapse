@@ -331,6 +331,7 @@
     "Next": "Selanjutnya",
     "Prev": "Sebelumnya",
     "Uninstall": "Hapus Pemasangan",
+    "Install": "Pasang",
 
     "Yes": "Ya",
     "YesRedownload": "Ya, Unduh ulang",
@@ -423,7 +424,15 @@
     "UninstallGameTitle": "Hapus Game: {0}",
     "UninstallGameSubtitle": "Kamu akan menghapus game di lokasi ini:\r\n\r\n{0}\r\n\r\nLanjutkan?",
     "MigrationTitle": "Memilih Folder Target",
-    "MigrationSubtitle": "Sebelum memulai proses ini, Apakah kamu ingin menentukan lokasi gamenya?"
+    "MigrationSubtitle": "Sebelum memulai proses ini, Apakah kamu ingin menentukan lokasi gamenya?",
+    "NeedInstallMediaPackTitle": "Media Feature Pack tidak ditemukan!",
+    "NeedInstallMediaPackSubtitle1": "PERINGATAN: Mulai dari update v5.8, Honkai Impact 3 membutuhkan \"Media Feature Pack\" terpasang pada PC-mu untuk menjalankan game. Hal ini akan memperbaiki error \"Unable to load DLL 'cri_ware_unity'\" pada game.\r\n\r\n",
+    "NeedInstallMediaPackSubtitle2": "Kamu perlu restart PC-mu terlebih dahulu setelah selesai memasang Media Feature Pack. Kamu bisa lewati peringatan ini tapi ada kemungkinan bahwa kamu akan mendapatkan error \"Unable to load DLL 'cri_ware_unity'\" saat menjalankan game.",
+    "InstallMediaPackCompleteTitle": "Media Feature Pack selesai dipasang!",
+    "InstallMediaPackCompleteSubtitle": "Media Feature Pack sudah selesai dipasang dalam PC-mu.\r\nTapi kamu perlu restart PC-mu terlebih dahulu sebelum main :)",
+    "InstallingMediaPackTitle": "Memasang Media Feature Pack",
+    "InstallingMediaPackSubtitle": "Menunggu hingga proses selesai...",
+    "InstallingMediaPackSubtitleFinished": "Selesai"
   },
 
   // InstallMgmt Content

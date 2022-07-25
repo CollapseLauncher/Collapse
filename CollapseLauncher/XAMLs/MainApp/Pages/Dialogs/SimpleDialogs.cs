@@ -249,6 +249,26 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.Cancel
                 );
 
+        public static async Task<ContentDialogResult> Dialog_NeedInstallMediaPackage(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.NeedInstallMediaPackTitle,
+                    Lang._Dialogs.NeedInstallMediaPackSubtitle1 + Lang._Dialogs.NeedInstallMediaPackSubtitle2,
+                    Content,
+                    Lang._Misc.Cancel,
+                    Lang._Misc.Install,
+                    Lang._Misc.Skip
+                );
+
+        public static async Task<ContentDialogResult> Dialog_InstallMediaPackageFinished(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.InstallMediaPackCompleteTitle,
+                    Lang._Dialogs.InstallMediaPackCompleteSubtitle,
+                    Content,
+                    null,
+                    Lang._Misc.OkayBackToMenu,
+                    null
+                );
+
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,

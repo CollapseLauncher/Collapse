@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Microsoft.Win32;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -740,6 +741,9 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                bool IsContinue = await CheckMediaPackInstalled();
+
+                if (!IsContinue) return;
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentRegion.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
@@ -763,6 +767,51 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentRegion.ZoneName}\r\nTraceback: {ex}", Hi3Helper.LogType.Error, true);
             }
+        }
+
+        public async Task<bool> CheckMediaPackInstalled()
+        {
+            if (CurrentRegion.IsGenshin ?? false) return true;
+
+            RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
+            if (reg != null)
+                return true;
+
+            switch (await Dialog_NeedInstallMediaPackage(Content))
+            {
+                case ContentDialogResult.Primary:
+                    TryInstallMediaPack();
+                    break;
+                case ContentDialogResult.Secondary:
+                    return true;
+            }
+
+            return false;
+        }
+
+        public async void TryInstallMediaPack()
+        {
+            try
+            {
+                Process proc = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
+                        UseShellExecute = true,
+                        Verb = "runas"
+                    }
+                };
+
+                ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle, Lang._Dialogs.InstallingMediaPackSubtitle);
+                MainFrameChanger.ChangeMainFrame(typeof(Pages.BlankPage));
+                proc.Start();
+                await proc.WaitForExitAsync();
+                ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle, Lang._Dialogs.InstallingMediaPackSubtitleFinished);
+                await Dialog_InstallMediaPackageFinished(Content);
+                MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+            }
+            catch { }
         }
 
         public async void StartExclusiveWindowPayload()

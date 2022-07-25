@@ -331,6 +331,7 @@
     "Next": "Next",
     "Prev": "Previous",
     "Uninstall": "Uninstall",
+    "Install": "Install",
 
     "Yes": "Yes",
     "YesRedownload": "Yes, Redownload",
@@ -423,7 +424,15 @@
     "UninstallGameTitle": "Uninstalling Game: {0}",
     "UninstallGameSubtitle": "You are about to uninstall the game in this location:\r\n\r\n{0}\r\n\r\nDo you want to continue?",
     "MigrationTitle": "Locating Target Folder",
-    "MigrationSubtitle": "Before starting this process, Do you want to specify the location of the game?"
+    "MigrationSubtitle": "Before starting this process, Do you want to specify the location of the game?",
+    "NeedInstallMediaPackTitle": "Media Feature Pack can't be found!",
+    "NeedInstallMediaPackSubtitle1": "WARNING: Starting from v5.8 update, Honkai Impact 3 needs \"Media Feature Pack\" to be installed on your PC to run. This will fix \"Unable to load DLL 'cri_ware_unity'\" error in-game.\r\n\r\n",
+    "NeedInstallMediaPackSubtitle2": "You need to restart your PC after you've installed the Media Feature Pack. However, You can ignore this warning but there might be a chance that you will get \"Unable to load DLL 'cri_ware_unity'\" error while running the game.",
+    "InstallMediaPackCompleteTitle": "Media Feature Pack has been installed!",
+    "InstallMediaPackCompleteSubtitle": "Media Feature Pack has been installed on your PC.\r\nPlease restart your PC to apply the effect!",
+    "InstallingMediaPackTitle": "Installing Media Feature Pack",
+    "InstallingMediaPackSubtitle": "Waiting until the process finished...",
+    "InstallingMediaPackSubtitleFinished": "Finished"
   },
 
   // InstallMgmt Content

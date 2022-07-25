@@ -64,6 +64,7 @@
                 public string Completed { get; set; } = LangFallback?._Misc.Completed;
                 public string Skipped { get; set; } = LangFallback?._Misc.Skipped;
                 public string Select { get; set; } = LangFallback?._Misc.Select;
+                public string Install { get; set; } = LangFallback?._Misc.Install;
                 public string NotRunning { get; set; } = LangFallback?._Misc.NotRunning;
                 public string MovingFile { get; set; } = LangFallback?._Misc.MovingFile;
                 public string CheckingFile { get; set; } = LangFallback?._Misc.CheckingFile;

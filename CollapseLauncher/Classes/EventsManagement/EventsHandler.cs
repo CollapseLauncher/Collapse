@@ -278,4 +278,30 @@ namespace CollapseLauncher
         public Uri URL { get; set; }
     }
     #endregion
+    #region ShowLoadingPage
+    internal static class ShowLoadingPage
+    {
+        static ShowLoadingPageInvoker invoker = new ShowLoadingPageInvoker();
+        public static void ShowLoading(string Title, string Subtitle, bool Hide = false) => invoker.ShowLoading(Hide, Title, Subtitle);
+    }
+
+    internal class ShowLoadingPageInvoker
+    {
+        public static event EventHandler<ShowLoadingPageProperty> PageEvent;
+        public void ShowLoading(bool Hide, string Title, string Subtitle) => PageEvent?.Invoke(this, new ShowLoadingPageProperty(Hide, Title, Subtitle));
+    }
+
+    internal class ShowLoadingPageProperty
+    {
+        internal ShowLoadingPageProperty(bool Hide, string Title, string Subtitle)
+        {
+            this.Hide = Hide;
+            this.Title = Title;
+            this.Subtitle = Subtitle;
+        }
+        public bool Hide { get; private set; }
+        public string Title { get; private set; }
+        public string Subtitle { get; private set; }
+    }
+    #endregion
 }
