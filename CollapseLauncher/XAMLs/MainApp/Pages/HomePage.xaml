@@ -481,7 +481,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="StartGamme">
+                        <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="StartGame">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium"/>
                         </Button>
                         <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="CancelInstallationProcedure">

@@ -224,9 +224,6 @@ namespace CollapseLauncher.Pages
                     GameInstallationState = GameInstallStateEnum.GameBroken;
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
-                    // Temporarily Disable RepairGameButton for Genshin
-                    // if (CurrentRegion.IsGenshin ?? false)
-                    //     RepairGameButton.IsEnabled = false;
                     UpdateGameBtn.Visibility = Visibility.Visible;
                     StartGameBtn.Visibility = Visibility.Collapsed;
                     GameInstallationState = GameInstallStateEnum.NeedsUpdate;
@@ -235,9 +232,6 @@ namespace CollapseLauncher.Pages
                 {
                     if (regionResourceProp.data.pre_download_game != null)
                     {
-                        // Temporarily Disable RepairGameButton for Genshin
-                        // if (CurrentRegion.IsGenshin ?? false)
-                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         NotificationBar.Translation += Shadow48;
@@ -263,9 +257,6 @@ namespace CollapseLauncher.Pages
                     }
                     else
                     {
-                        // Temporarily Disable RepairGameButton for Genshin
-                        // if (CurrentRegion.IsGenshin ?? false)
-                        //     RepairGameButton.IsEnabled = false;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;
@@ -476,12 +467,11 @@ namespace CollapseLauncher.Pages
 
         private bool CheckExistingGame(string destinationFolder)
         {
-            bool isExist = false;
-            string targetPath = null, iniPath = null;
-            // Phase 1 Check
-            targetPath = Path.Combine(destinationFolder, CurrentRegion.GameExecutableName);
-            iniPath = Path.Combine(destinationFolder, "config.ini");
+            bool isExist;
+            string targetPath = Path.Combine(destinationFolder, CurrentRegion.GameExecutableName),
+                   iniPath = Path.Combine(destinationFolder, "config.ini");
 
+            // Phase 1 Check
             if (File.Exists(targetPath) && File.Exists(iniPath))
             {
                 gameIni.Config = new IniFile();
@@ -514,12 +504,8 @@ namespace CollapseLauncher.Pages
             if (!isExist)
                 return false;
 
-            // if (gameIni.Config["General"]["game_version"].ToString() != regionResourceProp.data.game.latest.version)
-            //     return false;
-
             gameIni.Profile["launcher"]["game_install_path"] = Path.GetDirectoryName(targetPath).Replace('\\', '/');
             SaveGameProfile();
-            // PrepareGameConfig();
             if (CurrentRegion.IsGenshin ?? false)
                 CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
 
@@ -749,17 +735,8 @@ namespace CollapseLauncher.Pages
             return returnFolder;
         }
 
-        private async Task CheckMigrationProcess()
-        {
-            while (MigrationWatcher.IsMigrationRunning)
-            {
-                // Take sleep for 250ms
-                await Task.Delay(250);
-            }
-        }
-
         CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
-        private async void StartGamme(object sender, RoutedEventArgs e)
+        private async void StartGame(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -852,7 +829,7 @@ namespace CollapseLauncher.Pages
                 catch (OperationCanceledException)
                 {
                     LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
-                    InnerLauncherConfig.m_presenter.Restore();
+                    m_presenter.Restore();
                 }
                 catch (Exception ex)
                 {
@@ -863,11 +840,8 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            // MigrationWatcher.IsMigrationRunning = false;
             PageToken.Cancel();
-            // CancelInstallationDownload();
             InstallerDownloadTokenSource.Cancel();
-            // WatchOutputLog.Cancel();
         }
 
         private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
@@ -1107,7 +1081,6 @@ namespace CollapseLauncher.Pages
 
                 ApplyGameConfig(GameDirPath);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                // OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
             catch (IOException ex)
             {
@@ -1193,7 +1166,6 @@ namespace CollapseLauncher.Pages
         {
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
-            // (sender as Button).IsEnabled = false;
             NotificationBar.IsClosable = false;
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
@@ -1301,17 +1273,6 @@ namespace CollapseLauncher.Pages
         {
             if ((sender as Image).Tag == null) return;
             SpawnWebView2.SpawnWebView2Window((sender as Image).Tag.ToString());
-
-            /*
-            new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = true,
-                    FileName = (sender as Image).Tag.ToString()
-                }
-            }.Start();
-            */
         }
     }
 }
