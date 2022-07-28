@@ -37,7 +37,7 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
 
             // Clear MainPage State, like NavigationView, Load State, etc.
-            ClearMainPageState();
+            await ClearMainPageState();
 
             // Load Game Region File
             LoadGameRegionFile();
@@ -50,7 +50,7 @@ namespace CollapseLauncher
             await FinalizeLoadRegion();
         }
 
-        public async void ClearMainPageState()
+        public async Task ClearMainPageState()
         {
             // Reset Retry Counter
             CurrentRetry = 0;
