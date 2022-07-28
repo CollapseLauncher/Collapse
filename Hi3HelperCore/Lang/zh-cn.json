@@ -83,9 +83,9 @@
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换版本",
     "GameSettings_Panel3": "自定义启动参数",
-    "GameSettings_Panel4": "混合",
-    "GameSettings_Panel4ShowEventsPanel": "显示事件面板",
-    "PostPanel_Events": "事件",
+    "GameSettings_Panel4": "杂项",
+    "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
+    "PostPanel_Events": "公告",
     "PostPanel_Notices": "通知",
     "PostPanel_Info": "信息",
     "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
