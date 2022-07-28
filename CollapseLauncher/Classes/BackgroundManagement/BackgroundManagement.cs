@@ -280,6 +280,8 @@ namespace CollapseLauncher
                                                     ExifOrientationMode.RespectExifOrientation,
                                                     ColorManagementMode.DoNotColorManage);
 
+                if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
+
                 using (var destinationStream = new MemoryStream())
                 {
                     BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, destinationStream.AsRandomAccessStream());
@@ -291,6 +293,13 @@ namespace CollapseLauncher
             }
 
             return retBitmap;
+        }
+
+        private void FlipSize(ref (uint, uint) b)
+        {
+            (uint, uint) _b = b;
+            b.Item1 = _b.Item2;
+            b.Item2 = _b.Item1;
         }
 
         private BitmapImage Bitmap2BitmapImage(Stream image)
