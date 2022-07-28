@@ -399,6 +399,8 @@ namespace CollapseLauncher
             }
         }
 
+        private async Task TryUnassignReadOnlyFilesAsync() => await Task.Run(() => TryUnassignReadOnlyFiles());
+
         private void TryUnassignReadOnlyFiles()
         {
             foreach (string File in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
@@ -607,7 +609,7 @@ namespace CollapseLauncher
             };
             UpdateStatus(InstallStatus);
 
-            TryUnassignReadOnlyFiles();
+            await TryUnassignReadOnlyFilesAsync();
 
             Dictionary<string, PkgVersionProperties> HashtableManifest = new Dictionary<string, PkgVersionProperties>();
 
