@@ -340,7 +340,8 @@
     "Disabled": "关闭",
     "Enabled": "开启",
     "BuildChannelPreview": "预览版",
-    "BuildChannelStable": "正式版"
+    "BuildChannelStable": "正式版",
+    "Install": "安装"
   },
   // Dialogs Content
   "_Dialogs": {
@@ -387,7 +388,15 @@
     "UninstallGameTitle": "卸载游戏：{0}",
     "UninstallGameSubtitle": "你即将卸载在这个位置的游戏：\r\n\r\n{0}\r\n\r\n你想继续吗？",
     "MigrationTitle": "定位目标文件夹",
-    "MigrationSubtitle": "在开始这个过程之前，你是否要指定游戏的位置？"
+    "MigrationSubtitle": "在开始这个过程之前，你是否要指定游戏的位置？",
+    "NeedInstallMediaPackTitle": "找不到媒体功能包!",
+    "NeedInstallMediaPackSubtitle1": "注意：从v5.8更新开始，崩坏三需要在您的电脑上安装 \"媒体功能包 \"才能运行。这将解决游戏中 \"Unable to load DLL 'cri_ware_unity'\"的错误。\r\n\r\n",
+    "NeedInstallMediaPackSubtitle2": "在你安装完媒体功能包后，你需要重新启动你的电脑。或者，你可以忽略这个警告，但在运行游戏时可能会出现 \"Unable to load DLL 'cri_ware_unity'\"错误。",
+    "InstallMediaPackCompleteTitle": "媒体功能包已经安装完毕!",
+    "InstallMediaPackCompleteSubtitle": "您的电脑已经安装了媒体功能包。\r\n请重新启动您的电脑以应用该包！",
+    "InstallingMediaPackTitle": "正在媒体功能包",
+    "InstallingMediaPackSubtitle": "等待进程结束...",
+    "InstallingMediaPackSubtitleFinished": "完成"
   },
   // InstallMgmt Content
   "_InstallMgmt": {
