@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -7,8 +8,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
-using Hi3Helper.Http;
+using System.Text;
+using Newtonsoft.Json;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameConfig;
@@ -19,116 +20,157 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        Http httpHelper = new Http(default, 4, 250);
-        CancellationTokenSource tokenSource;
-        bool loadRegionComplete;
-        int LoadTimeoutSec = 10;
-        int LoadTimeoutJump = 2;
+        private Http Http = new Http(default, 4, 250);
+        private bool IsLoadRegionComplete;
+        private bool IsInnerTaskSuccess;
+        private string PreviousTag = string.Empty;
 
-        public async Task LoadRegion(int regionIndex = 0)
+        private uint CurrentRetry;
+        private uint MaxRetry = 5; // Max 5 times of retry attempt
+        private uint LoadTimeout = 1; // 10 seconds of initial Load Timeout
+        private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
+
+        public async Task LoadRegionByIndex(uint Index = 0)
         {
-            int prevTimeout = LoadTimeoutSec;
-            loadRegionComplete = false;
-            CurrentRegion = ConfigStore.Config[regionIndex];
-            previousTag = "launcher";
+            // Set CurrentRegion from Index
+            SetCurrentRegionByIndex(Index);
+            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
+
+            // Clear MainPage State, liek NavigationView, Load State, etc.
+            ClearMainPageState();
+
+            // Load Game Region File
+            LoadGameRegionFile();
+
+            // Load Region Resource from Launcher API
+            await TryLoadGameRegionTask(ChangeBackgroundImageAsRegion(), LoadTimeout, LoadTimeoutStep);
+            await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
+
+            // Finalize Region Load
+            await FinalizeLoadRegion();
+        }
+
+        public async void ClearMainPageState()
+        {
+            // Reset Retry Counter
+            CurrentRetry = 0;
+
+            // Set IsLoadRegionComplete to false
+            IsLoadRegionComplete = false;
+
+            // Clear NavigationViewControl Items and Reset Region props
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
-            LoadGameRegionFile();
-            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...");
-            DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = "");
-            await HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            PreviousTag = "launcher";
             ResetRegionProp();
-            while (!await TryGetRegionResource())
-            {
-                int lastTimeout = LoadTimeoutSec;
-                DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, CurrentRegion.ZoneName, lastTimeout * 2));
-                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> {lastTimeout * 2} seconds). Retrying...", Hi3Helper.LogType.Warning);
 
-                LoadTimeoutSec += LoadTimeoutJump;
+            // Set LoadingFooter empty
+            LoadingFooter.Text = string.Empty;
+
+            // Toggle Loading Popup
+            await HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+
+            IsLoadRegionComplete = true;
+        }
+
+        private async Task TryLoadGameRegionTask(Task InnerTask, uint Timeout, uint TimeoutStep)
+        {
+            while (await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
+            {
+                // If true (fail), then log the retry attempt
+                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, CurrentRegion.ZoneName, LoadTimeout);
+                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> {Timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
+                Timeout += TimeoutStep;
+                CurrentRetry++;
             }
-            LoadTimeoutSec = prevTimeout;
-            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!");
-            InitRegKey();
-            PushRegionNotification(CurrentRegion.ProfileName);
-            await HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
-            if (regionResourceProp.data == null)
+        }
+
+        private async Task<bool> IsTryLoadGameRegionTaskFail(Task InnerTask, uint Timeout)
+        {
+            // Check for Retry Count. If it reaches max, then return to DisconnectedPage
+            if (CurrentRetry > MaxRetry)
             {
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
-                return;
+                return false;
             }
-            InitializeNavigationItems();
-        }
 
-        private async void PushRegionNotification(string RegionProfileName)
-        {
-            if (InnerLauncherConfig.NotificationData.RegionPush == null) return;
-            await Task.Run(() =>
-            {
-                InnerLauncherConfig.NotificationData.EliminatePushList();
-                foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.RegionPush)
-                {
-                    if (Entry.RegionProfile == RegionProfileName && (Entry.ValidForVerBelow == null
-                            || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
-                            && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
-                            || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)))
-                    {
-                        NotificationSender.SendNotification(new NotificationInvokerProp
-                        {
-                            CloseAction = null,
-                            IsAppNotif = false,
-                            Notification = Entry,
-                            OtherContent = null
-                        });
-                    }
-                }
-            }).ConfigureAwait(false);
-        }
+            // Reset Task State
+            CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
+            IsInnerTaskSuccess = false;
 
-        private async Task<bool> TryGetRegionResource()
-        {
             try
             {
-                regionNewsProp = new HomeMenuPanel();
-                tokenSource = new CancellationTokenSource();
-                RetryWatcher();
-
-                await ChangeBackgroundImageAsRegion(tokenSource.Token);
-                await FetchLauncherResourceAsRegion(tokenSource.Token);
-
-                tokenSource.Cancel();
-
-                loadRegionComplete = true;
+                // Run Inner Task and watch for timeout
+                WatchAndCancelIfTimeout(InnerTokenSource, Timeout);
+                await InnerTask.WaitAsync(InnerTokenSource.Token);
+                IsInnerTaskSuccess = true;
             }
             catch (OperationCanceledException)
             {
-                return false;
+                // Return false if cancel triggered
+                return true;
             }
-            catch (Exception ex)
-            {
-                ErrorSender.SendException(ex);
-            }
-            return true;
+
+            // Return false if successful
+            return false;
         }
 
-        private async void RetryWatcher()
+        private async void WatchAndCancelIfTimeout(CancellationTokenSource TokenSource, uint Timeout)
         {
-            while (true)
+            // Wait until it timeout
+            await Task.Delay((int)Timeout * 1000, TokenSource.Token);
+
+            // If InnerTask still not loaded successfully, then cancel it
+            if (!IsInnerTaskSuccess || !IsLoadRegionComplete)
             {
-                try
+                TokenSource.Cancel();
+            }
+        }
+
+        private void SetCurrentRegionByIndex(uint Index)
+        {
+            CurrentRegion = ConfigStore.Config[(int)Index];
+            ComboBoxGameRegion.SelectedIndex = (int)Index;
+        }
+
+        private async Task FinalizeLoadRegion()
+        {
+            // Init Registry Key and Push Region Notification
+            InitRegKey();
+            PushRegionNotification(CurrentRegion.ProfileName);
+
+            // Init NavigationPanel Items
+            InitializeNavigationItems();
+
+            // Set LoadingFooter empty
+            LoadingFooter.Text = string.Empty;
+
+            // Hide Loading Popup
+            await HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+
+            // Log if region has been successfully loaded
+            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!", Hi3Helper.LogType.Scheme, true);
+        }
+
+        private void PushRegionNotification(string RegionProfileName)
+        {
+            if (InnerLauncherConfig.NotificationData.RegionPush == null) return;
+
+            InnerLauncherConfig.NotificationData.EliminatePushList();
+            foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.RegionPush)
+            {
+                if (Entry.RegionProfile == RegionProfileName && (Entry.ValidForVerBelow == null
+                        || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
+                        && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
+                        || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)))
                 {
-                    await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
-                    DispatcherQueue.TryEnqueue(() => LoadingFooter.Text = Lang._MainPage.RegionLoadingSubtitleTooLong);
-                    if (!loadRegionComplete)
+                    NotificationSender.SendNotification(new NotificationInvokerProp
                     {
-                        await Task.Delay(LoadTimeoutSec * 1000, tokenSource.Token);
-                        tokenSource.Cancel();
-                    }
-                    else
-                        return;
-                }
-                catch
-                {
-                    return;
+                        CloseAction = null,
+                        IsAppNotif = false,
+                        Notification = Entry,
+                        OtherContent = null
+                    });
                 }
             }
         }
@@ -159,7 +201,7 @@ namespace CollapseLauncher
             appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
             SaveAppConfig();
             MainFrameChanger.ChangeMainFrame(typeof(Pages.BlankPage));
-            await InvokeLoadRegion(ComboBoxGameRegion.SelectedIndex);
+            await LoadRegionByIndex((uint)ComboBoxGameRegion.SelectedIndex);
             if (ChangeRegionConfirmBtn.Flyout is Flyout f)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
@@ -171,6 +213,13 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task InvokeLoadRegion(int index) => await LoadRegion(index);
+        private async Task FetchLauncherResourceAsRegion()
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                await Http.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, default);
+                regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+            }
+        }
     }
 }

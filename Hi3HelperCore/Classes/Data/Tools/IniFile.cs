@@ -29,6 +29,21 @@ namespace Hi3Helper.Data
             return false;
         }
 
+        private static bool TryParseUInt(string text, out uint value)
+        {
+            uint res;
+            if (uint.TryParse(text,
+                System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out res))
+            {
+                value = res;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+
         private static bool TryParseDouble(string text, out double value)
         {
             double res;
@@ -144,6 +159,30 @@ namespace Hi3Helper.Data
                 return res;
             }
             return valueIfInvalid;
+        }
+
+        public uint ToUInt(uint valueIfInvalid = 0)
+        {
+            uint res;
+            if (TryConvertUInt(out res))
+            {
+                return res;
+            }
+            return valueIfInvalid;
+        }
+
+        public bool TryConvertUInt(out uint result)
+        {
+            if (Value == null)
+            {
+                result = default(uint);
+                return false;
+            }
+            if (TryParseUInt(Value.Trim(), out result))
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool TryConvertInt(out int result)

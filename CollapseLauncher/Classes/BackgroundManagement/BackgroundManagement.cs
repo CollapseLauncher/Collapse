@@ -30,11 +30,11 @@ namespace CollapseLauncher
         private Bitmap ThumbnailBitmap;
         private Stream ThumbnailStream;
         private readonly Size ThumbnailSize = new Size(32, 32);
-        private async Task ChangeBackgroundImageAsRegion(CancellationToken token)
+        private async Task ChangeBackgroundImageAsRegion()
         {
             regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
-                await TryGetMultiLangResourceProp(token) :
-                await TryGetSingleLangResourceProp(token);
+                await TryGetMultiLangResourceProp() :
+                await TryGetSingleLangResourceProp();
 
             regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
             SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
@@ -53,16 +53,16 @@ namespace CollapseLauncher
             BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
             await BackgroundImgChanger.WaitForBackgroundToLoad();
 
-            await GetLauncherAdvInfo(token);
-            await GetLauncherCarouselInfo(token);
-            await GetLauncherEventInfo(token);
+            await GetLauncherAdvInfo();
+            await GetLauncherCarouselInfo();
+            await GetLauncherEventInfo();
             GetLauncherPostInfo();
 
             ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         bool PassFirstTry = false;
-        public async Task<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken token)
+        public async Task<RegionResourceProp> TryGetMultiLangResourceProp()
         {
             RegionResourceProp ret = new RegionResourceProp();
             bool NoData = true;
@@ -70,7 +70,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await httpHelper.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, token);
+                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -79,7 +79,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await httpHelper.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, token);
+                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -89,12 +89,12 @@ namespace CollapseLauncher
             return ret;
         }
 
-        public async Task<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token)
+        public async Task<RegionResourceProp> TryGetSingleLangResourceProp()
         {
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await httpHelper.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, token);
+                await Http.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, default);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
@@ -103,13 +103,16 @@ namespace CollapseLauncher
 
         public void ResetRegionProp()
         {
-            regionNewsProp.sideMenuPanel = null;
-            regionNewsProp.imageCarouselPanel = null;
-            regionNewsProp.articlePanel = null;
-            regionNewsProp.eventPanel = null;
+            regionNewsProp = new HomeMenuPanel()
+            {
+                sideMenuPanel = null,
+                imageCarouselPanel = null,
+                articlePanel = null,
+                eventPanel = null
+            };
         }
 
-        public async Task GetLauncherAdvInfo(CancellationToken token)
+        public async Task GetLauncherAdvInfo()
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -126,7 +129,7 @@ namespace CollapseLauncher
                 });
         }
 
-        public async Task GetLauncherCarouselInfo(CancellationToken token)
+        public async Task GetLauncherCarouselInfo()
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
@@ -140,7 +143,7 @@ namespace CollapseLauncher
                 });
         }
 
-        public async Task GetLauncherEventInfo(CancellationToken token)
+        public async Task GetLauncherEventInfo()
         {
             if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
 
@@ -178,7 +181,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await httpHelper.Download(URL, cachePath, token);
+            if (!File.Exists(cachePath)) await Http.Download(URL, cachePath, token);
 
             return cachePath;
         }
@@ -342,8 +345,8 @@ namespace CollapseLauncher
 
             if (!fI.Exists)
             {
-                await httpHelper.DownloadMultisession(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, false, 4, tokenSource.Token);
-                await httpHelper.MergeMultisession(regionBackgroundProp.imgLocalPath, 4, tokenSource.Token);
+                await Http.DownloadMultisession(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, false, 4, default);
+                await Http.MergeMultisession(regionBackgroundProp.imgLocalPath, 4, default);
             }
         }
 

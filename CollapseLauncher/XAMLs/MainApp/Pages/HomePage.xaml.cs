@@ -122,7 +122,7 @@ namespace CollapseLauncher.Pages
                             }
                     }
                 }
-                catch { }
+                catch (Exception) { }
             });
         }
 

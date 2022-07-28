@@ -25,6 +25,8 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
+        private bool LockRegionChangeBtn;
+
         public MainPage()
         {
             try
@@ -359,9 +361,11 @@ namespace CollapseLauncher
 
             LoadConfigTemplate();
             LoadRegionSelectorItems();
-            await LoadRegion(GetAppConfigValue("CurrentRegion").ToInt());
+            LockRegionChangeBtn = true;
+            await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
             CheckMetadataUpdateInBackground();
             MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+            LockRegionChangeBtn = false;
         }
 
         private async void CheckMetadataUpdateInBackground()
@@ -467,7 +471,7 @@ namespace CollapseLauncher
             if (args.IsSettingsInvoked)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
-                previousTag = "settings";
+                PreviousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
             else
@@ -486,15 +490,14 @@ namespace CollapseLauncher
                 tagStr = "unavailable";
             }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
-            previousTag = tagStr;
+            PreviousTag = tagStr;
         }
 
-        string previousTag = string.Empty;
         private void NavView_Navigate(NavigationViewItem item)
         {
             try
             {
-                if (!(previousTag == (string)item.Tag))
+                if (!(PreviousTag == (string)item.Tag))
                 {
                     switch (item.Tag)
                     {
@@ -535,7 +538,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = true;
+        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = !LockRegionChangeBtn;
 
         private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
         {
@@ -543,13 +546,13 @@ namespace CollapseLauncher
             {
                 if (e.Exception.GetType() == typeof(NotImplementedException))
                 {
-                    previousTag = "unavailable";
+                    PreviousTag = "unavailable";
                     HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(Pages.UnavailablePage));
                 }
                 else
                 {
-                    previousTag = "crashinfo";
+                    PreviousTag = "crashinfo";
                     HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(Pages.UnhandledExceptionPage));
                 }
@@ -565,7 +568,7 @@ namespace CollapseLauncher
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;
                 case "RepairPage":
-                    previousTag = "repair";
+                    PreviousTag = "repair";
                     NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[2];
                     HideBackgroundImage();
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);

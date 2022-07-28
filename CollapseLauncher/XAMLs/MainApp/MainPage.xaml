@@ -90,7 +90,7 @@
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                         <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
-                        <TextBlock x:Name="LoadingFooter" Text=""
+                        <TextBlock x:Name="LoadingFooter" Text="" FontWeight="Bold"
                                    Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0"
                                    CharacterSpacing="0"/>
                     </StackPanel>
