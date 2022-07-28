@@ -244,10 +244,7 @@ namespace CollapseLauncher
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                Grid Container = new Grid
-                {
-                    // Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"]
-                };
+                Grid Container = new Grid();
 
                 StackPanel OtherContentContainer = new StackPanel
                 {

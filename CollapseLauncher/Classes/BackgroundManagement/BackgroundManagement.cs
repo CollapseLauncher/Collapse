@@ -30,6 +30,9 @@ namespace CollapseLauncher
         private Bitmap ThumbnailBitmap;
         private Stream ThumbnailStream;
         private readonly Size ThumbnailSize = new Size(32, 32);
+        private bool PassFirstTry = false;
+        private bool BGLastState = true;
+
         private async Task ChangeBackgroundImageAsRegion()
         {
             regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
@@ -61,8 +64,16 @@ namespace CollapseLauncher
             ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        bool PassFirstTry = false;
-        public async Task<RegionResourceProp> TryGetMultiLangResourceProp()
+        private async Task FetchLauncherResourceAsRegion()
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                await Http.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, default);
+                regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+            }
+        }
+
+        private async Task<RegionResourceProp> TryGetMultiLangResourceProp()
         {
             RegionResourceProp ret = new RegionResourceProp();
             bool NoData = true;
@@ -89,7 +100,7 @@ namespace CollapseLauncher
             return ret;
         }
 
-        public async Task<RegionResourceProp> TryGetSingleLangResourceProp()
+        private async Task<RegionResourceProp> TryGetSingleLangResourceProp()
         {
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
@@ -101,7 +112,7 @@ namespace CollapseLauncher
             return ret;
         }
 
-        public void ResetRegionProp()
+        private void ResetRegionProp()
         {
             regionNewsProp = new HomeMenuPanel()
             {
@@ -112,7 +123,7 @@ namespace CollapseLauncher
             };
         }
 
-        public async Task GetLauncherAdvInfo()
+        private async Task GetLauncherAdvInfo()
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -129,7 +140,7 @@ namespace CollapseLauncher
                 });
         }
 
-        public async Task GetLauncherCarouselInfo()
+        private async Task GetLauncherCarouselInfo()
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
@@ -143,7 +154,7 @@ namespace CollapseLauncher
                 });
         }
 
-        public async Task GetLauncherEventInfo()
+        private async Task GetLauncherEventInfo()
         {
             if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
 
@@ -154,7 +165,7 @@ namespace CollapseLauncher
             };
         }
 
-        public void GetLauncherPostInfo()
+        private void GetLauncherPostInfo()
         {
             if (regionBackgroundProp.data.post.Count == 0) return;
 
@@ -174,7 +185,7 @@ namespace CollapseLauncher
                 }
         }
 
-        public async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())
+        private async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())
         {
             string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
             string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
@@ -374,7 +385,7 @@ namespace CollapseLauncher
             FadeOutBackgroundBuffer();
         }
 
-        public async void FadeOutBackgroundBuffer()
+        private async void FadeOutBackgroundBuffer()
         {
             Storyboard storyboardBack = new Storyboard();
             Storyboard storyboardFront = new Storyboard();
@@ -465,8 +476,7 @@ namespace CollapseLauncher
             }
         }
 
-        bool BGLastState = true;
-        public async void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        private async void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
