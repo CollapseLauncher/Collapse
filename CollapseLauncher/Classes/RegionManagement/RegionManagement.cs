@@ -27,7 +27,7 @@ namespace CollapseLauncher
 
         private uint CurrentRetry;
         private uint MaxRetry = 5; // Max 5 times of retry attempt
-        private uint LoadTimeout = 1; // 10 seconds of initial Load Timeout
+        private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
         public async Task LoadRegionByIndex(uint Index = 0)
@@ -36,7 +36,7 @@ namespace CollapseLauncher
             SetCurrentRegionByIndex(Index);
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
 
-            // Clear MainPage State, liek NavigationView, Load State, etc.
+            // Clear MainPage State, like NavigationView, Load State, etc.
             ClearMainPageState();
 
             // Load Game Region File
@@ -180,8 +180,9 @@ namespace CollapseLauncher
             gameIni = new GameIniStruct();
 
             gamePath = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
-            DispatcherQueue.TryEnqueue(() => ComboBoxGameRegion.PlaceholderText = CurrentRegion.ZoneName);
             gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
+
+            ComboBoxGameRegion.PlaceholderText = CurrentRegion.ZoneName;
 
             if (!Directory.Exists(gamePath))
                 Directory.CreateDirectory(gamePath);
@@ -193,33 +194,44 @@ namespace CollapseLauncher
             gameIni.Profile.Load(gameIni.ProfilePath);
         }
 
-        public async void ChangeRegion(object sender, RoutedEventArgs e)
+        private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
-            ChangeRegionBtn.IsEnabled = false;
-            ChangeRegionConfirmBtn.Flyout.Hide();
-            ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
-            appIni.Profile["app"]["CurrentRegion"] = ComboBoxGameRegion.SelectedIndex;
-            SaveAppConfig();
-            MainFrameChanger.ChangeMainFrame(typeof(Pages.BlankPage));
+            // Disable ChangeRegionBtn and hide flyout
+            ToggleChangeRegionBtn(in sender, true);
+
+            // Set CurrentRegion in AppConfig
+            SetAndSaveConfigValue("CurrentRegion", ComboBoxGameRegion.SelectedIndex);
+
+            // Start region loading
             await LoadRegionByIndex((uint)ComboBoxGameRegion.SelectedIndex);
-            if (ChangeRegionConfirmBtn.Flyout is Flyout f)
-            {
-                MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
-                ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                f.Hide();
-                ChangeRegionConfirmBtn.IsEnabled = false;
-                ChangeRegionBtn.IsEnabled = true;
-                LogWriteLine($"Region changed to {ComboBoxGameRegion.SelectedValue}", Hi3Helper.LogType.Scheme);
-            }
+
+            // Finalize loading
+            ToggleChangeRegionBtn(in sender, false);
+            LogWriteLine($"Region changed to {ComboBoxGameRegion.SelectedValue}", Hi3Helper.LogType.Scheme, true);
         }
 
-        private async Task FetchLauncherResourceAsRegion()
+        private void ToggleChangeRegionBtn(in object sender, bool IsHide)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            Type page = null;
+            if (IsHide)
             {
-                await Http.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, default);
-                regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
+                // Hide element
+                ChangeRegionConfirmBtn.Flyout.Hide();
+                ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
+                page = typeof(Pages.BlankPage);
             }
+            else
+            {
+                // Show element
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
+                page = typeof(Pages.HomePage);
+            }
+            
+            (sender as Button).IsEnabled = !IsHide;
+
+            // Load page
+            MainFrameChanger.ChangeMainFrame(page);
         }
     }
 }
