@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.ViewManagement;
+using Windows.Graphics.Display;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -37,7 +39,7 @@ namespace CollapseLauncher
                 InitializeComponent();
                 SetThemeParameters();
 
-                m_actualMainFrameSize = new Size(LauncherFrame.Width, LauncherFrame.Height);
+                m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
                 ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
                 MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;

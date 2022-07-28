@@ -262,27 +262,32 @@ namespace CollapseLauncher
 
             using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
             {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
-
-                BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
-
-                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
-
-                (
-                    encoder.BitmapTransform.ScaledWidth,
-                    encoder.BitmapTransform.ScaledHeight
-                ) = GetPreservedImageRatio(
-                    (uint)((double)m_actualMainFrameSize.Width * 1.45 * m_appDPIScale),
-                    (uint)((double)m_actualMainFrameSize.Height * 1.45 * m_appDPIScale),
+                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
+                (uint, uint) ResizedSize = GetPreservedImageRatio(
+                    (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale),
+                    (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale),
                     decoder.PixelWidth,
                     decoder.PixelHeight);
+                BitmapTransform transform = new BitmapTransform() {
+                    ScaledWidth = ResizedSize.Item1,
+                    ScaledHeight = ResizedSize.Item2,
+                    InterpolationMode = BitmapInterpolationMode.Fant
+                };
+                PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
+                                                    BitmapPixelFormat.Rgba8,
+                                                    BitmapAlphaMode.Straight,
+                                                    transform,
+                                                    ExifOrientationMode.RespectExifOrientation,
+                                                    ColorManagementMode.DoNotColorManage);
 
-                await encoder.FlushAsync();
-                resizedStream.Seek(0);
+                using (var destinationStream = new MemoryStream())
+                {
+                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, destinationStream.AsRandomAccessStream());
+                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Premultiplied, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
+                    await encoder.FlushAsync();
 
-                retBitmap = Bitmap2BitmapImage(resizedStream.AsStreamForRead());
+                    retBitmap = Bitmap2BitmapImage(destinationStream);
+                }
             }
 
             return retBitmap;
@@ -291,6 +296,7 @@ namespace CollapseLauncher
         private BitmapImage Bitmap2BitmapImage(Stream image)
         {
             BitmapImage ret = new BitmapImage();
+            image.Position = 0;
             ret.SetSource(image.AsRandomAccessStream());
             return ret;
         }
@@ -363,24 +369,18 @@ namespace CollapseLauncher
 
         private async Task ApplyBackground(bool rescale = true)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                BackgroundBackBuffer.Source = BackgroundBitmap;
-                BackgroundBackBuffer.Visibility = Visibility.Visible;
-                BackgroundFrontBuffer.Source = BackgroundBitmap;
-                BackgroundFrontBuffer.Visibility = Visibility.Visible;
-            });
+            BackgroundBackBuffer.Source = BackgroundBitmap;
+            BackgroundBackBuffer.Visibility = Visibility.Visible;
+            BackgroundFrontBuffer.Source = BackgroundBitmap;
+            BackgroundFrontBuffer.Visibility = Visibility.Visible;
 
             if (rescale)
                 BackgroundBitmap = await GetResizedBitmap(regionBackgroundProp.imgLocalPath);
             else
                 BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                BackgroundBack.Source = BackgroundBitmap;
-                BackgroundFront.Source = BackgroundBitmap;
-            });
+            BackgroundBack.Source = BackgroundBitmap;
+            BackgroundFront.Source = BackgroundBitmap;
 
             FadeOutBackgroundBuffer();
         }

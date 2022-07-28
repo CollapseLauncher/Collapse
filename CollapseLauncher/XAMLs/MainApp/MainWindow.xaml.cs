@@ -26,6 +26,7 @@ namespace CollapseLauncher
             try
             {
                 this.InitializeComponent();
+                m_window = this;
 
                 string title = $"Collapse Launcher - v{AppCurrentVersion} ";
                 if (IsPreview)
