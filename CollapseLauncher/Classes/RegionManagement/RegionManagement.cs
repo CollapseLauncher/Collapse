@@ -43,7 +43,8 @@ namespace CollapseLauncher
             LoadGameRegionFile();
 
             // Load Region Resource from Launcher API
-            await TryLoadGameRegionTask(ChangeBackgroundImageAsRegion(), LoadTimeout, LoadTimeoutStep);
+            await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
+            await ChangeBackgroundImageAsRegion();
             await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
 
             // Finalize Region Load
