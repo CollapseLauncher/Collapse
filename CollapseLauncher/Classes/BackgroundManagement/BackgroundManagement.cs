@@ -32,19 +32,26 @@ namespace CollapseLauncher
         private readonly Size ThumbnailSize = new Size(32, 32);
         private bool PassFirstTry = false;
         private bool BGLastState = true;
+        private bool IsFirstStartup = true;
 
-        private async Task ChangeBackgroundImageAsRegion()
+        private async Task FetchLauncherLocalizedResources()
         {
             regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
                 await TryGetMultiLangResourceProp() :
                 await TryGetSingleLangResourceProp();
 
-            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
-            SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
-
             await DownloadBackgroundImage();
 
-            if (GetAppConfigValue("UseCustomBG").ToBool())
+            await GetLauncherAdvInfo();
+            await GetLauncherCarouselInfo();
+            await GetLauncherEventInfo();
+            GetLauncherPostInfo();
+        }
+
+        private async Task ChangeBackgroundImageAsRegion()
+        {
+            bool IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 if (string.IsNullOrEmpty(BGPath))
@@ -53,15 +60,14 @@ namespace CollapseLauncher
                     regionBackgroundProp.imgLocalPath = BGPath;
             }
 
-            BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
-            await BackgroundImgChanger.WaitForBackgroundToLoad();
+            if (!IsCustomBG || IsFirstStartup)
+            {
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                await BackgroundImgChanger.WaitForBackgroundToLoad();
+                IsFirstStartup = false;
 
-            await GetLauncherAdvInfo();
-            await GetLauncherCarouselInfo();
-            await GetLauncherEventInfo();
-            GetLauncherPostInfo();
-
-            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+                ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+            }
         }
 
         private async Task FetchLauncherResourceAsRegion()
@@ -356,6 +362,9 @@ namespace CollapseLauncher
 
         private async Task DownloadBackgroundImage()
         {
+            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+            SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
+
             if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
                 Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
 
