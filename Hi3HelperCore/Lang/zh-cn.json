@@ -12,16 +12,16 @@
     "Subtitle2": "看来你是第一次使用这个启动器。",
     "Subtitle3": "无论如何，感谢你尝试这个项目，为了设置一些东西，请选择你将把这个启动器的数据放在你的电脑中的位置。",
     "Subtitle4_1": "要开始，请点击",
-    "Subtitle4_2": "寻找文件夹",
+    "Subtitle4_2": "选择文件夹",
     "Subtitle4_3": "点击下面的按钮，选择你想把游戏放在哪里。",
     "FolderInsufficientPermission": "无权限! 选择另一个文件夹!",
     "FolderNotSelected": "还没有文件夹被选中!",
-    "ChooseFolderBtn": "寻找文件夹",
-    "ChooseFolderDialogTitle": "寻找文件夹",
+    "ChooseFolderBtn": "选择文件夹",
+    "ChooseFolderDialogTitle": "选择文件夹",
     "ChooseFolderDialogSubtitle": "我建议你使用下面的默认位置。\r\n\r\n位置为: {0}\r\n\r\n你想使用这个位置吗？",
-    "ChooseFolderDialogCancel": "不",
+    "ChooseFolderDialogCancel": "不想选",
     "ChooseFolderDialogPrimary": "是的",
-    "ChooseFolderDialogSecondary": "不，请选择文件夹",
+    "ChooseFolderDialogSecondary": "我想自己选择个文件夹",
     "OverlayPrepareFolderTitle": "准备程序文件夹",
     "OverlayPrepareFolderSubtitle": "申请权限..."
   },
@@ -43,9 +43,13 @@
     "RegionLoadingAPITitle1": "加载中",
     "RegionLoadingAPITitle2": "启动器API",
     "RegionLoadingSubtitleTimeOut": "加载区服{0}已经超时（>{1}秒）。正在重新尝试...",
-    "RegionLoadingSubtitleTooLong": "这比预期的时间要长一些。请确保你的网络连接是稳定的。",
+    "RegionLoadingSubtitleTooLong": "这比预期的时间要长一些。请确保你的网络连接稳定。",
     "NavCtrlTitleSettings": "程序设置",
-    "NotifNeverAsk": "不要再给我看这个"
+    "NotifNeverAsk": "不要再给我看这个",
+    "MetadataUpdateTitle": "启动器元数据更新已推出",
+    "MetadataUpdateSubtitle": "启动器的新元数据已经可用 我们建议你进行更新，以确保启动器能够与miHoYo/HoYoverse服务器通信。点击 \"更新元数据\"进行更新。",
+    "MetadataUpdateBtn": "更新元数据",
+    "MetadataUpdateBtnUpdating": "更新元数据中..."
   },
   // HomePage Content
   "_HomePage": {
@@ -79,9 +83,9 @@
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换版本",
     "GameSettings_Panel3": "自定义启动参数",
-    "GameSettings_Panel4": "混合",
-    "GameSettings_Panel4ShowEventsPanel": "显示事件面板",
-    "PostPanel_Events": "事件",
+    "GameSettings_Panel4": "杂项",
+    "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
+    "PostPanel_Events": "公告",
     "PostPanel_Notices": "通知",
     "PostPanel_Info": "信息",
     "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
@@ -336,7 +340,8 @@
     "Disabled": "关闭",
     "Enabled": "开启",
     "BuildChannelPreview": "预览版",
-    "BuildChannelStable": "正式版"
+    "BuildChannelStable": "正式版",
+    "Install": "安装"
   },
   // Dialogs Content
   "_Dialogs": {
@@ -383,7 +388,15 @@
     "UninstallGameTitle": "卸载游戏：{0}",
     "UninstallGameSubtitle": "你即将卸载在这个位置的游戏：\r\n\r\n{0}\r\n\r\n你想继续吗？",
     "MigrationTitle": "定位目标文件夹",
-    "MigrationSubtitle": "在开始这个过程之前，你是否要指定游戏的位置？"
+    "MigrationSubtitle": "在开始这个过程之前，你是否要指定游戏的位置？",
+    "NeedInstallMediaPackTitle": "找不到媒体功能包!",
+    "NeedInstallMediaPackSubtitle1": "注意：从v5.8更新开始，崩坏三需要在您的电脑上安装 \"媒体功能包 \"才能运行。这将解决游戏中 \"Unable to load DLL 'cri_ware_unity'\"的错误。\r\n\r\n",
+    "NeedInstallMediaPackSubtitle2": "在你安装完媒体功能包后，你需要重新启动你的电脑。或者，你可以忽略这个警告，但在运行游戏时可能会出现 \"Unable to load DLL 'cri_ware_unity'\"错误。",
+    "InstallMediaPackCompleteTitle": "媒体功能包已经安装完毕!",
+    "InstallMediaPackCompleteSubtitle": "您的电脑已经安装了媒体功能包。\r\n请重新启动您的电脑以应用该包！",
+    "InstallingMediaPackTitle": "正在媒体功能包",
+    "InstallingMediaPackSubtitle": "等待进程结束...",
+    "InstallingMediaPackSubtitleFinished": "完成"
   },
   // InstallMgmt Content
   "_InstallMgmt": {
