@@ -258,7 +258,7 @@ namespace CollapseLauncher
 
         private async Task<BitmapImage> GetResizedBitmap(string path)
         {
-            BitmapImage retBitmap = new BitmapImage();
+            InMemoryRandomAccessStream retStream = new InMemoryRandomAccessStream();
 
             using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
             {
@@ -268,7 +268,8 @@ namespace CollapseLauncher
                     (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale),
                     decoder.PixelWidth,
                     decoder.PixelHeight);
-                BitmapTransform transform = new BitmapTransform() {
+                BitmapTransform transform = new BitmapTransform()
+                {
                     ScaledWidth = ResizedSize.Item1,
                     ScaledHeight = ResizedSize.Item2,
                     InterpolationMode = BitmapInterpolationMode.Fant
@@ -281,18 +282,12 @@ namespace CollapseLauncher
                                                     ColorManagementMode.DoNotColorManage);
 
                 if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-
-                using (var destinationStream = new MemoryStream())
-                {
-                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, destinationStream.AsRandomAccessStream());
-                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Premultiplied, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
-                    await encoder.FlushAsync();
-
-                    retBitmap = Bitmap2BitmapImage(destinationStream);
-                }
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, retStream);
+                encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
+                await encoder.FlushAsync();
             }
 
-            return retBitmap;
+            return await Stream2BitmapImage(retStream);
         }
 
         private void FlipSize(ref (uint, uint) b)
@@ -302,11 +297,11 @@ namespace CollapseLauncher
             b.Item2 = _b.Item1;
         }
 
-        private BitmapImage Bitmap2BitmapImage(Stream image)
+        private async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
         {
             BitmapImage ret = new BitmapImage();
-            image.Position = 0;
-            ret.SetSource(image.AsRandomAccessStream());
+            await ret.SetSourceAsync(image);
+            image.Dispose();
             return ret;
         }
 
