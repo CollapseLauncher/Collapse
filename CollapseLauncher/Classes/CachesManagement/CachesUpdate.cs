@@ -1,5 +1,5 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,10 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -28,39 +27,30 @@ namespace CollapseLauncher.Pages
                 cachesCount = 0;
                 cancellationTokenSource = new CancellationTokenSource();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    UpdateCachesBtn.IsEnabled = false;
-                    CancelBtn.IsEnabled = true;
-                });
+                UpdateCachesBtn.IsEnabled = false;
+                CancelBtn.IsEnabled = true;
                 await DownloadCachesUpdate();
                 CacheReindexing();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesStatus.Text = Lang._Misc.Completed;
-                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                    CachesTotalProgressBar.Value = 0;
-                    UpdateCachesBtn.IsEnabled = true;
-                    CheckUpdateBtn.IsEnabled = true;
-                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
-                    CheckUpdateBtn.Visibility = Visibility.Visible;
-                    CancelBtn.IsEnabled = false;
-                });
+                CachesStatus.Text = Lang._Misc.Completed;
+                CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                CachesTotalProgressBar.Value = 0;
+                UpdateCachesBtn.IsEnabled = true;
+                CheckUpdateBtn.IsEnabled = true;
+                UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                CheckUpdateBtn.Visibility = Visibility.Visible;
+                CancelBtn.IsEnabled = false;
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine("Caches Update check cancelled!", LogType.Warning);
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
-                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                    CachesTotalProgressBar.Value = 0;
-                    CheckUpdateBtn.Visibility = Visibility.Visible;
-                    CheckUpdateBtn.IsEnabled = true;
-                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
-                    CancelBtn.IsEnabled = false;
-                });
+                CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
+                CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                CachesTotalProgressBar.Value = 0;
+                CheckUpdateBtn.Visibility = Visibility.Visible;
+                CheckUpdateBtn.IsEnabled = true;
+                UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                CancelBtn.IsEnabled = false;
                 http.DownloadProgress -= CachesDownloadProgress;
             }
             catch (Exception ex)
@@ -98,10 +88,7 @@ namespace CollapseLauncher.Pages
 
                     cachesFileInfo = new FileInfo(cachesPath);
 
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N);
-                    });
+                    CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N);
 
                     if (content.CS >= 4 << 20)
                     {
@@ -120,7 +107,7 @@ namespace CollapseLauncher.Pages
 
                     LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
 
-                    DispatcherQueue.TryEnqueue(() => brokenCachesListUI.RemoveAt(0));
+                    brokenCachesListUI.RemoveAt(0);
                 }
             }
         }
@@ -172,13 +159,10 @@ namespace CollapseLauncher.Pages
                 timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
             }
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
-                                       + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.Speed))
-                                       + $" | {timeLeftString}";
-                CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
-            });
+            CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
+                                   + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.Speed))
+                                   + $" | {timeLeftString}";
+            CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
         }
     }
 }

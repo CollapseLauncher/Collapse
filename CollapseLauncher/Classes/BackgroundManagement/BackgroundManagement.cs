@@ -200,58 +200,55 @@ namespace CollapseLauncher
         private void ApplyAccentColor()
         {
             Windows.UI.Color _color = new Windows.UI.Color();
-            DispatcherQueue.TryEnqueue(() =>
+            if (CurrentAppTheme == AppThemeMode.Light ||
+                (CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"))
             {
-                if (CurrentAppTheme == AppThemeMode.Light ||
-                    (CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"))
+                try
+                {
+                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
+                }
+                catch
                 {
                     try
                     {
-                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
+                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
                     }
                     catch
                     {
                         try
                         {
-                            _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
+                            _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
                         }
                         catch
                         {
-                            try
-                            {
-                                _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
-                            }
-                            catch
-                            {
-                                _color = new Windows.UI.Color { R = 0, G = 0, B = 0, A = 0 };
-                            }
+                            _color = new Windows.UI.Color { R = 0, G = 0, B = 0, A = 0 };
                         }
                     }
-
-                    Application.Current.Resources["SystemAccentColor"] = _color;
-                    Application.Current.Resources["SystemAccentColorDark1"] = _color;
-                    Application.Current.Resources["SystemAccentColorDark2"] = _color;
-                    Application.Current.Resources["SystemAccentColorDark3"] = _color;
                 }
-                else
+
+                Application.Current.Resources["SystemAccentColor"] = _color;
+                Application.Current.Resources["SystemAccentColorDark1"] = _color;
+                Application.Current.Resources["SystemAccentColorDark2"] = _color;
+                Application.Current.Resources["SystemAccentColorDark3"] = _color;
+            }
+            else
+            {
+                try
                 {
-                    try
-                    {
-                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
-                    }
-                    catch
-                    {
-                        _color = new Windows.UI.Color { R = 255, G = 255, B = 255, A = 255 };
-                    }
-
-                    Application.Current.Resources["SystemAccentColor"] = _color;
-                    Application.Current.Resources["SystemAccentColorLight1"] = _color;
-                    Application.Current.Resources["SystemAccentColorLight2"] = _color;
-                    Application.Current.Resources["SystemAccentColorLight3"] = _color;
+                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
+                }
+                catch
+                {
+                    _color = new Windows.UI.Color { R = 255, G = 255, B = 255, A = 255 };
                 }
 
-                ReloadPageTheme(ConvertAppThemeToElementTheme(InnerLauncherConfig.CurrentAppTheme));
-            });
+                Application.Current.Resources["SystemAccentColor"] = _color;
+                Application.Current.Resources["SystemAccentColorLight1"] = _color;
+                Application.Current.Resources["SystemAccentColorLight2"] = _color;
+                Application.Current.Resources["SystemAccentColorLight3"] = _color;
+            }
+
+            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
@@ -417,29 +414,20 @@ namespace CollapseLauncher
                 storyboardFront.Begin();
 
             await Task.Delay(250);
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                BackgroundBackBuffer.Visibility = Visibility.Collapsed;
-                BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
-            });
+            BackgroundBackBuffer.Visibility = Visibility.Collapsed;
+            BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
         }
 
         private async Task HideLoadingPopup(bool hide, string title, string subtitle)
         {
             Storyboard storyboard = new Storyboard();
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                LoadingTitle.Text = title;
-                LoadingSubtitle.Text = subtitle;
-            });
+            LoadingTitle.Text = title;
+            LoadingSubtitle.Text = subtitle;
 
             if (hide)
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    LoadingRing.IsIndeterminate = false;
-                });
+                LoadingRing.IsIndeterminate = false;
 
                 await Task.Delay(500);
 
@@ -454,17 +442,14 @@ namespace CollapseLauncher
 
                 storyboard.Begin();
                 await Task.Delay(250);
-                DispatcherQueue.TryEnqueue(() => LoadingPopup.Visibility = Visibility.Collapsed);
+                LoadingPopup.Visibility = Visibility.Collapsed;
             }
             else
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    LoadingFooter.Text = "";
-                    LoadingRing.IsIndeterminate = true;
-                });
+                LoadingFooter.Text = "";
+                LoadingRing.IsIndeterminate = true;
 
-                DispatcherQueue.TryEnqueue(() => LoadingPopup.Visibility = Visibility.Visible);
+                LoadingPopup.Visibility = Visibility.Visible;
 
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 0;

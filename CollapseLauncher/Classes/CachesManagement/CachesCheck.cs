@@ -54,32 +54,26 @@ namespace CollapseLauncher.Pages
                 cachesTotalCount = 0;
                 cachesTotalSize = 0;
                 cancellationTokenSource = new CancellationTokenSource();
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesDataTableGrid.Visibility = Visibility.Collapsed;
-                    brokenCachesListUI.Clear();
-                    CancelBtn.Visibility = Visibility.Visible;
-                    CheckUpdateBtn.IsEnabled = false;
-                    CancelBtn.IsEnabled = true;
-                });
+                CachesDataTableGrid.Visibility = Visibility.Collapsed;
+                brokenCachesListUI.Clear();
+                CancelBtn.Visibility = Visibility.Visible;
+                CheckUpdateBtn.IsEnabled = false;
+                CancelBtn.IsEnabled = true;
                 cachesLanguage = CurrentRegion.GetGameLanguage();
                 await FetchCachesAPI();
-                DispatcherQueue.TryEnqueue(() => CachesDataTableGrid.Visibility = Visibility.Visible);
+                CachesDataTableGrid.Visibility = Visibility.Visible;
                 await CheckCachesIntegrity();
             }
             catch (OperationCanceledException)
             {
                 LogWriteLine("Caches Update check cancelled!", LogType.Warning);
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
-                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                    CachesTotalProgressBar.Value = 0;
-                    CheckUpdateBtn.Visibility = Visibility.Visible;
-                    CheckUpdateBtn.IsEnabled = true;
-                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
-                    CancelBtn.IsEnabled = false;
-                });
+                CachesStatus.Text = Lang._CachesPage.CachesStatusCancelled;
+                CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                CachesTotalProgressBar.Value = 0;
+                CheckUpdateBtn.Visibility = Visibility.Visible;
+                CheckUpdateBtn.IsEnabled = true;
+                UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                CancelBtn.IsEnabled = false;
                 http.DownloadProgress -= DataFetchingProgress;
             }
             catch (Exception ex)
@@ -100,7 +94,7 @@ namespace CollapseLauncher.Pages
                     cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
                     LogWriteLine($"Fetching CachesType: {type}");
 
-                    DispatcherQueue.TryEnqueue(() => CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type));
+                    CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
 
                     http.DownloadProgress += DataFetchingProgress;
                     await http.DownloadStream(cachesAPIURL, cachesStream, cancellationTokenSource.Token);
@@ -181,12 +175,9 @@ namespace CollapseLauncher.Pages
 
                     cachesCount++;
                     cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusChecking, dataType.DataType, content.N);
-                        CachesTotalStatus.Text = string.Format(Lang._CachesPage.CachesTotalStatusChecking, cachesCount, cachesTotalCount);
-                        CachesTotalProgressBar.Value = GetPercentageNumber(cachesCount, cachesTotalCount);
-                    });
+                    CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusChecking, dataType.DataType, content.N);
+                    CachesTotalStatus.Text = string.Format(Lang._CachesPage.CachesTotalStatusChecking, cachesCount, cachesTotalCount);
+                    CachesTotalProgressBar.Value = GetPercentageNumber(cachesCount, cachesTotalCount);
 
                     cachesFileInfo = new FileInfo(cachesPath);
 
@@ -201,7 +192,7 @@ namespace CollapseLauncher.Pages
                             {
                                 content.Status = CachesDataStatus.Obsolete;
                                 brokenCaches.Add(content);
-                                DispatcherQueue.TryEnqueue(() => brokenCachesListUI.Add(new DataPropertiesUI
+                                brokenCachesListUI.Add(new DataPropertiesUI
                                 {
                                     FileName = Path.GetFileName(content.N),
                                     FileSizeStr = SummarizeSizeSimple(content.CS),
@@ -210,7 +201,7 @@ namespace CollapseLauncher.Pages
                                     FileSource = Path.GetDirectoryName(content.N),
                                     FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
                                     FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
-                                }));
+                                });
                                 LogWriteLine($"Obsolete: {content.N}", LogType.Warning);
                             }
                         }
@@ -219,7 +210,7 @@ namespace CollapseLauncher.Pages
                     {
                         content.Status = CachesDataStatus.Missing;
                         brokenCaches.Add(content);
-                        DispatcherQueue.TryEnqueue(() => brokenCachesListUI.Add(new DataPropertiesUI
+                        brokenCachesListUI.Add(new DataPropertiesUI
                         {
                             FileName = Path.GetFileName(content.N),
                             FileSizeStr = SummarizeSizeSimple(content.CS),
@@ -228,7 +219,7 @@ namespace CollapseLauncher.Pages
                             FileSource = Path.GetDirectoryName(content.N),
                             FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
                             FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
-                        }));
+                        });
                         LogWriteLine($"Missing: {content.N}", LogType.Warning, true);
                     }
                 }
@@ -249,30 +240,24 @@ namespace CollapseLauncher.Pages
             {
                 cachesTotalCount = brokenCachesList.Sum(x => x.Content.Count);
                 cachesTotalSize = brokenCachesList.Sum(x => x.Content.Sum(y => y.CS));
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusNeedUpdate, cachesTotalCount, SummarizeSizeSimple(cachesTotalSize));
-                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                    CachesTotalProgressBar.Value = 0;
-                    CheckUpdateBtn.Visibility = Visibility.Collapsed;
-                    UpdateCachesBtn.Visibility = Visibility.Visible;
-                    UpdateCachesBtn.IsEnabled = true;
-                    CancelBtn.IsEnabled = false;
-                });
+                CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusNeedUpdate, cachesTotalCount, SummarizeSizeSimple(cachesTotalSize));
+                CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                CachesTotalProgressBar.Value = 0;
+                CheckUpdateBtn.Visibility = Visibility.Collapsed;
+                UpdateCachesBtn.Visibility = Visibility.Visible;
+                UpdateCachesBtn.IsEnabled = true;
+                CancelBtn.IsEnabled = false;
                 LogWriteLine($"{cachesTotalCount} caches ({SummarizeSizeSimple(cachesTotalSize)}) is available to be updated.", LogType.Default, true);
             }
             else
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    CachesStatus.Text = Lang._CachesPage.CachesStatusUpToDate;
-                    CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
-                    CachesTotalProgressBar.Value = 0;
-                    CheckUpdateBtn.Visibility = Visibility.Visible;
-                    CheckUpdateBtn.IsEnabled = true;
-                    UpdateCachesBtn.Visibility = Visibility.Collapsed;
-                    CancelBtn.IsEnabled = false;
-                });
+                CachesStatus.Text = Lang._CachesPage.CachesStatusUpToDate;
+                CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
+                CachesTotalProgressBar.Value = 0;
+                CheckUpdateBtn.Visibility = Visibility.Visible;
+                CheckUpdateBtn.IsEnabled = true;
+                UpdateCachesBtn.Visibility = Visibility.Collapsed;
+                CancelBtn.IsEnabled = false;
             }
         }
 
@@ -294,12 +279,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void DataFetchingProgress(object sender, DownloadEvent e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                CachesTotalStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
-            });
-        }
+        private void DataFetchingProgress(object sender, DownloadEvent e) => CachesTotalStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
-using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameConfig;
@@ -60,8 +59,8 @@ namespace CollapseLauncher.Pages
                 else
                 {
                     await CheckExistingGameSettings();
-                    await LoadGameSettingsUI();
-                    await LoadAudioSettingsUI();
+                    LoadGameSettingsUI();
+                    LoadAudioSettingsUI();
                 }
             }
             catch (Exception ex)
@@ -71,102 +70,95 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task LoadGameSettingsUI() =>
-        await Task.Run(() =>
+        private void LoadGameSettingsUI()
         {
-            DispatcherQueue.TryEnqueue(() =>
+            GameResolutionFullscreen.IsChecked = gameIni.Settings[SectionName]["Fullscreen"].ToBool();
+
+            if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool()
+            || !ScreenResolutionsList.Contains(gameIni.Settings[SectionName]["ScreenResolution"].ToString()))
             {
-                GameResolutionFullscreen.IsChecked = gameIni.Settings[SectionName]["Fullscreen"].ToBool();
+                GameResolutionFullscreenExclusive.IsEnabled = false;
+                GameResolutionSelector.IsEnabled = false;
+                GameCustomResolutionCheckbox.IsChecked = true;
 
-                if (gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool()
-                || !ScreenResolutionsList.Contains(gameIni.Settings[SectionName]["ScreenResolution"].ToString()))
-                {
-                    GameResolutionFullscreenExclusive.IsEnabled = false;
-                    GameResolutionSelector.IsEnabled = false;
-                    GameCustomResolutionCheckbox.IsChecked = true;
+                Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
+                GameCustomResolutionWidth.IsEnabled = true;
+                GameCustomResolutionHeight.IsEnabled = true;
+                GameCustomResolutionWidth.Value = size.Width;
+                GameCustomResolutionHeight.Value = size.Height;
+            }
+            else
+            {
+                GameResolutionSelector.SelectedItem = gameIni.Settings[SectionName]["ScreenResolution"].ToString();
 
-                    Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
-                    GameCustomResolutionWidth.IsEnabled = true;
-                    GameCustomResolutionHeight.IsEnabled = true;
-                    GameCustomResolutionWidth.Value = size.Width;
-                    GameCustomResolutionHeight.Value = size.Height;
-                }
-                else
-                {
-                    GameResolutionSelector.SelectedItem = gameIni.Settings[SectionName]["ScreenResolution"].ToString();
+                Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
+                GameCustomResolutionWidth.Value = size.Width;
+                GameCustomResolutionHeight.Value = size.Height;
+            }
 
-                    Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
-                    GameCustomResolutionWidth.Value = size.Width;
-                    GameCustomResolutionHeight.Value = size.Height;
-                }
+            if (gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool())
+            {
+                GameResolutionFullscreenExclusive.IsChecked = true;
+                GameCustomResolutionWidth.IsEnabled = false;
+                GameCustomResolutionHeight.IsEnabled = false;
+            }
+            else
+            {
+                GameResolutionFullscreenExclusive.IsChecked = false;
+            }
 
-                if (gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool())
-                {
-                    GameResolutionFullscreenExclusive.IsChecked = true;
-                    GameCustomResolutionWidth.IsEnabled = false;
-                    GameCustomResolutionHeight.IsEnabled = false;
-                }
-                else
-                {
-                    GameResolutionFullscreenExclusive.IsChecked = false;
-                }
+            GameMaxFPSInCombatValue.Value = gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt();
+            GameMaxFPSInMainMenuValue.Value = gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt();
 
-                GameMaxFPSInCombatValue.Value = gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt();
-                GameMaxFPSInMainMenuValue.Value = gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt();
+            RenderingAccuracySelector.SelectedIndex = gameIni.Settings[SectionName]["ResolutionQuality"].ToInt();
+            ShadowQualitySelector.SelectedIndex = gameIni.Settings[SectionName]["ShadowLevel"].ToInt();
+            ReflectionQualitySelector.SelectedIndex = gameIni.Settings[SectionName]["ReflectionQuality"].ToInt();
 
-                RenderingAccuracySelector.SelectedIndex = gameIni.Settings[SectionName]["ResolutionQuality"].ToInt();
-                ShadowQualitySelector.SelectedIndex = gameIni.Settings[SectionName]["ShadowLevel"].ToInt();
-                ReflectionQualitySelector.SelectedIndex = gameIni.Settings[SectionName]["ReflectionQuality"].ToInt();
+            GameFXPostProcCheckBox.IsChecked = gameIni.Settings[SectionName]["UsePostFX"].ToBool();
+            GameFXPhysicsCheckBox.IsChecked = gameIni.Settings[SectionName]["UseDynamicBone"].ToBool();
 
-                GameFXPostProcCheckBox.IsChecked = gameIni.Settings[SectionName]["UsePostFX"].ToBool();
-                GameFXPhysicsCheckBox.IsChecked = gameIni.Settings[SectionName]["UseDynamicBone"].ToBool();
+            GlobalIlluminationSelector.SelectedIndex = gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
+            AmbientOcclusionSelector.SelectedIndex = gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
+            LevelOfDetailSelector.SelectedIndex = gameIni.Settings[SectionName]["LodLevel"].ToInt();
+            GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["VolumetricLight"].ToBool();
 
-                GlobalIlluminationSelector.SelectedIndex = gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
-                AmbientOcclusionSelector.SelectedIndex = gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
-                LevelOfDetailSelector.SelectedIndex = gameIni.Settings[SectionName]["LodLevel"].ToInt();
-                GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["VolumetricLight"].ToBool();
+            if (GameFXPostProcCheckBox.IsChecked ?? true)
+            {
+                GameFXHDRCheckBox.IsChecked = gameIni.Settings[SectionName]["UseHDR"].ToBool();
+                GameFXHighQualityCheckBox.IsChecked = gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool();
+                GameFXFXAACheckBox.IsChecked = gameIni.Settings[SectionName]["UseFXAA"].ToBool();
+                GameFXDistortionCheckBox.IsChecked = gameIni.Settings[SectionName]["UseDistortion"].ToBool();
+                GameFXPostProcExpander.IsExpanded = true;
+            }
+            else
+            {
+                GameFXHDRCheckBox.IsEnabled = false;
+                GameFXHighQualityCheckBox.IsEnabled = false;
+                GameFXFXAACheckBox.IsEnabled = false;
+                GameFXDistortionCheckBox.IsEnabled = false;
+            }
 
-                if (GameFXPostProcCheckBox.IsChecked ?? true)
-                {
-                    GameFXHDRCheckBox.IsChecked = gameIni.Settings[SectionName]["UseHDR"].ToBool();
-                    GameFXHighQualityCheckBox.IsChecked = gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool();
-                    GameFXFXAACheckBox.IsChecked = gameIni.Settings[SectionName]["UseFXAA"].ToBool();
-                    GameFXDistortionCheckBox.IsChecked = gameIni.Settings[SectionName]["UseDistortion"].ToBool();
-                    GameFXPostProcExpander.IsExpanded = true;
-                }
-                else
-                {
-                    GameFXHDRCheckBox.IsEnabled = false;
-                    GameFXHighQualityCheckBox.IsEnabled = false;
-                    GameFXFXAACheckBox.IsEnabled = false;
-                    GameFXDistortionCheckBox.IsEnabled = false;
-                }
+            GraphicsAPISelector.SelectedIndex = gameIni.Settings[SectionName]["GameGraphicsAPI"].ToInt();
+        }
 
-                GraphicsAPISelector.SelectedIndex = gameIni.Settings[SectionName]["GameGraphicsAPI"].ToInt();
-            });
-        });
-        private async Task LoadAudioSettingsUI() =>
-        await Task.Run(() =>
+        private void LoadAudioSettingsUI()
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                AudioBGMVolumeSlider.Value = gameIni.Settings[SectionName]["BGMVolume"].ToInt();
-                AudioSFXVolumeSlider.Value = gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt();
-                AudioCVVolumeSlider.Value = gameIni.Settings[SectionName]["VoiceVolume"].ToInt();
-                AudioElfCVVolumeSlider.Value = gameIni.Settings[SectionName]["ElfVolume"].ToInt();
-                AudioCutscenesVolumeSlider.Value = gameIni.Settings[SectionName]["CGVolume"].ToInt();
-                AudioCVLanguageSelector.SelectedIndex = gameIni.Settings[SectionName]["CVLanguage"].ToInt();
-            });
-        });
+            AudioBGMVolumeSlider.Value = gameIni.Settings[SectionName]["BGMVolume"].ToInt();
+            AudioSFXVolumeSlider.Value = gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt();
+            AudioCVVolumeSlider.Value = gameIni.Settings[SectionName]["VoiceVolume"].ToInt();
+            AudioElfCVVolumeSlider.Value = gameIni.Settings[SectionName]["ElfVolume"].ToInt();
+            AudioCutscenesVolumeSlider.Value = gameIni.Settings[SectionName]["CGVolume"].ToInt();
+            AudioCVLanguageSelector.SelectedIndex = gameIni.Settings[SectionName]["CVLanguage"].ToInt();
+        }
 
-        private async void ApplyButton_Click(object sender, RoutedEventArgs e)
+        private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 ApplyText.Visibility = Visibility.Visible;
 
-                await SetGraphicsSettingsIni();
-                await SetAudioSettingsIni();
+                SetGraphicsSettingsIni();
+                SetAudioSettingsIni();
                 SaveGameSettings();
             }
             catch (Exception ex)
@@ -176,53 +168,45 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task SetGraphicsSettingsIni() =>
-        await Task.Run(() =>
+        private void SetGraphicsSettingsIni()
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                gameIni.Settings[SectionName]["Fullscreen"] = GameResolutionFullscreen.IsChecked ?? false;
-                if (GameCustomResolutionCheckbox.IsChecked ?? false)
-                    gameIni.Settings[SectionName]["ScreenResolution"] = $"{GameCustomResolutionWidth.Value}x{GameCustomResolutionHeight.Value}";
-                else
-                    gameIni.Settings[SectionName]["ScreenResolution"] = (string)GameResolutionSelector.SelectedItem;
+            gameIni.Settings[SectionName]["Fullscreen"] = GameResolutionFullscreen.IsChecked ?? false;
+            if (GameCustomResolutionCheckbox.IsChecked ?? false)
+                gameIni.Settings[SectionName]["ScreenResolution"] = $"{GameCustomResolutionWidth.Value}x{GameCustomResolutionHeight.Value}";
+            else
+                gameIni.Settings[SectionName]["ScreenResolution"] = (string)GameResolutionSelector.SelectedItem;
 
-                gameIni.Settings[SectionName]["TargetFrameRateForInLevel"] = GameMaxFPSInCombatValue.Value;
-                gameIni.Settings[SectionName]["TargetFrameRateForOthers"] = GameMaxFPSInMainMenuValue.Value;
-                gameIni.Settings[SectionName]["ResolutionQuality"] = RenderingAccuracySelector.SelectedIndex;
-                gameIni.Settings[SectionName]["ShadowLevel"] = ShadowQualitySelector.SelectedIndex;
-                gameIni.Settings[SectionName]["ReflectionQuality"] = ReflectionQualitySelector.SelectedIndex;
+            gameIni.Settings[SectionName]["TargetFrameRateForInLevel"] = GameMaxFPSInCombatValue.Value;
+            gameIni.Settings[SectionName]["TargetFrameRateForOthers"] = GameMaxFPSInMainMenuValue.Value;
+            gameIni.Settings[SectionName]["ResolutionQuality"] = RenderingAccuracySelector.SelectedIndex;
+            gameIni.Settings[SectionName]["ShadowLevel"] = ShadowQualitySelector.SelectedIndex;
+            gameIni.Settings[SectionName]["ReflectionQuality"] = ReflectionQualitySelector.SelectedIndex;
 
-                gameIni.Settings[SectionName]["UsePostFX"] = GameFXPostProcCheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["UseDynamicBone"] = GameFXPhysicsCheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["UseHDR"] = GameFXHDRCheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["HighQualityPostFX"] = GameFXHighQualityCheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["UseFXAA"] = GameFXFXAACheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["UseDistortion"] = GameFXDistortionCheckBox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["GlobalIllumination"] = GlobalIlluminationSelector.SelectedIndex == 1;
-                gameIni.Settings[SectionName]["AmbientOcclusion"] = AmbientOcclusionSelector.SelectedIndex;
-                gameIni.Settings[SectionName]["LodGrade"] = LevelOfDetailSelector.SelectedIndex;
-                gameIni.Settings[SectionName]["VolumetricLight"] = GameVolumetricLightCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["UsePostFX"] = GameFXPostProcCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["UseDynamicBone"] = GameFXPhysicsCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["UseHDR"] = GameFXHDRCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["HighQualityPostFX"] = GameFXHighQualityCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["UseFXAA"] = GameFXFXAACheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["UseDistortion"] = GameFXDistortionCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["GlobalIllumination"] = GlobalIlluminationSelector.SelectedIndex == 1;
+            gameIni.Settings[SectionName]["AmbientOcclusion"] = AmbientOcclusionSelector.SelectedIndex;
+            gameIni.Settings[SectionName]["LodGrade"] = LevelOfDetailSelector.SelectedIndex;
+            gameIni.Settings[SectionName]["VolumetricLight"] = GameVolumetricLightCheckBox.IsChecked ?? false;
 
-                gameIni.Settings[SectionName]["FullscreenExclusive"] = GameResolutionFullscreenExclusive.IsChecked ?? false;
-                gameIni.Settings[SectionName]["CustomScreenResolution"] = GameCustomResolutionCheckbox.IsChecked ?? false;
-                gameIni.Settings[SectionName]["GameGraphicsAPI"] = GraphicsAPISelector.SelectedIndex;
-            });
-        });
+            gameIni.Settings[SectionName]["FullscreenExclusive"] = GameResolutionFullscreenExclusive.IsChecked ?? false;
+            gameIni.Settings[SectionName]["CustomScreenResolution"] = GameCustomResolutionCheckbox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["GameGraphicsAPI"] = GraphicsAPISelector.SelectedIndex;
+        }
 
-        private async Task SetAudioSettingsIni() =>
-        await Task.Run(() =>
+        private void SetAudioSettingsIni()
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                gameIni.Settings[SectionName]["BGMVolume"] = AudioBGMVolumeSlider.Value;
-                gameIni.Settings[SectionName]["SoundEffectVolume"] = AudioSFXVolumeSlider.Value;
-                gameIni.Settings[SectionName]["VoiceVolume"] = AudioCVVolumeSlider.Value;
-                gameIni.Settings[SectionName]["ElfVolume"] = AudioElfCVVolumeSlider.Value;
-                gameIni.Settings[SectionName]["CGVolume"] = AudioCutscenesVolumeSlider.Value;
-                gameIni.Settings[SectionName]["CVLanguage"] = AudioCVLanguageSelector.SelectedIndex;
-            });
-        });
+            gameIni.Settings[SectionName]["BGMVolume"] = AudioBGMVolumeSlider.Value;
+            gameIni.Settings[SectionName]["SoundEffectVolume"] = AudioSFXVolumeSlider.Value;
+            gameIni.Settings[SectionName]["VoiceVolume"] = AudioCVVolumeSlider.Value;
+            gameIni.Settings[SectionName]["ElfVolume"] = AudioElfCVVolumeSlider.Value;
+            gameIni.Settings[SectionName]["CGVolume"] = AudioCutscenesVolumeSlider.Value;
+            gameIni.Settings[SectionName]["CVLanguage"] = AudioCVLanguageSelector.SelectedIndex;
+        }
 
         private void GameResolutionFullscreen_IsEnabledChanged(object sender, RoutedEventArgs e)
         {

@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml;
 using System.Runtime.InteropServices;
 using WinRT;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
