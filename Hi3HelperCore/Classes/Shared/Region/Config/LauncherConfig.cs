@@ -59,6 +59,7 @@ namespace Hi3Helper.Shared.Region
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled = false;
         public static bool IsPreview = false;
+        public static bool IsPortable = false;
         public static bool IsAppThemeNeedRestart = false;
         public static bool IsAppLangNeedRestart = false;
         public static bool IsFirstInstall = false;

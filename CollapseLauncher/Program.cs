@@ -28,6 +28,9 @@ namespace CollapseLauncher
 #if PREVIEW
             IsPreview = true;
 #endif
+#if PORTABLE
+            IsPortable = true;
+#endif
             AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             InitializeConsole(true, AppGameLogsFolder);
 
@@ -35,11 +38,11 @@ namespace CollapseLauncher
             {
                 InitAppPreset();
                 InitConsoleSetting(true);
-                Console.WriteLine(string.Format("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
+                Console.WriteLine("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
                     AppCurrentVersion,
                     GetVersionString(),
                     Environment.UserName,
-                    IsPreview ? "Preview" : "Stable"));
+                    (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : ""));
                 Console.WriteLine("Initializing...", LogType.Empty);
 
                 InitializeAppSettings();

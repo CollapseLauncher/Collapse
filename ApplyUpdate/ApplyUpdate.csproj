@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	<Optimize>True</Optimize>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 

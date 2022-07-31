@@ -35,7 +35,9 @@ namespace CollapseLauncher
         public enum AppReleaseChannel
         {
             Stable,
-            Preview
+            Preview,
+            StablePortable,
+            PreviewPortable
         }
 
         public static AppMode m_appMode;

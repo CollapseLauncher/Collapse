@@ -31,6 +31,9 @@ namespace CollapseLauncher.Pages
             else
                 Version = Version + " Stable";
 
+            if (IsPortable)
+                Version += "-Portable";
+
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
             GetLanguageList();
@@ -115,8 +118,12 @@ namespace CollapseLauncher.Pages
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
         {
+            string ChannelName = IsPreview ? "Preview" : "Stable";
+            if (IsPortable)
+                ChannelName += "Portable";
+
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {(IsPreview ? "Preview" : "Stable")}";
+            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {ChannelName}";
             Console.WriteLine(UpdateArgument);
             try
             {
@@ -153,6 +160,9 @@ namespace CollapseLauncher.Pages
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
         {
+            string ChannelName = IsPreview ? " Preview" : " Stable";
+            if (IsPortable)
+                ChannelName += "-Portable";
             DispatcherQueue.TryEnqueue(() =>
             {
                 CheckUpdateBtn.IsEnabled = true;
@@ -161,7 +171,7 @@ namespace CollapseLauncher.Pages
                     UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                     UpdateAvailableStatus.Visibility = Visibility.Visible;
                     UpToDateStatus.Visibility = Visibility.Collapsed;
-                    UpdateAvailableLabel.Text = e.NewVersionName + (IsPreview ? " Preview" : " Stable");
+                    UpdateAvailableLabel.Text = e.NewVersionName + (ChannelName);
                     LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
                     return;
                 }

@@ -25,9 +25,12 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                string ChannelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
+                if (IsPortable)
+                    ChannelName += "-Portable";
                 CurrentVersionLabel.Text = $"{AppCurrentVersion}";
                 NewVersionLabel.Text = LauncherUpdateWatcher.UpdateProperty.ver;
-                UpdateChannelLabel.Text = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
+                UpdateChannelLabel.Text = ChannelName;
                 AskUpdateCheckbox.IsChecked = GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
                 BuildTimestampLabel.Text = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                             .AddSeconds(LauncherUpdateWatcher.UpdateProperty.time)
@@ -71,8 +74,11 @@ namespace CollapseLauncher.Pages
 
         private void DoUpdateClick(object sender, RoutedEventArgs e)
         {
+            string ChannelName = (IsPreview ? "Preview" : "Stable");
+            if (IsPortable)
+                ChannelName += "Portable";
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {(IsPreview ? "Preview" : "Stable")}";
+            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {ChannelName}";
             Console.WriteLine(UpdateArgument);
             try
             {

@@ -30,6 +30,11 @@ namespace CollapseLauncher
         public static async void StartCheckUpdate()
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
+            if (IsPortable)
+            {
+                UpdateChannelName = UpdateChannelName + "portable";
+            }
+
             string ChannelURL = string.Format(UpdateRepoChannel + "{0}/", UpdateChannelName);
 
             while (true)
