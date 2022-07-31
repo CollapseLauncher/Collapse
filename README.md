@@ -56,12 +56,12 @@ To see all releases, please [**go to here**](https://github.com/neon-nyan/Collap
 ***
 
 # Prequesties for self-build/development environment
-To develop and build it for yourself, you need to install [**.NET Core 6 SDK (6.0.104 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [**WinUI 3 (WindowsAppSDK 1.1 Runtime)**](https://aka.ms/windowsappsdk/1.1/latest/windowsappruntimeinstall-1.1-x64.exe).
+To develop and build it for yourself, you need to install [**.NET Core 6 SDK (6.0.107 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [**WinUI 3 (WindowsAppSDK 1.1.3 Runtime)**](https://aka.ms/windowsappsdk/1.1/1.1.3/windowsappruntimeinstall-1.1.3-x64.exe).
 
-You may also need **Visual Studio 2019** or later with **WindowsAppSDK 1.1 C# Extension** installed.
+You may also need **Visual Studio 2019** or later with **WindowsAppSDK 1.1.3 C# Extension** installed.
 Please refer to this link to download the extension for your Visual Studio version:
-- [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2019-cs)
-- [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.0/vsix-2022-cs)
+- [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.3/vsix-2019-cs)
+- [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.1/1.1.3/vsix-2022-cs)
 
 # Third-party repositories and references being used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
