@@ -15,6 +15,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -141,7 +142,14 @@ namespace CollapseLauncher
             PushRegionNotification(CurrentRegion.ProfileName);
 
             // Init NavigationPanel Items
-            InitializeNavigationItems();
+            if (m_appMode != AppMode.Hi3CacheUpdater)
+            {
+                InitializeNavigationItems();
+            }
+            else
+            {
+                NavigationViewControl.IsSettingsVisible = false;
+            }
 
             // Set LoadingFooter empty
             LoadingFooter.Text = string.Empty;
@@ -155,10 +163,10 @@ namespace CollapseLauncher
 
         private void PushRegionNotification(string RegionProfileName)
         {
-            if (InnerLauncherConfig.NotificationData.RegionPush == null) return;
+            if (NotificationData.RegionPush == null) return;
 
-            InnerLauncherConfig.NotificationData.EliminatePushList();
-            foreach (NotificationProp Entry in InnerLauncherConfig.NotificationData.RegionPush)
+            NotificationData.EliminatePushList();
+            foreach (NotificationProp Entry in NotificationData.RegionPush)
             {
                 if (Entry.RegionProfile == RegionProfileName && (Entry.ValidForVerBelow == null
                         || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
@@ -226,7 +234,7 @@ namespace CollapseLauncher
                 // Show element
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                page = typeof(Pages.HomePage);
+                page = m_appMode == AppMode.Hi3CacheUpdater ? typeof(Pages.CachesPage) : typeof(Pages.HomePage);
             }
             
             (sender as Button).IsEnabled = !IsHide;

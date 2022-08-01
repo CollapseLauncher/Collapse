@@ -45,7 +45,16 @@ namespace Hi3Helper.Preset
             AppGameConfigLastUpdate = Metadata.LastUpdated;
             AppGameConfig = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigMetadataPath));
             Config = AppGameConfig.Metadata;
-            GameConfigName = Config.Select(x => x.ZoneName).ToList();
+            GameConfigName = Config.Select(x => x.ZoneName);
+        }
+
+        public static void LoadConfigWithCacheTemplate()
+        {
+            PresetConfigClasses Metadata = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigStampPath));
+            AppGameConfigLastUpdate = Metadata.LastUpdated;
+            AppGameConfig = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigMetadataPath));
+            Config = AppGameConfig.Metadata.Where(i => !string.IsNullOrEmpty(i.CachesListAPIURL)).ToList();
+            GameConfigName = Config.Select(x => x.ZoneName);
         }
 
         public static async Task<bool> CheckForNewMetadata()

@@ -296,7 +296,6 @@ namespace CollapseLauncher
             });
         }
 
-
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
@@ -351,6 +350,8 @@ namespace CollapseLauncher
             bool IsMetaStampExist = IsMetadataStampExist();
             bool IsMetaContentExist = IsMetadataContentExist();
 
+            Type Page;
+
             if (!IsMetaStampExist || !IsMetaContentExist)
             {
                 LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
@@ -358,12 +359,21 @@ namespace CollapseLauncher
                 await DownloadMetadataFiles(true, true);
             }
 
-            LoadConfigTemplate();
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+            {
+                LoadConfigWithCacheTemplate();
+                Page = typeof(Pages.CachesPage);
+            }
+            else
+            {
+                LoadConfigTemplate();
+                Page = typeof(Pages.HomePage);
+            }
             LoadRegionSelectorItems();
             LockRegionChangeBtn = true;
             await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
             CheckMetadataUpdateInBackground();
-            MainFrameChanger.ChangeMainFrame(typeof(Pages.HomePage));
+            MainFrameChanger.ChangeMainFrame(Page);
             LockRegionChangeBtn = false;
         }
 

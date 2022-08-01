@@ -37,6 +37,7 @@ namespace CollapseLauncher
 #if PORTABLE
                 this.Title += "[PORTABLE]";
 #endif
+
                 if (IsFirstInstall)
                 {
                     TryInitWindowHandler();
@@ -207,6 +208,8 @@ namespace CollapseLauncher
 
         public void SetWindowSize(IntPtr hwnd, int width = 1280, int height = 730, int x = 0, int y = 0)
         {
+            if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
+
             var dpi = GetDpiForWindow(hwnd);
             float scalingFactor = (float)dpi / 96;
             width = (int)(width * scalingFactor);

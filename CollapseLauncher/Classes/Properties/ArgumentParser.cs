@@ -18,6 +18,10 @@ namespace CollapseLauncher
 
             switch (args[0].ToLower())
             {
+                case "hi3cacheupdate":
+                    m_appMode = AppMode.Hi3CacheUpdater;
+                    ParseHi3CacheUpdaterArguments(args);
+                    break;
                 case "update":
                     m_appMode = AppMode.Updater;
                     ParseUpdaterArguments(args);
@@ -52,6 +56,12 @@ namespace CollapseLauncher
                 throw new ArgumentException($"Argument to run this command is invalid! See the information above for more detail.");
         }
 
+        public static void ParseHi3CacheUpdaterArguments(params string[] args)
+        {
+            rootCommand.AddArgument(new Argument<string>("hi3cacheupdate", "Update the app or change the Release Channel of the app") { HelpName = null });
+            AddHi3CacheUpdaterOptions();
+        }
+
         public static void ParseUpdaterArguments(params string[] args)
         {
             rootCommand.AddArgument(new Argument<string>("update", "Update the app or change the Release Channel of the app") { HelpName = null });
@@ -62,6 +72,13 @@ namespace CollapseLauncher
         {
             rootCommand.AddArgument(new Argument<string>("elevateupdate", "Elevate updater to run as administrator") { HelpName = null });
             AddUpdaterOptions();
+        }
+
+        public static void AddHi3CacheUpdaterOptions()
+        {
+            rootCommand.SetHandler(() =>
+            {
+            });
         }
 
         public static void AddUpdaterOptions()

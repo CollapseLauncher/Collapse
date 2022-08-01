@@ -37,6 +37,12 @@
       "commandName": "Project",
       "commandLineArgs": "migrate --input \"C:\\Program Files\\Honkai Impact 3 sea\" --output \"H:\\Games\\miHoYoGames\\Hi3SEA\"",
       "nativeDebugging": false
+    },
+    "Hi3 Cache Updater": {
+      "commandName": "Project",
+      "commandLineArgs": "hi3cacheupdate",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": false
     }
   }
 }

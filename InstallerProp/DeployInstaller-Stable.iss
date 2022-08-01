@@ -2,24 +2,24 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=Collapse Launcher
-AppVersion=1.0.33.6
+AppName=Collapse
+AppVersion=1.0.35.6
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.33.6
+VersionInfoVersion=1.0.35.6
 VersionInfoCompany=neon-nyan
-VersionInfoDescription=Collapse Launcher - An advanced launcher for miHoYo Games
+VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
 VersionInfoCopyright=2022 - neon-nyan
-VersionInfoProductName=Collapse Launcher
-VersionInfoProductVersion=1.0.33.6
-VersionInfoProductTextVersion=1.0.33.6
+VersionInfoProductName=Collapse
+VersionInfoProductVersion=1.0.35.6
+VersionInfoProductTextVersion=1.0.35.6
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
 MinVersion=0,10.0.17763
 DefaultDirName={autopf64}\Collapse Launcher\
-DefaultGroupName=Collapse Launcher
-UninstallDisplayName=Collapse Launcher
+DefaultGroupName=Collapse
+UninstallDisplayName=Collapse
 UninstallDisplayIcon={app}\CollapseLauncher.exe
 WizardStyle=modern
 WizardImageFile=..\InstallerProp\WizardBannerDesign.bmp
@@ -34,8 +34,9 @@ LZMAMatchFinder=BT
 LZMANumFastBytes=128
 
 [Icons]
-Name: "{group}\Collapse Launcher\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{userdesktop}\Collapse Launcher"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.Hi3CacheUpdater.cmd"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\CollapseLauncher-ReleaseRepo\preview\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs

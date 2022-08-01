@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -24,6 +25,8 @@ namespace CollapseLauncher.Pages
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            if (m_appMode == AppMode.Hi3CacheUpdater) return;
+
             if (GameInstallationState == GameInstallStateEnum.NotInstalled
                 || GameInstallationState == GameInstallStateEnum.NeedsUpdate
                 || GameInstallationState == GameInstallStateEnum.GameBroken)

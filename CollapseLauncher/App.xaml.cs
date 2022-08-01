@@ -23,6 +23,7 @@ namespace CollapseLauncher
                     case AppMode.Updater:
                         m_window = new UpdaterWindow();
                         break;
+                    case AppMode.Hi3CacheUpdater:
                     case AppMode.Launcher:
                         m_window = new MainWindow();
                         break;

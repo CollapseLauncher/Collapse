@@ -299,11 +299,11 @@ namespace CollapseLauncher.Pages
         private async void CheckRunningGameInstance()
         {
             await Task.Delay(1);
-            TextBlock StartBtnText = new TextBlock() { FontWeight = FontWeights.Medium };
             DispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
+                    TextBlock StartBtnText = new TextBlock() { FontWeight = FontWeights.Medium };
                     while (true)
                     {
                         while (App.IsGameRunning)

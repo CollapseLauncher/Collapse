@@ -29,7 +29,8 @@ namespace CollapseLauncher
             Reindex,
             InvokerMigrate,
             InvokerTakeOwnership,
-            InvokerMoveSteam
+            InvokerMoveSteam,
+            Hi3CacheUpdater
         }
 
         public enum AppReleaseChannel
