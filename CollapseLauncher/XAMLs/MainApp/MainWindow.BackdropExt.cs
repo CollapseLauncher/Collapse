@@ -1,13 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.WindowsAPICodePack.Dialogs;
-
+using System.Collections.Generic;
 using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
