@@ -417,14 +417,14 @@ namespace CollapseLauncher
             string InputPath, OutputPath;
             foreach (FileProperties Entry in FileManifest)
             {
-                InputPath = Path.Combine(SourceProfile.ActualGameDataLocation, Entry.FileName);
-                OutputPath = Path.Combine(TargetProfile.ActualGameDataLocation + "_Ingredients", Entry.FileName);
+                OutputPath = Path.Combine(SourceProfile.ActualGameDataLocation, Entry.FileName);
+                InputPath = Path.Combine(TargetProfile.ActualGameDataLocation + "_Ingredients", Entry.FileName);
 
-                if (!Directory.Exists(Path.GetDirectoryName(InputPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(InputPath));
+                if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
 
                 if (File.Exists(InputPath))
-                    File.Move(OutputPath, InputPath, true);
+                    File.Move(InputPath, OutputPath, true);
             }
         }
 
