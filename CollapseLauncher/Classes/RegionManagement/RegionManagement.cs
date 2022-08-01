@@ -33,6 +33,9 @@ namespace CollapseLauncher
 
         public async Task LoadRegionByIndex(uint Index = 0)
         {
+            // If Index > Length of the region list, return back to 0
+            if ((Index + 1) > ConfigStore.Config.Count) Index = 0;
+
             // Set CurrentRegion from Index
             SetCurrentRegionByIndex(Index);
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
