@@ -1,5 +1,12 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Microsoft.UI.Xaml;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 using static CollapseLauncher.InnerLauncherConfig;
 
@@ -7,6 +14,35 @@ namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
+        public string GetFolderPicker()
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+
+            CommonFileDialogResult Result = dialog.ShowDialog(m_windowHandle);
+
+            if (Result == CommonFileDialogResult.Ok)
+                return dialog.FileName;
+
+            return null;
+        }
+
+        public string GetFilePicker(Dictionary<string, string> FileTypeFilter = null)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+
+            if (FileTypeFilter != null)
+                foreach (KeyValuePair<string, string> entry in FileTypeFilter)
+                    dialog.Filters.Add(new CommonFileDialogFilter(entry.Key, entry.Value));
+
+            CommonFileDialogResult Result = dialog.ShowDialog(m_windowHandle);
+
+            if (Result == CommonFileDialogResult.Ok)
+                return dialog.FileName;
+
+            return null;
+        }
+
         public void SetThemeParameters()
         {
             switch (m_currentBackdrop)

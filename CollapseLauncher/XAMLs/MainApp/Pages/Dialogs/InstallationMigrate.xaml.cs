@@ -54,8 +54,9 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<string> AskMigrationTarget()
         {
-            StorageFolder folder;
-            string returnFolder = "";
+            // StorageFolder folder;
+            string folder = "";
+            // string returnFolder = "";
 
             var cd = new ContentDialog
             {
@@ -73,28 +74,31 @@ namespace CollapseLauncher.Dialogs
             switch (await cd.ShowAsync())
             {
                 case ContentDialogResult.Secondary:
-                    folder = await (m_window as MainWindow).GetFolderPicker();
+                    folder = (m_window as MainWindow).GetFolderPicker();
 
                     if (folder == null)
                         await MigrationCancelled(3000);
 
-                    returnFolder = folder.Path;
+                    // returnFolder = folder.Path;
                     break;
                 case ContentDialogResult.Primary:
                     if (CurrentRegion.MigrateFromBetterHi3Launcher)
                     {
-                        returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
+                        // returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
+                        folder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
                         UseCurrentBHI3LFolder = true;
                     }
                     else
-                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                        // returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                        folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
                     break;
                 case ContentDialogResult.None:
                     await MigrationCancelled(3000);
                     break;
             }
 
-            return returnFolder;
+            // return returnFolder;
+            return folder;
         }
 
         private async Task MigrationCancelled(int delay, bool noException = false)

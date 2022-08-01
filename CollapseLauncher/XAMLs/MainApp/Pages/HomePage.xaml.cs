@@ -705,8 +705,9 @@ namespace CollapseLauncher.Pages
 
         private async Task<string> InstallGameDialogScratch()
         {
-            StorageFolder folder;
-            string returnFolder = "";
+            // StorageFolder folder;
+            string folder = "";
+            // string returnFolder = "";
 
             bool isChoosen = false;
             while (!isChoosen)
@@ -714,17 +715,20 @@ namespace CollapseLauncher.Pages
                 switch (await Dialog_InstallationLocation(Content))
                 {
                     case ContentDialogResult.Primary:
-                        returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
+                        // returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
+                        folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
                         isChoosen = true;
                         break;
                     case ContentDialogResult.Secondary:
-                        folder = await (m_window as MainWindow).GetFolderPicker();
+                        folder = (m_window as MainWindow).GetFolderPicker();
 
                         if (folder != null)
-                            if (IsUserHasPermission(returnFolder = folder.Path))
-                                isChoosen = true;
+                            // if (IsUserHasPermission(returnFolder = folder.Path))
+                            if (IsUserHasPermission(folder))
+                                    isChoosen = true;
                             else
-                                await Dialog_InsufficientWritePermission(Content, returnFolder);
+                                // await Dialog_InsufficientWritePermission(Content, returnFolder);
+                                await Dialog_InsufficientWritePermission(Content, folder);
                         else
                             isChoosen = false;
                         break;
@@ -733,7 +737,8 @@ namespace CollapseLauncher.Pages
                 }
             }
 
-            return returnFolder;
+            // return returnFolder;
+            return folder;
         }
 
         CancellationTokenSource WatchOutputLog = new CancellationTokenSource();

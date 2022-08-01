@@ -25,8 +25,9 @@ namespace CollapseLauncher.Pages
 
         private async void ChooseFolder(object sender, RoutedEventArgs e)
         {
-            StorageFolder folder;
-            string returnFolder;
+            // StorageFolder folder;
+            string folder;
+            // string returnFolder;
             bool Selected = false;
             switch (await Dialogs.SimpleDialogs.Dialog_LocateFirstSetupFolder(Content, Path.Combine(AppDataFolder, "GameFolder")))
             {
@@ -36,11 +37,13 @@ namespace CollapseLauncher.Pages
                     Selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    folder = await (m_window as MainWindow).GetFolderPicker();
+                    folder = (m_window as MainWindow).GetFolderPicker();
                     if (folder != null)
-                        if (IsUserHasPermission(returnFolder = folder.Path))
-                        {
-                            AppGameFolder = returnFolder;
+                        // if (IsUserHasPermission(returnFolder = folder.Path))
+                        if (IsUserHasPermission(folder))
+                            {
+                            // AppGameFolder = returnFolder;
+                            AppGameFolder = folder;
                             ErrMsg.Text = "";
                             SetAppConfigValue("GameFolder", AppGameFolder);
                             Selected = true;

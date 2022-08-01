@@ -14,6 +14,7 @@ using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -199,6 +200,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
+            /*
             IEnumerable<string> allowedFileType = new string[] { ".jpg", ".jpeg", ".jfif", ".png", ".bmp", ".tiff" };
             FileOpenPicker filePicker = new FileOpenPicker();
             StorageFile file;
@@ -209,12 +211,21 @@ namespace CollapseLauncher.Pages
             InitializeWithWindow.Initialize(filePicker, InnerLauncherConfig.m_windowHandle);
 
             file = await filePicker.PickSingleFileAsync();
+            */
+
+            string file = (m_window as MainWindow).GetFilePicker(new Dictionary<string, string> { { "Supported formats", ".jpg,.jpeg,.jfif,.png,.bmp,.tiff" } });
             if (file != null)
             {
+                /*
                 regionBackgroundProp.imgLocalPath = file.Path;
                 SetAndSaveConfigValue("CustomBGPath", file.Path);
                 BGPathDisplay.Text = file.Path;
                 BackgroundImgChanger.ChangeBackground(file.Path);
+                */
+                regionBackgroundProp.imgLocalPath = file;
+                SetAndSaveConfigValue("CustomBGPath", file);
+                BGPathDisplay.Text = file;
+                BackgroundImgChanger.ChangeBackground(file);
             }
         }
 

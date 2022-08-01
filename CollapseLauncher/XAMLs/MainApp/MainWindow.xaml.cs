@@ -191,6 +191,7 @@ namespace CollapseLauncher
             await Task.Delay(250);
         }
 
+        /*
         public async Task<StorageFolder> GetFolderPicker()
         {
             FolderPicker folderPicker = new FolderPicker();
@@ -200,6 +201,7 @@ namespace CollapseLauncher
 
             return await folderPicker.PickSingleFolderAsync();
         }
+        */
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
