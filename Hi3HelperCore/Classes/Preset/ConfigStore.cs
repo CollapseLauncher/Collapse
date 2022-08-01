@@ -106,7 +106,15 @@ namespace Hi3Helper.Preset
             }
         }
 
-        public static bool IsMetadataStampExist() => File.Exists(AppGameConfigStampPath);
-        public static bool IsMetadataContentExist() => File.Exists(AppGameConfigStampPath);
+        public static bool IsMetadataStampExist() => CheckMetadataStampContent(AppGameConfigStampPath);
+        public static bool IsMetadataContentExist() => CheckMetadataStampContent(AppGameConfigMetadataPath);
+
+        private static bool CheckMetadataStampContent(string name)
+        {
+            FileInfo file = new FileInfo(name);
+            if (!file.Exists) return false;
+            if (file.Length < 2) return false;
+            return true;
+        }
     }
 }
