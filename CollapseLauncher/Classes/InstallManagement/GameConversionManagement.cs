@@ -341,12 +341,11 @@ namespace CollapseLauncher
         public async Task StartConversion()
         {
             ResetSw();
+            string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
+            string OutputPath = TargetProfile.ActualGameDataLocation;
 
             try
             {
-                string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
-                string OutputPath = TargetProfile.ActualGameDataLocation;
-
                 if (Directory.Exists(OutputPath))
                     TryDirectoryDelete(OutputPath, true);
 
@@ -376,7 +375,7 @@ namespace CollapseLauncher
             {
                 try
                 {
-                    RevertBackIngredients(SourceFileManifest);
+                    RevertBackIngredients(SourceFileManifest, IngredientsPath, OutputPath);
                 }
                 catch (Exception exf)
                 {
@@ -412,7 +411,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void RevertBackIngredients(List<FileProperties> FileManifest)
+        private void RevertBackIngredients(List<FileProperties> FileManifest, string IngredientPath, string Output)
         {
             string InputPath, OutputPath;
             foreach (FileProperties Entry in FileManifest)
@@ -426,6 +425,9 @@ namespace CollapseLauncher
                 if (File.Exists(InputPath))
                     File.Move(InputPath, OutputPath, true);
             }
+
+            Directory.Delete(IngredientPath, true);
+            Directory.Delete(Output, true);
         }
 
         private void MoveMiscSourceFiles(string InputPath, string OutputPath)
