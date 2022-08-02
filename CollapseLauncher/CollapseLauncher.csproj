@@ -14,7 +14,6 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Version>1.0.36.0</Version>
 		<ErrorReport>none</ErrorReport>
-		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -71,6 +70,7 @@
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.3" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
         <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+        <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.12.0.2" />
     </ItemGroup>
 
     <ItemGroup>
