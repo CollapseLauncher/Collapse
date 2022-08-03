@@ -39,4 +39,4 @@ Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}
 Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
-Source: "..\..\CollapseLauncher-ReleaseRepo\preview\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\CollapseLauncher-ReleaseRepo\stable\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
