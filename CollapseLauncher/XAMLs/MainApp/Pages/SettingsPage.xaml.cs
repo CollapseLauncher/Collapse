@@ -197,28 +197,9 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            /*
-            IEnumerable<string> allowedFileType = new string[] { ".jpg", ".jpeg", ".jfif", ".png", ".bmp", ".tiff" };
-            FileOpenPicker filePicker = new FileOpenPicker();
-            StorageFile file;
-
-            foreach (string type in allowedFileType)
-                filePicker.FileTypeFilter.Add(type);
-
-            InitializeWithWindow.Initialize(filePicker, InnerLauncherConfig.m_windowHandle);
-
-            file = await filePicker.PickSingleFileAsync();
-            */
-
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
             if (file != null)
             {
-                /*
-                regionBackgroundProp.imgLocalPath = file.Path;
-                SetAndSaveConfigValue("CustomBGPath", file.Path);
-                BGPathDisplay.Text = file.Path;
-                BackgroundImgChanger.ChangeBackground(file.Path);
-                */
                 regionBackgroundProp.imgLocalPath = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;

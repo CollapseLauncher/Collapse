@@ -306,7 +306,6 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<bool> DoCheckPermission()
         {
-            // StorageFolder folder;
             string folder = "";
 
             DispatcherQueue.TryEnqueue(() => Step1.Opacity = 1f);
@@ -331,7 +330,6 @@ namespace CollapseLauncher.Dialogs
             }
 
             bool isChoosen = false;
-            // string choosenFolder = "";
             while (!isChoosen)
             {
                 switch (await Dialog_SteamConversionNoPermission(Content))
@@ -341,22 +339,16 @@ namespace CollapseLauncher.Dialogs
                         break;
                     case ContentDialogResult.Primary:
                         sourcePath = GamePathOnSteam;
-                        // choosenFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
-                        // targetPath = Path.Combine(choosenFolder, Path.GetFileName(GamePathOnSteam));
                         folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:
-                        // folder = await (m_window as MainWindow).GetFolderPicker();
                         folder = await GetFolderPicker();
 
                         if (folder == null)
                             OperationCancelled();
 
-                        // choosenFolder = folder.Path;
-
                         sourcePath = GamePathOnSteam;
-                        // targetPath = Path.Combine(choosenFolder, Path.GetFileName(GamePathOnSteam));
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                 }

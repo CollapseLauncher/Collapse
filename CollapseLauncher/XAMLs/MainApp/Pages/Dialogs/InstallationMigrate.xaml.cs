@@ -77,18 +77,14 @@ namespace CollapseLauncher.Dialogs
 
                     if (folder == null)
                         await MigrationCancelled(3000);
-
-                    // returnFolder = folder.Path;
                     break;
                 case ContentDialogResult.Primary:
                     if (CurrentRegion.MigrateFromBetterHi3Launcher)
                     {
-                        // returnFolder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
                         folder = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path;
                         UseCurrentBHI3LFolder = true;
                     }
                     else
-                        // returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
                         folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
                     break;
                 case ContentDialogResult.None:
@@ -96,7 +92,6 @@ namespace CollapseLauncher.Dialogs
                     break;
             }
 
-            // return returnFolder;
             return folder;
         }
 

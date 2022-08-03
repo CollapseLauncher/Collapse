@@ -705,9 +705,7 @@ namespace CollapseLauncher.Pages
 
         private async Task<string> InstallGameDialogScratch()
         {
-            // StorageFolder folder;
             string folder = "";
-            // string returnFolder = "";
 
             bool isChoosen = false;
             while (!isChoosen)
@@ -715,7 +713,6 @@ namespace CollapseLauncher.Pages
                 switch (await Dialog_InstallationLocation(Content))
                 {
                     case ContentDialogResult.Primary:
-                        // returnFolder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
                         folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
                         isChoosen = true;
                         break;
@@ -723,11 +720,9 @@ namespace CollapseLauncher.Pages
                         folder = await GetFolderPicker();
 
                         if (folder != null)
-                            // if (IsUserHasPermission(returnFolder = folder.Path))
                             if (IsUserHasPermission(folder))
                                 isChoosen = true;
                             else
-                                // await Dialog_InsufficientWritePermission(Content, returnFolder);
                                 await Dialog_InsufficientWritePermission(Content, folder);
                         else
                             isChoosen = false;
@@ -737,7 +732,6 @@ namespace CollapseLauncher.Pages
                 }
             }
 
-            // return returnFolder;
             return folder;
         }
 

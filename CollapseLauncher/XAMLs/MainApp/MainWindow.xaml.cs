@@ -79,7 +79,7 @@ namespace CollapseLauncher
             m_AppWindow.Changed += AppWindow_Changed;
         }
 
-        public async void InitializeWindowSettings()
+        public void InitializeWindowSettings()
         {
             TryInitWindowHandler();
             SetWindowSize(m_windowHandle);
@@ -188,18 +188,6 @@ namespace CollapseLauncher
 
             await Task.Delay(250);
         }
-
-        /*
-        public async Task<StorageFolder> GetFolderPicker()
-        {
-            FolderPicker folderPicker = new FolderPicker();
-
-            folderPicker.FileTypeFilter.Add("*");
-            InitializeWithWindow.Initialize(folderPicker, m_windowHandle);
-
-            return await folderPicker.PickSingleFolderAsync();
-        }
-        */
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
