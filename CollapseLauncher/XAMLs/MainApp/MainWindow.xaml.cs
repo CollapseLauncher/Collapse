@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Graphics;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
@@ -81,7 +79,7 @@ namespace CollapseLauncher
             m_AppWindow.Changed += AppWindow_Changed;
         }
 
-        public void InitializeWindowSettings()
+        public async void InitializeWindowSettings()
         {
             TryInitWindowHandler();
             SetWindowSize(m_windowHandle);

@@ -10,9 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Storage;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -349,7 +348,7 @@ namespace CollapseLauncher.Dialogs
                         break;
                     case ContentDialogResult.Secondary:
                         // folder = await (m_window as MainWindow).GetFolderPicker();
-                        folder = (m_window as MainWindow).GetFolderPicker();
+                        folder = await GetFolderPicker();
 
                         if (folder == null)
                             OperationCancelled();

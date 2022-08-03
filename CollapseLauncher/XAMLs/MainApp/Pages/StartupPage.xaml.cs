@@ -6,8 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
-using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -37,11 +36,11 @@ namespace CollapseLauncher.Pages
                     Selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    folder = (m_window as MainWindow).GetFolderPicker();
+                    folder = await GetFolderPicker();
                     if (folder != null)
                         // if (IsUserHasPermission(returnFolder = folder.Path))
                         if (IsUserHasPermission(folder))
-                            {
+                        {
                             // AppGameFolder = returnFolder;
                             AppGameFolder = folder;
                             ErrMsg.Text = "";

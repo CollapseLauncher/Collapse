@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,9 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Microsoft.Win32;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -720,12 +720,12 @@ namespace CollapseLauncher.Pages
                         isChoosen = true;
                         break;
                     case ContentDialogResult.Secondary:
-                        folder = (m_window as MainWindow).GetFolderPicker();
+                        folder = await GetFolderPicker();
 
                         if (folder != null)
                             // if (IsUserHasPermission(returnFolder = folder.Path))
                             if (IsUserHasPermission(folder))
-                                    isChoosen = true;
+                                isChoosen = true;
                             else
                                 // await Dialog_InsufficientWritePermission(Content, returnFolder);
                                 await Dialog_InsufficientWritePermission(Content, folder);

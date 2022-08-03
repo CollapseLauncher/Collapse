@@ -7,14 +7,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -213,7 +210,7 @@ namespace CollapseLauncher.Pages
             file = await filePicker.PickSingleFileAsync();
             */
 
-            string file = (m_window as MainWindow).GetFilePicker(new Dictionary<string, string> { { "Supported formats", ".jpg,.jpeg,.jfif,.png,.bmp,.tiff" } });
+            string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
             if (file != null)
             {
                 /*

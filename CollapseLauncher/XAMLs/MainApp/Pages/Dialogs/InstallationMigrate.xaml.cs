@@ -5,8 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
-using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -74,7 +73,7 @@ namespace CollapseLauncher.Dialogs
             switch (await cd.ShowAsync())
             {
                 case ContentDialogResult.Secondary:
-                    folder = (m_window as MainWindow).GetFolderPicker();
+                    folder = await GetFolderPicker();
 
                     if (folder == null)
                         await MigrationCancelled(3000);
