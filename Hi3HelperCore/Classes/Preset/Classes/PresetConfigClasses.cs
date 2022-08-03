@@ -260,8 +260,8 @@ namespace Hi3Helper.Preset
                 a = (string)Registry.GetValue(InstallRegistryLocation, RegValue, null);
                 if (a == null)
                 {
-                    ret = false;
-                    throw new NullReferenceException($"Registry for \"{ZoneName}\" version doesn't exist, probably the version isn't installed.");
+                    LogWriteLine($"Registry for \"{ZoneName}\" version doesn't exist, probably the version isn't installed.", LogType.Warning, true);
+                    return false;
                 }
 
                 if (!Directory.Exists(a))
