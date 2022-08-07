@@ -36,6 +36,7 @@ This launcher also supports other game client, including:
 * Genshin Impact (Global Release)
 * 原神 / Yuan Shen (Mainland China's Genshin)
 * ~~Honkai: Star Rail~~ (Waiting for Official Release)
+* ~~Zenless Zone Zero~~ (Waiting for Official Release)
 
 Some features like Game Data Repair and Preload Download are available for this game but other things like Game Settings and Caches Download aren't available for this Game Client.
 
