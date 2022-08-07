@@ -6,10 +6,10 @@ namespace Hi3Helper
 {
     public class ConsoleLogger : ILogger
     {
-        StringBuilder _logBuilder;
+        StringBuilder _logBuilder = new StringBuilder();
         private protected void ColorizePrint(string i, LogType a)
         {
-            _logBuilder = new StringBuilder();
+            _logBuilder.Clear();
             switch (a)
             {
                 case LogType.Error:
@@ -81,7 +81,7 @@ namespace Hi3Helper
 
         private protected void GetLog(string i, LogType a)
         {
-            _logBuilder = new StringBuilder();
+            _logBuilder.Clear();
             switch (a)
             {
                 case LogType.Error:
