@@ -619,6 +619,9 @@ namespace CollapseLauncher
             // Build primary manifest list
             await BuildPrimaryManifest(Entries, HashtableManifest);
 
+            // Initialize Dispatch
+            await InitializeNewGenshinDispatch();
+
             // Build persistent manifest list
             await BuildPersistentManifest(Entries, HashtableManifest);
 
@@ -712,9 +715,6 @@ namespace CollapseLauncher
         private async Task BuildPersistentManifest(List<PkgVersionProperties> Entries,
             Dictionary<string, PkgVersionProperties> HashtableManifest)
         {
-            // Initialize Dispatch First
-            await InitializeNewGenshinDispatch();
-
             // Load dispatch info as QueryProperty
             QueryProperty QueryProperty = DispatchReader.GetResult();
 
