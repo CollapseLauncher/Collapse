@@ -86,20 +86,19 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public int GetVoiceLanguageID()
         {
-            try
-            {
-                string regValue, value = string.Empty;
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-                value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
-                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+            string regValue, value = string.Empty;
+            RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
 
-                return JsonConvert.DeserializeObject<GeneralDataProp>(regValue).deviceVoiceLanguageType;
-            }
-            catch
+            if (keys == null)
             {
                 LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning);
                 return 2;
             }
+
+            value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
+            regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+
+            return JsonConvert.DeserializeObject<GeneralDataProp>(regValue).deviceVoiceLanguageType;
         }
 
         // WARNING!!!
@@ -109,16 +108,16 @@ namespace Hi3Helper.Preset
             string regValue;
             RegistryKey keys;
             GeneralDataProp initValue = new GeneralDataProp();
-            try
+            keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+
+            if (keys == null)
+                keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+            else
             {
-                keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
                 regValue = Encoding.UTF8.GetString((byte[])keys.GetValue("GENERAL_DATA_h2389025596", "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
                 initValue = JsonConvert.DeserializeObject<GeneralDataProp>(regValue);
             }
-            catch
-            {
-                keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
-            }
+
             initValue.deviceVoiceLanguageType = LangID;
             keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(initValue, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include }) + '\0'));
         }
@@ -127,21 +126,19 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public int GetRegServerNameID()
         {
-            try
-            {
-                string regValue, value = string.Empty;
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-                if (keys == null) return 0;
-                value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
-                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+            string regValue, value = string.Empty;
+            RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
 
-                return (int)JsonConvert.DeserializeObject<GeneralDataProp>(regValue).selectedServerName;
-            }
-            catch
+            if (keys == null)
             {
                 LogWriteLine($"Server name ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (0 / USA).", LogType.Warning);
                 return 0;
             }
+
+            value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
+            regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+
+            return (int)JsonConvert.DeserializeObject<GeneralDataProp>(regValue).selectedServerName;
         }
 
         // WARNING!!!
