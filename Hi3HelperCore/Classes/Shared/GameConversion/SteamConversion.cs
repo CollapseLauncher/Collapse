@@ -69,7 +69,7 @@ namespace Hi3Helper.Shared.GameConversion
                         await ConvertGenericAudioFile();
                         break;
                     case FileType.Blocks:
-                        ConvertBlockFile();
+                        await ConvertBlockFile();
                         break;
                 }
             }

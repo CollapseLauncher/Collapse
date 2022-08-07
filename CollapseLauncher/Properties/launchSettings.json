@@ -1,37 +1,28 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
-    },
     "Updater": {
       "commandName": "Project",
       "commandLineArgs": "update --input \"C:\\Program Files\\Collapse Launcher\" --channel Preview",
-      "remoteDebugEnabled": false,
-      "nativeDebugging": true
+      "nativeDebugging": false
     },
     "Elevate Updater": {
       "commandName": "Project",
       "commandLineArgs": "elevateupdate --input \"H:\\Data\\test\" --channel Preview",
-      "remoteDebugEnabled": false,
-      "nativeDebugging": true
+      "nativeDebugging": false
     },
     "Reindexer": {
       "commandName": "Project",
-      "commandLineArgs": "reindex --input \"\\myGit\\CollapseLauncher-ReleaseRepo\\stable\" --upver 1.0.36.0",
-      "remoteDebugEnabled": false,
-      "nativeDebugging": true
+      "commandLineArgs": "reindex --input \"\\myGit\\CollapseLauncher-ReleaseRepo\\preview\" --upver 1.0.36.1",
+      "nativeDebugging": false
     },
     "Collapse Launcher": {
       "commandName": "Project",
-      "remoteDebugEnabled": false,
       "nativeDebugging": false
     },
     "Take Ownership": {
       "commandName": "Project",
       "commandLineArgs": "takeownership --input \"H:\\Data\\Games\\miHoYoGames\"",
-      "remoteDebugEnabled": false,
-      "nativeDebugging": true
+      "nativeDebugging": false
     },
     "Migrate": {
       "commandName": "Project",
@@ -41,8 +32,7 @@
     "Hi3 Cache Updater": {
       "commandName": "Project",
       "commandLineArgs": "hi3cacheupdate",
-      "remoteDebugEnabled": false,
-      "nativeDebugging": false
+      "nativeDebugging": true
     }
   }
 }

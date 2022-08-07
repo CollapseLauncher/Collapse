@@ -24,8 +24,6 @@ namespace Hi3Helper.Data
 
         public event EventHandler<CheckingBlockProgressChanged> CheckingProgressChanged;
         public event EventHandler<CheckingBlockProgressChangedStatus> CheckingProgressChangedStatus;
-        public event EventHandler<RepairingBlockProgressChanged> RepairingProgressChanged;
-        public event EventHandler<RepairingBlockProgressChangedStatus> RepairingProgressChangedStatus;
 
         public void Init(in Stream i, XMFFileFormat format = XMFFileFormat.Dictionary)
         {

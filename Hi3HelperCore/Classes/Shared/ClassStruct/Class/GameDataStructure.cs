@@ -10,7 +10,7 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
-        public string? RN { get; set; }
+        public string RN { get; set; }
         public string CRC { get; set; }
         public string M { get; set; }
         public FileType FT { get; set; }

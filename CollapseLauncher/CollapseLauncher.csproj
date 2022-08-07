@@ -5,112 +5,102 @@
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
-		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<WindowsPackageType>None</WindowsPackageType>
-		<IncludeGetResolvedSDKReferences>true</IncludeGetResolvedSDKReferences>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<Version>1.0.36.1</Version>
 		<ErrorReport>none</ErrorReport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
+		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT</DefineConstants>
 		<Optimize>True</Optimize>
-		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Portable|x64'">
-	  <DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;PORTABLE</DefineConstants>
-	  <Optimize>True</Optimize>
-	  <DebugType>embedded</DebugType>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;PORTABLE</DefineConstants>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT</DefineConstants>
 		<Optimize>True</Optimize>
-		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish-Portable|x64'">
-	  <DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;PORTABLE</DefineConstants>
-	  <Optimize>True</Optimize>
-	  <DebugType>embedded</DebugType>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;PORTABLE</DefineConstants>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
+
 	<ItemGroup>
-	  <None Remove="ApplyUpdate.exe.config" />
-	  <None Remove="Assets\BG\PaimonWhat.png" />
-	  <None Remove="CollapseLauncher.Hi3CacheUpdater.cmd" />
-	  <None Remove="Misc\InstallMediaPack.cmd" />
-	  <None Remove="XAMLs\StartUp\StartupLanguageSelect.xaml" />
+		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+		<PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25169-preview" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.3" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0-preview.6.22324.4" />
 	</ItemGroup>
 
-    <ItemGroup>
-        <Content Include="ApplyUpdate.exe">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="ApplyUpdate.exe.config">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="icon.ico" />
-        <Content Include="Misc\InstallMediaPack.cmd">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Hi3HelperCore.EncTool\Hi3HelperCore.EncTool.csproj" />
+		<ProjectReference Include="..\Hi3HelperCore.Http\Hi3HelperCore.Http.csproj" />
+		<ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-        <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.3" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
-        <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="ApplyUpdate.exe">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="ApplyUpdate.exe.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="icon.ico" />
+		<Content Include="Misc\InstallMediaPack.cmd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\BG\AiHappy.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\BG\default.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\BG\PaimonSleep.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\BG\PaimonWhat.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\CollapseLauncherLogo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\CollapseLauncherLogo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Hi3HelperCore.EncTool\Hi3HelperCore.EncTool.csproj" />
-        <ProjectReference Include="..\Hi3HelperCore.Http\Hi3HelperCore.Http.csproj" />
-        <ProjectReference Include="..\Hi3HelperCore\Hi3HelperCore.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
 
-	<Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
-		<ItemGroup>
-			<FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="'%(FrameworkSdkReference.SDKName)' == 'Microsoft.WindowsAppRuntime.1.1.3'" />
-		</ItemGroup>
-	</Target>
-
-    <ItemGroup>
-        <Content Update="Assets\BG\AiHappy.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\BG\default.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\BG\PaimonSleep.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\BG\PaimonWhat.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\CollapseLauncherLogo.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="Assets\CollapseLauncherLogo.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
-        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      </Page>
-    </ItemGroup>
+	<ItemGroup>
+		<BuildMacro Include="DOTNET_TC_QuickJitForLoops">
+			<Value>1</Value>
+			<EnvironmentVariable>true</EnvironmentVariable>
+		</BuildMacro>
+		<BuildMacro Include="DOTNET_TieredPGO">
+			<Value>1</Value>
+			<EnvironmentVariable>true</EnvironmentVariable>
+		</BuildMacro>
+	</ItemGroup>
 </Project>
