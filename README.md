@@ -21,7 +21,7 @@ Collapse was came from **Honkai Impact** name in Chinese and Japanese. The word 
 
 Not only that, this launcher has also some advanced features for **Genshin Impact** like:
 * Choosing your voice-line language at first-install so you don't have to download it inside the game.
-* Repair the game files entirely including game caches, cutscenes, audio pack and persistent. (Only available on the latest preview build now [1.0.35.5])
+* Repair the game files entirely including game caches, cutscenes, audio pack and persistent.
 
 # Supported Game Client
 For now, this launcher is only supporting these versions of the game:
@@ -72,13 +72,11 @@ Please refer to this link to download the extension for your Visual Studio versi
 - [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
 - [**Hi3HelperCore.Http**](https://github.com/neon-nyan/Hi3HelperCore.Http) by neon-nyan
 
-# How to support us?
-For now, we are starting to open a fund and only Indonesian Digital Wallet is available. This fund will help this and other project's continuity and also to improve the services of all its features.
-
-> ### DANA
-> @neon-nyan / +62 838-7541-2241
-
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
 
 # UI Design Overview
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/AdvPanel1-6.webp)
+
+# How to support us?
+We are now opening sponsorship through **GitHub Sponsors**, **DANA (Indonesian-only Digital Wallet)**, and **PayPal** to keep this and other projects alive.
+By giving us your support, hope we could keep the server used for the API of this and other projects maintained and make more improvements for this project overtime! :smile:
