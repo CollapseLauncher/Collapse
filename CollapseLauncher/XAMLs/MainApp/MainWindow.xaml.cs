@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Graphics;
 using WinRT.Interop;
+using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
@@ -232,6 +233,8 @@ namespace CollapseLauncher
             AppWindow window = AppWindow.GetFromWindowId(wndId);
             m_presenter = window.Presenter as OverlappedPresenter;
             m_windowHandle = WindowNative.GetWindowHandle(this);
+            InitHandlerPointer(m_windowHandle);
+
             return window;
         }
 
