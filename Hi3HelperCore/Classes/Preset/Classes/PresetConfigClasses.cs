@@ -129,7 +129,7 @@ namespace Hi3Helper.Preset
             string regValue, value = string.Empty;
             RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
 
-            if (keys == null)
+            if (keys == null || !(IsGenshin ?? false))
             {
                 LogWriteLine($"Server name ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (0 / USA).", LogType.Warning);
                 return 0;
