@@ -3,16 +3,16 @@
 
 [Setup]
 AppName=Collapse
-AppVersion=1.0.36.0
+AppVersion=1.0.36.2
 AppCopyright=2022 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.36.0
+VersionInfoVersion=1.0.36.2
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
 VersionInfoCopyright=2022 - neon-nyan
 VersionInfoProductName=Collapse
-VersionInfoProductVersion=1.0.36.0
-VersionInfoProductTextVersion=1.0.36.0-preview
+VersionInfoProductVersion=1.0.36.2
+VersionInfoProductTextVersion=1.0.36.2-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
