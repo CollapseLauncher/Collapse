@@ -425,6 +425,7 @@ namespace CollapseLauncher.Pages
             }
             catch (NullReferenceException ex)
             {
+                LogWriteLine($"Error while installing region {CurrentRegion.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
@@ -1152,12 +1153,13 @@ namespace CollapseLauncher.Pages
             }
             catch (NullReferenceException ex)
             {
+                LogWriteLine($"Update error on {CurrentRegion.ZoneName} region!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Update error! {ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Update error on {CurrentRegion.ZoneName} region!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
