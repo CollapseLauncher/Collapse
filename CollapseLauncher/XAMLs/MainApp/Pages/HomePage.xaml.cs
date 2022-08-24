@@ -423,6 +423,11 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
+            catch (NullReferenceException ex)
+            {
+                ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
+                    $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"Error while installing region {CurrentRegion.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
@@ -460,8 +465,6 @@ namespace CollapseLauncher.Pages
             {
                 // Always loop if something wrong happen
             }
-
-            ApplyGameConfig(GameDirPath);
 
             CancelInstallationDownload();
         }
@@ -581,6 +584,8 @@ namespace CollapseLauncher.Pages
             }
 
             await InstallTool.StartInstallAsync();
+
+            ApplyGameConfig(GameDirPath);
             await InstallTool.FinalizeInstallationAsync(Content);
 
             return returnVal;
@@ -1125,9 +1130,10 @@ namespace CollapseLauncher.Pages
                 }
 
                 await InstallTool.StartInstallAsync();
-                await InstallTool.FinalizeInstallationAsync(Content);
 
                 ApplyGameConfig(GameDirPath);
+                await InstallTool.FinalizeInstallationAsync(Content);
+
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (IOException ex)
@@ -1143,6 +1149,11 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Update cancelled!", Hi3Helper.LogType.Warning);
+            }
+            catch (NullReferenceException ex)
+            {
+                ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
+                    $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
