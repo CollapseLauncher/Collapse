@@ -13,8 +13,8 @@ namespace Hi3Helper.Preset
     public class PresetConfigClasses
     {
         public long LastUpdated { get; set; }
-        public List<PresetConfigClasses> Metadata { get; set; }
-        public string MasterKey { get; set; }
+        public List<PresetConfigClasses>? Metadata { get; set; }
+        public string? MasterKey { get; set; }
         public int MasterKeyBitLength { get; set; }
 
         public enum ServerRegionID
@@ -25,15 +25,13 @@ namespace Hi3Helper.Preset
             os_cht = 3
         }
 
-        public string GetSteamInstallationPath()
+        public string? GetSteamInstallationPath()
         {
             try
             {
                 List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
                 string ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
-                if (ret == null) return null;
-                return ConverterTool.NormalizePath(ret);
-                // returnval = (string)Registry.GetValue(SteamInstallRegistryLocation, "InstallLocation", null);
+                return ret == null ? null : ConverterTool.NormalizePath(ret);
             }
             catch
             {
@@ -41,81 +39,57 @@ namespace Hi3Helper.Preset
             }
         }
 
-        public string GetUsedLanguage(string RegLocation, string RegValueWildCard, string FallbackValue)
+        public string? GetGameLanguage()
         {
-            string value = "";
-            try
+            ReadOnlySpan<char> value;
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+
+            byte[]? result = (byte[]?)keys?.GetValue("MIHOYOSDK_CURRENT_LANGUAGE_h2559149783");
+
+            if (keys is null || result is null || result.Length is 0)
             {
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(RegLocation);
-                foreach (string valueName in keys.GetValueNames())
-                    if (valueName.Contains(RegValueWildCard))
-                        value = valueName;
-
-                return Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{RegLocation}", value, FallbackValue)).Replace("\0", string.Empty);
-            }
-            catch
-            {
-                LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(RegLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning);
-                return FallbackValue;
-            }
-        }
-
-        public string GetGameLanguage()
-        {
-            string value = "";
-            try
-            {
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-
-                if (keys == null) return FallbackLanguage;
-
-                foreach (string valueName in keys.GetValueNames())
-                    if (valueName.Contains("MIHOYOSDK_NOTICE_LANGUAGE_"))
-                        value = valueName;
-
-                return Encoding.UTF8.GetString((byte[])Registry.GetValue($"HKEY_CURRENT_USER\\{ConfigRegistryLocation}", value, FallbackLanguage)).Replace("\0", string.Empty);
-            }
-            catch
-            {
-                LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning);
+                LogWriteLine($"Language registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m version doesn't exist. Fallback value will be used.", LogType.Warning, true);
                 return FallbackLanguage;
             }
+
+            value = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
+            return new string(value);
         }
 
         // WARNING!!!
         // This feature is only available for Genshin.
         public int GetVoiceLanguageID()
         {
-            string regValue, value = string.Empty;
-            RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            ReadOnlySpan<char> regValue;
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
 
-            if (keys == null)
+            if (keys is null || value is null || value.Length is 0)
             {
-                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning);
+                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning, true);
                 return 2;
             }
 
-            value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
-            regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
-
-            return JsonConvert.DeserializeObject<GeneralDataProp>(regValue).deviceVoiceLanguageType;
+            regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
+            return JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue))?.deviceVoiceLanguageType ?? 2;
         }
 
         // WARNING!!!
         // This feature is only available for Genshin.
         public void SetVoiceLanguageID(int LangID)
         {
-            string regValue;
-            RegistryKey keys;
+            ReadOnlySpan<char> regValue;
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
             GeneralDataProp initValue = new GeneralDataProp();
-            keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+            byte[]? result;
 
-            if (keys == null)
+            if (keys is null)
                 keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
             else
             {
-                regValue = Encoding.UTF8.GetString((byte[])keys.GetValue("GENERAL_DATA_h2389025596", "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
-                initValue = JsonConvert.DeserializeObject<GeneralDataProp>(regValue);
+                result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
+                regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
+                initValue = JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue)) ?? initValue;
             }
 
             initValue.deviceVoiceLanguageType = LangID;
@@ -126,19 +100,19 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public int GetRegServerNameID()
         {
-            string regValue, value = string.Empty;
-            RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            if (!IsGenshin ?? true) return 0;
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", "{}", RegistryValueOptions.None);
 
-            if (keys == null || !(IsGenshin ?? false))
+            if (keys is null || value is null || value.Length is 0)
             {
-                LogWriteLine($"Server name ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (0 / USA).", LogType.Warning);
+                LogWriteLine($"Server name ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (0 / USA).", LogType.Warning, true);
                 return 0;
             }
 
-            value = keys.GetValueNames().Where(x => x.Contains("GENERAL_DATA")).First();
-            regValue = Encoding.UTF8.GetString((byte[])keys.GetValue(value, "{}", RegistryValueOptions.None)).Replace("\0", string.Empty);
+            string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
 
-            return (int)JsonConvert.DeserializeObject<GeneralDataProp>(regValue).selectedServerName;
+            return (int)(JsonConvert.DeserializeObject<GeneralDataProp>(regValue)?.selectedServerName ?? ServerRegionID.os_usa);
         }
 
         // WARNING!!!
@@ -201,145 +175,91 @@ namespace Hi3Helper.Preset
             public IEnumerable<object> _customDataValueList { get; set; } = new List<object>();
         }
 
-        void SetFallbackGameFolder(string a, bool tryFallback = false)
-        {
-            if (File.Exists(Path.Combine(a, GameDirectoryName, GameDirectoryName)))
-            {
-                ActualGameDataLocation = Path.Combine(a, GameDirectoryName);
-            }
-            else if (tryFallback)
-            {
-                IniFile ini = new IniFile();
-                ini.Load(Path.Combine(a, "config.ini"));
-
-                string path = ConverterTool.NormalizePath(ini["game_install_path"]["launcher"].ToString());
-                if (!Directory.Exists(path))
-                {
-                    if (Directory.Exists(Path.Combine(DefaultGameLocation, GameDirectoryName)))
-                        ActualGameDataLocation = Path.Combine(DefaultGameLocation, GameDirectoryName);
-                    else
-                        throw new DirectoryNotFoundException($"\"{a}\" directory doesn't exist");
-                }
-
-                return;
-            }
-            else
-            {
-                SetFallbackGameFolder(a, true);
-            }
-        }
-
         public bool CheckExistingGameBetterLauncher()
         {
             if (BetterHi3LauncherVerInfoReg == null) return false;
+            RegistryKey? Key = Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher");
+            byte[]? Value = (byte[]?)Key?.GetValue(BetterHi3LauncherVerInfoReg);
+            
+            if (Value is null) return false;
+
+            string? Result = Encoding.UTF8.GetString(Value);
+            string? Path;
+
             try
             {
-                BetterHi3LauncherConfig = JsonConvert.DeserializeObject<BHI3LInfo>(
-                    Encoding.UTF8.GetString((byte[])Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher").GetValue(BetterHi3LauncherVerInfoReg))
-                    );
-                if (!File.Exists(Path.Combine(BetterHi3LauncherConfig.game_info.install_path)) && !BetterHi3LauncherConfig.game_info.installed) return false;
-                return true;
+                BetterHi3LauncherConfig = JsonConvert.DeserializeObject<BHI3LInfo>(Result);
             }
-            catch
+            catch (Exception ex)
             {
+                LogWriteLine($"Registry Value {BetterHi3LauncherVerInfoReg}:\r\n{Result}\r\n\r\nException:\r\n{ex}", LogType.Error, true);
                 return false;
-            }
+            };
+
+            if (Key is null || Value.Length is 0 || BetterHi3LauncherConfig is null) return false;
+
+            Path = ConverterTool.NormalizePath(BetterHi3LauncherConfig.game_info.install_path);
+
+            return File.Exists(Path) && BetterHi3LauncherConfig.game_info.installed;
         }
 
         public bool CheckExistingGame()
         {
-            string RegValue = "InstallPath";
-            bool ret = true;
-
-            string a;
             try
             {
-                a = (string)Registry.GetValue(InstallRegistryLocation, RegValue, null);
-                if (a == null)
-                {
-                    LogWriteLine($"Registry for \"{ZoneName}\" version doesn't exist, probably the version isn't installed.", LogType.Warning, true);
-                    return false;
-                }
-
-                if (!Directory.Exists(a))
-                {
-                    if (Directory.Exists(DefaultGameLocation))
-                    {
-                        ActualGameLocation = DefaultGameLocation;
-                        LogWriteLine($"Registered path for {ZoneName} version doesn't exist. But the default path does exist!", LogType.Warning);
-                        return true;
-                    }
-                    ret = false;
-                    throw new DirectoryNotFoundException($"Registry does exist but the registered directory for \"{ZoneName}\" version seems to be missing!");
-                }
-                else
-                {
-                    ActualGameLocation = a;
-                    LogWriteLine($"\u001b[34;1m{ZoneName}\u001b[0m (\u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m) version is detected!");
-                }
-
-                CheckExistingGameConfig(ref ret);
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                LogWriteLine(e.ToString(), LogType.Warning, true);
-            }
-            catch (NullReferenceException e)
-            {
-                LogWriteLine(e.ToString(), LogType.Warning, true);
+                string? Value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
+                return TryCheckGameLocation(Value);
             }
             catch (Exception e)
             {
-                LogWriteLine(e.ToString(), LogType.Error, true);
+                LogWriteLine($"{e}", LogType.Error, true);
+                return false;
             }
-
-            return ret;
         }
 
-        void CheckExistingGameConfig(ref bool ret)
+        public bool TryCheckGameLocation(in string? Path)
         {
-            string iniPath = Path.Combine(ActualGameLocation, "config.ini");
-            if (File.Exists(iniPath))
-            {
-                IniFile iniFile = new IniFile();
-                iniFile.Load(iniPath);
+            if (string.IsNullOrEmpty(Path)) return CheckInnerGameConfig(DefaultGameLocation);
+            if (Directory.Exists(Path)) return CheckInnerGameConfig(Path);
 
-                try
-                {
-                    ActualGameDataLocation = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
-
-                    if (File.Exists(Path.Combine(ActualGameDataLocation, "config.ini"))
-                        || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName)))
-                        ret = true;
-                    else
-                        ret = false;
-                }
-                catch { ret = false; }
-            }
-            else
-                ret = false;
+            return false;
         }
 
-        public string ProfileName { get; set; }
-        public string ZoneName { get; set; }
+        private bool CheckInnerGameConfig(in string GamePath)
+        {
+            string ConfigPath = Path.Combine(GamePath, "config.ini");
+            if (!File.Exists(ConfigPath)) return false;
+
+            IniFile Ini = new IniFile();
+            Ini.Load(ConfigPath);
+
+            ActualGameDataLocation = ConverterTool.NormalizePath(Ini["launcher"]["game_install_path"].ToString());
+
+            return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
+        }
+
+        public string? ProfileName { get; set; }
+        public string? ZoneName { get; set; }
+#nullable disable
         public string InstallRegistryLocation { get; set; }
-        public string ConfigRegistryLocation { get; set; }
-        public string ActualGameLocation { get; set; }
-        public string ActualGameDataLocation { get; set; }
         public string DefaultGameLocation { get; set; }
-        public string DictionaryHost { get; set; }
-        public string UpdateDictionaryAddress { get; set; }
-        public string BlockDictionaryAddress { get; set; }
-        public string GameVersion { get; set; }
+        public string ConfigRegistryLocation { get; set; }
         public string BetterHi3LauncherVerInfoReg { get; set; }
         public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
+#nullable enable
+        public string? ActualGameLocation { get; set; }
+        public string? ActualGameDataLocation { get; set; }
+        public string? DictionaryHost { get; set; }
+        public string? UpdateDictionaryAddress { get; set; }
+        public string? BlockDictionaryAddress { get; set; }
+        public string? GameVersion { get; set; }
         public bool MigrateFromBetterHi3Launcher { get; set; } = false;
-        public string FallbackLanguage { get; set; }
-        public string SteamInstallRegistryLocation { get; set; }
+        public string? FallbackLanguage { get; set; }
+        public string? SteamInstallRegistryLocation { get; set; }
         public int SteamGameID { get; set; }
-        public string GameDirectoryName { get; set; }
-        public string GameExecutableName { get; set; }
-        public string ZipFileURL { get; set; }
+        public string? GameDirectoryName { get; set; }
+        public string? GameExecutableName { get; set; }
+        public string? ZipFileURL { get; set; }
 #nullable enable
         public string? GameDispatchURL { get; set; }
         public string? ProtoDispatchKey { get; set; }
