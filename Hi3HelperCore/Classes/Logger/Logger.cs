@@ -3,6 +3,7 @@ using System.IO;
 
 namespace Hi3Helper
 {
+#nullable enable
     public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag, Game }
     public static class Logger
     {

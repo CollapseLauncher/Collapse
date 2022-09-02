@@ -6,7 +6,6 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WarningLevel>6</WarningLevel>
 		<DebugType>embedded</DebugType>
-		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

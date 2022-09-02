@@ -10,6 +10,7 @@ using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
 {
+#nullable enable
     public class PresetConfigClasses
     {
         public long LastUpdated { get; set; }
