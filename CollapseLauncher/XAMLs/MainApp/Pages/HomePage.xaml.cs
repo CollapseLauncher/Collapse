@@ -78,6 +78,7 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
+                CheckFailedDeltaPatchState();
                 CheckRunningGameInstance();
             }
             catch (Exception ex)
@@ -204,6 +205,58 @@ namespace CollapseLauncher.Pages
                     GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
                 });
             }
+        }
+
+        private async void CheckFailedDeltaPatchState()
+        {
+            await Task.Delay(100);
+            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            string GamePathIngredients = GamePath + "_Ingredients";
+            if (!Directory.Exists(GamePathIngredients)) return;
+            LogWriteLine($"Previous failed delta patch has been detected on Game: {CurrentRegion.ZoneName} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
+            try
+            {
+                switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
+                {
+                    case ContentDialogResult.Primary:
+                        RollbackFailedDeltaPatch(GamePath, GamePathIngredients);
+                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                        break;
+                }
+            }
+            catch
+            {
+                RollbackFailedDeltaPatch(GamePath, GamePathIngredients);
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
+        }
+
+        private void RollbackFailedDeltaPatch(string OrigPath, string IngrPath)
+        {
+            int DirLength = IngrPath.Length + 1;
+            string destFilePath;
+            string destFolderPath;
+            foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
+            {
+                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
+                destFilePath = Path.Combine(OrigPath, relativePath.ToString());
+                destFolderPath = Path.GetDirectoryName(destFilePath);
+
+                if (!Directory.Exists(destFolderPath))
+                    Directory.CreateDirectory(destFolderPath);
+
+                try
+                {
+                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", Hi3Helper.LogType.Default, true);
+                    File.Move(filePath, destFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", Hi3Helper.LogType.Error, true);
+                }
+            }
+
+            Directory.Delete(IngrPath, true);
         }
 
         private void CheckCurrentGameState()
@@ -1122,15 +1175,19 @@ namespace CollapseLauncher.Pages
                 bool RetryRoutine = true;
 
                 await InstallTool.CheckDriveFreeSpace(Content);
-                await InstallTool.CheckExistingDownloadAsync(Content);
 
-                while (RetryRoutine)
+                if (await InstallTool.StartIfDeltaPatchAvailable())
                 {
-                    await InstallTool.StartDownloadAsync();
-                    RetryRoutine = await InstallTool.StartVerificationAsync(Content);
-                }
+                    await InstallTool.CheckExistingDownloadAsync(Content);
 
-                await InstallTool.StartInstallAsync();
+                    while (RetryRoutine)
+                    {
+                        await InstallTool.StartDownloadAsync();
+                        RetryRoutine = await InstallTool.StartVerificationAsync(Content);
+                    }
+
+                    await InstallTool.StartInstallAsync();
+                }
 
                 ApplyGameConfig(GameDirPath);
                 await InstallTool.FinalizeInstallationAsync(Content);

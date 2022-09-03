@@ -66,7 +66,7 @@
     "PreloadNotifIntegrityCheckBtn": "Cek Integritas",
     "StartBtn": "Mulai Game",
     "StartBtnRunning": "Game Sedang Berjalan",
-    "VerifyingPkgTitle": "Memeriksa Berkas",
+    "VerifyingPkgTitle": "Memeriksa",
     "PreloadDownloadNotifbarTitle": "Mengunduh Pra-unduh",
     "PreloadDownloadNotifbarVerifyTitle": "Memeriksa Pra-unduh",
     "PreloadDownloadNotifbarSubtitle": "Berkas yang Diperlukan",
@@ -368,9 +368,9 @@
     "Skipped": "Dilewati",
     "Select": "Pilih",
     "NotRunning": "Tidak Jalan",
-    "MovingFile": "Memindahkan Berkas",
-    "CheckingFile": "Memeriksa Berkas",
-    "RepairingFile": "Memperbaiki Berkas",
+    "MovingFile": "Memindah File",
+    "CheckingFile": "Memeriksa File",
+    "RepairingFile": "Memperbaiki File",
     "ApplyingPatch": "Menerapkan Patch",
     "Disabled": "Mati",
     "Enabled": "Nyala",
@@ -383,6 +383,8 @@
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Pemberitahuan: Pembaruan Delta Patch Terdeteksi!",
     "DeltaPatchDetectedSubtitle": "Delta patch akan digunakan untuk pemperbarui game dari {0} ke {1}.\r\nPerlu diingat bahwa kamu mungkin masih perlu mengunduh beberapa berkas di dalam game.\r\n\r\nMau dilanjutkan?",
+    "DeltaPatchPrevFailedTitle": "Pembaruan Delta Patch sebelumnya telah Gagal/Belum Selesai!",
+    "DeltaPatchPrevFailedSubtitle": "Pembaruan Delta Patch sebelumnya telah Gagal/Belum Selesai! Apakah kamu ingin mengembalikan game? agar kamu tidak perlu mengunduh ulang.",
     "PreloadVerifiedTitle": "Pra-unduh telah terverifikasi!",
     "PreloadVerifiedSubtitle": "Pra-unduhmu telah siap dan terverifikasi!",
     "LocateInstallTitle": "Arahkan Folder Pemasangan",
@@ -439,7 +441,10 @@
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Cek Integritas",
     "PreparePatchTitle": "Menyiapkan Patch",
-    "AddtDownloadTitle": "Mengunduh: {0}/{1}"
+    "AddtDownloadTitle": "Mengunduh: {0}/{1}",
+    "RepairFilesRequiredShowFilesBtn": "Tampilkan daftar file yang rusak",
+    "RepairFilesRequiredTitle": "{0} file perlu diperbaiki!",
+    "RepairFilesRequiredSubtitle": "Kamu memiliki setidaknya {0} file (ukuran: {1}) yang perlu diperbaiki sebelum diupdate!\r\n\r\nCatatan: Process ini akan memakan waktu (tergantung seberapa cepat dan stabilnya koneksimu). Kamu direkomendasikan untuk gunakan VPN (VPN gratis seperti ProtonVPN sudah cukup) apabila kamu tidak punya koneksi yang cepat :)"
   },
 
   // InstallConvert Content

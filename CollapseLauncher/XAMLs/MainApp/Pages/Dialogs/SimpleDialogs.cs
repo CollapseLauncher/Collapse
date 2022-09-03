@@ -19,7 +19,7 @@ namespace CollapseLauncher.Dialogs
                        Content,
                        Lang._Misc.Cancel,
                        Lang._Misc.Yes,
-                       null,
+                       Lang._Misc.No,
                        ContentDialogButton.Primary
                    );
 
@@ -33,6 +33,16 @@ namespace CollapseLauncher.Dialogs
                        null,
                        ContentDialogButton.Secondary
                    );
+
+        public static async Task<ContentDialogResult> Dialog_PreviousDeltaPatchInstallFailed(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.DeltaPatchPrevFailedTitle,
+                    Lang._Dialogs.DeltaPatchPrevFailedSubtitle,
+                    Content,
+                    null,
+                    Lang._Misc.Yes,
+                    Lang._Misc.No
+                );
 
         public static async Task<ContentDialogResult> Dialog_InstallationLocation(UIElement Content) =>
             await SpawnDialog(

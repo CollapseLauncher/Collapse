@@ -383,6 +383,8 @@
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
     "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember, you might still need to download some files in-game as usual.\r\n\r\nDo you want to continue?",
+    "DeltaPatchPrevFailedTitle": "Previous Delta Patch was Failed/Incompleted!",
+    "DeltaPatchPrevFailedSubtitle": "The previous Delta Patch was failed/incompleted! Do you want to restore your game to prevent from redownloading?",
     "PreloadVerifiedTitle": "Pre-Download Package is Verified!",
     "PreloadVerifiedSubtitle": "Your Pre-Download Package is Ready and Verified!",
     "LocateInstallTitle": "Locating Installation Folder",
@@ -439,7 +441,10 @@
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Integrity Check",
     "PreparePatchTitle": "Preparing Patch",
-    "AddtDownloadTitle": "Addt. Download: {0}/{1}"
+    "AddtDownloadTitle": "Addt. Download: {0}/{1}",
+    "RepairFilesRequiredShowFilesBtn": "Show list of broken files",
+    "RepairFilesRequiredTitle": "{0} files need to be repaired!",
+    "RepairFilesRequiredSubtitle": "You have at least {0} files ({1} in size) need to be repaired before updating!\r\n\r\nNote: This process may takes longer than expected (depends on how fast and stable your connection is). Also, consider to use VPN (free VPN like ProtonVPN is good enough) if you have slow download speed :)"
   },
 
   // InstallConvert Content

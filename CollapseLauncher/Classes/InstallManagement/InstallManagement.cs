@@ -25,6 +25,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 namespace CollapseLauncher
 {
     public enum DownloadType { Update, FirstInstall, PreDownload }
+
     internal partial class InstallManagement : Http
     {
         public event EventHandler<InstallManagementStatus> InstallStatusChanged;
@@ -149,16 +150,6 @@ namespace CollapseLauncher
 
         public async Task StartDownloadAsync()
         {
-            if (CanDeltaPatch)
-            {
-                switch (await Dialog_DeltaPatchFileDetected(Content, PatchProp.SourceVer, PatchProp.TargetVer))
-                {
-                    case ContentDialogResult.None:
-                        throw new TaskCanceledException();
-                }
-                return;
-            }
-
             DownloadStopwatch = Stopwatch.StartNew();
             CountTotalToDownload = DownloadProperty.Count;
             // bool IsPerFile = DownloadProperty.Count > 1;
@@ -370,12 +361,6 @@ namespace CollapseLauncher
 
             CountCurrentDownload = 0;
 
-            if (CanDeltaPatch && ModeType == DownloadType.Update)
-            {
-                RunPatch().GetAwaiter().GetResult();
-                return;
-            }
-
             TryUnassignReadOnlyFiles();
             DownloadRemoteSize = DownloadProperty.Sum(x => CalculateUncompressedSize(ref x));
 
@@ -446,6 +431,26 @@ namespace CollapseLauncher
         }
 
         public async Task StartInstallAsync() => await Task.Run(() => StartInstall());
+
+        public async Task<bool> StartIfDeltaPatchAvailable()
+        {
+            if (CanDeltaPatch)
+            {
+                switch (await Dialog_DeltaPatchFileDetected(Content, PatchProp.SourceVer, PatchProp.TargetVer))
+                {
+                    case ContentDialogResult.Secondary:
+                        this.CanDeltaPatch = false;
+                        return true;
+                    case ContentDialogResult.None:
+                        throw new TaskCanceledException();
+                }
+
+                await RunPatch();
+                return false;
+            }
+
+            return true;
+        }
 
         public long CalculateUncompressedSize(ref DownloadAddressProperty Input) =>
             Input.LocalUncompressedSize = new SevenZipTool().GetUncompressedSize(Input.Output);

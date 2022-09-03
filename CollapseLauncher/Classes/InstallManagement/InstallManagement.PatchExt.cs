@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CollapseLauncher
 {
@@ -29,7 +30,11 @@ namespace CollapseLauncher
 
         string IngredientPath;
         string SourceBaseURL;
-        private void ResetSw() => ConvertSw = Stopwatch.StartNew();
+        private void ResetSw()
+        {
+            DownloadStopwatch = Stopwatch.StartNew();
+            ConvertSw = Stopwatch.StartNew();
+        }
         string ConvertStatus;
 
         public async Task StartPreparation()
@@ -143,7 +148,10 @@ namespace CollapseLauncher
                             await CreateMD5Async(fs);
 
                         if (LocalHash.ToLower() != Entry.CurrCRC)
+                        {
+                            LogWriteLine($"File [T: {Entry.DataType}]: {Entry.FileName} {Entry.FileSizeStr} is corrupted! (OrigHash: {Entry.CurrCRC} | CurrHash: {LocalHash.ToLower()})", LogType.Warning, true);
                             BrokenManifest.Add(Entry);
+                        }
                     }
                 }
                 else
@@ -203,11 +211,115 @@ namespace CollapseLauncher
             return _out;
         }
 
+        private async Task SpawnRepairDialog(List<FileProperties> BrokenFile)
+        {
+            long totalSize = BrokenFile.Sum(x => x.FileSize);
+            StackPanel Content = new StackPanel();
+            Button ShowBrokenFilesButton = new Button()
+            {
+                Content = Lang._InstallMgmt.RepairFilesRequiredShowFilesBtn,
+                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            ShowBrokenFilesButton.Click += (async (a, b) =>
+            {
+                string tempPath = Path.GetTempFileName() + ".log";
+
+                using (FileStream fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
+                {
+                    using (StreamWriter sw = new StreamWriter(fs))
+                    {
+                        sw.WriteLine($"Original Path: {SourceProfile.ActualGameDataLocation}");
+                        sw.WriteLine($"Ingredient Path: {IngredientPath}");
+                        sw.WriteLine($"Total Count of Broken Files: {BrokenFile.Count}");
+                        sw.WriteLine($"Total Size of Broken Files: {SummarizeSizeSimple(totalSize)} ({totalSize} bytes)");
+                        sw.WriteLine();
+                        foreach (FileProperties fileList in BrokenFile)
+                            sw.WriteLine($"File: {fileList.FileName}\t{fileList.FileSizeStr} ({fileList.FileSize} bytes)");
+                    }
+                }
+
+                Process proc = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "notepad.exe",
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        Arguments = $"\"{tempPath}\""
+                    }
+                };
+                proc.Start();
+                await proc.WaitForExitAsync();
+
+                try
+                {
+                    File.Delete(tempPath);
+                } catch { }
+            });
+
+            Content.Children.Add(new TextBlock()
+            {
+                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle, BrokenFile.Count, SummarizeSizeSimple(totalSize)),
+                Margin = new Thickness(0, 0, 0, 16),
+                TextWrapping = TextWrapping.Wrap
+            });
+            Content.Children.Add(ShowBrokenFilesButton);
+
+            ContentDialog dialog1 = new ContentDialog
+            {
+                Title = string.Format(Lang._InstallMgmt.RepairFilesRequiredTitle, BrokenFile.Count),
+                Content = Content,
+                CloseButtonText = Lang._Misc.Cancel,
+                PrimaryButtonText = Lang._Misc.YesResume,
+                SecondaryButtonText = null,
+                DefaultButton = ContentDialogButton.Primary,
+                Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            if (await dialog1.ShowAsync() == ContentDialogResult.None)
+            {
+                RollbackDeltaPatch(SourceProfile.ActualGameDataLocation, IngredientPath);
+                throw new TaskCanceledException();
+            }
+        }
+
+        private void RollbackDeltaPatch(string OrigPath, string IngrPath)
+        {
+            int DirLength = IngrPath.Length + 1;
+            string destFilePath;
+            string destFolderPath;
+            foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
+            {
+                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
+                destFilePath = Path.Combine(OrigPath, relativePath.ToString());
+                destFolderPath = Path.GetDirectoryName(destFilePath);
+
+                if (!Directory.Exists(destFolderPath))
+                    Directory.CreateDirectory(destFolderPath);
+
+                try
+                {
+                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", Hi3Helper.LogType.Default, true);
+                    File.Move(filePath, destFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", Hi3Helper.LogType.Error, true);
+                }
+            }
+
+            Directory.Delete(IngrPath, true);
+        }
+
         long RepairRead = 0;
         long RepairTotalSize = 0;
         private async Task RepairIngredients(List<FileProperties> BrokenFile, string GamePath)
         {
             if (BrokenFile.Count == 0) return;
+
+            await SpawnRepairDialog(BrokenFile);
 
             ResetSw();
             string OutputPath;

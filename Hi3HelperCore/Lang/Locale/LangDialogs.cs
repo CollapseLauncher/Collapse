@@ -10,6 +10,8 @@
             {
                 public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
+                public string DeltaPatchPrevFailedTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedTitle;
+                public string DeltaPatchPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedSubtitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string PreloadVerifiedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedSubtitle;
                 public string LocateInstallTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
