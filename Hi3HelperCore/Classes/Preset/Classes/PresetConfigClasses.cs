@@ -241,6 +241,9 @@ namespace Hi3Helper.Preset
 
         public string? ProfileName { get; set; }
         public string? ZoneName { get; set; }
+        public string? ZoneFullname { get; set; }
+        public string? ZoneDescription { get; set; }
+        public string? ZoneURL { get; set; }
 #nullable disable
         public string InstallRegistryLocation { get; set; }
         public string DefaultGameLocation { get; set; }
