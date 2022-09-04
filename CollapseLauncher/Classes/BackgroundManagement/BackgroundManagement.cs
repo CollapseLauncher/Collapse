@@ -27,9 +27,8 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         private BitmapImage BackgroundBitmap;
+        private InMemoryRandomAccessStream BackgroundStream;
         private Bitmap ThumbnailBitmap;
-        private Stream ThumbnailStream;
-        private readonly Size ThumbnailSize = new Size(32, 32);
         private bool PassFirstTry = false;
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
@@ -205,63 +204,73 @@ namespace CollapseLauncher
 
         private void ApplyAccentColor()
         {
-            Windows.UI.Color _color = new Windows.UI.Color();
-            if (CurrentAppTheme == AppThemeMode.Light ||
-                (CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"))
+            switch (CurrentAppTheme)
             {
-                try
-                {
-                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(2, false));
-                }
-                catch
-                {
-                    try
-                    {
-                        _color = ColorThiefToColor(GetColorFromPaletteByTheme(1, false));
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            _color = ColorThiefToColor(GetColorFromPaletteByThemeLow(0, false));
-                        }
-                        catch
-                        {
-                            _color = new Windows.UI.Color { R = 0, G = 0, B = 0, A = 0 };
-                        }
-                    }
-                }
-
-                Application.Current.Resources["SystemAccentColor"] = _color;
-                Application.Current.Resources["SystemAccentColorDark1"] = _color;
-                Application.Current.Resources["SystemAccentColorDark2"] = _color;
-                Application.Current.Resources["SystemAccentColorDark3"] = _color;
-            }
-            else
-            {
-                try
-                {
-                    _color = ColorThiefToColor(GetColorFromPaletteByTheme(0, true));
-                }
-                catch
-                {
-                    _color = new Windows.UI.Color { R = 255, G = 255, B = 255, A = 255 };
-                }
-
-                Application.Current.Resources["SystemAccentColor"] = _color;
-                Application.Current.Resources["SystemAccentColorLight1"] = _color;
-                Application.Current.Resources["SystemAccentColorLight2"] = _color;
-                Application.Current.Resources["SystemAccentColorLight3"] = _color;
+                case AppThemeMode.Light:
+                    SetLightColors();
+                    break;
+                case AppThemeMode.Dark:
+                    SetDarkColors();
+                    break;
+                default:
+                    if (SystemAppTheme.ToString() == "#FFFFFFFF")
+                        SetLightColors();
+                    else
+                        SetDarkColors();
+                    break;
             }
 
             ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+        }
+
+        private void SetLightColors()
+        {
+            List<Windows.UI.Color> _colors = GetPaletteList(4, true);
+            Application.Current.Resources["SystemAccentColor"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
+            Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
+            Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
+        }
+
+        private void SetDarkColors()
+        {
+            List<Windows.UI.Color> _colors = GetPaletteList(4, false);
+            Application.Current.Resources["SystemAccentColor"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
+            Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
+            Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
+        }
+
+        private List<Windows.UI.Color> GetPaletteList(int ColorCount = 4, bool IsDark = false)
+        {
+            List<Windows.UI.Color> output = new List<Windows.UI.Color>();
+            List<QuantizedColor> Colors = new ColorThief().GetPalette(ThumbnailBitmap, 20);
+
+            try
+            {
+                for (int i = 0; i < Colors.Count; i++)
+                {
+                    if (Colors[i].IsDark && IsDark) output.Add(ColorThiefToColor(Colors[i]));
+                    if (!Colors[i].IsDark && !IsDark) output.Add(ColorThiefToColor(Colors[i]));
+                    if (output.Count == 4) return output;
+                }
+            }
+            catch
+            {
+                output.Clear();
+                QuantizedColor Single = Colors.Where(x => IsDark ? x.IsDark : !x.IsDark).FirstOrDefault();
+                for (int i = 0; i < ColorCount; i++)
+                    output.Add(ColorThiefToColor(Single));
+            }
+
+            return output;
         }
 
         private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
         private async Task<BitmapImage> GetResizedBitmap(string path)
         {
-            InMemoryRandomAccessStream retStream = new InMemoryRandomAccessStream();
+            BackgroundStream = new InMemoryRandomAccessStream();
 
             using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
             {
@@ -285,12 +294,12 @@ namespace CollapseLauncher
                                                     ColorManagementMode.DoNotColorManage);
 
                 if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, retStream);
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
                 encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
                 await encoder.FlushAsync();
             }
 
-            return await Stream2BitmapImage(retStream);
+            return await Stream2BitmapImage(BackgroundStream);
         }
 
         private void FlipSize(ref (uint, uint) b)
@@ -306,6 +315,12 @@ namespace CollapseLauncher
             await ret.SetSourceAsync(image);
             image.Dispose();
             return ret;
+        }
+
+        private Bitmap Stream2Bitmap(IRandomAccessStream image)
+        {
+            image.Seek(0);
+            return new Bitmap(image.AsStream());
         }
 
         // Reference:
@@ -325,25 +340,7 @@ namespace CollapseLauncher
             {
                 using (IRandomAccessStream fileStream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
                 {
-                    var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                    InMemoryRandomAccessStream resizedStream = new InMemoryRandomAccessStream();
-
-                    BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(resizedStream, decoder);
-
-                    encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
-
-                    encoder.BitmapTransform.ScaledHeight = (uint)ThumbnailSize.Width;
-                    encoder.BitmapTransform.ScaledWidth = (uint)ThumbnailSize.Height;
-
-                    await encoder.FlushAsync();
-                    resizedStream.Seek(0);
-
-                    ThumbnailStream = new MemoryStream();
-                    await resizedStream.AsStream().CopyToAsync(ThumbnailStream);
-
-                    ThumbnailBitmap = new Bitmap(ThumbnailStream);
-                    ThumbnailStream.Dispose();
+                    ThumbnailBitmap =  await Task.Run(() => Stream2Bitmap(fileStream));
                 }
             }
             catch (Exception ex)
@@ -351,14 +348,6 @@ namespace CollapseLauncher
                 LogWriteLine($"Cannot generate thumbnail: {ex}", Hi3Helper.LogType.Warning, true);
             }
         }
-
-        private IEnumerable<QuantizedColor> GetPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap);
-        private QuantizedColor GetColorFromPalette(byte paletteOrder = 0) => new ColorThief().GetPalette(ThumbnailBitmap, 10)[paletteOrder];
-        private QuantizedColor GetColorFromPaletteByTheme(byte paletteOrder = 0, bool alwaysLight = true) =>
-            new ColorThief().GetPalette(ThumbnailBitmap, 10).Where(x => x.IsDark != alwaysLight).ToList()[paletteOrder];
-        private QuantizedColor GetColorFromPaletteByThemeLow(byte paletteOrder = 0, bool alwaysLight = true) =>
-            new ColorThief().GetPalette(ThumbnailBitmap, 50, 10).Where(x => x.IsDark != alwaysLight).ToArray()[paletteOrder];
-        private QuantizedColor GetSingleColorPalette() => new ColorThief().GetColor(ThumbnailBitmap);
 
         private async Task DownloadBackgroundImage()
         {

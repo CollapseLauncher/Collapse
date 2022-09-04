@@ -8,7 +8,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.0.36.3</Version>
+		<Version>1.0.40.0</Version>
 		<ErrorReport>none</ErrorReport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
