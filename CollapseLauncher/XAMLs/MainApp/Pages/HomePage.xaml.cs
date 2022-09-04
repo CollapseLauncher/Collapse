@@ -411,8 +411,12 @@ namespace CollapseLauncher.Pages
                     switch (await Dialog_ExistingInstallationSteam(Content))
                     {
                         case ContentDialogResult.Primary:
+#if DISABLEMOVEMIGRATE
+                            ApplyGameConfig(GamePathOnSteam);
+#else
                             MigrationWatcher.IsMigrationRunning = true;
                             MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrateSteam));
+#endif
                             return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
@@ -427,9 +431,15 @@ namespace CollapseLauncher.Pages
                     switch (await Dialog_ExistingInstallationBetterLauncher(Content))
                     {
                         case ContentDialogResult.Primary:
+#if DISABLEMOVEMIGRATE
+                            gameIni.Profile["launcher"]["game_install_path"] = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/');
+                            SaveGameProfile();
+                            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+#else
                             MigrationWatcher.IsMigrationRunning = true;
                             CurrentRegion.MigrateFromBetterHi3Launcher = true;
                             MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
+#endif
                             return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());
@@ -444,8 +454,14 @@ namespace CollapseLauncher.Pages
                     switch (await Dialog_ExistingInstallation(Content))
                     {
                         case ContentDialogResult.Primary:
+#if DISABLEMOVEMIGRATE
+                            gameIni.Profile["launcher"]["game_install_path"] = CurrentRegion.ActualGameDataLocation.Replace('\\', '/');
+                            SaveGameProfile();
+                            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+#else
                             MigrationWatcher.IsMigrationRunning = true;
                             MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
+#endif
                             return;
                         case ContentDialogResult.Secondary:
                             await StartInstallationProcedure(await InstallGameDialogScratch());

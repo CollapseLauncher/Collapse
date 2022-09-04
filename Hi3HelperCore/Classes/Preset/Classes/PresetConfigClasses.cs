@@ -185,7 +185,7 @@ namespace Hi3Helper.Preset
             if (Value is null) return false;
 
             string? Result = Encoding.UTF8.GetString(Value);
-            string? Path;
+            string? GamwePath;
 
             try
             {
@@ -199,9 +199,9 @@ namespace Hi3Helper.Preset
 
             if (Key is null || Value.Length is 0 || BetterHi3LauncherConfig is null) return false;
 
-            Path = ConverterTool.NormalizePath(BetterHi3LauncherConfig.game_info.install_path);
+            GamwePath = ConverterTool.NormalizePath(BetterHi3LauncherConfig.game_info.install_path);
 
-            return File.Exists(Path) && BetterHi3LauncherConfig.game_info.installed;
+            return File.Exists(Path.Combine(GamwePath, GameExecutableName)) && File.Exists(Path.Combine(GamwePath, "config.ini")) && BetterHi3LauncherConfig.game_info.installed;
         }
 
         public bool CheckExistingGame()
