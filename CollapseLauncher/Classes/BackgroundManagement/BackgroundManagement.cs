@@ -202,49 +202,49 @@ namespace CollapseLauncher
             return cachePath;
         }
 
-        private void ApplyAccentColor()
+        private async Task ApplyAccentColor()
         {
             switch (CurrentAppTheme)
             {
                 case AppThemeMode.Light:
-                    SetLightColors();
+                    await SetLightColors();
                     break;
                 case AppThemeMode.Dark:
-                    SetDarkColors();
+                    await SetDarkColors();
                     break;
                 default:
                     if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        SetLightColors();
+                        await SetLightColors();
                     else
-                        SetDarkColors();
+                        await SetDarkColors();
                     break;
             }
 
             ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private void SetLightColors()
+        private async Task SetLightColors()
         {
-            List<Windows.UI.Color> _colors = GetPaletteList(4, true);
+            List<Windows.UI.Color> _colors = await GetPaletteList(4, true);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
         }
 
-        private void SetDarkColors()
+        private async Task SetDarkColors()
         {
-            List<Windows.UI.Color> _colors = GetPaletteList(4, false);
+            List<Windows.UI.Color> _colors = await GetPaletteList(4, false);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
         }
 
-        private List<Windows.UI.Color> GetPaletteList(int ColorCount = 4, bool IsDark = false)
+        private async Task<List<Windows.UI.Color>> GetPaletteList(int ColorCount = 4, bool IsDark = false)
         {
             List<Windows.UI.Color> output = new List<Windows.UI.Color>();
-            List<QuantizedColor> Colors = new ColorThief().GetPalette(ThumbnailBitmap, 20);
+            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 30));
 
             try
             {

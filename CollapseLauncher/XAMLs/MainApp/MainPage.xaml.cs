@@ -88,7 +88,7 @@ namespace CollapseLauncher
             }
 
             await GenerateThumbnail();
-            ApplyAccentColor();
+            await ApplyAccentColor();
             e.IsImageLoaded = true;
         }
 
