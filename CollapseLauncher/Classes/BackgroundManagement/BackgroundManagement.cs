@@ -27,7 +27,6 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         private BitmapImage BackgroundBitmap;
-        private InMemoryRandomAccessStream BackgroundStream;
         private Bitmap ThumbnailBitmap;
         private bool PassFirstTry = false;
         private bool BGLastState = true;
@@ -241,27 +240,25 @@ namespace CollapseLauncher
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
         }
 
-        private async Task<List<Windows.UI.Color>> GetPaletteList(int ColorCount = 4, bool IsDark = false)
+        private async Task<List<Windows.UI.Color>> GetPaletteList(int ColorCount = 4, bool IsLight = false)
         {
             List<Windows.UI.Color> output = new List<Windows.UI.Color>();
-            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 30));
+            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 7, 10));
+
+            QuantizedColor Single;
 
             try
             {
-                for (int i = 0; i < Colors.Count; i++)
-                {
-                    if (Colors[i].IsDark && IsDark) output.Add(ColorThiefToColor(Colors[i]));
-                    if (!Colors[i].IsDark && !IsDark) output.Add(ColorThiefToColor(Colors[i]));
-                    if (output.Count == 4) return output;
-                }
+                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight ? 1 : 0];
             }
             catch
             {
-                output.Clear();
-                QuantizedColor Single = Colors.Where(x => IsDark ? x.IsDark : !x.IsDark).FirstOrDefault();
-                for (int i = 0; i < ColorCount; i++)
-                    output.Add(ColorThiefToColor(Single));
+                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
+                if (Single is null) Single = Colors.FirstOrDefault();
             }
+
+            for (int i = 0; i < ColorCount; i++)
+                output.Add(ColorThiefToColor(Single));
 
             return output;
         }
@@ -270,36 +267,38 @@ namespace CollapseLauncher
 
         private async Task<BitmapImage> GetResizedBitmap(string path)
         {
-            BackgroundStream = new InMemoryRandomAccessStream();
-
-            using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
+            using (InMemoryRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
-                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
-                (uint, uint) ResizedSize = GetPreservedImageRatio(
-                    (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale),
-                    (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale),
-                    decoder.PixelWidth,
-                    decoder.PixelHeight);
-                BitmapTransform transform = new BitmapTransform()
+                using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
                 {
-                    ScaledWidth = ResizedSize.Item1,
-                    ScaledHeight = ResizedSize.Item2,
-                    InterpolationMode = BitmapInterpolationMode.Fant
-                };
-                PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
-                                                    BitmapPixelFormat.Rgba8,
-                                                    BitmapAlphaMode.Straight,
-                                                    transform,
-                                                    ExifOrientationMode.RespectExifOrientation,
-                                                    ColorManagementMode.DoNotColorManage);
+                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
+                    (uint, uint) ResizedSize = GetPreservedImageRatio(
+                        (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale),
+                        (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale),
+                        decoder.PixelWidth,
+                        decoder.PixelHeight);
+                    BitmapTransform transform = new BitmapTransform()
+                    {
+                        ScaledWidth = ResizedSize.Item1,
+                        ScaledHeight = ResizedSize.Item2,
+                        InterpolationMode = BitmapInterpolationMode.Fant
+                    };
+                    PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
+                                                        BitmapPixelFormat.Rgba8,
+                                                        BitmapAlphaMode.Straight,
+                                                        transform,
+                                                        ExifOrientationMode.RespectExifOrientation,
+                                                        ColorManagementMode.DoNotColorManage);
 
-                if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
-                encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
-                await encoder.FlushAsync();
+                    if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
+                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
+                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
+                    await encoder.FlushAsync();
+                }
+
+                await GenerateThumbnail(BackgroundStream);
+                return await Stream2BitmapImage(BackgroundStream);
             }
-
-            return await Stream2BitmapImage(BackgroundStream);
         }
 
         private void FlipSize(ref (uint, uint) b)
@@ -312,6 +311,7 @@ namespace CollapseLauncher
         private async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
         {
             BitmapImage ret = new BitmapImage();
+            image.Seek(0);
             await ret.SetSourceAsync(image);
             image.Dispose();
             return ret;
@@ -334,14 +334,11 @@ namespace CollapseLauncher
             return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
         }
 
-        private async Task GenerateThumbnail()
+        private async Task GenerateThumbnail(IRandomAccessStream stream)
         {
             try
             {
-                using (IRandomAccessStream fileStream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
-                {
-                    ThumbnailBitmap =  await Task.Run(() => Stream2Bitmap(fileStream));
-                }
+                ThumbnailBitmap = await Task.Run(() => Stream2Bitmap(stream));
             }
             catch (Exception ex)
             {

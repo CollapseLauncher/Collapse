@@ -87,7 +87,6 @@ namespace CollapseLauncher
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
-            await GenerateThumbnail();
             await ApplyAccentColor();
             e.IsImageLoaded = true;
         }
