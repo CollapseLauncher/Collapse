@@ -14,6 +14,14 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Button x:Name="NextPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" IsEnabled="False"
+                Click="NextPage_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}" Margin="0,0,8,0"/>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE111;" FontSize="14"/>
+                </StackPanel>
+            </Button>
             <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" x:Name="LeftPanel">
                 <StackPanel.Transitions>
                     <EntranceThemeTransition/>
@@ -39,7 +47,7 @@
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <Button Content="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn, Mode=TwoWay}" Style="{StaticResource AccentButtonStyle}" Click="ChooseFolder"/>
-                    <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" VerticalAlignment="Center" Foreground="Red"/>
+                    <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimary}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

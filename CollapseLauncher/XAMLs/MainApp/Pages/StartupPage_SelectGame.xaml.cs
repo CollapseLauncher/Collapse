@@ -17,11 +17,15 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class StartupPage : Page
+    public sealed partial class StartupPage_SelectGame : Page
     {
-        public StartupPage()
+        bool AbortTransition = false;
+        public StartupPage_SelectGame()
         {
+            AbortTransition = false;
             this.InitializeComponent();
+            LoadConfigTemplate();
+            GameSelect.ItemsSource = GameConfigName;
         }
 
         private async void ChooseFolder(object sender, RoutedEventArgs e)
@@ -47,14 +51,10 @@ namespace CollapseLauncher.Pages
                         else
                         {
                             NextPage.IsEnabled = false;
-                            ErrMsg.Text = Lang._StartupPage.FolderInsufficientPermission;
-                            ErrMsg.Foreground = new SolidColorBrush(new Color() { R = 255, G = 0, B = 0, A = 255 });
                         }
                     else
                     {
                         NextPage.IsEnabled = false;
-                        ErrMsg.Text = Lang._StartupPage.FolderNotSelected;
-                        ErrMsg.Foreground = new SolidColorBrush(new Color() { R = 255, G = 0, B = 0, A = 255 });
                     }
                     break;
             }
@@ -62,9 +62,17 @@ namespace CollapseLauncher.Pages
             if (Selected)
             {
                 NextPage.IsEnabled = true;
-                ErrMsg.Text = $"✅ {AppGameFolder}";
-                ErrMsg.Foreground = new SolidColorBrush((Color)Application.Current.Resources["TextFillColorPrimary"]);
-                ErrMsg.TextWrapping = TextWrapping.Wrap;
+                /*
+                await HideLoadingPopup(false, Lang._StartupPage.OverlayPrepareFolderTitle, Lang._StartupPage.OverlayPrepareFolderSubtitle);
+                await AppendFolderPermission(AppGameFolder);
+                await HideLoadingPopup(true, Lang._StartupPage.OverlayPrepareFolderTitle, Lang._StartupPage.OverlayPrepareFolderSubtitle);
+
+                if (!AbortTransition)
+                {
+                    SaveAppConfig();
+                    MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                }
+                */
             }
         }
 
@@ -147,22 +155,46 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void NextPage_Click(object sender, RoutedEventArgs e)
+        private async Task AppendFolderPermission(string path)
         {
-            bool IsMetaStampExist = IsMetadataStampExist();
-            bool IsMetaContentExist = IsMetadataContentExist();
-
-            if (!IsMetaStampExist || !IsMetaContentExist)
+            try
             {
-                await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                await DownloadMetadataFiles(!IsMetaStampExist, !IsMetaContentExist);
-                Ring.IsIndeterminate = false;
-                OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
-                OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;
-                await Task.Delay(2000);
-            }
+                Process proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = Path.Combine(AppFolder, "CollapseLauncher.exe"),
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        Arguments = $"takeownership --input \"{path}\""
+                    }
+                };
 
-            (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage_SelectGame), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+                proc.Start();
+                await proc.WaitForExitAsync();
+            }
+            catch (Win32Exception)
+            {
+                AbortTransition = true;
+                MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+            }
+        }
+
+        private void NextPage_Click(object sender, RoutedEventArgs e)
+        {
+            (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+        }
+
+        private void PrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            (m_window as MainWindow).rootFrame.GoBack();
+        }
+
+        private void GameSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Set CurrentRegion in AppConfig
+            SetAndSaveConfigValue("CurrentRegion", (sender as ComboBox).SelectedIndex);
+            NextPage.IsEnabled = true;
         }
     }
 }

@@ -27,6 +27,20 @@
                 public string ChooseFolderDialogSecondary { get; set; } = LangFallback?._StartupPage.ChooseFolderDialogSecondary;
                 public string OverlayPrepareFolderTitle { get; set; } = LangFallback?._StartupPage.OverlayPrepareFolderTitle;
                 public string OverlayPrepareFolderSubtitle { get; set; } = LangFallback?._StartupPage.OverlayPrepareFolderSubtitle;
+                public string Pg1NextBtn { get; set; } = LangFallback?._StartupPage.Pg1NextBtn;
+                public string Pg1LoadingTitle1 { get; set; } = LangFallback?._StartupPage.Pg1LoadingTitle1;
+                public string Pg1LoadingSubitle1 { get; set; } = LangFallback?._StartupPage.Pg1LoadingSubitle1;
+                public string Pg1LoadingSubitle2 { get; set; } = LangFallback?._StartupPage.Pg1LoadingSubitle2;
+                public string Pg2NextBtn { get; set; } = LangFallback?._StartupPage.Pg2NextBtn;
+                public string Pg2PrevBtn { get; set; } = LangFallback?._StartupPage.Pg2PrevBtn;
+                public string Pg2Title { get; set; } = LangFallback?._StartupPage.Pg2Title;
+                public string Pg2Subtitle1_1 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_1;
+                public string Pg2Subtitle1_2 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_2;
+                public string Pg2Subtitle2_1 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_1;
+                public string Pg2Subtitle2_2 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_2;
+                public string Pg2Subtitle2_3 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_3;
+                public string Pg2Subtitle2_4 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_4;
+                public string Pg2ComboBox { get; set; } = LangFallback?._StartupPage.Pg2ComboBox;
             }
         }
         #endregion

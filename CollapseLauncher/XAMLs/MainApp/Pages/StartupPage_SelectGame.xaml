@@ -1,0 +1,65 @@
+﻿<Page
+    x:Class="CollapseLauncher.Pages.StartupPage_SelectGame"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource PagesSolidAcrylicBrush}">
+    <Grid>
+        <Button x:Name="NextPage" Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="32" IsEnabled="False"
+                Click="NextPage_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" Margin="0,0,8,0"/>
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE111;" FontSize="14"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="PrevPage" Style="{StaticResource AccentButtonStyle}"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="32" IsEnabled="True"
+                Click="PrevPage_Click">
+            <StackPanel Orientation="Horizontal">
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" FontSize="14"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtn}" Margin="8,0,0,0"/>
+            </StackPanel>
+        </Button>
+        <Grid x:Name="Bg" Margin="32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="32,0,0,0" x:Name="LeftPanel">
+                <StackPanel.Transitions>
+                    <EntranceThemeTransition/>
+                </StackPanel.Transitions>
+                <Image Source="/Assets/BG/AponiaFly.png" Width="400" Height="400" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" HorizontalAlignment="Left" x:Name="RightPanel">
+                <StackPanel.Transitions>
+                    <EntranceThemeTransition/>
+                </StackPanel.Transitions>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" FontWeight="Normal"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,24">
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" FontWeight="Normal"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" Foreground="{StaticResource SystemAccentColor}"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" FontWeight="Normal"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
+                </TextBlock>
+                <ComboBox x:Name="GameSelect" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameSelect_SelectionChanged"/>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="Overlay" Visibility="Collapsed">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,200,0,0">
+                <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

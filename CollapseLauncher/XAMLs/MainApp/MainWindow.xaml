@@ -142,7 +142,7 @@
                 </Grid>
             </Grid>
         </NavigationView>
-        <Frame x:Name="rootFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1">
+        <Frame x:Name="rootFrame" Grid.Row="0" Grid.RowSpan="2" Opacity="1" x:FieldModifier="public">
             <Frame.ContentTransitions>
                 <TransitionCollection>
                     <NavigationThemeTransition/>

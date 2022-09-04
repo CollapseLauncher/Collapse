@@ -24,7 +24,21 @@
     "ChooseFolderDialogPrimary": "Yes, please",
     "ChooseFolderDialogSecondary": "No, choose folder",
     "OverlayPrepareFolderTitle": "Preparing App Folder",
-    "OverlayPrepareFolderSubtitle": "Applying permission..."
+    "OverlayPrepareFolderSubtitle": "Applying permission...",
+    "Pg1NextBtn": "Next - Select Game",
+    "Pg1LoadingTitle1": "Loading Game List",
+    "Pg1LoadingSubitle1": "We are preparing the list of the supported games for you",
+    "Pg1LoadingSubitle2": "Completed! Move on to the next step!",
+    "Pg2NextBtn": "Finish - Enter the Launcher",
+    "Pg2PrevBtn": "Back - Select Folder",
+    "Pg2Title": "Time to fly~",
+    "Pg2Subtitle1_1": "Just one more step to play your game from",
+    "Pg2Subtitle1_2": "Collapse Launcher.",
+    "Pg2Subtitle2_1": "We have few",
+    "Pg2Subtitle2_2": "miHoYo/HoYoverse",
+    "Pg2Subtitle2_3": "games to be supported. Please select your game below to start using",
+    "Pg2Subtitle2_4": "Collapse Launcher.",
+    "Pg2ComboBox": "Select Game"
   },
 
   // DisconnectedPage Content
