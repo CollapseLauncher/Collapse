@@ -7,10 +7,10 @@
         <ResourceDictionary x:Key="Dark">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Color x:Key="SystemAccentColor">#FFFFFF</Color>
-                    <Color x:Key="SystemAccentColorLight1">#FFFFFF</Color>
-                    <Color x:Key="SystemAccentColorLight2">#FFFFFF</Color>
-                    <Color x:Key="SystemAccentColorLight3">#FFFFFF</Color>
+                    <Color x:Key="SystemAccentColor">#ffd52a</Color>
+                    <Color x:Key="SystemAccentColorLight1">#ffd52a</Color>
+                    <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
+                    <Color x:Key="SystemAccentColorLight3">#ffd52a</Color>
 
                     <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="0" TintColor="Black" />
 
@@ -58,10 +58,10 @@
         <ResourceDictionary x:Key="Light">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Color x:Key="SystemAccentColor">#111111</Color>
-                    <Color x:Key="SystemAccentColorDark1">#111111</Color>
-                    <Color x:Key="SystemAccentColorDark2">#111111</Color>
-                    <Color x:Key="SystemAccentColorDark3">#111111</Color>
+                    <Color x:Key="SystemAccentColor">#693758</Color>
+                    <Color x:Key="SystemAccentColorDark1">#693758</Color>
+                    <Color x:Key="SystemAccentColorDark2">#693758</Color>
+                    <Color x:Key="SystemAccentColorDark3">#693758</Color>
 
                     <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintOpacity="1" TintColor="#FFFFFF" />
 

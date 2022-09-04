@@ -80,7 +80,7 @@ namespace Hi3Helper.Shared.Region
             { "EnableConsole", new IniValue(false) },
 #endif
             { "DontAskUpdate", new IniValue(false) },
-            { "ThemeMode", new IniValue(AppThemeMode.Default) },
+            { "ThemeMode", new IniValue(AppThemeMode.Dark) },
             { "AppLanguage", new IniValue("en-us") },
             { "UseCustomBG", new IniValue(false) },
             { "ShowEventsPanel", new IniValue(true) },
@@ -90,8 +90,6 @@ namespace Hi3Helper.Shared.Region
         public static void LoadGamePreset()
         {
             AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
-            // LoadConfigTemplate();
-            // LoadConfigFromFile(Path.Combine(AppFolder, "config", "fileconfig.json"));
         }
 
         public static void GetScreenResolutionString()
@@ -141,7 +139,6 @@ namespace Hi3Helper.Shared.Region
             catch (ArgumentNullException)
             {
                 IsFirstInstall = true;
-
             }
         }
 
