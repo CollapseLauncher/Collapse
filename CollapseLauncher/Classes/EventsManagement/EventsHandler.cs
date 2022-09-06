@@ -242,11 +242,7 @@ namespace CollapseLauncher
     {
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
         BackgroundImgProperty property;
-        public async Task WaitForBackgroundToLoad()
-        {
-            while (!property.IsImageLoaded)
-                await Task.Delay(33);
-        }
+        public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property.IsImageLoaded) { } });
         public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
     }
 
