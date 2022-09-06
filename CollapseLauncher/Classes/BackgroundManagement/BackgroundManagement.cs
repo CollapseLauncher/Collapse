@@ -243,13 +243,13 @@ namespace CollapseLauncher
         private async Task<List<Windows.UI.Color>> GetPaletteList(int ColorCount = 4, bool IsLight = false)
         {
             List<Windows.UI.Color> output = new List<Windows.UI.Color>();
-            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 7, 10));
+            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 10));
 
             QuantizedColor Single;
 
             try
             {
-                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight ? 1 : 0];
+                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight ? 2 : 0];
             }
             catch
             {
