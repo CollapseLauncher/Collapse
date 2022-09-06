@@ -1,7 +1,6 @@
-*/bin/*
-*/obj/*
-*/build/*
-build/*
+*bin*
+*obj*
+*build/*
 .vs/*
 *.user
 packages/*

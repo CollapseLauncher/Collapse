@@ -1,6 +1,3 @@
-[submodule "Hi3HelperCore/Classes/Data/Tools/SevenZipTool/SevenZipExtractor"]
-	path = Hi3HelperCore/Classes/Data/Tools/SevenZipTool/SevenZipExtractor
+[submodule "Hi3Helper.Core/Classes/Data/Tools/SevenZipTool/SevenZipExtractor"]
+	path = Hi3Helper.Core/Classes/Data/Tools/SevenZipTool/SevenZipExtractor
 	url = https://github.com/neon-nyan/SevenZipExtractor
-[submodule "Hi3HelperCore.Http"]
-	path = Hi3HelperCore.Http
-	url = https://github.com/neon-nyan/Hi3HelperCore.Http
