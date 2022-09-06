@@ -37,7 +37,7 @@ namespace CollapseLauncher
             try
             {
                 InitAppPreset();
-                InitConsoleSetting(true);
+                InitConsoleSetting(false);
                 Console.WriteLine("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
                     AppCurrentVersion,
                     GetVersionString(),
@@ -101,6 +101,7 @@ namespace CollapseLauncher
             {
                 Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}", LogType.Error, true);
                 Console.WriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
+                InitConsoleSetting(true);
                 Console.ReadLine();
                 return;
             }

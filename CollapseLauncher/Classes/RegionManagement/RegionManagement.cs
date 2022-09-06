@@ -73,7 +73,7 @@ namespace CollapseLauncher
             LoadingFooter.Text = string.Empty;
 
             // Toggle Loading Popup
-            await HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
 
             IsLoadRegionComplete = true;
         }
@@ -158,7 +158,7 @@ namespace CollapseLauncher
             LoadingFooter.Text = string.Empty;
 
             // Hide Loading Popup
-            await HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
 
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!", Hi3Helper.LogType.Scheme, true);

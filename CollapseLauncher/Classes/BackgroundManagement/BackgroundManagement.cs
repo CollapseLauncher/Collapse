@@ -1,5 +1,5 @@
 ﻿using ColorThiefDotNet;
-using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,7 +16,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
-using Hi3Helper.Http;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -224,7 +223,7 @@ namespace CollapseLauncher
 
         private async Task SetLightColors()
         {
-            List<Windows.UI.Color> _colors = await GetPaletteList(4, true);
+            Windows.UI.Color[] _colors = await GetPaletteList(4, true);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
@@ -233,17 +232,18 @@ namespace CollapseLauncher
 
         private async Task SetDarkColors()
         {
-            List<Windows.UI.Color> _colors = await GetPaletteList(4, false);
+            Windows.UI.Color[] _colors = await GetPaletteList(4, false);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
         }
 
-        private async Task<List<Windows.UI.Color>> GetPaletteList(int ColorCount = 4, bool IsLight = false)
+        private async Task<Windows.UI.Color[]> GetPaletteList(int ColorCount = 4, bool IsLight = false)
         {
-            List<Windows.UI.Color> output = new List<Windows.UI.Color>();
-            List<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 10));
+            byte DefVal = (byte)(IsLight ? 80 : 255);
+            Windows.UI.Color[] output = new Windows.UI.Color[4];
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 10));
 
             QuantizedColor Single;
 
@@ -255,28 +255,24 @@ namespace CollapseLauncher
             {
                 Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
                 if (Single is null) Single = Colors.FirstOrDefault();
+                if (Single is null) Single = new QuantizedColor(new ColorThiefDotNet.Color { A = 255, R = DefVal, G = DefVal, B = DefVal }, 1);
             }
 
-            for (int i = 0; i < ColorCount; i++)
-                output.Add(ColorThiefToColor(Single));
+            for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single);
 
             return output;
         }
 
         private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
-        private async Task<BitmapImage> GetResizedBitmap(string path)
+        private async Task<BitmapImage> GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
         {
             using (InMemoryRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
-                using (IRandomAccessStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read).AsRandomAccessStream())
+                using (stream)
                 {
-                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
-                    (uint, uint) ResizedSize = GetPreservedImageRatio(
-                        (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale),
-                        (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale),
-                        decoder.PixelWidth,
-                        decoder.PixelHeight);
+                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                    (uint, uint) ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, decoder.PixelWidth, decoder.PixelHeight);
                     BitmapTransform transform = new BitmapTransform()
                     {
                         ScaledWidth = ResizedSize.Item1,
@@ -313,14 +309,13 @@ namespace CollapseLauncher
             BitmapImage ret = new BitmapImage();
             image.Seek(0);
             await ret.SetSourceAsync(image);
-            image.Dispose();
             return ret;
         }
 
         private Bitmap Stream2Bitmap(IRandomAccessStream image)
         {
             image.Seek(0);
-            return new Bitmap(image.AsStream());
+            return new Bitmap(image.AsStreamForRead());
         }
 
         // Reference:
@@ -363,17 +358,16 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task ApplyBackground(bool rescale = true)
+        private async Task ApplyBackground()
         {
             BackgroundBackBuffer.Source = BackgroundBitmap;
             BackgroundBackBuffer.Visibility = Visibility.Visible;
             BackgroundFrontBuffer.Source = BackgroundBitmap;
             BackgroundFrontBuffer.Visibility = Visibility.Visible;
+            uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
+            uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            if (rescale)
-                BackgroundBitmap = await GetResizedBitmap(regionBackgroundProp.imgLocalPath);
-            else
-                BackgroundBitmap = new BitmapImage(new Uri(regionBackgroundProp.imgLocalPath));
+            BackgroundBitmap = await GetResizedBitmap(new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream(), Width, Height);
 
             BackgroundBack.Source = BackgroundBitmap;
             BackgroundFront.Source = BackgroundBitmap;
@@ -413,7 +407,7 @@ namespace CollapseLauncher
             BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
         }
 
-        private async Task HideLoadingPopup(bool hide, string title, string subtitle)
+        private void HideLoadingPopup(bool hide, string title, string subtitle)
         {
             Storyboard storyboard = new Storyboard();
 
@@ -424,7 +418,7 @@ namespace CollapseLauncher
             {
                 LoadingRing.IsIndeterminate = false;
 
-                await Task.Delay(500);
+                // await Task.Delay(500);
 
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 1;
@@ -436,7 +430,7 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                await Task.Delay(250);
+                // await Task.Delay(250);
                 LoadingPopup.Visibility = Visibility.Collapsed;
             }
             else
@@ -456,7 +450,7 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                await Task.Delay(250);
+                // await Task.Delay(250);
             }
         }
 

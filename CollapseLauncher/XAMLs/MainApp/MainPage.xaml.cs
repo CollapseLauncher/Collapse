@@ -61,10 +61,10 @@ namespace CollapseLauncher
             }
         }
 
-        private async void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
+        private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
             HideBackgroundImage(!e.Hide);
-            await HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
+            HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
         }
 
         private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e) => SpawnWebView2Panel(e.URL);
@@ -83,7 +83,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                await ApplyBackground(false);
+                await ApplyBackground();
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
@@ -354,7 +354,7 @@ namespace CollapseLauncher
             if (!IsMetaStampExist || !IsMetaContentExist)
             {
                 LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
-                await HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
                 await DownloadMetadataFiles(true, true);
             }
 
