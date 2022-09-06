@@ -29,6 +29,14 @@
             <Button x:Name="CopyThrow" Content="Copy All to Clipboard"
                     HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
                     Click="CopyTextToClipboard"/>
+            <Button x:Name="BackToPreviousPage"
+                    HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
+                    Click="GoBackPreviousPage" Visibility="Collapsed" Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" FontSize="14"/>
+                    <TextBlock Text="Go back to previous page" Margin="8,0,0,0"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </Page>

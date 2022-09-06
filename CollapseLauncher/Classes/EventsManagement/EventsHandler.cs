@@ -138,15 +138,41 @@ namespace CollapseLauncher
     }
     #endregion
     #region ErrorSenderRegion
-    public enum ErrorType { Unhandled, GameError }
+    public enum ErrorType { Unhandled, GameError, Connection }
 
     internal static class ErrorSender
     {
         static ErrorSenderInvoker invoker = new ErrorSenderInvoker();
         public static string ExceptionContent;
+        public static ErrorType ExceptionType;
         public static string ExceptionTitle;
         public static string ExceptionSubtitle;
         public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled) => invoker.SendException(e, eT);
+        public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
+        {
+            ExceptionContent = e.ToString();
+            ExceptionType = eT;
+            SetPageTitle(eT);
+        }
+
+        public static void SetPageTitle(ErrorType errorType)
+        {
+            switch (errorType)
+            {
+                case ErrorType.Unhandled:
+                    ExceptionTitle = "Unhandled Error";
+                    ExceptionSubtitle = "An Unhandled Error has occured with an Exception Throw below:";
+                    break;
+                case ErrorType.Connection:
+                    ExceptionTitle = "Connection Issue";
+                    ExceptionSubtitle = "Oops, seems like you've been disconnected from the internet~ Or is it?";
+                    break;
+                case ErrorType.GameError:
+                    ExceptionTitle = "Game Crashed";
+                    ExceptionSubtitle = "The game has crashed with error details below:";
+                    break;
+            }
+        }
     }
 
     internal class ErrorSenderInvoker
@@ -162,18 +188,8 @@ namespace CollapseLauncher
             Exception = e;
             ExceptionString = e.ToString();
             ErrorSender.ExceptionContent = ExceptionString;
-
-            switch (errorType)
-            {
-                case ErrorType.Unhandled:
-                    ErrorSender.ExceptionTitle = "Unhandled Error";
-                    ErrorSender.ExceptionSubtitle = "An Unhandled Error has occured with an Exception Throw below:";
-                    break;
-                case ErrorType.GameError:
-                    ErrorSender.ExceptionTitle = "Game Crashed";
-                    ErrorSender.ExceptionSubtitle = "The game has crashed with error details below:";
-                    break;
-            }
+            ErrorSender.ExceptionType = errorType;
+            ErrorSender.SetPageTitle(errorType);
         }
         public Exception Exception { get; private set; }
         public string ExceptionString { get; private set; }

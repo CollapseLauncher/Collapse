@@ -48,7 +48,8 @@
     "Header2": "Disconnected",
     "Footer1": "Please check your internet connection and click",
     "Footer2": "Paimon",
-    "Footer3": "to Retry."
+    "Footer3": "to Retry.",
+    "ShowErrorBtn": "Show Error Message"
   },
 
   // MainPage Content

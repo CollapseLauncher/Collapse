@@ -348,6 +348,7 @@ namespace CollapseLauncher
 
             bool IsMetaStampExist = IsMetadataStampExist();
             bool IsMetaContentExist = IsMetadataContentExist();
+            bool IsLoadSuccess;
 
             Type Page;
 
@@ -370,9 +371,9 @@ namespace CollapseLauncher
             }
             LoadRegionSelectorItems();
             LockRegionChangeBtn = true;
-            await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
+            IsLoadSuccess = await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
             CheckMetadataUpdateInBackground();
-            MainFrameChanger.ChangeMainFrame(Page);
+            if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
             LockRegionChangeBtn = false;
         }
 

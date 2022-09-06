@@ -1,3 +1,4 @@
+using CollapseLauncher.Pages;
 using Hi3Helper;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -25,6 +26,11 @@ namespace CollapseLauncher
         private void PaimonClicked(object sender, PointerRoutedEventArgs e)
         {
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage), new DrillInNavigationTransitionInfo());
+        }
+
+        private void ShowError(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            MainFrameChanger.ChangeWindowFrame(typeof(UnhandledExceptionPage));
         }
     }
 }

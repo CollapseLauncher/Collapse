@@ -48,7 +48,8 @@
     "Header2": "Terputus",
     "Footer1": "Mohon periksa koneksi internetmu dan klik",
     "Footer2": "Paimon",
-    "Footer3": "untuk mencoba lagi."
+    "Footer3": "untuk mencoba lagi.",
+    "ShowErrorBtn": "Perlihatkan Pesan Error"
   },
 
   // MainPage Content

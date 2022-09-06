@@ -14,6 +14,7 @@
                 public string Footer1 { get; set; } = LangFallback?._DisconnectedPage.Footer1;
                 public string Footer2 { get; set; } = LangFallback?._DisconnectedPage.Footer2;
                 public string Footer3 { get; set; } = LangFallback?._DisconnectedPage.Footer3;
+                public string ShowErrorBtn { get; set; } = LangFallback?._DisconnectedPage.ShowErrorBtn;
             }
         }
         #endregion

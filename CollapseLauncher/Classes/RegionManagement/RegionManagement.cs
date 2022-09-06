@@ -16,6 +16,7 @@ using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.InnerLauncherConfig;
+using System.Net.Http;
 
 namespace CollapseLauncher
 {
@@ -31,7 +32,7 @@ namespace CollapseLauncher
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
-        public async Task LoadRegionByIndex(uint Index = 0)
+        public async Task<bool> LoadRegionByIndex(uint Index = 0)
         {
             // If Index > Length of the region list, return back to 0
             if ((Index + 1) > ConfigStore.Config.Count) Index = 0;
@@ -41,21 +42,28 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
 
             // Clear MainPage State, like NavigationView, Load State, etc.
-            await ClearMainPageState();
+            ClearMainPageState();
 
             // Load Game Region File
             LoadGameRegionFile();
 
             // Load Region Resource from Launcher API
-            await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
+            bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
             await ChangeBackgroundImageAsRegion();
-            await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
+            bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
 
             // Finalize Region Load
-            await FinalizeLoadRegion();
+            FinalizeLoadRegion();
+
+            if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
+            {
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+            }
+
+            return IsLoadLocalizedResourceSuccess && IsLoadResourceRegionSuccess;
         }
 
-        public async Task ClearMainPageState()
+        public void ClearMainPageState()
         {
             // Reset Retry Counter
             CurrentRetry = 0;
@@ -78,9 +86,10 @@ namespace CollapseLauncher
             IsLoadRegionComplete = true;
         }
 
-        private async Task TryLoadGameRegionTask(Task InnerTask, uint Timeout, uint TimeoutStep)
+        private async Task<bool> TryLoadGameRegionTask(Task InnerTask, uint Timeout, uint TimeoutStep)
         {
-            while (await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
+            bool IsContinue;
+            while (IsContinue = await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
             {
                 // If true (fail), then log the retry attempt
                 LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, CurrentRegion.ZoneName, LoadTimeout);
@@ -88,6 +97,8 @@ namespace CollapseLauncher
                 Timeout += TimeoutStep;
                 CurrentRetry++;
             }
+
+            return !(!IsContinue && (CurrentRetry > MaxRetry));
         }
 
         private async Task<bool> IsTryLoadGameRegionTaskFail(Task InnerTask, uint Timeout)
@@ -95,7 +106,6 @@ namespace CollapseLauncher
             // Check for Retry Count. If it reaches max, then return to DisconnectedPage
             if (CurrentRetry > MaxRetry)
             {
-                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
                 return false;
             }
 
@@ -110,9 +120,9 @@ namespace CollapseLauncher
                 await InnerTask.WaitAsync(InnerTokenSource.Token);
                 IsInnerTaskSuccess = true;
             }
-            catch (OperationCanceledException)
+            catch (Exception ex)
             {
-                // Return false if cancel triggered
+                ErrorSender.SendExceptionWithoutPage(ex, ErrorType.Connection);
                 return true;
             }
 
@@ -138,7 +148,7 @@ namespace CollapseLauncher
             ComboBoxGameRegion.SelectedIndex = (int)Index;
         }
 
-        private async Task FinalizeLoadRegion()
+        private void FinalizeLoadRegion()
         {
             // Init Registry Key and Push Region Notification
             InitRegKey();
