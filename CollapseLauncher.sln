@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplyUpdate", "ApplyUpdate\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool", "Hi3Helper.EncTool\Hi3Helper.EncTool.csproj", "{32413993-E384-46CA-84A4-F7975D78543C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Http", "Hi3Helper.Http\Hi3Helper.Http.csproj", "{0B70C677-C309-46B5-B58E-437728042B65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -62,6 +64,16 @@ Global
 		{32413993-E384-46CA-84A4-F7975D78543C}.Release|x64.Build.0 = Release|x64
 		{32413993-E384-46CA-84A4-F7975D78543C}.Release-Portable|x64.ActiveCfg = Release|x64
 		{32413993-E384-46CA-84A4-F7975D78543C}.Release-Portable|x64.Build.0 = Release|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Debug|x64.ActiveCfg = Debug|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Debug|x64.Build.0 = Debug|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Publish|x64.ActiveCfg = Publish|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Publish|x64.Build.0 = Publish|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Publish-Portable|x64.ActiveCfg = Publish|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Publish-Portable|x64.Build.0 = Publish|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Release|x64.ActiveCfg = Release|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Release|x64.Build.0 = Release|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Release-Portable|x64.ActiveCfg = Release|x64
+		{0B70C677-C309-46B5-B58E-437728042B65}.Release-Portable|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
