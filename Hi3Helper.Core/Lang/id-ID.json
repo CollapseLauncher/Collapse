@@ -52,6 +52,19 @@
     "ShowErrorBtn": "Perlihatkan Pesan Error"
   },
 
+  // UnhandledExceptionPage Content
+  "_UnhandledExceptionPage": {
+    "UnhandledTitle1": "Error Tidak Tertangani",
+    "UnhandledSubtitle1": "Telah terjadi error yang tidak dapat ditangani dengan exception throw berikut:",
+    "UnhandledTitle2": "Isu Koneksi",
+    "UnhandledSubtitle2": "Oops, sepertinya koneksi internetmu terputus. apakah betul?",
+    "UnhandledTitle3": "Game Crash",
+    "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
+    "CopyClipboardBtn1": "Salin Semua ke Clipboard",
+    "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
+    "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
+  },
+
   // MainPage Content
   "_MainPage": {
     "PageTitle": "Halaman Awal",

@@ -16,6 +16,7 @@ using Windows.Foundation;
 using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -160,16 +161,16 @@ namespace CollapseLauncher
             switch (errorType)
             {
                 case ErrorType.Unhandled:
-                    ExceptionTitle = "Unhandled Error";
-                    ExceptionSubtitle = "An Unhandled Error has occured with an Exception Throw below:";
+                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle1;
+                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledTitle1;
                     break;
                 case ErrorType.Connection:
-                    ExceptionTitle = "Connection Issue";
-                    ExceptionSubtitle = "Oops, seems like you've been disconnected from the internet~ Or is it?";
+                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle2;
+                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle2;
                     break;
                 case ErrorType.GameError:
-                    ExceptionTitle = "Game Crashed";
-                    ExceptionSubtitle = "The game has crashed with error details below:";
+                    ExceptionTitle = Lang._UnhandledExceptionPage.UnhandledTitle3;
+                    ExceptionSubtitle = Lang._UnhandledExceptionPage.UnhandledSubtitle3;
                     break;
             }
         }

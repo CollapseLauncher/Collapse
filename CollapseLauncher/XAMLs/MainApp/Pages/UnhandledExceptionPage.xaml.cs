@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 
 using Windows.ApplicationModel.DataTransfer;
+using static Hi3Helper.Locale;
 using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -29,7 +30,7 @@ namespace CollapseLauncher.Pages
             };
             data.SetText(ErrorSender.ExceptionContent);
             Clipboard.SetContent(data);
-            CopyThrow.Content = "Copied to Clipboard!";
+            CopyThrow.Content = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
             CopyThrow.IsEnabled = false;
         }
     }

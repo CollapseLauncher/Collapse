@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -11,9 +12,9 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Grid.Row="0">
-            <TextBlock x:Name="Title" Text="Unhandled Error"
+            <TextBlock x:Name="Title" Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.UnhandledTitle1}"
                        Margin="0,0,0,24" Style="{StaticResource TitleLargeTextBlockStyle}"/>
-            <TextBlock x:Name="Subtitle" Text="An Unhandled Error was occured with an Exception Throw below:"
+            <TextBlock x:Name="Subtitle" Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.UnhandledSubtitle1}"
                        Margin="0,0,0,8" Style="{StaticResource BodyStrongTextBlockStyle}" FontSize="18"/>
             <TextBox x:Name="ExceptionTextBox"
                      IsReadOnly="True"
@@ -26,7 +27,7 @@
                      AcceptsReturn="True"
                      Margin="0,0,0,16">
             </TextBox>
-            <Button x:Name="CopyThrow" Content="Copy All to Clipboard"
+            <Button x:Name="CopyThrow" Content="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.CopyClipboardBtn1}"
                     HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
                     Click="CopyTextToClipboard"/>
             <Button x:Name="BackToPreviousPage"
@@ -34,7 +35,7 @@
                     Click="GoBackPreviousPage" Visibility="Collapsed" Margin="0,16,0,0">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" FontSize="14"/>
-                    <TextBlock Text="Go back to previous page" Margin="8,0,0,0"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.GoBackPageBtn1}" Margin="8,0,0,0"/>
                 </StackPanel>
             </Button>
         </StackPanel>
