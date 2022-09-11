@@ -8,22 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}">
-
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Default">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
     <Grid>
         <Grid Margin="32">
             <StackPanel VerticalAlignment="Center" Margin="0,-32,0,0">

@@ -15,21 +15,6 @@
         <ThemeShadow x:Name="SharedShadow"/>
     </Page.Resources>
     <Grid>
-        <Grid.Resources>
-            <ResourceDictionary>
-                <ResourceDictionary.ThemeDictionaries>
-                    <ResourceDictionary x:Key="Dark">
-                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                    </ResourceDictionary>
-                    <ResourceDictionary x:Key="Light">
-                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                    </ResourceDictionary>
-                    <ResourceDictionary x:Key="Default">
-                        <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                    </ResourceDictionary>
-                </ResourceDictionary.ThemeDictionaries>
-            </ResourceDictionary>
-        </Grid.Resources>
         <Frame x:Name="OverlapFrame" Canvas.ZIndex="1" x:FieldModifier="public">
             <Frame.ContentTransitions>
                 <TransitionCollection>

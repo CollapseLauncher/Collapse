@@ -7,21 +7,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Default">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
     <ScrollViewer>
         <Grid Margin="32,32,32,32">
             <Grid.ColumnDefinitions>

@@ -8,21 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource UpdatePageAcrylicBrush}">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Default">
-                    <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
     <Grid Margin="32,48,32,32">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="185*"/>

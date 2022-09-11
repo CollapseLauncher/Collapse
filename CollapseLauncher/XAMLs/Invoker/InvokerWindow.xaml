@@ -9,21 +9,6 @@
     <Grid>
         <Grid x:Name="DragArea" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="320"/>
         <Page Background="{StaticResource PagesSolidAcrylicBrush}">
-            <Page.Resources>
-                <ResourceDictionary>
-                    <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Dark">
-                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Light">
-                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Default">
-                            <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
-                        </ResourceDictionary>
-                    </ResourceDictionary.ThemeDictionaries>
-                </ResourceDictionary>
-            </Page.Resources>
             <Grid Margin="24">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
