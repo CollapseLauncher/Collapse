@@ -49,18 +49,19 @@ namespace CollapseLauncher
 
             // Load Region Resource from Launcher API
             bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
-            await ChangeBackgroundImageAsRegion();
             bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
-
-            // Finalize Region Load
-            FinalizeLoadRegion();
 
             if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
             {
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                return false;
             }
 
-            return IsLoadLocalizedResourceSuccess && IsLoadResourceRegionSuccess;
+            // Finalize Region Load
+            await ChangeBackgroundImageAsRegion();
+            FinalizeLoadRegion();
+
+            return true;
         }
 
         public void ClearMainPageState()
@@ -156,13 +157,9 @@ namespace CollapseLauncher
 
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)
-            {
                 InitializeNavigationItems();
-            }
             else
-            {
                 NavigationViewControl.IsSettingsVisible = false;
-            }
 
             // Set LoadingFooter empty
             LoadingFooter.Text = string.Empty;

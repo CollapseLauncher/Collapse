@@ -6,7 +6,6 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="{StaticResource PagesAcrylicBrush}"
     mc:Ignorable="d">
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
@@ -69,13 +68,12 @@
         <NavigationView x:Name="NavigationViewControl"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="true"
-            Margin="0,0,0,0"
             PaneDisplayMode="LeftMinimal"
             Visibility="Visible" IsPaneOpen="False"
             Background="{StaticResource NavigationBarBrush}"
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
-            <Grid Margin="0,0,0,0">
+            <Grid>
                 <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Image x:Name="BackgroundFrontBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Frame x:Name="LauncherFrame">

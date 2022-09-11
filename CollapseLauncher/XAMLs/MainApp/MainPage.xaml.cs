@@ -15,8 +15,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.UI.ViewManagement;
-using Windows.Graphics.Display;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -47,7 +45,7 @@ namespace CollapseLauncher
                 BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
                 SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
                 ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
-                
+
                 LauncherUpdateWatcher.StartCheckUpdate();
 
                 CheckRunningGameInstance();
@@ -87,7 +85,6 @@ namespace CollapseLauncher
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
-            await ApplyAccentColor();
             e.IsImageLoaded = true;
         }
 
@@ -397,11 +394,11 @@ namespace CollapseLauncher
                     {
                         IsIndeterminate = true,
                         VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(0,0,8,0),
+                        Margin = new Thickness(0, 0, 8, 0),
                         Width = 16,
                         Height = 16
                     };
-                    StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal};
+                    StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal };
                     StackPane.Children.Add(LoadBar);
                     StackPane.Children.Add(Text);
                     (a as Button).Content = StackPane;
