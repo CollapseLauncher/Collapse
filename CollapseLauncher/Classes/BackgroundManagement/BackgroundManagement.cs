@@ -18,7 +18,6 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -26,7 +25,7 @@ namespace CollapseLauncher
     public sealed partial class MainPage : Page
     {
         private BitmapImage BackgroundBitmap;
-        private Bitmap ThumbnailBitmap;
+        private Bitmap PaletteBitmap;
         private bool PassFirstTry = false;
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
@@ -62,9 +61,9 @@ namespace CollapseLauncher
                 BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
                 IsFirstStartup = false;
-
-                ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
             }
+
+            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         private async Task FetchLauncherResourceAsRegion()
@@ -243,9 +242,9 @@ namespace CollapseLauncher
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(ThumbnailBitmap, 10));
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 5));
 
-            QuantizedColor Single;
+            QuantizedColor Single = null;
 
             try
             {
@@ -263,9 +262,9 @@ namespace CollapseLauncher
             return output;
         }
 
-        private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
+        private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
 
-        private async Task<BitmapImage> GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
+        private async Task GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
         {
             using (InMemoryRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
@@ -289,11 +288,12 @@ namespace CollapseLauncher
                     if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
                     BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
                     encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
+
                     await encoder.FlushAsync();
                 }
 
-                await GenerateThumbnail(BackgroundStream);
-                return await Stream2BitmapImage(BackgroundStream);
+                PaletteBitmap = await Task.Run(() => Stream2Bitmap(BackgroundStream));
+                BackgroundBitmap = await Stream2BitmapImage(BackgroundStream);
             }
         }
 
@@ -315,7 +315,7 @@ namespace CollapseLauncher
         private Bitmap Stream2Bitmap(IRandomAccessStream image)
         {
             image.Seek(0);
-            return new Bitmap(image.AsStreamForRead());
+            return new Bitmap(image.AsStream());
         }
 
         // Reference:
@@ -327,18 +327,6 @@ namespace CollapseLauncher
             double ratio = ratioX < ratioY ? ratioX : ratioY;
 
             return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
-        }
-
-        private async Task GenerateThumbnail(IRandomAccessStream stream)
-        {
-            try
-            {
-                ThumbnailBitmap = await Task.Run(() => Stream2Bitmap(stream));
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Cannot generate thumbnail: {ex}", Hi3Helper.LogType.Warning, true);
-            }
         }
 
         private async Task DownloadBackgroundImage()
@@ -360,51 +348,73 @@ namespace CollapseLauncher
 
         private async Task ApplyBackground()
         {
-            BackgroundBackBuffer.Source = BackgroundBitmap;
-            BackgroundBackBuffer.Visibility = Visibility.Visible;
             BackgroundFrontBuffer.Source = BackgroundBitmap;
-            BackgroundFrontBuffer.Visibility = Visibility.Visible;
+            BackgroundBackBuffer.Source = BackgroundBitmap;
+
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            BackgroundBitmap = await GetResizedBitmap(new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream(), Width, Height);
+            await GetResizedBitmap(new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream(), Width, Height);
 
+            await ApplyAccentColor();
+
+            // FadeOutBackgroundBuffer();
+            FadeOutBg();
+        }
+
+        private async void FadeOutBg()
+        {
             BackgroundBack.Source = BackgroundBitmap;
             BackgroundFront.Source = BackgroundBitmap;
 
-            FadeOutBackgroundBuffer();
-        }
+            BackgroundBack.Opacity = 0;
+            BackgroundFront.Opacity = 0;
 
-        private async void FadeOutBackgroundBuffer()
-        {
-            Storyboard storyboardBack = new Storyboard();
-            Storyboard storyboardFront = new Storyboard();
+            double dur = 0.125;
+            Storyboard storyBufBack = new Storyboard();
+            Storyboard storyBgBack = new Storyboard();
+            Storyboard storyBufFront = new Storyboard();
+            Storyboard storyBgFront = new Storyboard();
 
-            DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
-            OpacityAnimationBack.From = 0.30;
-            OpacityAnimationBack.To = 0;
-            OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+            DoubleAnimation OpacityBufBack = new DoubleAnimation();
+            OpacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
+            DoubleAnimation OpacityBgBack = new DoubleAnimation();
+            OpacityBgBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            DoubleAnimation OpacityAnimationFront = new DoubleAnimation();
-            OpacityAnimationFront.From = 1;
-            OpacityAnimationFront.To = 0;
-            OpacityAnimationFront.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+            DoubleAnimation OpacityBufFront = new DoubleAnimation();
+            OpacityBufFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
+            DoubleAnimation OpacityBgFront = new DoubleAnimation();
+            OpacityBgFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            Storyboard.SetTarget(OpacityAnimationBack, BackgroundBackBuffer);
-            Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
-            storyboardBack.Children.Add(OpacityAnimationBack);
+            OpacityBufBack.From = 0.30; OpacityBufBack.To = 0;
+            OpacityBgBack.From = 0; OpacityBgBack.To = 0.30;
 
-            Storyboard.SetTarget(OpacityAnimationFront, BackgroundFrontBuffer);
-            Storyboard.SetTargetProperty(OpacityAnimationFront, "Opacity");
-            storyboardFront.Children.Add(OpacityAnimationFront);
+            OpacityBufFront.From = 1; OpacityBufFront.To = 0;
+            OpacityBgFront.From = 0; OpacityBgFront.To = 1;
 
-            storyboardBack.Begin();
+            Storyboard.SetTarget(OpacityBufBack, BackgroundBackBuffer);
+            Storyboard.SetTargetProperty(OpacityBufBack, "Opacity");
+            storyBufBack.Children.Add(OpacityBufBack);
+            Storyboard.SetTarget(OpacityBgBack, BackgroundBack);
+            Storyboard.SetTargetProperty(OpacityBgBack, "Opacity");
+            storyBgBack.Children.Add(OpacityBgBack);
+
+            Storyboard.SetTarget(OpacityBufFront, BackgroundFrontBuffer);
+            Storyboard.SetTargetProperty(OpacityBufFront, "Opacity");
+            storyBufFront.Children.Add(OpacityBufFront);
+            Storyboard.SetTarget(OpacityBgFront, BackgroundFront);
+            Storyboard.SetTargetProperty(OpacityBgFront, "Opacity");
+            storyBgFront.Children.Add(OpacityBgFront);
+
+            storyBufBack.Begin();
+            storyBgBack.Begin();
             if (m_appCurrentFrameName == "HomePage")
-                storyboardFront.Begin();
+            {
+                storyBufFront.Begin();
+                storyBgFront.Begin();
+            }
 
-            await Task.Delay(250);
-            BackgroundBackBuffer.Visibility = Visibility.Collapsed;
-            BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
+            await Task.Delay((int)(dur * 1000));
         }
 
         private void HideLoadingPopup(bool hide, string title, string subtitle)
@@ -454,7 +464,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
+        private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
             Storyboard storyboardFront = new Storyboard();
             Storyboard storyboardBack = new Storyboard();
@@ -486,7 +496,7 @@ namespace CollapseLauncher
                 storyboardBack.Begin();
                 BGLastState = hideImage;
 
-                await Task.Delay(250);
+                // await Task.Delay(250);
             }
         }
     }
