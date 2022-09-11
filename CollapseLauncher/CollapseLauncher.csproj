@@ -42,7 +42,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-		<PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25188-preview" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.4" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
@@ -50,6 +49,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />

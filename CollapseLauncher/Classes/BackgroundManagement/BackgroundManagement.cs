@@ -254,7 +254,7 @@ namespace CollapseLauncher
             {
                 Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
                 if (Single is null) Single = Colors.FirstOrDefault();
-                if (Single is null) Single = new QuantizedColor(new ColorThiefDotNet.Color { A = 255, R = DefVal, G = DefVal, B = DefVal }, 1);
+                if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
             }
 
             for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single);

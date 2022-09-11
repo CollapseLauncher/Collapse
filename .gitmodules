@@ -4,3 +4,6 @@
 [submodule "Hi3Helper.Http"]
 	path = Hi3Helper.Http
 	url = https://github.com/neon-nyan/Hi3Helper.Http
+[submodule "ColorThief"]
+	path = ColorThief
+	url = https://github.com/neon-nyan/ColorThief
