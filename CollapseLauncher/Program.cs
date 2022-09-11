@@ -37,7 +37,7 @@ namespace CollapseLauncher
             try
             {
                 InitAppPreset();
-                InitConsoleSetting(false);
+                InitConsoleSetting();
                 Console.WriteLine("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
                     AppCurrentVersion,
                     GetVersionString(),
@@ -54,15 +54,19 @@ namespace CollapseLauncher
                         InitConsoleSetting();
                         break;
                     case AppMode.ElevateUpdater:
+                        InitConsoleSetting();
                         RunElevateUpdate();
                         return;
                     case AppMode.Reindex:
+                        InitConsoleSetting(true);
                         new Reindexer(m_arguments.Reindexer.AppPath, m_arguments.Reindexer.Version, 4).RunReindex();
                         return;
                     case AppMode.InvokerTakeOwnership:
+                        InitConsoleSetting(true);
                         new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
                         return;
                     case AppMode.InvokerMigrate:
+                        InitConsoleSetting(true);
                         if (m_arguments.Migrate.IsBHI3L)
                             new Migrate().DoMigrationBHI3L(
                                 m_arguments.Migrate.GameVer,
@@ -75,6 +79,7 @@ namespace CollapseLauncher
                                 m_arguments.Migrate.OutputPath);
                         return;
                     case AppMode.InvokerMoveSteam:
+                        InitConsoleSetting(true);
                         new Migrate().DoMoveSteam(
                             m_arguments.Migrate.InputPath,
                             m_arguments.Migrate.OutputPath,
