@@ -48,7 +48,7 @@
                     <TextBlock x:Name="RepairStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="192"/>
+                            <ColumnDefinition Width="230"/>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
