@@ -40,10 +40,10 @@
                             <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
 
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FF111111" TintOpacity="0.0" TintLuminosityOpacity="0.6"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.6"/>
+                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80"/>
 
                             <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
-                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#000000" TintOpacity="0.0" TintLuminosityOpacity="0.4"/>
+                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="#000000" TintOpacity="0.0"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
@@ -79,9 +79,9 @@
                             <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.7"/>
 
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FFFFFF" TintOpacity="0.8" TintLuminosityOpacity="0.75"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.2"/>
+                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5"/>
                             <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.5"/>
-                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.2"/>
+                            <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.0"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5"/>
@@ -94,6 +94,7 @@
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="FontAwesomeBrand">/Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
             <FontFamily x:Key="FontAwesome">/Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="FontAwesomeSolid">/Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
