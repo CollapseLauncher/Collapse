@@ -346,6 +346,8 @@ namespace CollapseLauncher
             }
         }
 
+        private async void ApplyBackgroundAsync() => await ApplyBackground();
+
         private async Task ApplyBackground()
         {
             BackgroundFrontBuffer.Source = BackgroundBitmap;
@@ -358,7 +360,6 @@ namespace CollapseLauncher
 
             await ApplyAccentColor();
 
-            // FadeOutBackgroundBuffer();
             FadeOutBg();
         }
 

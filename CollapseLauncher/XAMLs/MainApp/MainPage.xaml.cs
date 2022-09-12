@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,16 +80,24 @@ namespace CollapseLauncher
 
             try
             {
-                await ApplyBackground();
+                await RunApplyBackgroundTask();
             }
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                await ApplyBackground();
+                await RunApplyBackgroundTask();
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
             e.IsImageLoaded = true;
+        }
+
+        private async Task RunApplyBackgroundTask()
+        {
+            if (IsFirstStartup)
+                await ApplyBackground();
+            else
+                ApplyBackgroundAsync();
         }
 
         private async void CheckRunningGameInstance()
@@ -597,46 +606,87 @@ namespace CollapseLauncher
             try
             {
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
-                WebViewWindow.Visibility = Visibility.Visible;
+
+                WebView2Runtime = new WebView2()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch
+                };
+                WebView2Runtime.CoreWebView2Initialized += WebView2Window_CoreWebView2Initialized;
+                WebView2Runtime.NavigationStarting += WebView2Window_PageLoading;
+                WebView2Runtime.NavigationCompleted += WebView2Window_PageLoaded;
+
+                WebView2WindowContainer.Children.Clear();
+                WebView2WindowContainer.Children.Add(WebView2Runtime);
+
                 WebView2Panel.Visibility = Visibility.Visible;
                 WebView2Panel.Translation += Shadow32;
-                await WebViewWindow.EnsureCoreWebView2Async();
-                WebViewWindow.Source = URL;
+                await WebView2Runtime.EnsureCoreWebView2Async();
+                WebView2Runtime.Source = URL;
+
+                SetWebView2Bindings();
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Error while initialize WebView2\r\n{ex}", LogType.Error, true);
-                WebViewWindow.Close();
+                WebView2Runtime.Close();
             }
         }
 
-        private void WebViewWindow_PageLoaded(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args) => WebViewLoadingStatus.IsIndeterminate = false;
+        private void SetWebView2Bindings()
+        {
+            BindingOperations.SetBinding(WebView2BackBtn, IsEnabledProperty, new Binding()
+            {
+                Source = WebView2Runtime,
+                Path = new PropertyPath("CanGoBack"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+            BindingOperations.SetBinding(WebView2ForwardBtn, IsEnabledProperty, new Binding()
+            {
+                Source = WebView2Runtime,
+                Path = new PropertyPath("CanGoForward"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+            BindingOperations.SetBinding(WebView2URLBox, TextBox.TextProperty, new Binding()
+            {
+                Source = WebView2Runtime,
+                Path = new PropertyPath("Source"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+        }
 
-        private void WebViewWindow_PageLoading(WebView2 sender, CoreWebView2NavigationStartingEventArgs args) => WebViewLoadingStatus.IsIndeterminate = true;
-
-        private void WebViewBackBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoBack();
-        private void WebViewForwardBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.GoForward();
-        private void WebViewReloadBtn_Click(object sender, RoutedEventArgs e) => WebViewWindow.Reload();
-        private void WebViewOpenExternalBtn_Click(object sender, RoutedEventArgs e)
+        private void CoreWebView2_DocumentTitleChanged(CoreWebView2 sender, object args) => WebViewWindowTitle.Text = sender.DocumentTitle;
+        private void WebView2Window_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args) => sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+        private void WebView2Window_PageLoaded(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args) => WebView2LoadingStatus.IsIndeterminate = false;
+        private void WebView2Window_PageLoading(WebView2 sender, CoreWebView2NavigationStartingEventArgs args) => WebView2LoadingStatus.IsIndeterminate = true;
+        private void WebView2BackBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.GoBack();
+        private void WebView2ForwardBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.GoForward();
+        private void WebView2ReloadBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.Reload();
+        private void WebView2OpenExternalBtn_Click(object sender, RoutedEventArgs e)
         {
             new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = WebViewWindow.Source.ToString()
+                    FileName = WebView2Runtime.Source.ToString()
                 }
             }.Start();
         }
 
-        private void WebViewCloseBtn_Click(object sender, RoutedEventArgs e)
+        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e)
         {
-            WebViewWindow.Visibility = Visibility.Collapsed;
-            WebViewWindow.Reload();
+            WebView2Runtime.Visibility = Visibility.Collapsed;
+            WebView2Runtime.Close();
             WebView2Panel.Visibility = Visibility.Collapsed;
             WebView2Panel.Translation -= Shadow32;
+
+            WebView2Runtime.CoreWebView2Initialized -= WebView2Window_CoreWebView2Initialized;
+            WebView2Runtime.NavigationStarting -= WebView2Window_PageLoading;
+            WebView2Runtime.NavigationCompleted -= WebView2Window_PageLoaded;
         }
-        private void WebViewWindow_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args) => sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
-        private void CoreWebView2_DocumentTitleChanged(Microsoft.Web.WebView2.Core.CoreWebView2 sender, object args) => WebViewWindowTitle.Text = sender.DocumentTitle;
     }
 }
