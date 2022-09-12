@@ -12,7 +12,7 @@
     },
     "Reindexer": {
       "commandName": "Project",
-      "commandLineArgs": "reindex --input \"\\myGit\\CollapseLauncher-ReleaseRepo\\previewportable\" --upver 1.0.40.1",
+      "commandLineArgs": "reindex --input \"\\myGit\\CollapseLauncher-ReleaseRepo\\preview\" --upver 1.0.40.5",
       "nativeDebugging": false
     },
     "Collapse Launcher": {
