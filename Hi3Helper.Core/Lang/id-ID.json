@@ -565,6 +565,21 @@
     "RemindLaterBtn": "Ingatkan Nanti",
     "UpdateNowBtn": "Perbarui Sekarang",
     "LoadingRelease": "Memuat Catatan Rilis...",
-    "LoadingReleaseFailed": "Terjadi kesalahan saat memuat Catatan Rilis.\r\n{0}"
+    "LoadingReleaseFailed": "Terjadi kesalahan saat memuat Catatan Rilis.\r\n{0}",
+
+    "UpdateHeader1": "Progress:",
+    "UpdateHeader2": "Waktu Tersisa:",
+    "UpdateHeader3": "Ukuran Unduhan:",
+    "UpdateHeader4": "Kecepatan:",
+    "UpdateHeader5PlaceHolder": "Mengunduh Update [- / -]:",
+
+    "UpdateStatus1": "Memuat Update:",
+    "UpdateMessage1": "Menghubungkan dengan Repository Update...",
+    "UpdateStatus2": "Memverifikasi:",
+    "UpdateStatus3": "Mengunduh Update [{0} / {1}]:",
+    "UpdateStatus4": "Kamu sedang menggunakan versi terbaru sekarang! ({0})",
+    "UpdateMessage4": "Kembali ke launcher sebentar lagi...",
+    "UpdateStatus5": "Versi launcher telah diperbarui ke {0}!",
+    "UpdateMessage5": "Kita akan kembali ke launcher sebentar lagi..."
   }
 }

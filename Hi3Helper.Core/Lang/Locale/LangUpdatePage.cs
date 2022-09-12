@@ -20,6 +20,20 @@
                 public string UpdateNowBtn { get; set; } = LangFallback?._UpdatePage.UpdateNowBtn;
                 public string LoadingRelease { get; set; } = LangFallback?._UpdatePage.LoadingRelease;
                 public string LoadingReleaseFailed { get; set; } = LangFallback?._UpdatePage.LoadingReleaseFailed;
+                public string UpdateHeader1 { get; set; } = LangFallback?._UpdatePage.UpdateHeader1;
+                public string UpdateHeader2 { get; set; } = LangFallback?._UpdatePage.UpdateHeader2;
+                public string UpdateHeader3 { get; set; } = LangFallback?._UpdatePage.UpdateHeader3;
+                public string UpdateHeader4 { get; set; } = LangFallback?._UpdatePage.UpdateHeader4;
+                public string UpdateHeader5PlaceHolder { get; set; } = LangFallback?._UpdatePage.UpdateHeader5PlaceHolder;
+
+                public string UpdateStatus1 { get; set; } = LangFallback?._UpdatePage.UpdateStatus1;
+                public string UpdateMessage1 { get; set; } = LangFallback?._UpdatePage.UpdateMessage1;
+                public string UpdateStatus2 { get; set; } = LangFallback?._UpdatePage.UpdateStatus2;
+                public string UpdateStatus3 { get; set; } = LangFallback?._UpdatePage.UpdateStatus3;
+                public string UpdateStatus4 { get; set; } = LangFallback?._UpdatePage.UpdateStatus4;
+                public string UpdateMessage4 { get; set; } = LangFallback?._UpdatePage.UpdateMessage4;
+                public string UpdateStatus5 { get; set; } = LangFallback?._UpdatePage.UpdateStatus5;
+                public string UpdateMessage5 { get; set; } = LangFallback?._UpdatePage.UpdateMessage5;
             }
         }
         #endregion

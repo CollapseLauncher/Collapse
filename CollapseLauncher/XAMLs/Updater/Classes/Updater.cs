@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.UpdaterWindow;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
@@ -51,8 +52,8 @@ namespace CollapseLauncher
 
                 Status = new UpdaterStatus
                 {
-                    status = "Fetching Update",
-                    message = "Connecting to Update Repository..."
+                    status = Lang._UpdatePage.UpdateStatus1,
+                    message = Lang._UpdatePage.UpdateMessage1
                 };
                 UpdateStatus();
                 UpdateStopwatch = Stopwatch.StartNew();
@@ -70,7 +71,7 @@ namespace CollapseLauncher
 
             Directory.CreateDirectory(TempPath);
 
-            Status.status = "Verifying:";
+            Status.status = Lang._UpdatePage.UpdateStatus2;
             Status.newver = FileProp.ver;
             TotalSize = FileProp.f.Sum(x => x.s);
             Progress = new UpdaterProgress(Read, TotalSize, 0, UpdateStopwatch.Elapsed);
@@ -107,19 +108,21 @@ namespace CollapseLauncher
             if (UpdateFiles.Count == 0) return;
             Read = 0;
             TotalSize = UpdateFiles.Sum(x => x.s);
-            Status.status = "Downloading Update:";
 
             string URL;
             string Output;
+            int FilesCount = UpdateFiles.Count;
 
             DownloadProgress += Updater_DownloadProgressAdapter;
 
+            int i = 1;
             foreach (fileProp _entry in UpdateFiles)
             {
                 Status.message = _entry.p;
                 URL = ChannelURL + _entry.p;
                 Output = Path.Combine(TempPath, NormalizePath(_entry.p));
 
+                Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, i, FilesCount);
                 UpdateStatus();
 
                 if (!Directory.Exists(Path.GetDirectoryName(Output)))
@@ -132,52 +135,36 @@ namespace CollapseLauncher
                 }
                 else
                     await Download(URL, Output, TokenSource.Token);
+
+                i++;
             }
 
             DownloadProgress -= Updater_DownloadProgressAdapter;
         }
 
-        public async Task FinishUpdate()
+        public async Task FinishUpdate(bool NoSuicide = false)
         {
             if (UpdateFiles.Count == 0)
             {
-                Status.status = $"You're using the latest version ({FileProp.ver}) now!";
-                Status.message = $"Back to the launcher shortly...";
+                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, FileProp.ver);
+                Status.message = Lang._UpdatePage.UpdateMessage4;
                 Console.WriteLine(UpdateFiles.Count);
                 UpdateStatus();
                 await Suicide();
                 return;
             }
 
-            /*
-            string Output;
-            string Temp;
-            foreach (fileProp _entry in UpdateFiles)
-            {
-                Temp = Path.Combine(TempPath, NormalizePath(_entry.p));
-                Output = Path.Combine(TargetPath, NormalizePath(_entry.p));
-
-                if (!Directory.Exists(Path.GetDirectoryName(Output)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(Output));
-
-                if (File.Exists(Output))
-                    File.Delete(Output);
-
-                File.Move(Temp, Output);
-            }
-            Directory.Delete(TempPath, true);
-            */
-
             string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
 
-            Status.status = $"Version has been updated to {FileProp.ver}!";
-            Status.message = $"The launcher will re-open your launcher shortly...";
+            Status.status = string.Format(Lang._UpdatePage.UpdateStatus5, FileProp.ver);
+            Status.message = Lang._UpdatePage.UpdateMessage5;
             UpdateStatus();
 
             Progress = new UpdaterProgress(TotalSize, TotalSize, 0, UpdateStopwatch.Elapsed);
             UpdateProgress();
             File.WriteAllText(newVerTagPath, FileProp.ver);
-            await Suicide();
+            if (!NoSuicide)
+                await Suicide();
         }
 
         private async Task Suicide()

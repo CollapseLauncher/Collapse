@@ -565,6 +565,21 @@
     "RemindLaterBtn": "Remind me later",
     "UpdateNowBtn": "Update Now",
     "LoadingRelease": "Loading Release Notes...",
-    "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}"
+    "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}",
+
+    "UpdateHeader1": "Progress:",
+    "UpdateHeader2": "Time Elapsed:",
+    "UpdateHeader3": "Download Size:",
+    "UpdateHeader4": "Speed:",
+    "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
+
+    "UpdateStatus1": "Fetching Update:",
+    "UpdateMessage1": "Connecting to Update Repository...",
+    "UpdateStatus2": "Verifying:",
+    "UpdateStatus3": "Downloading Update [{0} / {1}]:",
+    "UpdateStatus4": "You're using the latest version ({0}) now!",
+    "UpdateMessage4": "Back to the launcher shortly...",
+    "UpdateStatus5": "Version has been updated to {0}!",
+    "UpdateMessage5": "We will re-open your launcher shortly..."
   }
 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
 
@@ -74,30 +75,44 @@ namespace CollapseLauncher.Pages
 
         private void DoUpdateClick(object sender, RoutedEventArgs e)
         {
+            UpdateBtnBox.Visibility = Visibility.Collapsed;
+            AskUpdateCheckbox.Visibility = Visibility.Collapsed;
+            UpdateProgressBox.Visibility = Visibility.Visible;
+
+            StartUpdateRoutine();
+        }
+
+        private async void StartUpdateRoutine()
+        {
             string ChannelName = (IsPreview ? "Preview" : "Stable");
             if (IsPortable)
                 ChannelName += "Portable";
+
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {ChannelName}";
-            Console.WriteLine(UpdateArgument);
-            try
-            {
-                new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = true,
-                        FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.exe"),
-                        Arguments = UpdateArgument,
-                        Verb = "runas"
-                    }
-                }.Start();
-            }
-            catch
-            {
-                return;
-            }
-            App.Current.Exit();
+            Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
+            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+            updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
+            
+            await updater.StartFetch();
+            await updater.StartCheck();
+            await updater.StartUpdate();
+            await updater.FinishUpdate();
+        }
+
+        private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
+        {
+            Status.Text = e.status;
+            ActivityStatus.Text = e.message;
+            NewVersionLabel.Text = e.newver;
+        }
+
+        private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
+        {
+            progressBar.IsIndeterminate = false;
+            progressBar.Value = e.ProgressPercentage;
+            ActivitySubStatus.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.DownloadedSize), SummarizeSizeSimple(e.TotalSizeToDownload));
+            SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.CurrentSpeed));
+            TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
         }
     }
 }
