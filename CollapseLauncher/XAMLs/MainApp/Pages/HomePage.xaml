@@ -183,8 +183,11 @@
                                 Margin="0,148,0,0" Orientation="Vertical" HorizontalAlignment="Left">
                             <StackPanel HorizontalAlignment="Left">
                                 <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
-                            MaxWidth="414" Height="192" 
-                            CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}" HorizontalAlignment="Center">
+                                  MaxWidth="414" Height="192" 
+                                  CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
+                                  HorizontalAlignment="Center"
+                                  PointerEntered="CarouselStopScroll"
+                                  PointerExited="CarouselRestartScroll">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
                                             <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
@@ -192,19 +195,19 @@
                                     </FlipView.ItemTemplate>
                                 </FlipView>
                                 <Grid x:Name="ImageCarouselPipsPager"
-                              Padding="4,4" Margin="10,-14,10,0" CornerRadius="8"
-                              Shadow="{StaticResource SharedShadow}"
-                              Background="{StaticResource CarouselPipsAcrylicBrush}"
-                              HorizontalAlignment="Right" Visibility="Collapsed"
-                              VerticalAlignment="Center">
+                                  Padding="4,4" Margin="10,-14,10,0" CornerRadius="8"
+                                  Shadow="{StaticResource SharedShadow}"
+                                  Background="{StaticResource CarouselPipsAcrylicBrush}"
+                                  HorizontalAlignment="Right" Visibility="Collapsed"
+                                  VerticalAlignment="Center">
                                     <PipsPager
-                                  Margin="0,0,0,0"
-                                  VerticalAlignment="Center"
-                                  PreviousButtonVisibility="Visible"
-                                  NextButtonVisibility="Visible"
-                                  NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
-                                  SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
-                                  Orientation="Horizontal"/>
+                                      Margin="0,0,0,0"
+                                      VerticalAlignment="Center"
+                                      PreviousButtonVisibility="Visible"
+                                      NextButtonVisibility="Visible"
+                                      NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
+                                      SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
+                                      Orientation="Horizontal"/>
                                 </Grid>
                             </StackPanel>
                             <Grid x:Name="PostPanel" Padding="8" Width="414" Visibility="Collapsed"

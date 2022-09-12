@@ -67,8 +67,6 @@ namespace CollapseLauncher.Pages
                     ImageCarousel.Translation += Shadow48;
                     ImageCarouselPipsPager.Translation += Shadow16;
                     PostPanel.Translation += Shadow16;
-
-                    Task.Run(() => StartCarouselAutoScroll(PageToken.Token));
                 }
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
@@ -80,6 +78,7 @@ namespace CollapseLauncher.Pages
 
                 CheckFailedDeltaPatchState();
                 CheckRunningGameInstance();
+                StartCarouselAutoScroll(PageToken.Token);
             }
             catch (Exception ex)
             {
@@ -88,43 +87,46 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void TryLoadEventPanelImage()
+        private void TryLoadEventPanelImage()
         {
             if (regionNewsProp.eventPanel == null) return;
 
-            await Task.Run(() =>
-            {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ImageEventImgGrid.Visibility = Visibility.Visible;
-                    ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
-                    ImageEventImg.Tag = regionNewsProp.eventPanel.url;
-                });
-            });
+            ImageEventImgGrid.Visibility = Visibility.Visible;
+            ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
+            ImageEventImg.Tag = regionNewsProp.eventPanel.url;
         }
 
         public async void ResetLastTimeSpan() => await Task.Run(() => LastTimeSpan = Stopwatch.StartNew());
-        private void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
+        private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
         {
-            DispatcherQueue.TryEnqueue(async () =>
+            if (regionNewsProp.eventPanel == null) return;
+            try
             {
-                try
+                while (true)
                 {
-                    while (true)
-                    {
-                        await Task.Delay(delay * 1000, token);
-                        if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
-                            ImageCarousel.SelectedIndex++;
-                        else
-                            for (int i = MenuPanels.imageCarouselPanel.Count; i > 0; i--)
-                            {
-                                ImageCarousel.SelectedIndex = i - 1;
-                                await Task.Delay(100, token);
-                            }
-                    }
+                    await Task.Delay(delay * 1000, token);
+                    if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
+                        ImageCarousel.SelectedIndex++;
+                    else
+                        for (int i = MenuPanels.imageCarouselPanel.Count; i > 0; i--)
+                        {
+                            ImageCarousel.SelectedIndex = i - 1;
+                            await Task.Delay(100, token);
+                        }
                 }
-                catch (Exception) { }
-            });
+            }
+            catch (Exception) { }
+        }
+
+        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e)
+        {
+            PageToken.Cancel();
+        }
+
+        private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
+        {
+            PageToken = new CancellationTokenSource();
+            StartCarouselAutoScroll(PageToken.Token);
         }
 
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
