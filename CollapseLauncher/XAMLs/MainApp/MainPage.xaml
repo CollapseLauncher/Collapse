@@ -118,39 +118,37 @@
                     <ColumnDefinition Width="44"/>
                     <ColumnDefinition Width="44"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="WebViewBackBtn" Click="WebViewBackBtn_Click" IsEnabled="{x:Bind WebViewWindow.CanGoBack, Mode=OneWay}" Grid.Column="0" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
+                <Button x:Name="WebView2BackBtn" IsEnabled="False" Click="WebView2BackBtn_Click" Grid.Column="0" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" Height="16" FontSize="12"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="WebViewForwardBtn" Click="WebViewForwardBtn_Click" IsEnabled="{x:Bind WebViewWindow.CanGoForward, Mode=OneWay}" Grid.Column="1" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
+                <Button x:Name="WebView2ForwardBtn" IsEnabled="False" Click="WebView2ForwardBtn_Click" Grid.Column="1" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
                     <Button.Content>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE111;" Height="16" FontSize="12"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="WebViewReloadBtn" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebViewReloadBtn_Click">
+                <Button x:Name="WebView2ReloadBtn" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2ReloadBtn_Click">
                     <Button.Content>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE149;" Height="16" FontSize="12"/>
                     </Button.Content>
                 </Button>
                 <Grid Grid.Column="3" Margin="8,0" CornerRadius="5">
-                    <TextBox x:Name="WebViewURLBox" Text="{x:Bind WebViewWindow.Source, Mode=OneWay}" IsReadOnly="True" />
-                    <ProgressBar x:Name="WebViewLoadingStatus" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    <TextBox x:Name="WebView2URLBox" IsReadOnly="True"/>
+                    <ProgressBar x:Name="WebView2LoadingStatus" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
                 </Grid>
-                <Button x:Name="WebViewOpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" HorizontalAlignment="Center" Click="WebViewOpenExternalBtn_Click">
+                <Button x:Name="WebView2OpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" HorizontalAlignment="Center" Click="WebView2OpenExternalBtn_Click">
                     <Button.Content>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE128;" Height="16" FontSize="12"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="WebViewCloseBtn" Grid.Column="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebViewCloseBtn_Click">
+                <Button x:Name="WebView2CloseBtn" Grid.Column="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2CloseBtn_Click">
                     <Button.Content>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10A;" Height="16" FontSize="12"/>
                     </Button.Content>
                 </Button>
             </Grid>
-            <WebView2 x:Name="WebViewWindow" Grid.Row="2" HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch" CoreWebView2Initialized="WebViewWindow_CoreWebView2Initialized"
-                NavigationStarting="WebViewWindow_PageLoading" NavigationCompleted="WebViewWindow_PageLoaded"/>
+            <Grid x:Name="WebView2WindowContainer" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
         </Grid>
     </Grid>
 </Page>
