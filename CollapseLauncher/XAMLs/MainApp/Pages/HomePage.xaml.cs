@@ -6,11 +6,10 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
-using Windows.UI.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -345,13 +345,6 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            /*
-             * 
-                            <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
-                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf11b;" FontSize="22"/>
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium" Margin="8,-2,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-             */
             FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
             VerticalAlignment TVAlign = VerticalAlignment.Center;
             Orientation SOrient = Orientation.Horizontal;
