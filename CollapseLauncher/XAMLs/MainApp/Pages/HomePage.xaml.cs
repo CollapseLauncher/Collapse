@@ -8,7 +8,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
+using Windows.UI.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,10 +48,10 @@ namespace CollapseLauncher.Pages
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
+                this.InitializeComponent();
+
                 CheckIfRightSideProgress();
                 LoadGameConfig();
-
-                this.InitializeComponent();
                 CheckCurrentGameState();
 
                 SocMedPanel.Translation += Shadow48;
@@ -94,12 +96,13 @@ namespace CollapseLauncher.Pages
             ImageEventImgGrid.Visibility = Visibility.Visible;
             ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
+            ImageEventImg.Translation += Shadow48;
         }
 
-        public async void ResetLastTimeSpan() => await Task.Run(() => LastTimeSpan = Stopwatch.StartNew());
+        public void ResetLastTimeSpan() => LastTimeSpan = Stopwatch.StartNew();
         private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
         {
-            if (regionNewsProp.eventPanel == null) return;
+            if (MenuPanels.imageCarouselPanel == null) return;
             try
             {
                 while (true)
@@ -118,10 +121,7 @@ namespace CollapseLauncher.Pages
             catch (Exception) { }
         }
 
-        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e)
-        {
-            PageToken.Cancel();
-        }
+        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e) => PageToken.Cancel();
 
         private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
         {
@@ -145,11 +145,8 @@ namespace CollapseLauncher.Pages
 
         private async Task HideImageCarousel(bool hide)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (!hide)
-                    ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
-            });
+            if (!hide)
+                ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
 
             Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
@@ -163,10 +160,8 @@ namespace CollapseLauncher.Pages
 
             storyboard.Begin();
             await Task.Delay(100);
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
-            });
+
+            ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e)
@@ -197,15 +192,12 @@ namespace CollapseLauncher.Pages
         {
             if (CurrentRegion.UseRightSideProgress ?? false)
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
-                    FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
-                    LauncherBtn.SetValue(Grid.ColumnProperty, 0);
-                    ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
-                    GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
-                    GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
-                });
+                FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
+                FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
+                LauncherBtn.SetValue(Grid.ColumnProperty, 0);
+                ProgressStatusGrid.SetValue(Grid.ColumnProperty, 0);
+                GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
+                GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
             }
         }
 
@@ -353,40 +345,56 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance()
         {
-            await Task.Delay(1);
-            DispatcherQueue.TryEnqueue(async () =>
+            /*
+             * 
+                            <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
+                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf11b;" FontSize="22"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium" Margin="8,-2,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+             */
+            FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+            VerticalAlignment TVAlign = VerticalAlignment.Center;
+            Orientation SOrient = Orientation.Horizontal;
+            Thickness Margin = new Thickness(0, -2, 8, 0);
+            Thickness SMargin = new Thickness(16, 0, 16, 0);
+            FontWeight FW = FontWeights.Medium;
+            string Gl = "";
+
+            StackPanel BtnStartGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
+            BtnStartGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtn });
+            BtnStartGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
+
+            StackPanel BtnRunningGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
+            BtnRunningGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtnRunning });
+            BtnRunningGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
+
+            try
             {
-                try
+                while (true)
                 {
-                    TextBlock StartBtnText = new TextBlock() { FontWeight = FontWeights.Medium };
-                    while (true)
+                    while (App.IsGameRunning)
                     {
-                        while (App.IsGameRunning)
-                        {
-                            if (StartGameBtn.IsEnabled)
-                                LauncherBtn.Translation -= Shadow16;
+                        if (StartGameBtn.IsEnabled)
+                            LauncherBtn.Translation -= Shadow16;
 
-                            StartGameBtn.IsEnabled = false;
-                            StartBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            StartGameBtn.Content = StartBtnText;
-                            GameStartupSetting.IsEnabled = false;
-
-                            await Task.Delay(100);
-                        }
-
-                        if (!StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation += Shadow16;
-
-                        StartGameBtn.IsEnabled = true;
-                        StartBtnText.Text = Lang._HomePage.StartBtn;
-                        StartGameBtn.Content = StartBtnText;
-                        GameStartupSetting.IsEnabled = true;
+                        StartGameBtn.IsEnabled = false;
+                        StartGameBtn.Content = BtnRunningGame;
+                        GameStartupSetting.IsEnabled = false;
 
                         await Task.Delay(100);
                     }
+
+                    if (!StartGameBtn.IsEnabled)
+                        LauncherBtn.Translation += Shadow16;
+
+                    StartGameBtn.IsEnabled = true;
+                    StartGameBtn.Content = BtnStartGame;
+                    GameStartupSetting.IsEnabled = true;
+
+                    await Task.Delay(100);
                 }
-                catch { return; }
-            });
+            }
+            catch { return; }
         }
 
         private void AnimateGameRegSettingIcon_Start(object sender, PointerRoutedEventArgs e) => AnimatedIcon.SetState(this.GameRegionSettingIcon, "PointerOver");
@@ -398,15 +406,12 @@ namespace CollapseLauncher.Pages
                 if (CurrentRegion.UseRightSideProgress ?? false)
                     await HideImageCarousel(true);
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    progressRing.Value = 0;
-                    progressRing.IsIndeterminate = true;
-                    ProgressStatusGrid.Visibility = Visibility.Visible;
-                    InstallGameBtn.Visibility = Visibility.Collapsed;
-                    CancelDownloadBtn.Visibility = Visibility.Visible;
-                    ProgressTimeLeft.Visibility = Visibility.Visible;
-                });
+                progressRing.Value = 0;
+                progressRing.IsIndeterminate = true;
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                InstallGameBtn.Visibility = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility = Visibility.Visible;
 
                 if ((GamePathOnSteam = await Task.Run(() => CurrentRegion.GetSteamInstallationPath())) != null)
                 {
@@ -605,15 +610,12 @@ namespace CollapseLauncher.Pages
             GameZipPath = Path.Combine(destinationFolder, Path.GetFileName(GameZipUrl));
             GameZipRequiredSize = regionResourceProp.data.game.latest.size;
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressRing.Value = 0;
-                progressRing.IsIndeterminate = false;
-                ProgressStatusGrid.Visibility = Visibility.Visible;
-                InstallGameBtn.Visibility = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility = Visibility.Visible;
-                ProgressTimeLeft.Visibility = Visibility.Visible;
-            });
+            progressRing.Value = 0;
+            progressRing.IsIndeterminate = false;
+            ProgressStatusGrid.Visibility = Visibility.Visible;
+            InstallGameBtn.Visibility = Visibility.Collapsed;
+            CancelDownloadBtn.Visibility = Visibility.Visible;
+            ProgressTimeLeft.Visibility = Visibility.Visible;
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
@@ -674,23 +676,18 @@ namespace CollapseLauncher.Pages
             InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
             InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
             DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                progressPreBar.IsIndeterminate = false;
-            });
+
+            ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+            LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
+            ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+            ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+            progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
+            progressPreBar.IsIndeterminate = false;
         }
 
         private void InstallerDownloadPreStatusChanged(object sender, InstallManagementStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressPrePerFileStatusFooter.Text = e.StatusTitle;
-            });
+            ProgressPrePerFileStatusFooter.Text = e.StatusTitle;
         }
 
         Stopwatch LastTimeSpan = Stopwatch.StartNew();
@@ -704,17 +701,15 @@ namespace CollapseLauncher.Pages
                 InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
                 DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
                 DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                    ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-                    ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                    ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                    progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                    progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
-                    progressPreBar.IsIndeterminate = false;
-                    progressPrePerFileBar.IsIndeterminate = false;
-                });
+
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
+                progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
+                progressPreBar.IsIndeterminate = false;
+                progressPrePerFileBar.IsIndeterminate = false;
                 ResetLastTimeSpan();
             }
         }
@@ -743,41 +738,30 @@ namespace CollapseLauncher.Pages
 
             InstallerDownloadTokenSource.Cancel();
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
-                ResumeDownloadPreBtn.Visibility = Visibility.Visible;
-
-                // MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            });
+            PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
+            ResumeDownloadPreBtn.Visibility = Visibility.Visible;
         }
 
         private void CancelUpdateDownload()
         {
             InstallerDownloadTokenSource.Cancel();
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusGrid.Visibility = Visibility.Collapsed;
-                UpdateGameBtn.Visibility = Visibility.Visible;
-                CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            ProgressStatusGrid.Visibility = Visibility.Collapsed;
+            UpdateGameBtn.Visibility = Visibility.Visible;
+            CancelDownloadBtn.Visibility = Visibility.Collapsed;
 
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            });
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
 
         private void CancelInstallationDownload()
         {
             InstallerDownloadTokenSource.Cancel();
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusGrid.Visibility = Visibility.Collapsed;
-                InstallGameBtn.Visibility = Visibility.Visible;
-                CancelDownloadBtn.Visibility = Visibility.Collapsed;
+            ProgressStatusGrid.Visibility = Visibility.Collapsed;
+            InstallGameBtn.Visibility = Visibility.Visible;
+            CancelDownloadBtn.Visibility = Visibility.Collapsed;
 
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            });
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
 
         private async Task<string> InstallGameDialogScratch()

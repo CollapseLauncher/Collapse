@@ -52,11 +52,8 @@ namespace CollapseLauncher.Pages
                 _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, Entry.Key, Entry.Value.Author));
             }
 
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                LanguageSelector.ItemsSource = _out;
-                LanguageSelector.SelectedIndex = SelectedIndex;
-            });
+            LanguageSelector.ItemsSource = _out;
+            LanguageSelector.SelectedIndex = SelectedIndex;
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -161,26 +158,24 @@ namespace CollapseLauncher.Pages
             string ChannelName = IsPreview ? " Preview" : " Stable";
             if (IsPortable)
                 ChannelName += "-Portable";
-            DispatcherQueue.TryEnqueue(() =>
+
+            CheckUpdateBtn.IsEnabled = true;
+            if (e.IsUpdateAvailable)
             {
-                CheckUpdateBtn.IsEnabled = true;
-                if (e.IsUpdateAvailable)
-                {
-                    UpdateLoadingStatus.Visibility = Visibility.Collapsed;
-                    UpdateAvailableStatus.Visibility = Visibility.Visible;
-                    UpToDateStatus.Visibility = Visibility.Collapsed;
-                    UpdateAvailableLabel.Text = e.NewVersionName + (ChannelName);
-                    LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
-                    return;
-                }
-                else
-                {
-                    UpdateLoadingStatus.Visibility = Visibility.Collapsed;
-                    UpdateAvailableStatus.Visibility = Visibility.Collapsed;
-                    UpToDateStatus.Visibility = Visibility.Visible;
-                    LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
-                }
-            });
+                UpdateLoadingStatus.Visibility = Visibility.Collapsed;
+                UpdateAvailableStatus.Visibility = Visibility.Visible;
+                UpToDateStatus.Visibility = Visibility.Collapsed;
+                UpdateAvailableLabel.Text = e.NewVersionName + (ChannelName);
+                LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
+                return;
+            }
+            else
+            {
+                UpdateLoadingStatus.Visibility = Visibility.Collapsed;
+                UpdateAvailableStatus.Visibility = Visibility.Collapsed;
+                UpToDateStatus.Visibility = Visibility.Visible;
+                LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
+            }
         }
 
         private void ClickTextLinkFromTag(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -190,6 +185,18 @@ namespace CollapseLauncher.Pages
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = (sender as TextBlock).Tag.ToString(),
+                    UseShellExecute = true
+                }
+            }.Start();
+        }
+
+        private void ClickButtonLinkFromTag(object sender, RoutedEventArgs e)
+        {
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = (sender as Button).Tag.ToString(),
                     UseShellExecute = true
                 }
             }.Start();

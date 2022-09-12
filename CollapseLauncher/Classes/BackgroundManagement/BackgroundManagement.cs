@@ -242,13 +242,13 @@ namespace CollapseLauncher
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 5));
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 2));
 
             QuantizedColor Single = null;
 
             try
             {
-                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight ? 2 : 0];
+                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight?1:0];
             }
             catch
             {
@@ -387,8 +387,8 @@ namespace CollapseLauncher
             DoubleAnimation OpacityBgFront = new DoubleAnimation();
             OpacityBgFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            OpacityBufBack.From = 0.30; OpacityBufBack.To = 0;
-            OpacityBgBack.From = 0; OpacityBgBack.To = 0.30;
+            OpacityBufBack.From = !BGLastState ? 1 : 0.30; OpacityBufBack.To = 0;
+            OpacityBgBack.From = 0; OpacityBgBack.To = !BGLastState ? 1 : 0.30;
 
             OpacityBufFront.From = 1; OpacityBufFront.To = 0;
             OpacityBgFront.From = 0; OpacityBgFront.To = 1;

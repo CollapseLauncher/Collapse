@@ -12,9 +12,9 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Grid.Row="0">
-            <TextBlock x:Name="Title" Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.UnhandledTitle1}"
+            <TextBlock x:Name="Title"
                        Margin="0,0,0,24" Style="{StaticResource TitleLargeTextBlockStyle}"/>
-            <TextBlock x:Name="Subtitle" Text="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.UnhandledSubtitle1}"
+            <TextBlock x:Name="Subtitle"
                        Margin="0,0,0,8" Style="{StaticResource BodyStrongTextBlockStyle}" FontSize="18"/>
             <TextBox x:Name="ExceptionTextBox"
                      IsReadOnly="True"

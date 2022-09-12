@@ -45,6 +45,46 @@
                 </TextBlock>
             </StackPanel>
         </StackPanel>
+        <Grid x:Name="UpdateProgressBox" Visibility="Collapsed" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Grid.ChildrenTransitions>
+                <PopupThemeTransition/>
+            </Grid.ChildrenTransitions>
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <TextBlock Text="{Binding Value, ElementName=progressBar}" TextAlignment="Left"/>
+                        <TextBlock Text="%" TextAlignment="Left"/>
+                    </StackPanel>
+                    <TextBlock x:Name="Status" Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}" FontWeight="Bold"/>
+                    <TextBlock x:Name="ActivityStatus" Text="-" TextAlignment="Left"/>
+                </StackPanel>
+                <Grid Width="440" HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="192"/>
+                        <ColumnDefinition Width="96"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}" TextAlignment="Right" FontWeight="Bold"/>
+                        <TextBlock x:Name="TimeEstimation" Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" TextAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader3}" TextAlignment="Right" FontWeight="Bold"/>
+                        <TextBlock x:Name="ActivitySubStatus" Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" TextAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader4}" TextAlignment="Right" FontWeight="Bold"/>
+                        <TextBlock x:Name="SpeedStatus" Text="-" TextAlignment="Right"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <ProgressBar x:Name="progressBar" Value="50" Maximum="100"  VerticalAlignment="Bottom" Grid.Row="1" IsIndeterminate="True"/>
+        </Grid>
         <Grid Grid.Column="1" Margin="32,24,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -64,7 +104,7 @@
                           Checked="AskUpdateToggle"
                           Unchecked="AskUpdateToggle"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+            <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
                 <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
                 <Button Content="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick"/>
             </StackPanel>

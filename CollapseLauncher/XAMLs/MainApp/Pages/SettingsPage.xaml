@@ -8,10 +8,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <ScrollViewer>
-        <Grid Margin="32,32,32,32">
+        <Grid Margin="32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
             <StackPanel HorizontalAlignment="Left" Grid.Column="0">
                 <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
@@ -21,7 +21,7 @@
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <ComboBox x:Name="LanguageSelector" MinWidth="200" SelectionChanged="LanguageChanged"/>
+                            <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" SelectionChanged="LanguageChanged"/>
                             <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
@@ -37,10 +37,10 @@
                         <StackPanel Margin="0,0,0,16" HorizontalAlignment="Left">
                             <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
                             <StackPanel Orientation="Horizontal" Margin="-2,8,0,0">
-                                <Button x:Name="BGSelector" IsEnabled="False" Click="SelectBackgroundImg">
-                                    <StackPanel Orientation="Horizontal">
-                                        <SymbolIcon Symbol="Pictures"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0"/>
+                                <Button x:Name="BGSelector" IsEnabled="False" Margin="-32,0,0,0" CornerRadius="0,16,16,0" Click="SelectBackgroundImg" Style="{ThemeResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                        <TextBlock FontFamily="{StaticResource FontAwesome}" Text="&#xF03E;" FontSize="22"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
                                 <TextBlock x:Name="BGPathDisplay" Text="" VerticalAlignment="Center" Width="384" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
@@ -53,7 +53,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <Button Margin="16,0">
+                            <Button Margin="16,0" CornerRadius="16">
                                 <Button.Content>
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE11B;" FontSize="12"/>
                                 </Button.Content>
@@ -99,7 +99,12 @@
                                 </TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="CheckUpdateBtn" Content="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" Click="CheckUpdate"/>
+                                <Button x:Name="CheckUpdateBtn" Margin="-32,0,0,0" Height="38" CornerRadius="0,17,17,0" Click="CheckUpdate" Style="{ThemeResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                        <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf105;" FontSize="22"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                                 <StackPanel x:Name="UpdateLoadingStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
                                     <ProgressRing Width="20" Height="20" IsIndeterminate="True"/>
                                 </StackPanel>
@@ -116,16 +121,31 @@
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </StackPanel>
-                            <Button x:Name="ForceUpdateBtn" Content="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Click="ForceUpdate" Margin="0,8,0,0"/>
+                            <Button x:Name="ForceUpdateBtn" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="ForceUpdate" Style="{ThemeResource AccentButtonStyle}">
+                                <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
-                            <Button Content="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder"/>
-                            <Button Content="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" Style="{StaticResource AccentButtonStyle}" Click="RelocateFolder"/>
+                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Click="RelocateFolder">
+                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" FontWeight="Medium"/>
+                            </Button>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                            <Button Content="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder"/>
-                            <Button Content="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" Style="{StaticResource AccentButtonStyle}" Click="ClearImgFolder"/>
+                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder">
+                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" FontWeight="Medium"/>
+                            </Button>
+                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Click="ClearImgFolder">
+                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" FontWeight="Medium"/>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -154,15 +174,15 @@
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,4" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/issues" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/></Hyperlink>
                         </TextBlock>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,4,0,8" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/pulls" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/></Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Margin="0,16">
+                <StackPanel Margin="0,8">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyTextBlockStyle}">
                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer1}"/>
@@ -206,6 +226,20 @@
                         <Run Text="~neon-nyan"/>
                     </TextBlock>
                 </StackPanel>
+                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/3x4s3v5J" Click="ClickButtonLinkFromTag">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
+                        <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                    </StackPanel>
+                </Button>
+                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/hi3" Click="ClickButtonLinkFromTag">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
+                        <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                    </StackPanel>
+                </Button>
                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Left">
                     <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
                                Tag="https://web.facebook.com/kemalsetya.adhisetya/"/>
@@ -213,10 +247,10 @@
                                Tag="https://github.com/neon-nyan/"/>
                     <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://www.reddit.com/user/justanewbie1-ID/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF16D;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF081;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                               Tag="https://twitter.com/neonnyann"/>
+                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xE055;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://instagram.com/neonnyann/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
-                               Tag="https://discord.gg/ironmaiden"/>
                     <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
             </StackPanel>

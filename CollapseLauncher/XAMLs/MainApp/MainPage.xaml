@@ -43,17 +43,23 @@
                     Margin="12,0,0,10"
                     Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
                     <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="16,4,0,0" Orientation="Horizontal">
-                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
-                        <Button Content="{x:Bind helper:Locale.Lang._Misc.Change}" Margin="8,0,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" CornerRadius="14,0,0,14" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+                        <Button Margin="0,0,8,0" CornerRadius="0,14,14,0"  x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                            <Button.Content>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium"/>
+                            </Button.Content>
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" TextWrapping="Wrap" Margin="0,0,0,12" />
-                                        <Button x:Name="ChangeRegionBtn" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
+                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" FontWeight="Medium" Margin="0,0,0,12" />
+                                        <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
                                             <Button.Content>
-                                                <Grid Margin="-11,-8,-11,-8" Padding="11,8,11,8">
-                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-11,0,-11,-28" Visibility="Collapsed"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}">Yes, Change It</TextBlock>
+                                                <Grid Margin="-36,-8" Padding="36,8">
+                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-36,0,-36,-28" Visibility="Collapsed"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf363;" FontSize="16" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
+                                                    </StackPanel>
                                                 </Grid>
                                             </Button.Content>
                                         </Button>
@@ -113,38 +119,45 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="52"/>
+                    <ColumnDefinition Width="72"/>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="44"/>
+                    <ColumnDefinition Width="64"/>
                     <ColumnDefinition Width="44"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="WebView2BackBtn" IsEnabled="False" Click="WebView2BackBtn_Click" Grid.Column="0" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
-                    <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" Height="16" FontSize="12"/>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="WebView2ForwardBtn" IsEnabled="False" Click="WebView2ForwardBtn_Click" Grid.Column="1" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
-                    <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE111;" Height="16" FontSize="12"/>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="WebView2ReloadBtn" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2ReloadBtn_Click">
-                    <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE149;" Height="16" FontSize="12"/>
-                    </Button.Content>
-                </Button>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="3">
+                    <Button x:Name="WebView2BackBtn" IsEnabled="False" Click="WebView2BackBtn_Click"
+                            CornerRadius="16,0,0,16" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
+                        <Button.Content>
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf104;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="WebView2ForwardBtn" IsEnabled="False" Click="WebView2ForwardBtn_Click"
+                            CornerRadius="0,16,16,0" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
+                        <Button.Content>
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="WebView2ReloadBtn" Click="WebView2ReloadBtn_Click"
+                            Margin="8,0,0,0" CornerRadius="16" Width="48" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}">
+                        <Button.Content>
+                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf01e;" FontSize="14"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
                 <Grid Grid.Column="3" Margin="8,0" CornerRadius="5">
                     <TextBox x:Name="WebView2URLBox" IsReadOnly="True"/>
                     <ProgressBar x:Name="WebView2LoadingStatus" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
                 </Grid>
-                <Button x:Name="WebView2OpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" HorizontalAlignment="Center" Click="WebView2OpenExternalBtn_Click">
+                <Button x:Name="WebView2OpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" CornerRadius="16" Width="64"
+                        HorizontalAlignment="Center" Click="WebView2OpenExternalBtn_Click">
                     <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE128;" Height="16" FontSize="12"/>
+                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08e;" FontSize="14"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="WebView2CloseBtn" Grid.Column="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2CloseBtn_Click">
+                <Button x:Name="WebView2CloseBtn" Grid.Column="5" VerticalAlignment="Stretch" CornerRadius="16"
+                        HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2CloseBtn_Click">
                     <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10A;" Height="16" FontSize="12"/>
+                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="14"/>
                     </Button.Content>
                 </Button>
             </Grid>

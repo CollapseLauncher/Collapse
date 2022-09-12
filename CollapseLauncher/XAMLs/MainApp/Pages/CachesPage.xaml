@@ -50,7 +50,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="240"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Margin="0,0,32,0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
@@ -62,9 +62,18 @@
                             <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                            <Button x:Name="UpdateCachesBtn" Content="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartCachesUpdate"/>
-                            <Button x:Name="CheckUpdateBtn" Content="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartCachesCheck"/>
-                            <Button x:Name="CancelBtn" IsEnabled="False" Content="{x:Bind helper:Locale.Lang._Misc.Cancel}" Width="72" Margin="16,0,0,0" Click="CancelOperation"/>
+                            <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
+                                    Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
+                            <Button x:Name="CheckUpdateBtn" CornerRadius="16" 
+                                    Style="{StaticResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
+                            <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False"
+                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

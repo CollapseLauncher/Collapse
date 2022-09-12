@@ -50,7 +50,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="230"/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="240"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PerProgressTitle1}" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
@@ -71,9 +71,18 @@
                             <ProgressBar x:Name="RepairTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                            <Button x:Name="RepairFilesBtn" Content="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameRepair"/>
-                            <Button x:Name="CheckFilesBtn" Content="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2}" Style="{StaticResource AccentButtonStyle}" Width="112" Click="StartGameCheck"/>
-                            <Button x:Name="CancelBtn" IsEnabled="False" Content="{x:Bind helper:Locale.Lang._Misc.Cancel}" Width="72" Margin="16,0,0,0" Click="CancelOperation"/>
+                            <Button x:Name="RepairFilesBtn" CornerRadius="16" Width="128"
+                                    Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Click="StartGameRepair">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
+                            <Button x:Name="CheckFilesBtn" CornerRadius="16" Width="128"
+                                    Style="{StaticResource AccentButtonStyle}" Click="StartGameCheck">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
+                            <Button x:Name="CancelBtn" IsEnabled="False" CornerRadius="16" 
+                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

@@ -177,7 +177,7 @@
                           Grid.Column="1" Grid.Row="1"
                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
                           Width="136" Margin="0,0,90,60">
-                            <Image x:Name="ImageEventImg" PointerPressed="ClickImageEventSpriteLink"/>
+                            <Image x:Name="ImageEventImg" Shadow="{StaticResource SharedShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                                 Margin="0,148,0,0" Orientation="Vertical" HorizontalAlignment="Left">
@@ -195,7 +195,7 @@
                                     </FlipView.ItemTemplate>
                                 </FlipView>
                                 <Grid x:Name="ImageCarouselPipsPager"
-                                  Padding="4,4" Margin="10,-14,10,0" CornerRadius="8"
+                                  Padding="4,4" Margin="10,-14,10,0" CornerRadius="14"
                                   Shadow="{StaticResource SharedShadow}"
                                   Background="{StaticResource CarouselPipsAcrylicBrush}"
                                   HorizontalAlignment="Right" Visibility="Collapsed"
@@ -341,7 +341,7 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
-                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed">
+                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed" Shadow="{StaticResource SharedShadow}">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
@@ -376,13 +376,14 @@
                     <Button x:Name="GameStartupSetting"
                             Grid.Column="0" Grid.Row="2" 
                             VerticalAlignment="Stretch"
+                            CornerRadius="20"
                             PointerEntered="AnimateGameRegSettingIcon_Start"
                             PointerExited="AnimateGameRegSettingIcon_End"
                             Shadow="{StaticResource SharedShadow}">
                         <Button.Content>
                             <Grid>
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource GameSettingsBtnBrush}" Margin="-16"/>
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="8,0">
                                     <AnimatedIcon x:Name='GameRegionSettingIcon' Width="20">
                                         <AnimatedIcon.Source>
                                             <animatedvisuals:AnimatedSettingsVisualSource/>
@@ -391,7 +392,7 @@
                                             <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
                                         </AnimatedIcon.FallbackIconSource>
                                     </AnimatedIcon>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
                                 </StackPanel>
                             </Grid>
                         </Button.Content>
@@ -399,43 +400,43 @@
                             <Flyout>
                                 <StackPanel Width="200">
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <Button x:Name="OpenGameFolderButton" Margin="0,8" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
+                                    <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
                                         <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="MoveToFolder"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" Margin="8,0,0,0"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf07b;" FontSize="18"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
-                                    <Button x:Name="OpenCacheFolderButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
+                                    <Button x:Name="OpenCacheFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
                                         <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="MoveToFolder"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" Margin="8,0,0,0"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf65e;" FontSize="18"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                    <Button x:Name="RepairGameButton" Margin="0,8" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
+                                    <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
                                         <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="Repair"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf0ad;" FontSize="18"/>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
-                                    <Button x:Name="UninstallGameButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
+                                    <Button x:Name="UninstallGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
                                         <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="Delete"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
-                                    <Button x:Name="ConvertVersionButton" Margin="0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
+                                    <Button x:Name="ConvertVersionButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
                                         <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Symbol="Switch"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf363;" FontSize="18"/>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button.Content>
@@ -452,16 +453,19 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{StaticResource SharedShadow}">
-                        <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="InstallGameDialog">
+                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{StaticResource SharedShadow}" CornerRadius="20">
+                        <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Style="{StaticResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
                             <Button.Content>
-                                <StackPanel Orientation="Horizontal">
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE118;" FontSize="16"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
+                                <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
+                                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf019;" FontSize="18"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.InstallBtn}" FontWeight="Medium" Margin="8,-2,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="UpdateGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="UpdateGameDialog" Visibility="Collapsed">
+                        <Button x:Name="UpdateGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Style="{StaticResource AccentButtonStyle}" Click="UpdateGameDialog" CornerRadius="20"
+                                Visibility="Collapsed">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE117;" FontSize="16"/>
@@ -469,13 +473,21 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="StartGame">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium"/>
+                        <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Click="StartGame">
+                            <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
+                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf11b;" FontSize="22"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.StartBtn}" FontWeight="Medium" Margin="8,-2,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
-                        <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" Click="CancelInstallationProcedure">
+                        <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Click="CancelInstallationProcedure">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" FontWeight="Medium"/>
                         </Button>
-                        <Button x:Name="ResumeDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed">
+                        <Button x:Name="ResumeDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" FontWeight="Medium"/>
                         </Button>
                     </Grid>

@@ -1,4 +1,4 @@
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -272,11 +272,13 @@ namespace CollapseLauncher
                     IsClosable = IsClosable,
                     IsIconVisible = true,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"],
                     Shadow = SharedShadow,
                     Translation = Shadow16,
                     IsOpen = true
                 };
+
+                if (Severity == InfoBarSeverity.Informational)
+                    Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
 
                 Notification.Closed += ((a, b) => { a.Translation -= Shadow16; });
 
@@ -446,25 +448,34 @@ namespace CollapseLauncher
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
 
+            FontFamily Fnt = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
+
+            FontIcon IconLauncher = new FontIcon { FontFamily = Fnt, Glyph = "" };
+            FontIcon IconRepair = new FontIcon { FontFamily = Fnt, Glyph = "" };
+            FontIcon IconCaches = new FontIcon { FontFamily = Fnt, Glyph = "" };
+            FontIcon IconGameSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
+            FontIcon IconAppSettings = new FontIcon { FontFamily = Fnt, Glyph = "" };
+
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Content = Lang._HomePage.PageTitle, Icon = new SymbolIcon(Symbol.Home), Tag = "launcher" });
+            { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
             if (!(CurrentRegion.IsGenshin ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
 
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameRepairPage.PageTitle, Icon = new SymbolIcon(Symbol.Repair), Tag = "repair" });
+                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._CachesPage.PageTitle, Icon = new SymbolIcon(Symbol.Download), Tag = "caches" });
+                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 // NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 // { Content = Lang._CutscenesPage.PageTitle, Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameSettingsPage.PageTitle, Icon = new SymbolIcon(Symbol.Library), Tag = "gamesettings" });
+                { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
+            (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
         }
 
         public void LoadRegionSelectorItems()

@@ -11,18 +11,18 @@
     <Grid>
         <Button x:Name="NextPage" Style="{StaticResource AccentButtonStyle}"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="32" IsEnabled="False"
-                Click="NextPage_Click">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" Margin="0,0,8,0"/>
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE111;" FontSize="14"/>
+                Click="NextPage_Click" CornerRadius="16">
+            <StackPanel Orientation="Horizontal" Margin="8,0">
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" FontWeight="Medium" Margin="0,0,8,0"/>
+                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
             </StackPanel>
         </Button>
         <Button x:Name="PrevPage" Style="{StaticResource AccentButtonStyle}"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="32" IsEnabled="True"
-                Click="PrevPage_Click">
-            <StackPanel Orientation="Horizontal">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" FontSize="14"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtn}" Margin="8,0,0,0"/>
+                Click="PrevPage_Click" CornerRadius="16">
+            <StackPanel Orientation="Horizontal" Margin="8,0">
+                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf060;" FontSize="14"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
             </StackPanel>
         </Button>
         <Grid x:Name="Bg" Margin="32">
@@ -51,7 +51,7 @@
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" FontWeight="Normal"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
                 </TextBlock>
-                <ComboBox x:Name="GameSelect" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameSelect_SelectionChanged"/>
+                <ComboBox x:Name="GameSelect" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameSelect_SelectionChanged"/>
             </StackPanel>
         </Grid>
         <Grid x:Name="Overlay" Visibility="Collapsed">
