@@ -489,6 +489,8 @@ namespace CollapseLauncher.Dialogs
 
         private void RevertConversion()
         {
+            if (SourceProfile is null || TargetProfile is null) return;
+
             string OrigPath = SourceProfile.ActualGameDataLocation;
             string IngrPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
 
