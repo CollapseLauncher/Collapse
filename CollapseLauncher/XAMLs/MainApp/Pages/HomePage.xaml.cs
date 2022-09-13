@@ -234,11 +234,26 @@ namespace CollapseLauncher.Pages
 
         private string GetFailedGameConversionFolder(string basepath)
         {
-            string ParentPath = Path.GetDirectoryName(basepath);
-            string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{CurrentRegion.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
-                .FirstOrDefault();
-            if (IngredientPath is null) return null;
-            return IngredientPath;
+            try
+            {
+                string ParentPath = Path.GetDirectoryName(basepath);
+                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{CurrentRegion.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
+                    .FirstOrDefault();
+                if (IngredientPath is not null) return IngredientPath;
+            }
+#if DEBUG
+            catch (DirectoryNotFoundException)
+            {
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Unhandled);
+#else
+            catch
+            {
+#endif
+            }
+            return null;
         }
 
         private async void CheckFailedDeltaPatchState()
