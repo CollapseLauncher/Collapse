@@ -33,6 +33,10 @@
                 public string ConvertSuccessSubtitle { get; set; } = LangFallback?._InstallConvert.ConvertSuccessSubtitle;
                 public string CookbookDownloadTitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadTitle;
                 public string CookbookDownloadSubtitle { get; set; } = LangFallback?._InstallConvert.CookbookDownloadSubtitle;
+                public string CancelBtn { get; set; } = LangFallback?._InstallConvert.CancelBtn;
+                public string CancelMsgTitle { get; set; } = LangFallback?._InstallConvert.CancelMsgTitle;
+                public string CancelMsgSubtitle1 { get; set; } = LangFallback?._InstallConvert.CancelMsgSubtitle1;
+                public string CancelMsgSubtitle2 { get; set; } = LangFallback?._InstallConvert.CancelMsgSubtitle2;
             }
         }
         #endregion

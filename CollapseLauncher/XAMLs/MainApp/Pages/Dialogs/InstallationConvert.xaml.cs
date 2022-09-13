@@ -461,13 +461,13 @@ namespace CollapseLauncher.Dialogs
         {
             string ContentText;
             if (IsAlreadyConverted)
-                ContentText = string.Format("You're about to cancel the conversion process but your game has been already converted to {0}. You'll be skipping the Post Conversion Verification phase.\r\n\r\nAre you sure?", TargetProfile.ZoneName);
+                ContentText = string.Format(Lang._InstallConvert.CancelMsgSubtitle2, TargetProfile.ZoneName);
             else
-                ContentText = "You're about to cancel the conversion process. Any conversion progress will be aborted.\r\n\r\nAre you sure?";
+                ContentText = Lang._InstallConvert.CancelMsgSubtitle1;
 
             ContentDialog Dialog = new ContentDialog
             {
-                Title = "Camcelling Conversion...",
+                Title = Lang._InstallConvert.CancelMsgTitle,
                 Content = new TextBlock {
                     Text = ContentText,
                     TextWrapping = TextWrapping.Wrap

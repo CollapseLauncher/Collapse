@@ -504,7 +504,12 @@
     "ConvertSuccessTitle": "Conversion Successful",
     "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
     "CookbookDownloadTitle": "Downloading Recipe",
-    "CookbookDownloadSubtitle": "Downloading recipe for conversion from {0} to {1}"
+    "CookbookDownloadSubtitle": "Downloading recipe for conversion from {0} to {1}",
+
+    "CancelBtn": "Cancel Conversion",
+    "CancelMsgTitle": "Camcelling Conversion...",
+    "CancelMsgSubtitle1": "You're about to cancel the conversion process. Any conversion progress will be aborted.\r\n\r\nAre you sure?",
+    "CancelMsgSubtitle2": "You're about to cancel the conversion process but your game has been already converted to {0}. You'll be skipping the \"Post-Conversion Integrity Verification\" phase.\r\n\r\nAre you sure?"
   },
 
   // InstallMigrateSteam Content

@@ -504,7 +504,12 @@
     "ConvertSuccessTitle": "Pengubahan Berhasil",
     "ConvertSuccessSubtitle": "Pengubahan Game dari {0} ke {1} telah berhasil dilakukan!",
     "CookbookDownloadTitle": "Mengunduh Resep",
-    "CookbookDownloadSubtitle": "Mengunduh resep untuk pengubahan dari {0} ke {1}"
+    "CookbookDownloadSubtitle": "Mengunduh resep untuk pengubahan dari {0} ke {1}",
+
+    "CancelBtn": "Batalkan Pengubahan",
+    "CancelMsgTitle": "Membatalkan Pengubahan...",
+    "CancelMsgSubtitle1": "Kamu akan membatalkan proses pengubahan. Proses pengubahan akan dikembalikan ulang.\r\n\r\nKamu yakin?",
+    "CancelMsgSubtitle2": "Kamu akan membatalkan proses pengubahan namun game-mu sudah terlanjur diubah ke {0}. Kamu akan melewati fase \"Verifikasi Integritas Setelah Pengubahan\".\r\n\r\nKamu yakin?"
   },
 
   // InstallMigrateSteam Content
