@@ -416,6 +416,8 @@
     "DeltaPatchDetectedSubtitle": "Delta patch akan digunakan untuk pemperbarui game dari {0} ke {1}.\r\nPerlu diingat bahwa kamu mungkin masih perlu mengunduh beberapa berkas di dalam game.\r\n\r\nMau dilanjutkan?",
     "DeltaPatchPrevFailedTitle": "Pembaruan Delta Patch sebelumnya telah Gagal/Belum Selesai!",
     "DeltaPatchPrevFailedSubtitle": "Pembaruan Delta Patch sebelumnya telah Gagal/Belum Selesai! Apakah kamu ingin mengembalikan game? agar kamu tidak perlu mengunduh ulang.",
+    "GameConversionPrevFailedTitle": "Pengubahan Game sebelumnya telah Gagal/Belum Selesai!",
+    "GameConversionPrevFailedSubtitle": "Pengubahan Game sebelumnya telah Gagal/Belum Selesai! Apakah kamu ingin mengembalikan game? agar kamu tidak perlu mengunduh ulang.",
     "PreloadVerifiedTitle": "Pra-unduh telah terverifikasi!",
     "PreloadVerifiedSubtitle": "Pra-unduhmu telah siap dan terverifikasi!",
     "LocateInstallTitle": "Arahkan Folder Pemasangan",

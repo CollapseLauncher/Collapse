@@ -79,6 +79,7 @@ namespace CollapseLauncher.Pages
                 TryLoadEventPanelImage();
 
                 CheckFailedDeltaPatchState();
+                CheckFailedGameConversion();
                 CheckRunningGameInstance();
                 StartCarouselAutoScroll(PageToken.Token);
             }
@@ -201,6 +202,45 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private async void CheckFailedGameConversion()
+        {
+            await Task.Delay(100);
+            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
+            if (GamePathIngredients is null) return;
+            if (!Directory.Exists(GamePathIngredients)) return;
+
+            long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
+            if (FileSize < 1 << 20) return;
+
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {CurrentRegion.ZoneName} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
+
+            try
+            {
+                switch (await Dialog_PreviousGameConversionFailed(Content))
+                {
+                    case ContentDialogResult.Primary:
+                        RollbackFileContent(GamePath, GamePathIngredients);
+                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                        break;
+                }
+            }
+            catch
+            {
+                RollbackFileContent(GamePath, GamePathIngredients);
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
+        }
+
+        private string GetFailedGameConversionFolder(string basepath)
+        {
+            string ParentPath = Path.GetDirectoryName(basepath);
+            string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{CurrentRegion.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+            if (IngredientPath is null) return null;
+            return IngredientPath;
+        }
+
         private async void CheckFailedDeltaPatchState()
         {
             await Task.Delay(100);
@@ -213,23 +253,25 @@ namespace CollapseLauncher.Pages
                 switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
                 {
                     case ContentDialogResult.Primary:
-                        RollbackFailedDeltaPatch(GamePath, GamePathIngredients);
+                        RollbackFileContent(GamePath, GamePathIngredients);
                         MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                         break;
                 }
             }
             catch
             {
-                RollbackFailedDeltaPatch(GamePath, GamePathIngredients);
+                RollbackFileContent(GamePath, GamePathIngredients);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
         }
 
-        private void RollbackFailedDeltaPatch(string OrigPath, string IngrPath)
+        private void RollbackFileContent(string OrigPath, string IngrPath)
         {
             int DirLength = IngrPath.Length + 1;
             string destFilePath;
             string destFolderPath;
+            bool ErrorOccured = false;
+
             foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
             {
                 ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
@@ -247,10 +289,12 @@ namespace CollapseLauncher.Pages
                 catch (Exception ex)
                 {
                     LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", Hi3Helper.LogType.Error, true);
+                    ErrorOccured = true;
                 }
             }
 
-            Directory.Delete(IngrPath, true);
+            if (!ErrorOccured)
+                Directory.Delete(IngrPath, true);
         }
 
         private void CheckCurrentGameState()

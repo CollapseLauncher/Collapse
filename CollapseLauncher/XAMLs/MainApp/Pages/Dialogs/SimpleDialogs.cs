@@ -44,6 +44,16 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.No
                 );
 
+        public static async Task<ContentDialogResult> Dialog_PreviousGameConversionFailed(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.GameConversionPrevFailedTitle,
+                    Lang._Dialogs.GameConversionPrevFailedSubtitle,
+                    Content,
+                    null,
+                    Lang._Misc.Yes,
+                    Lang._Misc.No
+                );
+
         public static async Task<ContentDialogResult> Dialog_InstallationLocation(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.LocateInstallTitle,

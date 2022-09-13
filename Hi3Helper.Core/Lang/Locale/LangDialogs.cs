@@ -12,6 +12,8 @@
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchPrevFailedTitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedTitle;
                 public string DeltaPatchPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.DeltaPatchPrevFailedSubtitle;
+                public string GameConversionPrevFailedTitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedTitle;
+                public string GameConversionPrevFailedSubtitle { get; set; } = LangFallback?._Dialogs.GameConversionPrevFailedSubtitle;
                 public string PreloadVerifiedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string PreloadVerifiedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedSubtitle;
                 public string LocateInstallTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
