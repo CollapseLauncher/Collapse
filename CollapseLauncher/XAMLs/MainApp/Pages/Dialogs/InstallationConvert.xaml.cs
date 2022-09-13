@@ -29,6 +29,7 @@ namespace CollapseLauncher.Dialogs
         string SourceDataIntegrityURL;
         string TargetDataIntegrityURL;
         string GameVersion;
+        bool IsAlreadyConverted = false;
         PresetConfigClasses SourceProfile;
         PresetConfigClasses TargetProfile;
         GameConversionManagement Converter;
@@ -80,7 +81,12 @@ namespace CollapseLauncher.Dialogs
                 await DoSetProfileDataLocation();
                 await DoDownloadRecipe();
                 await DoPrepareIngredients();
+
+                CancelBtn.IsEnabled = false;
                 await DoConversion();
+
+                IsAlreadyConverted = true;
+                CancelBtn.IsEnabled = true;
                 await DoVerification();
 
                 ApplyConfiguration();
@@ -103,6 +109,11 @@ namespace CollapseLauncher.Dialogs
 
                 OperationCancelled();
             }
+            catch (TaskCanceledException)
+            {
+                LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
+                OperationCancelled();
+            }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
@@ -110,9 +121,9 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
-                ErrorSender.SendException(ex);
-                MainFrameChanger.ChangeWindowFrame(typeof(Pages.UnhandledExceptionPage));
+                RevertConversion();
+                LogWriteLine($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", Hi3Helper.LogType.Error, true);
+                ErrorSender.SendException(new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex));
             }
         }
 
@@ -283,7 +294,7 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressRing.Value = 0;
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
-            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, Content);
+            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, Content, tokenSource.Token);
 
             Converter.ProgressChanged += Step2ProgressEvents;
             await Converter.StartDownloadRecipe();
@@ -435,6 +446,7 @@ namespace CollapseLauncher.Dialogs
 
         private void OperationCancelled()
         {
+            RevertConversion();
             MigrationWatcher.IsMigrationRunning = false;
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
@@ -443,6 +455,75 @@ namespace CollapseLauncher.Dialogs
         {
             MigrationWatcher.IsMigrationRunning = true;
             StartConversionProcess();
+        }
+
+        private async void CancelConversion(object sender, RoutedEventArgs e)
+        {
+            string ContentText;
+            if (IsAlreadyConverted)
+                ContentText = string.Format("You're about to cancel the conversion process but your game has been already converted to {0}. You'll be skipping the Post Conversion Verification phase.\r\n\r\nAre you sure?", TargetProfile.ZoneName);
+            else
+                ContentText = "You're about to cancel the conversion process. Any conversion progress will be aborted.\r\n\r\nAre you sure?";
+
+            ContentDialog Dialog = new ContentDialog
+            {
+                Title = "Camcelling Conversion...",
+                Content = new TextBlock {
+                    Text = ContentText,
+                    TextWrapping = TextWrapping.Wrap
+                },
+                CloseButtonText = null,
+                PrimaryButtonText = Lang._Misc.Yes,
+                SecondaryButtonText = Lang._Misc.No,
+                DefaultButton = ContentDialogButton.Secondary,
+                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                XamlRoot = Content.XamlRoot
+            };
+
+            if (await Dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                tokenSource.Cancel();
+                return;
+            }
+        }
+
+        private void RevertConversion()
+        {
+            string OrigPath = SourceProfile.ActualGameDataLocation;
+            string IngrPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
+
+            if (Directory.Exists(TargetProfile.ActualGameDataLocation))
+            {
+                // Do force config apply if the file has been actually converted.
+                ApplyConfiguration();
+                return;
+            }
+            else if (!Directory.Exists(IngrPath)) return;
+
+            int DirLength = IngrPath.Length + 1;
+            string destFilePath;
+            string destFolderPath;
+            foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
+            {
+                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
+                destFilePath = Path.Combine(OrigPath, relativePath.ToString());
+                destFolderPath = Path.GetDirectoryName(destFilePath);
+
+                if (!Directory.Exists(destFolderPath))
+                    Directory.CreateDirectory(destFolderPath);
+
+                try
+                {
+                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", Hi3Helper.LogType.Default, true);
+                    File.Move(filePath, destFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", Hi3Helper.LogType.Error, true);
+                }
+            }
+
+            Directory.Delete(IngrPath, true);
         }
     }
 }

@@ -14,8 +14,7 @@
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}"
                    Style="{StaticResource TitleLargeTextBlockStyle}"
                    Margin="0,0,0,24"/>
-        <Grid
-              HorizontalAlignment="Stretch" Height="550">
+        <Grid HorizontalAlignment="Stretch" Height="550">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32*"/>
                 <ColumnDefinition Width="681*"/>
@@ -78,6 +77,11 @@
                     <TextBlock x:Name="Step5ProgressStatus" Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
+            <Button x:Name="CancelBtn"  Style="{ThemeResource AccentButtonStyle}" Margin="0,0,0,-32" CornerRadius="16"
+                    Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" VerticalAlignment="Bottom"
+                    Click="CancelConversion">
+                <TextBlock Text="Cancel Conversion" FontWeight="Medium" Margin="8,0"/>
+            </Button>
         </Grid>
         <TextBlock x:Name="MigrationSubtextStatus"
                    Style="{StaticResource BodyTextBlockStyle}" Margin="0,12,4,0"

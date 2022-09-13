@@ -39,7 +39,7 @@ namespace CollapseLauncher
         byte DownloadThread;
 
         public GameConversionManagement(PresetConfigClasses SourceProfile, PresetConfigClasses TargetProfile,
-            string SourceBaseURL, string TargetBaseURL, string GameVersion, UIElement ParentUI)
+            string SourceBaseURL, string TargetBaseURL, string GameVersion, UIElement ParentUI, CancellationToken Token = new CancellationToken())
         {
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
@@ -51,6 +51,7 @@ namespace CollapseLauncher
                 $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
             this.CookbookPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Temp",
                 $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
+            this.Token = Token;
         }
 
         public async Task StartPreparation()
@@ -66,7 +67,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadStream(SourceBaseURL + "index.json", buffer, new CancellationToken());
+                await DownloadStream(SourceBaseURL + "index.json", buffer, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -74,7 +75,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadStream(TargetBaseURL + "index.json", buffer, new CancellationToken());
+                await DownloadStream(TargetBaseURL + "index.json", buffer, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 TargetFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -152,9 +153,10 @@ namespace CollapseLauncher
                                 BytesToCRC32Simple(fs) :
                                 CreateMD5(fs);
 
+                            Token.ThrowIfCancellationRequested();
                             if (LocalHash.ToLower() != Entry.CurrCRC)
                                 BrokenManifest.Add(Entry);
-                        });
+                        }, Token);
                     }
                 }
                 else
@@ -363,7 +365,7 @@ namespace CollapseLauncher
 
                 ConvertFsWatcher.Created += ConvertFsWatcher_Created;
 
-                await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath));
+                await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath), Token);
                 TryDirectoryDelete(IngredientsPath, true);
                 TryFileDelete(CookbookPath);
                 MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
