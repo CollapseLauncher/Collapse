@@ -106,7 +106,9 @@
             </StackPanel>
             <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
                 <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
-                <Button Content="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick"/>
+                <Button Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" FontWeight="Medium" Margin="16,0"/>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>
