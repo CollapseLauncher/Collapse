@@ -333,6 +333,7 @@ namespace CollapseLauncher.Pages
                 {
                     UpdateGameBtn.Visibility = Visibility.Visible;
                     StartGameBtn.Visibility = Visibility.Collapsed;
+                    InstallGameBtn.Visibility = Visibility.Collapsed;
                     GameInstallationState = GameInstallStateEnum.NeedsUpdate;
                 }
                 else
