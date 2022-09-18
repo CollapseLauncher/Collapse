@@ -101,18 +101,24 @@ namespace CollapseLauncher.Pages
 
         private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
         {
-            Status.Text = e.status;
-            ActivityStatus.Text = e.message;
-            NewVersionLabel.Text = e.newver;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                Status.Text = e.status;
+                ActivityStatus.Text = e.message;
+                NewVersionLabel.Text = e.newver;
+            });
         }
 
         private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
         {
-            progressBar.IsIndeterminate = false;
-            progressBar.Value = e.ProgressPercentage;
-            ActivitySubStatus.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.DownloadedSize), SummarizeSizeSimple(e.TotalSizeToDownload));
-            SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.CurrentSpeed));
-            TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressBar.IsIndeterminate = false;
+                progressBar.Value = e.ProgressPercentage;
+                ActivitySubStatus.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.DownloadedSize), SummarizeSizeSimple(e.TotalSizeToDownload));
+                SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.CurrentSpeed));
+                TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+            });
         }
     }
 }
