@@ -1147,28 +1147,22 @@ namespace CollapseLauncher.Pages
 
         private void InstallToolStatus(object sender, InstallManagementStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusTitle.Text = e.StatusTitle;
-                progressPerFile.Visibility = e.IsPerFile ? Visibility.Visible : Visibility.Collapsed;
+            ProgressStatusTitle.Text = e.StatusTitle;
+            progressPerFile.Visibility = e.IsPerFile ? Visibility.Visible : Visibility.Collapsed;
 
-                progressRing.IsIndeterminate = e.IsIndetermined;
-                progressRingPerFile.IsIndeterminate = e.IsIndetermined;
-            });
+            progressRing.IsIndeterminate = e.IsIndetermined;
+            progressRingPerFile.IsIndeterminate = e.IsIndetermined;
         }
 
         private void InstallToolProgress(object sender, InstallManagementProgress e)
         {
             if (LastTimeSpan.ElapsedMilliseconds >= RefreshTime)
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    progressRing.Value = e.ProgressPercentage;
-                    progressRingPerFile.Value = e.ProgressPercentagePerFile;
-                    ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-                    ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
-                    ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                });
+                progressRing.Value = e.ProgressPercentage;
+                progressRingPerFile.Value = e.ProgressPercentagePerFile;
+                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
+                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
                 ResetLastTimeSpan();
             }
         }
@@ -1206,7 +1200,7 @@ namespace CollapseLauncher.Pages
             GameZipRequiredSize = diff.size;
 
             InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
-
+            
             TryAddVoicePack(GetUpdateDiffs(false));
 
             if (IsGameHasVoicePack)
