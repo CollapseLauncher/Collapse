@@ -112,14 +112,15 @@ namespace CollapseLauncher
 
         private bool CheckDeltaPatchUpdate()
         {
-            string[] GamePaths = Directory.GetFiles(this.GameDirPath, "*.patch", SearchOption.TopDirectoryOnly);
+            string[] GamePaths = Directory.GetFiles(GameDirPath, "*.patch", SearchOption.TopDirectoryOnly);
             if (GamePaths.Length == 0) return false;
 
             try
             {
                 PatchProp = new DeltaPatchProperty(GamePaths.First());
-                if (PatchProp.ProfileName != this.SourceProfile.ProfileName) return false;
-                if (this.ModeType != DownloadType.Update) return false;
+                if (PatchProp.ProfileName != SourceProfile.ProfileName) return false;
+                if (ModeType != DownloadType.Update) return false;
+                if (PatchProp.TargetVer != GameVersionString) return false;
             }
             catch (IndexOutOfRangeException) { return false; }
 
