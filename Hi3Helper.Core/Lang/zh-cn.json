@@ -1,9 +1,7 @@
 {
-  // Translation Metadata
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
   "Author": "misaka10843",
-  // StartupPage Content
   "_StartupPage": {
     "PageTitle": "第一次启动页面",
     "Title1": "欢迎来到",
@@ -23,18 +21,42 @@
     "ChooseFolderDialogPrimary": "是的",
     "ChooseFolderDialogSecondary": "我想自己选择个文件夹",
     "OverlayPrepareFolderTitle": "准备程序文件夹",
-    "OverlayPrepareFolderSubtitle": "申请权限..."
+    "OverlayPrepareFolderSubtitle": "申请权限...",
+    "Pg1NextBtn": "下一步 - 选择游戏",
+    "Pg1LoadingTitle1": "正在载入游戏列表",
+    "Pg1LoadingSubitle1": "我们正在为您准备支持的游戏列表",
+    "Pg1LoadingSubitle2": "已完成！继续到下一步！",
+    "Pg2NextBtn": "完成 - 进入启动器",
+    "Pg2PrevBtn": "返回-选择文件夹",
+    "Pg2Title": "Time to fly~",
+    "Pg2Subtitle1_1": "只需再一步就可以玩你的游戏了",
+    "Pg2Subtitle1_2": "Collapse Launcher.",
+    "Pg2Subtitle2_1": "我们只有少数的",
+    "Pg2Subtitle2_2": "miHoYo/HoYoverse",
+    "Pg2Subtitle2_3": "支持的游戏。请在下面选择您的游戏开始使用",
+    "Pg2Subtitle2_4": "Collapse Launcher.",
+    "Pg2ComboBox": "选择游戏"
   },
-  // DisconnectedPage Content
   "_DisconnectedPage": {
     "PageTitle": "断开链接",
     "Header1": "你的互联网被",
     "Header2": "断开了",
     "Footer1": "请检查您的互联网连接，并点击",
     "Footer2": "派蒙",
-    "Footer3": "重试。"
+    "Footer3": "重试。",
+    "ShowErrorBtn": "显示错误消息"
   },
-  // MainPage Content
+  "_UnhandledExceptionPage": {
+    "UnhandledTitle1": "无法处理错误",
+    "UnhandledSubtitle1": "一个无法处理的错误发生在下面的异常抛出：",
+    "UnhandledTitle2": "连接问题",
+    "UnhandledSubtitle2": "哎呀，看起来您已经从互联网断开了连接！是吗？",
+    "UnhandledTitle3": "游戏已崩溃",
+    "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
+    "CopyClipboardBtn1": "复制全部到剪贴板",
+    "CopyClipboardBtn2": "复制到剪贴板!",
+    "GoBackPageBtn1": "返回上一页"
+  },
   "_MainPage": {
     "PageTitle": "主页面",
     "RegionChangeConfirm": "游戏区服将被改变。你想继续吗？",
@@ -51,7 +73,6 @@
     "MetadataUpdateBtn": "更新元数据",
     "MetadataUpdateBtnUpdating": "更新元数据中..."
   },
-  // HomePage Content
   "_HomePage": {
     "PageTitle": "启动器",
     "PreloadTitle": "预装可用!",
@@ -90,7 +111,6 @@
     "PostPanel_Info": "信息",
     "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
   },
-  // GameRepairPage
   "_GameRepairPage": {
     "PageTitle": "游戏修复",
     "ListCol1": "名字",
@@ -122,7 +142,6 @@
     "OverlayGameRunningTitle": "游戏正在运行!",
     "OverlayGameRunningSubtitle": "请先关闭游戏以使用此功能!"
   },
-  // CachesPage Content
   "_CachesPage": {
     "PageTitle": "缓存更新",
     "ListCol1": "名称",
@@ -148,15 +167,12 @@
     "OverlayGameRunningTitle": "游戏正在运行!",
     "OverlayGameRunningSubtitle": "请先关闭游戏以使用此功能!"
   },
-  // CutscenesPage
   "_CutscenesPage": {
     "PageTitle": "场景"
   },
-  // GameSettingsPage
   "_GameSettingsPage": {
     "PageTitle": "游戏设置",
     "Graphics_Title": "图形设置",
-    // Graphics: Resolution Panel
     "Graphics_ResolutionPanel": "游戏分辨率",
     "Graphics_Fullscreen": "全屏",
     "Graphics_ExclusiveFullscreen": "使用独占全屏",
@@ -164,16 +180,13 @@
     "Graphics_ResCustom": "使用自定义分辨率",
     "Graphics_ResCustomW": "宽",
     "Graphics_ResCustomH": "高",
-    // Graphics: FPS Panel
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "战斗中",
     "Graphics_FPSInMenu": "主菜单",
-    // Graphics: API Panel
     "Graphics_APIPanel": "图形API",
     "Graphics_APIHelp1": "这个游戏有几个API模式，包括。",
     "Graphics_APIHelp2": "注：",
     "Graphics_APIHelp3": "使用DirectX 12可能会在某些阶段导致崩溃，因为游戏不是用DirectX 12 API原生编译的。",
-    // Graphics: Global Graphics Settings Panel
     "Graphics_SpecPanel": "全局图形设置",
     "Graphics_Render": "渲染精度",
     "Graphics_Shadow": "阴影质量",
@@ -185,7 +198,6 @@
     "Graphics_FXHQ": "高质量",
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "失真",
-    // Graphics: APHO2 Graphics Settings Panel
     "Graphics_APHO2Panel": "APHO2与图形设置",
     "Graphics_APHO2GI": "全局照明",
     "Graphics_APHO2VL": "体积照明",
@@ -198,7 +210,6 @@
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
     "Audio_Title": "音频设置",
-    // Audio: Audio Panel
     "Audio_BGM": "背景音乐音量",
     "Audio_SFX": "音效音量",
     "Audio_VOLang": "配音语言",
@@ -217,13 +228,11 @@
     "OverlayFirstTimeTitle": "你还没有第一次运行这个游戏!",
     "OverlayFirstTimeSubtitle": "请先运行游戏，然后再回来使用此功能。",
     "CustomArgs_Title": "自定义启动参数（高级）",
-    // Custom Arguments: Custom Arguments Panel
     "CustomArgs_Subtitle": "启动参数",
     "CustomArgs_Footer1": "关于启动参数的更多信息，请查看",
     "CustomArgs_Footer2": "Unity Standalone命令行文档",
     "CustomArgs_Footer3": "来查看更多的参数。"
   },
-  // CutscenesPage
   "_SettingsPage": {
     "PageTitle": "程序设置",
     "Debug": "调试",
@@ -263,7 +272,6 @@
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献",
     "About": "关于",
-    // 版权信息可以不用翻译|Copyright information can be used without translation
     "About_Copyright1": "© 2022 Created by",
     "About_Copyright2": " neon-nyan [14372096 SEA]",
     "About_Copyright3": "Under",
@@ -271,9 +279,10 @@
     "Disclaimer": "免责声明",
     "Disclaimer1": "本程序与",
     "Disclaimer2": "没有任何关系",
-    "Disclaimer3": "并完全开放源代码。我们欢迎任何贡献。"
+    "Disclaimer3": "并完全开放源代码。我们欢迎任何贡献。",
+    "DiscordBtn1": "加入我们的Armada Discord(大陆无法正常访问)",
+    "DiscordBtn2": "访问崩坏三Discord(大陆无法正常访问)"
   },
-  // Misc Content
   "_Misc": {
     "UpdateCompleteTitle": "更新完成!",
     "UpdateCompleteSubtitle": "您的启动器版本已更新为{0}! (发布渠道：{1})",
@@ -287,7 +296,6 @@
     "SpeedPlaceholder": "速度: - /s",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
-    // Buttons Texts
     "Cancel": "取消",
     "Close": "关闭",
     "UseCurrentDir": "使用当前目录",
@@ -301,6 +309,7 @@
     "Next": "下一页",
     "Prev": "上一页",
     "Uninstall": "卸载",
+    "Install": "安装",
     "Yes": "是",
     "YesRedownload": "是的，重新下载",
     "YesResume": "是的，恢复",
@@ -340,13 +349,15 @@
     "Disabled": "关闭",
     "Enabled": "开启",
     "BuildChannelPreview": "预览版",
-    "BuildChannelStable": "正式版",
-    "Install": "安装"
+    "BuildChannelStable": "正式版"
   },
-  // Dialogs Content
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告。检测到Delta补丁更新!",
     "DeltaPatchDetectedSubtitle": "Delta补丁将用于将你的游戏从{0}更新到{1}。\r\n注意，你可能仍然需要像往常一样在游戏中下载一些文件。\r\n\r\n你想继续吗？",
+    "DeltaPatchPrevFailedTitle": "上一个 Delta 补丁失败/完成！",
+    "DeltaPatchPrevFailedSubtitle": "上一个 Delta 补丁失败/完成！你想要还原你的游戏以防止重新下载吗？",
+    "GameConversionPrevFailedTitle": "上一个游戏转换失败/完成！",
+    "GameConversionPrevFailedSubtitle": "上一个游戏转换失败/完成！你想要还原你的游戏以防止重新下载吗？",
     "PreloadVerifiedTitle": "预装软件包已被验证!",
     "PreloadVerifiedSubtitle": "您的预装包已准备就绪并通过验证!",
     "LocateInstallTitle": "找到安装文件夹",
@@ -398,13 +409,14 @@
     "InstallingMediaPackSubtitle": "等待进程结束...",
     "InstallingMediaPackSubtitleFinished": "完成"
   },
-  // InstallMgmt Content
   "_InstallMgmt": {
     "IntegrityCheckTitle": "完整性检查",
     "PreparePatchTitle": "准备补丁",
-    "AddtDownloadTitle": "添加下载：{0}/{1}"
+    "AddtDownloadTitle": "添加下载：{0}/{1}",
+    "RepairFilesRequiredShowFilesBtn": "显示损坏文件列表",
+    "RepairFilesRequiredTitle": "{0} 个文件需要修复！",
+    "RepairFilesRequiredSubtitle": "您至少有 {0} 个文件 (大小为{1} ) 需要在更新前修复！\n\n注意：此过程可能需要比预期的长时间(取决于您连接的速度和稳定程度)。 另外，如果您的下载速度较慢，请考虑使用 VPN (例如ProtonVPN)"
   },
-  // InstallConvert Content
   "_InstallConvert": {
     "PageTitle": "跨版本转换",
     "Step1Title": "选择游戏和获取依赖性",
@@ -430,9 +442,12 @@
     "ConvertSuccessTitle": "转换成功",
     "ConvertSuccessSubtitle": "游戏从{0}到{1}的转换已经成功完成!",
     "CookbookDownloadTitle": "正在下载配方",
-    "CookbookDownloadSubtitle": "正在下载从{0}转换到{1}的配方"
+    "CookbookDownloadSubtitle": "正在下载从{0}转换到{1}的配方",
+    "CancelBtn": "取消转换",
+    "CancelMsgTitle": "正在取消转换...",
+    "CancelMsgSubtitle1": "您将要取消转换过程。任何转换进度都将被中止。\n\n您确定吗？",
+    "CancelMsgSubtitle2": "您即将取消转换过程，但您的游戏已被转换为 {0}。 您将跳过\"后转换完整性验证\"阶段。\n\n您确定吗？"
   },
-  // InstallMigrateSteam Content
   "_InstallMigrateSteam": {
     "PageTitle": "Steam转换",
     "Step1Title": "检查文件夹权限",
@@ -464,7 +479,6 @@
     "InnerConvertFile2": "正在下载{0}[{1}/{2}]: {3}",
     "InnerConvertFile3": "下载{0}[{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
-  // InstallMigrate Content
   "_InstallMigrate": {
     "PageTitle": "游戏迁移",
     "Step1Title": "进程将在5秒内开始。请接受UAC(管理员权限)的提示后开始迁移。",
@@ -475,7 +489,6 @@
     "PageFooter2": "请勿",
     "PageFooter3": "进程运行时，请切换到其他页面或关闭启动器"
   },
-  // UpdatePage Content
   "_UpdatePage": {
     "PageTitle1": "有可用",
     "PageTitle2": "更新!",
@@ -488,6 +501,19 @@
     "RemindLaterBtn": "稍后提醒我",
     "UpdateNowBtn": "现在更新",
     "LoadingRelease": "正在加载版本说明...",
-    "LoadingReleaseFailed": "获取版本发行说明时出错。\r\n{0}"
+    "LoadingReleaseFailed": "获取版本发行说明时出错。\r\n{0}",
+    "UpdateHeader1": "进度：",
+    "UpdateHeader2": "耗时：",
+    "UpdateHeader3": "下载大小：",
+    "UpdateHeader4": "速度：",
+    "UpdateHeader5PlaceHolder": "正在下载更新[- / -]：",
+    "UpdateStatus1": "正在获取更新：",
+    "UpdateMessage1": "正在连接到更新仓库...",
+    "UpdateStatus2": "正在验证：",
+    "UpdateStatus3": "正在下载更新 [{0} / {1}]:",
+    "UpdateStatus4": "您正在使用最新版本 ({0}) ！",
+    "UpdateMessage4": "很快就会回到启动器...",
+    "UpdateStatus5": "版本已更新到 {0}！",
+    "UpdateMessage5": "我们将很快重新启动启动器..."
   }
 }
