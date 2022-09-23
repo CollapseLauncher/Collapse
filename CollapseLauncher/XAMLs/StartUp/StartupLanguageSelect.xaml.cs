@@ -1,3 +1,4 @@
+using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -5,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -27,7 +29,9 @@ namespace CollapseLauncher
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoadLocalization(LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangID);
+            string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangID;
+            LoadLocalization(LangID);
+            SetAndSaveConfigValue("AppLanguage", LangID);
             NextBtn.IsEnabled = true;
         }
 
