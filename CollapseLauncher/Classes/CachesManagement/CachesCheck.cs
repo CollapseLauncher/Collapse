@@ -208,13 +208,13 @@ namespace CollapseLauncher.Pages
                     }
                     else
                     {
-                        content.Status = CachesDataStatus.Missing;
+                        content.Status = CachesDataStatus.New;
                         brokenCaches.Add(content);
                         brokenCachesListUI.Add(new DataPropertiesUI
                         {
                             FileName = Path.GetFileName(content.N),
                             FileSizeStr = SummarizeSizeSimple(content.CS),
-                            CacheStatus = CachesDataStatus.Missing,
+                            CacheStatus = CachesDataStatus.New,
                             DataType = dataType.DataType,
                             FileSource = Path.GetDirectoryName(content.N),
                             FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
