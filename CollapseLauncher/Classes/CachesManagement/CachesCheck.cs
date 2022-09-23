@@ -217,7 +217,7 @@ namespace CollapseLauncher.Pages
                             CacheStatus = CachesDataStatus.New,
                             DataType = dataType.DataType,
                             FileSource = Path.GetDirectoryName(content.N),
-                            FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
+                            FileLastModified = "-",
                             FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                         });
                         LogWriteLine($"Missing: {content.N}", LogType.Warning, true);
