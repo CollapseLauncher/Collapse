@@ -42,7 +42,7 @@ namespace Hi3Helper.Shared.ClassStruct
 
     public enum CachesDataStatus
     {
-        Missing = 0,
+        New = 0,
         Obsolete = 1,
         Unecessary = 2
     }

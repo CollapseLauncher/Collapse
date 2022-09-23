@@ -159,10 +159,13 @@ namespace CollapseLauncher.Pages
                 timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
             }
 
-            CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
-                                   + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.Speed))
-                                   + $" | {timeLeftString}";
-            CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                CachesTotalStatus.Text = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", cachesCount, cachesTotalCount)
+                                       + string.Format($"({Lang._Misc.SpeedPerSec})", SummarizeSizeSimple(e.Speed))
+                                       + $" | {timeLeftString}";
+                CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
+            });
         }
     }
 }

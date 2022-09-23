@@ -279,6 +279,9 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void DataFetchingProgress(object sender, DownloadEvent e) => CachesTotalStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
+        private void DataFetchingProgress(object sender, DownloadEvent e)
+        {
+            DispatcherQueue.TryEnqueue(() => { CachesTotalStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed)); });
+        }
     }
 }
