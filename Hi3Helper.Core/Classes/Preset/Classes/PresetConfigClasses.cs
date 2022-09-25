@@ -253,10 +253,6 @@ namespace Hi3Helper.Preset
 #nullable enable
         public string? ActualGameLocation { get; set; }
         public string? ActualGameDataLocation { get; set; }
-        public string? DictionaryHost { get; set; }
-        public string? UpdateDictionaryAddress { get; set; }
-        public string? BlockDictionaryAddress { get; set; }
-        public string? GameVersion { get; set; }
         public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string? FallbackLanguage { get; set; }
         public string? SteamInstallRegistryLocation { get; set; }
@@ -271,7 +267,6 @@ namespace Hi3Helper.Preset
         public byte? CachesListGameVerID { get; set; }
         public string? CachesEndpointURL { get; set; }
 #nullable disable
-        public Dictionary<string, MirrorUrlMember> MirrorList { get; set; }
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
