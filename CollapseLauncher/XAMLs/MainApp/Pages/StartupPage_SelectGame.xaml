@@ -31,15 +31,15 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="32,0,0,0" x:Name="LeftPanel">
-                <!--<StackPanel.Transitions>
+                <StackPanel.Transitions>
                     <EntranceThemeTransition/>
-                </StackPanel.Transitions>-->
+                </StackPanel.Transitions>
                 <Image Source="/Assets/BG/AponiaFly.png" Width="400" Height="400" HorizontalAlignment="Center"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" HorizontalAlignment="Left" x:Name="RightPanel">
-                <!--<StackPanel.Transitions>
+                <StackPanel.Transitions>
                     <EntranceThemeTransition/>
-                </StackPanel.Transitions>-->
+                </StackPanel.Transitions>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
                 <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" FontWeight="Normal"/>

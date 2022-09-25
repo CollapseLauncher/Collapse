@@ -409,14 +409,6 @@ namespace CollapseLauncher
             if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
 
             CheckRunningGameInstance();
-
-            /*
-            LoadRegionSelectorItems();
-            IsLoadSuccess = await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
-            CheckMetadataUpdateInBackground();
-            if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
-            LockRegionChangeBtn = false;
-            */
         }
 
         private void LoadSavedGameSelection()

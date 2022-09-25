@@ -105,9 +105,9 @@
                     </StackPanel>
                 </Grid>
                 <StackPanel x:Name="NotificationBar">
-                    <!--<StackPanel.ChildrenTransitions>
+                    <StackPanel.ChildrenTransitions>
                         <AddDeleteThemeTransition/>
-                    </StackPanel.ChildrenTransitions>-->
+                    </StackPanel.ChildrenTransitions>
                 </StackPanel>
             </Grid>
         </NavigationView>
