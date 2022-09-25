@@ -37,7 +37,9 @@ namespace Hi3Helper.Preset
 
         public static void LoadConfigV2()
         {
+            string stamp = File.ReadAllText(AppGameConfigV2StampPath);
             string content = File.ReadAllText(AppGameConfigV2MetadataPath);
+            if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException("stampv2.json file seems to be empty. Please remove it and restart the launcher!");
             if (string.IsNullOrEmpty(content)) throw new NullReferenceException("metadatav2.json file seems to be empty. Please remove it and restart the launcher!");
 
             ConfigV2 = JsonConvert.DeserializeObject<Metadata>(content);
@@ -73,7 +75,7 @@ namespace Hi3Helper.Preset
                 return false;
             }
 
-            return ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
+            return ConfigV2LastUpdate != ConfigStamp?.LastUpdated;
         }
 
         public static async Task DownloadConfigV2Files(bool Stamp, bool Content)
