@@ -64,6 +64,10 @@
                 public string InstallingMediaPackTitle { get; set; } = LangFallback?._Dialogs.InstallingMediaPackTitle;
                 public string InstallingMediaPackSubtitle { get; set; } = LangFallback?._Dialogs.InstallingMediaPackSubtitle;
                 public string InstallingMediaPackSubtitleFinished { get; set; } = LangFallback?._Dialogs.InstallingMediaPackSubtitleFinished;
+                public string GameConfigBrokenTitle1 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenTitle1;
+                public string GameConfigBrokenSubtitle1 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle1;
+                public string GameConfigBrokenSubtitle2 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle2;
+                public string GameConfigBrokenSubtitle3 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle3;
             }
         }
         #endregion

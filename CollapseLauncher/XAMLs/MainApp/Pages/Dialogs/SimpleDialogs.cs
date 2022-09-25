@@ -234,6 +234,18 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.NoStartFromBeginning
                 );
 
+        public static async Task<ContentDialogResult> Dialog_GameConfigBroken(UIElement Content, string GameConfigPath) =>
+            await SpawnDialog(
+                    Lang._Dialogs.GameConfigBrokenTitle1,
+                    string.Format(Lang._Dialogs.GameConfigBrokenSubtitle1
+                  + Lang._Dialogs.GameConfigBrokenSubtitle2
+                  + Lang._Dialogs.GameConfigBrokenSubtitle3, GameConfigPath),
+                    Content,
+                    null,
+                    Lang._Misc.LocateDir,
+                    null
+                );
+
         public static async Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement Content, long DriveFreeSpace, long RequiredSpace, string DriveLetter) =>
             await SpawnDialog(
                     Lang._Dialogs.InsufficientDiskTitle,

@@ -467,7 +467,11 @@
     "InstallMediaPackCompleteSubtitle": "Media Feature Pack sudah selesai dipasang dalam PC-mu.\r\nTapi kamu perlu restart PC-mu terlebih dahulu sebelum main :)",
     "InstallingMediaPackTitle": "Memasang Media Feature Pack",
     "InstallingMediaPackSubtitle": "Menunggu hingga proses selesai...",
-    "InstallingMediaPackSubtitleFinished": "Selesai"
+    "InstallingMediaPackSubtitleFinished": "Selesai",
+    "GameConfigBrokenTitle1": "Konfigurasi Game Rusak",
+    "GameConfigBrokenSubtitle1": "Bagian dari konfigurasi Launcher telah rusak dan kamu perlu memilih lokasi game sebelumnya secara manual.",
+    "GameConfigBrokenSubtitle2": "\r\nPastikan bahwa lokasi game-mu tidak sama dengan lokasi dari file config.ini milik launcher yang terletak pada path ini:\r\n\r\n{0}\r\n\r\n",
+    "GameConfigBrokenSubtitle3": "Apabila iya, maka kamu perlu memindahkan semua file gamenya ke lokasi lain. Setelahnya, klik \"Arahkan direkktori\" untuk memilih lokasi gamenya."
   },
 
   // InstallMgmt Content

@@ -83,10 +83,28 @@ namespace CollapseLauncher.Pages
                 CheckRunningGameInstance();
                 StartCarouselAutoScroll(PageToken.Token);
             }
+            catch (ArgumentNullException ex)
+            {
+                LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", Hi3Helper.LogType.Error, true);
+                await StartGameConfigBrokenDialog();
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+        }
+
+        private async Task StartGameConfigBrokenDialog()
+        {
+            bool IsComplete = false;
+            while (!IsComplete)
+            {
+                await Dialog_GameConfigBroken(Content, gameIni.ProfilePath);
+                string GamePath = await GetFolderPicker();
+
+                if (IsComplete = CheckExistingGame(GamePath))
+                    MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
             }
         }
 
