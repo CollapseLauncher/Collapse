@@ -365,7 +365,7 @@ namespace CollapseLauncher
             FadeOutBg();
         }
 
-        private async void FadeOutBg()
+        private void FadeOutBg()
         {
             BackgroundBack.Source = BackgroundBitmap;
             BackgroundFront.Source = BackgroundBitmap;
@@ -416,8 +416,6 @@ namespace CollapseLauncher
                 storyBufFront.Begin();
                 storyBgFront.Begin();
             }
-
-            await Task.Delay((int)(dur * 1000));
         }
 
         private void HideLoadingPopup(bool hide, string title, string subtitle)

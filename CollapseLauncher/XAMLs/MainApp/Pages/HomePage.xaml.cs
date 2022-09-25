@@ -165,7 +165,7 @@ namespace CollapseLauncher.Pages
             sb.Begin();
         }
 
-        private async Task HideImageCarousel(bool hide)
+        private void HideImageCarousel(bool hide)
         {
             if (!hide)
                 ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
@@ -181,7 +181,6 @@ namespace CollapseLauncher.Pages
             storyboard.Children.Add(OpacityAnimation);
 
             storyboard.Begin();
-            await Task.Delay(100);
 
             ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
@@ -225,7 +224,6 @@ namespace CollapseLauncher.Pages
 
         private async void CheckFailedGameConversion()
         {
-            await Task.Delay(100);
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
             if (GamePathIngredients is null) return;
@@ -279,7 +277,6 @@ namespace CollapseLauncher.Pages
 
         private async void CheckFailedDeltaPatchState()
         {
-            await Task.Delay(100);
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             string GamePathIngredients = GamePath + "_Ingredients";
             if (!Directory.Exists(GamePathIngredients)) return;
@@ -478,7 +475,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 if (CurrentRegion.UseRightSideProgress ?? false)
-                    await HideImageCarousel(true);
+                    HideImageCarousel(true);
 
                 progressRing.Value = 0;
                 progressRing.IsIndeterminate = true;
@@ -1068,7 +1065,7 @@ namespace CollapseLauncher.Pages
                     GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
 
                     if (CurrentRegion.UseRightSideProgress ?? false)
-                        await HideImageCarousel(true);
+                        HideImageCarousel(true);
 
                     DispatcherQueue.TryEnqueue(() =>
                     {
@@ -1202,7 +1199,7 @@ namespace CollapseLauncher.Pages
             CancellationToken token = InstallerDownloadTokenSource.Token;
 
             if (CurrentRegion.UseRightSideProgress ?? false)
-                await HideImageCarousel(true);
+                HideImageCarousel(true);
 
             GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
 
@@ -1414,7 +1411,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 if (CurrentRegion.UseRightSideProgress ?? false)
-                    await HideImageCarousel(true);
+                    HideImageCarousel(true);
 
                 InstallTool.InstallStatusChanged += InstallerDownloadPreStatusChanged;
                 InstallTool.InstallProgressChanged += InstallerDownloadPreProgressChanged;

@@ -51,7 +51,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public async void ToggleEventsPanel(bool hide) => await HideImageCarousel(!hide);
+        public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);
     }
 
     public class NullVisibilityConverter : IValueConverter
