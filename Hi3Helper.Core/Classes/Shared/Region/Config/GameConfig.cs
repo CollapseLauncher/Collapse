@@ -65,7 +65,9 @@ namespace Hi3Helper.Shared.Region
 
         public static async Task CheckExistingGameSettings()
         {
-            gameIni.SettingsPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "settings.ini");
+            string SettingsPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            gameIni.SettingsPath = Path.Combine(SettingsPath, "settings.ini");
+
             PrepareGameSettings();
 
             await UpdateGameExistingSettings();
@@ -152,7 +154,7 @@ namespace Hi3Helper.Shared.Region
         {
             try
             {
-                if (!(CurrentRegion.IsGenshin ?? false))
+                if (!(CurrentRegion.IsGenshin ?? false) && gameIni.Settings != null)
                     return gameIni.Settings[SectionName][key];
             }
             catch (NullReferenceException) { }

@@ -38,12 +38,13 @@ namespace Hi3Helper.Shared.Region
             try
             {
                 gameIni.Config = new IniFile();
-                gameIni.ConfigPath = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "config.ini");
+                string GamePath = gameIni.Profile["launcher"]["game_install_path"].ToString();
+                gameIni.ConfigPath = Path.Combine(NormalizePath(GamePath), "config.ini");
                 if (File.Exists(gameIni.ConfigPath))
                     gameIni.Config.Load(gameIni.ConfigPath);
 
-                if (!(CurrentRegion.IsGenshin ?? false))
-                    Task.Run(() => CheckExistingGameSettings());
+                if (!(CurrentRegion.IsGenshin ?? false) && Directory.Exists(GamePath))
+                    await CheckExistingGameSettings();
             }
             catch (ArgumentNullException)
             {
