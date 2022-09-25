@@ -18,6 +18,7 @@ namespace Hi3Helper.Preset
         os_asia = 2,
         os_cht = 3
     }
+
     public enum GameChannel
     {
         Beta = 0,
@@ -269,7 +270,7 @@ namespace Hi3Helper.Preset
         public BHI3LInfo? BetterHi3LauncherConfig { get; private set; }
         public string? ActualGameLocation { get; set; }
         public string? ActualGameDataLocation { get; set; }
-        public bool? MigrateFromBetterHi3Launcher { get; set; }
+        public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string? FallbackLanguage { get; set; }
         public string? SteamInstallRegistryLocation { get; set; }
         public int? SteamGameID { get; set; }
@@ -289,7 +290,7 @@ namespace Hi3Helper.Preset
         public List<string>? ConvertibleTo { get; set; }
         public string? ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
-        public bool? LauncherSpriteURLMultiLang { get; set; }
+        public bool LauncherSpriteURLMultiLang { get; set; }
         public string? LauncherSpriteURLMultiLangFallback { get; set; }
         public string? LauncherSpriteURL { get; set; }
         public string? LauncherResourceURL { get; set; }

@@ -23,7 +23,7 @@ namespace Hi3Helper.Preset
             try
             {
                 List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
-                string ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
+                string? ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
                 return ret == null ? null : ConverterTool.NormalizePath(ret);
             }
             catch
@@ -250,15 +250,15 @@ namespace Hi3Helper.Preset
         public string? SteamInstallRegistryLocation { get; set; }
         public int SteamGameID { get; set; }
         public string? GameDirectoryName { get; set; }
-        public string? GameExecutableName { get; set; }
-        public string? ZipFileURL { get; set; }
 #nullable enable
+        public string? ZipFileURL { get; set; }
         public string? GameDispatchURL { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }
         public string? CachesEndpointURL { get; set; }
 #nullable disable
+        public string GameExecutableName { get; set; }
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
@@ -283,34 +283,6 @@ namespace Hi3Helper.Preset
         public string version { get; set; }
         public string install_path { get; set; }
         public bool installed { get; set; }
-    }
-
-    public class AppSettings
-    {
-        public bool ShowConsole { get; set; }
-        public ushort SupportedGameVersion { get; set; }
-        public ushort PreviousGameVersion { get; set; }
-        public byte MirrorSelection { get; set; }
-        public List<string> AvailableMirror { get; set; }
-    }
-    public class MirrorUrlMember
-    {
-        public string AssetBundle { get; set; }
-        public string Bigfile { get; set; }
-    }
-
-    public class UpdateDataProperties
-    {
-        public string N { get; set; }
-        public long CS { get; set; }
-        public long ECS { get; set; }
-        public string CRC { get; set; }
-        public string ActualPath { get; set; }
-        public string HumanizeSize { get; set; }
-        public string RemotePath { get; set; }
-        public string ZoneName { get; set; }
-        public string DataType { get; set; }
-        public string DownloadStatus { get; set; } = "Not yet downloaded";
     }
 
     public class PkgVersionProperties

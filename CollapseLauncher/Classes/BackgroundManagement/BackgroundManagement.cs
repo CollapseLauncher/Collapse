@@ -18,6 +18,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -32,7 +33,7 @@ namespace CollapseLauncher
 
         private async Task FetchLauncherLocalizedResources()
         {
-            regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
+            regionBackgroundProp = CurrentConfigV2.LauncherSpriteURLMultiLang ?
                 await TryGetMultiLangResourceProp() :
                 await TryGetSingleLangResourceProp();
 
@@ -70,7 +71,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, default);
+                await Http.DownloadStream(CurrentConfigV2.LauncherResourceURL, memoryStream, default);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
             }
         }
@@ -83,7 +84,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
+                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -92,7 +93,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, default);
+                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, CurrentConfigV2.LauncherSpriteURLMultiLangFallback), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -107,7 +108,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, default);
+                await Http.DownloadStream(CurrentConfigV2.LauncherSpriteURL, memoryStream, default);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
@@ -138,7 +139,7 @@ namespace CollapseLauncher
                     IconHover = await GetCachedSprites(item.img_hover),
                     QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = string.IsNullOrEmpty(item.title) || CurrentRegion.IsHideSocMedDesc ? item.url : item.title
+                    Description = string.IsNullOrEmpty(item.title) || CurrentConfigV2.IsHideSocMedDesc ? item.url : item.title
                 });
         }
 

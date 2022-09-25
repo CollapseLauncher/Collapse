@@ -19,6 +19,7 @@ using Hi3Helper.Shared.ClassStruct;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 // Load CurrentConfig from here
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -37,7 +38,7 @@ namespace CollapseLauncher
         private InstallManagementStatus InstallStatus;
         private InstallManagementProgress InstallProgress;
         private DeltaPatchProperty PatchProp;
-        private PresetConfigClasses SourceProfile;
+        private PresetConfigV2 SourceProfile;
         private UIElement Content;
 
         private DownloadType ModeType;
@@ -75,7 +76,7 @@ namespace CollapseLauncher
         private List<DownloadAddressProperty> DownloadProperty;
         private GenshinDispatchHelper DispatchReader;
 
-        public InstallManagement(UIElement Content, DownloadType downloadType, PresetConfigClasses SourceProfile,
+        public InstallManagement(UIElement Content, DownloadType downloadType, PresetConfigV2 SourceProfile,
             string GameDirPath, int downloadThread,
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
@@ -694,8 +695,8 @@ namespace CollapseLauncher
                 // Grab Genshin and Master Key to decrypt first
                 string MasterKey = AppGameConfig.MasterKey;
                 int MasterKeyBitLength = AppGameConfig.MasterKeyBitLength;
-                string GenshinKey = CurrentRegion.DispatcherKey;
-                int GenshinKeyBitLength = CurrentRegion.DispatcherKeyBitLength ?? 0;
+                string GenshinKey = CurrentConfigV2.DispatcherKey;
+                int GenshinKeyBitLength = CurrentConfigV2.DispatcherKeyBitLength ?? 0;
 
                 YSDispatchDec Decryptor = new YSDispatchDec();
                 Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);

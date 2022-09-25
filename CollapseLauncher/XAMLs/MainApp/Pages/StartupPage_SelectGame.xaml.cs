@@ -19,14 +19,13 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class StartupPage_SelectGame : Page
     {
-        bool AbortTransition = false;
         public StartupPage_SelectGame()
         {
-            AbortTransition = false;
             this.InitializeComponent();
             LoadConfigTemplate();
             GameSelect.ItemsSource = GameConfigName;
         }
+
         private void NextPage_Click(object sender, RoutedEventArgs e)
         {
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });

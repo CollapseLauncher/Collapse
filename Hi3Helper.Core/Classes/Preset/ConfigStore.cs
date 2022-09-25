@@ -15,30 +15,11 @@ namespace Hi3Helper.Preset
     public static class ConfigStore
     {
         public static Http.Http http = new Http.Http();
-        public static AppSettings AppConfigData = new AppSettings();
         public static List<PresetConfigClasses> Config = new List<PresetConfigClasses>();
-        public static List<UpdateDataProperties> UpdateFiles;
         public static long UpdateFilesTotalSize;
         public static long UpdateFilesTotalDownloaded = 0;
         public static bool UpdateFinished = false;
-        public static UpdateDataProperties DataProp = new UpdateDataProperties();
 
-        public static readonly string[] RegionalCheckName = new string[] { "TextMap", "RandomDialogData", "sprite" };
-        public enum DataType
-        {
-            Data = 0,
-            Event = 1,
-            Ai = 2,
-            Block = 3,
-            Video = 4,
-            Subtitle = 5,
-            DictionaryAddress = 6,
-            Bigfile = 7,
-            AssetBundle = 8,
-            BlockDictionaryAddress = 9,
-        }
-
-        public static void LoadConfigFromFile(string input) => Config = JsonConvert.DeserializeObject<List<PresetConfigClasses>>(File.ReadAllText(input));
         public static void LoadConfigTemplate()
         {
             PresetConfigClasses Metadata = JsonConvert.DeserializeObject<PresetConfigClasses>(File.ReadAllText(AppGameConfigStampPath));

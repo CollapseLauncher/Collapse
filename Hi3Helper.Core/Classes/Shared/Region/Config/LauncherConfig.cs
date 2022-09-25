@@ -27,7 +27,7 @@ namespace Hi3Helper.Shared.Region
         public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
         public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
-        public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();
+        // public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();
         public static IEnumerable<string> GameConfigName = new List<string>();
         public static List<string> ScreenResolutionsList = new List<string>();
 
@@ -47,10 +47,13 @@ namespace Hi3Helper.Shared.Region
         public static string GamePathOnSteam;
 
         public static string AppGameConfigURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadata_{0}.json";
+        public static string AppGameConfigV2URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadatav2_{0}.json";
         // public static string AppGameConfigURLPrefix = "http://127.0.0.1/metadata_{0}.json";
         public static long AppGameConfigLastUpdate;
         public static PresetConfigClasses AppGameConfig;
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
+        public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
+        public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
         public static string AppGameConfigStampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stamp.json"); }
         public static string AppGameConfigMetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadata.json"); }
 
@@ -84,7 +87,9 @@ namespace Hi3Helper.Shared.Region
             { "AppLanguage", new IniValue("en-us") },
             { "UseCustomBG", new IniValue(false) },
             { "ShowEventsPanel", new IniValue(true) },
-            { "CustomBGPath", new IniValue() }
+            { "CustomBGPath", new IniValue() },
+            { "GameCategory", new IniValue("Honkai Impact 3rd") },
+            { "GameRegion", new IniValue("Southeast Asia") }
         };
 
         public static void LoadGamePreset()

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -30,13 +31,13 @@ namespace CollapseLauncher.Dialogs
         string TargetDataIntegrityURL;
         string GameVersion;
         bool IsAlreadyConverted = false;
-        PresetConfigClasses SourceProfile;
-        PresetConfigClasses TargetProfile;
+        PresetConfigV2 SourceProfile;
+        PresetConfigV2 TargetProfile;
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         List<FilePropertiesRemote> BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
-        Dictionary<string, PresetConfigClasses> ConvertibleRegions;
+        Dictionary<string, PresetConfigV2> ConvertibleRegions;
 
         public InstallationConvert()
         {
@@ -55,7 +56,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                string EndpointURL = string.Format(CurrentRegion.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                string EndpointURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
                 bool IsAskContinue = true;
                 while (IsAskContinue)
                 {
@@ -111,12 +112,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
                 OperationCancelled();
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
                 OperationCancelled();
             }
             catch (Exception ex)
@@ -146,7 +147,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private async Task<string> FetchDataIntegrityURL(PresetConfigClasses Profile)
+        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
         {
             RegionResourceProp _Entry;
             using (MemoryStream s = new MemoryStream())
@@ -160,7 +161,7 @@ namespace CollapseLauncher.Dialogs
             return string.Format(Profile.ZipFileURL, Path.GetFileNameWithoutExtension(_Entry.data.game.latest.path));
         }
 
-        public bool IsSourceGameExist(PresetConfigClasses Profile)
+        public bool IsSourceGameExist(PresetConfigV2 Profile)
         {
             string INIPath = Path.Combine(AppGameFolder, Profile.ProfileName, "config.ini");
             string GamePath;
@@ -188,11 +189,11 @@ namespace CollapseLauncher.Dialogs
             return true;
         }
 
-        public async Task<(PresetConfigClasses, PresetConfigClasses)> AskConvertionDestination()
+        public async Task<(PresetConfigV2, PresetConfigV2)> AskConvertionDestination()
         {
-            ConvertibleRegions = new Dictionary<string, PresetConfigClasses>();
-            foreach (PresetConfigClasses Config in ConfigStore.Config.Where(x => x.IsConvertible ?? false))
-                ConvertibleRegions.Add(Config.ZoneName, Config);
+            ConvertibleRegions = new Dictionary<string, PresetConfigV2>();
+            foreach (KeyValuePair<string, PresetConfigV2> Config in ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Where(x => x.Value.IsConvertible ?? false))
+                ConvertibleRegions.Add(Config.Key, Config.Value);
 
             ComboBox SourceGame = new ComboBox();
             ComboBox TargetGame = new ComboBox();
@@ -226,9 +227,9 @@ namespace CollapseLauncher.Dialogs
             TargetGame.SelectionChanged += TargetGameChangedArgs;
 
             StackPanel DialogContainer = new StackPanel() { Orientation = Orientation.Vertical };
-            StackPanel ComboBoxContainer = new StackPanel() { Orientation = Orientation.Horizontal };
+            StackPanel ComboBoxContainer = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
             ComboBoxContainer.Children.Add(SourceGame);
-            ComboBoxContainer.Children.Add(new SymbolIcon() { Symbol = Symbol.Switch, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(16, 0, 16, 0), Opacity = 0.5f });
+            ComboBoxContainer.Children.Add(new FontIcon() { Glyph = "", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(16, 0, 16, 0), Opacity = 0.5f });
             ComboBoxContainer.Children.Add(TargetGame);
             DialogContainer.Children.Add(new TextBlock
             {
@@ -251,14 +252,16 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = Content.XamlRoot
             };
 
-            PresetConfigClasses SourceRet = null;
-            PresetConfigClasses TargetRet = null;
+            PresetConfigV2 SourceRet = null;
+            PresetConfigV2 TargetRet = null;
 
             switch (await Dialog.ShowAsync())
             {
                 case ContentDialogResult.Secondary:
-                    SourceRet = ConfigStore.Config.Where(x => x.ZoneName == SourceGame.SelectedItem.ToString()).First();
-                    TargetRet = ConfigStore.Config.Where(x => x.ZoneName == TargetGame.SelectedItem.ToString()).First();
+                    SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                        Values.Where(x => x.ZoneName == SourceGame.SelectedItem.ToString()).First();
+                    SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                        Values.Where(x => x.ZoneName == TargetGame.SelectedItem.ToString()).First();
                     break;
                 case ContentDialogResult.Primary:
                     throw new OperationCanceledException();
@@ -269,14 +272,14 @@ namespace CollapseLauncher.Dialogs
         private List<string> GetConvertibleNameList(string ZoneName)
         {
             List<string> _out = new List<string>();
-            List<string> GameTargetProfileName = ConfigStore.Config
+            List<string> GameTargetProfileName = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
                 .Where(x => x.ZoneName == ZoneName)
                 .Select(x => x.ConvertibleTo)
                 .First();
 
             foreach (string Entry in GameTargetProfileName)
-                _out.Add(ConfigStore.Config
-                    .Where(x => x.ProfileName == Entry)
+                _out.Add(ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values
+                    .Where(x => x.ZoneName == Entry)
                     .Select(x => x.ZoneName)
                     .First());
 
@@ -294,7 +297,7 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressRing.Value = 0;
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
-            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, Content, tokenSource.Token);
+            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, tokenSource.Token);
 
             Converter.ProgressChanged += Step2ProgressEvents;
             await Converter.StartDownloadRecipe();
@@ -432,8 +435,8 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            CurrentRegion = TargetProfile;
-            CurrentRegion.GameDirectoryName = Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation);
+            CurrentConfigV2 = TargetProfile;
+            CurrentConfigV2.GameDirectoryName = Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation);
             gamePath = Path.GetDirectoryName(TargetProfile.ActualGameDataLocation);
             string IniPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName);
             gameIni.ProfilePath = Path.Combine(IniPath, "config.ini");

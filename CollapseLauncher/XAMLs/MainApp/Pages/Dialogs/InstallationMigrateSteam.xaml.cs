@@ -15,6 +15,7 @@ using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -45,7 +46,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                endpointURL = string.Format(CurrentRegion.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                endpointURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
                 if (await DoCheckPermission())
                 {
                     await DoMigrationProcess();
@@ -68,7 +69,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
             }
             catch (Exception ex)
             {
@@ -275,7 +276,7 @@ namespace CollapseLauncher.Dialogs
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentRegion.SteamInstallRegistryLocation}\" --keyname InstallLocation";
+                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentConfigV2.SteamInstallRegistryLocation}\" --keyname InstallLocation";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
@@ -339,7 +340,7 @@ namespace CollapseLauncher.Dialogs
                         break;
                     case ContentDialogResult.Primary:
                         sourcePath = GamePathOnSteam;
-                        folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                        folder = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:

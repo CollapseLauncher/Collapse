@@ -12,6 +12,7 @@ using System.Text;
 using Newtonsoft.Json;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -32,6 +33,50 @@ namespace CollapseLauncher
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
+        public async Task<bool> LoadRegionFromCurrentConfigV2()
+        {
+            LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
+
+            // Clear MainPage State, like NavigationView, Load State, etc.
+            ClearMainPageState();
+
+            // Load Game Region File
+            LoadGameRegionFromCurrentConfigV2();
+
+            // Load Region Resource from Launcher API
+            bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
+            bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
+
+            if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
+            {
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                return false;
+            }
+
+            // Finalize Region Load
+            await ChangeBackgroundImageAsRegion();
+            FinalizeLoadRegion();
+
+            return true;
+        }
+
+        private void LoadGameRegionFromCurrentConfigV2()
+        {
+            gameIni = new GameIniStruct();
+
+            gamePath = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
+            gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
+
+            if (!Directory.Exists(gamePath))
+                Directory.CreateDirectory(gamePath);
+
+            if (!File.Exists(gameIni.ProfilePath))
+                PrepareInstallation();
+
+            gameIni.Profile = new IniFile();
+            gameIni.Profile.Load(gameIni.ProfilePath);
+        }
+
         public async Task<bool> LoadRegionByIndex(uint Index = 0)
         {
             // If Index > Length of the region list, return back to 0
@@ -39,7 +84,7 @@ namespace CollapseLauncher
 
             // Set CurrentRegion from Index
             SetCurrentRegionByIndex(Index);
-            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName}...", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
 
             // Clear MainPage State, like NavigationView, Load State, etc.
             ClearMainPageState();
@@ -82,7 +127,7 @@ namespace CollapseLauncher
             LoadingFooter.Text = string.Empty;
 
             // Toggle Loading Popup
-            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             IsLoadRegionComplete = true;
         }
@@ -93,8 +138,8 @@ namespace CollapseLauncher
             while (IsContinue = await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
             {
                 // If true (fail), then log the retry attempt
-                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, CurrentRegion.ZoneName, LoadTimeout);
-                LogWriteLine($"Loading Region {CurrentRegion.ZoneName} has timed-out (> {Timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
+                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", LoadTimeout);
+                LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has timed-out (> {Timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
                 Timeout += TimeoutStep;
                 CurrentRetry++;
             }
@@ -145,7 +190,7 @@ namespace CollapseLauncher
 
         private void SetCurrentRegionByIndex(uint Index)
         {
-            CurrentRegion = ConfigStore.Config[(int)Index];
+            // CurrentRegion = ConfigStore.Config[(int)Index];
             ComboBoxGameRegion.SelectedIndex = (int)Index;
         }
 
@@ -153,7 +198,7 @@ namespace CollapseLauncher
         {
             // Init Registry Key and Push Region Notification
             InitRegKey();
-            PushRegionNotification(CurrentRegion.ProfileName);
+            PushRegionNotification(CurrentConfigV2.ProfileName);
 
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)
@@ -165,10 +210,10 @@ namespace CollapseLauncher
             LoadingFooter.Text = string.Empty;
 
             // Hide Loading Popup
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentRegion.ZoneName);
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             // Log if region has been successfully loaded
-            LogWriteLine($"Initializing Region {CurrentRegion.ZoneName} Done!", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing Region {CurrentConfigV2.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
         }
 
         private void PushRegionNotification(string RegionProfileName)
@@ -198,10 +243,10 @@ namespace CollapseLauncher
         {
             gameIni = new GameIniStruct();
 
-            gamePath = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+            gamePath = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
             gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
 
-            ComboBoxGameRegion.PlaceholderText = CurrentRegion.ZoneName;
+            ComboBoxGameRegion.PlaceholderText = CurrentConfigV2.ZoneName;
 
             if (!Directory.Exists(gamePath))
                 Directory.CreateDirectory(gamePath);
@@ -218,15 +263,19 @@ namespace CollapseLauncher
             // Disable ChangeRegionBtn and hide flyout
             ToggleChangeRegionBtn(in sender, true);
 
-            // Set CurrentRegion in AppConfig
-            SetAndSaveConfigValue("CurrentRegion", ComboBoxGameRegion.SelectedIndex);
+            // Set and Save CurrentRegion in AppConfig
+            SetAndSaveConfigValue("GameCategory", (string)ComboBoxGameCategory.SelectedValue);
+            SetAndSaveConfigValue("GameRegion", (string)ComboBoxGameRegion.SelectedValue);
+
+            // Load Game ConfigV2 List before loading the region
+            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, (string)ComboBoxGameRegion.SelectedValue);
 
             // Start region loading
-            await LoadRegionByIndex((uint)ComboBoxGameRegion.SelectedIndex);
+            await LoadRegionFromCurrentConfigV2();
 
             // Finalize loading
             ToggleChangeRegionBtn(in sender, false);
-            LogWriteLine($"Region changed to {ComboBoxGameRegion.SelectedValue}", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Region changed to {CurrentConfigV2.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
         }
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)

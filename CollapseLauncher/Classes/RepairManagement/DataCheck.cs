@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Hi3Helper.Http;
 using static CollapseLauncher.Pages.RepairData;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -72,7 +73,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string indexURL = string.Format(CurrentRegion.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                string indexURL = string.Format(CurrentConfigV2.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
                 using (memBuffer = new MemoryStream())
                 {
                     http.DownloadProgress += DataFetchingProgress;

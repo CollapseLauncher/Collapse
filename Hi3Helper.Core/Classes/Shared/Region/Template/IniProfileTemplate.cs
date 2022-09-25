@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Data;
 using System.Collections.Generic;
 using System.IO;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.Region
@@ -14,8 +15,8 @@ namespace Hi3Helper.Shared.Region
                 { "cps", new IniValue() },
                 { "channel", new IniValue("1") },
                 { "sub_channel", new IniValue("1") },
-                { "game_install_path", new IniValue(Path.Combine(gamePath, CurrentRegion.GameDirectoryName).Replace('\\', '/')) },
-                { "game_start_name", new IniValue(CurrentRegion.GameExecutableName) },
+                { "game_install_path", new IniValue(Path.Combine(gamePath, CurrentConfigV2.GameDirectoryName).Replace('\\', '/')) },
+                { "game_start_name", new IniValue(CurrentConfigV2.GameExecutableName) },
                 { "is_first_exit", new IniValue(false) },
                 { "exit_type", new IniValue(2) }
             });
