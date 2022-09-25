@@ -46,6 +46,8 @@ namespace Hi3Helper.Preset
             if (ConfigV2 is null) throw new NullReferenceException("Metadata config is broken");
 
             ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
+
+            ConfigV2LastUpdate = JsonConvert.DeserializeObject<Stamp>(stamp).LastUpdated;
         }
 
         public static void GetConfigV2Regions(string GameCategoryName)
