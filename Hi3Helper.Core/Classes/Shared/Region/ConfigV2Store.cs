@@ -35,6 +35,25 @@ namespace Hi3Helper.Preset
             CurrentConfigV2GameRegion = Value;
         }
 
+        public static void LoadConfigV2CacheOnly()
+        {
+            LoadConfigV2();
+            Dictionary<string, Dictionary<string, PresetConfigV2>> res = new Dictionary<string, Dictionary<string, PresetConfigV2>>();
+            Dictionary<string, PresetConfigV2> phase1 = new Dictionary<string, PresetConfigV2>();
+
+            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> a in ConfigV2.MetadataV2)
+            {
+                phase1 = a.Value
+                    .Where(b => !string.IsNullOrEmpty(b.Value.CachesListAPIURL))
+                    .ToDictionary(b => b.Key, b => b.Value);
+
+                if (phase1.Count > 0) res.Add(a.Key, phase1);
+            }
+
+            ConfigV2.MetadataV2 = res;
+            ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
+        }
+
         public static void LoadConfigV2()
         {
             string stamp = File.ReadAllText(AppGameConfigV2StampPath);
@@ -52,7 +71,12 @@ namespace Hi3Helper.Preset
 
         public static void GetConfigV2Regions(string GameCategoryName)
         {
-            if (ConfigV2.MetadataV2[GameCategoryName] is null) throw new KeyNotFoundException($"Game category \"{GameCategoryName}\" isn't found!");
+            if (!ConfigV2.MetadataV2.ContainsKey(GameCategoryName))
+            {
+                ConfigV2GameRegions = ConfigV2.MetadataV2.FirstOrDefault().Value.Keys.ToList();
+                LogWriteLine($"Game category \"{GameCategoryName}\" isn't found!", LogType.Error, true);
+                return;
+            }
 
             ConfigV2GameRegions = ConfigV2.MetadataV2[GameCategoryName].Keys.ToList();
         }

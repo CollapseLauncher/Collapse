@@ -388,7 +388,7 @@ namespace CollapseLauncher
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
-                LoadConfigWithCacheTemplate();
+                LoadConfigV2CacheOnly();
                 Page = typeof(Pages.CachesPage);
             }
             else
