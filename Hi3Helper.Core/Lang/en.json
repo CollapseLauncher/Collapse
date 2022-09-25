@@ -38,7 +38,8 @@
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "games to be supported. Please select your game below to start using",
     "Pg2Subtitle2_4": "Collapse Launcher.",
-    "Pg2ComboBox": "Select Game"
+    "Pg2ComboBox": "Select Game",
+    "Pg2ComboBoxRegion": "Select Region"
   },
 
   // DisconnectedPage Content

@@ -31,15 +31,15 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="32,0,0,0" x:Name="LeftPanel">
-                <StackPanel.Transitions>
+                <!--<StackPanel.Transitions>
                     <EntranceThemeTransition/>
-                </StackPanel.Transitions>
+                </StackPanel.Transitions>-->
                 <Image Source="/Assets/BG/AponiaFly.png" Width="400" Height="400" HorizontalAlignment="Center"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" HorizontalAlignment="Left" x:Name="RightPanel">
-                <StackPanel.Transitions>
+                <!--<StackPanel.Transitions>
                     <EntranceThemeTransition/>
-                </StackPanel.Transitions>
+                </StackPanel.Transitions>-->
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
                 <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" FontWeight="Normal"/>
@@ -51,7 +51,10 @@
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" FontWeight="Normal"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
                 </TextBlock>
-                <ComboBox x:Name="GameSelect" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameSelect_SelectionChanged"/>
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox x:Name="GameCategorySelect" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameCategorySelect_SelectionChanged"/>
+                    <ComboBox x:Name="GameRegionSelect" IsEnabled="False" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBoxRegion}" Margin="16,0,0,0" Width="192" SelectionChanged="GameSelect_SelectionChanged"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
         <Grid x:Name="Overlay" Visibility="Collapsed">
