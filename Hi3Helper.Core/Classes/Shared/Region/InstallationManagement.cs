@@ -34,6 +34,7 @@ namespace Hi3Helper.Shared.Region
         }
 
         public static void LoadGameConfig()
+        public static async Task LoadGameConfig()
         {
             try
             {

@@ -43,15 +43,20 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         public HomePage()
         {
+            this.Loaded += StartLoadedRoutine;
+        }
+
+        private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
+        {
             try
             {
+                this.InitializeComponent();
+
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
-                this.InitializeComponent();
-
                 CheckIfRightSideProgress();
-                LoadGameConfig();
+                await LoadGameConfig();
                 CheckCurrentGameState();
 
                 SocMedPanel.Translation += Shadow48;
@@ -72,9 +77,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
-                {
                     ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
-                }
 
                 TryLoadEventPanelImage();
 
