@@ -11,19 +11,40 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Preset
 {
 #nullable enable
-    public class PresetConfigClasses
+    public enum ServerRegionID
+    {
+        os_usa = 0,
+        os_euro = 1,
+        os_asia = 2,
+        os_cht = 3
+    }
+    public enum GameChannel
+    {
+        Beta = 0,
+        Stable = 1,
+        DevRelease = 2
+    }
+
+    public class Stamp
     {
         public long LastUpdated { get; set; }
-        public List<PresetConfigClasses>? Metadata { get; set; }
+    }
+
+    public class Metadata
+    {
+        public Dictionary<string, Dictionary<string, PresetConfigV2>>? MetadataV2 { get; set; }
         public string? MasterKey { get; set; }
         public int MasterKeyBitLength { get; set; }
+    }
 
+    public class PresetConfigV2
+    {
         public string? GetSteamInstallationPath()
         {
             try
             {
                 List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
-                string ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
+                string? ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
                 return ret == null ? null : ConverterTool.NormalizePath(ret);
             }
             catch
@@ -81,7 +102,8 @@ namespace Hi3Helper.Preset
             else
             {
                 result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                regValue = Encoding.UTF8.GetString(result!).AsSpan().Trim('\0');
+                if (result is null) throw new NullReferenceException("Key \"GENERAL_DATA_h2389025596\" is null");
+                regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
                 initValue = JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue)) ?? initValue;
             }
 
@@ -173,7 +195,7 @@ namespace Hi3Helper.Preset
             if (BetterHi3LauncherVerInfoReg == null) return false;
             RegistryKey? Key = Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher");
             byte[]? Value = (byte[]?)Key?.GetValue(BetterHi3LauncherVerInfoReg);
-            
+
             if (Value is null) return false;
 
             string? Result = Encoding.UTF8.GetString(Value);
@@ -232,6 +254,8 @@ namespace Hi3Helper.Preset
         }
 
         public string? ProfileName { get; set; }
+        public GameChannel GameChannel { get; set; } = GameChannel.Stable;
+        public bool IsExperimental { get; set; } = false;
         public string? ZoneName { get; set; }
         public string? ZoneFullname { get; set; }
         public string? ZoneDescription { get; set; }
@@ -240,86 +264,36 @@ namespace Hi3Helper.Preset
         public string InstallRegistryLocation { get; set; }
         public string DefaultGameLocation { get; set; }
         public string ConfigRegistryLocation { get; set; }
-        public string BetterHi3LauncherVerInfoReg { get; set; }
-        public BHI3LInfo BetterHi3LauncherConfig { get; private set; }
 #nullable enable
+        public string? BetterHi3LauncherVerInfoReg { get; set; }
+        public BHI3LInfo? BetterHi3LauncherConfig { get; private set; }
         public string? ActualGameLocation { get; set; }
         public string? ActualGameDataLocation { get; set; }
-        public bool MigrateFromBetterHi3Launcher { get; set; } = false;
+        public bool? MigrateFromBetterHi3Launcher { get; set; }
         public string? FallbackLanguage { get; set; }
         public string? SteamInstallRegistryLocation { get; set; }
-        public int SteamGameID { get; set; }
+        public int? SteamGameID { get; set; }
         public string? GameDirectoryName { get; set; }
-        public string? GameExecutableName { get; set; }
-        public string? ZipFileURL { get; set; }
+#nullable disable
+        public string GameExecutableName { get; set; }
 #nullable enable
+        public string? ZipFileURL { get; set; }
         public string? GameDispatchURL { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }
         public string? CachesEndpointURL { get; set; }
-#nullable disable
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
-        public List<string> ConvertibleTo { get; set; }
-        public string ConvertibleCookbookURL { get; set; }
+        public List<string>? ConvertibleTo { get; set; }
+        public string? ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
-        public bool LauncherSpriteURLMultiLang { get; set; } = false;
-        public string LauncherSpriteURLMultiLangFallback { get; set; } = "en-us";
-        public string LauncherSpriteURL { get; set; }
-        public string LauncherResourceURL { get; set; }
-        public string DispatcherKey { get; set; }
+        public bool? LauncherSpriteURLMultiLang { get; set; }
+        public string? LauncherSpriteURLMultiLangFallback { get; set; }
+        public string? LauncherSpriteURL { get; set; }
+        public string? LauncherResourceURL { get; set; }
+        public string? DispatcherKey { get; set; }
         public int? DispatcherKeyBitLength { get; set; }
-    }
-
-    public class BHI3LInfo
-    {
-        public BHI3LInfo_GameInfo game_info { get; set; }
-    }
-
-    public class BHI3LInfo_GameInfo
-    {
-        public string version { get; set; }
-        public string install_path { get; set; }
-        public bool installed { get; set; }
-    }
-
-    public class AppSettings
-    {
-        public bool ShowConsole { get; set; }
-        public ushort SupportedGameVersion { get; set; }
-        public ushort PreviousGameVersion { get; set; }
-        public byte MirrorSelection { get; set; }
-        public List<string> AvailableMirror { get; set; }
-    }
-    public class MirrorUrlMember
-    {
-        public string AssetBundle { get; set; }
-        public string Bigfile { get; set; }
-    }
-
-    public class UpdateDataProperties
-    {
-        public string N { get; set; }
-        public long CS { get; set; }
-        public long ECS { get; set; }
-        public string CRC { get; set; }
-        public string ActualPath { get; set; }
-        public string HumanizeSize { get; set; }
-        public string RemotePath { get; set; }
-        public string ZoneName { get; set; }
-        public string DataType { get; set; }
-        public string DownloadStatus { get; set; } = "Not yet downloaded";
-    }
-
-    public class PkgVersionProperties
-    {
-        public string localName { get; set; }
-        public string remoteURL { get; set; }
-        public string remoteName { get; set; }
-        public string md5 { get; set; }
-        public long fileSize { get; set; }
-        public bool isPatch { get; set; } = false;
     }
 }
