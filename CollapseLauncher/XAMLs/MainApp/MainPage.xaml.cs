@@ -78,6 +78,12 @@ namespace CollapseLauncher
             if (e.IsCustom)
                 SetAndSaveConfigValue("CustomBGPath", regionBackgroundProp.imgLocalPath);
 
+            if (!File.Exists(regionBackgroundProp.imgLocalPath))
+            {
+                LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
+                regionBackgroundProp.imgLocalPath = AppDefaultBG;
+            }
+
             try
             {
                 await RunApplyBackgroundTask();
