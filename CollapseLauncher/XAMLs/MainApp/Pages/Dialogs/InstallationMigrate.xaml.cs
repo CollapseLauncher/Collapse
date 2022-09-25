@@ -54,9 +54,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<string> AskMigrationTarget()
         {
-            // StorageFolder folder;
             string folder = "";
-            // string returnFolder = "";
 
             var cd = new ContentDialog
             {

@@ -1,5 +1,5 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,10 +13,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher

@@ -1,9 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
 using Windows.ApplicationModel.DataTransfer;
-using static Hi3Helper.Locale;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.Pages
 {

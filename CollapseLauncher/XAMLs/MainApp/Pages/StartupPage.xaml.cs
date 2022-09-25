@@ -3,8 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI;

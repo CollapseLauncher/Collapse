@@ -244,18 +244,15 @@ namespace CollapseLauncher
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
             IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 3));
-            // IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 2));
 
             QuantizedColor Single = null;
 
             try
             {
                 Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
-                // Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight?1:0];
             }
             catch
             {
-                // Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
                 if (Single is null) Single = Colors.FirstOrDefault();
                 if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
             }
@@ -430,8 +427,6 @@ namespace CollapseLauncher
             {
                 LoadingRing.IsIndeterminate = false;
 
-                // await Task.Delay(500);
-
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 1;
                 OpacityAnimation.To = 0;
@@ -442,7 +437,6 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                // await Task.Delay(250);
                 LoadingPopup.Visibility = Visibility.Collapsed;
             }
             else
@@ -462,7 +456,6 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                // await Task.Delay(250);
             }
         }
 
@@ -497,8 +490,6 @@ namespace CollapseLauncher
                 storyboardFront.Begin();
                 storyboardBack.Begin();
                 BGLastState = hideImage;
-
-                // await Task.Delay(250);
             }
         }
     }

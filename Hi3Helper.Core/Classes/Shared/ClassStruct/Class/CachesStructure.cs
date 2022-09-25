@@ -44,10 +44,6 @@ namespace Hi3Helper.Shared.ClassStruct
 
         // File size of the cache file.
         public long CS { get; set; }
-
-        // True => The file is necessary at Update Settings.
-        // False => The file will only be downloaded while you're accessing certain menu (like Gacha Banner).
-        public bool IsNecessary { get; set; }
         public CachesDataStatus Status { get; set; }
     }
 }

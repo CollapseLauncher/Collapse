@@ -1,6 +1,4 @@
-﻿using Force.Crc32;
-using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

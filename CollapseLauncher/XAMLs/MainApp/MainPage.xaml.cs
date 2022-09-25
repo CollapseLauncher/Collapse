@@ -9,11 +9,9 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +19,6 @@ using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigStore;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -528,11 +525,6 @@ namespace CollapseLauncher
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
             (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
-        }
-
-        public void LoadRegionSelectorItems()
-        {
-            ComboBoxGameRegion.ItemsSource = GameConfigName;
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Hi3Helper
+﻿namespace Hi3Helper
 {
     public class DummyLogger : ConsoleLogger, ILogger
     {

@@ -1,5 +1,4 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Http;
+﻿using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -9,8 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -92,7 +91,7 @@ namespace CollapseLauncher.Pages
             Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
             updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
             updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-            
+
             await updater.StartFetch();
             await updater.StartCheck();
             await updater.StartUpdate();

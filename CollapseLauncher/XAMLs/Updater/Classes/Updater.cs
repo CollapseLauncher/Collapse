@@ -1,5 +1,4 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Http;
+﻿using Hi3Helper.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

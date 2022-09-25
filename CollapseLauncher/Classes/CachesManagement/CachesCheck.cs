@@ -15,9 +15,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -151,7 +151,7 @@ namespace CollapseLauncher.Pages
             string hash;
             List<DataPropertiesContent> brokenCaches;
             brokenCachesList = new List<DataProperties>();
-            byte[] salt = new mhyEncTool(Pkcs1Salt, AppGameConfig.MasterKey).GetSalt();
+            byte[] salt = new mhyEncTool(Pkcs1Salt, ConfigV2.MasterKey).GetSalt();
             hashTool = new HMACSHA1(salt);
 
             foreach (DataProperties dataType in cachesList)

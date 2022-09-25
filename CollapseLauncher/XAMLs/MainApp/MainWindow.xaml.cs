@@ -172,24 +172,6 @@ namespace CollapseLauncher
             }
         }
 
-        public async void HideRootFrame(bool hide)
-        {
-            Storyboard storyboardBack = new Storyboard();
-
-            DoubleAnimation OpacityAnimationBack = new DoubleAnimation();
-            OpacityAnimationBack.From = hide ? 1 : 0;
-            OpacityAnimationBack.To = hide ? 0 : 1;
-            OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
-
-            Storyboard.SetTarget(OpacityAnimationBack, rootFrame);
-            Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
-            storyboardBack.Children.Add(OpacityAnimationBack);
-
-            storyboardBack.Begin();
-
-            await Task.Delay(250);
-        }
-
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
             rootFrame.Navigate(e.FrameTo, null, e.Transition);

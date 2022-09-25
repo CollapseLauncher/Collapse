@@ -1,16 +1,12 @@
 ﻿using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
-using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Preset.ConfigStore;
 
 namespace Hi3Helper.Shared.Region
 {
@@ -50,7 +46,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigV2URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadatav2_{0}.json";
         // public static string AppGameConfigURLPrefix = "http://127.0.0.1/metadata_{0}.json";
         public static long AppGameConfigLastUpdate;
-        public static PresetConfigClasses AppGameConfig;
+        // public static PresetConfigClasses AppGameConfig;
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }

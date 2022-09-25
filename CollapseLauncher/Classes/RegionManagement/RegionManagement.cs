@@ -1,6 +1,5 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,16 +7,13 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
-using Newtonsoft.Json;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.InnerLauncherConfig;
-using System.Net.Http;
 
 namespace CollapseLauncher
 {
@@ -75,38 +71,6 @@ namespace CollapseLauncher
 
             gameIni.Profile = new IniFile();
             gameIni.Profile.Load(gameIni.ProfilePath);
-        }
-
-        public async Task<bool> LoadRegionByIndex(uint Index = 0)
-        {
-            // If Index > Length of the region list, return back to 0
-            if ((Index + 1) > ConfigStore.Config.Count) Index = 0;
-
-            // Set CurrentRegion from Index
-            SetCurrentRegionByIndex(Index);
-            LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
-
-            // Clear MainPage State, like NavigationView, Load State, etc.
-            ClearMainPageState();
-
-            // Load Game Region File
-            LoadGameRegionFile();
-
-            // Load Region Resource from Launcher API
-            bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
-            bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
-
-            if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
-            {
-                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
-                return false;
-            }
-
-            // Finalize Region Load
-            await ChangeBackgroundImageAsRegion();
-            FinalizeLoadRegion();
-
-            return true;
         }
 
         public void ClearMainPageState()
@@ -188,12 +152,6 @@ namespace CollapseLauncher
             }
         }
 
-        private void SetCurrentRegionByIndex(uint Index)
-        {
-            // CurrentRegion = ConfigStore.Config[(int)Index];
-            ComboBoxGameRegion.SelectedIndex = (int)Index;
-        }
-
         private void FinalizeLoadRegion()
         {
             // Init Registry Key and Push Region Notification
@@ -239,25 +197,6 @@ namespace CollapseLauncher
             }
         }
 
-        private void LoadGameRegionFile()
-        {
-            gameIni = new GameIniStruct();
-
-            gamePath = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
-            gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
-
-            ComboBoxGameRegion.PlaceholderText = CurrentConfigV2.ZoneName;
-
-            if (!Directory.Exists(gamePath))
-                Directory.CreateDirectory(gamePath);
-
-            if (!File.Exists(gameIni.ProfilePath))
-                PrepareInstallation();
-
-            gameIni.Profile = new IniFile();
-            gameIni.Profile.Load(gameIni.ProfilePath);
-        }
-
         private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             // Disable ChangeRegionBtn and hide flyout
@@ -295,7 +234,7 @@ namespace CollapseLauncher
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
                 page = m_appMode == AppMode.Hi3CacheUpdater ? typeof(Pages.CachesPage) : typeof(Pages.HomePage);
             }
-            
+
             (sender as Button).IsEnabled = !IsHide;
 
             // Load page

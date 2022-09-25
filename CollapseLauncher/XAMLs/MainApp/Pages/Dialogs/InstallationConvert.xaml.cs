@@ -20,9 +20,6 @@ using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher.Dialogs
 {
     public partial class InstallationConvert : Page
@@ -443,7 +440,7 @@ namespace CollapseLauncher.Dialogs
             gameIni.Profile = new IniFile();
             BuildGameIniProfile();
 
-            SetAndSaveConfigValue("CurrentRegion", ConfigStore.Config.FindIndex(x => x.ProfileName == TargetProfile.ProfileName));
+            SetAndSaveConfigValue("GameRegion", TargetProfile.ZoneName);
             LoadAppConfig();
         }
 
@@ -471,7 +468,8 @@ namespace CollapseLauncher.Dialogs
             ContentDialog Dialog = new ContentDialog
             {
                 Title = Lang._InstallConvert.CancelMsgTitle,
-                Content = new TextBlock {
+                Content = new TextBlock
+                {
                     Text = ContentText,
                     TextWrapping = TextWrapping.Wrap
                 },

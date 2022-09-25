@@ -1,6 +1,5 @@
 ﻿using Hi3Helper.Preset;
 using System.Collections.Generic;
-using System.Linq;
 using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.ClassStruct
@@ -8,7 +7,7 @@ namespace Hi3Helper.Shared.ClassStruct
     public enum FileType { Blocks, Generic, Audio }
     public class FilePropertiesRemote : XMFDictionaryClasses
     {
-        public long BlkS() => BlkC.Sum(x => x.BlockSize);
+        // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
         public string RN { get; set; }
         public string CRC { get; set; }
@@ -25,7 +24,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public string FileSource { get; set; }
         public long FileSize { get; set; }
         public string FileSizeStr => SummarizeSizeSimple(FileSize);
-        public long Offset { get; set; }
+        // public long Offset { get; set; }
         public string ExpctCRC { get; set; }
         public string CurrCRC { get; set; }
     }

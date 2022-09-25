@@ -1165,7 +1165,6 @@ namespace CollapseLauncher.Pages
             return diff;
         }
 
-
         private void InstallToolStatus(object sender, InstallManagementStatus e)
         {
             DispatcherQueue.TryEnqueue(() =>

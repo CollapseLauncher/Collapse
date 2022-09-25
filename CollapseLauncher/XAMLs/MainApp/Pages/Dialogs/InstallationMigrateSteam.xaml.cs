@@ -158,75 +158,69 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoCompareProcess()
         {
-            await Task.Run(() =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 2;
+                ProgressSlider.Value = 2;
 
-                    Step3.Opacity = 1f;
-                    Step3ProgressRing.IsIndeterminate = false;
-                    Step3ProgressRing.Value = 0;
-                    Step3ProgressStatus.Text = Lang._InstallMigrateSteam.Step3Subtitle;
-                });
+                Step3.Opacity = 1f;
+                Step3ProgressRing.IsIndeterminate = false;
+                Step3ProgressRing.Value = 0;
+                Step3ProgressStatus.Text = Lang._InstallMigrateSteam.Step3Subtitle;
+            });
 
-                StartCheckIntegrity();
+            await StartCheckIntegrity();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 2;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                ProgressSlider.Value = 2;
 
-                    Step3.Opacity = 1f;
-                    Step3ProgressRing.IsIndeterminate = false;
-                    Step3ProgressRing.Value = 100;
-                    Step3ProgressStatus.Text = Lang._Misc.Completed;
-                });
+                Step3.Opacity = 1f;
+                Step3ProgressRing.IsIndeterminate = false;
+                Step3ProgressRing.Value = 100;
+                Step3ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
         private async Task DoVerification()
         {
-            await Task.Run(() =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 4;
+                ProgressSlider.Value = 4;
 
-                    Step5.Opacity = 1f;
-                    Step5ProgressRing.IsIndeterminate = false;
-                    Step5ProgressRing.Value = 0;
-                    Step5ProgressStatus.Text = Lang._InstallMigrateSteam.Step5Subtitle;
-                });
+                Step5.Opacity = 1f;
+                Step5ProgressRing.IsIndeterminate = false;
+                Step5ProgressRing.Value = 0;
+                Step5ProgressStatus.Text = Lang._InstallMigrateSteam.Step5Subtitle;
+            });
 
-                StartCheckVerification();
+            await StartCheckVerification();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    Step5.Opacity = 1f;
-                    Step5ProgressRing.IsIndeterminate = false;
-                    Step5ProgressRing.Value = 100;
-                    Step5ProgressStatus.Text = Lang._Misc.Completed;
-                });
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                Step5.Opacity = 1f;
+                Step5ProgressRing.IsIndeterminate = false;
+                Step5ProgressRing.Value = 100;
+                Step5ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
-        private void StartCheckIntegrity()
+        private async Task StartCheckIntegrity()
         {
             CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
 
             integrityTool.ProgressChanged += IntegrityProgressChanged;
-            integrityTool.StartCheckIntegrity();
+            await integrityTool.StartCheckIntegrity();
             integrityTool.ProgressChanged -= IntegrityProgressChanged;
 
             BrokenFileIndexesProperty = integrityTool.GetNecessaryFileList();
         }
 
-        private void StartCheckVerification()
+        private async Task StartCheckVerification()
         {
             CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
 
             integrityTool.ProgressChanged += VerificationProgressChanged;
-            integrityTool.StartCheckIntegrity();
+            await integrityTool.StartCheckIntegrity();
             integrityTool.ProgressChanged -= VerificationProgressChanged;
 
             BrokenFileIndexesProperty = integrityTool.GetNecessaryFileList();

@@ -1,9 +1,7 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Media.Animation;
 using System;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;

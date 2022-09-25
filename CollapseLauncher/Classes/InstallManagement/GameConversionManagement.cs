@@ -1,8 +1,8 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
