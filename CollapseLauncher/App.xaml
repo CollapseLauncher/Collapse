@@ -42,13 +42,13 @@
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FF111111" TintOpacity="0.0" TintLuminosityOpacity="0.6" FallbackColor="#333333"/>
                             <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#333333"/>
 
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#FF222222"/>
+                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#DD222222"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="#000000" TintOpacity="0.0"/>
-                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#FF1D1D1D"/>
+                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
                             <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
-                            <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75"/>
+                            <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Light">
                             <Color x:Key="SystemAccentColor">#693758</Color>
