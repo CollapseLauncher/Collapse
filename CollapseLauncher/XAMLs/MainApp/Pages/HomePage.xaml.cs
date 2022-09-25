@@ -620,6 +620,8 @@ namespace CollapseLauncher.Pages
         private bool CheckExistingGame(string destinationFolder)
         {
             bool isExist;
+            if (destinationFolder == null) return false;
+
             string targetPath = Path.Combine(destinationFolder, CurrentRegion.GameExecutableName),
                    iniPath = Path.Combine(destinationFolder, "config.ini");
 
