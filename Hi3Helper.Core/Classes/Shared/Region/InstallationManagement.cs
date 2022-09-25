@@ -33,7 +33,6 @@ namespace Hi3Helper.Shared.Region
             BuildGameIniConfig();
         }
 
-        public static void LoadGameConfig()
         public static async Task LoadGameConfig()
         {
             try
