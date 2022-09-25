@@ -46,6 +46,10 @@ namespace Hi3Helper.Shared.Region
                 if (!(CurrentRegion.IsGenshin ?? false))
                     Task.Run(() => CheckExistingGameSettings());
             }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"The Game Profile config.ini seems to be messed up. Please check your Game Profile \"config.ini\" located in this folder:\r\n{gameIni.ProfilePath}\r\n{ex}", LogType.Error, true);
