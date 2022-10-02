@@ -98,7 +98,7 @@ namespace CollapseLauncher.Pages
                     CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
 
                     http.DownloadProgress += DataFetchingProgress;
-                    await http.DownloadStream(cachesAPIURL, cachesStream, cancellationTokenSource.Token);
+                    await http.Download(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
                     http.DownloadProgress -= DataFetchingProgress;
 
                     cacheCatalog = JsonConvert.DeserializeObject<DataProperties>(

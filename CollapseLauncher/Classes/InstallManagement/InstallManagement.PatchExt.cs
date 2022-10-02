@@ -57,7 +57,7 @@ namespace CollapseLauncher
             using (MemoryStream buffer = new MemoryStream())
             {
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadStream(SourceBaseURL + "index.json", buffer, Token);
+                await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -348,11 +348,11 @@ namespace CollapseLauncher
                 DownloadProgress += RepairIngredients_Progress;
                 if (Entry.FileSize >= 20 << 20)
                 {
-                    await DownloadMultisession(InputURL, OutputPath, true, this.DownloadThread, Token);
-                    await MergeMultisession(OutputPath, this.DownloadThread, Token);
+                    await Download(InputURL, OutputPath, this.DownloadThread, true, Token);
+                    await Merge();
                 }
                 else
-                    await DownloadStream(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token);
+                    await Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }

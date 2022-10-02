@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -174,8 +175,8 @@ namespace CollapseLauncher
                 LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
                 if (!file.Exists || file.Length < prop.LocalSize)
                 {
-                    await DownloadMultisession(prop.URL, prop.Output, false, DownloadThread, Token);
-                    await MergeMultisession(prop.Output, DownloadThread, Token);
+                    await Download(prop.URL, prop.Output, DownloadThread, false, Token);
+                    await Merge();
                 }
             }
 
@@ -304,8 +305,8 @@ namespace CollapseLauncher
 
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
-                DownloadLocalSize += (DownloadProperty[i].LocalSize = GetExistingPartialDownloadLength(DownloadProperty[i].Output));
-                DownloadRemoteSize += (DownloadProperty[i].RemoteSize = await GetContentLength(DownloadProperty[i].URL) ?? 0);
+                DownloadLocalSize += DownloadProperty[i].LocalSize = CalculateExistingMultisessionFiles(DownloadProperty[i].Output, DownloadThread);
+                DownloadRemoteSize += DownloadProperty[i].RemoteSize = await TryGetContentLength(DownloadProperty[i].URL, Token) ?? 0;
             }
 
             return DownloadLocalSize == 0 ? true : DownloadLocalSize == DownloadRemoteSize;
@@ -320,13 +321,13 @@ namespace CollapseLauncher
                     case ContentDialogResult.Primary:
                         break;
                     case ContentDialogResult.Secondary:
-                        await ResetDownload();
+                        ResetDownload();
                         break;
                 }
             }
         }
 
-        public async Task ResetDownload()
+        public void ResetDownload()
         {
             DownloadLocalSize = 0;
             FileInfo fileInfo;
@@ -335,7 +336,7 @@ namespace CollapseLauncher
             {
                 if ((fileInfo = new FileInfo(DownloadProperty[i].Output)).Exists)
                     fileInfo.Delete();
-                await DeleteMultisessionChunks(DownloadProperty[i].Output);
+                DeleteMultisessionFiles(DownloadProperty[i].Output, DownloadThread);
             }
         }
 
@@ -659,7 +660,7 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(GameDirPath, "pkg_version");
             if (!File.Exists(ManifestPath))
-                await Download(DecompressedRemotePath + "/pkg_version", ManifestPath, Token);
+                await Download(DecompressedRemotePath + "/pkg_version", ManifestPath, true, null, null, Token);
             BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", DecompressedRemotePath);
 
             // Build local audio entry.
@@ -737,7 +738,7 @@ namespace CollapseLauncher
             {
                 if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                    await DownloadStream(ParentURL + "/data_versions", fs, Token);
+                    await Download(ParentURL + "/data_versions", fs, null, null, Token);
 #if DEBUG
                 LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}");
 #endif
@@ -751,7 +752,7 @@ namespace CollapseLauncher
             ParentURL = $"{QueryProperty.ClientDesignDataURL}/AssetBundles";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await DownloadStream(ParentURL + "/data_versions", fs, Token);
+                await Download(ParentURL + "/data_versions", fs, null, null, Token);
 #if DEBUG
             LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}");
 #endif
@@ -764,7 +765,7 @@ namespace CollapseLauncher
             ParentAudioURL = $"{QueryProperty.ClientAudioAssetsURL}/StandaloneWindows64";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await DownloadStream(ParentURL + "/release_res_versions_external", fs, Token);
+                await Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
 #if DEBUG
             LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}");
 #endif
@@ -974,11 +975,11 @@ namespace CollapseLauncher
 
                     if (Entry.fileSize >= 10 << 20)
                     {
-                        await DownloadMultisession(RemotePath, LocalPath, true, DownloadThread, Token);
-                        await MergeMultisession(LocalPath, DownloadThread, Token);
+                        await Download(RemotePath, LocalPath, DownloadThread, true, Token);
+                        await Merge();
                     }
                     else
-                        await DownloadStream(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), Token);
+                        await Download(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), null, null, Token);
                 }
                 catch (TaskCanceledException ex)
                 {

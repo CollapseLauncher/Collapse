@@ -49,7 +49,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await new Http().DownloadStream(ReleaseNoteURL, ResponseStream, new CancellationToken());
+                await new Http().Download(ReleaseNoteURL, ResponseStream, null, null, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
 
                 DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Content);

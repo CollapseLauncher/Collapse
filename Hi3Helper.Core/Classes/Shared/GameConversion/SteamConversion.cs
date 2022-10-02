@@ -92,12 +92,12 @@ namespace Hi3Helper.Shared.GameConversion
             {
                 if (FileIndex.S > 10 << 20)
                 {
-                    await http.DownloadMultisession(FileURL, FilePath, true, DownloadThread, tokenSource.Token);
-                    await http.MergeMultisession(FilePath, DownloadThread, tokenSource.Token);
+                    await http.Download(FileURL, FilePath, DownloadThread, true, tokenSource.Token);
+                    await http.Merge();
                 }
                 else
                     using (stream = FileInfo.Create())
-                        await http.DownloadStream(FileURL, stream, tokenSource.Token);
+                        await http.Download(FileURL, stream, null, null, tokenSource.Token);
             }
 
             http.DownloadProgress -= HttpAdapter;
@@ -125,7 +125,7 @@ namespace Hi3Helper.Shared.GameConversion
                     CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerConvertFile2, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash);
 
                     using (stream = FileInfo.Create())
-                        await http.DownloadStream(FileURL, stream, tokenSource.Token);
+                        await http.Download(FileURL, stream, null, null, tokenSource.Token);
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace Hi3Helper.Shared.GameConversion
 
                             using (MemoryStream mStream = new MemoryStream())
                             {
-                                await http.DownloadStream(FileURL, mStream, tokenSource.Token, chunk._startoffset, chunk._startoffset + chunk._filesize);
+                                await http.Download(FileURL, mStream, chunk._startoffset, chunk._startoffset + chunk._filesize, tokenSource.Token);
                                 stream.Position = chunk._startoffset;
                                 await stream.WriteAsync(mStream.GetBuffer(), tokenSource.Token);
                             }

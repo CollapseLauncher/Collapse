@@ -87,7 +87,7 @@ namespace Hi3Helper.Preset
                 using (MemoryStream Stream = new MemoryStream())
                 {
                     string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
-                    await http.DownloadStream(URL, Stream);
+                    await http.Download(URL, Stream);
                     string data = Encoding.UTF8.GetString(Stream.GetBuffer());
                     ConfigStamp = JsonConvert.DeserializeObject<Stamp>(data);
                 }

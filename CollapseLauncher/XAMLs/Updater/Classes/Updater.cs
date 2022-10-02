@@ -57,7 +57,7 @@ namespace CollapseLauncher
                 UpdateStatus();
                 UpdateStopwatch = Stopwatch.StartNew();
 
-                await DownloadStream(ChannelURL + "fileindex.json", _databuf, TokenSource.Token);
+                await Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
 
                 FileProp = JsonConvert.DeserializeObject<Prop>(Encoding.UTF8.GetString(_databuf.GetBuffer()));
             }
@@ -129,11 +129,11 @@ namespace CollapseLauncher
 
                 if (_entry.s >= (20 << 20))
                 {
-                    await DownloadMultisession(URL, Output, true, DownloadThread, TokenSource.Token);
-                    await MergeMultisession(Output, DownloadThread, TokenSource.Token);
+                    await Download(URL, Output, DownloadThread, true, TokenSource.Token);
+                    await Merge();
                 }
                 else
-                    await Download(URL, Output, TokenSource.Token);
+                    await Download(URL, Output, true, null, null, TokenSource.Token);
 
                 i++;
             }

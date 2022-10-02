@@ -106,12 +106,12 @@ namespace CollapseLauncher.Pages
 
                 if (input.S > MultipleDownloadSizeStart)
                 {
-                    await http.DownloadMultisession(FileURL, FilePath, true, DownloadThread, cancellationTokenSource.Token);
-                    await http.MergeMultisession(FilePath, DownloadThread, cancellationTokenSource.Token);
+                    await http.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
+                    await http.Merge();
                 }
                 else
                     using (RepairFileStream = RepairFileInfo.Create())
-                        await http.DownloadStream(FileURL, RepairFileStream, cancellationTokenSource.Token);
+                        await http.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
 
                 http.DownloadProgress -= GenericFilesDownloadProgress;
             }
@@ -149,12 +149,12 @@ namespace CollapseLauncher.Pages
 
                     if (block.BlockSize > MultipleDownloadSizeStart)
                     {
-                        await http.DownloadMultisession(FileURL, FilePath, true, DownloadThread, cancellationTokenSource.Token);
-                        await http.MergeMultisession(FilePath, DownloadThread, cancellationTokenSource.Token);
+                        await http.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
+                        await http.Merge();
                     }
                     else
                         using (RepairFileStream = RepairFileInfo.Create())
-                            await http.DownloadStream(FileURL, RepairFileStream, cancellationTokenSource.Token);
+                            await http.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
 
                     http.DownloadProgress -= GenericFilesDownloadProgress;
 
@@ -181,8 +181,8 @@ namespace CollapseLauncher.Pages
                             using (MemoryStream RepairMemoryStream = new MemoryStream())
                             {
                                 http.DownloadProgress += GenericFilesDownloadProgress;
-                                await http.DownloadStream(FileURL, RepairMemoryStream, cancellationTokenSource.Token,
-                                    chunk._startoffset, chunk._startoffset + chunk._filesize);
+                                await http.Download(FileURL, RepairMemoryStream,
+                                    chunk._startoffset, chunk._startoffset + chunk._filesize, cancellationTokenSource.Token);
                                 http.DownloadProgress -= GenericFilesDownloadProgress;
 
                                 RepairFileStream.Position = chunk._startoffset;
