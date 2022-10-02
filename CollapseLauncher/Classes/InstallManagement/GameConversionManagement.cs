@@ -1,8 +1,8 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.Http;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -24,8 +23,7 @@ namespace CollapseLauncher
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
-        UIElement ParentUI;
-        PresetConfigClasses SourceProfile, TargetProfile;
+        PresetConfigV2 SourceProfile, TargetProfile;
         List<FileProperties> SourceFileManifest;
         List<FileProperties> TargetFileManifest;
 
@@ -38,15 +36,14 @@ namespace CollapseLauncher
         string ConvertStatus, ConvertDetail;
         byte DownloadThread;
 
-        public GameConversionManagement(PresetConfigClasses SourceProfile, PresetConfigClasses TargetProfile,
-            string SourceBaseURL, string TargetBaseURL, string GameVersion, UIElement ParentUI, CancellationToken Token = new CancellationToken())
+        public GameConversionManagement(PresetConfigV2 SourceProfile, PresetConfigV2 TargetProfile,
+            string SourceBaseURL, string TargetBaseURL, string GameVersion, CancellationToken Token = new CancellationToken())
         {
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
             this.SourceBaseURL = SourceBaseURL;
             this.TargetBaseURL = TargetBaseURL;
             this.DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
-            this.ParentUI = ParentUI;
             this.CookbookURL = string.Format(SourceProfile.ConvertibleCookbookURL,
                 $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
             this.CookbookPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Temp",

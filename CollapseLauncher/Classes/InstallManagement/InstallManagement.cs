@@ -1,6 +1,10 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+// Load YSDispatch from this namespace
+using Hi3Helper.EncTool;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
@@ -12,15 +16,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.Http;
-// Load YSDispatch from this namespace
-using Hi3Helper.EncTool;
-using Hi3Helper.Shared.ClassStruct;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 // Load CurrentConfig from here
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -37,7 +37,7 @@ namespace CollapseLauncher
         private InstallManagementStatus InstallStatus;
         private InstallManagementProgress InstallProgress;
         private DeltaPatchProperty PatchProp;
-        private PresetConfigClasses SourceProfile;
+        private PresetConfigV2 SourceProfile;
         private UIElement Content;
 
         private DownloadType ModeType;
@@ -75,7 +75,7 @@ namespace CollapseLauncher
         private List<DownloadAddressProperty> DownloadProperty;
         private GenshinDispatchHelper DispatchReader;
 
-        public InstallManagement(UIElement Content, DownloadType downloadType, PresetConfigClasses SourceProfile,
+        public InstallManagement(UIElement Content, DownloadType downloadType, PresetConfigV2 SourceProfile,
             string GameDirPath, int downloadThread,
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
@@ -692,10 +692,10 @@ namespace CollapseLauncher
 
                 // As per 2.8 update, the dispatch must be decrypted first.
                 // Grab Genshin and Master Key to decrypt first
-                string MasterKey = AppGameConfig.MasterKey;
-                int MasterKeyBitLength = AppGameConfig.MasterKeyBitLength;
-                string GenshinKey = CurrentRegion.DispatcherKey;
-                int GenshinKeyBitLength = CurrentRegion.DispatcherKeyBitLength ?? 0;
+                string MasterKey = ConfigV2.MasterKey;
+                int MasterKeyBitLength = ConfigV2.MasterKeyBitLength;
+                string GenshinKey = CurrentConfigV2.DispatcherKey;
+                int GenshinKeyBitLength = CurrentConfigV2.DispatcherKeyBitLength ?? 0;
 
                 YSDispatchDec Decryptor = new YSDispatchDec();
                 Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);

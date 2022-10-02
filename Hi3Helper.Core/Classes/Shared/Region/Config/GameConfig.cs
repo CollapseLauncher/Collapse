@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -24,7 +25,7 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitRegKey()
         {
-            RegKey = Registry.CurrentUser.OpenSubKey($"{CurrentRegion.ConfigRegistryLocation}", true);
+            RegKey = Registry.CurrentUser.OpenSubKey($"{CurrentConfigV2.ConfigRegistryLocation}", true);
             IsRegKeyExist = !(RegKey == null);
         }
 
@@ -154,7 +155,7 @@ namespace Hi3Helper.Shared.Region
         {
             try
             {
-                if (!(CurrentRegion.IsGenshin ?? false) && gameIni.Settings != null)
+                if (!(CurrentConfigV2.IsGenshin ?? false) && gameIni.Settings != null)
                     return gameIni.Settings[SectionName][key];
             }
             catch (NullReferenceException) { }
@@ -236,10 +237,10 @@ namespace Hi3Helper.Shared.Region
                 isfullScreen = gameIni.Settings[SectionName]["Fullscreen"].ToBool()
             }) + '\0';
 
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, ScreenSettingDataReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Is Fullscreen mode_h3981298716", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0, RegistryValueKind.DWord);
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Resolution Width_h182942802", resolution.Width, RegistryValueKind.DWord);
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, "Screenmanager Resolution Height_h2627697771", resolution.Height, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, ScreenSettingDataReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, "Screenmanager Is Fullscreen mode_h3981298716", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, "Screenmanager Resolution Width_h182942802", resolution.Width, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, "Screenmanager Resolution Height_h2627697771", resolution.Height, RegistryValueKind.DWord);
         }
 
         #endregion
@@ -464,8 +465,8 @@ namespace Hi3Helper.Shared.Region
                 LodGrade = (ushort)gameIni.Settings[SectionName]["LodGrade"].ToInt(),
             }, new Newtonsoft.Json.Converters.StringEnumConverter()) + '\0';
 
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, PersonalGraphicsSettingV2Reg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalGraphicsSettingV2Reg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
         }
 
         private static int ConvertEnumToInt(EnumQuality value) => (int)value;
@@ -552,7 +553,7 @@ namespace Hi3Helper.Shared.Region
                 IsUserDefined = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0
             }) + '\0';
 
-            SaveRegistryValue(CurrentRegion.ConfigRegistryLocation, PersonalAudioSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalAudioSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
         }
 
         public static byte ConvertStringToByte(string value)

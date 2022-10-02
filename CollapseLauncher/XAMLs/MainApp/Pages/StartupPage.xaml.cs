@@ -3,8 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -12,7 +10,7 @@ using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigStore;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -149,13 +147,10 @@ namespace CollapseLauncher.Pages
 
         private async void NextPage_Click(object sender, RoutedEventArgs e)
         {
-            bool IsMetaStampExist = IsMetadataStampExist();
-            bool IsMetaContentExist = IsMetadataContentExist();
-
-            if (!IsMetaStampExist || !IsMetaContentExist)
+            if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
                 await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                await DownloadMetadataFiles(!IsMetaStampExist, !IsMetaContentExist);
+                await DownloadConfigV2Files(true, true);
                 Ring.IsIndeterminate = false;
                 OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
                 OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;

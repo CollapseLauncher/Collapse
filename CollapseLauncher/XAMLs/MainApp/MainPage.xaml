@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
     xmlns:helper="using:Hi3Helper"
+    xmlns:p="using:Hi3Helper.Preset"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -43,10 +44,14 @@
                     Margin="12,0,0,10"
                     Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
                     <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="16,4,0,0" Orientation="Horizontal">
-                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" CornerRadius="14,0,0,14" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+                        <ComboBox x:Name="ComboBoxGameCategory" PlaceholderText="Honkai Impact 3rd"
+                                  ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
+                                  CornerRadius="14,0,0,14" Width="170" Canvas.ZIndex="2" SelectionChanged="SetGameCategoryChange"/>
+                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia"
+                                  CornerRadius="0" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
                         <Button Margin="0,0,8,0" CornerRadius="0,14,14,0"  x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
                             <Button.Content>
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium" Margin="4,0"/>
                             </Button.Content>
                             <Button.Flyout>
                                 <Flyout>

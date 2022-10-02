@@ -36,7 +36,7 @@
                        VerticalAlignment="Center"
                        Margin="12,0,6,0"/>
             <StackPanel x:Name="RegionChangerPanel" Orientation="Horizontal" Grid.Column="3" Margin="10,0,0,0">
-                <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="160" Margin="0,8,8,0"/>
+                <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia" Width="330" Margin="0,8,8,0"/>
                 <Button Content="Change" Margin="0,2,8,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
                     <Button.Flyout>
                         <Flyout>

@@ -41,6 +41,7 @@
                 public string Pg2Subtitle2_3 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_3;
                 public string Pg2Subtitle2_4 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_4;
                 public string Pg2ComboBox { get; set; } = LangFallback?._StartupPage.Pg2ComboBox;
+                public string Pg2ComboBoxRegion { get; set; } = LangFallback?._StartupPage.Pg2ComboBoxRegion;
             }
         }
         #endregion

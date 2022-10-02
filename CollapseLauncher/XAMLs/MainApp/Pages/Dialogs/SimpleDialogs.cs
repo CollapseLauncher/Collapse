@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
@@ -145,7 +146,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, CurrentRegion.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, CurrentConfigV2.ActualGameDataLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,
@@ -155,7 +156,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallBHI3LTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, CurrentRegion.BetterHi3LauncherConfig.game_info.install_path),
+                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,

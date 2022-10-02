@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -75,7 +76,7 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                cachesEndpointURL = string.Format(CurrentRegion.CachesEndpointURL, dataType.DataType.ToString().ToLower());
+                cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
                 LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
                 foreach (DataPropertiesContent content in dataType.Content)
                 {

@@ -24,6 +24,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -211,7 +212,7 @@ namespace CollapseLauncher.Pages
 
         private void CheckIfRightSideProgress()
         {
-            if (CurrentRegion.UseRightSideProgress ?? false)
+            if (CurrentConfigV2.UseRightSideProgress ?? false)
             {
                 FrameGrid.ColumnDefinitions[0].Width = new GridLength(248, GridUnitType.Pixel);
                 FrameGrid.ColumnDefinitions[1].Width = new GridLength(1224, GridUnitType.Star);
@@ -232,7 +233,7 @@ namespace CollapseLauncher.Pages
             long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
             if (FileSize < 1 << 20) return;
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {CurrentRegion.ZoneName} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {CurrentConfigV2.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
 
             try
             {
@@ -256,7 +257,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 string ParentPath = Path.GetDirectoryName(basepath);
-                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{CurrentRegion.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
+                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{CurrentConfigV2.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
                     .FirstOrDefault();
                 if (IngredientPath is not null) return IngredientPath;
             }
@@ -280,7 +281,7 @@ namespace CollapseLauncher.Pages
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             string GamePathIngredients = GamePath + "_Ingredients";
             if (!Directory.Exists(GamePathIngredients)) return;
-            LogWriteLine($"Previous failed delta patch has been detected on Game: {CurrentRegion.ZoneName} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
+            LogWriteLine($"Previous failed delta patch has been detected on Game {CurrentConfigV2.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
             try
             {
                 switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
@@ -335,17 +336,17 @@ namespace CollapseLauncher.Pages
             if (File.Exists(
                    Path.Combine(
                        NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
-                       CurrentRegion.GameExecutableName)))
+                       CurrentConfigV2.GameExecutableName)))
             {
-                if (CurrentRegion.IsGenshin ?? false)
+                if (CurrentConfigV2.IsGenshin ?? false)
                     ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-                if (!CurrentRegion.IsConvertible ?? true)
+                if (!CurrentConfigV2.IsConvertible ?? true)
                     ConvertVersionButton.IsEnabled = false;
 
                 if (new FileInfo(Path.Combine(
                     NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
-                    CurrentRegion.GameExecutableName)).Length < 0xFFFF)
+                    CurrentConfigV2.GameExecutableName)).Length < 0xFFFF)
                     GameInstallationState = GameInstallStateEnum.GameBroken;
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
@@ -388,10 +389,10 @@ namespace CollapseLauncher.Pages
                         GameInstallationState = GameInstallStateEnum.Installed;
                     }
                 }
-                if (CurrentRegion.IsGenshin ?? false)
+                if (CurrentConfigV2.IsGenshin ?? false)
                     OpenCacheFolderButton.IsEnabled = false;
 
-                if (!(CurrentRegion.IsGenshin ?? false))
+                if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
                     CustomStartupArgs.Visibility = Visibility.Visible;
                 }
@@ -474,7 +475,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (CurrentRegion.UseRightSideProgress ?? false)
+                if (CurrentConfigV2.UseRightSideProgress ?? false)
                     HideImageCarousel(true);
 
                 progressRing.Value = 0;
@@ -484,7 +485,7 @@ namespace CollapseLauncher.Pages
                 CancelDownloadBtn.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
 
-                if ((GamePathOnSteam = await Task.Run(() => CurrentRegion.GetSteamInstallationPath())) != null)
+                if ((GamePathOnSteam = await Task.Run(CurrentConfigV2.GetSteamInstallationPath)) != null)
                 {
                     switch (await Dialog_ExistingInstallationSteam(Content))
                     {
@@ -504,13 +505,13 @@ namespace CollapseLauncher.Pages
                             return;
                     }
                 }
-                else if (await Task.Run(() => CurrentRegion.CheckExistingGameBetterLauncher()))
+                else if (await Task.Run(CurrentConfigV2.CheckExistingGameBetterLauncher))
                 {
                     switch (await Dialog_ExistingInstallationBetterLauncher(Content))
                     {
                         case ContentDialogResult.Primary:
 #if DISABLEMOVEMIGRATE
-                            gameIni.Profile["launcher"]["game_install_path"] = CurrentRegion.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/');
+                            gameIni.Profile["launcher"]["game_install_path"] = CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/');
                             SaveGameProfile();
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
 #else
@@ -527,13 +528,13 @@ namespace CollapseLauncher.Pages
                             return;
                     }
                 }
-                else if (await Task.Run(() => CurrentRegion.CheckExistingGame()))
+                else if (await Task.Run(CurrentConfigV2.CheckExistingGame))
                 {
                     switch (await Dialog_ExistingInstallation(Content))
                     {
                         case ContentDialogResult.Primary:
 #if DISABLEMOVEMIGRATE
-                            gameIni.Profile["launcher"]["game_install_path"] = CurrentRegion.ActualGameDataLocation.Replace('\\', '/');
+                            gameIni.Profile["launcher"]["game_install_path"] = CurrentConfigV2.ActualGameDataLocation.Replace('\\', '/');
                             SaveGameProfile();
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
 #else
@@ -551,34 +552,34 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    LogWriteLine($"Existing Installation Not Found {CurrentRegion.ZoneName}");
+                    LogWriteLine($"Existing Installation Not Found {CurrentConfigV2.ZoneFullname}");
                     await StartInstallationProcedure(await InstallGameDialogScratch());
                 }
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (IOException ex)
             {
-                LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName} because of IO Error!\r\n{ex}", Hi3Helper.LogType.Warning, true);
+                LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname} because of IO Error!\r\n{ex}", Hi3Helper.LogType.Warning, true);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
+                LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Installation cancelled for region {CurrentRegion.ZoneName}");
+                LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneName}");
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (NullReferenceException ex)
             {
-                LogWriteLine($"Error while installing region {CurrentRegion.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentConfigV2.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error while installing region {CurrentRegion.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error while installing game {CurrentConfigV2.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
             }
         }
@@ -622,7 +623,7 @@ namespace CollapseLauncher.Pages
             bool isExist;
             if (destinationFolder == null) return false;
 
-            string targetPath = Path.Combine(destinationFolder, CurrentRegion.GameExecutableName),
+            string targetPath = Path.Combine(destinationFolder, CurrentConfigV2.GameExecutableName),
                    iniPath = Path.Combine(destinationFolder, "config.ini");
 
             // Phase 1 Check
@@ -637,8 +638,8 @@ namespace CollapseLauncher.Pages
             }
 
             // Phase 2 Check
-            targetPath = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName, CurrentRegion.GameExecutableName);
-            iniPath = Path.Combine(destinationFolder, CurrentRegion.GameDirectoryName, "config.ini");
+            targetPath = Path.Combine(destinationFolder, CurrentConfigV2.GameDirectoryName, CurrentConfigV2.GameExecutableName);
+            iniPath = Path.Combine(destinationFolder, CurrentConfigV2.GameDirectoryName, "config.ini");
 
             if (File.Exists(targetPath) && File.Exists(iniPath))
             {
@@ -660,8 +661,8 @@ namespace CollapseLauncher.Pages
 
             gameIni.Profile["launcher"]["game_install_path"] = Path.GetDirectoryName(targetPath).Replace('\\', '/');
             SaveGameProfile();
-            if (CurrentRegion.IsGenshin ?? false)
-                CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
+            if (CurrentConfigV2.IsGenshin ?? false)
+                CurrentConfigV2.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
 
             return true;
         }
@@ -671,8 +672,8 @@ namespace CollapseLauncher.Pages
             gameIni.Profile["launcher"]["game_install_path"] = destinationFolder.Replace('\\', '/');
             SaveGameProfile();
             PrepareGameConfig();
-            if (IsGameHasVoicePack && (CurrentRegion.IsGenshin ?? false))
-                CurrentRegion.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
+            if (IsGameHasVoicePack && (CurrentConfigV2.IsGenshin ?? false))
+                CurrentConfigV2.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
         }
 
         private async Task<bool> DownloadGameClient(string destinationFolder)
@@ -695,19 +696,19 @@ namespace CollapseLauncher.Pages
 
             InstallTool = new InstallManagement(Content,
                                 DownloadType.FirstInstall,
-                                CurrentRegion,
+                                CurrentConfigV2,
                                 destinationFolder,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 GetAppExtractConfigValue(),
                                 token,
-                                CurrentRegion.IsGenshin ?? false ?
+                                CurrentConfigV2.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
                                     null,
                                 regionResourceProp.data.game.latest.version,
-                                CurrentRegion.ProtoDispatchKey,
-                                CurrentRegion.GameDispatchURL,
-                                CurrentRegion.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+                                CurrentConfigV2.ProtoDispatchKey,
+                                CurrentConfigV2.GameDispatchURL,
+                                CurrentConfigV2.GetRegServerNameID(),
+                                Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
 
             InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
             if (IsGameHasVoicePack)
@@ -847,7 +848,7 @@ namespace CollapseLauncher.Pages
                 switch (await Dialog_InstallationLocation(Content))
                 {
                     case ContentDialogResult.Primary:
-                        folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName, CurrentRegion.GameDirectoryName);
+                        folder = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName, CurrentConfigV2.GameDirectoryName);
                         isChoosen = true;
                         break;
                     case ContentDialogResult.Secondary:
@@ -878,9 +879,9 @@ namespace CollapseLauncher.Pages
 
                 if (!IsContinue) return;
                 Process proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentRegion.GameExecutableName);
+                proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentConfigV2.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
-                if (!(CurrentRegion.IsGenshin ?? false))
+                if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
                     proc.StartInfo.Arguments = await GetLaunchArguments();
                     LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
@@ -898,13 +899,13 @@ namespace CollapseLauncher.Pages
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentRegion.ZoneName}\r\nTraceback: {ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentConfigV2.ZoneName}\r\nTraceback: {ex}", Hi3Helper.LogType.Error, true);
             }
         }
 
         public async Task<bool> CheckMediaPackInstalled()
         {
-            if (CurrentRegion.IsGenshin ?? false) return true;
+            if (CurrentConfigV2.IsGenshin ?? false) return true;
 
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
             if (reg != null)
@@ -949,7 +950,7 @@ namespace CollapseLauncher.Pages
 
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = Hi3Helper.InvokeProp.GetProcessWindowHandle(CurrentRegion.GameExecutableName);
+            IntPtr _windowPtr = Hi3Helper.InvokeProp.GetProcessWindowHandle(CurrentConfigV2.GameExecutableName);
             await Task.Delay(1000);
             new Hi3Helper.InvokeProp.InvokePresence(_windowPtr).HideWindow();
             await Task.Delay(1000);
@@ -966,7 +967,7 @@ namespace CollapseLauncher.Pages
                 try
                 {
                     InnerLauncherConfig.m_presenter.Minimize();
-                    string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(CurrentRegion.ConfigRegistryLocation)}\\output_log.txt";
+                    string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation)}\\output_log.txt";
 
                     if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(logPath));
@@ -994,7 +995,7 @@ namespace CollapseLauncher.Pages
                                     {
                                         if (line == "MoleMole.MonoGameEntry:Awake()"
                                         // if (line == "asb download url:"
-                                            && (CurrentRegion.IsGenshin ?? false))
+                                            && (CurrentConfigV2.IsGenshin ?? false))
                                         {
                                             StartExclusiveWindowPayload();
                                             RequireWindowExclusivePayload = false;
@@ -1043,7 +1044,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentRegion.ConfigRegistryLocation));
+            string GameFolder = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation));
             LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
             new Process()
             {
@@ -1060,11 +1061,11 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (CurrentRegion.IsGenshin ?? false)
+                if (CurrentConfigV2.IsGenshin ?? false)
                 {
                     GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
 
-                    if (CurrentRegion.UseRightSideProgress ?? false)
+                    if (CurrentConfigV2.UseRightSideProgress ?? false)
                         HideImageCarousel(true);
 
                     DispatcherQueue.TryEnqueue(() =>
@@ -1082,19 +1083,19 @@ namespace CollapseLauncher.Pages
 
                     InstallTool = new InstallManagement(Content,
                                         DownloadType.FirstInstall,
-                                        CurrentRegion,
+                                        CurrentConfigV2,
                                         GameDirPath,
                                         appIni.Profile["app"]["DownloadThread"].ToInt(),
                                         GetAppExtractConfigValue(),
                                         token,
-                                        CurrentRegion.IsGenshin ?? false ?
+                                        CurrentConfigV2.IsGenshin ?? false ?
                                             regionResourceProp.data.game.latest.decompressed_path :
                                             null,
                                         regionResourceProp.data.game.latest.version,
-                                        CurrentRegion.ProtoDispatchKey,
-                                        CurrentRegion.GameDispatchURL,
-                                        CurrentRegion.GetRegServerNameID(),
-                                        Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+                                        CurrentConfigV2.ProtoDispatchKey,
+                                        CurrentConfigV2.GameDispatchURL,
+                                        CurrentConfigV2.GetRegServerNameID(),
+                                        Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
 
                     InstallTool.InstallProgressChanged += InstallToolProgress;
                     InstallTool.InstallStatusChanged += InstallToolStatus;
@@ -1124,7 +1125,7 @@ namespace CollapseLauncher.Pages
         {
             string GameFolder = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
 
-            switch (await Dialog_UninstallGame(Content, GameFolder, CurrentRegion.ZoneName))
+            switch (await Dialog_UninstallGame(Content, GameFolder, CurrentConfigV2.ZoneFullname))
             {
                 case ContentDialogResult.Primary:
                     try
@@ -1164,7 +1165,6 @@ namespace CollapseLauncher.Pages
             return diff;
         }
 
-
         private void InstallToolStatus(object sender, InstallManagementStatus e)
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -1198,7 +1198,7 @@ namespace CollapseLauncher.Pages
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
 
-            if (CurrentRegion.UseRightSideProgress ?? false)
+            if (CurrentConfigV2.UseRightSideProgress ?? false)
                 HideImageCarousel(true);
 
             GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
@@ -1206,19 +1206,19 @@ namespace CollapseLauncher.Pages
             RegionResourceVersion diff = GetUpdateDiffs();
             InstallTool = new InstallManagement(Content,
                                 DownloadType.Update,
-                                CurrentRegion,
+                                CurrentConfigV2,
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 GetAppExtractConfigValue(),
                                 token,
-                                CurrentRegion.IsGenshin ?? false ?
+                                CurrentConfigV2.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
-                                    CurrentRegion.ZipFileURL,
+                                    CurrentConfigV2.ZipFileURL,
                                 regionResourceProp.data.game.latest.version,
-                                CurrentRegion.ProtoDispatchKey,
-                                CurrentRegion.GameDispatchURL,
-                                CurrentRegion.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+                                CurrentConfigV2.ProtoDispatchKey,
+                                CurrentConfigV2.GameDispatchURL,
+                                CurrentConfigV2.GetRegServerNameID(),
+                                Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
 
             GameZipUrl = diff.path;
             GameZipRemoteHash = diff.md5.ToLower();
@@ -1285,13 +1285,13 @@ namespace CollapseLauncher.Pages
             }
             catch (NullReferenceException ex)
             {
-                LogWriteLine($"Update error on {CurrentRegion.ZoneName} region!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Update error on {CurrentConfigV2.ZoneFullname} game!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Update error on {CurrentRegion.ZoneName} region!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Update error on {CurrentConfigV2.ZoneFullname} game!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -1303,11 +1303,11 @@ namespace CollapseLauncher.Pages
                 && diffVer.voice_packs.Count > 0)
             {
                 IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[langID = CurrentRegion.GetVoiceLanguageID()];
+                VoicePackFile = diffVer.voice_packs[langID = CurrentConfigV2.GetVoiceLanguageID()];
                 VoicePackFile.languageID = langID;
                 return;
             }
-            LogWriteLine($"This {CurrentRegion.ProfileName} region doesn't have Voice Pack");
+            LogWriteLine($"This {CurrentConfigV2.ZoneFullname} game doesn't have Voice Pack");
             IsGameHasVoicePack = false;
         }
 
@@ -1322,7 +1322,7 @@ namespace CollapseLauncher.Pages
                 VoicePackFile.languageID = langID;
                 return;
             }
-            LogWriteLine($"This {CurrentRegion.ProfileName} region doesn't have Voice Pack");
+            LogWriteLine($"This {CurrentConfigV2.ZoneFullname} region doesn't have Voice Pack");
             IsGameHasVoicePack = false;
         }
 
@@ -1369,19 +1369,19 @@ namespace CollapseLauncher.Pages
 
             InstallTool = new InstallManagement(Content,
                                 DownloadType.PreDownload,
-                                CurrentRegion,
+                                CurrentConfigV2,
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 GetAppExtractConfigValue(),
                                 token,
-                                CurrentRegion.IsGenshin ?? false ?
+                                CurrentConfigV2.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
                                     null,
                                 regionResourceProp.data.game.latest.version,
-                                CurrentRegion.ProtoDispatchKey,
-                                CurrentRegion.GameDispatchURL,
-                                CurrentRegion.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName));
+                                CurrentConfigV2.ProtoDispatchKey,
+                                CurrentConfigV2.GameDispatchURL,
+                                CurrentConfigV2.GetRegServerNameID(),
+                                Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
 
             GameDirPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             GameZipUrl = diffVer.path;
@@ -1410,7 +1410,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                if (CurrentRegion.UseRightSideProgress ?? false)
+                if (CurrentConfigV2.UseRightSideProgress ?? false)
                     HideImageCarousel(true);
 
                 InstallTool.InstallStatusChanged += InstallerDownloadPreStatusChanged;

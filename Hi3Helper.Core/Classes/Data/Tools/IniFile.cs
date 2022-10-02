@@ -400,7 +400,7 @@ namespace Hi3Helper.Data
 
         public bool Remove(string section) => sections.Remove(section);
 
-        public IniSection Add(string section, Dictionary<string, IniValue> values, bool ordered = false) => 
+        public IniSection Add(string section, Dictionary<string, IniValue> values, bool ordered = false) =>
             Add(section, new IniSection(values, StringComparer) { Ordered = ordered });
 
         public IniSection Add(string section, IniSection value)

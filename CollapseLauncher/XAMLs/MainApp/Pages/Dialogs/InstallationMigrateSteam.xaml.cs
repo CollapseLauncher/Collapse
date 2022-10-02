@@ -15,6 +15,7 @@ using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -45,7 +46,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                endpointURL = string.Format(CurrentRegion.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                endpointURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
                 if (await DoCheckPermission())
                 {
                     await DoMigrationProcess();
@@ -68,7 +69,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game Region: {CurrentRegion.ZoneName}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
             }
             catch (Exception ex)
             {
@@ -157,75 +158,69 @@ namespace CollapseLauncher.Dialogs
 
         private async Task DoCompareProcess()
         {
-            await Task.Run(() =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 2;
+                ProgressSlider.Value = 2;
 
-                    Step3.Opacity = 1f;
-                    Step3ProgressRing.IsIndeterminate = false;
-                    Step3ProgressRing.Value = 0;
-                    Step3ProgressStatus.Text = Lang._InstallMigrateSteam.Step3Subtitle;
-                });
+                Step3.Opacity = 1f;
+                Step3ProgressRing.IsIndeterminate = false;
+                Step3ProgressRing.Value = 0;
+                Step3ProgressStatus.Text = Lang._InstallMigrateSteam.Step3Subtitle;
+            });
 
-                StartCheckIntegrity();
+            await StartCheckIntegrity();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 2;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                ProgressSlider.Value = 2;
 
-                    Step3.Opacity = 1f;
-                    Step3ProgressRing.IsIndeterminate = false;
-                    Step3ProgressRing.Value = 100;
-                    Step3ProgressStatus.Text = Lang._Misc.Completed;
-                });
+                Step3.Opacity = 1f;
+                Step3ProgressRing.IsIndeterminate = false;
+                Step3ProgressRing.Value = 100;
+                Step3ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
         private async Task DoVerification()
         {
-            await Task.Run(() =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    ProgressSlider.Value = 4;
+                ProgressSlider.Value = 4;
 
-                    Step5.Opacity = 1f;
-                    Step5ProgressRing.IsIndeterminate = false;
-                    Step5ProgressRing.Value = 0;
-                    Step5ProgressStatus.Text = Lang._InstallMigrateSteam.Step5Subtitle;
-                });
+                Step5.Opacity = 1f;
+                Step5ProgressRing.IsIndeterminate = false;
+                Step5ProgressRing.Value = 0;
+                Step5ProgressStatus.Text = Lang._InstallMigrateSteam.Step5Subtitle;
+            });
 
-                StartCheckVerification();
+            await StartCheckVerification();
 
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    Step5.Opacity = 1f;
-                    Step5ProgressRing.IsIndeterminate = false;
-                    Step5ProgressRing.Value = 100;
-                    Step5ProgressStatus.Text = Lang._Misc.Completed;
-                });
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                Step5.Opacity = 1f;
+                Step5ProgressRing.IsIndeterminate = false;
+                Step5ProgressRing.Value = 100;
+                Step5ProgressStatus.Text = Lang._Misc.Completed;
             });
         }
 
-        private void StartCheckIntegrity()
+        private async Task StartCheckIntegrity()
         {
             CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
 
             integrityTool.ProgressChanged += IntegrityProgressChanged;
-            integrityTool.StartCheckIntegrity();
+            await integrityTool.StartCheckIntegrity();
             integrityTool.ProgressChanged -= IntegrityProgressChanged;
 
             BrokenFileIndexesProperty = integrityTool.GetNecessaryFileList();
         }
 
-        private void StartCheckVerification()
+        private async Task StartCheckVerification()
         {
             CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
 
             integrityTool.ProgressChanged += VerificationProgressChanged;
-            integrityTool.StartCheckIntegrity();
+            await integrityTool.StartCheckIntegrity();
             integrityTool.ProgressChanged -= VerificationProgressChanged;
 
             BrokenFileIndexesProperty = integrityTool.GetNecessaryFileList();
@@ -275,7 +270,7 @@ namespace CollapseLauncher.Dialogs
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentRegion.SteamInstallRegistryLocation}\" --keyname InstallLocation";
+                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentConfigV2.SteamInstallRegistryLocation}\" --keyname InstallLocation";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
@@ -339,7 +334,7 @@ namespace CollapseLauncher.Dialogs
                         break;
                     case ContentDialogResult.Primary:
                         sourcePath = GamePathOnSteam;
-                        folder = Path.Combine(AppGameFolder, CurrentRegion.ProfileName);
+                        folder = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:

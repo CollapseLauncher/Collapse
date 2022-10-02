@@ -18,6 +18,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -32,7 +33,7 @@ namespace CollapseLauncher
 
         private async Task FetchLauncherLocalizedResources()
         {
-            regionBackgroundProp = CurrentRegion.LauncherSpriteURLMultiLang ?
+            regionBackgroundProp = CurrentConfigV2.LauncherSpriteURLMultiLang ?
                 await TryGetMultiLangResourceProp() :
                 await TryGetSingleLangResourceProp();
 
@@ -70,7 +71,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentRegion.LauncherResourceURL, memoryStream, default);
+                await Http.DownloadStream(CurrentConfigV2.LauncherResourceURL, memoryStream, default);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
             }
         }
@@ -83,7 +84,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
+                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -92,7 +93,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await Http.DownloadStream(string.Format(CurrentRegion.LauncherSpriteURL, CurrentRegion.LauncherSpriteURLMultiLangFallback), memoryStream, default);
+                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, CurrentConfigV2.LauncherSpriteURLMultiLangFallback), memoryStream, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -107,7 +108,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentRegion.LauncherSpriteURL, memoryStream, default);
+                await Http.DownloadStream(CurrentConfigV2.LauncherSpriteURL, memoryStream, default);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
@@ -138,7 +139,7 @@ namespace CollapseLauncher
                     IconHover = await GetCachedSprites(item.img_hover),
                     QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = string.IsNullOrEmpty(item.title) || CurrentRegion.IsHideSocMedDesc ? item.url : item.title
+                    Description = string.IsNullOrEmpty(item.title) || CurrentConfigV2.IsHideSocMedDesc ? item.url : item.title
                 });
         }
 
@@ -243,18 +244,15 @@ namespace CollapseLauncher
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
             IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 3));
-            // IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 2));
 
             QuantizedColor Single = null;
 
             try
             {
                 Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
-                // Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).ToList()[IsLight?1:0];
             }
             catch
             {
-                // Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
                 if (Single is null) Single = Colors.FirstOrDefault();
                 if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
             }
@@ -429,8 +427,6 @@ namespace CollapseLauncher
             {
                 LoadingRing.IsIndeterminate = false;
 
-                // await Task.Delay(500);
-
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 1;
                 OpacityAnimation.To = 0;
@@ -441,7 +437,6 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                // await Task.Delay(250);
                 LoadingPopup.Visibility = Visibility.Collapsed;
             }
             else
@@ -461,7 +456,6 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                // await Task.Delay(250);
             }
         }
 
@@ -496,8 +490,6 @@ namespace CollapseLauncher
                 storyboardFront.Begin();
                 storyboardBack.Begin();
                 BGLastState = hideImage;
-
-                // await Task.Delay(250);
             }
         }
     }

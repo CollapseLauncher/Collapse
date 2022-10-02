@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -59,7 +60,7 @@ namespace CollapseLauncher.Pages
                 CancelBtn.Visibility = Visibility.Visible;
                 CheckUpdateBtn.IsEnabled = false;
                 CancelBtn.IsEnabled = true;
-                cachesLanguage = CurrentRegion.GetGameLanguage();
+                cachesLanguage = CurrentConfigV2.GetGameLanguage();
                 await FetchCachesAPI();
                 CachesDataTableGrid.Visibility = Visibility.Visible;
                 await CheckCachesIntegrity();
@@ -91,7 +92,7 @@ namespace CollapseLauncher.Pages
             {
                 using (cachesStream = new MemoryStream())
                 {
-                    cachesAPIURL = string.Format(CurrentRegion.CachesListAPIURL, (byte)type, CurrentRegion.CachesListGameVerID);
+                    cachesAPIURL = string.Format(CurrentConfigV2.CachesListAPIURL, (byte)type, CurrentConfigV2.CachesListGameVerID);
                     LogWriteLine($"Fetching CachesType: {type}");
 
                     CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
@@ -145,12 +146,12 @@ namespace CollapseLauncher.Pages
 
         private async Task CheckCachesIntegrity()
         {
-            cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentRegion.ConfigRegistryLocation));
+            cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation));
             string cachesPathType;
             string hash;
             List<DataPropertiesContent> brokenCaches;
             brokenCachesList = new List<DataProperties>();
-            byte[] salt = new mhyEncTool(Pkcs1Salt, AppGameConfig.MasterKey).GetSalt();
+            byte[] salt = new mhyEncTool(Pkcs1Salt, ConfigV2.MasterKey).GetSalt();
             hashTool = new HMACSHA1(salt);
 
             foreach (DataProperties dataType in cachesList)

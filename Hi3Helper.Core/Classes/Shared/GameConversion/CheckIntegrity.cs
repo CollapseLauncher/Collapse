@@ -1,5 +1,4 @@
 ﻿using Force.Crc32;
-using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Newtonsoft.Json;

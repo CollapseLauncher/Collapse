@@ -38,7 +38,8 @@
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "yang didukung. Silahkan pilih game-mu di bawah ini untuk memulainya dengan",
     "Pg2Subtitle2_4": "Collapse Launcher.",
-    "Pg2ComboBox": "Pilih Game"
+    "Pg2ComboBox": "Pilih Game",
+    "Pg2ComboBoxRegion": "Pilih Region"
   },
 
   // DisconnectedPage Content

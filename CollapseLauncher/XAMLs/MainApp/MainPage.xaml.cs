@@ -9,11 +9,9 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +19,7 @@ using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigStore;
+using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -35,10 +33,23 @@ namespace CollapseLauncher
         {
             try
             {
-                LoadGamePreset();
                 LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
+                Loaded += StartRoutine;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
+        }
+
+        private void StartRoutine(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LoadGamePreset();
                 SetThemeParameters();
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
@@ -51,8 +62,6 @@ namespace CollapseLauncher
                 ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
 
                 LauncherUpdateWatcher.StartCheckUpdate();
-
-                CheckRunningGameInstance();
 
                 InitializeStartup();
             }
@@ -110,7 +119,7 @@ namespace CollapseLauncher
         {
             while (true && !App.IsAppKilled)
             {
-                string execName = Path.GetFileNameWithoutExtension(CurrentRegion.GameExecutableName);
+                string execName = Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
                 await Task.Delay(250);
             }
@@ -363,40 +372,74 @@ namespace CollapseLauncher
         {
             GetAppNotificationPush();
 
-            bool IsMetaStampExist = IsMetadataStampExist();
-            bool IsMetaContentExist = IsMetadataContentExist();
             bool IsLoadSuccess;
 
             Type Page;
 
-            if (!IsMetaStampExist || !IsMetaContentExist)
+            if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
             {
                 LogWriteLine($"Loading config metadata for the first time...", LogType.Default, true);
                 HideLoadingPopup(false, Lang._MainPage.RegionLoadingAPITitle1, Lang._MainPage.RegionLoadingAPITitle2);
-                await DownloadMetadataFiles(true, true);
+                await DownloadConfigV2Files(true, true);
             }
 
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
-                LoadConfigWithCacheTemplate();
+                LoadConfigV2CacheOnly();
                 Page = typeof(Pages.CachesPage);
             }
             else
             {
-                LoadConfigTemplate();
+                LoadConfigV2();
                 Page = typeof(Pages.HomePage);
             }
-            LoadRegionSelectorItems();
+
+            // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
-            IsLoadSuccess = await LoadRegionByIndex(GetAppConfigValue("CurrentRegion").ToUInt());
+
+            LoadSavedGameSelection();
+            IsLoadSuccess = await LoadRegionFromCurrentConfigV2();
             CheckMetadataUpdateInBackground();
-            if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
+
+            // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
+            if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
+
+            CheckRunningGameInstance();
+        }
+
+        private void LoadSavedGameSelection()
+        {
+            ComboBoxGameCategory.ItemsSource = ConfigV2GameCategory;
+
+            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+            string GameRegion = GetAppConfigValue("GameRegion").ToString();
+
+            GetConfigV2Regions(GameCategory);
+            ComboBoxGameRegion.ItemsSource = ConfigV2GameRegions;
+
+            int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
+            if (IndexCategory < 0) IndexCategory = 0;
+
+            int IndexRegion = ConfigV2GameRegions.IndexOf(GameRegion);
+            if (IndexRegion < 0) IndexRegion = 0;
+
+            ComboBoxGameCategory.SelectedIndex = IndexCategory;
+            ComboBoxGameRegion.SelectedIndex = IndexRegion;
+
+            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, (string)ComboBoxGameRegion.SelectedValue);
+        }
+
+        private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
+        {
+            GetConfigV2Regions((string)((ComboBox)sender).SelectedItem);
+            ComboBoxGameRegion.ItemsSource = ConfigV2GameRegions;
+            ComboBoxGameRegion.SelectedIndex = 0;
         }
 
         private async void CheckMetadataUpdateInBackground()
         {
-            bool IsUpdate = await CheckForNewMetadata();
+            bool IsUpdate = await CheckForNewConfigV2();
             if (IsUpdate)
             {
                 TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtn, VerticalAlignment = VerticalAlignment.Center };
@@ -426,7 +469,7 @@ namespace CollapseLauncher
 
                     try
                     {
-                        await DownloadMetadataFiles(true, true);
+                        await DownloadConfigV2Files(true, true);
                         MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     }
                     catch (Exception ex)
@@ -465,7 +508,7 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if (!(CurrentRegion.IsGenshin ?? false))
+            if (!(CurrentConfigV2.IsGenshin ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
 
@@ -482,11 +525,6 @@ namespace CollapseLauncher
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
             (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
-        }
-
-        public void LoadRegionSelectorItems()
-        {
-            ComboBoxGameRegion.ItemsSource = GameConfigName;
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -519,7 +557,7 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (((CurrentRegion.IsGenshin ?? false) && (string)tag.Tag != "launcher"))
+            if (((CurrentConfigV2.IsGenshin ?? false) && (string)tag.Tag != "launcher"))
             {
                 sourceType = typeof(Pages.UnavailablePage);
                 tagStr = "unavailable";
@@ -541,16 +579,16 @@ namespace CollapseLauncher
                             break;
 
                         case "repair":
-                            if (string.IsNullOrEmpty(CurrentRegion.ZipFileURL))
+                            if (string.IsNullOrEmpty(CurrentConfigV2.ZipFileURL))
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
                             else
                                 Navigate(typeof(Pages.RepairPage), true, item);
                             break;
 
                         case "caches":
-                            if (CurrentRegion.CachesListGameVerID != null
-                                && CurrentRegion.CachesListAPIURL != null
-                                && CurrentRegion.CachesEndpointURL != null)
+                            if (CurrentConfigV2.CachesListGameVerID != null
+                                && CurrentConfigV2.CachesListAPIURL != null
+                                && CurrentConfigV2.CachesEndpointURL != null)
                                 Navigate(typeof(Pages.CachesPage), true, item);
                             else
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
