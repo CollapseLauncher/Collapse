@@ -118,7 +118,7 @@ namespace Hi3Helper.Preset
         {
             if (!IsGenshin ?? true) return 0;
             RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", "{}", RegistryValueOptions.None);
+            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", new byte[] {}, RegistryValueOptions.None);
 
             if (keys is null || value is null || value.Length is 0)
             {
