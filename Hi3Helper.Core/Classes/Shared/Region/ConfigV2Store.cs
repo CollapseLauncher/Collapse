@@ -123,7 +123,7 @@ namespace Hi3Helper.Preset
                 if (File.Exists(AppGameConfigV2MetadataPath))
                     File.Delete(AppGameConfigV2MetadataPath);
 
-                await http.Download(URL, AppGameConfigV2MetadataPath);
+                await http.Download(URL, AppGameConfigV2MetadataPath, true, null, null);
             }
         }
 
