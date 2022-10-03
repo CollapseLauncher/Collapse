@@ -20,7 +20,7 @@ namespace CollapseLauncher.Pages
         {
             // Set and Save CurrentRegion in AppConfig
             SetAndSaveConfigValue("GameCategory", (string)GameCategorySelect.SelectedValue);
-            SetAndSaveConfigValue("GameRegion", (string)GameRegionSelect.SelectedValue);
+            SetAndSaveConfigValue("GameRegion", GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue));
 
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
@@ -37,8 +37,9 @@ namespace CollapseLauncher.Pages
 
         private void GameCategorySelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GetConfigV2Regions((string)((ComboBox)sender).SelectedValue);
-            GameRegionSelect.ItemsSource = ConfigV2GameRegions;
+            string value = (string)((ComboBox)sender).SelectedValue;
+            GetConfigV2Regions(value);
+            GameRegionSelect.ItemsSource = BuildGameRegionListUI(value);
             GameRegionSelect.IsEnabled = true;
             NextPage.IsEnabled = false;
         }

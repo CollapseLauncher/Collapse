@@ -398,6 +398,7 @@ namespace CollapseLauncher
             LockRegionChangeBtn = true;
 
             LoadSavedGameSelection();
+
             IsLoadSuccess = await LoadRegionFromCurrentConfigV2();
             CheckMetadataUpdateInBackground();
 
@@ -416,7 +417,7 @@ namespace CollapseLauncher
             string GameRegion = GetAppConfigValue("GameRegion").ToString();
 
             GetConfigV2Regions(GameCategory);
-            ComboBoxGameRegion.ItemsSource = ConfigV2GameRegions;
+            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(GameCategory);
 
             int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
             if (IndexCategory < 0) IndexCategory = 0;
@@ -426,14 +427,13 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
-
-            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, (string)ComboBoxGameRegion.SelectedValue);
+            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
             GetConfigV2Regions((string)((ComboBox)sender).SelectedItem);
-            ComboBoxGameRegion.ItemsSource = ConfigV2GameRegions;
+            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI("Honkai Impact 3rd");
             ComboBoxGameRegion.SelectedIndex = 0;
         }
 

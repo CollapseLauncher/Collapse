@@ -1,14 +1,20 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
+using static Hi3Helper.Preset.ConfigV2Store;
 
 namespace CollapseLauncher
 {
@@ -79,6 +85,55 @@ namespace CollapseLauncher
                     else
                         return ApplicationTheme.Dark;
             }
+        }
+
+        public static string GetComboBoxGameRegionValue(object obj)
+        {
+            StackPanel Value = (StackPanel)obj;
+            TextBlock TextBlock = (TextBlock)Value.Children.FirstOrDefault();
+            return TextBlock.Text;
+        }
+
+        public static List<StackPanel> BuildGameRegionListUI(string GameCategory)
+        {
+            List<StackPanel> list = new List<StackPanel>();
+            foreach (string region in ConfigV2GameRegions)
+            {
+                PresetConfigV2 config = ConfigV2.MetadataV2[GameCategory][region];
+                GameChannel chan = config.GameChannel;
+                StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
+                panel.Children.Add(new TextBlock { Text = region });
+                if (config.IsExperimental)
+                {
+                    Grid expTag = new Grid
+                    {
+                        Padding = new Thickness(4, 0, 4, 0),
+                        Margin = new Thickness(4, 3, 0, 0),
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        CornerRadius = new CornerRadius(4),
+                        Background = new SolidColorBrush(GetAppTheme() == ApplicationTheme.Dark ?
+                            Color.FromArgb(255, 255, 255, 255) :
+                            Color.FromArgb(255, 40, 40, 40))
+                    };
+                    expTag.Children.Add(new TextBlock
+                    {
+                        Text = "EXPER",
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        FontSize = 10,
+                        Margin = new Thickness(0, -2, 0, 0),
+                        Foreground = new SolidColorBrush(GetAppTheme() == ApplicationTheme.Dark ?
+                            Color.FromArgb(255, 40, 40, 40) :
+                            Color.FromArgb(255, 255, 255, 255)),
+                        FontWeight = FontWeights.Bold
+                    });
+                    panel.Children.Add(expTag);
+                }
+
+                list.Add(panel);
+            }
+            return list;
         }
 
         public static void SaveLocalNotificationData()
