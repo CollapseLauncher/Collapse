@@ -64,7 +64,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadStream(SourceBaseURL + "index.json", buffer, Token);
+                await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -72,7 +72,7 @@ namespace CollapseLauncher
             {
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await DownloadStream(TargetBaseURL + "index.json", buffer, Token);
+                await Download(TargetBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 TargetFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
             }
@@ -248,13 +248,13 @@ namespace CollapseLauncher
             ConvertDetail = string.Format(Lang._InstallConvert.CookbookDownloadSubtitle, SourceProfile.ZoneName, TargetProfile.ZoneName);
 
             if (File.Exists(CookbookPath))
-                if (new FileInfo(CookbookPath).Length == await GetContentLength(CookbookURL))
+                if (new FileInfo(CookbookPath).Length == await TryGetContentLength(CookbookURL, Token))
                     return;
 
             DownloadProgress += RecipeDownload_Progress;
 
-            await DownloadMultisession(CookbookURL, CookbookPath, true, DownloadThread, Token);
-            await MergeMultisession(CookbookPath, DownloadThread, Token);
+            await Download(CookbookURL, CookbookPath, DownloadThread, true, Token);
+            await Merge();
             DownloadProgress -= RecipeDownload_Progress;
         }
 
@@ -309,18 +309,18 @@ namespace CollapseLauncher
                 DownloadProgress += RepairIngredients_Progress;
                 if (Entry.FileSize >= 20 << 20)
                 {
-                    await DownloadMultisession(InputURL, OutputPath, true, DownloadThread, Token);
-                    await MergeMultisession(OutputPath, DownloadThread, Token);
+                    await Download(InputURL, OutputPath, DownloadThread, true, Token);
+                    await Merge();
                 }
                 else
-                    await DownloadStream(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), Token);
+                    await Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }
 
         private void RepairIngredients_Progress(object sender, DownloadEvent e)
         {
-            if (SessionState != MultisessionState.Merging)
+            if (DownloadState != MultisessionState.Merging)
                 RepairRead += e.Read;
 
             UpdateProgress(RepairRead, RepairTotalSize, 1, 1, ConvertSw.Elapsed,

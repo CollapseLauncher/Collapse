@@ -164,8 +164,8 @@ namespace CollapseLauncher
                 RunTimeoutCancel(TokenSource);
                 using (MemoryStream buffer = new MemoryStream())
                 {
-                    await new Http().DownloadStream(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                        buffer, TokenSource.Token);
+                    await new Http().Download(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
+                        buffer, null, null, TokenSource.Token);
                     NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
                     IsLoadNotifComplete = true;
                 }

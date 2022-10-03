@@ -149,7 +149,7 @@ namespace CollapseLauncher.Dialogs
             RegionResourceProp _Entry;
             using (MemoryStream s = new MemoryStream())
             {
-                await new Http().DownloadStream(Profile.LauncherResourceURL, s, tokenSource.Token);
+                await new Http().Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 _Entry = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(s.ToArray()));
             }
 

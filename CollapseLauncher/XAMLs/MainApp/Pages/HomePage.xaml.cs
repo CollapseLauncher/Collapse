@@ -568,8 +568,7 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneName}");
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
             }
             catch (NullReferenceException ex)
             {
@@ -863,6 +862,7 @@ namespace CollapseLauncher.Pages
                             isChoosen = false;
                         break;
                     case ContentDialogResult.None:
+                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                         throw new OperationCanceledException();
                 }
             }

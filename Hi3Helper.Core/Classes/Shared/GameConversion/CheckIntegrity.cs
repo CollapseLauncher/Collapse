@@ -64,7 +64,7 @@ namespace Hi3Helper.Shared.GameConversion
             using (stream = new MemoryStream())
             {
                 http.DownloadProgress += HttpAdapter;
-                await http.DownloadStream(endpointURL, stream, tokenSource.Token);
+                await http.Download(endpointURL, stream, null, null, tokenSource.Token);
                 http.DownloadProgress -= HttpAdapter;
 
                 FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>

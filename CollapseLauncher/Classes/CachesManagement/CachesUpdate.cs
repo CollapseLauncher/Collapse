@@ -94,15 +94,15 @@ namespace CollapseLauncher.Pages
                     if (content.CS >= 4 << 20)
                     {
                         http.DownloadProgress += CachesDownloadProgress;
-                        await http.DownloadMultisession(cachesURL, cachesPath, true, DownloadThread, cancellationTokenSource.Token);
+                        await http.Download(cachesURL, cachesPath, DownloadThread, true, cancellationTokenSource.Token);
                         http.DownloadProgress -= CachesDownloadProgress;
-                        await http.MergeMultisession(cachesPath, DownloadThread, cancellationTokenSource.Token);
+                        await http.Merge();
                     }
                     else
                     {
                         http.DownloadProgress += CachesDownloadProgress;
                         using (cachesStream = cachesFileInfo.Create())
-                            await http.DownloadStream(cachesURL, cachesStream, cancellationTokenSource.Token);
+                            await http.Download(cachesURL, cachesStream, null, null, cancellationTokenSource.Token);
                         http.DownloadProgress -= CachesDownloadProgress;
                     }
 
@@ -151,7 +151,7 @@ namespace CollapseLauncher.Pages
         string timeLeftString;
         private void CachesDownloadProgress(object sender, DownloadEvent e)
         {
-            if (http.SessionState != MultisessionState.Merging)
+            if (http.DownloadState != MultisessionState.Merging)
                 cachesRead += e.Read;
 
             if (refreshTime.Elapsed.Milliseconds >= 500)

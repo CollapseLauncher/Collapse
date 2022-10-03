@@ -71,7 +71,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentConfigV2.LauncherResourceURL, memoryStream, default);
+                await Http.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, default);
                 regionResourceProp = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.ToArray()));
             }
         }
@@ -84,7 +84,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, default);
+                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, null, null, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
 
                     NoData = ret.data.adv == null;
@@ -93,7 +93,7 @@ namespace CollapseLauncher
                 if (NoData)
                 {
                     PassFirstTry = true;
-                    await Http.DownloadStream(string.Format(CurrentConfigV2.LauncherSpriteURL, CurrentConfigV2.LauncherSpriteURLMultiLangFallback), memoryStream, default);
+                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, CurrentConfigV2.LauncherSpriteURLMultiLangFallback), memoryStream, null, null, default);
                     ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
                 }
             }
@@ -108,7 +108,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.DownloadStream(CurrentConfigV2.LauncherSpriteURL, memoryStream, default);
+                await Http.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
                 ret = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(memoryStream.GetBuffer()));
             }
 
@@ -195,7 +195,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await Http.Download(URL, cachePath, token);
+            if (!File.Exists(cachePath)) await Http.Download(URL, cachePath, true, null, null, token);
 
             return cachePath;
         }
@@ -341,8 +341,8 @@ namespace CollapseLauncher
 
             if (!fI.Exists)
             {
-                await Http.DownloadMultisession(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, false, 4, default);
-                await Http.MergeMultisession(regionBackgroundProp.imgLocalPath, 4, default);
+                await Http.Download(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, false, default);
+                await Http.Merge();
             }
         }
 

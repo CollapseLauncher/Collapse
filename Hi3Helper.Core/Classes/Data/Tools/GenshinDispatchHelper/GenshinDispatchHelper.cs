@@ -34,7 +34,7 @@ namespace Hi3Helper.Data
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await DownloadStream(DispatchBaseURL, response, cancelToken);
+                await Download(DispatchBaseURL, response, null, null, cancelToken);
 
                 return response.GetBuffer();
             }
@@ -45,7 +45,7 @@ namespace Hi3Helper.Data
             YSDispatchInfo DispatcherDataInfo;
             using (MemoryStream Stream = new MemoryStream())
             {
-                await DownloadStream(DispatchBaseURL, Stream, cancelToken);
+                await Download(DispatchBaseURL, Stream, null, null, cancelToken);
                 string Data = Encoding.UTF8.GetString(Stream.GetBuffer());
                 DispatcherDataInfo = JsonConvert.DeserializeObject<YSDispatchInfo>(Data);
             }
@@ -110,7 +110,7 @@ namespace Hi3Helper.Data
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await DownloadStream(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, cancelToken);
+                await Download(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, null, null, cancelToken);
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",
