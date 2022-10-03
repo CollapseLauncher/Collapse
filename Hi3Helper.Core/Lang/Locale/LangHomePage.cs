@@ -34,6 +34,7 @@
                 public string GameSettings_Panel1 { get; set; } = LangFallback?._HomePage.GameSettings_Panel1;
                 public string GameSettings_Panel1OpenGameFolder { get; set; } = LangFallback?._HomePage.GameSettings_Panel1OpenGameFolder;
                 public string GameSettings_Panel1OpenCacheFolder { get; set; } = LangFallback?._HomePage.GameSettings_Panel1OpenCacheFolder;
+                public string GameSettings_Panel1OpenScreenshotFolder { get; set; } = LangFallback?._HomePage.GameSettings_Panel1OpenScreenshotFolder;
                 public string GameSettings_Panel2 { get; set; } = LangFallback?._HomePage.GameSettings_Panel2;
                 public string GameSettings_Panel2RepairGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2RepairGame;
                 public string GameSettings_Panel2UninstallGame { get; set; } = LangFallback?._HomePage.GameSettings_Panel2UninstallGame;

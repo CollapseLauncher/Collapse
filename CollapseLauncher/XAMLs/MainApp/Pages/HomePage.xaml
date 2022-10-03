@@ -416,6 +416,14 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
+                                    <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Visibility="Collapsed" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                     <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
                                         <Button.Content>

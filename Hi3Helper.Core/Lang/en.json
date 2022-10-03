@@ -111,6 +111,7 @@
     "GameSettings_Panel1": "Quick Settings",
     "GameSettings_Panel1OpenGameFolder": "Open Game Folder",
     "GameSettings_Panel1OpenCacheFolder": "Open Cache Folder",
+    "GameSettings_Panel1OpenScreenshotFolder": "Open Screenshot",
     "GameSettings_Panel2": "Game Installation",
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",

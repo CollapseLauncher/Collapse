@@ -333,16 +333,25 @@ namespace CollapseLauncher.Pages
 
         private void CheckCurrentGameState()
         {
+            if (!CurrentConfigV2.IsConvertible ?? true)
+                ConvertVersionButton.Visibility = Visibility.Collapsed;
+
+            if (string.IsNullOrEmpty(CurrentConfigV2.ZipFileURL))
+                RepairGameButton.Visibility = Visibility.Collapsed;
+
+            if (CurrentConfigV2.IsGenshin ?? false)
+            {
+                ConvertVersionButton.Visibility = Visibility.Collapsed;
+                OpenScreenshotFolderButton.Visibility = Visibility.Visible;
+                OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+                RepairGameButton.Visibility = Visibility.Collapsed;
+            }
+
             if (File.Exists(
                    Path.Combine(
                        NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
                        CurrentConfigV2.GameExecutableName)))
             {
-                if (CurrentConfigV2.IsGenshin ?? false)
-                    ConvertVersionButton.Visibility = Visibility.Collapsed;
-
-                if (!CurrentConfigV2.IsConvertible ?? true)
-                    ConvertVersionButton.IsEnabled = false;
 
                 if (new FileInfo(Path.Combine(
                     NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
@@ -389,8 +398,6 @@ namespace CollapseLauncher.Pages
                         GameInstallationState = GameInstallStateEnum.Installed;
                     }
                 }
-                if (CurrentConfigV2.IsGenshin ?? false)
-                    OpenCacheFolderButton.IsEnabled = false;
 
                 if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
@@ -398,6 +405,7 @@ namespace CollapseLauncher.Pages
                 }
                 return;
             }
+
             GameInstallationState = GameInstallStateEnum.NotInstalled;
             UninstallGameButton.IsEnabled = false;
             RepairGameButton.IsEnabled = false;
@@ -405,6 +413,7 @@ namespace CollapseLauncher.Pages
             OpenCacheFolderButton.IsEnabled = false;
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
+            OpenScreenshotFolderButton.IsEnabled = false;
         }
 
         private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args) => sender.Translation -= Shadow48;
@@ -1053,6 +1062,25 @@ namespace CollapseLauncher.Pages
                     UseShellExecute = true,
                     FileName = "explorer.exe",
                     Arguments = GameFolder
+                }
+            }.Start();
+        }
+
+        private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            string ScreenshotFolder = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "ScreenShot");
+            LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
+            
+            if (!Directory.Exists(ScreenshotFolder))
+                Directory.CreateDirectory(ScreenshotFolder);
+
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = ScreenshotFolder
                 }
             }.Start();
         }
