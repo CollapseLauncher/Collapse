@@ -114,7 +114,7 @@ namespace Hi3Helper.Preset
                 if (File.Exists(AppGameConfigV2StampPath))
                     File.Delete(AppGameConfigV2StampPath);
 
-                await http.Download(URL, AppGameConfigV2StampPath);
+                await http.Download(URL, AppGameConfigV2StampPath, true, null, null);
             }
 
             if (Content)
