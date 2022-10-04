@@ -257,7 +257,7 @@ namespace CollapseLauncher.Dialogs
                 case ContentDialogResult.Secondary:
                     SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
                         Values.Where(x => x.ZoneName == SourceGame.SelectedItem.ToString()).First();
-                    SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
+                    TargetRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
                         Values.Where(x => x.ZoneName == TargetGame.SelectedItem.ToString()).First();
                     break;
                 case ContentDialogResult.Primary:
