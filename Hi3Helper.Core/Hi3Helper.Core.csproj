@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
+		<TargetFramework>net6.0</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Configurations>Debug;Release;Publish</Configurations>
+		<Configurations>Debug;Release;Publish;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
 		<WarningLevel>6</WarningLevel>
-		<DebugType>embedded</DebugType>
+		<IsTrimmable>false</IsTrimmable>
+		<TrimMode>false</TrimMode>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -18,6 +19,21 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<Optimize>False</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
+		<Optimize>False</Optimize>
+		<DefineConstants>DISABLE_COM</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
+		<Optimize>True</Optimize>
+		<DefineConstants>DISABLE_COM</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
+		<Optimize>True</Optimize>
+		<DefineConstants>DISABLE_COM</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -36,14 +52,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Lang\en.json" />
+	  <None Remove="Lang\id-ID.json" />
+	  <None Remove="Lang\zh-cn.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="Lang\en.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\id-ID.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\zh-cn.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -57,7 +79,7 @@
 		<PackageReference Include="Crc32.NET" Version="1.2.0" />
 		<PackageReference Include="Google.Protobuf" Version="3.21.7" />
 		<PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
+		<PackageReference Include="System.Text.Json" Version="7.0.0-rc.1.22426.10" />
 	</ItemGroup>
 
 	<ItemGroup>
