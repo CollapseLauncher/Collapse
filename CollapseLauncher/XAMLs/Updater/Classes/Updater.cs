@@ -205,19 +205,6 @@ namespace CollapseLauncher
 
         public void UpdateStatus() => UpdaterStatusChanged?.Invoke(this, Status);
         public void UpdateProgress() => UpdaterProgressChanged?.Invoke(this, Progress);
-        public class Prop
-        {
-            public string ver { get; set; }
-            public long time { get; set; }
-            public List<fileProp> f { get; set; }
-        }
-
-        public class fileProp
-        {
-            public string p { get; set; }
-            public string crc { get; set; }
-            public long s { get; set; }
-        }
 
         public class UpdaterStatus
         {
