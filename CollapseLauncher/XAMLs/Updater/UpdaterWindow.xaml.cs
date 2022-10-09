@@ -92,10 +92,31 @@ namespace CollapseLauncher
             });
         }
 
+        private void InitializeAppWindowAndIntPtr()
+        {
+            this.InitializeComponent();
+            this.Activate();
+            // Initialize Window Handlers
+            m_windowHandle = GetActiveWindow();
+            m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
+            m_appWindow = AppWindow.GetFromWindowId(m_windowID);
+            m_appWindow.Changed += AppWindow_Changed;
+            m_presenter = m_appWindow.Presenter as OverlappedPresenter;
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(m_windowID, DisplayAreaFallback.Primary);
+
+            // Get Monitor DPI
+            IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
+            if (GetDpiForMonitor(hMonitor, Monitor_DPI_Type.MDT_Default, out uint dpiX, out uint _) != 0)
+            {
+                throw new Exception("Could not get DPI for monitor.");
+            }
+
+            m_appDPIScale = (uint)(((long)dpiX * 100 + (96 >> 1)) / 96) / 100.0;
+        }
+
         public void InitializeWindowSettings()
         {
-            m_appWindow = GetAppWindowForCurrentWindow();
-            m_appWindow.Changed += AppWindow_Changed;
+            InitializeAppWindowAndIntPtr();
 
             SetWindowSize(m_windowHandle, 540, 320);
 
