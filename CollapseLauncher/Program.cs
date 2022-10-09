@@ -38,6 +38,9 @@ namespace CollapseLauncher
             {
                 InitAppPreset();
                 InitConsoleSetting();
+                // ContextLoader.Load();
+                // Hi3Helper.ContextLoader.Load();
+
                 Console.WriteLine("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
                     AppCurrentVersion,
                     GetVersionString(),

@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -9,12 +10,22 @@ namespace Hi3Helper.Shared.ClassStruct
         public int MsgId { get; set; }
         public bool? IsClosable { get; set; }
         public bool? IsDisposable { get; set; }
+        public bool? Show { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
-        public InfoBarSeverity Severity { get; set; }
+        public NotifSeverity Severity { get; set; }
         public string RegionProfile { get; set; }
         public string ValidForVerAbove { get; set; }
         public string ValidForVerBelow { get; set; }
+    }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum NotifSeverity : uint
+    {
+        Informational,
+        Success,
+        Warning,
+        Error
     }
 
     public class NotificationPush

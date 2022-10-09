@@ -12,7 +12,7 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Preset
 {
 #nullable enable
-    [JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ServerRegionID
     {
         os_usa = 0,
@@ -21,7 +21,7 @@ namespace Hi3Helper.Preset
         os_cht = 3
     }
 
-    [JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum GameChannel
     {
         Beta = 0,

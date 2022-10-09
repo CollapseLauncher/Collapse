@@ -1,5 +1,6 @@
 ﻿using Hi3Helper.Preset;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -29,10 +30,13 @@ namespace Hi3Helper.Shared.ClassStruct
         public string version { get; set; }
         public string path { get; set; }
         public string decompressed_path { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long size { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long package_size { get; set; }
         public string md5 { get; set; }
         public string language { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int? languageID { get; set; }
         public bool is_recommended_update { get; set; }
         public string entry { get; set; }
@@ -74,6 +78,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public string url { get; set; }
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum PostCarouselType
     {
         POST_TYPE_INFO,

@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
@@ -8,11 +9,11 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -147,17 +148,21 @@ namespace CollapseLauncher
                 AppPushIgnoreMsgIds = NotificationData.AppPushIgnoreMsgIds,
                 RegionPushIgnoreMsgIds = NotificationData.RegionPushIgnoreMsgIds
             };
-            File.WriteAllText(LauncherConfig.AppNotifIgnoreFile, JsonConvert.SerializeObject(LocalNotificationData, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+            File.WriteAllText(LauncherConfig.AppNotifIgnoreFile,
+                JsonSerializer.Serialize(LocalNotificationData, typeof(NotificationPush), NotificationPushContext.Default));
         }
 
         public static void LoadLocalNotificationData()
         {
             if (!File.Exists(LauncherConfig.AppNotifIgnoreFile))
-                File.WriteAllText(LauncherConfig.AppNotifIgnoreFile, JsonConvert.SerializeObject(new NotificationPush
-                { AppPushIgnoreMsgIds = new List<int>(), RegionPushIgnoreMsgIds = new List<int>() }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                File.WriteAllText(LauncherConfig.AppNotifIgnoreFile,
+                    JsonSerializer.Serialize(new NotificationPush
+                    { AppPushIgnoreMsgIds = new List<int>(), RegionPushIgnoreMsgIds = new List<int>() },
+                    typeof(NotificationPush),
+                    NotificationPushContext.Default));
 
             string Data = File.ReadAllText(LauncherConfig.AppNotifIgnoreFile);
-            NotificationPush LocalNotificationData = JsonConvert.DeserializeObject<NotificationPush>(Data);
+            NotificationPush LocalNotificationData = (NotificationPush)JsonSerializer.Deserialize(Data, typeof(NotificationPush), NotificationPushContext.Default);
             if (NotificationData != null)
             {
                 NotificationData.AppPushIgnoreMsgIds = LocalNotificationData.AppPushIgnoreMsgIds;

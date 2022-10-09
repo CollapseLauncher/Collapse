@@ -4,12 +4,12 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -46,8 +46,8 @@ namespace CollapseLauncher
                         using (MemoryStream RemoteData = new MemoryStream())
                         {
                             await new Http().Download(ChannelURL + "fileindex.json", RemoteData, null, null, new CancellationToken());
-                            string UpdateJSON = Encoding.UTF8.GetString(RemoteData.ToArray());
-                            UpdateProperty = JsonConvert.DeserializeObject<Prop>(UpdateJSON);
+                            RemoteData.Position = 0;
+                            UpdateProperty = (Prop)JsonSerializer.Deserialize(RemoteData, typeof(Prop), PropContext.Default);
                         }
 
                         if (CompareVersion(AppCurrentVersion, UpdateProperty.ver))
@@ -89,20 +89,20 @@ namespace CollapseLauncher
 
             return concatRemoteVer > concatLocalVer;
         }
+    }
 
-        public class Prop
-        {
-            public string ver { get; set; }
-            public long time { get; set; }
-            public List<fileProp> f { get; set; }
-        }
+    public class Prop
+    {
+        public string ver { get; set; }
+        public long time { get; set; }
+        public List<fileProp> f { get; set; }
+    }
 
-        public class fileProp
-        {
-            public string p { get; set; }
-            public string crc { get; set; }
-            public long s { get; set; }
-        }
+    public class fileProp
+    {
+        public string p { get; set; }
+        public string crc { get; set; }
+        public long s { get; set; }
     }
 
     internal class LauncherUpdateInvoker

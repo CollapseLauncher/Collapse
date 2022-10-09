@@ -7,14 +7,14 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
+using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -482,7 +482,7 @@ namespace CollapseLauncher
             string path;
             foreach (string entry in List)
             {
-                _Entry = JsonConvert.DeserializeObject<PkgVersionProperties>(entry);
+                _Entry = (PkgVersionProperties)JsonSerializer.Deserialize(entry, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
                 path = Path.Combine(GameDirPath, ConverterTool.NormalizePath(_Entry.remoteName) + ".hdiff");
                 file = new FileInfo(path);
                 outSize += file.Exists ? file.Length : 0;
@@ -515,7 +515,7 @@ namespace CollapseLauncher
             foreach (string _Entry in HPatchList)
             {
                 i++;
-                Entry = JsonConvert.DeserializeObject<PkgVersionProperties>(_Entry);
+                Entry = (PkgVersionProperties)JsonSerializer.Deserialize(_Entry, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
                 FileSource = Path.Combine(GameDirPath, ConverterTool.NormalizePath(Entry.remoteName));
                 FilePatch = FileSource + ".hdiff";
                 FileOutput = FileSource + "_tmp";
@@ -823,7 +823,7 @@ namespace CollapseLauncher
             foreach (string data in File.ReadAllLines(manifestPath)
                 .Where(x => x.EndsWith(onlyAcceptExt, StringComparison.OrdinalIgnoreCase)))
             {
-                Entry = JsonConvert.DeserializeObject<PkgVersionProperties>(data);
+                Entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
 
                 IsHashHasValue = hashtable.ContainsKey(Entry.remoteName);
                 if (!IsHashHasValue)
@@ -911,7 +911,7 @@ namespace CollapseLauncher
             foreach (string data in File.ReadAllLines(manifestPath)
                 .Where(x => x.EndsWith(onlyAcceptExt, StringComparison.OrdinalIgnoreCase)))
             {
-                Entry = JsonConvert.DeserializeObject<PkgVersionProperties>(data);
+                Entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
                 if (parentPath != "")
                     Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
                 Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";

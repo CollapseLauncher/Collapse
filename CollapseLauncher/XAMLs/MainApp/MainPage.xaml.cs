@@ -7,12 +7,12 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Web.WebView2.Core;
-using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -129,7 +129,7 @@ namespace CollapseLauncher
         {
             SpawnNotificationPush(e.Notification.Title, e.Notification.Message, e.Notification.Severity,
                 e.Notification.MsgId, e.Notification.IsClosable ?? true, e.Notification.IsDisposable ?? true, e.CloseAction,
-                e.OtherContent, e.IsAppNotif);
+                e.OtherContent, e.IsAppNotif, e.Notification.Show);
         }
 
         private async void GetAppNotificationPush()
@@ -143,7 +143,7 @@ namespace CollapseLauncher
                 });
                 PushAppNotification();
             }
-            catch (JsonReaderException ex)
+            catch (JsonException ex)
             {
                 LogWriteLine($"Error while trying to get Notification Feed\r\n{ex}", LogType.Error, true);
             }
@@ -166,7 +166,8 @@ namespace CollapseLauncher
                 {
                     await new Http().Download(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
                         buffer, null, null, TokenSource.Token);
-                    NotificationData = JsonConvert.DeserializeObject<NotificationPush>(Encoding.UTF8.GetString(buffer.ToArray()));
+                    buffer.Position = 0;
+                    NotificationData = (NotificationPush)JsonSerializer.Deserialize(buffer, typeof(NotificationPush), NotificationPushContext.Default);
                     IsLoadNotifComplete = true;
                 }
             }
@@ -213,7 +214,8 @@ namespace CollapseLauncher
                     || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
                         && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
                     || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow))
-                    SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true, Entry.IsDisposable ?? true, ClickCloseAction, null, true);
+                    SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
+                        Entry.IsDisposable ?? true, ClickCloseAction, null, true, Entry.Show);
                 await Task.Delay(250);
             }
         }
@@ -237,11 +239,14 @@ namespace CollapseLauncher
                     SpawnNotificationPush(
                         Lang._Misc.UpdateCompleteTitle,
                         string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
-                        InfoBarSeverity.Success,
+                        NotifSeverity.Success,
                         0xAF,
                         true,
                         false,
-                        ClickClose
+                        ClickClose,
+                        null,
+                        true,
+                        true
                         );
 
                     string target;
@@ -264,9 +269,27 @@ namespace CollapseLauncher
             catch { }
         }
 
-        private void SpawnNotificationPush(string Title, string Content, InfoBarSeverity Severity, int MsgId = 0, bool IsClosable = true,
-            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true)
+        private InfoBarSeverity NotifSeverity2InfoBarSeverity(NotifSeverity inp)
         {
+            switch (inp)
+            {
+                default:
+                    return InfoBarSeverity.Informational;
+                case NotifSeverity.Success:
+                    return InfoBarSeverity.Success;
+                case NotifSeverity.Warning:
+                    return InfoBarSeverity.Warning;
+                case NotifSeverity.Error:
+                    return InfoBarSeverity.Error;
+            }
+        }
+
+        private void SpawnNotificationPush(string Title, string Content, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
+            bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true,
+            bool? Show = false)
+        {
+            if (!(Show ?? false)) return;
+
             DispatcherQueue.TryEnqueue(() =>
             {
                 Grid Container = new Grid();
@@ -283,7 +306,7 @@ namespace CollapseLauncher
                     Message = Content,
                     Margin = new Thickness(4, 4, 4, 0),
                     CornerRadius = new CornerRadius(8),
-                    Severity = Severity,
+                    Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -292,7 +315,7 @@ namespace CollapseLauncher
                     IsOpen = true
                 };
 
-                if (Severity == InfoBarSeverity.Informational)
+                if (Severity == NotifSeverity.Informational)
                     Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
 
                 Notification.Closed += ((a, b) => { a.Translation -= Shadow16; });
@@ -482,12 +505,13 @@ namespace CollapseLauncher
                 SpawnNotificationPush(
                     Lang._MainPage.MetadataUpdateTitle,
                     Lang._MainPage.MetadataUpdateSubtitle,
-                    InfoBarSeverity.Informational,
+                    NotifSeverity.Informational,
                     -886135731,
                     true,
                     false,
                     null,
-                    UpdateMetadatabtn
+                    UpdateMetadatabtn,
+                    true
                     );
             }
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Hi3Helper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -20,13 +21,13 @@ namespace Hi3Helper
             LangFallback = (LocalizationParams)JsonSerializer.Deserialize(File
                 .ReadAllText(LanguageNames
                     .Where(x => x.Value.LangID.ToLower() == "en" || x.Value.LangID.ToLower() == "en-us")
-                    .First().Value.LangFilePath), typeof(LocalizationParams), LocaleContext.Default);
+                    .First().Value.LangFilePath), typeof(LocalizationParams), LocalizationParamsContext.Default);
             try
             {
                 Lang = (LocalizationParams)JsonSerializer.Deserialize(
                     File.ReadAllText(LanguageNames
                         .Where(x => x.Value.LangID.ToLower() == appLang.ToLower())
-                        .First().Value.LangFilePath), typeof(LocalizationParams), LocaleContext.Default);
+                        .First().Value.LangFilePath), typeof(LocalizationParams), LocalizationParamsContext.Default);
 
                 LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");
             }
@@ -44,7 +45,7 @@ namespace Hi3Helper
                 LocalizationParams lang = new LocalizationParams();
                 try
                 {
-                    lang = (LocalizationParams)JsonSerializer.Deserialize(File.ReadAllText(Entry), typeof(LocalizationParams), LocaleContext.Default);
+                    lang = (LocalizationParams)JsonSerializer.Deserialize(File.ReadAllText(Entry), typeof(LocalizationParams), LocalizationParamsContext.Default);
 
                     Console.WriteLine(lang.LanguageName);
                     if (!LanguageNames.ContainsKey(lang.LanguageName))

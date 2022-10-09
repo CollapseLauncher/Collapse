@@ -5,7 +5,6 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Pages.RepairData;
@@ -78,7 +78,8 @@ namespace CollapseLauncher.Pages
                     http.DownloadProgress += DataFetchingProgress;
                     await http.Download(indexURL, memBuffer, null, null, cancellationTokenSource.Token);
                     http.DownloadProgress -= DataFetchingProgress;
-                    FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(memBuffer.ToArray()));
+                    memBuffer.Position = 0;
+                    FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(memBuffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
                 }
 
                 await Task.Run(() => CheckGameFiles());

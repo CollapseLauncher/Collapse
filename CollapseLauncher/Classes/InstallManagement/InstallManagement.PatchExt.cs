@@ -5,13 +5,12 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -59,7 +58,8 @@ namespace CollapseLauncher
                 DownloadProgress += FetchIngredientsAPI_Progress;
                 await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
-                SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
+                buffer.Position = 0;
+                SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
 
             SourceFileManifest = BuildManifest(SourceFileRemote);

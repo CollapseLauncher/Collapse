@@ -3,13 +3,12 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -66,7 +65,8 @@ namespace CollapseLauncher
                 DownloadProgress += FetchIngredientsAPI_Progress;
                 await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
-                SourceFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
+                buffer.Position = 0;
+                SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
             using (MemoryStream buffer = new MemoryStream())
             {
@@ -74,7 +74,8 @@ namespace CollapseLauncher
                 DownloadProgress += FetchIngredientsAPI_Progress;
                 await Download(TargetBaseURL + "index.json", buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
-                TargetFileRemote = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>(Encoding.UTF8.GetString(buffer.ToArray()));
+                buffer.Position = 0;
+                TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
 
             SourceFileManifest = BuildManifest(SourceFileRemote);
@@ -162,34 +163,6 @@ namespace CollapseLauncher
             }
 
             return BrokenManifest;
-        }
-
-        private async Task Copy(string InputPath, string OutputPath, bool UseCopyTo = true)
-        {
-            byte[] buffer = new byte[20 << 20];
-            using (FileStream source = new FileStream(InputPath, FileMode.Open, FileAccess.Read))
-            {
-                using (FileStream dest = new FileStream(OutputPath, FileMode.Create, FileAccess.Write))
-                {
-                    if (UseCopyTo)
-                    {
-                        await source.CopyToAsync(dest, Token);
-                        MakeIngredientsRead += source.Length;
-                        UpdateProgress(MakeIngredientsRead, MakeIngredientsTotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
-                    }
-                    else
-                    {
-                        int read = 0;
-                        while ((read = await source.ReadAsync(buffer)) > 0)
-                        {
-                            Token.ThrowIfCancellationRequested();
-                            dest.Write(buffer, 0, read);
-                            MakeIngredientsRead += read;
-                            UpdateProgress(MakeIngredientsRead, MakeIngredientsTotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
-                        }
-                    }
-                }
-            }
         }
 
         private List<FileProperties> BuildManifest(List<FilePropertiesRemote> FileRemote)

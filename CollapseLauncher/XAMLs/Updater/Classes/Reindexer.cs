@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 
@@ -42,7 +42,8 @@ namespace CollapseLauncher
                 }
             }
 
-            File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"), JsonConvert.SerializeObject(Prop, Formatting.Indented));
+            File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"),
+                JsonSerializer.Serialize(Prop, typeof(Prop), PropContext.Default));
         }
     }
 }

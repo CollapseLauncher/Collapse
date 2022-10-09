@@ -1,12 +1,13 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 
 namespace CollapseLauncher
 {
@@ -65,7 +66,9 @@ namespace CollapseLauncher
                     };
 
                     Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher", true)
-                        .SetValue(registryName, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(info)), RegistryValueKind.Binary);
+                        .SetValue(registryName,
+                        Encoding.UTF8.GetBytes(JsonSerializer.Serialize(info, typeof(BHI3LInfo), BHI3LInfoContext.Default)),
+                        RegistryValueKind.Binary);
                 }
                 catch (Exception ex)
                 {

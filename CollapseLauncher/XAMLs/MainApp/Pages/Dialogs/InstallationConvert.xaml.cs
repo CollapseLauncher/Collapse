@@ -1,16 +1,16 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -150,7 +150,8 @@ namespace CollapseLauncher.Dialogs
             using (MemoryStream s = new MemoryStream())
             {
                 await new Http().Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
-                _Entry = JsonConvert.DeserializeObject<RegionResourceProp>(Encoding.UTF8.GetString(s.ToArray()));
+                s.Position = 0;
+                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
 
             GameVersion = _Entry.data.game.latest.version;

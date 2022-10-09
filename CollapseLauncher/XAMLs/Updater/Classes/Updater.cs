@@ -1,11 +1,11 @@
 ﻿using Hi3Helper.Http;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.UpdaterWindow;
@@ -58,8 +58,8 @@ namespace CollapseLauncher
                 UpdateStopwatch = Stopwatch.StartNew();
 
                 await Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
-
-                FileProp = JsonConvert.DeserializeObject<Prop>(Encoding.UTF8.GetString(_databuf.GetBuffer()));
+                _databuf.Position = 0;
+                FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
             }
         }
 

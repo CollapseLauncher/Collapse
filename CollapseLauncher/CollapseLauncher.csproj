@@ -57,9 +57,9 @@
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25211-preview" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.220930.4-preview2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0-rc.1.22426.10" />
+		<PackageReference Include="System.Text.Json" Version="7.0.0-rc.1.22426.10" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -124,8 +124,7 @@
 		</Page>
 	</ItemGroup>
 
-	<Target Name="ConfigureTrimming"
-        BeforeTargets="PrepareForILLink">
+	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
 			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WindowsAppSDK'">
 				<IsTrimmable>true</IsTrimmable>
