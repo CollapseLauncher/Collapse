@@ -163,8 +163,8 @@ namespace CollapseLauncher.Pages
         byte[] ChunkBuffer;
         private void CheckChunksCRC(FilePropertiesRemote input)
         {
-            List<XMFDictionaryClasses.XMFBlockList> BrokenBlock = new List<XMFDictionaryClasses.XMFBlockList>();
-            List<XMFDictionaryClasses.XMFFileProperty> BrokenChunk = new List<XMFDictionaryClasses.XMFFileProperty>();
+            List<XMFBlockList> BrokenBlock = new List<XMFBlockList>();
+            List<XMFFileProperty> BrokenChunk = new List<XMFFileProperty>();
             string BlockBasePath = FilePath;
             foreach (var block in input.BlkC)
             {
@@ -183,7 +183,7 @@ namespace CollapseLauncher.Pages
                         ExpctCRC = "",
                         CurrCRC = "Missing"
                     }));
-                    BrokenBlock.Add(new XMFDictionaryClasses.XMFBlockList
+                    BrokenBlock.Add(new XMFBlockList
                     {
                         BlockHash = block.BlockHash,
                         BlockSize = block.BlockSize,
@@ -213,7 +213,7 @@ namespace CollapseLauncher.Pages
                         ExpctCRC = "",
                         CurrCRC = "Size < Actual"
                     }));
-                    BrokenBlock.Add(new XMFDictionaryClasses.XMFBlockList
+                    BrokenBlock.Add(new XMFBlockList
                     {
                         BlockHash = block.BlockHash,
                         BlockSize = block.BlockSize,
@@ -236,7 +236,7 @@ namespace CollapseLauncher.Pages
                     {
                         SingleCurrentReadSize = 0;
                         SingleSize = block.BlockSize;
-                        BrokenChunk = new List<XMFDictionaryClasses.XMFFileProperty>();
+                        BrokenChunk = new List<XMFFileProperty>();
                         foreach (var chunk in block.BlockContent)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -273,7 +273,7 @@ namespace CollapseLauncher.Pages
 
                         if (BrokenChunk.Count > 0)
                         {
-                            BrokenBlock.Add(new XMFDictionaryClasses.XMFBlockList
+                            BrokenBlock.Add(new XMFBlockList
                             {
                                 BlockHash = block.BlockHash,
                                 BlockSize = block.BlockSize,

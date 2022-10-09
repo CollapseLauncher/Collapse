@@ -15,7 +15,7 @@ namespace Hi3Helper.Data
         XMF
     }
 
-    public class XMFUtils : XMFDictionaryClasses
+    public class XMFUtils
     {
         // XMF Section
         internal protected Stream stream;

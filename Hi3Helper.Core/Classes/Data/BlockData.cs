@@ -9,7 +9,7 @@ using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Data
 {
-    public class BlockData : XMFDictionaryClasses
+    public class BlockData
     {
         internal protected MemoryStream chunkBuffer;
         internal protected FileStream fileStream;

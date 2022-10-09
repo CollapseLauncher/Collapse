@@ -195,12 +195,12 @@ namespace CollapseLauncher
             return _out;
         }
 
-        private List<FileProperties> BuildBlockManifest(List<XMFDictionaryClasses.XMFBlockList> BlockC, string BaseName)
+        private List<FileProperties> BuildBlockManifest(List<XMFBlockList> BlockC, string BaseName)
         {
             string Name;
             List<FileProperties> _out = new List<FileProperties>();
 
-            foreach (XMFDictionaryClasses.XMFBlockList Block in BlockC)
+            foreach (XMFBlockList Block in BlockC)
             {
                 Name = BaseName + "/" + Block.BlockHash + ".wmv";
                 _out.Add(new FileProperties

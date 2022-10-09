@@ -121,8 +121,8 @@ namespace Hi3Helper.Shared.GameConversion
 
         private void CheckBlockFile()
         {
-            List<XMFDictionaryClasses.XMFBlockList> BrokenBlock = new List<XMFDictionaryClasses.XMFBlockList>();
-            List<XMFDictionaryClasses.XMFFileProperty> BrokenChunk = new List<XMFDictionaryClasses.XMFFileProperty>();
+            List<XMFBlockList> BrokenBlock = new List<XMFBlockList>();
+            List<XMFFileProperty> BrokenChunk = new List<XMFFileProperty>();
             string BlockBasePath = FilePath;
             byte[] ChunkBuffer;
 
@@ -138,7 +138,7 @@ namespace Hi3Helper.Shared.GameConversion
                     TotalRead += block.BlockSize;
                     TotalCount += block.BlockContent.Count;
 
-                    BrokenBlock.Add(new XMFDictionaryClasses.XMFBlockList
+                    BrokenBlock.Add(new XMFBlockList
                     {
                         BlockHash = block.BlockHash,
                         BlockSize = block.BlockSize,
@@ -155,7 +155,7 @@ namespace Hi3Helper.Shared.GameConversion
                 {
                     using (stream = FileInfo.OpenRead())
                     {
-                        BrokenChunk = new List<XMFDictionaryClasses.XMFFileProperty>();
+                        BrokenChunk = new List<XMFFileProperty>();
                         foreach (var chunk in block.BlockContent)
                         {
                             CheckStatus = string.Format(Lang._InstallMigrateSteam.InnerCheckBlock2, FileIndex.FT, TotalCount, TotalCountToRead, block.BlockHash, chunk._startoffset.ToString("x8"), chunk._filesize.ToString("x8"));
@@ -180,7 +180,7 @@ namespace Hi3Helper.Shared.GameConversion
                     }
 
                     if (BrokenChunk.Count > 0)
-                        BrokenBlock.Add(new XMFDictionaryClasses.XMFBlockList
+                        BrokenBlock.Add(new XMFBlockList
                         {
                             BlockHash = block.BlockHash,
                             BlockSize = block.BlockSize,

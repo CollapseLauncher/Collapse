@@ -1,11 +1,13 @@
 ﻿using Hi3Helper.Preset;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum FileType { Blocks, Generic, Audio }
-    public class FilePropertiesRemote : XMFDictionaryClasses
+    public class FilePropertiesRemote
     {
         // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
