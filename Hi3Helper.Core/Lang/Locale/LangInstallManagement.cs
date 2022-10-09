@@ -1,6 +1,6 @@
 ﻿namespace Hi3Helper
 {
-    public static partial class Locale
+    public partial class Locale
     {
         #region InstallManagement
         public partial class LocalizationParams

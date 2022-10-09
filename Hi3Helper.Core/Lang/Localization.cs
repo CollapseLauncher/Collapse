@@ -1,27 +1,32 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper
 {
-    public static partial class Locale
+    public partial class Locale
     {
         public static void LoadLocalization(string appLang)
         {
-            LangFallback = JsonConvert.DeserializeObject<LocalizationParams>(File
+            Console.WriteLine(LanguageNames.Count);
+            Console.WriteLine(LanguageNames.Keys);
+
+            LangFallback = (LocalizationParams)JsonSerializer.Deserialize(File
                 .ReadAllText(LanguageNames
                     .Where(x => x.Value.LangID.ToLower() == "en" || x.Value.LangID.ToLower() == "en-us")
-                    .First().Value.LangFilePath));
+                    .First().Value.LangFilePath), typeof(LocalizationParams), LocaleContext.Default);
             try
             {
-                Lang = JsonConvert.DeserializeObject<LocalizationParams>(
+                Lang = (LocalizationParams)JsonSerializer.Deserialize(
                     File.ReadAllText(LanguageNames
                         .Where(x => x.Value.LangID.ToLower() == appLang.ToLower())
-                        .First().Value.LangFilePath));
+                        .First().Value.LangFilePath), typeof(LocalizationParams), LocaleContext.Default);
 
                 LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");
             }
@@ -39,10 +44,13 @@ namespace Hi3Helper
                 LocalizationParams lang = new LocalizationParams();
                 try
                 {
-                    lang = JsonConvert.DeserializeObject<LocalizationParams>(File.ReadAllText(Entry));
-                    LanguageNames.Add(lang.LanguageName, new LangMetadata { LangID = lang.LanguageID, Author = lang.Author, LangFilePath = Entry });
+                    lang = (LocalizationParams)JsonSerializer.Deserialize(File.ReadAllText(Entry), typeof(LocalizationParams), LocaleContext.Default);
+
+                    Console.WriteLine(lang.LanguageName);
+                    if (!LanguageNames.ContainsKey(lang.LanguageName))
+                        LanguageNames.Add(lang.LanguageName, new LangMetadata { LangID = lang.LanguageID, Author = lang.Author, LangFilePath = Entry });
                 }
-                catch (JsonReaderException ex)
+                catch (JsonException ex)
                 {
                     LogWriteLine($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
                     throw new LocalizationException($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"", ex);

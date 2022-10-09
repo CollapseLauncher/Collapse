@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -58,12 +58,15 @@ namespace Hi3Helper.Preset
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException("stampv2.json file seems to be empty. Please remove it and restart the launcher!");
             if (string.IsNullOrEmpty(content)) throw new NullReferenceException("metadatav2.json file seems to be empty. Please remove it and restart the launcher!");
 
-            ConfigV2 = JsonConvert.DeserializeObject<Metadata>(content);
+            ConfigV2 = (Metadata)JsonSerializer
+                .Deserialize(content, typeof(Metadata), MetadataContext.Default);
+
             if (ConfigV2 is null) throw new NullReferenceException("Metadata config is broken");
 
             ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
 
-            ConfigV2LastUpdate = JsonConvert.DeserializeObject<Stamp>(stamp).LastUpdated;
+            ConfigV2LastUpdate = ((Stamp)JsonSerializer
+                .Deserialize(stamp, typeof(Stamp), StampContext.Default)).LastUpdated;
         }
 
         public static void GetConfigV2Regions(string GameCategoryName)
@@ -88,8 +91,8 @@ namespace Hi3Helper.Preset
                 {
                     string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
                     await http.Download(URL, Stream);
-                    string data = Encoding.UTF8.GetString(Stream.GetBuffer());
-                    ConfigStamp = JsonConvert.DeserializeObject<Stamp>(data);
+                    Stream.Position = 0;
+                    ConfigStamp = ((Stamp)JsonSerializer.Deserialize(Stream, typeof(Stamp), StampContext.Default));
                 }
             }
             catch (Exception ex)

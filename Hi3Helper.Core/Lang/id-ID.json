@@ -1,10 +1,8 @@
 {
-  // Translation Metadata
   "LanguageName": "Bahasa Indonesia",
   "LanguageID": "id-ID",
   "Author": "neon-nyan",
 
-  // StartupPage Content
   "_StartupPage": {
     "PageTitle": "Halaman Startup Awal",
     "Title1": "Selamat Datang",
@@ -42,7 +40,6 @@
     "Pg2ComboBoxRegion": "Pilih Region"
   },
 
-  // DisconnectedPage Content
   "_DisconnectedPage": {
     "PageTitle": "Halaman Terputus",
     "Header1": "Koneksi Internetmu",
@@ -53,7 +50,6 @@
     "ShowErrorBtn": "Perlihatkan Pesan Error"
   },
 
-  // UnhandledExceptionPage Content
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Error Tidak Tertangani",
     "UnhandledSubtitle1": "Telah terjadi error yang tidak dapat ditangani dengan exception throw berikut:",
@@ -66,7 +62,6 @@
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
   },
 
-  // MainPage Content
   "_MainPage": {
     "PageTitle": "Halaman Awal",
     "RegionChangeConfirm": "Wilayah game akan diubah. Lanjutkan?",
@@ -84,7 +79,6 @@
     "MetadataUpdateBtnUpdating": "Memperbarui Metadata..."
   },
 
-  // HomePage Content
   "_HomePage": {
     "PageTitle": "Launcher",
     "PreloadTitle": "Pra-unduh Telah Tersedia!",
@@ -125,7 +119,6 @@
     "PostPanel_NoNews": "Hah?\nNggak ada berita?"
   },
 
-  // GameRepairPage
   "_GameRepairPage": {
     "PageTitle": "Perbaikan Game",
     "ListCol1": "Nama",
@@ -158,7 +151,6 @@
     "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu sebelum menggunakan fitur ini!"
   },
 
-  // CachesPage Content
   "_CachesPage": {
     "PageTitle": "Pembaruan Cache",
     "ListCol1": "Name",
@@ -185,17 +177,14 @@
     "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu sebelum menggunakan fitur ini!"
   },
 
-  // CutscenesPage
   "_CutscenesPage": {
     "PageTitle": "Cutscene"
   },
 
-  // GameSettingsPage
   "_GameSettingsPage": {
     "PageTitle": "Pengaturan Game",
 
     "Graphics_Title": "Pengaturan Grafis",
-    // Graphics: Resolution Panel
     "Graphics_ResolutionPanel": "Resolusi Game",
     "Graphics_Fullscreen": "Layar Penuh",
     "Graphics_ExclusiveFullscreen": "Gunakan Layar Penuh Eksklusif",
@@ -204,18 +193,15 @@
     "Graphics_ResCustomW": "P",
     "Graphics_ResCustomH": "T",
 
-    // Graphics: FPS Panel
     "Graphics_FPSPanel": "FPS Maksimal",
     "Graphics_FPSInCombat": "Dalam Pertarungan",
     "Graphics_FPSInMenu": "Menu Awal",
 
-    // Graphics: API Panel
     "Graphics_APIPanel": "API Grafis",
     "Graphics_APIHelp1": "Ada beberapa API yang didukung untuk game ini antara lain:",
     "Graphics_APIHelp2": "Catatan:",
     "Graphics_APIHelp3": "Menggunakan DirectX 12 akan menyebabkan crash pada beberapa arena mengingat game tidak menggunakan DirectX 12 API secara bawaan.",
 
-    // Graphics: Global Graphics Settings Panel
     "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
     "Graphics_Render": "Akurasi Rendering",
     "Graphics_Shadow": "Kualitas Bayangan",
@@ -228,7 +214,6 @@
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Distorsi",
 
-    // Graphics: APHO2 Graphics Settings Panel
     "Graphics_APHO2Panel": "Pengaturan Grafis APHO2 dan Chapter Baru",
     "Graphics_APHO2GI": "Global Illumination",
     "Graphics_APHO2VL": "Volumetric Lighting",
@@ -243,7 +228,6 @@
     "SpecMaximum": "Maksimum",
 
     "Audio_Title": "Pengaturan Suara",
-    // Audio: Audio Panel 1
     "Audio_BGM": "Volume BGM",
     "Audio_SFX": "Volume Efek Suara",
     "Audio_VOLang": "Bahasa Pengisi Suara",
@@ -265,14 +249,12 @@
     "OverlayFirstTimeSubtitle": "Mohon jalankan game ini untuk pertama kalinya terlebih dahulu dan kembali lagi untuk menggunakan fitur ini.",
 
     "CustomArgs_Title": "Penyesuaian Argumen Pemulaian",
-    // Custom Arguments: Custom Arguments Panel
     "CustomArgs_Subtitle": "Argumen Pemulaian",
     "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
     "CustomArgs_Footer3": "berikut."
   },
 
-  // SettingsPage
   "_SettingsPage": {
     "PageTitle": "Pengaturan Aplikasi",
 
@@ -335,7 +317,6 @@
     "DiscordBtn2": "Kunjungi Discord Honkai Impact 3rd"
   },
 
-  // Misc Content
   "_Misc": {
     "UpdateCompleteTitle": "Pembaruan Selesai!",
     "UpdateCompleteSubtitle": "Launchermu telah diperbarui ke {0}! (Kanal Rilis: {1})",
@@ -350,7 +331,6 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
-    // Buttons Texts
     "Cancel": "Batal",
     "Close": "Tutup",
     "UseCurrentDir": "Pakai lokasi saat ini",
@@ -412,7 +392,6 @@
     "BuildChannelStable": "Stable"
   },
 
-  // Dialogs Content
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Pemberitahuan: Pembaruan Delta Patch Terdeteksi!",
     "DeltaPatchDetectedSubtitle": "Delta patch akan digunakan untuk pemperbarui game dari {0} ke {1}.\r\nPerlu diingat bahwa kamu mungkin masih perlu mengunduh beberapa berkas di dalam game.\r\n\r\nMau dilanjutkan?",
@@ -476,7 +455,6 @@
     "GameConfigBrokenSubtitle3": "Apabila iya, maka kamu perlu memindahkan semua file gamenya ke lokasi lain. Setelahnya, klik \"Arahkan direkktori\" untuk memilih lokasi gamenya."
   },
 
-  // InstallMgmt Content
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Cek Integritas",
     "PreparePatchTitle": "Menyiapkan Patch",
@@ -486,7 +464,6 @@
     "RepairFilesRequiredSubtitle": "Kamu memiliki setidaknya {0} file (ukuran: {1}) yang perlu diperbaiki sebelum diupdate!\r\n\r\nCatatan: Process ini akan memakan waktu (tergantung seberapa cepat dan stabilnya koneksimu). Kamu direkomendasikan untuk gunakan VPN (VPN gratis seperti ProtonVPN sudah cukup) apabila kamu tidak punya koneksi yang cepat :)"
   },
 
-  // InstallConvert Content
   "_InstallConvert": {
     "PageTitle": "Pengubahan Antar-Versi",
     "Step1Title": "Memilih Game dan Mendapatkan Depensi",
@@ -520,7 +497,6 @@
     "CancelMsgSubtitle2": "Kamu akan membatalkan proses pengubahan namun game-mu sudah terlanjur diubah ke {0}. Kamu akan melewati fase \"Verifikasi Integritas Setelah Pengubahan\".\r\n\r\nKamu yakin?"
   },
 
-  // InstallMigrateSteam Content
   "_InstallMigrateSteam": {
     "PageTitle": "Pengubahan Steam",
     "Step1Title": "Memeriksa Izin Folder",
@@ -553,7 +529,6 @@
     "InnerConvertFile3": "Mengunduh {0} [{1}/{2}]: {3} -> (0x{4} | Ukuran: 0x{5})"
   },
 
-  // InstallMigrate Content
   "_InstallMigrate": {
     "PageTitle": "Migrasi Game",
     "Step1Title": "Proses akan dimulai dalam 5 detik. Mohon \"Accept\" perintah UAC untuk memulai proses migrasi.",
@@ -565,7 +540,6 @@
     "PageFooter3": "launcher pada saat proses sedang berjalan"
   },
 
-  // UpdatePage Content
   "_UpdatePage": {
     "PageTitle1": "UPDATE",
     "PageTitle2": "TERSEDIA!",

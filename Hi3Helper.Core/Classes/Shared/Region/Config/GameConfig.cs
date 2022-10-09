@@ -1,12 +1,12 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
@@ -209,8 +209,8 @@ namespace Hi3Helper.Shared.Region
                 string RegData = GetRegistryValue(ScreenSettingDataReg);
 
                 if (RegData == null) return;
-
-                ScreenSettingData screenData = JsonConvert.DeserializeObject<ScreenSettingData>(RegData);
+                ScreenSettingData screenData = (ScreenSettingData)JsonSerializer.Deserialize(RegData, typeof(ScreenSettingData), ScreenSettingDataContext.Default);
+                
                 switch (key)
                 {
                     case "Fullscreen":
@@ -230,12 +230,12 @@ namespace Hi3Helper.Shared.Region
         {
             Size resolution = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
 
-            string data = JsonConvert.SerializeObject(new ScreenSettingData
+            string data = JsonSerializer.Serialize(new ScreenSettingData
             {
                 width = resolution.Width,
                 height = resolution.Height,
                 isfullScreen = gameIni.Settings[SectionName]["Fullscreen"].ToBool()
-            }) + '\0';
+            }, typeof(ScreenSettingData), ScreenSettingDataContext.Default) + '\0';
 
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, ScreenSettingDataReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, "Screenmanager Is Fullscreen mode_h3981298716", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0, RegistryValueKind.DWord);
@@ -348,7 +348,8 @@ namespace Hi3Helper.Shared.Region
 
                 if (RegData == null) return;
 
-                PersonalGraphicsSettingV2 data = JsonConvert.DeserializeObject<PersonalGraphicsSettingV2>(RegData);
+                PersonalGraphicsSettingV2 data = (PersonalGraphicsSettingV2)JsonSerializer
+                    .Deserialize(RegData, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default);
                 #region Unused
                 /*
                 switch (key)
@@ -446,7 +447,7 @@ namespace Hi3Helper.Shared.Region
 
         public static void SavePersonalGraphicsSettingsValue()
         {
-            string data = JsonConvert.SerializeObject(new PersonalGraphicsSettingV2
+            string data = JsonSerializer.Serialize(new PersonalGraphicsSettingV2
             {
                 ResolutionQuality = ConvertIntToEnum(gameIni.Settings[SectionName]["ResolutionQuality"].ToInt()),
                 ShadowLevel = ConvertIntToEnumCloseable(gameIni.Settings[SectionName]["ShadowLevel"].ToInt()),
@@ -463,7 +464,7 @@ namespace Hi3Helper.Shared.Region
                 UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),
                 UseDistortion = gameIni.Settings[SectionName]["UseDistortion"].ToBool(),
                 LodGrade = (ushort)gameIni.Settings[SectionName]["LodGrade"].ToInt(),
-            }, new Newtonsoft.Json.Converters.StringEnumConverter()) + '\0';
+            }, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) + '\0';
 
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalGraphicsSettingV2Reg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
@@ -510,7 +511,7 @@ namespace Hi3Helper.Shared.Region
 
                 if (RegData == null) return;
 
-                PersonalAudioSetting data = JsonConvert.DeserializeObject<PersonalAudioSetting>(RegData);
+                PersonalAudioSetting data = (PersonalAudioSetting)JsonSerializer.Deserialize(RegData, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default);
 
                 switch (key)
                 {
@@ -541,7 +542,7 @@ namespace Hi3Helper.Shared.Region
 
         private static void SavePersonalAudioSettingsValue()
         {
-            string data = JsonConvert.SerializeObject(new PersonalAudioSetting
+            string data = JsonSerializer.Serialize(new PersonalAudioSetting
             {
                 BGMVolume = (byte)gameIni.Settings[SectionName]["BGMVolume"].ToInt(),
                 SoundEffectVolume = (byte)gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt(),
@@ -551,7 +552,7 @@ namespace Hi3Helper.Shared.Region
                 CVLanguage = "Japanese",
                 _userCVLanguage = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0 ? "Chinese(PRC)" : null,
                 IsUserDefined = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0
-            }) + '\0';
+            }, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) + '\0';
 
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalAudioSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
         }

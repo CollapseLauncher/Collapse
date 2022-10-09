@@ -1,13 +1,13 @@
 ﻿using Force.Crc32;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -67,9 +67,7 @@ namespace Hi3Helper.Shared.GameConversion
                 await http.Download(endpointURL, stream, null, null, tokenSource.Token);
                 http.DownloadProgress -= HttpAdapter;
 
-                FileIndexesProperty = JsonConvert.DeserializeObject<List<FilePropertiesRemote>>
-                    (Encoding.UTF8.GetString((stream as MemoryStream)
-                    .ToArray()));
+                FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(stream, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
         }
 

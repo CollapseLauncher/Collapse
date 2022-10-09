@@ -1,12 +1,14 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using static Hi3Helper.Locale;
 using static System.Convert;
 
 namespace Hi3Helper.Data
@@ -47,7 +49,7 @@ namespace Hi3Helper.Data
             {
                 await Download(DispatchBaseURL, Stream, null, null, cancelToken);
                 string Data = Encoding.UTF8.GetString(Stream.GetBuffer());
-                DispatcherDataInfo = JsonConvert.DeserializeObject<YSDispatchInfo>(Data);
+                DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(Data, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
             }
 
             return DispatcherDataInfo;
@@ -95,15 +97,15 @@ namespace Hi3Helper.Data
             {
                 (ValProp.ClientGameRes as List<PkgVersionProperties>)
                     .Add(
-                        JsonConvert.DeserializeObject<PkgVersionProperties>(Data)
+                        (PkgVersionProperties)JsonSerializer.Deserialize(Data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default)
                     );
             }
         }
 
         private void ParseGameResPkgProp(ref QueryProperty ValProp)
         {
-            ValProp.ClientDesignData = JsonConvert.DeserializeObject<PkgVersionProperties>(DispatchProto.Dispatcher.ClientDesignDatalist);
-            ValProp.ClientDesignDataSil = JsonConvert.DeserializeObject<PkgVersionProperties>(DispatchProto.Dispatcher.ClientDesignDatalistSlnt);
+            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(DispatchProto.Dispatcher.ClientDesignDatalist, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(DispatchProto.Dispatcher.ClientDesignDatalistSlnt, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
         }
 
         private async Task ParseAudioAssetsURL(QueryProperty ValProp)

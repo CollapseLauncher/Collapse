@@ -1,16 +1,18 @@
 ﻿using Hi3Helper.Data;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper.Preset
 {
 #nullable enable
+    [JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public enum ServerRegionID
     {
         os_usa = 0,
@@ -19,6 +21,7 @@ namespace Hi3Helper.Preset
         os_cht = 3
     }
 
+    [JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
     public enum GameChannel
     {
         Beta = 0,
@@ -86,7 +89,7 @@ namespace Hi3Helper.Preset
             }
 
             regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-            return JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue))?.deviceVoiceLanguageType ?? 2;
+            return ((GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default))?.deviceVoiceLanguageType ?? 2;
         }
 
         // WARNING!!!
@@ -105,11 +108,13 @@ namespace Hi3Helper.Preset
                 result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
                 if (result is null) throw new NullReferenceException("Key \"GENERAL_DATA_h2389025596\" is null");
                 regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                initValue = JsonConvert.DeserializeObject<GeneralDataProp>(new string(regValue)) ?? initValue;
+                initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
             }
 
             initValue.deviceVoiceLanguageType = LangID;
-            keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(initValue, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include }) + '\0'));
+            keys.SetValue("GENERAL_DATA_h2389025596",
+                Encoding.UTF8.GetBytes(
+                    JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
         }
 
         // WARNING!!!
@@ -128,12 +133,12 @@ namespace Hi3Helper.Preset
 
             string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
 
-            return (int)(JsonConvert.DeserializeObject<GeneralDataProp>(regValue)?.selectedServerName ?? ServerRegionID.os_usa);
+            return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName ?? ServerRegionID.os_usa);
         }
 
         // WARNING!!!
         // This feature is only available for Genshin.
-        class GeneralDataProp
+        public class GeneralDataProp
         {
             public string deviceUUID { get; set; } = "";
             public string userLocalDataVersionId { get; set; } = "0.0.1";
@@ -204,7 +209,7 @@ namespace Hi3Helper.Preset
 
             try
             {
-                BetterHi3LauncherConfig = JsonConvert.DeserializeObject<BHI3LInfo>(Result);
+                BetterHi3LauncherConfig = (BHI3LInfo?)JsonSerializer.Deserialize(Result, typeof(BHI3LInfo), BHI3LInfoContext.Default);
             }
             catch (Exception ex)
             {

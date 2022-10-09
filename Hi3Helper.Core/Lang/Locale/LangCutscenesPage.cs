@@ -1,6 +1,8 @@
-﻿namespace Hi3Helper
+﻿using System.Text.Json.Serialization;
+
+namespace Hi3Helper
 {
-    public static partial class Locale
+    public partial class Locale
     {
         #region CutscenesPage
         public partial class LocalizationParams

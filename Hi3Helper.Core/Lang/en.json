@@ -1,10 +1,8 @@
 {
-  // Translation Metadata
   "LanguageName": "English",
   "LanguageID": "en-US",
   "Author": "neon-nyan",
 
-  // StartupPage Content
   "_StartupPage": {
     "PageTitle": "First Startup Page",
     "Title1": "Welcome",
@@ -42,7 +40,6 @@
     "Pg2ComboBoxRegion": "Select Region"
   },
 
-  // DisconnectedPage Content
   "_DisconnectedPage": {
     "PageTitle": "Disconnected Page",
     "Header1": "Your Internet is",
@@ -53,7 +50,6 @@
     "ShowErrorBtn": "Show Error Message"
   },
 
-  // UnhandledExceptionPage Content
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Unhandled Error",
     "UnhandledSubtitle1": "An Unhandled Error has occured with an Exception Throw below:",
@@ -66,7 +62,6 @@
     "GoBackPageBtn1": "Go Back to Previous Page"
   },
 
-  // MainPage Content
   "_MainPage": {
     "PageTitle": "Root Page",
     "RegionChangeConfirm": "Game region will be changed. Do you want to continue?",
@@ -84,7 +79,6 @@
     "MetadataUpdateBtnUpdating": "Updating Metadata..."
   },
 
-  // HomePage Content
   "_HomePage": {
     "PageTitle": "Launcher",
     "PreloadTitle": "Preload is Available!",
@@ -125,7 +119,6 @@
     "PostPanel_NoNews": "What?\nNo news for today?"
   },
 
-  // GameRepairPage
   "_GameRepairPage": {
     "PageTitle": "Game Repair",
     "ListCol1": "Name",
@@ -158,7 +151,6 @@
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!"
   },
 
-  // CachesPage Content
   "_CachesPage": {
     "PageTitle": "Caches Update",
     "ListCol1": "Name",
@@ -185,17 +177,14 @@
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!"
   },
 
-  // CutscenesPage
   "_CutscenesPage": {
     "PageTitle": "Cutscenes"
   },
 
-  // GameSettingsPage
   "_GameSettingsPage": {
     "PageTitle": "Game Settings",
 
     "Graphics_Title": "Graphics Settings",
-    // Graphics: Resolution Panel
     "Graphics_ResolutionPanel": "Game Resolution",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
@@ -204,18 +193,15 @@
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
-    // Graphics: FPS Panel
     "Graphics_FPSPanel": "Maximum FPS",
     "Graphics_FPSInCombat": "In-Combat",
     "Graphics_FPSInMenu": "Main Menu",
 
-    // Graphics: API Panel
     "Graphics_APIPanel": "Graphics API",
     "Graphics_APIHelp1": "There are few API modes which are available for this game, including:",
     "Graphics_APIHelp2": "Note:",
     "Graphics_APIHelp3": "Using DirectX 12 may cause crashes at some stages since the game wasn't natively compiled with DirectX 12 API",
 
-    // Graphics: Global Graphics Settings Panel
     "Graphics_SpecPanel": "Global Graphics Settings",
     "Graphics_Render": "Rendering Accuracy",
     "Graphics_Shadow": "Shadow Quality",
@@ -228,7 +214,6 @@
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Distortion",
 
-    // Graphics: APHO2 Graphics Settings Panel
     "Graphics_APHO2Panel": "APHO2 & New Chapter Graphics Settings",
     "Graphics_APHO2GI": "Global Illumination",
     "Graphics_APHO2VL": "Volumetric Lighting",
@@ -243,7 +228,6 @@
     "SpecMaximum": "Maximum",
 
     "Audio_Title": "Audio Settings",
-    // Audio: Audio Panel
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VOLang": "Voice Over Language",
@@ -265,14 +249,12 @@
     "OverlayFirstTimeSubtitle": "Please run the game first and then come back to use this feature.",
 
     "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
-    // Custom Arguments: Custom Arguments Panel
     "CustomArgs_Subtitle": "Start-up Arguments",
     "CustomArgs_Footer1": "For more information about the Start-up Argument, please check",
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "to see more parameters."
   },
 
-  // SettingsPage
   "_SettingsPage": {
     "PageTitle": "App Settings",
 
@@ -335,7 +317,6 @@
     "DiscordBtn2": "Visit Honkai Impact 3rd Discord"
   },
 
-  // Misc Content
   "_Misc": {
     "UpdateCompleteTitle": "Update Completed!",
     "UpdateCompleteSubtitle": "Your launcher version has been updated to {0}! (Release Channel: {1})",
@@ -350,7 +331,6 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
-    // Buttons Texts
     "Cancel": "Cancel",
     "Close": "Close",
     "UseCurrentDir": "Use current directory",
@@ -412,7 +392,6 @@
     "BuildChannelStable": "Stable"
   },
 
-  // Dialogs Content
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
     "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember, you might still need to download some files in-game as usual.\r\n\r\nDo you want to continue?",
@@ -476,7 +455,6 @@
     "GameConfigBrokenSubtitle3": "If yes, then move all of your game files to another location. After that, click on \"Locate directory\" to choose the path."
   },
 
-  // InstallMgmt Content
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Integrity Check",
     "PreparePatchTitle": "Preparing Patch",
@@ -486,7 +464,6 @@
     "RepairFilesRequiredSubtitle": "You have at least {0} files ({1} in size) need to be repaired before updating!\r\n\r\nNote: This process may takes longer than expected (depends on how fast and stable your connection is). Also, consider to use VPN (free VPN like ProtonVPN is good enough) if you have slow download speed :)"
   },
 
-  // InstallConvert Content
   "_InstallConvert": {
     "PageTitle": "Cross-version Conversion",
     "Step1Title": "Select Game and Fetching Dependencies",
@@ -520,7 +497,6 @@
     "CancelMsgSubtitle2": "You're about to cancel the conversion process but your game has been already converted to {0}. You'll be skipping the \"Post-Conversion Integrity Verification\" phase.\r\n\r\nAre you sure?"
   },
 
-  // InstallMigrateSteam Content
   "_InstallMigrateSteam": {
     "PageTitle": "Steam Conversion",
     "Step1Title": "Checking Folder Permission",
@@ -553,7 +529,6 @@
     "InnerConvertFile3": "Downloading {0} [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
 
-  // InstallMigrate Content
   "_InstallMigrate": {
     "PageTitle": "Game Migration",
     "Step1Title": "Process will start in 5 seconds. Please accept the UAC dialog to start Migration process",
@@ -565,7 +540,6 @@
     "PageFooter3": "switch to another page or close the launcher while the process is running"
   },
 
-  // UpdatePage Content
   "_UpdatePage": {
     "PageTitle1": "UPDATE",
     "PageTitle2": "IS AVAILABLE!",
