@@ -9,9 +9,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Graphics;
-using WinRT.Interop;
-using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -20,11 +19,11 @@ namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
+        private bool IsWindowActive = false;
         public MainWindow()
         {
             try
             {
-                this.InitializeComponent();
                 m_window = this;
 
                 string title = $"Collapse Launcher - v{AppCurrentVersion} ";
@@ -36,10 +35,22 @@ namespace CollapseLauncher
 #if PORTABLE
                 this.Title += "[PORTABLE]";
 #endif
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                Console.ReadLine();
+            }
+        }
+
+        public void InitializeWindowProperties()
+        {
+            try
+            {
+                InitializeWindowSettings();
 
                 if (IsFirstInstall)
                 {
-                    TryInitWindowHandler();
                     ExtendsContentIntoTitleBar = false;
                     SetWindowSize(m_windowHandle, 360, 230);
                     SetLegacyTitleBarColor();
@@ -52,52 +63,72 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 Console.ReadLine();
             }
         }
 
         public void StartSetupPage()
         {
-            InitializeWindowSettings();
+            SetWindowSize(m_windowHandle, 1280, 730);
             rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
         }
 
         public void StartMainPage()
         {
-            InitializeWindowSettings();
+            SetWindowSize(m_windowHandle, 1280, 730);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
-        public void TryInitWindowHandler()
+        private void InitializeAppWindowAndIntPtr()
         {
-            m_backDrop = new BackdropManagement(this);
-            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
-            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-            m_appDPIScale = GetScaleAdjustment();
+            this.InitializeComponent();
+            this.Activate();
+            // Initialize Window Handlers
+            m_windowHandle = GetActiveWindow();
+            m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
+            m_appWindow = AppWindow.GetFromWindowId(m_windowID);
+            m_appWindow.Changed += AppWindow_Changed;
+            m_presenter = m_appWindow.Presenter as OverlappedPresenter;
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(m_windowID, DisplayAreaFallback.Primary);
 
-            m_AppWindow = GetAppWindowForCurrentWindow();
-            m_AppWindow.Changed += AppWindow_Changed;
+            // Get Monitor DPI
+            IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
+            if (GetDpiForMonitor(hMonitor, Monitor_DPI_Type.MDT_Default, out uint dpiX, out uint _) != 0)
+            {
+                throw new Exception("Could not get DPI for monitor.");
+            }
+
+            m_appDPIScale = (uint)(((long)dpiX * 100 + (96 >> 1)) / 96) / 100.0;
+
+            InitHandlerPointer(m_windowHandle);
         }
 
         public void InitializeWindowSettings()
         {
-            TryInitWindowHandler();
+#if !DISABLE_COM
+            m_backDrop = new BackdropManagement(this);
+            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
+            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
+#endif
+
+            InitializeAppWindowAndIntPtr();
+
             SetWindowSize(m_windowHandle);
 
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
             if (AppWindowTitleBar.IsCustomizationSupported())
             {
-#if MICA
+#if MICA && !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.Mica);
-#elif DISABLETRANSPARENT
+#elif DISABLETRANSPARENT && !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.DefaultColor);
-#else
+#elif !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
 #endif
                 SetThemeParameters();
-                var titleBar = m_AppWindow.TitleBar;
+                var titleBar = m_appWindow.TitleBar;
                 titleBar.ExtendsContentIntoTitleBar = true;
                 AppTitleBar.Loaded += AppTitleBar_Loaded;
                 AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
@@ -109,21 +140,21 @@ namespace CollapseLauncher
                 switch (GetAppTheme())
                 {
                     case ApplicationTheme.Light:
-                        m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                        m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
                         break;
                     case ApplicationTheme.Dark:
-                        m_AppWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                        m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
                         break;
                 }
 
-                m_AppWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
-                m_AppWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+                m_appWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+                m_appWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
             }
             else
             {
-#if DISABLETRANSPARENT
+#if DISABLETRANSPARENT && !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.DefaultColor);
-#else
+#elif !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
 #endif
                 SetThemeParameters();
@@ -195,29 +226,17 @@ namespace CollapseLauncher
         {
             if (AppWindowTitleBar.IsCustomizationSupported())
             {
-                SetDragRegionForCustomTitleBar(m_AppWindow);
+                SetDragRegionForCustomTitleBar(m_appWindow);
             }
         }
 
         private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (AppWindowTitleBar.IsCustomizationSupported()
-                && m_AppWindow.TitleBar.ExtendsContentIntoTitleBar)
+                && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
-                SetDragRegionForCustomTitleBar(m_AppWindow);
+                SetDragRegionForCustomTitleBar(m_appWindow);
             }
-        }
-
-        private AppWindow GetAppWindowForCurrentWindow()
-        {
-            m_windowHandle = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
-            AppWindow window = AppWindow.GetFromWindowId(wndId);
-            m_presenter = window.Presenter as OverlappedPresenter;
-            m_windowHandle = WindowNative.GetWindowHandle(this);
-            InitHandlerPointer(m_windowHandle);
-
-            return window;
         }
 
         [DllImport("Shcore.dll", SetLastError = true)]
@@ -229,23 +248,6 @@ namespace CollapseLauncher
             MDT_Angular_DPI = 1,
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
-        }
-
-        private double GetScaleAdjustment()
-        {
-            IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            DisplayArea displayArea = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
-            IntPtr hMonitor = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
-
-            int result = GetDpiForMonitor(hMonitor, Monitor_DPI_Type.MDT_Default, out uint dpiX, out uint _);
-            if (result != 0)
-            {
-                throw new Exception("Could not get DPI for monitor.");
-            }
-
-            uint scaleFactorPercent = (uint)(((long)dpiX * 100 + (96 >> 1)) / 96);
-            return scaleFactorPercent / 100.0;
         }
 
         private void SetDragRegionForCustomTitleBar(AppWindow appWindow)
@@ -290,15 +292,15 @@ namespace CollapseLauncher
             // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
             if (args.DidPresenterChange && !AppWindowTitleBar.IsCustomizationSupported())
             {
-                if (m_AppWindow.Position.X > -128 || m_AppWindow.Position.Y > -128)
+                if (m_appWindow.Position.X > -128 || m_appWindow.Position.Y > -128)
                     m_presenter.Restore();
 
                 sender.Move(LastPos);
                 SetWindowSize(m_windowHandle);
             }
 
-            if (!(m_AppWindow.Position.X < 0 || m_AppWindow.Position.Y < 0))
-                LastPos = m_AppWindow.Position;
+            if (!(m_appWindow.Position.X < 0 || m_appWindow.Position.Y < 0))
+                LastPos = m_appWindow.Position;
         }
     }
 }

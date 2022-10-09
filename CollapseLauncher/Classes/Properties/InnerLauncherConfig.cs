@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
@@ -49,8 +50,10 @@ namespace CollapseLauncher
 
         public static AppMode m_appMode;
         public static Arguments m_arguments = new Arguments();
+#if !DISABLE_COM
         public static BackdropManagement m_backDrop;
         public static WindowsSystemDispatcherQueueHelper m_wsdqHelper;
+#endif
         public static BackdropType m_currentBackdrop;
         public static MicaController m_micaController;
         public static DesktopAcrylicController m_acrylicController;
@@ -59,7 +62,8 @@ namespace CollapseLauncher
 
         public static Window m_window;
         public static IntPtr m_windowHandle;
-        public static AppWindow m_AppWindow;
+        public static WindowId m_windowID;
+        public static AppWindow m_appWindow;
         public static OverlappedPresenter m_presenter;
         public static Size m_actualMainFrameSize;
         public static double m_appDPIScale;

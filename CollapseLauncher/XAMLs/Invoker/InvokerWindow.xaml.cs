@@ -98,18 +98,20 @@ namespace CollapseLauncher
 
         public void InitializeWindowSettings()
         {
+            m_appWindow = GetAppWindowForCurrentWindow();
+            m_appWindow.Changed += AppWindow_Changed;
+
+#if !DISABLE_COM
             m_backDrop = new BackdropManagement(this);
             m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
             m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
 
-            m_AppWindow = GetAppWindowForCurrentWindow();
-            m_AppWindow.Changed += AppWindow_Changed;
-
-            SetWindowSize(m_windowHandle, 540, 320);
-
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
             m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
+#endif
+
+            SetWindowSize(m_windowHandle, 540, 320);
             ExtendsContentIntoTitleBar = true;
 
             SetTitleBar(DragArea);
@@ -176,15 +178,15 @@ namespace CollapseLauncher
             // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
             if (args.DidPresenterChange)
             {
-                if (m_AppWindow.Position.X > -128 || m_AppWindow.Position.Y > -128)
+                if (m_appWindow.Position.X > -128 || m_appWindow.Position.Y > -128)
                     m_presenter.Restore();
 
                 sender.Move(LastPos);
                 SetWindowSize(m_windowHandle, 540, 320);
             }
 
-            if (!(m_AppWindow.Position.X < 0 || m_AppWindow.Position.Y < 0))
-                LastPos = m_AppWindow.Position;
+            if (!(m_appWindow.Position.X < 0 || m_appWindow.Position.Y < 0))
+                LastPos = m_appWindow.Position;
         }
     }
 }

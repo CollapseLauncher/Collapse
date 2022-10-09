@@ -19,11 +19,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -105,7 +105,11 @@ namespace CollapseLauncher.Pages
             while (!IsComplete)
             {
                 await Dialog_GameConfigBroken(Content, gameIni.ProfilePath);
+#if DISABLE_COM
+                string GamePath = GetFolderPicker();
+#else
                 string GamePath = await GetFolderPicker();
+#endif
 
                 if (IsComplete = CheckExistingGame(GamePath))
                     MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
@@ -860,7 +864,11 @@ namespace CollapseLauncher.Pages
                         isChoosen = true;
                         break;
                     case ContentDialogResult.Secondary:
+#if DISABLE_COM
+                        folder = GetFolderPicker();
+#else
                         folder = await GetFolderPicker();
+#endif
 
                         if (folder != null)
                             if (IsUserHasPermission(folder))

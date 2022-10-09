@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using static CollapseLauncher.FileDialogNative;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -72,7 +72,11 @@ namespace CollapseLauncher.Dialogs
             switch (await cd.ShowAsync())
             {
                 case ContentDialogResult.Secondary:
+#if DISABLE_COM
+                    folder = GetFolderPicker();
+#else
                     folder = await GetFolderPicker();
+#endif
 
                     if (folder == null)
                         await MigrationCancelled(3000);

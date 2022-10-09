@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Composition.SystemBackdrops;
+﻿#if !DISABLE_COM
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using System.Runtime.InteropServices;
 using WinRT;
@@ -164,3 +165,4 @@ namespace CollapseLauncher
         }
     }
 }
+#endif

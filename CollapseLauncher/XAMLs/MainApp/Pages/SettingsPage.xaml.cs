@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using static CollapseLauncher.FileDialogNative;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -202,9 +202,15 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
+#if DISABLE_COM
+        private void SelectBackgroundImg(object sender, RoutedEventArgs e)
+        {
+            string file = GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
+#else
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
+#endif
             if (file != null)
             {
                 regionBackgroundProp.imgLocalPath = file;

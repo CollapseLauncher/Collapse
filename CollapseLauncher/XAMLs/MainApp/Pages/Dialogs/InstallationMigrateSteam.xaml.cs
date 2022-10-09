@@ -11,8 +11,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -338,7 +338,11 @@ namespace CollapseLauncher.Dialogs
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:
+#if DISABLE_COM
+                        folder = GetFolderPicker();
+#else
                         folder = await GetFolderPicker();
+#endif
 
                         if (folder == null)
                             OperationCancelled();

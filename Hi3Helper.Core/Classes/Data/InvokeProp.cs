@@ -23,6 +23,7 @@ namespace Hi3Helper
         {
             SWP_NOMOVE = 2,
         }
+
         public enum SpecialWindowHandles
         {
             HWND_TOP = 0,
@@ -48,6 +49,59 @@ namespace Hi3Helper
             MDT_Angular_DPI = 1,
             MDT_Raw_DPI = 2,
             MDT_Default = MDT_Effective_DPI
+        }
+
+        public delegate int BrowseCallBackProc(IntPtr hwnd, int msg, IntPtr lp, IntPtr wp);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct BROWSEINFO
+        {
+            public IntPtr hwndOwner;
+            public IntPtr pidlRoot;
+            public string pszDisplayName;
+            public string lpszTitle;
+            public uint ulFlags;
+            public BrowseCallBackProc lpfn;
+            public IntPtr lParam;
+            public int iImage;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public class OpenFileName
+        {
+            public int structSize = 0;
+            public IntPtr dlgOwner = IntPtr.Zero;
+            public IntPtr instance = IntPtr.Zero;
+
+            public string filter = null;
+            public string customFilter = null;
+            public int maxCustFilter = 0;
+            public int filterIndex = 0;
+
+            public string file = null;
+            public int maxFile = 0;
+
+            public string fileTitle = null;
+            public int maxFileTitle = 0;
+
+            public string initialDir = null;
+
+            public string title = null;
+
+            public int flags = 0;
+            public short fileOffset = 0;
+            public short fileExtension = 0;
+
+            public string defExt = null;
+
+            public IntPtr custData = IntPtr.Zero;
+            public IntPtr hook = IntPtr.Zero;
+
+            public string templateName = null;
+
+            public IntPtr reservedPtr = IntPtr.Zero;
+            public int reservedInt = 0;
+            public int flagsEx = 0;
         }
 
         [DllImport("kernel32.dll")]
@@ -98,12 +152,30 @@ namespace Hi3Helper
         [DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
 
+        [DllImport("shell32.dll")]
+        public static extern IntPtr SHBrowseForFolder(ref BROWSEINFO lpbi);
+
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
+
+        [DllImport("user32.dll", PreserveSig = true)]
+        public static extern IntPtr SendMessage(HandleRef hWnd, uint Msg, int wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, string lParam);
+
+        [DllImport("comdlg32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
+
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatch(string oldFileName, string diffFileName, string outNewFileName,
             bool isLoadOldAll, UIntPtr patchCacheSize, long diffDataOffert, long diffDataSize);
 
         [DllImport(@"Lib\HPatchZ.dll", EntryPoint = "hpatch_cmd_line", CallingConvention = CallingConvention.Cdecl)]
         public static extern int HPatchCommand(int argc, string[] argv);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetActiveWindow();
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
