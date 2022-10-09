@@ -11,7 +11,7 @@
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
 
     <Grid>
-        <StackPanel Margin="32,32,32,32" x:Name="PageContent">
+        <StackPanel Margin="32,80,32,32" x:Name="PageContent">
             <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -80,7 +80,7 @@
             </Grid>
         </StackPanel>
         <Grid x:Name="Overlay" Visibility="Collapsed">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,128,0,0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                 <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>

@@ -63,6 +63,7 @@ namespace CollapseLauncher
 
         public static Window m_window;
         public static IntPtr m_windowHandle;
+        public static Rect m_windowPosSize;
         public static WindowId m_windowID;
         public static AppWindow m_appWindow;
         public static OverlappedPresenter m_presenter;

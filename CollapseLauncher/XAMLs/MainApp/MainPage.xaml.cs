@@ -13,9 +13,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -28,6 +30,39 @@ namespace CollapseLauncher
     {
         private WebView2 WebView2Runtime;
         private bool LockRegionChangeBtn;
+
+        private RectInt32[] DragAreaMode_Normal
+        {
+            get
+            {
+                List<RectInt32> area = new List<RectInt32>
+                {
+                    new RectInt32((int)(TitleBarDrag1.ActualOffset.X * m_appDPIScale),
+                                  0,
+                                  (int)(TitleBarDrag1.ActualWidth * m_appDPIScale),
+                                  (int)(48 * m_appDPIScale)),
+                    new RectInt32((int)(TitleBarDrag2.ActualOffset.X * m_appDPIScale),
+                                  0,
+                                  (int)(TitleBarDrag2.ActualWidth * m_appDPIScale),
+                                  (int)(48 * m_appDPIScale))
+                };
+                return area.ToArray();
+            }
+        }
+        private RectInt32[] DragAreaMode_Full
+        {
+            get
+            {
+                List<RectInt32> area = new List<RectInt32>
+                {
+                    new RectInt32(0,
+                                  0,
+                                  (int)(m_windowPosSize.Width * m_appDPIScale),
+                                  (int)(40 * m_appDPIScale))
+                };
+                return area.ToArray();
+            }
+        }
 
         public MainPage()
         {
@@ -49,6 +84,7 @@ namespace CollapseLauncher
         {
             try
             {
+                MainWindow.SetDragArea(DragAreaMode_Normal);
                 LoadGamePreset();
                 SetThemeParameters();
 
@@ -360,21 +396,26 @@ namespace CollapseLauncher
 
         private void ReloadPageTheme(ElementTheme startTheme)
         {
-            try
+            bool IsComplete = false;
+            while (!IsComplete)
             {
-                if (this.RequestedTheme == ElementTheme.Dark)
-                    this.RequestedTheme = ElementTheme.Light;
-                else if (this.RequestedTheme == ElementTheme.Light)
-                    this.RequestedTheme = ElementTheme.Default;
-                else if (this.RequestedTheme == ElementTheme.Default)
-                    this.RequestedTheme = ElementTheme.Dark;
+                try
+                {
+                    if (this.RequestedTheme == ElementTheme.Dark)
+                        this.RequestedTheme = ElementTheme.Light;
+                    else if (this.RequestedTheme == ElementTheme.Light)
+                        this.RequestedTheme = ElementTheme.Default;
+                    else if (this.RequestedTheme == ElementTheme.Default)
+                        this.RequestedTheme = ElementTheme.Dark;
 
-                if (this.RequestedTheme != startTheme)
-                    ReloadPageTheme(startTheme);
-            }
-            catch (ArgumentException ex)
-            {
-                LogWriteLine($"TODO: Investigate issue while theme is getting reloaded\r\n{ex}", LogType.Error, true);
+                    if (this.RequestedTheme != startTheme)
+                        ReloadPageTheme(startTheme);
+                    IsComplete = true;
+                }
+                catch (Exception)
+                {
+                    
+                }
             }
         }
 
@@ -684,6 +725,7 @@ namespace CollapseLauncher
         {
             try
             {
+                MainWindow.SetDragArea(DragAreaMode_Full);
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
 
                 WebView2Runtime = new WebView2()
@@ -758,6 +800,7 @@ namespace CollapseLauncher
 
         private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.SetDragArea(DragAreaMode_Normal);
             WebView2Runtime.Visibility = Visibility.Collapsed;
             WebView2Runtime.Close();
             WebView2Panel.Visibility = Visibility.Collapsed;
@@ -766,6 +809,11 @@ namespace CollapseLauncher
             WebView2Runtime.CoreWebView2Initialized -= WebView2Window_CoreWebView2Initialized;
             WebView2Runtime.NavigationStarting -= WebView2Window_PageLoading;
             WebView2Runtime.NavigationCompleted -= WebView2Window_PageLoaded;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            MainWindow.SetDragArea(DragAreaMode_Full);
         }
     }
 }

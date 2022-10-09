@@ -19,7 +19,6 @@ namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
-        private bool IsWindowActive = false;
         public MainWindow()
         {
             try
@@ -131,7 +130,6 @@ namespace CollapseLauncher
                 var titleBar = m_appWindow.TitleBar;
                 titleBar.ExtendsContentIntoTitleBar = true;
                 AppTitleBar.Loaded += AppTitleBar_Loaded;
-                AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
 
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
@@ -220,22 +218,15 @@ namespace CollapseLauncher
             SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
                                         x, y, width, height,
                                         SetWindowPosFlags.SWP_NOMOVE);
+
+            m_windowPosSize = this.Bounds;
         }
 
         private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
         {
             if (AppWindowTitleBar.IsCustomizationSupported())
             {
-                SetDragRegionForCustomTitleBar(m_appWindow);
-            }
-        }
-
-        private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (AppWindowTitleBar.IsCustomizationSupported()
-                && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
-            {
-                SetDragRegionForCustomTitleBar(m_appWindow);
+                SetInitialDragArea(m_appWindow);
             }
         }
 
@@ -250,40 +241,19 @@ namespace CollapseLauncher
             MDT_Default = MDT_Effective_DPI
         }
 
-        private void SetDragRegionForCustomTitleBar(AppWindow appWindow)
+        private void SetInitialDragArea(AppWindow appWindow)
         {
             if (AppWindowTitleBar.IsCustomizationSupported()
                 && appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
                 double scaleAdjustment = m_appDPIScale;
+                RectInt32[] dragRects = new RectInt32[] { new RectInt32(0, 0, (int)(this.Bounds.Width * scaleAdjustment), (int)(48 * scaleAdjustment)) };
 
-                RightPaddingColumn.Width = new GridLength(appWindow.TitleBar.RightInset / scaleAdjustment);
-
-                List<RectInt32> dragRectsList = new();
-
-                RectInt32 dragRectL;
-                dragRectL.X = (int)((LeftPaddingColumn.ActualWidth) * scaleAdjustment);
-                dragRectL.Y = 0;
-                dragRectL.Height = (int)(AppTitleBar.ActualHeight * scaleAdjustment);
-                dragRectL.Width = (int)((IconColumn.ActualWidth
-                                        + TitleColumn.ActualWidth) * scaleAdjustment);
-                dragRectsList.Add(dragRectL);
-
-                RectInt32 dragRectR;
-                dragRectR.X = (int)((LeftPaddingColumn.ActualWidth
-                                    + IconColumn.ActualWidth
-                                    + TitleTextBlock.ActualWidth
-                                    + SearchColumn.ActualWidth) * scaleAdjustment) + 24;
-                dragRectR.Y = 0;
-                dragRectR.Height = (int)(AppTitleBar.ActualHeight * scaleAdjustment);
-                dragRectR.Width = (int)(RightDragColumn.ActualWidth * scaleAdjustment) - 24;
-                dragRectsList.Add(dragRectR);
-
-                RectInt32[] dragRects = dragRectsList.ToArray();
-
-                appWindow.TitleBar.SetDragRectangles(dragRects);
+                SetDragArea(dragRects);
             }
         }
+
+        public static void SetDragArea(RectInt32[] area) => m_appWindow.TitleBar.SetDragRectangles(area);
 
         PointInt32 LastPos;
         private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)

@@ -22,7 +22,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
             <Frame.Content>
-                <Grid x:Name="FrameGrid" Margin="32,32,32,32">
+                <Grid x:Name="FrameGrid" Margin="32,80,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="290"/>
@@ -176,7 +176,7 @@
                         <Grid x:Name="ImageEventImgGrid" Visibility="Collapsed"
                           Grid.Column="1" Grid.Row="1"
                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                          Width="136" Margin="0,0,90,60">
+                          Width="136" Margin="0,0,90,80">
                             <Image x:Name="ImageEventImg" Shadow="{StaticResource SharedShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"

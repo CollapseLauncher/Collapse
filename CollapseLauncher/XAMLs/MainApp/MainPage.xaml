@@ -7,7 +7,7 @@
     xmlns:p="using:Hi3Helper.Preset"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Unloaded="Page_Unloaded">
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
@@ -20,62 +20,6 @@
             <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
         </Grid>
         <Grid x:Name="BackgroundAcrylicMask" Background="{StaticResource BackgroundMaskAcrylicBrush}" Visibility="Collapsed"/>
-        <Border x:Name="AppTitleBar"
-                IsHitTestVisible="True"
-                VerticalAlignment="Top"
-                Background="Transparent"
-                Height="48"
-                Canvas.ZIndex="1" 
-                Margin="48,4,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
-                    <ColumnDefinition x:Name="IconColumn" Width="Auto"/>
-                    <ColumnDefinition x:Name="TitleColumn" Width="Auto"/>
-                    <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
-                    <ColumnDefinition x:Name="SearchColumn" Width="Auto"/>
-                    <ColumnDefinition x:Name="RightDragColumn" Width="*"/>
-                    <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" CanDrag="True" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
-                    <TextBlock x:Name="AppTitle"
-                    Text="Collapse Launcher"
-                    VerticalAlignment="Center"
-                    Margin="12,0,0,10"
-                    Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Left" />
-                    <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Margin="16,4,0,0" Orientation="Horizontal">
-                        <ComboBox x:Name="ComboBoxGameCategory" PlaceholderText="Honkai Impact 3rd"
-                                  ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
-                                  CornerRadius="14,0,0,14" Width="170" Canvas.ZIndex="2" SelectionChanged="SetGameCategoryChange"/>
-                        <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia"
-                                  CornerRadius="0" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
-                        <Button Margin="0,0,8,0" CornerRadius="0,14,14,0"  x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
-                            <Button.Content>
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium" Margin="4,0"/>
-                            </Button.Content>
-                            <Button.Flyout>
-                                <Flyout>
-                                    <StackPanel>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" FontWeight="Medium" Margin="0,0,0,12" />
-                                        <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
-                                            <Button.Content>
-                                                <Grid Margin="-36,-8" Padding="36,8">
-                                                    <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-36,0,-36,-28" Visibility="Collapsed"/>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf363;" FontSize="16" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Button.Content>
-                                        </Button>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-        </Border>
         <NavigationView x:Name="NavigationViewControl"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="true"
@@ -87,14 +31,100 @@
             <Grid>
                 <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Image x:Name="BackgroundFrontBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
-                <Frame x:Name="LauncherFrame">
+                <Frame x:Name="LauncherFrame" Margin="0,0,0,0">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
                             <NavigationThemeTransition/>
                         </TransitionCollection>
                     </Frame.ContentTransitions>
                 </Frame>
-                <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,-64,0,0" Visibility="Collapsed" Opacity="0">
+                <Grid Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="52"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="0"/>
+                        <ColumnDefinition Width="418"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="137"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Background="{StaticResource NavigationBarBrush}"
+                          Grid.ColumnSpan="8" Grid.Column="0"
+                          CornerRadius="0,0,0,0"/>
+                    <Grid x:Name="TitleBarDrag1" Grid.Column="1"  Grid.ColumnSpan="2"/>
+                    <Grid x:Name="TitleBarDrag2" Grid.Column="4"  Grid.ColumnSpan="2"/>
+                    <Grid Name="GridBG_NavBtn" Height="48" Grid.Column="0"
+                      VerticalAlignment="Top" HorizontalAlignment="Left" Width="52"/>
+                    <Grid Name="GridBG_Icon" Height="48" Grid.Column="1"
+                      VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Image Margin="-2,-3,0,0" Source="/Assets/CollapseLauncherLogo.png" Width="28" Height="28"/>
+                            <StackPanel
+                                Margin="12,-3,0,0"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                            Text="Collapse"
+                                            FontWeight="Medium"
+                                            FontSize="10"
+                                            Opacity="0.8"
+                                            Margin="-6,0,0,0"
+                                            HorizontalAlignment="Left"
+                                            Visibility="Visible">
+                                </TextBlock>
+                                <TextBlock
+                                            Text="Launcher"
+                                            FontWeight="Bold"
+                                            FontSize="12"
+                                            Opacity="0.8"
+                                            Margin="0,-3,0,0"
+                                            Foreground="{StaticResource AccentColor}"
+                                            HorizontalAlignment="Left"
+                                            Visibility="Visible">
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Name="GridBG_RegionBtn" Height="48" Grid.Column="3"
+                      VerticalAlignment="Top" HorizontalAlignment="Left"
+                      CornerRadius="0,0,16,16">
+                        <StackPanel Margin="0,0" Orientation="Horizontal" CanDrag="True" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
+                            <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Orientation="Horizontal">
+                                <ComboBox x:Name="ComboBoxGameCategory" PlaceholderText="Honkai Impact 3rd"
+                                  ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
+                                  CornerRadius="14,0,0,14" Width="170" Canvas.ZIndex="2" SelectionChanged="SetGameCategoryChange"/>
+                                <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia"
+                                  CornerRadius="0" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+                                <Button CornerRadius="0,14,14,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                                    <Button.Content>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium" Margin="4,0"/>
+                                    </Button.Content>
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <StackPanel>
+                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" FontWeight="Medium" Margin="0,0,0,12" />
+                                                <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
+                                                    <Button.Content>
+                                                        <Grid Margin="-36,-8" Padding="36,8">
+                                                            <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-36,0,-36,-28" Visibility="Collapsed"/>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf363;" FontSize="16" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Button.Content>
+                                                </Button>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Name="GridBG_WindowBtn" Height="31" Grid.Column="6"
+                      VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                      CornerRadius="0,0,0,0" />
+                </Grid>
+                <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,-16,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                         <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -104,10 +134,10 @@
                                    CharacterSpacing="0"/>
                     </StackPanel>
                 </Grid>
-                <StackPanel x:Name="NotificationBar">
-                    <StackPanel.ChildrenTransitions>
+                <StackPanel x:Name="NotificationBar" Margin="0,48,0,0">
+                    <!--<StackPanel.ChildrenTransitions>
                         <AddDeleteThemeTransition/>
-                    </StackPanel.ChildrenTransitions>
+                    </StackPanel.ChildrenTransitions>-->
                 </StackPanel>
             </Grid>
         </NavigationView>

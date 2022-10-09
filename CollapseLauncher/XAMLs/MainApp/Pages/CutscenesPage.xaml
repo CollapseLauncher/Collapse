@@ -9,7 +9,7 @@
     Background="{ThemeResource PagesAcrylicBrush}">
 
     <Grid>
-        <Grid Margin="32,32,32,32">
+        <Grid Margin="32,80,32,32">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="258"/>
