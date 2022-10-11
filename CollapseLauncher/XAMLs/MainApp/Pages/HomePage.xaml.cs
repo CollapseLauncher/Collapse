@@ -363,6 +363,8 @@ namespace CollapseLauncher.Pages
                     GameInstallationState = GameInstallStateEnum.GameBroken;
                 else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
                 {
+                    RepairGameButton.Visibility = Visibility.Visible;
+                    RepairGameButton.IsEnabled = false;
                     UpdateGameBtn.Visibility = Visibility.Visible;
                     StartGameBtn.Visibility = Visibility.Collapsed;
                     InstallGameBtn.Visibility = Visibility.Collapsed;
@@ -397,6 +399,7 @@ namespace CollapseLauncher.Pages
                     }
                     else
                     {
+                        RepairGameButton.Visibility = Visibility.Visible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;
