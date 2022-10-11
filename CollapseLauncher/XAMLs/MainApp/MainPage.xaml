@@ -29,8 +29,8 @@
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
             <Grid>
-                <Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
-                <Image x:Name="BackgroundFrontBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
+                <Image x:Name="BackgroundFront" Margin="0,48,0,0" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
+                <Image x:Name="BackgroundFrontBuffer" Margin="0,48,0,0" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Frame x:Name="LauncherFrame" Margin="0,0,0,0">
                     <Frame.ContentTransitions>
                         <TransitionCollection>
@@ -41,14 +41,14 @@
                 <Grid Height="48" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="52"/>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="0"/>
-                        <ColumnDefinition Width="418"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition x:Name="GridBG_RegionMargin"/>
+                        <ColumnDefinition Width="400"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="35"/>
+                        <ColumnDefinition Width="25"/>
                         <ColumnDefinition Width="137"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Background="{StaticResource NavigationBarBrush}"
+                    <Grid x:Name="TitleBarBg" Background="{StaticResource WindowTrayBrush}"
                           Grid.ColumnSpan="8" Grid.Column="0"
                           CornerRadius="0,0,0,0"/>
                     <Grid x:Name="TitleBarDrag1" Grid.Column="1"  Grid.ColumnSpan="2"/>
@@ -57,8 +57,8 @@
                       VerticalAlignment="Top" HorizontalAlignment="Left" Width="52"/>
                     <Grid Name="GridBG_Icon" Height="48" Grid.Column="1"
                       VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <Image Margin="-2,-3,0,0" Source="/Assets/CollapseLauncherLogo.png" Width="28" Height="28"/>
+                        <StackPanel Orientation="Horizontal" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Image Margin="0,-1,0,0" Source="/Assets/CollapseLauncherLogo.png" Width="24" Height="24"/>
                             <StackPanel
                                 Margin="12,-3,0,0"
                                 VerticalAlignment="Center">
@@ -84,16 +84,16 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <Grid Name="GridBG_RegionBtn" Height="48" Grid.Column="3"
-                      VerticalAlignment="Top" HorizontalAlignment="Left"
+                    <Grid Name="GridBG_RegionGrid" Height="48" Grid.Column="3"
+                      VerticalAlignment="Center" HorizontalAlignment="Center"
                       CornerRadius="0,0,16,16">
-                        <StackPanel Margin="0,0" Orientation="Horizontal" CanDrag="True" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
+                        <StackPanel Name="GridBG_RegionInner" Margin="0,0" Orientation="Horizontal" CanDrag="True" VerticalAlignment="Center" Grid.ColumnSpan="7" Grid.Column="0" Grid.Row="1">
                             <StackPanel VerticalAlignment="Top" Canvas.ZIndex="2" Orientation="Horizontal">
                                 <ComboBox x:Name="ComboBoxGameCategory" PlaceholderText="Honkai Impact 3rd"
                                   ItemsSource="{x:Bind p:ConfigV2Store.ConfigV2GameCategory, Mode=OneWay}"
-                                  CornerRadius="14,0,0,14" Width="170" Canvas.ZIndex="2" SelectionChanged="SetGameCategoryChange"/>
+                                  CornerRadius="14,0,0,14" Width="167" Canvas.ZIndex="2" SelectionChanged="SetGameCategoryChange"/>
                                 <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia"
-                                  CornerRadius="0" Width="160" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
+                                  CornerRadius="0" Width="148" Canvas.ZIndex="2" SelectionChanged="EnableRegionChangeButton"/>
                                 <Button CornerRadius="0,14,14,0" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
                                     <Button.Content>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium" Margin="4,0"/>
@@ -124,8 +124,8 @@
                       VerticalAlignment="Top" HorizontalAlignment="Stretch"
                       CornerRadius="0,0,0,0" />
                 </Grid>
-                <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,-16,0,0" Visibility="Collapsed" Opacity="0">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,220,0,0">
+                <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,32,0,0" Visibility="Collapsed" Opacity="0">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,172,0,0">
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
                         <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
@@ -135,9 +135,9 @@
                     </StackPanel>
                 </Grid>
                 <StackPanel x:Name="NotificationBar" Margin="0,48,0,0">
-                    <!--<StackPanel.ChildrenTransitions>
+                    <StackPanel.ChildrenTransitions>
                         <AddDeleteThemeTransition/>
-                    </StackPanel.ChildrenTransitions>-->
+                    </StackPanel.ChildrenTransitions>
                 </StackPanel>
             </Grid>
         </NavigationView>

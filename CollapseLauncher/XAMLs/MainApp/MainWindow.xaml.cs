@@ -118,14 +118,14 @@ namespace CollapseLauncher
 #endif
 
             InitializeAppWindowAndIntPtr();
-            var titleBar = m_appWindow.TitleBar;
-            titleBar.ExtendsContentIntoTitleBar = true;
 
             SetWindowSize(m_windowHandle);
 
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
-            if (AppWindowTitleBar.IsCustomizationSupported())
+            // m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
+
+            if (m_windowSupportCustomTitle)
             {
 #if MICA && !DISABLE_COM
                 m_backDrop.SetBackdrop(BackdropType.Mica);
@@ -136,6 +136,7 @@ namespace CollapseLauncher
 #endif
                 SetThemeParameters();
                 AppTitleBar.Loaded += AppTitleBar_Loaded;
+                m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
@@ -266,7 +267,7 @@ namespace CollapseLauncher
         {
             // TEMPORARY HACK:
             // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
-            if (args.DidPresenterChange && !AppWindowTitleBar.IsCustomizationSupported())
+            if (args.DidPresenterChange && !m_windowSupportCustomTitle)
             {
                 if (m_appWindow.Position.X > -128 || m_appWindow.Position.Y > -128)
                     m_presenter.Restore();

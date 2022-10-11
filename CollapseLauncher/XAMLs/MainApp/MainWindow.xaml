@@ -60,7 +60,7 @@
         <StackPanel x:Name="CustomTitleBar" VerticalAlignment="Top" Height="48" HorizontalAlignment="Right" Opacity="0">
             <Grid Height="46" VerticalAlignment="Stretch">
                 <!--<Grid x:Name="DragArea" Background="Transparent" Width="670" Height="46" CanDrag="True"/>-->
-                <Grid x:Name="DragArea" Background="Transparent" Width="842" Height="40" CanDrag="True"/>
+                <Grid x:Name="DragArea" Background="White" Width="708" Height="40" CanDrag="True"/>
                 <Grid x:Name="TitleBarMinMaxCloseContainer"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top">

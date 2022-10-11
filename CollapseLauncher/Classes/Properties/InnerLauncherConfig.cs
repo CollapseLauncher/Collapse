@@ -61,10 +61,12 @@ namespace CollapseLauncher
         public static SystemBackdropConfiguration m_configurationSource;
 
 
+        public static ushort[] w_windowsVersionNumbers;
         public static Window m_window;
+        public static bool m_windowSupportCustomTitle = false;
         public static IntPtr m_windowHandle;
         public static Rect m_windowPosSize;
-        public static WindowId m_windowID;
+        public static Microsoft.UI.WindowId m_windowID;
         public static AppWindow m_appWindow;
         public static OverlappedPresenter m_presenter;
         public static Size m_actualMainFrameSize;

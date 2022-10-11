@@ -177,11 +177,17 @@ namespace CollapseLauncher
         public static string GetVersionString()
         {
             OperatingSystem osDetail = Environment.OSVersion;
-            ushort[] buildNumber = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
-            if (buildNumber[2] >= 22000)
-                return $"Windows 11 (build: {buildNumber[2]}.{buildNumber[3]})";
+            w_windowsVersionNumbers = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
+            if (w_windowsVersionNumbers[2] >= 22000)
+            {
+                m_windowSupportCustomTitle = true;
+                return $"Windows 11 (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
+            }
             else
-                return $"Windows {buildNumber[0]} (build: {buildNumber[2]}.{buildNumber[3]})";
+            {
+                m_windowSupportCustomTitle = false;
+                return $"Windows {w_windowsVersionNumbers[0]} (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
+            }
         }
     }
 }

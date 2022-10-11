@@ -9,6 +9,13 @@ namespace CollapseLauncher
     {
         public void SetThemeParameters()
         {
+            if (!m_windowSupportCustomTitle)
+            {
+                GridBG_RegionMargin.Width = new GridLength(0, GridUnitType.Pixel);
+                GridBG_RegionGrid.HorizontalAlignment = HorizontalAlignment.Left;
+                GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+
             switch (m_currentBackdrop)
             {
                 case BackdropType.DefaultColor:
