@@ -42,8 +42,8 @@
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FF111111" TintOpacity="0.0" TintLuminosityOpacity="0.6" FallbackColor="#333333"/>
                             <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#333333"/>
 
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="1" FallbackColor="#DD222222"/>
-                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0.1" TintLuminosityOpacity="0.2" FallbackColor="#DD222222"/>
+                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#DD222222"/>
+                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="#DD222222"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="#000000" TintOpacity="0.0"/>
@@ -80,7 +80,7 @@
                             <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.7" FallbackColor="#FFEAEAEA"/>
 
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FFFFFF" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="#FFFFFF"/>
-                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5" FallbackColor="#FFFFFF"/>
+                            <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="0.8" FallbackColor="#FFFFFF"/>
                             <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#EEEEEE" TintOpacity="0.0" TintLuminosityOpacity="1" FallbackColor="#FFFFFFFF"/>
                             <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#EEEEEE" TintOpacity="0.1" TintLuminosityOpacity="0.2" FallbackColor="#FFFFFFFF"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>

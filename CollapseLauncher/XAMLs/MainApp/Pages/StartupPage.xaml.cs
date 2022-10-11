@@ -20,6 +20,12 @@ namespace CollapseLauncher.Pages
         public StartupPage()
         {
             this.InitializeComponent();
+            Loaded += StartupPage_Loaded;
+        }
+
+        private void StartupPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            MainWindow.SetInitialDragArea();
         }
 
         private async void ChooseFolder(object sender, RoutedEventArgs e)

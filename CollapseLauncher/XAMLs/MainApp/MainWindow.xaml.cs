@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Graphics;
+using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
@@ -84,7 +85,11 @@ namespace CollapseLauncher
             this.InitializeComponent();
             this.Activate();
             // Initialize Window Handlers
+#if DISABLE_COM
             m_windowHandle = GetActiveWindow();
+#else
+            m_windowHandle = WindowNative.GetWindowHandle(this);
+#endif
             m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
             m_appWindow = AppWindow.GetFromWindowId(m_windowID);
             m_appWindow.Changed += AppWindow_Changed;
@@ -105,6 +110,7 @@ namespace CollapseLauncher
 
         public void InitializeWindowSettings()
         {
+
 #if !DISABLE_COM
             m_backDrop = new BackdropManagement(this);
             m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
@@ -112,6 +118,8 @@ namespace CollapseLauncher
 #endif
 
             InitializeAppWindowAndIntPtr();
+            var titleBar = m_appWindow.TitleBar;
+            titleBar.ExtendsContentIntoTitleBar = true;
 
             SetWindowSize(m_windowHandle);
 
@@ -127,8 +135,6 @@ namespace CollapseLauncher
                 m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
 #endif
                 SetThemeParameters();
-                var titleBar = m_appWindow.TitleBar;
-                titleBar.ExtendsContentIntoTitleBar = true;
                 AppTitleBar.Loaded += AppTitleBar_Loaded;
 
                 m_presenter.IsResizable = false;
@@ -226,7 +232,7 @@ namespace CollapseLauncher
         {
             if (AppWindowTitleBar.IsCustomizationSupported())
             {
-                SetInitialDragArea(m_appWindow);
+                SetInitialDragArea();
             }
         }
 
@@ -241,13 +247,13 @@ namespace CollapseLauncher
             MDT_Default = MDT_Effective_DPI
         }
 
-        private void SetInitialDragArea(AppWindow appWindow)
+        public static void SetInitialDragArea()
         {
             if (AppWindowTitleBar.IsCustomizationSupported()
-                && appWindow.TitleBar.ExtendsContentIntoTitleBar)
+                && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
                 double scaleAdjustment = m_appDPIScale;
-                RectInt32[] dragRects = new RectInt32[] { new RectInt32(0, 0, (int)(this.Bounds.Width * scaleAdjustment), (int)(48 * scaleAdjustment)) };
+                RectInt32[] dragRects = new RectInt32[] { new RectInt32(0, 0, (int)(m_window.Bounds.Width * scaleAdjustment), (int)(48 * scaleAdjustment)) };
 
                 SetDragArea(dragRects);
             }
