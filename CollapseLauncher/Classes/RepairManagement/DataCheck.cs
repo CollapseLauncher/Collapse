@@ -249,7 +249,7 @@ namespace CollapseLauncher.Pages
 
                             FileCRC = GenerateCRC(ChunkBuffer);
 
-                            if (!string.Equals(FileCRC, chunk._filecrc32))
+                            if (FileCRC != chunk._filecrc32)
                             {
                                 DispatcherQueue.TryEnqueue(() => NeedRepairListUI.Add(new FileProperties
                                 {
@@ -331,7 +331,7 @@ namespace CollapseLauncher.Pages
         private void CheckGenericAudioCRC(FilePropertiesRemote input)
         {
             FileCRC = GenerateCRC(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
-            if (!string.Equals(FileCRC, input.CRC))
+            if (FileCRC != input.CRC)
             {
                 DispatcherQueue.TryEnqueue(() => NeedRepairListUI.Add(new FileProperties
                 {
