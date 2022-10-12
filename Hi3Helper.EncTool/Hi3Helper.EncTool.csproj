@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release;Publish</Configurations>
 	</PropertyGroup>
@@ -17,9 +17,5 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<Optimize>True</Optimize>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
-	</ItemGroup>
 
 </Project>

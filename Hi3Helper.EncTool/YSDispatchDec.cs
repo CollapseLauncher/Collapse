@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Security.Cryptography;
-using System.Xml.Linq;
-using Hi3Helper.Data;
 
 namespace Hi3Helper.EncTool
 {
