@@ -46,10 +46,10 @@ namespace CollapseLauncher.Pages
             foreach (KeyValuePair<string, LangMetadata> Entry in LanguageNames)
             {
                 Index++;
-                if (Entry.Value.LangID == CurrentLang)
+                if (Entry.Key == CurrentLang)
                     SelectedIndex = Index;
 
-                _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, Entry.Key, Entry.Value.Author));
+                _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, Entry.Value.LangData.LanguageName, Entry.Value.LangData.Author));
             }
 
             LanguageSelector.ItemsSource = _out;
@@ -235,7 +235,11 @@ namespace CollapseLauncher.Pages
 
             if (EnableLanguageChange)
             {
-                SetAndSaveConfigValue("AppLanguage", new IniValue(LanguageNames.Values.ToList()[(sender as ComboBox).SelectedIndex].LangID));
+                string LangName = LanguageNames
+                    .Values
+                    .ToList()[(sender as ComboBox).SelectedIndex]
+                    .LangData.LanguageID;
+                SetAndSaveConfigValue("AppLanguage", new IniValue(LangName));
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
                 IsAppLangNeedRestart = true;
             }

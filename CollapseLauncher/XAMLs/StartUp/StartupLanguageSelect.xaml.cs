@@ -28,7 +28,7 @@ namespace CollapseLauncher
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangID;
+            string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangData.LanguageID;
             LoadLocalization(LangID);
             SetAndSaveConfigValue("AppLanguage", LangID);
             NextBtn.IsEnabled = true;
@@ -40,7 +40,7 @@ namespace CollapseLauncher
             {
                 List<string> list = new List<string>();
                 foreach (KeyValuePair<string, LangMetadata> entry in LanguageNames)
-                    list.Add($"{entry.Key} ({entry.Value.LangID}) by {entry.Value.Author}");
+                    list.Add($"{entry.Value.LangData.LanguageName} ({entry.Key}) by {entry.Value.LangData.Author}");
                 return list;
             }
         }

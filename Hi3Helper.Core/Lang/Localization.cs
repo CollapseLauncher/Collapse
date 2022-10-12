@@ -15,20 +15,11 @@ namespace Hi3Helper
     {
         public static void LoadLocalization(string appLang)
         {
-            Console.WriteLine(LanguageNames.Count);
-            Console.WriteLine(LanguageNames.Keys);
+            LangFallback = LanguageNames["en-US"].LangData;
 
-            LangFallback = (LocalizationParams)JsonSerializer.Deserialize(File
-                .ReadAllText(LanguageNames
-                    .Where(x => x.Value.LangID.ToLower() == "en" || x.Value.LangID.ToLower() == "en-us")
-                    .First().Value.LangFilePath), typeof(LocalizationParams), LocalizationParamsContext.Default);
             try
             {
-                Lang = (LocalizationParams)JsonSerializer.Deserialize(
-                    File.ReadAllText(LanguageNames
-                        .Where(x => x.Value.LangID.ToLower() == appLang.ToLower())
-                        .First().Value.LangFilePath), typeof(LocalizationParams), LocalizationParamsContext.Default);
-
+                Lang = LanguageNames[appLang].LangData;
                 LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");
             }
             catch (Exception ex)
@@ -40,25 +31,35 @@ namespace Hi3Helper
 
         public static void TryParseLocalizations()
         {
+            LanguageNames.Clear();
             foreach (string Entry in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
             {
                 LocalizationParams lang = new LocalizationParams();
                 try
                 {
-                    lang = (LocalizationParams)JsonSerializer.Deserialize(File.ReadAllText(Entry), typeof(LocalizationParams), LocalizationParamsContext.Default);
+                    using (Stream s = new FileStream(Entry, FileMode.Open, FileAccess.Read))
+                    {
+                        lang = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
 
-                    Console.WriteLine(lang.LanguageName);
-                    if (!LanguageNames.ContainsKey(lang.LanguageName))
-                        LanguageNames.Add(lang.LanguageName, new LangMetadata { LangID = lang.LanguageID, Author = lang.Author, LangFilePath = Entry });
+                        if (!LanguageNames.ContainsKey(lang.LanguageID))
+                        {
+                            LogWriteLine($"Loaded lang. resource: {lang.LanguageName} ({lang.LanguageID}) by {lang.Author}", LogType.Scheme);
+                            LanguageNames.Add(lang.LanguageID, new LangMetadata
+                            {
+                                LangData = lang,
+                                LangFilePath = Entry
+                            });
+                        }
+                    }
                 }
                 catch (JsonException ex)
                 {
-                    LogWriteLine($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
+                    LogWriteLine($"Error while parsing lang. resource: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
                     throw new LocalizationException($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"", ex);
                 }
                 catch (Exception ex)
                 {
-                    LogWriteLine($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
+                    LogWriteLine($"Error while parsing lang. resource: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
                     throw new LocalizationException($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"", ex);
                 }
             }
@@ -66,9 +67,8 @@ namespace Hi3Helper
 
         public struct LangMetadata
         {
-            public string LangID;
-            public string Author;
             public string LangFilePath;
+            public LocalizationParams LangData;
         }
 
         public static Dictionary<string, LangMetadata> LanguageNames = new Dictionary<string, LangMetadata>();
