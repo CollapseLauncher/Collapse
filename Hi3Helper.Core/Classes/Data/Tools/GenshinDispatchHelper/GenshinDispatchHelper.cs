@@ -45,11 +45,11 @@ namespace Hi3Helper.Data
         public async Task<YSDispatchInfo> LoadDispatchInfo()
         {
             YSDispatchInfo DispatcherDataInfo;
-            using (MemoryStream Stream = new MemoryStream())
+            using (MemoryStream s = new MemoryStream())
             {
-                await Download(DispatchBaseURL, Stream, null, null, cancelToken);
-                string Data = Encoding.UTF8.GetString(Stream.GetBuffer());
-                DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(Data, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
+                await Download(DispatchBaseURL, s, null, null, cancelToken);
+                s.Position = 0;
+                DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
             }
 
             return DispatcherDataInfo;
