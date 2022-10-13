@@ -69,16 +69,17 @@ namespace Hi3Helper.Preset
                 .Deserialize(stamp, typeof(Stamp), StampContext.Default)).LastUpdated;
         }
 
-        public static void GetConfigV2Regions(string GameCategoryName)
+        public static bool GetConfigV2Regions(string GameCategoryName)
         {
             if (!ConfigV2.MetadataV2.ContainsKey(GameCategoryName))
             {
                 ConfigV2GameRegions = ConfigV2.MetadataV2.FirstOrDefault().Value.Keys.ToList();
                 LogWriteLine($"Game category \"{GameCategoryName}\" isn't found!", LogType.Error, true);
-                return;
+                return false;
             }
 
             ConfigV2GameRegions = ConfigV2.MetadataV2[GameCategoryName].Keys.ToList();
+            return true;
         }
 
         public static async Task<bool> CheckForNewConfigV2()
