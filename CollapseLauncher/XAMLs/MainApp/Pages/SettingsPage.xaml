@@ -226,7 +226,7 @@
                         <Run Text="~neon-nyan"/>
                     </TextBlock>
                 </StackPanel>
-                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/3x4s3v5J" Click="ClickButtonLinkFromTag">
+                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/NAYQ8TT2Ge" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
                         <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
