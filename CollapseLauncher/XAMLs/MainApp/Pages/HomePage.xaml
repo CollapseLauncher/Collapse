@@ -176,14 +176,14 @@
                         <Grid x:Name="ImageEventImgGrid" Visibility="Collapsed"
                           Grid.Column="1" Grid.Row="1"
                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                          Width="136" Margin="0,0,90,60">
+                          Width="136" Margin="0,0,82,68">
                             <Image x:Name="ImageEventImg" Shadow="{StaticResource SharedShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
-                                Margin="0,148,0,0" Orientation="Vertical" HorizontalAlignment="Left">
+                                Margin="0,158,0,0" Orientation="Vertical" HorizontalAlignment="Left">
                             <StackPanel HorizontalAlignment="Left">
                                 <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
-                                  MaxWidth="414" Height="192" 
+                                  MaxWidth="390" Height="181" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
                                   HorizontalAlignment="Center"
                                   PointerEntered="CarouselStopScroll"
@@ -210,7 +210,7 @@
                                       Orientation="Horizontal"/>
                                 </Grid>
                             </StackPanel>
-                            <Grid x:Name="PostPanel" Padding="8" Width="414" Visibility="Collapsed"
+                            <Grid x:Name="PostPanel" Padding="8" Width="390" Visibility="Collapsed"
                               MaxHeight="150" Margin="0,16,0,0" CornerRadius="8"
                               Background="{StaticResource PostAcrylicBrush}" Shadow="{StaticResource SharedShadow}">
                                 <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">

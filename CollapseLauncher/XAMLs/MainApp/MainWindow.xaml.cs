@@ -70,13 +70,13 @@ namespace CollapseLauncher
 
         public void StartSetupPage()
         {
-            SetWindowSize(m_windowHandle, 1280, 730);
+            SetWindowSize(m_windowHandle);
             rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
         }
 
         public void StartMainPage()
         {
-            SetWindowSize(m_windowHandle, 1280, 730);
+            SetWindowSize(m_windowHandle);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
@@ -213,7 +213,7 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        public void SetWindowSize(IntPtr hwnd, int width = 1280, int height = 730, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width = 1196, int height = 730, int x = 0, int y = 0)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 
