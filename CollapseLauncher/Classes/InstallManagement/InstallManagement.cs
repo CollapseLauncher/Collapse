@@ -218,7 +218,7 @@ namespace CollapseLauncher
         public async Task<bool> StartVerificationAsync(UIElement Content)
         {
             if (CanDeltaPatch) return false;
-            DownloadAddressProperty VerificationResult = await Task.Run(() => StartVerification());
+            DownloadAddressProperty VerificationResult = await Task.Run(StartVerification);
 
             if (VerificationResult != null)
             {
@@ -607,12 +607,11 @@ namespace CollapseLauncher
 
             if (!File.Exists(XmfPath)) return;
 
-            List<string> UnusedFiles = new List<string>();
             BlockData Util = new BlockData();
 
             Util.Init(new FileStream(XmfPath, FileMode.Open, FileAccess.Read, FileShare.Read), XMFFileFormat.XMF);
             Util.CheckForUnusedBlocks(XmfDir);
-            UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
+            List<string> UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
             UnusedFiles.AddRange(Directory.EnumerateFiles(XmfDir, "Blocks_*.xmf"));
 
             foreach (string _Entry in UnusedFiles) File.Delete(_Entry);

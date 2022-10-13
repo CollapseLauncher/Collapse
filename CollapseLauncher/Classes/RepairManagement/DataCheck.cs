@@ -1,5 +1,6 @@
 ﻿using Force.Crc32;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -82,7 +83,7 @@ namespace CollapseLauncher.Pages
                     FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(memBuffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
                 }
 
-                await Task.Run(() => CheckGameFiles());
+                await Task.Run(CheckGameFiles);
             }
             catch (OperationCanceledException)
             {
@@ -102,6 +103,8 @@ namespace CollapseLauncher.Pages
         int BrokenFilesCount;
         private void CheckGameFiles()
         {
+            StashOldBlock();
+
             sw = Stopwatch.StartNew();
             TotalCurrentReadSize = 0;
             TotalCurrentReadCount = 0;
@@ -156,6 +159,32 @@ namespace CollapseLauncher.Pages
 
             sw.Stop();
             SummarizeResult();
+        }
+
+        private void StashOldBlock()
+        {
+            string XmfPath = Path.Combine(GameBasePath, $"{Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName)}_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
+            string XmfDir = Path.GetDirectoryName(XmfPath);
+
+            if (!File.Exists(XmfPath)) return;
+
+            BlockData Util = new BlockData();
+
+            Util.Init(new FileStream(XmfPath, FileMode.Open, FileAccess.Read, FileShare.Read), XMFFileFormat.XMF);
+            Util.CheckForUnusedBlocks(XmfDir);
+            List<string> UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
+            UnusedFiles.AddRange(Directory.EnumerateFiles(XmfDir, "Blocks_*.xmf"));
+
+            foreach (string _Entry in UnusedFiles)
+            {
+                FileInfo fileInfo = new FileInfo(_Entry);
+                if (fileInfo.Exists)
+                {
+                    LogWriteLine($"Removing unused file: {_Entry}");
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                }
+            }
         }
 
         FileInfo BlockFileInfo;

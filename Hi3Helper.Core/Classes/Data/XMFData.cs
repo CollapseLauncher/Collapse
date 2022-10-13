@@ -102,7 +102,6 @@ namespace Hi3Helper.Data
 
         void InitRead()
         {
-
             switch (format)
             {
                 case XMFFileFormat.XMF:
@@ -127,6 +126,7 @@ namespace Hi3Helper.Data
         void GetMetadataInfo(int contentbytelength, int jumper, bool isBigEndian)
         {
             _blocklist = new XMFBlockList();
+            _blocklist.BlockContent = new List<XMFFileProperty>();
 
             stream.Read(buffer = new byte[16], 0, 16);
             blockhash = BytesToHex(buffer);
