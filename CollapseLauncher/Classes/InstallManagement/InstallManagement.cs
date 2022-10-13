@@ -165,6 +165,7 @@ namespace CollapseLauncher
 
             DownloadProgress += DownloadStatusAdapter;
             DownloadProgress += DownloadProgressAdapter;
+            DownloadLog += DownloadLogAdapter;
 
             CountCurrentDownload = 0;
             foreach (DownloadAddressProperty prop in DownloadProperty)
@@ -182,6 +183,7 @@ namespace CollapseLauncher
 
             DownloadProgress -= DownloadStatusAdapter;
             DownloadProgress -= DownloadProgressAdapter;
+            DownloadLog -= DownloadLogAdapter;
         }
 
         public DownloadAddressProperty StartVerification()
@@ -292,6 +294,21 @@ namespace CollapseLauncher
                 DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds, true, e.Speed);
 
             UpdateProgress(InstallProgress);
+        }
+
+        private void DownloadLogAdapter(object sender, DownloadLogEvent e) => LogWriteLine(e.Message, LogSeverity2LogType(e.Severity), true);
+
+        private LogType LogSeverity2LogType(LogSeverity e)
+        {
+            switch (e)
+            {
+                case LogSeverity.Error:
+                    return LogType.Error;
+                case LogSeverity.Warning:
+                    return LogType.Warning;
+                default:
+                    return LogType.Default;
+            }
         }
 
         /*
@@ -953,6 +970,7 @@ namespace CollapseLauncher
             int BrokenFilesCount = EntryIn.Count;
             int FilesRead = 0;
 
+            DownloadLog += DownloadLogAdapter;
             DownloadProgress += DownloadProgressAdapter;
             foreach (PkgVersionProperties Entry in EntryIn)
             {
@@ -997,6 +1015,7 @@ namespace CollapseLauncher
                 }
             }
             DownloadProgress -= DownloadProgressAdapter;
+            DownloadLog -= DownloadLogAdapter;
 
             await Dialog_AdditionalDownloadCompleted(Content);
         }
