@@ -480,7 +480,9 @@ namespace CollapseLauncher
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
             string GameRegion = GetAppConfigValue("GameRegion").ToString();
 
-            GetConfigV2Regions(GameCategory);
+            if (!GetConfigV2Regions(GameCategory))
+                GameCategory = ConfigV2GameCategory.FirstOrDefault();
+
             ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(GameCategory);
 
             int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
