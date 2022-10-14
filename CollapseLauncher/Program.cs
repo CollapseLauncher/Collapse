@@ -120,7 +120,7 @@ namespace CollapseLauncher
             bool isRedirect = false;
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
             ExtendedActivationKind kind = args.Kind;
-            AppInstance keyInstance = AppInstance.FindOrRegisterForKey("randomKey");
+            AppInstance keyInstance = AppInstance.FindOrRegisterForKey(m_appMode.ToString());
 
             if (keyInstance.IsCurrent)
             {
