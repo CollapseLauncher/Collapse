@@ -452,7 +452,15 @@
     "GameConfigBrokenTitle1": "Game Config is Broken",
     "GameConfigBrokenSubtitle1": "The Launcher Scope's config is broken and you need to choose your previous game path manually.",
     "GameConfigBrokenSubtitle2": "\r\nMake sure that the location of the game isn't the same as the path of your launcher's config.ini file, which is in this path:\r\n\r\n{0}\r\n\r\n",
-    "GameConfigBrokenSubtitle3": "If yes, then move all of your game files to another location. After that, click on \"Locate directory\" to choose the path."
+    "GameConfigBrokenSubtitle3": "If yes, then move all of your game files to another location. After that, click on \"Locate directory\" to choose the path.",
+    "CookbookLocateTitle": "Locate the Cookbook File",
+    "CookbookLocateSubtitle1": "Please locate the downloaded Cookbook before start the process.\r\nIf you haven't, ",
+    "CookbookLocateSubtitle2": "CLICK HERE",
+    "CookbookLocateSubtitle3": " to download the Cookbook file and then click",
+    "CookbookLocateSubtitle4": "Next",
+    "CookbookLocateSubtitle5": "to locate the downloaded Cookbook file and continue.\r\n\r\n",
+    "CookbookLocateSubtitle6": "Note:\r\n",
+    "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n"
   },
 
   "_InstallMgmt": {

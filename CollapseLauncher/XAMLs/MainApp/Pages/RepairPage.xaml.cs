@@ -17,7 +17,7 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
             GameBasePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            GameBaseURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+            GameBaseURL = regionResourceProp.data.game.latest.decompressed_path + "/";
         }
 
         private void CancelOperation(object sender, RoutedEventArgs e)

@@ -52,7 +52,7 @@ namespace Hi3Helper.Shared.GameConversion
         {
             File.Create(Path.Combine(targetPath, "_conversion_unfinished")).Close();
             await FetchAPI();
-            await Task.Run(() => CheckGameFiles());
+            await Task.Run(CheckGameFiles);
             stream.Dispose();
             FileIndexesProperty.Clear();
         }

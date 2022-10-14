@@ -68,6 +68,14 @@
                 public string GameConfigBrokenSubtitle1 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle1;
                 public string GameConfigBrokenSubtitle2 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle2;
                 public string GameConfigBrokenSubtitle3 { get; set; } = LangFallback?._Dialogs.GameConfigBrokenSubtitle3;
+                public string CookbookLocateTitle { get; set; } = LangFallback?._Dialogs.CookbookLocateTitle;
+                public string CookbookLocateSubtitle1 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle1;
+                public string CookbookLocateSubtitle2 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle2;
+                public string CookbookLocateSubtitle3 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle3;
+                public string CookbookLocateSubtitle4 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle4;
+                public string CookbookLocateSubtitle5 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle5;
+                public string CookbookLocateSubtitle6 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle6;
+                public string CookbookLocateSubtitle7 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle7;
             }
         }
         #endregion

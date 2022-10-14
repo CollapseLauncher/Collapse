@@ -452,7 +452,15 @@
     "GameConfigBrokenTitle1": "Konfigurasi Game Rusak",
     "GameConfigBrokenSubtitle1": "Bagian dari konfigurasi Launcher telah rusak dan kamu perlu memilih lokasi game sebelumnya secara manual.",
     "GameConfigBrokenSubtitle2": "\r\nPastikan bahwa lokasi game-mu tidak sama dengan lokasi dari file config.ini milik launcher yang terletak pada path ini:\r\n\r\n{0}\r\n\r\n",
-    "GameConfigBrokenSubtitle3": "Apabila iya, maka kamu perlu memindahkan semua file gamenya ke lokasi lain. Setelahnya, klik \"Arahkan direkktori\" untuk memilih lokasi gamenya."
+    "GameConfigBrokenSubtitle3": "Apabila iya, maka kamu perlu memindahkan semua file gamenya ke lokasi lain. Setelahnya, klik \"Arahkan direkktori\" untuk memilih lokasi gamenya.",
+    "CookbookLocateTitle": "Pilih File Cookbook",
+    "CookbookLocateSubtitle1": "Pilih file Cookbook yang sudah terunduh sebelum memulai proses konversi.\r\nApabila belum, ",
+    "CookbookLocateSubtitle2": "KLIK DI SINI",
+    "CookbookLocateSubtitle3": " tuntuk mengunduh file Cookbook dan klik",
+    "CookbookLocateSubtitle4": "Selanjutnya",
+    "CookbookLocateSubtitle5": "untuk memilih file Cookbook yang sudah terunduh dan memulai proses konversi.\r\n\r\n",
+    "CookbookLocateSubtitle6": "Catatan:\r\n",
+    "CookbookLocateSubtitle7": "Berikut adalah nama file Cookbook yang perlu kamu unduh:\r\n"
   },
 
   "_InstallMgmt": {

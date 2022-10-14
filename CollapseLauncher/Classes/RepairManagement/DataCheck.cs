@@ -73,7 +73,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string indexURL = string.Format(CurrentConfigV2.ZipFileURL + "index.json", Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
                 using (memBuffer = new MemoryStream())
                 {
                     http.DownloadProgress += DataFetchingProgress;

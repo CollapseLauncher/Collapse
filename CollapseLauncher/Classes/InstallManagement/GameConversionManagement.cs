@@ -27,6 +27,7 @@ namespace CollapseLauncher
         List<FileProperties> TargetFileManifest;
 
         string SourceBaseURL, TargetBaseURL;
+        string GameVersion;
         string CookbookURL;
         string CookbookPath;
         Stopwatch ConvertSw;
@@ -36,17 +37,15 @@ namespace CollapseLauncher
         byte DownloadThread;
 
         public GameConversionManagement(PresetConfigV2 SourceProfile, PresetConfigV2 TargetProfile,
-            string SourceBaseURL, string TargetBaseURL, string GameVersion, CancellationToken Token = new CancellationToken())
+            string SourceBaseURL, string TargetBaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
         {
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
             this.SourceBaseURL = SourceBaseURL;
             this.TargetBaseURL = TargetBaseURL;
+            this.GameVersion = GameVersion;
             this.DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
-            this.CookbookURL = string.Format(SourceProfile.ConvertibleCookbookURL,
-                $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
-            this.CookbookPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Temp",
-                $"Cookbook_{SourceProfile.ProfileName}_{TargetProfile.ProfileName}_{GameVersion}_lzma2_crc32.diff");
+            this.CookbookPath = CookbookPath;
             this.Token = Token;
         }
 
@@ -58,21 +57,24 @@ namespace CollapseLauncher
             ConvertStatus = Lang._InstallConvert.Step3Title;
 
             string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
+            string URL = "";
 
             using (MemoryStream buffer = new MemoryStream())
             {
+                URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
+                await Download(URL, buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
             using (MemoryStream buffer = new MemoryStream())
             {
+                URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(TargetBaseURL + "index.json", buffer, null, null, Token);
+                await Download(URL, buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);

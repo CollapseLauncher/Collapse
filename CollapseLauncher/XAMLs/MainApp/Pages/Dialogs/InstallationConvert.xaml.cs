@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -156,7 +157,7 @@ namespace CollapseLauncher.Dialogs
 
             GameVersion = _Entry.data.game.latest.version;
 
-            return string.Format(Profile.ZipFileURL, Path.GetFileNameWithoutExtension(_Entry.data.game.latest.path));
+            return _Entry.data.game.latest.decompressed_path + "/";
         }
 
         public bool IsSourceGameExist(PresetConfigV2 Profile)
@@ -295,11 +296,25 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressRing.Value = 0;
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
-            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, tokenSource.Token);
 
-            Converter.ProgressChanged += Step2ProgressEvents;
-            await Converter.StartDownloadRecipe();
-            Converter.ProgressChanged -= Step2ProgressEvents;
+            bool IsChoosen = false;
+            string cPath = null;
+            while (!IsChoosen)
+            {
+                string FileName = string.Format("Cookbook_{0}_{1}_{2}_lzma2_crc32.diff", SourceProfile.ProfileName, TargetProfile.ProfileName, GameVersion);
+                switch (await Dialog_LocateDownloadedConvertRecipe(Content, FileName))
+                {
+                    case ContentDialogResult.Primary:
+                        cPath = await FileDialogNative.GetFilePicker(
+                            new Dictionary<string, string> { { $"{SourceProfile.ProfileName} to {TargetProfile.ProfileName} Cookbook", FileName } });
+                        IsChoosen = cPath != null;
+                        break;
+                    case ContentDialogResult.None:
+                        throw new OperationCanceledException();
+                }
+            }
+
+            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, cPath, tokenSource.Token);
 
             DispatcherQueue.TryEnqueue(() =>
             {

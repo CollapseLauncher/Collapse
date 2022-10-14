@@ -25,7 +25,8 @@ namespace CollapseLauncher.Dialogs
     {
         string sourcePath;
         string targetPath;
-        string endpointURL;
+        string apiFileListURL;
+        string fileRepoURL;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         List<FilePropertiesRemote> BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
 
@@ -46,7 +47,8 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                endpointURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                apiFileListURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
+                fileRepoURL = regionResourceProp.data.game.latest.decompressed_path + "/";
                 if (await DoCheckPermission())
                 {
                     await DoMigrationProcess();
@@ -149,7 +151,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartConversionTask()
         {
-            SteamConversion conversionTool = new SteamConversion(targetPath, endpointURL, BrokenFileIndexesProperty, tokenSource);
+            SteamConversion conversionTool = new SteamConversion(targetPath, fileRepoURL, BrokenFileIndexesProperty, tokenSource);
 
             conversionTool.ProgressChanged += ConversionProgressChanged;
             await conversionTool.StartConverting();
@@ -206,7 +208,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartCheckIntegrity()
         {
-            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
+            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, fileRepoURL, tokenSource);
 
             integrityTool.ProgressChanged += IntegrityProgressChanged;
             await integrityTool.StartCheckIntegrity();
@@ -217,7 +219,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartCheckVerification()
         {
-            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, endpointURL, tokenSource);
+            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, fileRepoURL, tokenSource);
 
             integrityTool.ProgressChanged += VerificationProgressChanged;
             await integrityTool.StartCheckIntegrity();

@@ -1,5 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Text;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
@@ -142,6 +144,39 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.No,
                     ContentDialogButton.Secondary
                 );
+
+        public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
+        {
+            Run text1 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 };
+            Hyperlink hyperlink = new Hyperlink() {
+                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = (SolidColorBrush)Application.Current.Resources["AccentColor"] } },
+                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
+            };
+            Run text3 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 };
+            Run text4 = new Run { Text = $" {Lang._Misc.Next} ", FontWeight = FontWeights.Bold };
+            Run text5 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle5 };
+            Run text6 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle6, FontWeight = FontWeights.Bold };
+            Run text7 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle7 };
+            Run text8 = new Run { Text = FileName, FontWeight = FontWeights.Bold };
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(text1);
+            texts.Inlines.Add(hyperlink);
+            texts.Inlines.Add(text3);
+            texts.Inlines.Add(text4);
+            texts.Inlines.Add(text5);
+            texts.Inlines.Add(text6);
+            texts.Inlines.Add(text7);
+            texts.Inlines.Add(text8);
+            return await SpawnDialog(
+                    Lang._Dialogs.CookbookLocateTitle,
+                    texts,
+                    Content,
+                    Lang._Misc.Cancel,
+                    Lang._Misc.Next,
+                    null,
+                    ContentDialogButton.Primary
+                );
+        }
 
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
