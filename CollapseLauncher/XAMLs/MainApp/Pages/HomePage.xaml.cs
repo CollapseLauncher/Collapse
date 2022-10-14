@@ -1250,9 +1250,7 @@ namespace CollapseLauncher.Pages
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 GetAppExtractConfigValue(),
                                 token,
-                                CurrentConfigV2.IsGenshin ?? false ?
-                                    regionResourceProp.data.game.latest.decompressed_path :
-                                    CurrentConfigV2.ZipFileURL,
+                                regionResourceProp.data.game.latest.decompressed_path,
                                 regionResourceProp.data.game.latest.version,
                                 CurrentConfigV2.ProtoDispatchKey,
                                 CurrentConfigV2.GameDispatchURL,

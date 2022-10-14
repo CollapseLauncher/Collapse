@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -41,8 +42,7 @@ namespace CollapseLauncher
             ResetSw();
             ConvertStatus = Lang._InstallMgmt.PreparePatchTitle;
             IngredientPath = SourceProfile.ActualGameDataLocation + "_Ingredients";
-            SourceBaseURL = string.Format(DecompressedRemotePath, $"BH3_v{PatchProp.SourceVer}_{PatchProp.ZipHash}");
-            DecompressedRemotePath = null;
+            IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVersionString);
 
             InstallStatus = new InstallManagementStatus
             {
@@ -56,7 +56,7 @@ namespace CollapseLauncher
             using (MemoryStream buffer = new MemoryStream())
             {
                 DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(SourceBaseURL + "index.json", buffer, null, null, Token);
+                await Download(IndexRemoteURL, buffer, null, null, Token);
                 DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
@@ -337,7 +337,7 @@ namespace CollapseLauncher
 
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = SourceBaseURL + Entry.FileName;
+                InputURL = RepoRemoteURL + "/" + Entry.FileName;
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));

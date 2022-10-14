@@ -21,6 +21,7 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 // Load CurrentConfig from here
 
 namespace CollapseLauncher
@@ -47,7 +48,8 @@ namespace CollapseLauncher
                      ExtractionThread;
 
         private string GameDirPath = string.Empty,
-                       DecompressedRemotePath,
+                       IndexRemoteURL,
+                       RepoRemoteURL,
                        DispatchKey,
                        DispatchURLPrefix,
                        GameVersionString,
@@ -91,7 +93,8 @@ namespace CollapseLauncher
             this.Token = token;
             this.DownloadProperty = new List<DownloadAddressProperty>();
             this.GameDirPath = GameDirPath;
-            this.DecompressedRemotePath = DecompressedRemotePath;
+            this.IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVerString);
+            this.RepoRemoteURL = DecompressedRemotePath;
             this.DispatchKey = DispatchKey;
             this.GameVersionString = GameVerString;
             this.DispatchServerID = RegionID;
@@ -422,7 +425,7 @@ namespace CollapseLauncher
 
             await StartPreparation();
             await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
-            await Task.Run(() => StartConversion());
+            await Task.Run(StartConversion);
         }
 
         long LastSize = 0;
@@ -449,7 +452,7 @@ namespace CollapseLauncher
             UpdateProgress(InstallProgress);
         }
 
-        public async Task StartInstallAsync() => await Task.Run(() => StartInstall());
+        public async Task StartInstallAsync() => await Task.Run(StartInstall);
 
         public async Task<bool> StartIfDeltaPatchAvailable()
         {
@@ -621,7 +624,7 @@ namespace CollapseLauncher
         {
             // Temporarily disable the PostInstallVerification for both Post Install Check and
             // Repair Mechanism.
-            if (DecompressedRemotePath == null || !(this.SourceProfile.IsGenshin ?? false)) return;
+            if (!(this.SourceProfile.IsGenshin ?? false)) return;
             // return;
 
             InstallStatus = new InstallManagementStatus
@@ -676,28 +679,28 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(GameDirPath, "pkg_version");
             if (!File.Exists(ManifestPath))
-                await Download(DecompressedRemotePath + "/pkg_version", ManifestPath, true, null, null, Token);
-            BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", DecompressedRemotePath);
+                await Download(RepoRemoteURL + "/pkg_version", ManifestPath, true, null, null, Token);
+            BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build local audio entry.
             foreach (string _Entry in Directory.GetFiles(GameDirPath, "Audio_*_pkg_version"))
-                BuildManifestList(_Entry, Entries, ref HashtableManifest, "", "", DecompressedRemotePath);
+                BuildManifestList(_Entry, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build additional blks entry.
             foreach (string _Entry in Directory.GetFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "data_versions_*"))
-                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", DecompressedRemotePath);
+                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", RepoRemoteURL);
             foreach (string _Entry in Directory.GetFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "silence_versions_*"))
-                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", DecompressedRemotePath);
+                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", RepoRemoteURL);
             foreach (string _Entry in Directory.GetFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "res_versions_*"))
-                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", DecompressedRemotePath);
+                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", RepoRemoteURL);
 
             // Build cutscenes entry.
             foreach (string _Entry in Directory.GetFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets"), "*_versions_*"))
-                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets", "", DecompressedRemotePath);
+                BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets", "", RepoRemoteURL);
         }
 
         private async Task InitializeNewGenshinDispatch()
