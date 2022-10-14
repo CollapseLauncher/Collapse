@@ -339,7 +339,7 @@ namespace CollapseLauncher
 
                 await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath), Token);
                 TryDirectoryDelete(IngredientsPath, true);
-                TryFileDelete(CookbookPath);
+                // TryFileDelete(CookbookPath);
                 MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
                 TryDirectoryDelete(SourceProfile.ActualGameDataLocation, true);
 
