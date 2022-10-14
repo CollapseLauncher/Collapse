@@ -82,8 +82,8 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                CheckFailedDeltaPatchState();
-                CheckFailedGameConversion();
+                await CheckFailedDeltaPatchState();
+                await CheckFailedGameConversion();
                 CheckRunningGameInstance();
                 StartCarouselAutoScroll(PageToken.Token);
             }
@@ -227,7 +227,30 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void CheckFailedGameConversion()
+        private async Task CheckFailedDeltaPatchState()
+        {
+            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            string GamePathIngredients = GamePath + "_Ingredients";
+            if (!Directory.Exists(GamePathIngredients)) return;
+            LogWriteLine($"Previous failed delta patch has been detected on Game {CurrentConfigV2.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
+            try
+            {
+                switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
+                {
+                    case ContentDialogResult.Primary:
+                        RollbackFileContent(GamePath, GamePathIngredients);
+                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                        break;
+                }
+            }
+            catch
+            {
+                RollbackFileContent(GamePath, GamePathIngredients);
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
+        }
+
+        private async Task CheckFailedGameConversion()
         {
             string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
@@ -278,29 +301,6 @@ namespace CollapseLauncher.Pages
 #endif
             }
             return null;
-        }
-
-        private async void CheckFailedDeltaPatchState()
-        {
-            string GamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            string GamePathIngredients = GamePath + "_Ingredients";
-            if (!Directory.Exists(GamePathIngredients)) return;
-            LogWriteLine($"Previous failed delta patch has been detected on Game {CurrentConfigV2.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
-            try
-            {
-                switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        RollbackFileContent(GamePath, GamePathIngredients);
-                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                        break;
-                }
-            }
-            catch
-            {
-                RollbackFileContent(GamePath, GamePathIngredients);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            }
         }
 
         private void RollbackFileContent(string OrigPath, string IngrPath)
