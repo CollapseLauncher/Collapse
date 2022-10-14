@@ -25,14 +25,10 @@ namespace CollapseLauncher
 
         List<FileProperties> SourceFileManifest;
 
-        Stopwatch ConvertSw;
-
         string IngredientPath;
-        string SourceBaseURL;
         private void ResetSw()
         {
             DownloadStopwatch = Stopwatch.StartNew();
-            ConvertSw = Stopwatch.StartNew();
         }
         string ConvertStatus;
 
