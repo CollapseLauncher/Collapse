@@ -26,6 +26,7 @@
             PaneDisplayMode="LeftMinimal"
             Visibility="Visible" IsPaneOpen="False"
             Background="{StaticResource NavigationBarBrush}"
+            Margin="-1"
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
             <Grid>
