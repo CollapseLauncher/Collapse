@@ -8,12 +8,11 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Web.WebView2.Core;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -49,6 +48,7 @@ namespace CollapseLauncher
                 return area.ToArray();
             }
         }
+
         private RectInt32[] DragAreaMode_Full
         {
             get
@@ -96,6 +96,7 @@ namespace CollapseLauncher
                 BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
                 SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
                 ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
+                ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
@@ -105,6 +106,19 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+        }
+
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        {
+            switch (e.Template)
+            {
+                case DragAreaTemplate.Full:
+                    MainWindow.SetDragArea(DragAreaMode_Full);
+                    break;
+                case DragAreaTemplate.Default:
+                    MainWindow.SetDragArea(DragAreaMode_Normal);
+                    break;
             }
         }
 
@@ -414,7 +428,7 @@ namespace CollapseLauncher
                 }
                 catch (Exception)
                 {
-                    
+
                 }
             }
         }
@@ -727,7 +741,6 @@ namespace CollapseLauncher
         {
             try
             {
-                MainWindow.SetDragArea(DragAreaMode_Full);
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
 
                 WebView2Runtime = new WebView2()
@@ -748,11 +761,21 @@ namespace CollapseLauncher
                 WebView2Runtime.Source = URL;
 
                 SetWebView2Bindings();
+                ChangeTitleDragArea.Change(DragAreaTemplate.Full);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error while initialize WebView2\r\n{ex}", LogType.Error, true);
-                WebView2Runtime.Close();
+                LogWriteLine($"Error while initialize WebView2. Open it to browser instead!\r\n{ex}", LogType.Error, true);
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        FileName = URL.ToString()
+                    }
+                }.Start();
+
+                WebView2Runtime?.Close();
             }
         }
 
@@ -802,7 +825,7 @@ namespace CollapseLauncher
 
         private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.SetDragArea(DragAreaMode_Normal);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
             WebView2Runtime.Visibility = Visibility.Collapsed;
             WebView2Runtime.Close();
             WebView2Panel.Visibility = Visibility.Collapsed;

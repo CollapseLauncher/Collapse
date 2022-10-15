@@ -321,4 +321,33 @@ namespace CollapseLauncher
         public string Subtitle { get; private set; }
     }
     #endregion
+    #region ChangeTitleDragArea
+    public enum DragAreaTemplate
+    {
+        Full,
+        Default
+    }
+
+    internal static class ChangeTitleDragArea
+    {
+        static ChangeTitleDragAreaInvoker invoker = new ChangeTitleDragAreaInvoker();
+        public static void Change(DragAreaTemplate Template) => invoker.Change(Template);
+    }
+
+    internal class ChangeTitleDragAreaInvoker
+    {
+        public static event EventHandler<ChangeTitleDragAreaProperty> TitleBarEvent;
+        public void Change(DragAreaTemplate Template) => TitleBarEvent?.Invoke(this, new ChangeTitleDragAreaProperty(Template));
+    }
+
+    internal class ChangeTitleDragAreaProperty
+    {
+        internal ChangeTitleDragAreaProperty(DragAreaTemplate Template)
+        {
+            this.Template = Template;
+        }
+
+        public DragAreaTemplate Template { get; private set; }
+    }
+    #endregion
 }

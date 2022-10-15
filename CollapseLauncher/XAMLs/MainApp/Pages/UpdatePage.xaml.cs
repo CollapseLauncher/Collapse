@@ -20,7 +20,13 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
             RunAsyncTasks();
+            this.Loaded += UpdatePage_Loaded;
+            this.Unloaded += UpdatePage_Unloaded;
         }
+
+        private void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+
+        private void UpdatePage_Loaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Full);
 
         public async void RunAsyncTasks()
         {
