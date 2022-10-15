@@ -24,16 +24,6 @@ namespace CollapseLauncher
             try
             {
                 m_window = this;
-
-                string title = $"Collapse";
-#if PORTABLE
-                this.Title += " Portable";
-#endif
-                if (IsPreview)
-                    this.Title = title += " Preview";
-#if DEBUG
-                this.Title = title += " [Debug]";
-#endif
             }
             catch (Exception ex)
             {
@@ -93,6 +83,18 @@ namespace CollapseLauncher
             m_appWindow = AppWindow.GetFromWindowId(m_windowID);
             m_appWindow.Changed += AppWindow_Changed;
             m_presenter = m_appWindow.Presenter as OverlappedPresenter;
+
+            string title = $"Collapse";
+#if PORTABLE
+                title += " Portable";
+#endif
+            if (IsPreview)
+                title += " Preview";
+#if DEBUG
+            title += " [Debug]";
+#endif
+            m_appWindow.Title = title;
+
             DisplayArea displayArea = DisplayArea.GetFromWindowId(m_windowID, DisplayAreaFallback.Primary);
 
             // Get Monitor DPI
