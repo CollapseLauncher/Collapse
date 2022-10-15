@@ -6,13 +6,15 @@
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
     xmlns:regionShared="using:Hi3Helper.Shared.Region"
+    xmlns:s="using:CommunityToolkit.WinUI.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     mc:Ignorable="d"
     x:FieldModifier="public" Unloaded="Page_Unloaded">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow"/>
+        <ThemeShadow x:Key="SharedShadow"/>
+        <s:AttachedDropShadow x:Key="SharedDropShadow" Offset="0,4,0" BlurRadius="16" Opacity="0.3" CastTo="{x:Bind ImageEventImgShadow}"/>
     </Page.Resources>
     <Grid>
         <Frame x:Name="OverlapFrame" Canvas.ZIndex="1" x:FieldModifier="public">
@@ -177,7 +179,8 @@
                           Grid.Column="1" Grid.Row="1"
                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
                           Width="136" Margin="0,0,82,68">
-                            <Image x:Name="ImageEventImg" Shadow="{StaticResource SharedShadow}" PointerPressed="ClickImageEventSpriteLink"/>
+                            <Grid x:Name="ImageEventImgShadow"/>
+                            <Image x:Name="ImageEventImg" s:Effects.Shadow="{StaticResource SharedDropShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                                 Margin="0,158,0,0" Orientation="Vertical" HorizontalAlignment="Left">

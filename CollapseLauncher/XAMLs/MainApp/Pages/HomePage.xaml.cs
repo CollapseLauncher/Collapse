@@ -123,7 +123,6 @@ namespace CollapseLauncher.Pages
             ImageEventImgGrid.Visibility = Visibility.Visible;
             ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
-            ImageEventImg.Translation += Shadow48;
         }
 
         public void ResetLastTimeSpan() => LastTimeSpan = Stopwatch.StartNew();

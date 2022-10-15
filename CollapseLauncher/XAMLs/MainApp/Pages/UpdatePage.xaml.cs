@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -51,6 +52,8 @@ namespace CollapseLauncher.Pages
             {
                 await new Http().Download(ReleaseNoteURL, ResponseStream, null, null, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
+
+                Content = File.ReadAllText(@"C:\myGit\CollapseLauncher-ReleaseRepo\changelog_preview.md");
 
                 DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Content);
             }
@@ -117,6 +120,36 @@ namespace CollapseLauncher.Pages
                 ActivitySubStatus.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.DownloadedSize), SummarizeSizeSimple(e.TotalSizeToDownload));
                 SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.CurrentSpeed));
                 TimeEstimation.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+            });
+        }
+
+        private async void ReleaseNotesBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        FileName = e.Link
+                    }
+                }.Start();
+            });
+        }
+
+        private async void ReleaseNotesBox_ImageClicked(object sender, LinkClickedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        FileName = e.Link
+                    }
+                }.Start();
             });
         }
     }

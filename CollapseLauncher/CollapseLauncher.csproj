@@ -8,7 +8,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim;DebugILTrim</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.0.51.3</Version>
+		<Version>1.0.41.6</Version>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
@@ -54,6 +54,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25211-preview" />
@@ -80,7 +81,9 @@
 		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="icon.ico" />
+		<Content Include="icon.ico">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
