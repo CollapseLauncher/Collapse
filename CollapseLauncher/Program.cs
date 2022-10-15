@@ -22,7 +22,7 @@ namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
-        [STAThreadAttribute]
+        [STAThread]
         public static void Main(params string[] args)
         {
 #if PREVIEW
@@ -119,24 +119,14 @@ namespace CollapseLauncher
         {
             bool isRedirect = false;
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
-            ExtendedActivationKind kind = args.Kind;
             AppInstance keyInstance = AppInstance.FindOrRegisterForKey(m_appMode.ToString());
 
-            if (keyInstance.IsCurrent)
-            {
-                keyInstance.Activated += OnActivated;
-            }
-            else
+            if (!keyInstance.IsCurrent)
             {
                 isRedirect = true;
                 keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();
             }
             return isRedirect;
-        }
-
-        private static void OnActivated(object sender, AppActivationArguments args)
-        {
-            ExtendedActivationKind kind = args.Kind;
         }
 
         public static void InitializeAppSettings()
