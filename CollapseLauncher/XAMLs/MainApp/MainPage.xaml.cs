@@ -568,6 +568,7 @@ namespace CollapseLauncher
                     false,
                     null,
                     UpdateMetadatabtn,
+                    true,
                     true
                     );
             }
