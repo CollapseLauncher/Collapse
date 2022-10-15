@@ -4,11 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
     xmlns:helper="using:Hi3Helper"
+    xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource UpdatePageAcrylicBrush}">
-    <Grid Margin="32,48,32,32">
+    <Grid Margin="32,16,32,32">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="185*"/>
             <ColumnDefinition Width="423*"/>
@@ -90,20 +91,28 @@
                 <RowDefinition/>
                 <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0">
+            <Grid Grid.Row="0">
                 <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" Style="{StaticResource TitleTextBlockStyle}"/>
-                <TextBox x:Name="ReleaseNotesBox"
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                     Height="480"
-                     AcceptsReturn="True"
-                     Margin="0,16,0,0"/>
+                <Grid
+                    Margin="0,48,0,48"
+                    CornerRadius="8"
+                    Background="{StaticResource WindowTrayBrush}">
+                    <ScrollViewer>
+                        <control:MarkdownTextBlock
+                            x:Name="ReleaseNotesBox"
+                            Background="Transparent"
+                            Padding="16"
+                            LinkClicked="ReleaseNotesBox_LinkClicked"
+                            ImageClicked="ReleaseNotesBox_ImageClicked"
+                            VerticalAlignment="Stretch"
+                            Header1FontSize="32">
+                        </control:MarkdownTextBlock>
+                    </ScrollViewer>
+                </Grid>
                 <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,16,0,0"
                           Checked="AskUpdateToggle"
                           Unchecked="AskUpdateToggle"/>
-            </StackPanel>
+            </Grid>
             <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
                 <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
                 <Button Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">

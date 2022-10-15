@@ -46,14 +46,12 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Lang._UpdatePage.LoadingRelease);
 
             MemoryStream ResponseStream = new MemoryStream();
-            string ReleaseNoteURL = string.Format(UpdateRepoChannel + "changelog_{0}", IsPreview ? "preview" : "stable");
+            string ReleaseNoteURL = string.Format(UpdateRepoChannel + "changelog_{0}.md", IsPreview ? "preview" : "stable");
 
             try
             {
                 await new Http().Download(ReleaseNoteURL, ResponseStream, null, null, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
-
-                Content = File.ReadAllText(@"C:\myGit\CollapseLauncher-ReleaseRepo\changelog_preview.md");
 
                 DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Content);
             }
