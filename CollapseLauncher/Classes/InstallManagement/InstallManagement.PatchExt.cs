@@ -12,10 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -38,7 +38,6 @@ namespace CollapseLauncher
             ResetSw();
             ConvertStatus = Lang._InstallMgmt.PreparePatchTitle;
             IngredientPath = SourceProfile.ActualGameDataLocation + "_Ingredients";
-            IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVersionString);
 
             InstallStatus = new InstallManagementStatus
             {
@@ -48,6 +47,21 @@ namespace CollapseLauncher
             };
 
             UpdateStatus(InstallStatus);
+
+            Dictionary<string, string> RepoList;
+            string RepoListURL = string.Format(AppGameRepoIndexURLPrefix, SourceProfile.ProfileName);
+
+            using (MemoryStream buffer = new MemoryStream())
+            {
+                DownloadProgress += FetchIngredientsAPI_Progress;
+                await Download(RepoListURL, buffer, null, null, Token);
+                DownloadProgress -= FetchIngredientsAPI_Progress;
+                buffer.Position = 0;
+                RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
+            }
+
+            RepoRemoteURL = RepoList[GameVersionString] + '/';
+            IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVersionString);
 
             using (MemoryStream buffer = new MemoryStream())
             {
@@ -194,7 +208,7 @@ namespace CollapseLauncher
 
             foreach (XMFBlockList Block in BlockC)
             {
-                Name = BaseName + "/" + Block.BlockHash + ".wmv";
+                Name = BaseName + '/' + Block.BlockHash + ".wmv";
                 _out.Add(new FileProperties
                 {
                     FileName = Name,
@@ -333,7 +347,7 @@ namespace CollapseLauncher
 
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = RepoRemoteURL + "/" + Entry.FileName;
+                InputURL = RepoRemoteURL + Entry.FileName;
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));

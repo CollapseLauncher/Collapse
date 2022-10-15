@@ -59,4 +59,8 @@ namespace Hi3Helper
     [JsonSerializable(typeof(List<FilePropertiesRemote>))]
     [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class L_FilePropertiesRemoteContext : JsonSerializerContext { }
+
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    public partial class D_StringString : JsonSerializerContext { }
 }

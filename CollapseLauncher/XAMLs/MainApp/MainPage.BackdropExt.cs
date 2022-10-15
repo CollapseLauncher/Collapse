@@ -19,11 +19,11 @@ namespace CollapseLauncher
             switch (m_currentBackdrop)
             {
                 case BackdropType.DefaultColor:
-                {
-                    Background.Visibility = Visibility.Visible;
-                    BackgroundAcrylicMask.Visibility = Visibility.Visible;
-                }
-                break;
+                    {
+                        Background.Visibility = Visibility.Visible;
+                        BackgroundAcrylicMask.Visibility = Visibility.Visible;
+                    }
+                    break;
             }
         }
     }

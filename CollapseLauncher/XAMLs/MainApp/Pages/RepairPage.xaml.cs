@@ -1,11 +1,9 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.IO;
 using static CollapseLauncher.Pages.RepairData;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -17,7 +15,6 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
             GameBasePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            GameBaseURL = regionResourceProp.data.game.latest.decompressed_path + "/";
         }
 
         private void CancelOperation(object sender, RoutedEventArgs e)

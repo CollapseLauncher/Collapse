@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Locale;
 using static System.Convert;
 
 namespace Hi3Helper.Data

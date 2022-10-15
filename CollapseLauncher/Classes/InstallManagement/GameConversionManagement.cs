@@ -28,7 +28,6 @@ namespace CollapseLauncher
 
         string SourceBaseURL, TargetBaseURL;
         string GameVersion;
-        string CookbookURL;
         string CookbookPath;
         Stopwatch ConvertSw;
         CancellationToken Token = new CancellationToken();
@@ -204,7 +203,7 @@ namespace CollapseLauncher
 
             foreach (XMFBlockList Block in BlockC)
             {
-                Name = BaseName + "/" + Block.BlockHash + ".wmv";
+                Name = BaseName + '/' + Block.BlockHash + ".wmv";
                 _out.Add(new FileProperties
                 {
                     FileName = Name,
@@ -214,23 +213,6 @@ namespace CollapseLauncher
             }
 
             return _out;
-        }
-
-        public async Task StartDownloadRecipe()
-        {
-            ResetSw();
-            ConvertStatus = Lang._InstallConvert.CookbookDownloadTitle;
-            ConvertDetail = string.Format(Lang._InstallConvert.CookbookDownloadSubtitle, SourceProfile.ZoneName, TargetProfile.ZoneName);
-
-            if (File.Exists(CookbookPath))
-                if (new FileInfo(CookbookPath).Length == await TryGetContentLength(CookbookURL, Token))
-                    return;
-
-            DownloadProgress += RecipeDownload_Progress;
-
-            await Download(CookbookURL, CookbookPath, DownloadThread, true, Token);
-            await Merge();
-            DownloadProgress -= RecipeDownload_Progress;
         }
 
         public string CleanUpPreviousChunkFiles(string CookbookPath)
@@ -248,12 +230,6 @@ namespace CollapseLauncher
             }
 
             return CookbookPath;
-        }
-
-        private void RecipeDownload_Progress(object sender, DownloadEvent e)
-        {
-            UpdateProgress(e.SizeDownloaded, e.SizeToBeDownloaded, 1, 1, ConvertSw.Elapsed,
-                ConvertStatus, ConvertDetail);
         }
 
         long RepairRead = 0;

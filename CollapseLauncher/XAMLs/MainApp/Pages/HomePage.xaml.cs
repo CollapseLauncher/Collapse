@@ -21,9 +21,9 @@ using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
+using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -1080,7 +1080,7 @@ namespace CollapseLauncher.Pages
         {
             string ScreenshotFolder = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), "ScreenShot");
             LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
-            
+
             if (!Directory.Exists(ScreenshotFolder))
                 Directory.CreateDirectory(ScreenshotFolder);
 

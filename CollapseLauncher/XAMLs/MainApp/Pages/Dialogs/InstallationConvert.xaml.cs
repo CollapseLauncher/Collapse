@@ -34,7 +34,6 @@ namespace CollapseLauncher.Dialogs
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
-        List<FilePropertiesRemote> BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
         Dictionary<string, PresetConfigV2> ConvertibleRegions;
 
         public InstallationConvert()
@@ -77,7 +76,7 @@ namespace CollapseLauncher.Dialogs
                     }
                 }
 
-                await DoSetProfileDataLocation();
+                DoSetProfileDataLocation();
                 await DoDownloadRecipe();
                 await DoPrepareIngredients();
 
@@ -126,13 +125,11 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
-        private async Task DoSetProfileDataLocation()
+        private void DoSetProfileDataLocation()
         {
             SourceProfile.ActualGameDataLocation = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
             TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation), $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
             string TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
-            SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
-            TargetDataIntegrityURL = await FetchDataIntegrityURL(TargetProfile);
 
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -147,17 +144,31 @@ namespace CollapseLauncher.Dialogs
 
         private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
         {
-            RegionResourceProp _Entry;
+            Http _Http = new Http();
+            Dictionary<string, string> _RepoList;
+
             using (MemoryStream s = new MemoryStream())
             {
-                await new Http().Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
+                _Http.DownloadProgress += Step2ProgressEvents;
+                string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
+                await _Http.Download(repoListURL, s, null, null, tokenSource.Token);
+                s.Position = 0;
+                _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
+                _Http.DownloadProgress -= Step2ProgressEvents;
+            }
+
+            RegionResourceProp _Entry;
+
+            using (MemoryStream s = new MemoryStream())
+            {
+                await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 s.Position = 0;
                 _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
 
             GameVersion = _Entry.data.game.latest.version;
 
-            return _Entry.data.game.latest.decompressed_path + "/";
+            return _RepoList[GameVersion] + '/';
         }
 
         public bool IsSourceGameExist(PresetConfigV2 Profile)
@@ -297,6 +308,9 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
 
+            SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
+            TargetDataIntegrityURL = await FetchDataIntegrityURL(TargetProfile);
+
             bool IsChoosen = false;
             string cPath = null;
             while (!IsChoosen)
@@ -327,13 +341,12 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private void Step2ProgressEvents(object sender, GameConversionManagement.ConvertProgress e)
+        private void Step2ProgressEvents(object sender, DownloadEvent e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                Step2ProgressRing.Value = e.Percentage;
-                Step2ProgressTitle.Text = e.ProgressStatus;
-                Step2ProgressStatus.Text = e.ProgressDetail;
+                Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed))}";
+                Step2ProgressRing.Value = e.ProgressPercentage;
             });
         }
 

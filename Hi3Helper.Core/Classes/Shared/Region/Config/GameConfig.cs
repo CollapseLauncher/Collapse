@@ -210,7 +210,7 @@ namespace Hi3Helper.Shared.Region
 
                 if (RegData == null) return;
                 ScreenSettingData screenData = (ScreenSettingData)JsonSerializer.Deserialize(RegData, typeof(ScreenSettingData), ScreenSettingDataContext.Default);
-                
+
                 switch (key)
                 {
                     case "Fullscreen":

@@ -23,7 +23,6 @@ namespace Hi3Helper.Shared.Region
         public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
         public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
-        // public static PresetConfigClasses CurrentRegion = new PresetConfigClasses();
         public static IEnumerable<string> GameConfigName = new List<string>();
         public static List<string> ScreenResolutionsList = new List<string>();
 
@@ -45,6 +44,7 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameConfigURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadata_{0}.json";
         public const string AppGameConfigV2URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/{1}/index";
+        public const string AppGameRepoIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }

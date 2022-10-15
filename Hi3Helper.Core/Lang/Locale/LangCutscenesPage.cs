@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Hi3Helper
+﻿namespace Hi3Helper
 {
     public partial class Locale
     {

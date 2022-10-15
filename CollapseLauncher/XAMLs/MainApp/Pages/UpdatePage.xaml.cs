@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Http;
+﻿using CommunityToolkit.WinUI.UI.Controls;
+using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -7,7 +8,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.WinUI.UI.Controls;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;

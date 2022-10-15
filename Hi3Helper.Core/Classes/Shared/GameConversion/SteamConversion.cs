@@ -15,7 +15,8 @@ namespace Hi3Helper.Shared.GameConversion
     public class SteamConversion
     {
         private string targetPath;
-        private string endpointURL;
+        private string repoIndexURL;
+        private string repoURL;
         private Http.Http http;
         private Stream stream;
         private CancellationTokenSource tokenSource;
@@ -34,11 +35,12 @@ namespace Hi3Helper.Shared.GameConversion
         private FileInfo FileInfo;
         private FilePropertiesRemote FileIndex;
 
-        public SteamConversion(string targetPath, string endpointURL, List<FilePropertiesRemote> FileList, CancellationTokenSource tokenSource)
+        public SteamConversion(string targetPath, string repoURL, string repoIndexURL, List<FilePropertiesRemote> FileList, CancellationTokenSource tokenSource)
         {
             this.sw = Stopwatch.StartNew();
             this.targetPath = targetPath;
-            this.endpointURL = endpointURL;
+            this.repoURL = repoURL;
+            this.repoIndexURL = repoIndexURL;
             this.tokenSource = tokenSource;
             this.http = new Http.Http();
             this.BrokenFileIndexesProperty = FileList;
@@ -80,7 +82,7 @@ namespace Hi3Helper.Shared.GameConversion
 
             FileInfo = new FileInfo(FilePath);
 
-            FileURL = endpointURL +
+            FileURL = repoURL +
                 (FileIndex.FT == FileType.Generic ? FileIndex.N :
                                                     Path.GetDirectoryName(FileIndex.N).Replace('\\', '/') + $"/{FileIndex.RN}");
 
@@ -109,7 +111,7 @@ namespace Hi3Helper.Shared.GameConversion
             long FileExistingLength;
             foreach (var block in FileIndex.BlkC)
             {
-                FileURL = endpointURL + FileIndex.N + $"/{block.BlockHash}.wmv";
+                FileURL = repoURL + FileIndex.N + $"/{block.BlockHash}.wmv";
                 FilePath = Path.Combine(targetPath, BlockBasePath, block.BlockHash + ".wmv");
                 FileInfo = new FileInfo(FilePath);
 

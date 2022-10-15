@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.GameConversion;
 using Microsoft.UI.Xaml;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -25,8 +27,9 @@ namespace CollapseLauncher.Dialogs
     {
         string sourcePath;
         string targetPath;
-        string apiFileListURL;
-        string fileRepoURL;
+        string repoURL;
+        string repoIndexURL;
+        string repoListURL;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         List<FilePropertiesRemote> BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
 
@@ -38,7 +41,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -47,14 +50,13 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                apiFileListURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-                fileRepoURL = regionResourceProp.data.game.latest.decompressed_path + "/";
                 if (await DoCheckPermission())
                 {
                     await DoMigrationProcess();
                 }
 
                 targetPath = GamePathOnSteam;
+                await DoGetRepoURL();
                 await DoCompareProcess();
                 await DoConversionProcess();
                 await DoVerification();
@@ -75,10 +77,23 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+        }
+
+        public async Task DoGetRepoURL()
+        {
+            repoListURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
+
+            using (MemoryStream s = new MemoryStream())
+            {
+                await http.Download(repoListURL, s, null, null, tokenSource.Token);
+                Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
+                repoURL = repoList[regionResourceProp.data.game.latest.version] + '/';
+                repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
+            }
         }
 
         public void ApplyConfiguration()
@@ -86,15 +101,20 @@ namespace CollapseLauncher.Dialogs
             gameIni.Profile["launcher"]["game_install_path"] = targetPath;
             gameIni.Profile.Save(gameIni.ProfilePath);
 
-            gameIni.Config = new IniFile();
-            gameIni.Config.Add("General", new Dictionary<string, IniValue>
+            gameIni.Config = new IniFile
             {
-                    { "channel", new IniValue(1) },
-                    { "cps", new IniValue() },
-                    { "game_version", new IniValue(regionResourceProp.data.game.latest.version) },
-                    { "sub_channel", new IniValue(1) },
-                    { "sdk_version", new IniValue() },
-            });
+                {
+                    "General",
+                    new Dictionary<string, IniValue>
+                    {
+                            { "channel", new IniValue(1) },
+                            { "cps", new IniValue() },
+                            { "game_version", new IniValue(regionResourceProp.data.game.latest.version) },
+                            { "sub_channel", new IniValue(1) },
+                            { "sdk_version", new IniValue() },
+                    }
+                }
+            };
             gameIni.Config.Save(Path.Combine(targetPath, "config.ini"));
 
             File.Delete(Path.Combine(targetPath, "_conversion_unfinished"));
@@ -151,7 +171,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartConversionTask()
         {
-            SteamConversion conversionTool = new SteamConversion(targetPath, fileRepoURL, BrokenFileIndexesProperty, tokenSource);
+            SteamConversion conversionTool = new SteamConversion(targetPath, repoURL, repoIndexURL, BrokenFileIndexesProperty, tokenSource);
 
             conversionTool.ProgressChanged += ConversionProgressChanged;
             await conversionTool.StartConverting();
@@ -208,7 +228,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartCheckIntegrity()
         {
-            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, fileRepoURL, tokenSource);
+            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, repoURL, repoIndexURL, tokenSource);
 
             integrityTool.ProgressChanged += IntegrityProgressChanged;
             await integrityTool.StartCheckIntegrity();
@@ -219,7 +239,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartCheckVerification()
         {
-            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, fileRepoURL, tokenSource);
+            CheckIntegrity integrityTool = new CheckIntegrity(targetPath, repoURL, repoIndexURL, tokenSource);
 
             integrityTool.ProgressChanged += VerificationProgressChanged;
             await integrityTool.StartCheckIntegrity();
@@ -286,7 +306,7 @@ namespace CollapseLauncher.Dialogs
                     Step2ProgressStatus.Text = Lang._InstallMigrateSteam.Step2Subtitle2;
                 });
 
-                await Task.Run(() => proc.WaitForExit());
+                await Task.Run(proc.WaitForExit);
 
                 DispatcherQueue.TryEnqueue(() =>
                 {

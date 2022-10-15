@@ -148,7 +148,8 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
         {
             Run text1 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 };
-            Hyperlink hyperlink = new Hyperlink() {
+            Hyperlink hyperlink = new Hyperlink()
+            {
                 Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = (SolidColorBrush)Application.Current.Resources["AccentColor"] } },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
             };

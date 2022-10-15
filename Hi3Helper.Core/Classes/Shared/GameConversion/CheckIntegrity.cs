@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +17,8 @@ namespace Hi3Helper.Shared.GameConversion
     public class CheckIntegrity
     {
         private string targetPath;
-        private string endpointURL;
+        private string repoURL;
+        private string repoIndexURL;
         private Http.Http http;
         private Stream stream;
         private CancellationTokenSource tokenSource;
@@ -39,11 +39,12 @@ namespace Hi3Helper.Shared.GameConversion
         private Crc32Algorithm FileCRCTool;
         private byte[] buffer = new byte[0x400000];
 
-        public CheckIntegrity(string targetPath, string endpointURL, CancellationTokenSource tokenSource)
+        public CheckIntegrity(string targetPath, string repoURL, string repoIndexURL, CancellationTokenSource tokenSource)
         {
             this.sw = Stopwatch.StartNew();
             this.targetPath = targetPath;
-            this.endpointURL = endpointURL;
+            this.repoURL = repoURL;
+            this.repoIndexURL = repoIndexURL;
             this.tokenSource = tokenSource;
             this.http = new Http.Http();
         }
@@ -64,7 +65,7 @@ namespace Hi3Helper.Shared.GameConversion
             using (stream = new MemoryStream())
             {
                 http.DownloadProgress += HttpAdapter;
-                await http.Download(endpointURL, stream, null, null, tokenSource.Token);
+                await http.Download(repoIndexURL, stream, null, null, tokenSource.Token);
                 http.DownloadProgress -= HttpAdapter;
 
                 FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(stream, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);

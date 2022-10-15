@@ -7,7 +7,6 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

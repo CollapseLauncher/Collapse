@@ -39,9 +39,7 @@ namespace CollapseLauncher.Pages
         MemoryStream memBuffer;
         byte[] buffer = new byte[0x400000];
 
-        long TotalIndexedSize,
-             TotalCurrentReadSize,
-             SingleSize,
+        long SingleSize,
              SingleCurrentReadSize,
              BlockSize,
              BlockCurrentReadSize,
@@ -49,6 +47,8 @@ namespace CollapseLauncher.Pages
 
         int TotalIndexedCount,
             TotalCurrentReadCount;
+
+        Dictionary<string, string> RepoURLDict;
 
         string CurrentCheckName = "";
 
@@ -72,7 +72,20 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                string repoURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
+
+                using (memBuffer = new MemoryStream())
+                {
+                    http.DownloadProgress += DataFetchingProgress;
+                    await http.Download(repoURL, memBuffer, null, null, cancellationTokenSource.Token);
+                    http.DownloadProgress -= DataFetchingProgress;
+                    memBuffer.Position = 0;
+                    RepoURLDict = (Dictionary<string, string>)JsonSerializer.Deserialize(memBuffer, typeof(Dictionary<string, string>), D_StringString.Default);
+                }
+                GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
+
                 string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
+
                 using (memBuffer = new MemoryStream())
                 {
                     http.DownloadProgress += DataFetchingProgress;
@@ -105,12 +118,10 @@ namespace CollapseLauncher.Pages
             StashOldBlock();
 
             sw = Stopwatch.StartNew();
-            TotalCurrentReadSize = 0;
             TotalCurrentReadCount = 0;
             BlockCurrentReadSize = 0;
             BrokenFilesCount = 0;
             BlockSize = FileIndexesProperty.Where(x => x.BlkC != null).Sum(x => x.BlkC.Sum(x => x.BlockSize));
-            TotalIndexedSize = FileIndexesProperty.Sum(x => x.S) + BlockSize;
             TotalIndexedCount = FileIndexesProperty.Count + FileIndexesProperty.Where(x => x.BlkC != null).Sum(y => y.BlkC.Sum(z => z.BlockContent.Count));
 
             DispatcherQueue.TryEnqueue(() => RepairDataTableGrid.Visibility = Visibility.Visible);
@@ -227,7 +238,6 @@ namespace CollapseLauncher.Pages
                     BlockCurrentReadSize += block.BlockSize;
 
                     SingleCurrentReadSize = block.BlockSize;
-                    TotalCurrentReadSize += block.BlockSize;
                 }
                 else if (BlockFileInfo.Length != block.BlockSize)
                 {
@@ -256,7 +266,6 @@ namespace CollapseLauncher.Pages
                     BlockCurrentReadSize += block.BlockSize;
 
                     SingleCurrentReadSize = block.BlockSize;
-                    TotalCurrentReadSize += block.BlockSize;
                 }
                 else
                 {
@@ -296,7 +305,6 @@ namespace CollapseLauncher.Pages
                             }
 
                             SingleCurrentReadSize += chunk._filesize;
-                            TotalCurrentReadSize += chunk._filesize;
                         }
 
                         if (BrokenChunk.Count > 0)
@@ -394,13 +402,11 @@ namespace CollapseLauncher.Pages
                 {
                     cancellationTokenSource.Token.ThrowIfCancellationRequested();
                     crcTool.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
-                    TotalCurrentReadSize += read;
                     SingleCurrentReadSize += read;
                     GetComputeStatus();
                 }
 
                 crcTool.TransformFinalBlock(buffer, 0, read);
-                TotalCurrentReadSize += read;
                 SingleCurrentReadSize += read;
                 GetComputeStatus();
             }
