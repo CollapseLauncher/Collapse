@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -26,14 +27,14 @@ namespace CollapseLauncher
             {
                 m_window = this;
 
-                string title = $"Collapse Launcher - v{AppCurrentVersion} ";
-                if (IsPreview)
-                    this.Title = title += "[PREVIEW]";
-#if DEBUG
-                this.Title = title += "[DEBUG]";
-#endif
+                string title = $"Collapse";
 #if PORTABLE
-                this.Title += "[PORTABLE]";
+                this.Title += " Portable";
+#endif
+                if (IsPreview)
+                    this.Title = title += " Preview";
+#if DEBUG
+                this.Title = title += " [Debug]";
 #endif
             }
             catch (Exception ex)
@@ -108,6 +109,13 @@ namespace CollapseLauncher
             InitHandlerPointer(m_windowHandle);
         }
 
+        private void LoadWindowIcon()
+        {
+            string path = Path.Combine(AppFolder, "icon.ico");
+            if (!File.Exists(path)) return;
+            m_appWindow.SetIcon(path);
+        }
+
         public void InitializeWindowSettings()
         {
 
@@ -118,6 +126,7 @@ namespace CollapseLauncher
 #endif
 
             InitializeAppWindowAndIntPtr();
+            LoadWindowIcon();
 
             SetWindowSize(m_windowHandle);
 
