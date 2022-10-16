@@ -146,7 +146,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        Stopwatch refreshTime = Stopwatch.StartNew();
         Stopwatch SpeedStopwatch = Stopwatch.StartNew();
         string timeLeftString;
         private void CachesDownloadProgress(object sender, DownloadEvent e)
@@ -154,11 +153,8 @@ namespace CollapseLauncher.Pages
             if (http.DownloadState != MultisessionState.Merging)
                 cachesRead += e.Read;
 
-            if (refreshTime.Elapsed.Milliseconds >= 500)
-            {
-                refreshTime = Stopwatch.StartNew();
-                timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
-            }
+            timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
+
 
             DispatcherQueue.TryEnqueue(() =>
             {
