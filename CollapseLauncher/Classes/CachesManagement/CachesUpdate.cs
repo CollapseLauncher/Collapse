@@ -78,6 +78,8 @@ namespace CollapseLauncher.Pages
 
                 cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
                 LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
+
+                http.DownloadProgress += CachesDownloadProgress;
                 foreach (DataPropertiesContent content in dataType.Content)
                 {
                     cachesCount++;
@@ -87,29 +89,23 @@ namespace CollapseLauncher.Pages
                     if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
 
-                    cachesFileInfo = new FileInfo(cachesPath);
-
                     CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N);
 
                     if (content.CS >= 4 << 20)
                     {
-                        http.DownloadProgress += CachesDownloadProgress;
                         await http.Download(cachesURL, cachesPath, DownloadThread, true, cancellationTokenSource.Token);
-                        http.DownloadProgress -= CachesDownloadProgress;
                         await http.Merge();
                     }
                     else
                     {
-                        http.DownloadProgress += CachesDownloadProgress;
-                        using (cachesStream = cachesFileInfo.Create())
-                            await http.Download(cachesURL, cachesStream, null, null, cancellationTokenSource.Token);
-                        http.DownloadProgress -= CachesDownloadProgress;
+                        await http.Download(cachesURL, cachesPath, true, null, null, cancellationTokenSource.Token);
                     }
 
                     LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
 
                     brokenCachesListUI.RemoveAt(0);
                 }
+                http.DownloadProgress -= CachesDownloadProgress;
             }
         }
 
