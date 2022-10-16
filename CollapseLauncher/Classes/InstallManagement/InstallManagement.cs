@@ -325,7 +325,7 @@ namespace CollapseLauncher
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
                 DownloadLocalSize += DownloadProperty[i].LocalSize = CalculateExistingMultisessionFiles(DownloadProperty[i].Output, DownloadThread);
-                DownloadRemoteSize += DownloadProperty[i].RemoteSize = await TryGetContentLength(DownloadProperty[i].URL, Token) ?? 0;
+                DownloadRemoteSize += DownloadProperty[i].RemoteSize = await Task.Run(() => TryGetContentLength(DownloadProperty[i].URL, Token) ?? 0);
             }
 
             return DownloadLocalSize == 0 ? true : DownloadLocalSize == DownloadRemoteSize;
