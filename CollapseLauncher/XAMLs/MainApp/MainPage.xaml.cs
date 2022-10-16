@@ -836,10 +836,5 @@ namespace CollapseLauncher
             WebView2Runtime.NavigationStarting -= WebView2Window_PageLoading;
             WebView2Runtime.NavigationCompleted -= WebView2Window_PageLoaded;
         }
-
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
-        {
-            MainWindow.SetDragArea(DragAreaMode_Full);
-        }
     }
 }

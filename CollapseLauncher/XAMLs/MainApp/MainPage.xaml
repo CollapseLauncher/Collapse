@@ -7,7 +7,7 @@
     xmlns:p="using:Hi3Helper.Preset"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Unloaded="Page_Unloaded">
+    mc:Ignorable="d">
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
