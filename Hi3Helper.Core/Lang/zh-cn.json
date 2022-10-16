@@ -99,6 +99,7 @@
     "GameSettings_Panel1": "快速设置",
     "GameSettings_Panel1OpenGameFolder": "打开游戏文件夹",
     "GameSettings_Panel1OpenCacheFolder": "打开缓存文件夹",
+    "GameSettings_Panel1OpenScreenshotFolder": "打开截图文件夹"
     "GameSettings_Panel2": "游戏安装",
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
