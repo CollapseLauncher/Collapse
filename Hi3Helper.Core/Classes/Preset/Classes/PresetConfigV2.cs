@@ -107,7 +107,7 @@ namespace Hi3Helper.Preset
             else
             {
                 result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                if (result is null) throw new NullReferenceException("Key \"GENERAL_DATA_h2389025596\" is null");
+                if (result is null) return;
                 regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
                 initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
             }
