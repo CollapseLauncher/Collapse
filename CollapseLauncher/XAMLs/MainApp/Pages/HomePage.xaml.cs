@@ -169,7 +169,7 @@ namespace CollapseLauncher.Pages
             sb.Begin();
         }
 
-        private void HideImageCarousel(bool hide)
+        private async void HideImageCarousel(bool hide)
         {
             if (!hide)
                 ImageCarouselAndPostPanel.Visibility = Visibility.Visible;
@@ -185,6 +185,8 @@ namespace CollapseLauncher.Pages
             storyboard.Children.Add(OpacityAnimation);
 
             storyboard.Begin();
+
+            await Task.Delay(100);
 
             ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
