@@ -35,7 +35,8 @@
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "支持的游戏.请在下面选择您的游戏开始使用",
     "Pg2Subtitle2_4": "Collapse Launcher.",
-    "Pg2ComboBox": "选择游戏"
+    "Pg2ComboBox": "选择游戏",
+    "Pg2ComboBoxRegion": "选择区服"
   },
   "_DisconnectedPage": {
     "PageTitle": "断开链接",
@@ -99,6 +100,7 @@
     "GameSettings_Panel1": "快速设置",
     "GameSettings_Panel1OpenGameFolder": "打开游戏文件夹",
     "GameSettings_Panel1OpenCacheFolder": "打开缓存文件夹",
+    "GameSettings_Panel1OpenScreenshotFolder": "打开截图文件夹",
     "GameSettings_Panel2": "游戏安装",
     "GameSettings_Panel2RepairGame": "修复游戏",
     "GameSettings_Panel2UninstallGame": "卸载游戏",
@@ -407,7 +409,19 @@
     "InstallMediaPackCompleteSubtitle": "您的电脑已经安装了媒体功能包.\r\n请重新启动您的电脑以应用该包!",
     "InstallingMediaPackTitle": "正在媒体功能包",
     "InstallingMediaPackSubtitle": "等待进程结束...",
-    "InstallingMediaPackSubtitleFinished": "完成"
+    "InstallingMediaPackSubtitleFinished": "完成",
+    "GameConfigBrokenTitle1": "游戏配置文件损坏",
+    "GameConfigBrokenSubtitle1": "启动器的配置文件损坏,你需要手动选择你以前的游戏路径.",
+    "GameConfigBrokenSubtitle2": "\n确保游戏位置与启动器配置文件的路径不同,该文件位于该路径中:\n\n{0}\n\n",
+    "GameConfigBrokenSubtitle3": "如果是,那就把你所有的游戏文件移到另一个地方.然后点击 \"查找目录\"来选择路径.",
+    "CookbookLocateTitle": "查找Cookbook文件",
+    "CookbookLocateSubtitle1": "在开始程序之前,请找到已下载的Cookbook.\n如果你还没有下载, ",
+    "CookbookLocateSubtitle2": "请点击这里",
+    "CookbookLocateSubtitle3": " 以下载Cookbook文件,然后点击",
+    "CookbookLocateSubtitle4": "下一步",
+    "CookbookLocateSubtitle5": "查找下载的 Cookbook 文件并继续.\n\n",
+    "CookbookLocateSubtitle6": "注:\n",
+    "CookbookLocateSubtitle7": "这里是您需要下载的 Cookbook 文件的名称:\n"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "完整性检查",
