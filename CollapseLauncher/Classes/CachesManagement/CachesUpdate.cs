@@ -80,31 +80,34 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
 
                 http.DownloadProgress += CachesDownloadProgress;
-                foreach (DataPropertiesContent content in dataType.Content)
+                await Task.Run(() =>
                 {
-                    cachesCount++;
-                    cachesURL = cachesEndpointURL + content.ConcatNRemote();
-                    cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
-
-                    if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
-
-                    CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N);
-
-                    if (content.CS >= 4 << 20)
+                    foreach (DataPropertiesContent content in dataType.Content)
                     {
-                        await http.Download(cachesURL, cachesPath, DownloadThread, true, cancellationTokenSource.Token);
-                        await http.Merge();
-                    }
-                    else
-                    {
-                        await http.Download(cachesURL, cachesPath, true, null, null, cancellationTokenSource.Token);
-                    }
+                        cachesCount++;
+                        cachesURL = cachesEndpointURL + content.ConcatNRemote();
+                        cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
 
-                    LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
+                        if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
+                            Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
 
-                    brokenCachesListUI.RemoveAt(0);
-                }
+                        DispatcherQueue.TryEnqueue(() => CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N));
+
+                        if (content.CS >= 10 << 20)
+                        {
+                            http.DownloadSync(cachesURL, cachesPath, DownloadThread, true, cancellationTokenSource.Token);
+                            http.MergeSync();
+                        }
+                        else
+                        {
+                            http.DownloadSync(cachesURL, cachesPath, true, null, null, cancellationTokenSource.Token);
+                        }
+
+                        LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
+
+                        DispatcherQueue.TryEnqueue(() => brokenCachesListUI.RemoveAt(0));
+                    }
+                });
                 http.DownloadProgress -= CachesDownloadProgress;
             }
         }
