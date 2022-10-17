@@ -19,37 +19,33 @@ namespace CollapseLauncher.Pages
         public UpdatePage()
         {
             this.InitializeComponent();
-            RunAsyncTasks();
-            this.Loaded += UpdatePage_Loaded;
+            this.Loaded += LoadedAsyncRoutine;
             this.Unloaded += UpdatePage_Unloaded;
         }
 
         private void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private void UpdatePage_Loaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Full);
-
-        public async void RunAsyncTasks()
+        private async void LoadedAsyncRoutine(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                string ChannelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
-                if (IsPortable)
-                    ChannelName += "-Portable";
-                CurrentVersionLabel.Text = $"{AppCurrentVersion}";
-                NewVersionLabel.Text = LauncherUpdateWatcher.UpdateProperty.ver;
-                UpdateChannelLabel.Text = ChannelName;
-                AskUpdateCheckbox.IsChecked = GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
-                BuildTimestampLabel.Text = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                                            .AddSeconds(LauncherUpdateWatcher.UpdateProperty.time)
-                                            .ToLocalTime().ToString("f");
-            });
+            ChangeTitleDragArea.Change(DragAreaTemplate.Full);
+
+            string ChannelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
+            if (IsPortable)
+                ChannelName += "-Portable";
+            CurrentVersionLabel.Text = $"{AppCurrentVersion}";
+            NewVersionLabel.Text = LauncherUpdateWatcher.UpdateProperty.ver;
+            UpdateChannelLabel.Text = ChannelName;
+            AskUpdateCheckbox.IsChecked = GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false;
+            BuildTimestampLabel.Text = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                                        .AddSeconds(LauncherUpdateWatcher.UpdateProperty.time)
+                                        .ToLocalTime().ToString("f");
 
             await GetReleaseNote();
         }
 
         public async Task GetReleaseNote()
         {
-            DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Lang._UpdatePage.LoadingRelease);
+            ReleaseNotesBox.Text = Lang._UpdatePage.LoadingRelease;
 
             MemoryStream ResponseStream = new MemoryStream();
             string ReleaseNoteURL = string.Format(UpdateRepoChannel + "changelog_{0}.md", IsPreview ? "preview" : "stable");
@@ -58,12 +54,13 @@ namespace CollapseLauncher.Pages
             {
                 await new Http().Download(ReleaseNoteURL, ResponseStream, null, null, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
+                Content = File.ReadAllText(@"C:\myGit\CollapseLauncher-ReleaseRepo\changelog_preview.md");
 
-                DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = Content);
+                ReleaseNotesBox.Text = Content;
             }
             catch (Exception ex)
             {
-                DispatcherQueue.TryEnqueue(() => ReleaseNotesBox.Text = string.Format(Lang._UpdatePage.LoadingReleaseFailed, ex));
+                ReleaseNotesBox.Text = string.Format(Lang._UpdatePage.LoadingReleaseFailed, ex);
             }
         }
 
