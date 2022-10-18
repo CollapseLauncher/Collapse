@@ -37,15 +37,12 @@ namespace Hi3Helper
     public partial class BHI3LInfoContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(ScreenSettingData))]
-    [JsonSourceGenerationOptions(WriteIndented = true)]
     internal partial class ScreenSettingDataContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(PersonalGraphicsSettingV2))]
-    [JsonSourceGenerationOptions(WriteIndented = true)]
     internal partial class PersonalGraphicsSettingV2Context : JsonSerializerContext { }
 
     [JsonSerializable(typeof(PersonalAudioSetting))]
-    [JsonSourceGenerationOptions(WriteIndented = true)]
     internal partial class PersonalAudioSettingContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(DataProperties))]

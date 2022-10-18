@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
@@ -291,47 +292,79 @@ namespace Hi3Helper.Shared.Region
 
         public class PersonalGraphicsSetting
         {
-            public string RecommendGrade { get; set; } = "Off";
-            public bool IsUserDefinedGrade { get; set; } = false;
-            public bool IsUserDefinedVolatile { get; set; } = false;
-            public bool IsEcoMode { get; set; } = false;
-            public int RecommendResolutionX { get; set; } = 0;
-            public int RecommendResolutionY { get; set; } = 0;
-            public EnumQuality ResolutionQuality { get; set; } = EnumQuality.Low;
-            public int TargetFrameRateForInLevel { get; set; } = 0;
-            public int TargetFrameRateForOthers { get; set; } = 0;
-            public float ContrastDelta { get; set; } = 0.0f;
-            public bool isBrightnessStandardModeOn { get; set; } = true;
-            public _VolatileSetting VolatileSetting { get; set; } = null;
+            public PersonalGraphicsSetting()
+            {
+                RecommendGrade = "Off";
+                IsUserDefinedGrade = false;
+                IsUserDefinedVolatile = false;
+                IsEcoMode = false;
+                ResolutionQuality = EnumQuality.Low;
+                RecommendResolutionX = 0;
+                RecommendResolutionY = 0;
+                TargetFrameRateForInLevel = 0;
+                TargetFrameRateForOthers = 0;
+                ContrastDelta = 0.0f;
+                isBrightnessStandardModeOn = true;
+                VolatileSetting = null;
+            }
+
+            public string RecommendGrade { get; set; }
+            public bool IsUserDefinedGrade { get; set; }
+            public bool IsUserDefinedVolatile { get; set; }
+            public bool IsEcoMode { get; set; }
+            public int RecommendResolutionX { get; set; }
+            public int RecommendResolutionY { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            public EnumQuality ResolutionQuality { get; set; }
+            public int TargetFrameRateForInLevel { get; set; }
+            public int TargetFrameRateForOthers { get; set; }
+            public float ContrastDelta { get; set; }
+            public bool isBrightnessStandardModeOn { get; set; }
+            public _VolatileSetting VolatileSetting { get; set; }
         }
 
         public class _VolatileSetting
         {
+            public _VolatileSetting()
+            {
+                MSAA = "MSAA_OFF";
+                UseStaticCloud = false;
+            }
+
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality PostFXGrade { get; set; }
             public bool UsePostFX { get; set; }
             public bool UseHDR { get; set; }
             public bool UseDistortion { get; set; }
             public bool UseReflection { get; set; }
             public bool UseFXAA { get; set; }
-            public string MSAA { get; set; } = "MSAA_OFF";
+            public string MSAA { get; set; }
             public bool UseDynamicBone { get; set; }
-            public bool UseStaticCloud { get; set; } = false;
+            public bool UseStaticCloud { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality ShadowLevel { get; set; }
         }
 
         public class PersonalGraphicsSettingV2
         {
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality ResolutionQuality { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityCloseable ShadowLevel { get; set; }
             public ushort TargetFrameRateForInLevel { get; set; }
             public ushort TargetFrameRateForOthers { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityCloseableOLH ReflectionQuality { get; set; }
             public bool UseDynamicBone { get; set; }
             public bool UseFXAA { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality GlobalIllumination { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityOLH AmbientOcclusion { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality VolumetricLight { get; set; }
             public bool UsePostFX { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality PostFXGrade { get; set; }
             public bool UseHDR { get; set; }
             public bool UseDistortion { get; set; }
@@ -491,6 +524,11 @@ namespace Hi3Helper.Shared.Region
 
         public class PersonalAudioSetting
         {
+            public PersonalAudioSetting()
+            {
+                IsUserDefined = false;
+            }
+
             public byte BGMVolume { get; set; }
             public byte SoundEffectVolume { get; set; }
             public byte VoiceVolume { get; set; }
@@ -498,7 +536,7 @@ namespace Hi3Helper.Shared.Region
             public byte CGVolume { get; set; }
             public string CVLanguage { get; set; }
             public string _userCVLanguage { get; set; }
-            public bool IsUserDefined { get; set; } = false;
+            public bool IsUserDefined { get; set; }
         }
 
         private static void GetOrCreatePersonalAudioSettingsValue(in string key)
