@@ -44,7 +44,7 @@ namespace Hi3Helper.Shared.Region
                 if (File.Exists(gameIni.ConfigPath))
                     gameIni.Config.Load(gameIni.ConfigPath);
 
-                if (!(CurrentConfigV2.IsGenshin ?? false) && Directory.Exists(GamePath))
+                if (Directory.Exists(GamePath))
                     await CheckExistingGameSettings();
             }
             catch (ArgumentNullException)

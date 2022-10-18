@@ -89,6 +89,8 @@ namespace Hi3Helper.Shared.Region
             if (gameIni.Settings[SectionName] == null)
                 gameIni.Settings.Add(SectionName);
 
+            if (CurrentConfigV2.IsGenshin ?? false) return;
+
             foreach (KeyValuePair<string, IniValue> keyValue in GameSettingsTemplate)
             {
                 if (gameIni.Settings[SectionName][keyValue.Key].Value == null)
@@ -156,7 +158,7 @@ namespace Hi3Helper.Shared.Region
         {
             try
             {
-                if (!(CurrentConfigV2.IsGenshin ?? false) && gameIni.Settings != null)
+                if (gameIni.Settings != null)
                     return gameIni.Settings[SectionName][key];
             }
             catch (NullReferenceException) { }
@@ -628,50 +630,51 @@ namespace Hi3Helper.Shared.Region
 
             if (IsRegKeyExist)
             {
-                await CheckExistingGameSettings();
-
-                // parameter.AppendFormat("-screen-fullscreen {0} ", gameIni.Settings[SectionName]["Fullscreen"].ToBool() ? 1 : 0);
-
-                if (GetGameConfigValue("FullscreenExclusive").ToBool())
+                if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
-                    parameter.Append("-window-mode exclusive ");
-                    RequireWindowExclusivePayload = true;
-                }
+                    await CheckExistingGameSettings();
 
-                Size screenSize = GetGameConfigValue("ScreenResolution").ToSize();
+                    if (GetGameConfigValue("FullscreenExclusive").ToBool())
+                    {
+                        parameter.Append("-window-mode exclusive ");
+                        RequireWindowExclusivePayload = true;
+                    }
 
-                int apiID = GetGameConfigValue("GameGraphicsAPI").ToInt();
+                    Size screenSize = GetGameConfigValue("ScreenResolution").ToSize();
 
-                if (apiID == 4)
-                {
-                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (GetGameConfigValue("CustomScreenResolution").ToBool() && GetGameConfigValue("Fullscreen").ToBool())
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    int apiID = GetGameConfigValue("GameGraphicsAPI").ToInt();
+
+                    if (apiID == 4)
+                    {
+                        LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                        if (GetGameConfigValue("CustomScreenResolution").ToBool() && GetGameConfigValue("Fullscreen").ToBool())
+                            parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        else
+                            parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                    }
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
-                }
-                else
-                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
 
 
-                switch (apiID)
-                {
-                    case 0:
-                        parameter.Append("-force-feature-level-10-1 ");
-                        break;
-                    default:
-                    case 1:
-                        parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 2:
-                        parameter.Append("-force-feature-level-11-1 ");
-                        break;
-                    case 3:
-                        parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 4:
-                        parameter.Append("-force-d3d12 ");
-                        break;
+                    switch (apiID)
+                    {
+                        case 0:
+                            parameter.Append("-force-feature-level-10-1 ");
+                            break;
+                        default:
+                        case 1:
+                            parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
+                            break;
+                        case 2:
+                            parameter.Append("-force-feature-level-11-1 ");
+                            break;
+                        case 3:
+                            parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
+                            break;
+                        case 4:
+                            parameter.Append("-force-d3d12 ");
+                            break;
+                    }
                 }
             }
 

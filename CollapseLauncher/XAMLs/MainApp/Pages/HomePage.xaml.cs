@@ -357,7 +357,6 @@ namespace CollapseLauncher.Pages
                        NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
                        CurrentConfigV2.GameExecutableName)))
             {
-
                 if (new FileInfo(Path.Combine(
                     NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
                     CurrentConfigV2.GameExecutableName)).Length < 0xFFFF)
@@ -407,10 +406,7 @@ namespace CollapseLauncher.Pages
                     }
                 }
 
-                if (!(CurrentConfigV2.IsGenshin ?? false))
-                {
-                    CustomStartupArgs.Visibility = Visibility.Visible;
-                }
+                CustomStartupArgs.Visibility = Visibility.Visible;
                 return;
             }
 
@@ -902,11 +898,8 @@ namespace CollapseLauncher.Pages
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentConfigV2.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
-                if (!(CurrentConfigV2.IsGenshin ?? false))
-                {
-                    proc.StartInfo.Arguments = await GetLaunchArguments();
-                    LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                }
+                proc.StartInfo.Arguments = await GetLaunchArguments();
+                LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()));
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
@@ -987,7 +980,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
                 try
                 {
-                    InnerLauncherConfig.m_presenter.Minimize();
+                    m_presenter.Minimize();
                     string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation)}\\output_log.txt";
 
                     if (!Directory.Exists(Path.GetDirectoryName(logPath)))
