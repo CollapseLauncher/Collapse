@@ -48,7 +48,7 @@ namespace Hi3Helper.Shared.Region
             { "UseFXAA", new IniValue(true) },
             { "GlobalIllumination", new IniValue(true) },
             { "AmbientOcclusion", new IniValue(2) },
-            { "VolumetricLight", new IniValue(true) },
+            { "VolumetricLight", new IniValue(2) },
             { "UsePostFX", new IniValue(true) },
             { "HighQualityPostFX", new IniValue(true) },
             { "UseHDR", new IniValue(true) },
@@ -454,7 +454,7 @@ namespace Hi3Helper.Shared.Region
                         value = new IniValue(ConvertEnumToIntOLH(data.AmbientOcclusion));
                         break;
                     case "VolumetricLight":
-                        value = new IniValue(ConvertEnumHighLowToBool(data.VolumetricLight));
+                        value = new IniValue(ConvertEnumToInt(data.VolumetricLight));
                         break;
                     case "UsePostFX":
                         value = new IniValue(data.UsePostFX);
@@ -491,7 +491,7 @@ namespace Hi3Helper.Shared.Region
                 UseFXAA = gameIni.Settings[SectionName]["UseFXAA"].ToBool(),
                 GlobalIllumination = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["GlobalIllumination"].ToBool()),
                 AmbientOcclusion = ConvertIntToEnumOLH(gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt()),
-                VolumetricLight = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["VolumetricLight"].ToBool()),
+                VolumetricLight = ConvertIntToEnum(gameIni.Settings[SectionName]["VolumetricLight"].ToInt()),
                 UsePostFX = gameIni.Settings[SectionName]["UsePostFX"].ToBool(),
                 PostFXGrade = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool()),
                 UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),

@@ -120,7 +120,7 @@ namespace CollapseLauncher.Pages
             GlobalIlluminationSelector.SelectedIndex = gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
             AmbientOcclusionSelector.SelectedIndex = gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
             LevelOfDetailSelector.SelectedIndex = gameIni.Settings[SectionName]["LodLevel"].ToInt();
-            GameVolumetricLightCheckBox.IsChecked = gameIni.Settings[SectionName]["VolumetricLight"].ToBool();
+            GameVolumetricLightSelector.SelectedIndex = Boolean2IntFallback(gameIni.Settings[SectionName]["VolumetricLight"].ToBoolNullable());
 
             if (GameFXPostProcCheckBox.IsChecked ?? true)
             {
@@ -140,6 +140,8 @@ namespace CollapseLauncher.Pages
 
             GraphicsAPISelector.SelectedIndex = gameIni.Settings[SectionName]["GameGraphicsAPI"].ToInt();
         }
+
+        private int Boolean2IntFallback(bool? val) => val == null ? 0 : 2;
 
         private void LoadAudioSettingsUI()
         {
@@ -191,7 +193,7 @@ namespace CollapseLauncher.Pages
             gameIni.Settings[SectionName]["GlobalIllumination"] = GlobalIlluminationSelector.SelectedIndex == 1;
             gameIni.Settings[SectionName]["AmbientOcclusion"] = AmbientOcclusionSelector.SelectedIndex;
             gameIni.Settings[SectionName]["LodGrade"] = LevelOfDetailSelector.SelectedIndex;
-            gameIni.Settings[SectionName]["VolumetricLight"] = GameVolumetricLightCheckBox.IsChecked ?? false;
+            gameIni.Settings[SectionName]["VolumetricLight"] = GameVolumetricLightSelector.SelectedIndex;
 
             gameIni.Settings[SectionName]["FullscreenExclusive"] = GameResolutionFullscreenExclusive.IsChecked ?? false;
             gameIni.Settings[SectionName]["CustomScreenResolution"] = GameCustomResolutionCheckbox.IsChecked ?? false;

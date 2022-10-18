@@ -131,7 +131,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FX}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,16,0,8"/>
-                                <Expander Margin="0,8,0,8" Width="514" HorizontalContentAlignment="Stretch" CornerRadius="24"
+                                <Expander Margin="0,8,0,8" Width="514" HorizontalContentAlignment="Stretch" CornerRadius="8"
                                    x:Name="GameFXPostProcExpander">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
@@ -173,15 +173,14 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2GI}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="GlobalIlluminationSelector" Margin="0,8,0,8" Width="128" CornerRadius="14">
+                                        <ComboBox x:Name="GlobalIlluminationSelector" Width="128" CornerRadius="14">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
                                         </ComboBox>
-                                        <CheckBox x:Name="GameVolumetricLightCheckBox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2VL}" Grid.Column="0" MinWidth="0"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2AO}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="AmbientOcclusionSelector" Margin="0,8,0,8" Width="128" CornerRadius="14">
+                                        <ComboBox x:Name="AmbientOcclusionSelector" Width="128" CornerRadius="14">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
@@ -189,10 +188,25 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2LOD}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="LevelOfDetailSelector" Margin="0,8,0,8" Width="128" CornerRadius="14">
+                                        <ComboBox x:Name="LevelOfDetailSelector" Width="128" CornerRadius="14">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_APHO2VL}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <ComboBox x:Name="GameVolumetricLightSelector" Width="128" CornerRadius="14">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>
