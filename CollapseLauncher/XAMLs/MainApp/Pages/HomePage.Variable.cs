@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.Collections.Generic;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -24,6 +25,7 @@ namespace CollapseLauncher.Pages
         long GameZipVoiceRequiredSize;
 
         RegionResourceVersion VoicePackFile = new RegionResourceVersion();
+        Dictionary<string, RegionResourceVersion> VoicePacks = new Dictionary<string, RegionResourceVersion>();
         InstallManagement InstallTool;
 
         bool IsGameHasVoicePack;

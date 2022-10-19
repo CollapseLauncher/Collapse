@@ -425,12 +425,12 @@ namespace CollapseLauncher.Pages
         private bool IsPreDownloadCompleted()
         {
             bool IsPrimaryDataExist = File.Exists(
-                                        Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
+                                        Path.Combine(GameDirPath,
                                         Path.GetFileName(GetUpdateDiffs(true).path)));
-            TryAddVoicePack(GetUpdateDiffs(true));
-            bool IsSecondaryDataExist = IsGameHasVoicePack ? File.Exists(
-                                        Path.Combine(gameIni.Profile["launcher"]["game_install_path"].ToString(),
-                                        Path.GetFileName(VoicePackFile.path))) : true;
+
+            VoicePacks = TryAddVoicePack(GetUpdateDiffs(true));
+
+            bool IsSecondaryDataExist = IsGameHasVoicePack ? VoicePacks.All(x => File.Exists(Path.Combine(GameDirPath, Path.GetFileName(x.Value.path)))) : true;
 
             return IsPrimaryDataExist && IsSecondaryDataExist;
         }
@@ -1258,16 +1258,19 @@ namespace CollapseLauncher.Pages
 
             InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
 
-            TryAddVoicePack(GetUpdateDiffs(false));
+            VoicePacks = TryAddVoicePack(GetUpdateDiffs(false));
 
             if (IsGameHasVoicePack)
             {
-                GameZipVoiceUrl = VoicePackFile.path;
-                GameZipVoiceRemoteHash = VoicePackFile.md5;
-                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                GameZipVoiceSize = VoicePackFile.package_size;
-                GameZipVoiceRequiredSize = VoicePackFile.size;
-                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
+                foreach (KeyValuePair<string, RegionResourceVersion> a in VoicePacks)
+                {
+                    GameZipVoiceUrl = a.Value.path;
+                    GameZipVoiceRemoteHash = a.Value.md5;
+                    GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                    GameZipVoiceSize = a.Value.package_size;
+                    GameZipVoiceRequiredSize = a.Value.size;
+                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
+                }
             }
 
             try
@@ -1327,19 +1330,44 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void TryAddVoicePack(RegionResourceVersion diffVer)
+        private Dictionary<string, RegionResourceVersion> TryAddVoicePack(RegionResourceVersion diffVer)
         {
             int langID;
             if (diffVer.voice_packs != null
                 && diffVer.voice_packs.Count > 0)
             {
+                Dictionary<string, RegionResourceVersion> VoicePacks = new Dictionary<string, RegionResourceVersion>();
                 IsGameHasVoicePack = true;
                 VoicePackFile = diffVer.voice_packs[langID = CurrentConfigV2.GetVoiceLanguageID()];
                 VoicePackFile.languageID = langID;
-                return;
+                VoicePacks.Add(VoicePackFile.language, VoicePackFile);
+                TryAddOtherInstalledVoicePacks(ref VoicePacks, diffVer.voice_packs);
+                return VoicePacks;
             }
             LogWriteLine($"This {CurrentConfigV2.ZoneFullname} game doesn't have Voice Pack");
             IsGameHasVoicePack = false;
+            return null;
+        }
+            
+        private void TryAddOtherInstalledVoicePacks(ref Dictionary<string, RegionResourceVersion> VoicePacksOut, List<RegionResourceVersion> Packs)
+        {
+            if (File.Exists(Path.Combine(GameDirPath, "Audio_Chinese_pkg_version")))
+                TryAddOtherVoicePacksDictionary(Packs[0].language, Packs[0], 0, ref VoicePacksOut);
+            if (File.Exists(Path.Combine(GameDirPath, "Audio_English(US)_pkg_version")))
+                TryAddOtherVoicePacksDictionary(Packs[1].language, Packs[1], 1, ref VoicePacksOut);
+            if (File.Exists(Path.Combine(GameDirPath, "Audio_Japanese_pkg_version")))
+                TryAddOtherVoicePacksDictionary(Packs[2].language, Packs[2], 2, ref VoicePacksOut);
+            if (File.Exists(Path.Combine(GameDirPath, "Audio_Korean_pkg_version")))
+                TryAddOtherVoicePacksDictionary(Packs[3].language, Packs[3], 3, ref VoicePacksOut);
+        }
+
+        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, ref Dictionary<string, RegionResourceVersion> VoicePacksOut)
+        {
+            if (!VoicePacksOut.ContainsKey(key))
+            {
+                value.languageID = langID;
+                VoicePacksOut.Add(key, value);
+            }
         }
 
         private async Task TrySetVoicePack(RegionResourceVersion diffVer)
@@ -1422,16 +1450,19 @@ namespace CollapseLauncher.Pages
 
             InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
 
-            TryAddVoicePack(diffVer);
+            VoicePacks = TryAddVoicePack(diffVer);
 
             if (IsGameHasVoicePack)
             {
-                GameZipVoiceUrl = VoicePackFile.path;
-                GameZipVoiceRemoteHash = VoicePackFile.md5;
-                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                GameZipVoiceSize = VoicePackFile.package_size;
-                GameZipVoiceRequiredSize = VoicePackFile.size;
-                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
+                foreach (KeyValuePair<string, RegionResourceVersion> a in VoicePacks)
+                {
+                    GameZipVoiceUrl = a.Value.path;
+                    GameZipVoiceRemoteHash = a.Value.md5;
+                    GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
+                    GameZipVoiceSize = a.Value.package_size;
+                    GameZipVoiceRequiredSize = a.Value.size;
+                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
+                }
             }
 
             bool RetryRoutine = true;
