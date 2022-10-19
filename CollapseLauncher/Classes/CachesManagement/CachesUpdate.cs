@@ -63,7 +63,6 @@ namespace CollapseLauncher.Pages
         private async Task DownloadCachesUpdate()
         {
             string cachesPathType;
-            byte DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
             foreach (DataProperties dataType in brokenCachesList)
             {
                 switch (dataType.DataType)
@@ -95,7 +94,7 @@ namespace CollapseLauncher.Pages
 
                         if (content.CS >= 10 << 20)
                         {
-                            http.DownloadSync(cachesURL, cachesPath, DownloadThread, true, cancellationTokenSource.Token);
+                            http.DownloadSync(cachesURL, cachesPath, (byte)DownloadThread, true, cancellationTokenSource.Token);
                             http.MergeSync();
                         }
                         else
