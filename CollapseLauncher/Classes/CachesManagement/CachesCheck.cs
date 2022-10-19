@@ -200,7 +200,7 @@ namespace CollapseLauncher.Pages
                                     FileLastModified = File.GetLastWriteTime(cachesPath).ToLocalTime().ToString("yyyy/MM/dd HH:mm"),
                                     FileNewModified = DateTimeOffset.FromUnixTimeSeconds(dataType.Timestamp).ToLocalTime().ToString("yyyy/MM/dd HH:mm")
                                 });
-                                LogWriteLine($"Obsolete: {content.N}", LogType.Warning);
+                                LogWriteLine($"New: {content.N}", LogType.Warning, true);
                             }
                         }
                     }
