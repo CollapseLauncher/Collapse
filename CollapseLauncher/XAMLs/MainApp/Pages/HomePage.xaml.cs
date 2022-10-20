@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Dialogs;
+using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
@@ -53,16 +54,11 @@ namespace CollapseLauncher.Pages
             {
                 this.InitializeComponent();
 
-                MigrationWatcher.IsMigrationRunning = false;
-                HomePageProp.Current = this;
-
-                CheckIfRightSideProgress();
-                await LoadGameConfig();
-                CheckCurrentGameState();
-
                 SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
+
+                TryLoadEventPanelImage();
 
                 if (MenuPanels.imageCarouselPanel != null
                     && MenuPanels.articlePanel != null)
@@ -80,7 +76,12 @@ namespace CollapseLauncher.Pages
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                     ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
 
-                TryLoadEventPanelImage();
+                MigrationWatcher.IsMigrationRunning = false;
+                HomePageProp.Current = this;
+
+                CheckIfRightSideProgress();
+                await LoadGameConfig();
+                CheckCurrentGameState();
 
                 await CheckFailedDeltaPatchState();
                 await CheckFailedGameConversion();
@@ -207,7 +208,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
-            SpawnWebView2.SpawnWebView2Window(((Image)sender).Tag.ToString());
+            SpawnWebView2.SpawnWebView2Window(((ImageEx)sender).Tag.ToString());
         }
 
         private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)

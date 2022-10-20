@@ -7,6 +7,7 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:regionShared="using:Hi3Helper.Shared.Region"
     xmlns:s="using:CommunityToolkit.WinUI.UI"
+    xmlns:c="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -15,6 +16,86 @@
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow"/>
         <s:AttachedDropShadow x:Key="SharedDropShadow" Offset="0,4,0" BlurRadius="16" Opacity="0.3" CastTo="{x:Bind ImageEventImgShadow}"/>
+        <Style TargetType="c:ImageEx">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="LazyLoadingThreshold" Value="300" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="c:ImageEx">
+                        <Grid Background="{TemplateBinding Background}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}">
+                            <Image Name="PlaceholderImage"
+                               HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                               Opacity="1.0"
+                               Source="{TemplateBinding PlaceholderSource}"
+                               Stretch="{TemplateBinding PlaceholderStretch}" />
+                            <Image Name="Image"
+                               HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                               NineGrid="{TemplateBinding NineGrid}"
+                               Opacity="0.0"
+                               Stretch="{TemplateBinding Stretch}" />
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Failed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Image"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="0" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderImage"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="1" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Loading">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Image"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="0" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderImage"
+                                                                       Storyboard.TargetProperty="Opacity">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                    Value="1" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Loaded">
+                                        <Storyboard>
+                                            <DoubleAnimation AutoReverse="False"
+                                                         BeginTime="0"
+                                                         Duration="0:0:0.1"
+                                                         Storyboard.TargetName="Image"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         From="0"
+                                                         To="1" />
+                                            <DoubleAnimation AutoReverse="False"
+                                                         BeginTime="0"
+                                                         Duration="0:0:0.1"
+                                                         Storyboard.TargetName="PlaceholderImage"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         From="1"
+                                                         To="0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unloaded" />
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <Grid>
         <Frame x:Name="OverlapFrame" Canvas.ZIndex="1" x:FieldModifier="public">
@@ -35,11 +116,11 @@
                         <ColumnDefinition Width="248"/>
                     </Grid.ColumnDefinitions>
                     <InfoBar x:Name="NotificationBar" Background="{StaticResource InfoBarInformationBrush}"
-                    IsOpen="False" IsClosable="False"
-                    Severity="Informational"
-                    Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
-                    Message="" Shadow="{StaticResource SharedShadow}"
-                    HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                        IsOpen="False" IsClosable="False"
+                        Severity="Informational"
+                        Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
+                        Message="" Shadow="{StaticResource SharedShadow}"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2">
                         <InfoBar.Transitions>
                             <PopupThemeTransition/>
                         </InfoBar.Transitions>
@@ -136,7 +217,7 @@
                             <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
                                 <ItemsControl.Transitions>
                                     <PopupThemeTransition/>
-                                </ItemsControl.Transitions>
+                                </ItemsControl.Transitions>-
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
@@ -193,7 +274,7 @@
                                   PointerExited="CarouselRestartScroll">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <Image Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="/Assets/BG/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -232,8 +313,8 @@
                                                                         <ControlTemplate>
                                                                             <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
-                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
-                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                                   HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                                   Foreground="{StaticResource TextFillColorPrimary}"/>
                                                                                 <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
                                                                             </Grid>
                                                                         </ControlTemplate>
@@ -273,8 +354,8 @@
                                                                         <ControlTemplate>
                                                                             <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
-                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
-                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                                   HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                                   Foreground="{StaticResource TextFillColorPrimary}"/>
                                                                                 <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
                                                                             </Grid>
                                                                         </ControlTemplate>
@@ -314,8 +395,8 @@
                                                                         <ControlTemplate>
                                                                             <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
-                                                                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
-                                                                           Foreground="{StaticResource TextFillColorPrimary}"/>
+                                                                                   HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
+                                                                                   Foreground="{StaticResource TextFillColorPrimary}"/>
                                                                                 <TextBlock Text="{Binding show_time}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AccentColor}"/>
                                                                             </Grid>
                                                                         </ControlTemplate>
