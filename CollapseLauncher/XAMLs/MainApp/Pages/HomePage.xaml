@@ -217,7 +217,7 @@
                             <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
                                 <ItemsControl.Transitions>
                                     <PopupThemeTransition/>
-                                </ItemsControl.Transitions>-
+                                </ItemsControl.Transitions>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{StaticResource EllipsisButtonRevealStyle}"
