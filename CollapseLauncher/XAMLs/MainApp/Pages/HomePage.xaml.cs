@@ -672,10 +672,22 @@ namespace CollapseLauncher.Pages
             if (!isExist)
                 return false;
 
-            gameIni.Profile["launcher"]["game_install_path"] = Path.GetDirectoryName(targetPath).Replace('\\', '/');
+            string gamePath = Path.GetDirectoryName(targetPath);
+            gameIni.Profile["launcher"]["game_install_path"] = gamePath.Replace('\\', '/');
             SaveGameProfile();
             if (CurrentConfigV2.IsGenshin ?? false)
                 CurrentConfigV2.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
+
+            FileInfo ExecFile = new FileInfo(Path.Combine(gamePath, CurrentConfigV2.GameExecutableName));
+            if (!ExecFile.Exists)
+            {
+                return false;
+            }
+
+            if (ExecFile.Length < 8 << 10)
+            {
+                return false;
+            }
 
             return true;
         }
