@@ -68,6 +68,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public bool IsQRExist => !string.IsNullOrEmpty(QR);
         public string Description { get; set; }
         public bool IsDescriptionExist => !string.IsNullOrEmpty(Description);
+        public bool IsQRDescriptionExist => !string.IsNullOrEmpty(QR_Description);
     }
 
     public class RegionBackgroundProp

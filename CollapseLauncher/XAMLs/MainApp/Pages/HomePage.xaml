@@ -227,7 +227,8 @@
                                                 <StackPanel>
                                                     <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={StaticResource NullToVisibilityConverter}}">
                                                         <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"/>
+                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"
+                                                               Visibility="{Binding IsQRDescriptionExist, Converter={StaticResource NullToVisibilityConverter}}"/>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" TextWrapping="Wrap"
                                                                Visibility="{Binding IsDescriptionExist, Converter={StaticResource NullToVisibilityConverter}}"/>
