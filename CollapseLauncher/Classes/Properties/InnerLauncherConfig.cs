@@ -106,7 +106,6 @@ namespace CollapseLauncher
             foreach (string region in ConfigV2GameRegions)
             {
                 PresetConfigV2 config = ConfigV2.MetadataV2[GameCategory][region];
-                GameChannel chan = config.GameChannel;
                 StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
                 panel.Children.Add(new TextBlock { Text = region });
                 if (config.IsExperimental)

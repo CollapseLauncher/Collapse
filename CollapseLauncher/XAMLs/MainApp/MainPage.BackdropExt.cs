@@ -5,7 +5,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
-    public sealed partial class MainPage : Page
+    public partial class MainPage : Page
     {
         public void SetThemeParameters()
         {

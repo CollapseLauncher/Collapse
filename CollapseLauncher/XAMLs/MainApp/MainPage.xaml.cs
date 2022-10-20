@@ -512,9 +512,19 @@ namespace CollapseLauncher
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
-            GetConfigV2Regions((string)((ComboBox)sender).SelectedItem);
-            ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI("Honkai Impact 3rd");
-            ComboBoxGameRegion.SelectedIndex = 0;
+            string PreviousRegionString = GetComboBoxGameRegionValue(((List<StackPanel>)ComboBoxGameRegion.ItemsSource)[ComboBoxGameRegion.SelectedIndex == -1 ? 0 : ComboBoxGameRegion.SelectedIndex]);
+            string SelectedCategoryString = (string)((ComboBox)sender).SelectedItem;
+            GetConfigV2Regions(SelectedCategoryString);
+
+            List<StackPanel> CurRegionList = BuildGameRegionListUI(SelectedCategoryString);
+            ComboBoxGameRegion.ItemsSource = CurRegionList;
+            ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(PreviousRegionString, CurRegionList);
+        }
+
+        private int GetIndexOfRegionStringOrDefault(string name, List<StackPanel> CurRegionList)
+        {
+            int? index = CurRegionList.FindIndex(x => ((TextBlock)x.Children.FirstOrDefault()).Text == name);
+            return index == -1 || index == null ? 0 : index ?? 0;
         }
 
         private async void CheckMetadataUpdateInBackground()

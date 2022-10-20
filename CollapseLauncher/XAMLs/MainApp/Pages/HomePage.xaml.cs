@@ -952,7 +952,7 @@ namespace CollapseLauncher.Pages
                 };
 
                 ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle, Lang._Dialogs.InstallingMediaPackSubtitle);
-                MainFrameChanger.ChangeMainFrame(typeof(Pages.BlankPage));
+                MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
                 proc.Start();
                 await proc.WaitForExitAsync();
                 ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle, Lang._Dialogs.InstallingMediaPackSubtitleFinished);
@@ -1008,7 +1008,6 @@ namespace CollapseLauncher.Pages
                                     if (RequireWindowExclusivePayload)
                                     {
                                         if (line == "MoleMole.MonoGameEntry:Awake()"
-                                        // if (line == "asb download url:"
                                             && (CurrentConfigV2.IsGenshin ?? false))
                                         {
                                             StartExclusiveWindowPayload();
