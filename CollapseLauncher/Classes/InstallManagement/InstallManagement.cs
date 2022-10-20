@@ -451,8 +451,6 @@ namespace CollapseLauncher
             UpdateProgress(InstallProgress);
         }
 
-        public async Task StartInstallAsync() => await Task.Run(StartInstall);
-
         public async Task<bool> StartIfDeltaPatchAvailable()
         {
             if (CanDeltaPatch)

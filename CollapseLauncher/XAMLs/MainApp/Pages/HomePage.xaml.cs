@@ -756,7 +756,7 @@ namespace CollapseLauncher.Pages
                 RetryRoutine = await InstallTool.StartVerificationAsync(Content);
             }
 
-            await InstallTool.StartInstallAsync();
+            await Task.Run(InstallTool.StartInstall);
 
             ApplyGameConfig(GameDirPath);
             await InstallTool.FinalizeInstallationAsync(Content);
@@ -1307,7 +1307,7 @@ namespace CollapseLauncher.Pages
                         RetryRoutine = await InstallTool.StartVerificationAsync(Content);
                     }
 
-                    await InstallTool.StartInstallAsync();
+                    await Task.Run(InstallTool.StartInstall);
                 }
 
                 ApplyGameConfig(GameDirPath);
