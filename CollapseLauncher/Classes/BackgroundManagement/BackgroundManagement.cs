@@ -71,7 +71,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, TokenSource.Token);
+                await Http.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, default);
                 memoryStream.Position = 0;
                 regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
@@ -85,7 +85,7 @@ namespace CollapseLauncher
             {
                 if (!PassFirstTry)
                 {
-                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, null, null, TokenSource.Token);
+                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, null, null, default);
                     memoryStream.Position = 0;
                     ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
 
@@ -111,7 +111,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, TokenSource.Token);
+                await Http.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
                 memoryStream.Position = 0;
                 ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
