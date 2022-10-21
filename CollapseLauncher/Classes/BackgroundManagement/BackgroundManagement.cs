@@ -410,8 +410,8 @@ namespace CollapseLauncher
             DoubleAnimation OpacityBgBack = new DoubleAnimation();
             OpacityBgBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            OpacityBufBack.From = !BGLastState ? 1 : 0.30; OpacityBufBack.To = 0;
-            OpacityBgBack.From = 0; OpacityBgBack.To = !BGLastState ? 1 : 0.30;
+            OpacityBufBack.From = !BGLastState ? 1 : 0.50; OpacityBufBack.To = 0;
+            OpacityBgBack.From = 0; OpacityBgBack.To = !BGLastState ? 1 : 0.50;
 
             Storyboard.SetTarget(OpacityBufBack, BackgroundBackBuffer);
             Storyboard.SetTargetProperty(OpacityBufBack, "Opacity");
