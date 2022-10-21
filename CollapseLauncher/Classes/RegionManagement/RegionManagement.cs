@@ -23,11 +23,12 @@ namespace CollapseLauncher
         private bool IsLoadRegionComplete;
         private bool IsInnerTaskSuccess;
         private string PreviousTag = string.Empty;
+        private CancellationTokenSource TokenSource = new CancellationTokenSource();
 
         private uint CurrentRetry;
         private uint MaxRetry = 5; // Max 5 times of retry attempt
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
-        private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
+        private uint LoadTimeoutStep = 2; // Step 5 seconds for each timeout retries
 
         public async Task<bool> LoadRegionFromCurrentConfigV2()
         {
@@ -120,15 +121,23 @@ namespace CollapseLauncher
             }
 
             // Reset Task State
-            CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
+            TokenSource = new CancellationTokenSource();
             IsInnerTaskSuccess = false;
 
             try
             {
                 // Run Inner Task and watch for timeout
-                WatchAndCancelIfTimeout(InnerTokenSource, Timeout);
-                await InnerTask.WaitAsync(InnerTokenSource.Token);
+                WatchAndCancelIfTimeout(TokenSource, Timeout);
+                await InnerTask.WaitAsync(TokenSource.Token);
                 IsInnerTaskSuccess = true;
+            }
+            catch (TaskCanceledException ex)
+            {
+                LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has been cancelled!\r\n{ex}", Hi3Helper.LogType.Warning, true);
+            }
+            catch (OperationCanceledException ex)
+            {
+                LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has been cancelled!\r\n{ex}", Hi3Helper.LogType.Warning, true);
             }
             catch (Exception ex)
             {
