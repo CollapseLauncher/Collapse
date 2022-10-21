@@ -302,5 +302,7 @@ namespace Hi3Helper.Preset
         public string? LauncherResourceURL { get; set; }
         public string? DispatcherKey { get; set; }
         public int? DispatcherKeyBitLength { get; set; }
+        public bool? IsRepairEnabled { get; set; }
+        public bool? IsCacheUpdateEnabled { get; set; }
     }
 }

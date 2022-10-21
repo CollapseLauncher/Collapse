@@ -342,7 +342,7 @@ namespace CollapseLauncher.Pages
             if (!CurrentConfigV2.IsConvertible ?? true)
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-            if (string.IsNullOrEmpty(CurrentConfigV2.ZipFileURL))
+            if (!(CurrentConfigV2.IsRepairEnabled ?? false))
                 RepairGameButton.Visibility = Visibility.Collapsed;
 
             if (CurrentConfigV2.IsGenshin ?? false)

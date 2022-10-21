@@ -671,7 +671,7 @@ namespace CollapseLauncher
                             break;
 
                         case "repair":
-                            if (string.IsNullOrEmpty(CurrentConfigV2.ZipFileURL))
+                            if (!(CurrentConfigV2.IsRepairEnabled ?? false))
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
                             else
                                 Navigate(typeof(Pages.RepairPage), true, item);
