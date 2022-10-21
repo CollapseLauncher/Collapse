@@ -354,7 +354,6 @@ namespace CollapseLauncher
 
         private async Task ApplyBackground()
         {
-            BackgroundFrontBuffer.Source = BackgroundBitmap;
             BackgroundBackBuffer.Source = BackgroundBitmap;
 
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
@@ -364,38 +363,55 @@ namespace CollapseLauncher
 
             await ApplyAccentColor();
 
-            FadeOutBg();
+            FadeOutFrontBg();
+            FadeOutBackBg();
         }
 
-        private void FadeOutBg()
+        private async void FadeOutFrontBg()
+        {
+            BackgroundFront.Source = BackgroundBitmap;
+            BackgroundFrontBuffer.Visibility = Visibility.Visible;
+
+            double dur = 0.125;
+            Storyboard storyBufFront = new Storyboard();
+
+            DoubleAnimation OpacityBufFront = new DoubleAnimation();
+            OpacityBufFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
+
+            OpacityBufFront.From = 1; OpacityBufFront.To = 0;
+
+            Storyboard.SetTarget(OpacityBufFront, BackgroundFrontBuffer);
+            Storyboard.SetTargetProperty(OpacityBufFront, "Opacity");
+            storyBufFront.Children.Add(OpacityBufFront);
+
+            if (m_appCurrentFrameName == "HomePage")
+            {
+                storyBufFront.Begin();
+            }
+
+            await Task.Delay((int)(dur * 1000));
+            BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
+
+            BackgroundFrontBuffer.Source = BackgroundBitmap;
+        }
+
+        private async void FadeOutBackBg()
         {
             BackgroundBack.Source = BackgroundBitmap;
-            BackgroundFront.Source = BackgroundBitmap;
 
             BackgroundBack.Opacity = 0;
-            BackgroundFront.Opacity = 0;
 
             double dur = 0.125;
             Storyboard storyBufBack = new Storyboard();
             Storyboard storyBgBack = new Storyboard();
-            Storyboard storyBufFront = new Storyboard();
-            Storyboard storyBgFront = new Storyboard();
 
             DoubleAnimation OpacityBufBack = new DoubleAnimation();
             OpacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
             DoubleAnimation OpacityBgBack = new DoubleAnimation();
             OpacityBgBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
 
-            DoubleAnimation OpacityBufFront = new DoubleAnimation();
-            OpacityBufFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
-            DoubleAnimation OpacityBgFront = new DoubleAnimation();
-            OpacityBgFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
-
             OpacityBufBack.From = !BGLastState ? 1 : 0.30; OpacityBufBack.To = 0;
             OpacityBgBack.From = 0; OpacityBgBack.To = !BGLastState ? 1 : 0.30;
-
-            OpacityBufFront.From = 1; OpacityBufFront.To = 0;
-            OpacityBgFront.From = 0; OpacityBgFront.To = 1;
 
             Storyboard.SetTarget(OpacityBufBack, BackgroundBackBuffer);
             Storyboard.SetTargetProperty(OpacityBufBack, "Opacity");
@@ -404,20 +420,10 @@ namespace CollapseLauncher
             Storyboard.SetTargetProperty(OpacityBgBack, "Opacity");
             storyBgBack.Children.Add(OpacityBgBack);
 
-            Storyboard.SetTarget(OpacityBufFront, BackgroundFrontBuffer);
-            Storyboard.SetTargetProperty(OpacityBufFront, "Opacity");
-            storyBufFront.Children.Add(OpacityBufFront);
-            Storyboard.SetTarget(OpacityBgFront, BackgroundFront);
-            Storyboard.SetTargetProperty(OpacityBgFront, "Opacity");
-            storyBgFront.Children.Add(OpacityBgFront);
-
             storyBufBack.Begin();
             storyBgBack.Begin();
-            if (m_appCurrentFrameName == "HomePage")
-            {
-                storyBufFront.Begin();
-                storyBgFront.Begin();
-            }
+
+            await Task.Delay((int)(dur * 1000));
         }
 
         private void HideLoadingPopup(bool hide, string title, string subtitle)
@@ -462,6 +468,7 @@ namespace CollapseLauncher
                 storyboard.Begin();
             }
         }
+        
 
         private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
@@ -484,7 +491,7 @@ namespace CollapseLauncher
                 Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
                 storyboardFront.Children.Add(OpacityAnimation);
 
-                Storyboard.SetTarget(OpacityAnimationBack, BackgroundBack);
+                Storyboard.SetTarget(OpacityAnimationBack, Background);
                 Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");
                 storyboardBack.Children.Add(OpacityAnimationBack);
             }
