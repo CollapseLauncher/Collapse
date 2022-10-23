@@ -359,16 +359,23 @@ namespace CollapseLauncher
                     Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = m_windowSupportCustomTitle ? 720 : double.NaN,
+                    HorizontalAlignment = m_windowSupportCustomTitle ? HorizontalAlignment.Right : HorizontalAlignment.Stretch,
                     Shadow = SharedShadow,
-                    Translation = Shadow16,
                     IsOpen = true
                 };
+
+                Notification.Translation += Shadow32;
 
                 if (Severity == NotifSeverity.Informational)
                     Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
 
-                Notification.Closed += ((a, b) => { a.Translation -= Shadow16; });
+                Notification.Closed += (a, b) =>
+                {
+                    a.Translation -= Shadow32;
+                    a.Height = 0;
+                    a.Margin = new Thickness(0);
+                };
 
                 if (OtherContent != null)
                     OtherContentContainer.Children.Add(OtherContent);

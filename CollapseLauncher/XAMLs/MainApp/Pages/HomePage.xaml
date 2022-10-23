@@ -74,14 +74,14 @@
                                         <Storyboard>
                                             <DoubleAnimation AutoReverse="False"
                                                          BeginTime="0"
-                                                         Duration="0:0:0.1"
+                                                         Duration="0:0:0.25"
                                                          Storyboard.TargetName="Image"
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="0"
                                                          To="1" />
                                             <DoubleAnimation AutoReverse="False"
                                                          BeginTime="0"
-                                                         Duration="0:0:0.1"
+                                                         Duration="0:0:0.25"
                                                          Storyboard.TargetName="PlaceholderImage"
                                                          Storyboard.TargetProperty="Opacity"
                                                          From="1"
@@ -105,7 +105,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
             <Frame.Content>
-                <Grid x:Name="FrameGrid" Margin="32,80,32,32">
+                <Grid x:Name="FrameGrid" Margin="32,44,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="290"/>
@@ -203,8 +203,9 @@
                         x:Name="SocMedPanel"
                         Background="{ThemeResource SocMedPanelAcrylicBrush}"
                         Orientation="Vertical" HorizontalAlignment="Right"
-                        CornerRadius="12,0,0,12" Padding="0,4"
-                        Margin="0,0,-32,0"
+                        Padding="0,4"
+                        Margin="0,16,-32,0"
+                        CornerRadius="12,0,0,12"
                         Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                         VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}">
                         <StackPanel.Resources>
@@ -245,8 +246,8 @@
                                                 </Storyboard>
                                             </Button.Resources>
                                             <Grid>
-                                                <Image x:Name="Icon" Source="{Binding Icon}"/>
-                                                <Image x:Name="IconHover" Source="{Binding IconHover}" Opacity="0"/>
+                                                <c:ImageEx x:Name="Icon" Source="{Binding Icon}"/>
+                                                <c:ImageEx x:Name="IconHover" Source="{Binding IconHover}" Opacity="0"/>
                                             </Grid>
                                         </Button>
                                     </DataTemplate>
@@ -260,12 +261,12 @@
                         <Grid x:Name="ImageEventImgGrid" Visibility="Collapsed"
                           Grid.Column="1" Grid.Row="1"
                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                          Width="136" Margin="0,0,82,68">
+                          Width="136" Margin="0,0,80,68">
                             <Grid x:Name="ImageEventImgShadow"/>
                             <Image x:Name="ImageEventImg" s:Effects.Shadow="{StaticResource SharedDropShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
-                                Margin="0,158,0,0" Orientation="Vertical" HorizontalAlignment="Left">
+                                Margin="0,186,0,0" Orientation="Vertical" HorizontalAlignment="Left">
                             <StackPanel HorizontalAlignment="Left">
                                 <FlipView x:Name="ImageCarousel" Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
                                   MaxWidth="391" Height="181" 
@@ -295,7 +296,7 @@
                                       Orientation="Horizontal"/>
                                 </Grid>
                             </StackPanel>
-                            <Grid x:Name="PostPanel" Padding="8" Width="391" Visibility="Collapsed"
+                            <Grid x:Name="PostPanel" Padding="8" Width="391" MinHeight="140" Visibility="Collapsed"
                               MaxHeight="150" Margin="0,16,0,0" CornerRadius="8"
                               Background="{StaticResource PostAcrylicBrush}" Shadow="{StaticResource SharedShadow}">
                                 <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">

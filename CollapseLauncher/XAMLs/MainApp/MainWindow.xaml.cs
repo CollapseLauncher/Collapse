@@ -133,7 +133,7 @@ namespace CollapseLauncher
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
             // m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
-
+            
             if (m_windowSupportCustomTitle)
             {
 #if MICA && !DISABLE_COM
@@ -222,7 +222,7 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        public void SetWindowSize(IntPtr hwnd, int width = 1196, int height = 730, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width = 1196, int height = 726, int x = 0, int y = 0)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 
