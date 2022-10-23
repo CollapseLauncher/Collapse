@@ -37,7 +37,7 @@ namespace CollapseLauncher.Pages
                 gameIni.Settings[SectionName]["Fullscreen"] = value;
                 if (value)
                 {
-                    GameResolutionFullscreenExclusive.IsEnabled = IsCustomResolutionEnabled ? false : true;
+                    GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
                     return;
                 }
                 GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -68,6 +68,9 @@ namespace CollapseLauncher.Pages
                 GameCustomResolutionHeight.IsEnabled = false;
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
+
+                Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+                GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
 
