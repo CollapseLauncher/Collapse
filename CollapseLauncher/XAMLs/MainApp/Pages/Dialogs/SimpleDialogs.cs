@@ -127,7 +127,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_RepairCompleted(UIElement Content, int Count) =>
             await SpawnDialog(
                     Lang._Dialogs.RepairCompletedTitle,
-                    $"{(Count > 0 ? string.Format(Lang._Dialogs.RepairCompletedSubtitle, Count) : Lang._Dialogs.RepairCompletedSubtitleNoBroken)}",
+                    Count > 0 ? string.Format(Lang._Dialogs.RepairCompletedSubtitle, Count) : Lang._Dialogs.RepairCompletedSubtitleNoBroken,
                     Content,
                     null,
                     Lang._Misc.Okay,
@@ -147,27 +147,19 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
         {
-            Run text1 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 };
-            Hyperlink hyperlink = new Hyperlink()
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 });
+            texts.Inlines.Add(new Hyperlink()
             {
                 Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = (SolidColorBrush)Application.Current.Resources["AccentColor"] } },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
-            };
-            Run text3 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 };
-            Run text4 = new Run { Text = $" {Lang._Misc.Next} ", FontWeight = FontWeights.Bold };
-            Run text5 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle5 };
-            Run text6 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle6, FontWeight = FontWeights.Bold };
-            Run text7 = new Run { Text = Lang._Dialogs.CookbookLocateSubtitle7 };
-            Run text8 = new Run { Text = FileName, FontWeight = FontWeights.Bold };
-            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            texts.Inlines.Add(text1);
-            texts.Inlines.Add(hyperlink);
-            texts.Inlines.Add(text3);
-            texts.Inlines.Add(text4);
-            texts.Inlines.Add(text5);
-            texts.Inlines.Add(text6);
-            texts.Inlines.Add(text7);
-            texts.Inlines.Add(text8);
+            });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 });
+            texts.Inlines.Add(new Run { Text = $" {Lang._Misc.Next} ", FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle5 });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle6, FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle7 });
+            texts.Inlines.Add(new Run { Text = FileName, FontWeight = FontWeights.Bold });
             return await SpawnDialog(
                     Lang._Dialogs.CookbookLocateTitle,
                     texts,
