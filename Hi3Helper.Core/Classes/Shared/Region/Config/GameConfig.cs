@@ -370,7 +370,7 @@ namespace Hi3Helper.Shared.Region
             public EnumQuality PostFXGrade { get; set; }
             public bool UseHDR { get; set; }
             public bool UseDistortion { get; set; }
-            public ushort LodGrade { get; set; }
+            public int LodGrade { get; set; }
         }
 
         private static void GetOrCreatePersonalGraphicsSettingsValue(in string key)
