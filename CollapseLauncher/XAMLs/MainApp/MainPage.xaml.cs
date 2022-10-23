@@ -1,6 +1,8 @@
-﻿using Hi3Helper;
+﻿using CommunityToolkit.WinUI.UI.Controls;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -182,39 +184,42 @@ namespace CollapseLauncher
                 e.OtherContent, e.IsAppNotif, e.Notification.Show);
         }
 
-        private async void GetAppNotificationPush()
+        private async void RunBackgroundUpdateCheck()
         {
             try
             {
-                await GetNotificationFeed();
                 await Task.Run(() =>
                 {
+                    GetNotificationFeed();
                     GetAppUpdateNotification();
                 });
                 PushAppNotification();
+                CheckMetadataUpdateInBackground();
             }
             catch (JsonException ex)
             {
-                LogWriteLine($"Error while trying to get Notification Feed\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error while trying to get Notification Feed\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
         }
 
         bool IsLoadNotifComplete = false;
-        private async Task GetNotificationFeed()
+        private void GetNotificationFeed()
         {
             try
             {
+                Http _http = new Http(true, 5, 1000, null);
                 IsLoadNotifComplete = false;
                 NotificationData = new NotificationPush();
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
+                using (_http)
                 using (MemoryStream buffer = new MemoryStream())
                 {
-                    await new Http().Download(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
+                    _http.DownloadSync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
                         buffer, null, null, TokenSource.Token);
                     buffer.Position = 0;
                     NotificationData = (NotificationPush)JsonSerializer.Deserialize(buffer, typeof(NotificationPush), NotificationPushContext.Default);
@@ -384,7 +389,7 @@ namespace CollapseLauncher
                 {
                     CheckBox NeverAskNotif = new CheckBox
                     {
-                        Content = Lang._MainPage.NotifNeverAsk,
+                        Content = new TextBlock { Text = Lang._MainPage.NotifNeverAsk, FontWeight = FontWeights.Medium },
                         Tag = $"{MsgId},{IsAppNotif}"
                     };
                     NeverAskNotif.Checked += NeverAskNotif_Checked;
@@ -455,7 +460,7 @@ namespace CollapseLauncher
 
         private async void InitializeStartup()
         {
-            GetAppNotificationPush();
+            RunBackgroundUpdateCheck();
 
             bool IsLoadSuccess;
 
@@ -485,7 +490,6 @@ namespace CollapseLauncher
             LoadSavedGameSelection();
 
             IsLoadSuccess = await LoadRegionFromCurrentConfigV2();
-            CheckMetadataUpdateInBackground();
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
