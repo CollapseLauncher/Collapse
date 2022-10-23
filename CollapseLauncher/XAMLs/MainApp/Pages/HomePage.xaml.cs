@@ -70,7 +70,7 @@ namespace CollapseLauncher.Pages
                     PostPanel.Visibility = Visibility.Visible;
                     ImageCarousel.Translation += Shadow48;
                     ImageCarouselPipsPager.Translation += Shadow16;
-                    PostPanel.Translation += Shadow16;
+                    PostPanel.Translation += Shadow48;
                 }
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
