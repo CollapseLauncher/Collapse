@@ -353,8 +353,8 @@ namespace Hi3Helper.Shared.Region
             public EnumQuality ResolutionQuality { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityCloseable ShadowLevel { get; set; }
-            public ushort TargetFrameRateForInLevel { get; set; }
-            public ushort TargetFrameRateForOthers { get; set; }
+            public int TargetFrameRateForInLevel { get; set; }
+            public int TargetFrameRateForOthers { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityCloseableOLH ReflectionQuality { get; set; }
             public bool UseDynamicBone { get; set; }
@@ -486,8 +486,8 @@ namespace Hi3Helper.Shared.Region
             {
                 ResolutionQuality = ConvertIntToEnum(gameIni.Settings[SectionName]["ResolutionQuality"].ToInt()),
                 ShadowLevel = ConvertIntToEnumCloseable(gameIni.Settings[SectionName]["ShadowLevel"].ToInt()),
-                TargetFrameRateForInLevel = checked((ushort)gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt()),
-                TargetFrameRateForOthers = checked((ushort)gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt()),
+                TargetFrameRateForInLevel = gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt(),
+                TargetFrameRateForOthers = gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt(),
                 ReflectionQuality = ConvertIntToEnumCloseableOLH(gameIni.Settings[SectionName]["ReflectionQuality"].ToInt()),
                 UseDynamicBone = gameIni.Settings[SectionName]["UseDynamicBone"].ToBool(),
                 UseFXAA = gameIni.Settings[SectionName]["UseFXAA"].ToBool(),
@@ -498,7 +498,7 @@ namespace Hi3Helper.Shared.Region
                 PostFXGrade = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool()),
                 UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),
                 UseDistortion = gameIni.Settings[SectionName]["UseDistortion"].ToBool(),
-                LodGrade = (ushort)gameIni.Settings[SectionName]["LodGrade"].ToInt(),
+                LodGrade = gameIni.Settings[SectionName]["LodGrade"].ToInt()
             }, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) + '\0';
 
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, GraphicsGradeReg, 6, RegistryValueKind.DWord);
