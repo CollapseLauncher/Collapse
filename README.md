@@ -75,7 +75,9 @@ Please refer to this link to download the extension for your Visual Studio versi
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
 
 # UI Design Overview
-![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/AdvPanel1-6.webp)
+> The version used on this overview image is **v1.0.52 Release Candidate 2** build
+
+![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
 # How to support us?
 We are now opening sponsorship through **GitHub Sponsors**, **DANA (Indonesian-only Digital Wallet)**, and **PayPal** to keep this and other projects alive.
