@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
@@ -685,14 +686,14 @@ namespace CollapseLauncher
                             if (!(CurrentConfigV2.IsRepairEnabled ?? false))
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
                             else
-                                Navigate(typeof(Pages.RepairPage), true, item);
+                                Navigate(IsGameInstalled() ? typeof(Pages.RepairPage) : typeof(Pages.NotInstalledPage), true, item);
                             break;
 
                         case "caches":
                             if (CurrentConfigV2.CachesListGameVerID != null
                                 && CurrentConfigV2.CachesListAPIURL != null
                                 && CurrentConfigV2.CachesEndpointURL != null)
-                                Navigate(typeof(Pages.CachesPage), true, item);
+                                Navigate(IsGameInstalled() ? typeof(Pages.CachesPage) : typeof(Pages.NotInstalledPage), true, item);
                             else
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
                             break;
@@ -701,7 +702,7 @@ namespace CollapseLauncher
                             throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
 
                         case "gamesettings":
-                            Navigate(typeof(Pages.GameSettingsPage), true, item);
+                            Navigate(IsGameInstalled() ? typeof(Pages.GameSettingsPage) : typeof(Pages.NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
@@ -713,6 +714,10 @@ namespace CollapseLauncher
                 ErrorSender.SendException(ex);
             }
         }
+
+        private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
+                                          GameInstallationState == GameInstallStateEnum.InstalledHavePreload ||
+                                          GameInstallationState == GameInstallStateEnum.NeedsUpdate;
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = !LockRegionChangeBtn;
 

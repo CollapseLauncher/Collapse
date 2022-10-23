@@ -52,6 +52,9 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;PORTABLE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="XAMLs\MainApp\Pages\NotInstalledPage.xaml" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
@@ -133,6 +136,9 @@
 	<ItemGroup>
 		<Page Update="XAMLs\MainApp\Pages\StartupPage_SelectGame.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+		<Page Update="XAMLs\MainApp\Pages\NotInstalledPage.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

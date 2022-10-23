@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="CollapseLauncher.Pages.NotInstalledPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
+            <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
+            <TextBlock x:Name="Title" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="Subtitle" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.OverlayNotInstalledSubtitle}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+        </StackPanel>
+    </Grid>
+</Page>
