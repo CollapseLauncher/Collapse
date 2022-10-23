@@ -73,7 +73,7 @@
                             <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.0" FallbackColor="#FFEEEEEE"/>
                             <AcrylicBrush x:Key="UpdatePageAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.75" FallbackColor="#FFEAEAEA"/>
 
-                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#CCFFFFFF"/>
+                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5" FallbackColor="#CCFFFFFF"/>
 
                             <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.0"/>
 
