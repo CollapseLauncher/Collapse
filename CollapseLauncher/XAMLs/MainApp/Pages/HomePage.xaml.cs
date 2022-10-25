@@ -772,45 +772,50 @@ namespace CollapseLauncher.Pages
 
         private void InstallerDownloadPreStatusChanged(object sender, DownloadEvent e)
         {
-            InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
-            InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
-            DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
-
-            ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-            LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
-            ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-            ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-            progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-            progressPreBar.IsIndeterminate = false;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
+                InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
+                DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
+                progressPreBar.IsIndeterminate = false;
+            });
         }
 
         private void InstallerDownloadPreStatusChanged(object sender, InstallManagementStatus e)
         {
-            ProgressPrePerFileStatusFooter.Text = e.StatusTitle;
+            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.StatusTitle);
         }
 
         Stopwatch LastTimeSpan = Stopwatch.StartNew();
 
         private void InstallerDownloadPreProgressChanged(object sender, InstallManagementProgress e)
         {
-            if (LastTimeSpan.ElapsedMilliseconds >= RefreshTime)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressSpeed);
-                InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressDownloadedSize);
-                InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
-                DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-                DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
+                if (LastTimeSpan.ElapsedMilliseconds >= RefreshTime)
+                {
+                    InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressSpeed);
+                    InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressDownloadedSize);
+                    InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
+                    DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+                    DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
 
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
-                progressPreBar.IsIndeterminate = false;
-                progressPrePerFileBar.IsIndeterminate = false;
-                ResetLastTimeSpan();
-            }
+                    ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                    ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+                    ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                    ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                    progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
+                    progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
+                    progressPreBar.IsIndeterminate = false;
+                    progressPrePerFileBar.IsIndeterminate = false;
+                    ResetLastTimeSpan();
+                }
+            });
         }
 
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
@@ -1360,7 +1365,7 @@ namespace CollapseLauncher.Pages
             IsGameHasVoicePack = false;
             return null;
         }
-            
+
         private void TryAddOtherInstalledVoicePacks(ref Dictionary<string, RegionResourceVersion> VoicePacksOut, List<RegionResourceVersion> Packs)
         {
             if (File.Exists(Path.Combine(GameDirPath, "Audio_Chinese_pkg_version")))
