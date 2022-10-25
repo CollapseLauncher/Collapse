@@ -120,6 +120,7 @@
                         Severity="Informational"
                         Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}" Width="512"
                         Message="" Shadow="{StaticResource SharedShadow}"
+                        Margin="0,16,0,0"
                         HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2">
                         <InfoBar.Transitions>
                             <PopupThemeTransition/>
