@@ -54,7 +54,6 @@ namespace CollapseLauncher.Pages
             {
                 await new Http().Download(ReleaseNoteURL, ResponseStream, null, null, new CancellationToken());
                 string Content = Encoding.UTF8.GetString(ResponseStream.ToArray());
-                Content = File.ReadAllText(@"C:\myGit\CollapseLauncher-ReleaseRepo\changelog_preview.md");
 
                 ReleaseNotesBox.Text = Content;
             }
