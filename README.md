@@ -30,6 +30,7 @@ For now, this launcher is only supporting these versions of the game:
 * TW/HK/MO
 * Mainland China
 * Korea
+* Japanese (in Preview Build)
 
 # Other Supported Game Client
 This launcher also supports other game client, including:
