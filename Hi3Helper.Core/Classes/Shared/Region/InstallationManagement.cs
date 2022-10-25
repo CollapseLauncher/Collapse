@@ -34,7 +34,7 @@ namespace Hi3Helper.Shared.Region
             BuildGameIniConfig();
         }
 
-        public static async Task LoadGameConfig()
+        public static async Task<string> LoadGameConfig()
         {
             try
             {
@@ -46,6 +46,8 @@ namespace Hi3Helper.Shared.Region
 
                 if (Directory.Exists(GamePath))
                     await CheckExistingGameSettings();
+
+                return GamePath;
             }
             catch (ArgumentNullException)
             {

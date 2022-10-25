@@ -80,7 +80,7 @@ namespace CollapseLauncher.Pages
                 HomePageProp.Current = this;
 
                 CheckIfRightSideProgress();
-                await LoadGameConfig();
+                GameDirPath = NormalizePath(await LoadGameConfig());
                 CheckCurrentGameState();
 
                 await CheckFailedDeltaPatchState();
