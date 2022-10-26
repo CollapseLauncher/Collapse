@@ -108,7 +108,7 @@
                 <Grid x:Name="FrameGrid" Margin="32,56,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition Height="290"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="41"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -117,7 +117,7 @@
                         <ColumnDefinition Width="248"/>
                     </Grid.ColumnDefinitions>
                     <InfoBar x:Name="NotificationBar" Background="{StaticResource InfoBarAnnouncementBrush}"
-                        IsOpen="False" IsClosable="False"
+                        IsOpen="False" IsClosable="True"
                         Severity="Informational"
                         Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}"
                         Message="" Shadow="{StaticResource SharedShadow}"
