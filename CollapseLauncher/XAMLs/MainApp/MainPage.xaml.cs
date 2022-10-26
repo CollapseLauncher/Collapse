@@ -544,17 +544,39 @@ namespace CollapseLauncher
             bool IsUpdate = await CheckForNewConfigV2();
             if (IsUpdate)
             {
-                TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtn, VerticalAlignment = VerticalAlignment.Center };
+                StackPanel Text = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
+                Text.Children.Add(
+                    new FontIcon
+                    {
+                        Glyph = "",
+                        FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                        FontSize = 16
+                    });
+
+                Text.Children.Add(
+                    new TextBlock {
+                        Text = Lang._MainPage.MetadataUpdateBtn,
+                        FontWeight = FontWeights.Medium,
+                        Margin = new Thickness(8, 0, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Center
+                    });
+
                 Button UpdateMetadatabtn = new Button
                 {
                     Content = Text,
                     Margin = new Thickness(0, 0, 0, 16),
-                    Style = (Application.Current.Resources["AccentButtonStyle"] as Style)
+                    Style = (Style)Application.Current.Resources["AccentButtonStyle"],
+                    CornerRadius = new CornerRadius(16)
                 };
 
                 UpdateMetadatabtn.Click += (async (a, b) =>
                 {
-                    TextBlock Text = new TextBlock { Text = Lang._MainPage.MetadataUpdateBtnUpdating, VerticalAlignment = VerticalAlignment.Center };
+                    TextBlock Text = new TextBlock
+                    {
+                        Text = Lang._MainPage.MetadataUpdateBtnUpdating,
+                        FontWeight = FontWeights.Medium,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
                     ProgressRing LoadBar = new ProgressRing
                     {
                         IsIndeterminate = true,

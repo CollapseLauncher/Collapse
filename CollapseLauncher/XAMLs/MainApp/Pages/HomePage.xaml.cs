@@ -53,6 +53,8 @@ namespace CollapseLauncher.Pages
             try
             {
                 this.InitializeComponent();
+                GameDirPath = NormalizePath(await LoadGameConfig());
+                CheckCurrentGameState();
 
                 SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
@@ -80,8 +82,6 @@ namespace CollapseLauncher.Pages
                 HomePageProp.Current = this;
 
                 CheckIfRightSideProgress();
-                GameDirPath = NormalizePath(await LoadGameConfig());
-                CheckCurrentGameState();
 
                 await CheckFailedDeltaPatchState();
                 await CheckFailedGameConversion();
@@ -390,10 +390,26 @@ namespace CollapseLauncher.Pages
                             NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
                             NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
                             NotificationBar.IsClosable = true;
-                            var content = new TextBlock();
-                            content.Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn;
 
-                            DownloadPreBtn.Content = content;
+                            StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
+                            Text.Children.Add(
+                                new FontIcon
+                                {
+                                    Glyph = "",
+                                    FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                                    FontSize = 16
+                                });
+
+                            Text.Children.Add(
+                                new TextBlock
+                                {
+                                    Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
+                                    FontWeight = FontWeights.Medium,
+                                    Margin = new Thickness(8, 0, 0, 0),
+                                    VerticalAlignment = VerticalAlignment.Center
+                                });
+
+                            DownloadPreBtn.Content = Text;
                         }
 
                         GameInstallationState = GameInstallStateEnum.InstalledHavePreload;
@@ -1433,6 +1449,8 @@ namespace CollapseLauncher.Pages
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)
         {
+            ((Button)sender).IsEnabled = false;
+
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             NotificationBar.IsClosable = false;
@@ -1499,10 +1517,9 @@ namespace CollapseLauncher.Pages
                 {
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
                     ProgressPreStatusGrid.Visibility = Visibility.Visible;
-                    ProgressPrePerFileStatusGrid.Visibility = Visibility.Visible;
+                    ProgressPreButtonGrid.Visibility = Visibility.Visible;
                     NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
                     NotificationBar.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
-
                     await InstallTool.StartDownloadAsync();
 
                     PauseDownloadPreBtn.IsEnabled = false;

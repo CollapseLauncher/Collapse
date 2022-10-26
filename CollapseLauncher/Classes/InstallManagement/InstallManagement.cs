@@ -110,12 +110,12 @@ namespace CollapseLauncher
             CanDeleteZip = !File.Exists(Path.Combine(GameDirPath, "@NoDeleteZip"));
             CanSkipVerif = File.Exists(Path.Combine(GameDirPath, "@NoVerification"));
             CanSkipExtract = File.Exists(Path.Combine(GameDirPath, "@NoExtraction"));
-            CanDeltaPatch = CheckDeltaPatchUpdate();
+            CanDeltaPatch = CheckDeltaPatchUpdate(GameDirPath);
         }
 
-        private bool CheckDeltaPatchUpdate()
+        public bool CheckDeltaPatchUpdate(string GamePath)
         {
-            string[] GamePaths = Directory.GetFiles(GameDirPath, "*.patch", SearchOption.TopDirectoryOnly);
+            string[] GamePaths = Directory.GetFiles(GamePath, "*.patch", SearchOption.TopDirectoryOnly);
             if (GamePaths.Length == 0) return false;
 
             try
