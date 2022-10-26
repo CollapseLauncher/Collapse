@@ -457,7 +457,7 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
-                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Height="250" Visibility="Collapsed" Shadow="{StaticResource SharedShadow}">
+                    <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="0" Margin="0,0,0,48" VerticalAlignment="Bottom" Height="250" Visibility="Collapsed" Shadow="{StaticResource SharedShadow}">
                         <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
                         </Grid.ChildrenTransitions>
