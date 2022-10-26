@@ -35,7 +35,15 @@ namespace Hi3Helper
                 {
                     logstream.Dispose();
                 }
-                logstream = new StreamWriter(Path.Combine(logdir, filename), true);
+                try
+                {
+                    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
+                }
+                catch
+                {
+                    filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.{Path.GetFileNameWithoutExtension(Path.GetTempFileName())}.log";
+                    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
+                }
             }
         }
 
