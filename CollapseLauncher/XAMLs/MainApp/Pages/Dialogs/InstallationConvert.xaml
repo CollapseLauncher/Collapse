@@ -77,10 +77,13 @@
                     <TextBlock x:Name="Step5ProgressStatus" Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="CancelBtn"  Style="{ThemeResource AccentButtonStyle}" Margin="0,0,0,-32" CornerRadius="16"
+            <Button x:Name="CancelBtn"  Style="{ThemeResource AccentButtonStyle}" Margin="0,0,0,-26" CornerRadius="16"
                     Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" VerticalAlignment="Bottom"
                     Click="CancelConversion">
-                <TextBlock Text="Cancel Conversion" FontWeight="Medium" Margin="8,0"/>
+                <StackPanel Orientation="Horizontal" Margin="8,0">
+                    <FontIcon Glyph="&#xf00d;" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
+                </StackPanel>
             </Button>
         </Grid>
         <TextBlock x:Name="MigrationSubtextStatus"
