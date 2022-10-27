@@ -61,7 +61,7 @@ namespace CollapseLauncher
             }
 
             RepoRemoteURL = RepoList[GameVersionString] + '/';
-            IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVersionString);
+            IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, PatchProp.SourceVer);
 
             using (MemoryStream buffer = new MemoryStream())
             {
