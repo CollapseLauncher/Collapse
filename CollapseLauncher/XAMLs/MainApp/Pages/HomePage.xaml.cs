@@ -1140,6 +1140,7 @@ namespace CollapseLauncher.Pages
                         progressRing.IsIndeterminate = false;
                         ProgressStatusGrid.Visibility = Visibility.Visible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
+                        StartGameBtn.Visibility = Visibility.Collapsed;
                         CancelDownloadBtn.Visibility = Visibility.Visible;
                         ProgressTimeLeft.Visibility = Visibility.Visible;
                     });
