@@ -42,11 +42,11 @@ This launcher also supports other game client, including:
 Some features like Game Data Repair and Preload Download are available for this game but other things like Game Settings and Caches Download aren't available for this Game Client.
 
 # Download Ready-to-use build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.36.3-stable-hotfix/CL-1.0.36.3_Installer.exe)
-> **Note**: The version for this build is 1.0.36.3-hotfix (Released on: September 11th, 2022)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.5-stable/CL-1.0.52.5_Installer.exe)
+> **Note**: The version for this build is 1.0.52.5 (Released on: October 27th, 2022)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.4-RC2/CL-1.0.52.4-RC2_Installer.exe)
-> **Note**: The version for this build is 1.0.52.4 [Release Candidate 2] (Released on: October 25th, 2022).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.5-RC3/CL-1.0.52.5-RC3_Installer.exe)
+> **Note**: The version for this build is 1.0.52.5 [Release Candidate 3] (Released on: October 27th, 2022).
 
 To see all releases, [**go here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -76,8 +76,6 @@ Please refer to this link to download the extension for your Visual Studio versi
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and completely open-sourced and made with love by Kanchous'. Any contributions are welcomed! 😃
 
 # UI Design Overview
-> The version used on this overview image is **v1.0.52 Release Candidate 2** build
-
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
 # How to support us?
