@@ -275,19 +275,15 @@
     "AppBG_Checkbox": "Usar papel de fundo customizado",
     "AppBG_Note": "Nota: A imagem precisa de estar em formato .png, .jpg, .tiff ou .bmp e ter uma dimensão menor que 4096x4096",
 
-    // Done above
-
-    "AppThreads": "Application Threads",
-    "AppThreads_Download": "Download Threads",
-    "AppThreads_Extract": "Extraction Threads",
-    "AppThreads_Help1": "This thread will handle how many chunks will be split while downloading files. This mechanism behaves the same as what IDM and aria2c do.",
+    "AppThreads": "Threads/Linhas de execução da aplicação",
+    "AppThreads_Download": "Threads de descarregamento",
+    "AppThreads_Extract": "Threads de extração",
+    "AppThreads_Help1": "Este thread é responsável por definir em quantos pedaços os ficheiros vão ser divididos enquanto são descarregados. Este mecanismo comporta-se da mesma forma que os programas IDM e aria2c.",
     "AppThreads_Help2": "Valor predefinido:",
     "AppThreads_Help3": "Campo de valores:",
     "AppThreads_Help4": "0 (Auto-detetar)",
-    "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
+    "AppThreads_Help5": "Este thread é responsável pelo processo de extração/verificação durante a instalação/reparação do jogo.",
     "AppThreads_Help6": "Nota: Esta opção já não é efetiva ao instalar Honkai Impact 3rd.",
-
-    // Done below
 
     "Update": "Atualizações",
     "Update_CurVer": "Versão atual:",
@@ -395,8 +391,6 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable"
   },
-
-  // Done above
 
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
@@ -544,17 +538,15 @@
   },
 
   "_InstallMigrate": {
-    "PageTitle": "Jogo Migration",
-    "Step1Title": "Process will start in 5 seconds. Please accept the UAC dialog to start Migration process",
-    "Step2Title": "Migration is in progress. You may see a console window pops up. Please wait until the process is completed",
-    "Step3Title": "Migration process is done! Will be return in a moment...",
-    "StepCancelledTitle": "Migration cancelled! Will be return in a moment...",
-    "PageFooter1": "Please",
-    "PageFooter2": "DO NOT",
-    "PageFooter3": "switch to another page or close the launcher while the process is running"
+    "PageTitle": "Migração de jogo",
+    "Step1Title": "O processo vai começar em 5 segundos. Por favor aceita o diálogo do UAC para começar o processo de migração",
+    "Step2Title": "Migração em progresso. Poderás ver janelas de terminal a aparecer. Por favor aguarda até ao processo terminar",
+    "Step3Title": "Processo de migração concluído! A retornar em momentos...",
+    "StepCancelledTitle": "Migração cancelada! A retornar em momentos...",
+    "PageFooter1": "Por favor",
+    "PageFooter2": "NÃO",
+    "PageFooter3": "mudes para outra página ou feches o Launcher enquanto o processo estiver a decorrer"
   },
-
-  // Done Below
 
   "_UpdatePage": {
     "PageTitle1": "ATUALIZAÇÃO",
