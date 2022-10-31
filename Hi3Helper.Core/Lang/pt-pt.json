@@ -112,7 +112,7 @@
     "GameSettings_Panel2ConvertVersion": "Converter versão",
     "GameSettings_Panel3": "Args de incialização",
     "GameSettings_Panel4": "Variado",
-    "GameSettings_Panel4ShowEventsPanel": "(???) Mostrar painel de eventos",
+    "GameSettings_Panel4ShowEventsPanel": "Exibir painel de eventos",
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
     "PostPanel_Info": "Info",
@@ -127,7 +127,7 @@
     "ListCol4": "Tamanho",
     "ListCol5": "L.CRC",
     "ListCol6": "R.CRC",
-    "Status1": "Clica em \"Verificar\" para começar a análise.",
+    "Status1": "Clica em \"Procurar\" para começar a análise.",
     "Status2": "A carregar indexos...",
     "Status3": "{0} ficheiro(s) corrompidos encontrados (com o tamanho total de {1}). Clica em \"Reparar jogo\" para começar o processo de reparação",
     "Status4": "Não foram detetados ficheiros corrompidos!",
@@ -309,7 +309,7 @@
     "About_Copyright4": ". Todos os direitos reservados.",
 
     "Disclaimer": "Declaração",
-    "Disclaimer1": "Esta aplicação não está associada com a ",
+    "Disclaimer1": "Esta aplicação não está associada com a",
     "Disclaimer2": "de qualquer maneira",
     "Disclaimer3": "e é completamente open-source. Qualquer contribuição é apreciada.",
 
