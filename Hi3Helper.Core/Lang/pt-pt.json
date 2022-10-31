@@ -275,6 +275,8 @@
     "AppBG_Checkbox": "Usar papel de fundo customizado",
     "AppBG_Note": "Nota: A imagem precisa de estar em formato .png, .jpg, .tiff ou .bmp e ter uma dimensão menor que 4096x4096",
 
+    // Done above
+
     "AppThreads": "Application Threads",
     "AppThreads_Download": "Download Threads",
     "AppThreads_Extract": "Extraction Threads",
@@ -284,6 +286,8 @@
     "AppThreads_Help4": "0 (Auto-detetar)",
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Nota: Esta opção já não é efetiva ao instalar Honkai Impact 3rd.",
+
+    // Done below
 
     "Update": "Atualizações",
     "Update_CurVer": "Versão atual:",
@@ -391,6 +395,8 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable"
   },
+
+  // Done above
 
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
@@ -549,7 +555,7 @@
   },
 
   // Done Below
-  
+
   "_UpdatePage": {
     "PageTitle1": "ATUALIZAÇÃO",
     "PageTitle2": "DISPONÍVEL!",
