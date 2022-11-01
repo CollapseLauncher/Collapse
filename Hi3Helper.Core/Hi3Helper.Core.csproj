@@ -53,6 +53,7 @@
 	  <None Remove="Lang\en.json" />
 	  <None Remove="Lang\id-ID.json" />
 	  <None Remove="Lang\zh-cn.json" />
+	  <None Remove="Lang\pt-pt.json" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -63,6 +64,9 @@
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\zh-cn.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Lang\pt-pt.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">
