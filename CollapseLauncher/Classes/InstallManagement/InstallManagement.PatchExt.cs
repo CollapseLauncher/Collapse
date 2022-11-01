@@ -362,7 +362,7 @@ namespace CollapseLauncher
                     await Merge();
                 }
                 else
-                    await Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
+                    await Download(InputURL, OutputPath, true, null, null, Token);
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }
