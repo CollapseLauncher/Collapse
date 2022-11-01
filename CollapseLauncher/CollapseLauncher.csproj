@@ -90,6 +90,7 @@
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
 		<Content Update="Assets\BG\AiHappy.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

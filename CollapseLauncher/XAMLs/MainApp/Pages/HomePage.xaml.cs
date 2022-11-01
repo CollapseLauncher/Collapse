@@ -48,19 +48,22 @@ namespace CollapseLauncher.Pages
             this.Loaded += StartLoadedRoutine;
         }
 
+        private bool NeedShowEventIcon = true;
+
         private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
         {
             try
             {
                 this.InitializeComponent();
                 GameDirPath = NormalizePath(await LoadGameConfig());
+
                 CheckCurrentGameState();
+
+                TryLoadEventPanelImage();
 
                 SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
-
-                TryLoadEventPanelImage();
 
                 if (MenuPanels.imageCarouselPanel != null
                     && MenuPanels.articlePanel != null)
@@ -121,7 +124,7 @@ namespace CollapseLauncher.Pages
         {
             if (regionNewsProp.eventPanel == null) return;
 
-            ImageEventImgGrid.Visibility = Visibility.Visible;
+            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
         }
@@ -190,6 +193,30 @@ namespace CollapseLauncher.Pages
             await Task.Delay(100);
 
             ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private async void HideImageEventImg(bool hide)
+        {
+            if (ImageEventImgGrid.Visibility == Visibility.Collapsed && NeedShowEventIcon) return;
+
+            if (!hide)
+                ImageEventImgGrid.Visibility = Visibility.Visible;
+
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation OpacityAnimation = new DoubleAnimation();
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
+            OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
+
+            Storyboard.SetTarget(OpacityAnimation, ImageEventImgGrid);
+            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+            storyboard.Children.Add(OpacityAnimation);
+
+            storyboard.Begin();
+
+            await Task.Delay(100);
+
+            ImageEventImgGrid.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e)
@@ -380,6 +407,7 @@ namespace CollapseLauncher.Pages
                         NotificationBar.Translation += Shadow48;
                         NotificationBar.Closed += NotificationBar_Closed;
                         NotificationBar.IsOpen = true;
+                        NeedShowEventIcon = false;
 
                         if (!IsPreDownloadCompleted())
                         {
@@ -437,7 +465,11 @@ namespace CollapseLauncher.Pages
             OpenScreenshotFolderButton.IsEnabled = false;
         }
 
-        private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args) => sender.Translation -= Shadow48;
+        private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args)
+        {
+            sender.Translation -= Shadow48;
+            HideImageEventImg(false);
+        }
 
         private bool IsPreDownloadCompleted()
         {
