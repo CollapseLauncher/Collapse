@@ -2,6 +2,7 @@
 *obj*
 *build/*
 .vs/*
+.vscode/*
 *.user
 packages/*
 
