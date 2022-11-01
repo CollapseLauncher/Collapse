@@ -142,11 +142,17 @@ namespace CollapseLauncher
         public async Task CheckDriveFreeSpace(UIElement Content)
         {
             DriveInfo _DriveInfo = new DriveInfo(GameDirPath);
-            long RequiredSpace = DownloadProperty.Sum(x => x.RemoteRequiredSize) - DownloadProperty.Sum(x => GetExistingPartialDownloadLength(x.Output));
-            long DiskSpace = new DriveInfo(GameDirPath).TotalFreeSpace;
-
-            if (DiskSpace < RequiredSpace)
+            long RequiredSpace = DownloadProperty.Sum(x =>
             {
+                LogWriteLine($"Package: {Path.GetFileName(x.URL)} {ConverterTool.SummarizeSizeSimple(x.RemoteRequiredSize)} ({x.RemoteRequiredSize} bytes) free space required.", LogType.Default, true);
+                return x.RemoteRequiredSize;
+            });
+            long DiskSpace = _DriveInfo.TotalFreeSpace;
+            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remained free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
+
+            if (DiskSpace < (RequiredSpace - DownloadProperty.Sum(x => GetExistingPartialDownloadLength(x.Output))))
+            {
+                LogWriteLine($"DISK SPACE ON {_DriveInfo.Name} IS INSUFFICIENT!", LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
                 throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace}, Drive: {_DriveInfo.Name}). Cancelling the task!");
             }
