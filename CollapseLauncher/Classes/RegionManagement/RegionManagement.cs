@@ -221,7 +221,7 @@ namespace CollapseLauncher
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)
         {
-            Type page = null;
+            Type page;
             if (IsHide)
             {
                 // Hide element

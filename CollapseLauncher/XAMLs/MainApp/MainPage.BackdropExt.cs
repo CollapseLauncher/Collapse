@@ -16,15 +16,8 @@ namespace CollapseLauncher
                 GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
-            switch (m_currentBackdrop)
-            {
-                case BackdropType.DefaultColor:
-                    {
-                        Background.Visibility = Visibility.Visible;
-                        BackgroundAcrylicMask.Visibility = Visibility.Visible;
-                    }
-                    break;
-            }
+            Background.Visibility = Visibility.Visible;
+            BackgroundAcrylicMask.Visibility = Visibility.Visible;
         }
     }
 }

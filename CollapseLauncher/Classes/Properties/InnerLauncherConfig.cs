@@ -49,16 +49,6 @@ namespace CollapseLauncher
 
         public static AppMode m_appMode;
         public static Arguments m_arguments = new Arguments();
-#if !DISABLE_COM
-        public static BackdropManagement m_backDrop;
-        public static WindowsSystemDispatcherQueueHelper m_wsdqHelper;
-#endif
-        public static BackdropType m_currentBackdrop;
-        public static MicaController m_micaController;
-        public static DesktopAcrylicController m_acrylicController;
-        public static SystemBackdropConfiguration m_configurationSource;
-
-
         public static ushort[] w_windowsVersionNumbers;
         public static Window m_window;
         public static bool m_windowSupportCustomTitle = false;
