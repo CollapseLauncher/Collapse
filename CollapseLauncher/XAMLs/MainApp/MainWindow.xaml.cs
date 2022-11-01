@@ -118,13 +118,6 @@ namespace CollapseLauncher
 
         public void InitializeWindowSettings()
         {
-
-#if !DISABLE_COM
-            m_backDrop = new BackdropManagement(this);
-            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
-            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-#endif
-
             InitializeAppWindowAndIntPtr();
             LoadWindowIcon();
 
@@ -136,14 +129,6 @@ namespace CollapseLauncher
             
             if (m_windowSupportCustomTitle)
             {
-#if MICA && !DISABLE_COM
-                m_backDrop.SetBackdrop(BackdropType.Mica);
-#elif DISABLETRANSPARENT && !DISABLE_COM
-                m_backDrop.SetBackdrop(BackdropType.DefaultColor);
-#elif !DISABLE_COM
-                m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
-#endif
-                SetThemeParameters();
                 AppTitleBar.Loaded += AppTitleBar_Loaded;
                 m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
@@ -166,12 +151,6 @@ namespace CollapseLauncher
             }
             else
             {
-#if DISABLETRANSPARENT && !DISABLE_COM
-                m_backDrop.SetBackdrop(BackdropType.DefaultColor);
-#elif !DISABLE_COM
-                m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
-#endif
-                SetThemeParameters();
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
                 Grid.SetColumn(RegionChangerPanel, 4);
