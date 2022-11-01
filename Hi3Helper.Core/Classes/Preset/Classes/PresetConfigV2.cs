@@ -134,7 +134,15 @@ namespace Hi3Helper.Preset
 
             string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
 
-            return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName ?? ServerRegionID.os_usa);
+            try
+            {
+                return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName ?? ServerRegionID.os_usa);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}! Returning value 0 as fallback!\r\nValue: {regValue}\r\n{ex}", LogType.Warning, true);
+                return 0;
+            }
         }
 
         // WARNING!!!
