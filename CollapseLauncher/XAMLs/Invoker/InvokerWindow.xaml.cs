@@ -101,16 +101,6 @@ namespace CollapseLauncher
             m_appWindow = GetAppWindowForCurrentWindow();
             m_appWindow.Changed += AppWindow_Changed;
 
-#if !DISABLE_COM
-            m_backDrop = new BackdropManagement(this);
-            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
-            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-
-            // Check to see if customization is supported.
-            // Currently only supported on Windows 11.
-            m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
-#endif
-
             SetWindowSize(m_windowHandle, 540, 320);
             ExtendsContentIntoTitleBar = true;
 

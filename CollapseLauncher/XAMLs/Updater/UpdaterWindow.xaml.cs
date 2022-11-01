@@ -120,17 +120,6 @@ namespace CollapseLauncher
 
             SetWindowSize(m_windowHandle, 540, 320);
 
-#if !DISABLE_COM
-            m_backDrop = new BackdropManagement(this);
-            m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
-            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-#endif
-
-            // Check to see if customization is supported.
-            // Currently only supported on Windows 11.
-#if !DISABLETRANSPARENT && !DISABLE_COM
-            m_backDrop.SetBackdrop(BackdropType.DesktopAcrylic);
-#endif
             ExtendsContentIntoTitleBar = true;
 
             SetTitleBar(DragArea);
