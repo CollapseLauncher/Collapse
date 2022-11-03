@@ -45,6 +45,8 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         public HomePage()
         {
+            this.InitializeComponent();
+            CheckIfRightSideProgress();
             this.Loaded += StartLoadedRoutine;
         }
 
@@ -54,10 +56,12 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                this.InitializeComponent();
                 GameDirPath = NormalizePath(await LoadGameConfig());
 
-                CheckCurrentGameState();
+                GetCurrentGameState();
+
+                if (!GetAppConfigValue("ShowEventsPanel").ToBool())
+                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
 
                 TryLoadEventPanelImage();
 
@@ -78,13 +82,8 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                if (!GetAppConfigValue("ShowEventsPanel").ToBool())
-                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
-
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
-
-                CheckIfRightSideProgress();
 
                 await CheckFailedDeltaPatchState();
                 await CheckFailedGameConversion();
@@ -364,98 +363,52 @@ namespace CollapseLauncher.Pages
                 Directory.Delete(IngrPath, true);
         }
 
-        private void CheckCurrentGameState()
+        private void GetCurrentGameState()
         {
-            if (!CurrentConfigV2.IsConvertible ?? true)
-                ConvertVersionButton.Visibility = Visibility.Collapsed;
+            Visibility RepairGameButtonVisible = (CurrentConfigV2.IsRepairEnabled ?? false) || (CurrentConfigV2.IsGenshin ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
-            if (!(CurrentConfigV2.IsRepairEnabled ?? false))
-                RepairGameButton.Visibility = Visibility.Collapsed;
+            if (!(CurrentConfigV2.IsConvertible ?? true) || (CurrentConfigV2.IsGenshin ?? false))
+                ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             if (CurrentConfigV2.IsGenshin ?? false)
             {
-                ConvertVersionButton.Visibility = Visibility.Collapsed;
                 OpenScreenshotFolderButton.Visibility = Visibility.Visible;
                 OpenCacheFolderButton.Visibility = Visibility.Collapsed;
-                RepairGameButton.Visibility = Visibility.Collapsed;
             }
 
-            if (File.Exists(
-                   Path.Combine(
-                       NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
-                       CurrentConfigV2.GameExecutableName)))
+            switch (GetGameInstallationStatus())
             {
-                if (new FileInfo(Path.Combine(
-                    NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()),
-                    CurrentConfigV2.GameExecutableName)).Length < 0xFFFF)
-                    GameInstallationState = GameInstallStateEnum.GameBroken;
-                else if (regionResourceProp.data.game.latest.version != gameIni.Config["General"]["game_version"].ToString())
-                {
-                    RepairGameButton.Visibility = Visibility.Visible;
-                    RepairGameButton.IsEnabled = false;
-                    UpdateGameBtn.Visibility = Visibility.Visible;
-                    StartGameBtn.Visibility = Visibility.Collapsed;
-                    InstallGameBtn.Visibility = Visibility.Collapsed;
-                    GameInstallationState = GameInstallStateEnum.NeedsUpdate;
-                }
-                else
-                {
-                    if (regionResourceProp.data.pre_download_game != null)
+                case GameInstallStateEnum.Installed:
                     {
-                        InstallGameBtn.Visibility = Visibility.Collapsed;
-                        StartGameBtn.Visibility = Visibility.Visible;
-                        NotificationBar.Translation += Shadow48;
-                        NotificationBar.Closed += NotificationBar_Closed;
-                        NotificationBar.IsOpen = true;
-                        NeedShowEventIcon = false;
-
-                        if (!IsPreDownloadCompleted())
-                        {
-                            NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
-                        }
-                        else
-                        {
-                            NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
-                            NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
-                            NotificationBar.IsClosable = true;
-
-                            StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
-                            Text.Children.Add(
-                                new FontIcon
-                                {
-                                    Glyph = "",
-                                    FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                                    FontSize = 16
-                                });
-
-                            Text.Children.Add(
-                                new TextBlock
-                                {
-                                    Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
-                                    FontWeight = FontWeights.Medium,
-                                    Margin = new Thickness(8, 0, 0, 0),
-                                    VerticalAlignment = VerticalAlignment.Center
-                                });
-
-                            DownloadPreBtn.Content = Text;
-                        }
-
-                        GameInstallationState = GameInstallStateEnum.InstalledHavePreload;
-                    }
-                    else
-                    {
-                        RepairGameButton.Visibility = Visibility.Visible;
+                        RepairGameButton.Visibility = RepairGameButtonVisible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         GameInstallationState = GameInstallStateEnum.Installed;
+                        CustomStartupArgs.Visibility = Visibility.Visible;
                     }
-                }
-
-                CustomStartupArgs.Visibility = Visibility.Visible;
-                return;
+                    return;
+                case GameInstallStateEnum.InstalledHavePreload:
+                    {
+                        RepairGameButton.Visibility = RepairGameButtonVisible;
+                        CustomStartupArgs.Visibility = Visibility.Visible;
+                        InstallGameBtn.Visibility = Visibility.Collapsed;
+                        StartGameBtn.Visibility = Visibility.Visible;
+                        NeedShowEventIcon = false;
+                        SpawnPreloadBox();
+                    }
+                    return;
+                case GameInstallStateEnum.NeedsUpdate:
+                    {
+                        RepairGameButton.Visibility = RepairGameButtonVisible;
+                        RepairGameButton.IsEnabled = false;
+                        UpdateGameBtn.Visibility = Visibility.Visible;
+                        StartGameBtn.Visibility = Visibility.Collapsed;
+                        InstallGameBtn.Visibility = Visibility.Collapsed;
+                        GameInstallationState = GameInstallStateEnum.NeedsUpdate;
+                    }
+                    return;
             }
 
-            GameInstallationState = GameInstallStateEnum.NotInstalled;
             UninstallGameButton.IsEnabled = false;
             RepairGameButton.IsEnabled = false;
             OpenGameFolderButton.IsEnabled = false;
@@ -463,6 +416,72 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
+        }
+
+        private void SpawnPreloadBox()
+        {
+            NotificationBar.Translation += Shadow48;
+            NotificationBar.Closed += NotificationBar_Closed;
+            NotificationBar.IsOpen = true;
+
+            if (!IsPreDownloadCompleted())
+            {
+                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+            }
+            else
+            {
+                NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
+                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                NotificationBar.IsClosable = true;
+
+                StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
+                Text.Children.Add(
+                    new FontIcon
+                    {
+                        Glyph = "",
+                        FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                        FontSize = 16
+                    });
+
+                Text.Children.Add(
+                    new TextBlock
+                    {
+                        Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
+                        FontWeight = FontWeights.Medium,
+                        Margin = new Thickness(8, 0, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Center
+                    });
+
+                DownloadPreBtn.Content = Text;
+            }
+        }
+
+        private GameInstallStateEnum GetGameInstallationStatus()
+        {
+            string GameVersion = gameIni.Config["General"]["game_version"].ToString();
+
+            // If the default value is null or empty, return NotInstalled.
+            if (string.IsNullOrEmpty(GameDirPath)) return GameInstallStateEnum.NotInstalled;
+
+            // Normalize game path starts from here to avoid crash if GameDirPath is empty.
+            GameDirPath = NormalizePath(GameDirPath);
+            string GameExecutionPath = Path.Combine(GameDirPath, CurrentConfigV2.GameExecutableName);
+            FileInfo GameExecutionInfo = new FileInfo(GameExecutionPath);
+
+            if (GameExecutionInfo.Exists)
+            {
+                // If game execution has less than 64 KB in size, then declare as broken.
+                if (GameExecutionInfo.Length < 0xFFFF) return GameInstallStateEnum.GameBroken;
+                // Return if the game needs an update.
+                if (GameVersion != regionResourceProp.data.game.latest.version) return GameInstallStateEnum.NeedsUpdate;
+                // Return if the game passed checks above and pre_download_game is not null.
+                if (regionResourceProp.data.pre_download_game != null) return GameInstallStateEnum.InstalledHavePreload;
+                // Return if all checks passed
+                return GameInstallStateEnum.Installed;
+            }
+
+            // Return if the game doesn't exist.
+            return GameInstallStateEnum.NotInstalled;
         }
 
         private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args)
@@ -1593,8 +1612,9 @@ namespace CollapseLauncher.Pages
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
         {
-            if ((sender as Image).Tag == null) return;
-            SpawnWebView2.SpawnWebView2Window((sender as Image).Tag.ToString());
+            object ImageTag = ((ImageEx)sender).Tag;
+            if (ImageTag == null) return;
+            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
         }
     }
 }
