@@ -1059,13 +1059,14 @@ namespace CollapseLauncher
                     if (File.Exists(LocalPath))
                         TryUnassignDeleteROPersistFile(LocalPath);
 
+                    LogWriteLine($"Downloading: {RemotePath}...", LogType.Default, true);
                     if (Entry.fileSize >= 10 << 20)
                     {
                         await Download(RemotePath, LocalPath, DownloadThread, true, Token);
                         await Merge();
                     }
                     else
-                        await Download(RemotePath, new FileStream(LocalPath, FileMode.Create, FileAccess.Write, FileShare.Write), null, null, Token);
+                        await Download(RemotePath, LocalPath, true, null, null, Token);
                 }
                 catch (TaskCanceledException ex)
                 {
