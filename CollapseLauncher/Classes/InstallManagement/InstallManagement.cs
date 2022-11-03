@@ -372,13 +372,12 @@ namespace CollapseLauncher
             if ((fileInfo = new FileInfo(fileOutput)).Exists && fileInfo.Length > 0)
                 return fileInfo.Length;
 
-            List<string> partPaths = Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*").ToList();
+            string[] partPaths = Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*");
 
-            if (partPaths.Count == 0)
+            if (partPaths.Length == 0)
                 return 0;
 
-            return partPaths
-                   .Sum(x => (fileInfo = new FileInfo(x)).Exists ? fileInfo.Length : 0);
+            return partPaths.Sum(x => (fileInfo = new FileInfo(x)).Exists ? fileInfo.Length : 0);
         }
 
         public void StartInstall()
@@ -410,6 +409,19 @@ namespace CollapseLauncher
                 ExtractTool.Dispose();
                 if (CanDeleteZip)
                     File.Delete(prop.Output);
+
+                FileInfo hdiffList = new FileInfo(Path.Combine(GameDirPath, "hdifffiles.txt"));
+                FileInfo deleteList = new FileInfo(Path.Combine(GameDirPath, "deletefiles.txt"));
+
+                if (hdiffList.Exists)
+                {
+                    hdiffList.MoveTo(Path.Combine(GameDirPath, $"hdifffiles_{Path.GetFileNameWithoutExtension(prop.Output)}.txt"), true);
+                }
+
+                if (deleteList.Exists)
+                {
+                    deleteList.MoveTo(Path.Combine(GameDirPath, $"deletefiles_{Path.GetFileNameWithoutExtension(prop.Output)}.txt"), true);
+                }
             }
         }
 
@@ -499,53 +511,73 @@ namespace CollapseLauncher
                 await PostInstallVerification(Content);
         }
 
-        private long GetHdiffSize(in IEnumerable<string> List)
+        private List<PkgVersionProperties> TryGetHDiffList()
         {
-            long outSize = 0;
-            PkgVersionProperties _Entry;
-            FileInfo file;
-            string path;
-            foreach (string entry in List)
+            List<PkgVersionProperties> _out = new List<PkgVersionProperties>();
+            PkgVersionProperties prop;
+            foreach (string listFile in Directory.EnumerateFiles(GameDirPath, "*hdifffiles*", SearchOption.TopDirectoryOnly))
             {
-                _Entry = (PkgVersionProperties)JsonSerializer.Deserialize(entry, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
-                path = Path.Combine(GameDirPath, ConverterTool.NormalizePath(_Entry.remoteName) + ".hdiff");
-                file = new FileInfo(path);
-                outSize += file.Exists ? file.Length : 0;
+                LogWriteLine($"hdiff File list path: {listFile}", LogType.Default, true);
+
+                try
+                {
+                    using (Stream fs = new FileStream(listFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
+                    using (StreamReader listReader = new StreamReader(fs))
+                    {
+                        while (!listReader.EndOfStream)
+                        {
+                            _out.Add(prop = (PkgVersionProperties)JsonSerializer
+                                .Deserialize(
+                                    listReader.ReadLine(),
+                                    typeof(PkgVersionProperties),
+                                    PkgVersionPropertiesContext.Default));
+                            LogWriteLine($"hdiff entry: {prop.remoteName}", LogType.Default, true);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed while trying to read hdiff file list: {listFile}\r\n{ex}", LogType.Warning, true);
+                }
             }
 
-            return outSize;
+            return _out;
         }
 
         private void ApplyHdiffPatch()
         {
             DownloadStopwatch = Stopwatch.StartNew();
-            string PatchListPath = Path.Combine(GameDirPath, "hdifffiles.txt");
-            if (!File.Exists(PatchListPath)) return;
 
             string FileSource,
                    FilePatch,
                    FileOutput;
 
-            IEnumerable<string> HPatchList = File.ReadAllLines(PatchListPath);
+            HPatchUtil Patcher = new HPatchUtil();
+            List<PkgVersionProperties> Entry = TryGetHDiffList();
+
+            if (Entry.Count == 0) return;
+
+            FileInfo _fDiff;
 
             DownloadLocalSize = 0;
-            DownloadRemoteSize = GetHdiffSize(HPatchList);
-
-            HPatchUtil Patcher = new HPatchUtil();
-            PkgVersionProperties Entry;
+            DownloadRemoteSize = Entry.Sum(x =>
+            {
+                _fDiff = new FileInfo(Path.Combine(GameDirPath, ConverterTool.NormalizePath(x.remoteName) + ".hdiff"));
+                return _fDiff.Exists ? _fDiff.Length : 0;
+            });
 
             InstallStatus.IsPerFile = false;
 
             int i = 0;
-            foreach (string _Entry in HPatchList)
+            int listCount = Entry.Count;
+            foreach (PkgVersionProperties _Entry in Entry)
             {
                 i++;
-                Entry = (PkgVersionProperties)JsonSerializer.Deserialize(_Entry, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
-                FileSource = Path.Combine(GameDirPath, ConverterTool.NormalizePath(Entry.remoteName));
+                FileSource = Path.Combine(GameDirPath, ConverterTool.NormalizePath(_Entry.remoteName));
                 FilePatch = FileSource + ".hdiff";
                 FileOutput = FileSource + "_tmp";
 
-                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, i, HPatchList.Count()));
+                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, i, listCount));
                 UpdateStatus(InstallStatus);
                 InstallProgress = new InstallManagementProgress(DownloadLocalSize, DownloadRemoteSize,
                     DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds);
@@ -559,6 +591,7 @@ namespace CollapseLauncher
                     {
                         if (File.Exists(FilePatch))
                         {
+                            LogWriteLine($"Patching file {_Entry.remoteName}...", LogType.Default, true);
                             Patcher.HPatchFile(FileSource, FilePatch, FileOutput);
                             File.Delete(FilePatch);
                             File.Delete(FileSource);
@@ -568,31 +601,44 @@ namespace CollapseLauncher
                 }
                 catch (Exception ex)
                 {
-                    LogWriteLine($"Error while patching file: {Entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning, true);
+                    LogWriteLine($"Error while patching file: {_Entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning, true);
                 }
 
                 InstallProgress = new InstallManagementProgress(DownloadLocalSize, DownloadRemoteSize,
                     DownloadLocalPerFileSize, DownloadRemotePerFileSize, DownloadStopwatch.Elapsed.TotalSeconds);
                 UpdateProgress(InstallProgress);
             }
+        }
 
-            File.Delete(PatchListPath);
+        private void TryRemoveDeleteFilesList()
+        {
+            string FilePath;
+            FileInfo fInfo;
+            foreach (string listFile in Directory.EnumerateFiles(GameDirPath, "*deletefiles*", SearchOption.TopDirectoryOnly))
+            {
+                LogWriteLine($"deletefiles File list path: {listFile}", LogType.Default, true);
+                using (Stream fs = new FileStream(listFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
+                using (StreamReader listReader = new StreamReader(fs))
+                {
+                    while (!listReader.EndOfStream)
+                    {
+                        FilePath = Path.Combine(GameDirPath, ConverterTool.NormalizePath(listReader.ReadLine()));
+                        fInfo = new FileInfo(FilePath);
+                        if (fInfo.Exists)
+                        {
+                            fInfo.Delete();
+                            LogWriteLine($"Deleting redundant file: {FilePath}", LogType.Default, true);
+                        }
+                    }
+                }
+            }
         }
 
         private void CleanUpUnusedAssets()
         {
             try
             {
-                string AssetsListPath = Path.Combine(GameDirPath, "deletefiles.txt"),
-                   FilePath;
-                if (File.Exists(AssetsListPath))
-                {
-                    foreach (string _Entry in File.ReadAllLines(AssetsListPath))
-                    {
-                        FilePath = Path.Combine(GameDirPath, ConverterTool.NormalizePath(_Entry));
-                        if (File.Exists(FilePath)) File.Delete(FilePath);
-                    }
-                }
+                TryRemoveDeleteFilesList();
 
                 // Remove any _tmp or .diff files
                 IEnumerable<string> UnusedFiles = Directory.GetFiles(GameDirPath, "*.*", SearchOption.AllDirectories)
