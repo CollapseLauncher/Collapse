@@ -144,7 +144,7 @@ namespace CollapseLauncher
             DriveInfo _DriveInfo = new DriveInfo(GameDirPath);
             long RequiredSpace = DownloadProperty.Sum(x =>
             {
-                LogWriteLine($"Package: {Path.GetFileName(x.URL)} {ConverterTool.SummarizeSizeSimple(x.RemoteRequiredSize)} ({x.RemoteRequiredSize} bytes) free space required.", LogType.Default, true);
+                LogWriteLine($"Package: {Path.GetFileName(x.URL)} {ConverterTool.SummarizeSizeSimple(x.RemoteRequiredSize)} ({x.RemoteRequiredSize} bytes) free space required.\r\nHash: {x.RemoteHash}", LogType.Default, true);
                 return x.RemoteRequiredSize;
             });
             long DiskSpace = _DriveInfo.TotalFreeSpace;
