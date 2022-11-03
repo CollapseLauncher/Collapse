@@ -97,14 +97,14 @@ namespace Hi3Helper
                     _logBuilder.Append("[Game] ");
                     break;
                 default:
-                    _logBuilder.Append("    ");
+                    _logBuilder.Append("\t\t");
                     break;
             }
 
             _logBuilder.Append('[');
             _logBuilder.Append(Logger.GetCurrentTime("HH:mm:ss.fff"));
             _logBuilder.Append(']');
-            _logBuilder.Append(' ');
+            _logBuilder.Append('\t');
             _logBuilder.Append(i.Replace("\n", $"{new string(' ', 22)}\t"));
         }
     }
