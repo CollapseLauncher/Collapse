@@ -116,7 +116,7 @@
                         <ColumnDefinition Width="1224*"/>
                         <ColumnDefinition Width="248"/>
                     </Grid.ColumnDefinitions>
-                    <InfoBar x:Name="NotificationBar" Background="{StaticResource InfoBarAnnouncementBrush}"
+                    <InfoBar x:Name="PreloadDialogBox" Background="{StaticResource InfoBarAnnouncementBrush}"
                         IsOpen="False" IsClosable="True"
                         Severity="Informational"
                         Title="{x:Bind helper:Locale.Lang._HomePage.PreloadTitle}"

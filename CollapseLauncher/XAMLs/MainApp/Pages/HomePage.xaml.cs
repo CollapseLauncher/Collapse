@@ -420,19 +420,19 @@ namespace CollapseLauncher.Pages
 
         private void SpawnPreloadBox()
         {
-            NotificationBar.Translation += Shadow48;
-            NotificationBar.Closed += NotificationBar_Closed;
-            NotificationBar.IsOpen = true;
+            PreloadDialogBox.Translation += Shadow48;
+            PreloadDialogBox.Closed += PreloadDialogBox_Closed;
+            PreloadDialogBox.IsOpen = true;
 
             if (!IsPreDownloadCompleted())
             {
-                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
             }
             else
             {
-                NotificationBar.Title = Lang._HomePage.PreloadNotifCompleteTitle;
-                NotificationBar.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
-                NotificationBar.IsClosable = true;
+                PreloadDialogBox.Title = Lang._HomePage.PreloadNotifCompleteTitle;
+                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                PreloadDialogBox.IsClosable = true;
 
                 StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
                 Text.Children.Add(
@@ -484,7 +484,7 @@ namespace CollapseLauncher.Pages
             return GameInstallStateEnum.NotInstalled;
         }
 
-        private void NotificationBar_Closed(InfoBar sender, InfoBarClosedEventArgs args)
+        private void PreloadDialogBox_Closed(InfoBar sender, InfoBarClosedEventArgs args)
         {
             sender.Translation -= Shadow48;
             HideImageEventImg(false);
@@ -1505,7 +1505,7 @@ namespace CollapseLauncher.Pages
 
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
-            NotificationBar.IsClosable = false;
+            PreloadDialogBox.IsClosable = false;
 
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
@@ -1570,12 +1570,12 @@ namespace CollapseLauncher.Pages
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
                     ProgressPreStatusGrid.Visibility = Visibility.Visible;
                     ProgressPreButtonGrid.Visibility = Visibility.Visible;
-                    NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
-                    NotificationBar.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+                    PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                    PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
                     await InstallTool.StartDownloadAsync();
 
                     PauseDownloadPreBtn.IsEnabled = false;
-                    NotificationBar.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
+                    PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
 
                     RetryRoutine = await InstallTool.StartVerificationAsync(Content);
                 }
