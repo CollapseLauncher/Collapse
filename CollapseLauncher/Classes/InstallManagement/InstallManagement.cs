@@ -732,8 +732,23 @@ namespace CollapseLauncher
 
                 // Load Dispatch Info in JSON
                 YSDispatchInfo DispatcherData = await DispatchReader.LoadDispatchInfo();
+
+#if DEBUG
+                // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
+                string dFormat = string.Format("Query Response (from server in encrypted form):\r\n{0}", DispatcherData.content);
+                Console.WriteLine(dFormat);
+                Logger.WriteLog(dFormat, LogType.Default);
+#endif
+
                 // Get Protobuf Encrypted content and decrypt it. Then load it to LoadDispatch.
                 byte[] ProtoDecrypted = Decryptor.DecryptYSDispatch(DispatcherData.content);
+
+#if DEBUG
+                // DEBUG ONLY: Show the decrypted Proto as Base64 format
+                dFormat = string.Format("Proto Response (from server after decryption process):\r\n{0}", Convert.ToBase64String(ProtoDecrypted));
+                Console.WriteLine(dFormat);
+                Logger.WriteLog(dFormat, LogType.Default);
+#endif
                 await DispatchReader.LoadDispatch(ProtoDecrypted);
             }
             catch (Exception ex)

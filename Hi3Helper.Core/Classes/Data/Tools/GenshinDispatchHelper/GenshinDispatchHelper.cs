@@ -45,6 +45,12 @@ namespace Hi3Helper.Data
             YSDispatchInfo DispatcherDataInfo;
             using (MemoryStream s = new MemoryStream())
             {
+#if DEBUG
+                // DEBUG ONLY: Show URL of Proto
+                string dFormat = string.Format("URL for Proto Response:\r\n{0}", DispatchBaseURL);
+                Console.WriteLine(dFormat);
+                Logger.WriteLog(dFormat, LogType.Default);
+#endif
                 await Download(DispatchBaseURL, s, null, null, cancelToken);
                 s.Position = 0;
                 DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
@@ -55,8 +61,9 @@ namespace Hi3Helper.Data
 
         public async Task LoadDispatch(byte[] CustomDispatchData = null)
         {
+            string stringdata = Encoding.UTF8.GetString(await LoadRemoteDispatch());
             byte[] ProtoData = CustomDispatchData == null
-                ? FromBase64String(Encoding.UTF8.GetString(await LoadRemoteDispatch()))
+                ? FromBase64String(stringdata)
                 : CustomDispatchData;
 
             DispatchProto = QueryProto.Parser.ParseFrom(ProtoData);
