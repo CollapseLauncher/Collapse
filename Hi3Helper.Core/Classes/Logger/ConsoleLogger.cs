@@ -82,26 +82,25 @@ namespace Hi3Helper
             switch (a)
             {
                 case LogType.Error:
-                    _logBuilder.Append("[Erro]\t");
+                    _logBuilder.Append("[Erro] ");
                     break;
                 case LogType.Warning:
-                    _logBuilder.Append("[Warn]\t");
+                    _logBuilder.Append("[Warn] ");
                     break;
                 case LogType.Default:
-                    _logBuilder.Append("[Info]\t");
+                    _logBuilder.Append("[Info] ");
                     break;
                 case LogType.Scheme:
-                    _logBuilder.Append("[Schm]\t");
+                    _logBuilder.Append("[Schm] ");
                     break;
                 case LogType.Game:
-                    _logBuilder.Append("[Game]\t");
+                    _logBuilder.Append("[Game] ");
                     break;
                 default:
-                    _logBuilder.Append("\t\t");
+                    _logBuilder.Append("    ");
                     break;
             }
 
-            _logBuilder.Append(i);
             _logBuilder.Append('[');
             _logBuilder.Append(Logger.GetCurrentTime("HH:mm:ss.fff"));
             _logBuilder.Append(']');
