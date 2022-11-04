@@ -25,6 +25,7 @@
 
                             <AcrylicBrush x:Key="OverlayAcrylicBrush" TintColor="#000000" TintOpacity="0.25" />
                             <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />
+                            <AcrylicBrush x:Key="BlankPageAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />
 
                             <AcrylicBrush x:Key="PagesAcrylicBrush" TintColor="#000000" TintOpacity="0.0" TintLuminosityOpacity="0.0" />
 
@@ -67,6 +68,7 @@
 
                             <AcrylicBrush x:Key="OverlayAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" />
                             <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" />
+                            <AcrylicBrush x:Key="BlankPageAcrylicBrush" TintColor="Transparent" TintOpacity="0" />
 
                             <AcrylicBrush x:Key="PagesAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" FallbackColor="#FFEAEAEA"/>
 
