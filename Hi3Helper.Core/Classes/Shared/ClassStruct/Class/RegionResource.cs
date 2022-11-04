@@ -77,6 +77,8 @@ namespace Hi3Helper.Shared.ClassStruct
         public string bg_checksum { get; set; }
         public string icon { get; set; }
         public string url { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? version { get; set; }
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
