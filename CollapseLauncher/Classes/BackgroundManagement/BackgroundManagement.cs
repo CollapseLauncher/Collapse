@@ -27,7 +27,6 @@ namespace CollapseLauncher
     {
         private BitmapImage BackgroundBitmap;
         private Bitmap PaletteBitmap;
-        private bool PassFirstTry = false;
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
@@ -79,31 +78,19 @@ namespace CollapseLauncher
 
         private async Task<RegionResourceProp> TryGetMultiLangResourceProp()
         {
-            RegionResourceProp ret = new RegionResourceProp();
-            bool NoData = true;
+            RegionResourceProp? ret = (RegionResourceProp?)await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
+
+            return ret.data.adv == null ? (RegionResourceProp?)await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback) : ret;
+        }
+
+        private async Task<object?> GetMultiLangResourceProp(string langID)
+        {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                if (!PassFirstTry)
-                {
-                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, Lang.LanguageID.ToLower()), memoryStream, null, null, default);
-                    memoryStream.Position = 0;
-                    ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
-
-                    NoData = ret.data.adv == null;
-                }
-
-                if (NoData)
-                {
-                    PassFirstTry = true;
-                    await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, CurrentConfigV2.LauncherSpriteURLMultiLangFallback), memoryStream, null, null, default);
-                    memoryStream.Position = 0;
-                    ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
-                }
+                await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, langID), memoryStream, null, null, default);
+                memoryStream.Position = 0;
+                return JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
-
-            PassFirstTry = false;
-
-            return ret;
         }
 
         private async Task<RegionResourceProp> TryGetSingleLangResourceProp()
@@ -468,7 +455,7 @@ namespace CollapseLauncher
                 storyboard.Begin();
             }
         }
-        
+
 
         private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
