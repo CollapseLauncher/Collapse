@@ -294,7 +294,7 @@
                           VerticalAlignment="Bottom"
                           Width="136" Margin="0,0,80,70">
                             <Grid x:Name="ImageEventImgShadow"/>
-                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" x:Name="ImageEventImg" s:Effects.Shadow="{StaticResource SharedDropShadow}" PointerPressed="ClickImageEventSpriteLink"/>
+                            <Image x:Name="ImageEventImg" s:Effects.Shadow="{StaticResource SharedDropShadow}" PointerPressed="ClickImageEventSpriteLink"/>
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                                 Margin="0,0,0,52" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom">
