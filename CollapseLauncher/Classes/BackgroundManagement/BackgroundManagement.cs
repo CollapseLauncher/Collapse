@@ -80,7 +80,7 @@ namespace CollapseLauncher
         {
             RegionResourceProp? ret = (RegionResourceProp?)await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
 
-            return ret.data.adv == null ? (RegionResourceProp?)await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback) : ret;
+            return ret.data.adv == null ? (RegionResourceProp?)await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us") : ret;
         }
 
         private async Task<object?> GetMultiLangResourceProp(string langID)
