@@ -319,8 +319,13 @@ namespace CollapseLauncher.Dialogs
                 switch (await Dialog_LocateDownloadedConvertRecipe(Content, FileName))
                 {
                     case ContentDialogResult.Primary:
+#if DISABLE_COM
+                        cPath = await Task.Run(() => FileDialogNative.GetFilePicker(
+                            new Dictionary<string, string> { { $"{SourceProfile.ProfileName} to {TargetProfile.ProfileName} Cookbook", FileName } }));
+#else
                         cPath = await FileDialogNative.GetFilePicker(
                             new Dictionary<string, string> { { $"{SourceProfile.ProfileName} to {TargetProfile.ProfileName} Cookbook", FileName } });
+#endif
                         IsChoosen = cPath != null;
                         break;
                     case ContentDialogResult.None:

@@ -74,11 +74,7 @@ namespace CollapseLauncher
             this.InitializeComponent();
             this.Activate();
             // Initialize Window Handlers
-#if DISABLE_COM
             m_windowHandle = GetActiveWindow();
-#else
-            m_windowHandle = WindowNative.GetWindowHandle(this);
-#endif
             m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
             m_appWindow = AppWindow.GetFromWindowId(m_windowID);
             m_appWindow.Changed += AppWindow_Changed;

@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+#if !DISABLE_COM
 using System.Threading.Tasks;
+#else
+using System.Text;
+using static Hi3Helper.Logger;
+using static Hi3Helper.InvokeProp;
+#endif
 
 namespace Hi3Helper
 {
