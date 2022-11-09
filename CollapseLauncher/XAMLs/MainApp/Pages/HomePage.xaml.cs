@@ -376,14 +376,13 @@ namespace CollapseLauncher.Pages
                 OpenCacheFolderButton.Visibility = Visibility.Collapsed;
             }
 
-            switch (GetGameInstallationStatus())
+            switch (GameInstallationState = GetGameInstallationStatus())
             {
                 case GameInstallStateEnum.Installed:
                     {
                         RepairGameButton.Visibility = RepairGameButtonVisible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
-                        GameInstallationState = GameInstallStateEnum.Installed;
                         CustomStartupArgs.Visibility = Visibility.Visible;
                     }
                     return;
@@ -404,7 +403,6 @@ namespace CollapseLauncher.Pages
                         UpdateGameBtn.Visibility = Visibility.Visible;
                         StartGameBtn.Visibility = Visibility.Collapsed;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
-                        GameInstallationState = GameInstallStateEnum.NeedsUpdate;
                     }
                     return;
             }
