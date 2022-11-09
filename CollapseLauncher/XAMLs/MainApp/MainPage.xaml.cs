@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.WinUI.UI.Controls;
-using Hi3Helper;
-using Hi3Helper.Data;
+﻿using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
@@ -554,7 +552,8 @@ namespace CollapseLauncher
                     });
 
                 Text.Children.Add(
-                    new TextBlock {
+                    new TextBlock
+                    {
                         Text = Lang._MainPage.MetadataUpdateBtn,
                         FontWeight = FontWeights.Medium,
                         Margin = new Thickness(8, 0, 0, 0),

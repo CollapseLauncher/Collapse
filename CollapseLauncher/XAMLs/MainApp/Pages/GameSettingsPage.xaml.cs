@@ -25,27 +25,27 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void InitializeSettings(object sender, RoutedEventArgs e)
+        private void InitializeSettings(object sender, RoutedEventArgs e)
         {
             try
             {
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
-                if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                    || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                    || GameInstallationState == GameInstallStateEnum.GameBroken)
-                {
-                    Overlay.Visibility = Visibility.Visible;
-                    PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
-                }
-                else if (App.IsGameRunning)
+                if (App.IsGameRunning)
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
+                }
+                else if (GameInstallationState == GameInstallStateEnum.NotInstalled
+                      || GameInstallationState == GameInstallStateEnum.NeedsUpdate
+                      || GameInstallationState == GameInstallStateEnum.GameBroken)
+                {
+                    Overlay.Visibility = Visibility.Visible;
+                    PageContent.Visibility = Visibility.Collapsed;
+                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
                 }
                 else if (!IsRegKeyExist)
                 {
@@ -53,10 +53,6 @@ namespace CollapseLauncher.Pages
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayFirstTimeTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayFirstTimeSubtitle;
-                }
-                else
-                {
-                    await CheckExistingGameSettings();
                 }
             }
             catch (Exception ex)

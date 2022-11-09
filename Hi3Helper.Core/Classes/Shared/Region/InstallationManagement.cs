@@ -44,7 +44,7 @@ namespace Hi3Helper.Shared.Region
                     gameIni.Config.Load(gameIni.ConfigPath);
 
                 if (Directory.Exists(GamePath))
-                    await CheckExistingGameSettings();
+                    await Task.Run(CheckExistingGameSettings);
 
                 return GamePath;
             }

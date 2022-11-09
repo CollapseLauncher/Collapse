@@ -65,14 +65,14 @@ namespace Hi3Helper.Shared.Region
             { "CustomArgs", new IniValue("") },
         };
 
-        public static async Task CheckExistingGameSettings()
+        public static void CheckExistingGameSettings()
         {
             string SettingsPath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             gameIni.SettingsPath = Path.Combine(SettingsPath, "settings.ini");
 
             PrepareGameSettings();
 
-            await UpdateGameExistingSettings();
+            UpdateGameExistingSettings();
         }
 
         public static void PrepareGameSettings()
@@ -83,8 +83,7 @@ namespace Hi3Helper.Shared.Region
             gameIni.Settings.Load(gameIni.SettingsPath);
         }
 
-        private static async Task UpdateGameExistingSettings() =>
-        await Task.Run(() =>
+        private static void UpdateGameExistingSettings()
         {
             if (gameIni.Settings[SectionName] == null)
                 gameIni.Settings.Add(SectionName);
@@ -102,7 +101,7 @@ namespace Hi3Helper.Shared.Region
                         // Registry: ScreenSettingData
                         case "Fullscreen":
                         case "ScreenResolution":
-                            GetOrCreateWindowValue(keyValue.Key);
+                            GetOrCreateWindowValue(keyValue.Key, keyValue.Value);
                             break;
 
                         // Registry: PersonalGraphicsSetting
@@ -121,7 +120,7 @@ namespace Hi3Helper.Shared.Region
                         case "UseHDR":
                         case "UseDistortion":
                         case "LodGrade":
-                            GetOrCreatePersonalGraphicsSettingsValue(keyValue.Key);
+                            GetOrCreatePersonalGraphicsSettingsValue(keyValue.Key, keyValue.Value);
                             break;
 
                         // Registry: PersonalAudioSetting
@@ -131,7 +130,7 @@ namespace Hi3Helper.Shared.Region
                         case "ElfVolume":
                         case "CGVolume":
                         case "CVLanguage":
-                            GetOrCreatePersonalAudioSettingsValue(keyValue.Key);
+                            GetOrCreatePersonalAudioSettingsValue(keyValue.Key, keyValue.Value);
                             break;
 
                         // Unregistered Keys
@@ -141,7 +140,7 @@ namespace Hi3Helper.Shared.Region
                     }
                 }
             }
-        });
+        }
 
         public static async void SaveGameSettings() =>
         await Task.Run(() =>
@@ -203,7 +202,7 @@ namespace Hi3Helper.Shared.Region
             public bool isfullScreen { get; set; }
         }
 
-        private static void GetOrCreateWindowValue(in string key)
+        private static void GetOrCreateWindowValue(in string key, in IniValue fallbackValue)
         {
             // Set default value before getting assigned
             IniValue value = GameSettingsTemplate[key];
@@ -211,17 +210,23 @@ namespace Hi3Helper.Shared.Region
             {
                 string RegData = GetRegistryValue(ScreenSettingDataReg);
 
-                if (RegData == null) return;
-                ScreenSettingData screenData = (ScreenSettingData)JsonSerializer.Deserialize(RegData, typeof(ScreenSettingData), ScreenSettingDataContext.Default);
-
-                switch (key)
+                if (RegData != null)
                 {
-                    case "Fullscreen":
-                        value = new IniValue(screenData.isfullScreen);
-                        break;
-                    case "ScreenResolution":
-                        value = new IniValue($"{screenData.width}x{screenData.height}");
-                        break;
+                    ScreenSettingData screenData = (ScreenSettingData)JsonSerializer.Deserialize(RegData, typeof(ScreenSettingData), ScreenSettingDataContext.Default);
+
+                    switch (key)
+                    {
+                        case "Fullscreen":
+                            value = new IniValue(screenData.isfullScreen);
+                            break;
+                        case "ScreenResolution":
+                            value = new IniValue($"{screenData.width}x{screenData.height}");
+                            break;
+                    }
+                }
+                else
+                {
+                    value = fallbackValue;
                 }
             }
             catch { }
@@ -373,7 +378,7 @@ namespace Hi3Helper.Shared.Region
             public int LodGrade { get; set; }
         }
 
-        private static void GetOrCreatePersonalGraphicsSettingsValue(in string key)
+        private static void GetOrCreatePersonalGraphicsSettingsValue(in string key, in IniValue fallbackValue)
         {
             // Set default value before getting assigned
             IniValue value = GameSettingsTemplate[key];
@@ -381,98 +386,63 @@ namespace Hi3Helper.Shared.Region
             {
                 string RegData = GetRegistryValue(PersonalGraphicsSettingV2Reg);
 
-                if (RegData == null) return;
-
-                PersonalGraphicsSettingV2 data = (PersonalGraphicsSettingV2)JsonSerializer
-                    .Deserialize(RegData, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default);
-                #region Unused
-                /*
-                switch (key)
+                if (RegData != null)
                 {
-                    case "MaximumCombatFPS":
-                        value = new IniValue(data.TargetFrameRateForInLevel);
-                        break;
-                    case "MaximumMenuFPS":
-                        value = new IniValue(data.TargetFrameRateForOthers);
-                        break;
-                    case "VisualQuality":
-                        value = new IniValue(ConvertEnumToInt(data.ResolutionQuality));
-                        break;
-                    case "ShadowQuality":
-                        value = new IniValue(ConvertEnumToInt(data.ShadowLevel));
-                        break;
-                    case "PostProcessing":
-                        value = new IniValue(data.UsePostFX);
-                        break;
-                    case "ReflectionQuality":
-                        value = new IniValue(data.ReflectionQuality);
-                        break;
-                    case "Physics":
-                        value = new IniValue(data.VolatileSetting.UseDynamicBone);
-                        break;
-                    case "HighQualityBloom":
-                        value = new IniValue(ConvertEnumToBool(data.VolatileSetting.PostFXGrade));
-                        break;
-                    case "DynamicRange":
-                        value = new IniValue(data.VolatileSetting.UseHDR);
-                        break;
-                    case "FXAA":
-                        value = new IniValue(data.VolatileSetting.UseFXAA);
-                        break;
-                    case "Distortion":
-                        value = new IniValue(data.VolatileSetting.UseDistortion);
-                        break;
+                    PersonalGraphicsSettingV2 data = (PersonalGraphicsSettingV2)JsonSerializer
+                        .Deserialize(RegData, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default);
+
+                    switch (key)
+                    {
+                        case "ResolutionQuality":
+                            value = new IniValue(ConvertEnumToInt(data.ResolutionQuality));
+                            break;
+                        case "ShadowLevel":
+                            value = new IniValue(ConvertEnumToIntCloseable(data.ShadowLevel));
+                            break;
+                        case "TargetFrameRateForInLevel":
+                            value = new IniValue(data.TargetFrameRateForInLevel);
+                            break;
+                        case "TargetFrameRateForOthers":
+                            value = new IniValue(data.TargetFrameRateForOthers);
+                            break;
+                        case "ReflectionQuality":
+                            value = new IniValue(ConvertEnumToIntCloseableOLH(data.ReflectionQuality));
+                            break;
+                        case "UseDynamicBone":
+                            value = new IniValue(data.UseDynamicBone);
+                            break;
+                        case "UseFXAA":
+                            value = new IniValue(data.UseFXAA);
+                            break;
+                        case "GlobalIllumination":
+                            value = new IniValue(ConvertEnumHighLowToBool(data.GlobalIllumination));
+                            break;
+                        case "AmbientOcclusion":
+                            value = new IniValue(ConvertEnumToIntOLH(data.AmbientOcclusion));
+                            break;
+                        case "VolumetricLight":
+                            value = new IniValue(ConvertEnumToInt(data.VolumetricLight));
+                            break;
+                        case "UsePostFX":
+                            value = new IniValue(data.UsePostFX);
+                            break;
+                        case "HighQualityPostFX":
+                            value = new IniValue(ConvertEnumHighLowToBool(data.PostFXGrade));
+                            break;
+                        case "UseHDR":
+                            value = new IniValue(data.UseHDR);
+                            break;
+                        case "UseDistortion":
+                            value = new IniValue(data.UseDistortion);
+                            break;
+                        case "LodGrade":
+                            value = new IniValue(data.LodGrade);
+                            break;
+                    }
                 }
-                */
-                #endregion
-
-                switch (key)
+                else
                 {
-                    case "ResolutionQuality":
-                        value = new IniValue(ConvertEnumToInt(data.ResolutionQuality));
-                        break;
-                    case "ShadowLevel":
-                        value = new IniValue(ConvertEnumToIntCloseable(data.ShadowLevel));
-                        break;
-                    case "TargetFrameRateForInLevel":
-                        value = new IniValue(data.TargetFrameRateForInLevel);
-                        break;
-                    case "TargetFrameRateForOthers":
-                        value = new IniValue(data.TargetFrameRateForOthers);
-                        break;
-                    case "ReflectionQuality":
-                        value = new IniValue(ConvertEnumToIntCloseableOLH(data.ReflectionQuality));
-                        break;
-                    case "UseDynamicBone":
-                        value = new IniValue(data.UseDynamicBone);
-                        break;
-                    case "UseFXAA":
-                        value = new IniValue(data.UseFXAA);
-                        break;
-                    case "GlobalIllumination":
-                        value = new IniValue(ConvertEnumHighLowToBool(data.GlobalIllumination));
-                        break;
-                    case "AmbientOcclusion":
-                        value = new IniValue(ConvertEnumToIntOLH(data.AmbientOcclusion));
-                        break;
-                    case "VolumetricLight":
-                        value = new IniValue(ConvertEnumToInt(data.VolumetricLight));
-                        break;
-                    case "UsePostFX":
-                        value = new IniValue(data.UsePostFX);
-                        break;
-                    case "HighQualityPostFX":
-                        value = new IniValue(ConvertEnumHighLowToBool(data.PostFXGrade));
-                        break;
-                    case "UseHDR":
-                        value = new IniValue(data.UseHDR);
-                        break;
-                    case "UseDistortion":
-                        value = new IniValue(data.UseDistortion);
-                        break;
-                    case "LodGrade":
-                        value = new IniValue(data.LodGrade);
-                        break;
+                    value = fallbackValue;
                 }
             }
             catch { }
@@ -541,7 +511,7 @@ namespace Hi3Helper.Shared.Region
             public bool IsUserDefined { get; set; }
         }
 
-        private static void GetOrCreatePersonalAudioSettingsValue(in string key)
+        private static void GetOrCreatePersonalAudioSettingsValue(in string key, in IniValue fallbackValue)
         {
             // Set default value before getting assigned
             IniValue value = GameSettingsTemplate[key];
@@ -549,30 +519,35 @@ namespace Hi3Helper.Shared.Region
             {
                 string RegData = GetRegistryValue(PersonalAudioSettingReg);
 
-                if (RegData == null) return;
-
-                PersonalAudioSetting data = (PersonalAudioSetting)JsonSerializer.Deserialize(RegData, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default);
-
-                switch (key)
+                if (RegData == null)
                 {
-                    case "BGMVolume":
-                        value = new IniValue(data.BGMVolume);
-                        break;
-                    case "SoundEffectVolume":
-                        value = new IniValue(data.SoundEffectVolume);
-                        break;
-                    case "VoiceVolume":
-                        value = new IniValue(data.VoiceVolume);
-                        break;
-                    case "ElfVolume":
-                        value = new IniValue(data.ElfVolume);
-                        break;
-                    case "CGVolume":
-                        value = new IniValue(data.CGVolume);
-                        break;
-                    case "CVLanguage":
-                        value = data.IsUserDefined ? 0 : 1;
-                        break;
+                    PersonalAudioSetting data = (PersonalAudioSetting)JsonSerializer.Deserialize(RegData, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default);
+
+                    switch (key)
+                    {
+                        case "BGMVolume":
+                            value = new IniValue(data.BGMVolume);
+                            break;
+                        case "SoundEffectVolume":
+                            value = new IniValue(data.SoundEffectVolume);
+                            break;
+                        case "VoiceVolume":
+                            value = new IniValue(data.VoiceVolume);
+                            break;
+                        case "ElfVolume":
+                            value = new IniValue(data.ElfVolume);
+                            break;
+                        case "CGVolume":
+                            value = new IniValue(data.CGVolume);
+                            break;
+                        case "CVLanguage":
+                            value = data.IsUserDefined ? 0 : 1;
+                            break;
+                    }
+                }
+                else
+                {
+                    value = fallbackValue;
                 }
             }
             catch { }
@@ -632,7 +607,7 @@ namespace Hi3Helper.Shared.Region
             {
                 if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
-                    await CheckExistingGameSettings();
+                    await Task.Run(CheckExistingGameSettings);
 
                     if (GetGameConfigValue("FullscreenExclusive").ToBool())
                     {
