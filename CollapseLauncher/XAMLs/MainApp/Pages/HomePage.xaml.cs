@@ -367,7 +367,7 @@ namespace CollapseLauncher.Pages
         {
             Visibility RepairGameButtonVisible = (CurrentConfigV2.IsRepairEnabled ?? false) || (CurrentConfigV2.IsGenshin ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
-            if (!(CurrentConfigV2.IsConvertible ?? true) || (CurrentConfigV2.IsGenshin ?? false))
+            if ((!(CurrentConfigV2.IsConvertible ?? false)) || (CurrentConfigV2.IsGenshin ?? false))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             if (CurrentConfigV2.IsGenshin ?? false)
