@@ -9,9 +9,9 @@
     "Title2": "ao Collapse Launcher",
     "Subtitle1": "Olá!",
     "Subtitle2": "Parece que é a tua primeira vez a usar este launcher.",
-    "Subtitle3": "De qualquer das maneiras, obrigado por experimentares este projeto e para preparar tudo, por favor escolhe onde queres colocar os dados do launcher no teu computador.",
+    "Subtitle3": "De qualquer das maneiras, obrigado por experimentares este projeto. Para preparar tudo, por favor escolhe onde queres colocar os dados do launcher no teu computador.",
     "Subtitle4_1": "Para começar, clica no botão",
-    "Subtitle4_2": "\"Localizar pasta\"",
+    "Subtitle4_2": "Localizar pasta",
     "Subtitle4_3": "abaixo para escolheres onde queres instalar o jogo.",
     "FolderInsufficientPermission": "Permissão negada! Escolhe outra pasta!",
     "FolderNotSelected": "Uma pasta não foi escolhida!",
@@ -26,7 +26,7 @@
     "Pg1NextBtn": "Próximo - Selecionar jogo",
     "Pg1LoadingTitle1": "A carregar lista de jogos",
     "Pg1LoadingSubitle1": "Estamos a preparar a lista de jogos suportados para ti",
-    "Pg1LoadingSubitle2": "Completo! Prossegue para o próximo passo!",
+    "Pg1LoadingSubitle2": "Sucesso! Prossegue para o próximo passo!",
     "Pg2NextBtn": "Finalizar - Entrar no launcher",
     "Pg2PrevBtn": "Voltar - Selecionar pasta",
     "Pg2Title": "Hora de voar~",
@@ -36,7 +36,7 @@
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": ". Por favor seleciona o jogo pretendido abaixo para começar a usar o",
     "Pg2Subtitle2_4": "Collapse Launcher.",
-    "Pg2ComboBox": "Selecionar jogo",
+    "Pg2ComboBox": "Seleciona o jogo",
     "Pg2ComboBoxRegion": "Seleciona a região"
   },
 
@@ -57,9 +57,9 @@
     "UnhandledSubtitle2": "Oops, parece que foste desconectado da internet~ Ou será que não?",
     "UnhandledTitle3": "Crash de Jogo",
     "UnhandledSubtitle3": "O jogo parou inesperadamente com os seguintes erros detalhados abaixo:",
-    "CopyClipboardBtn1": "Copiar todos para a clipboard",
+    "CopyClipboardBtn1": "Copiar tudo para a clipboard",
     "CopyClipboardBtn2": "Copiado para a clipboard!",
-    "GoBackPageBtn1": "Volta à página anterior"
+    "GoBackPageBtn1": "Voltar à página anterior"
   },
 
   "_MainPage": {
@@ -72,7 +72,7 @@
     "RegionLoadingSubtitleTimeOut": "O tempo de carregamento da Região {0} passou o esperado (> {1} seconds). Tentando novamente...",
     "RegionLoadingSubtitleTooLong": "Está a demorar mais do que o esperado. Por favor verifica se a tua conexão é estável.",
     "NavCtrlTitleSettings": "Definições da aplicação",
-    "NotifNeverAsk": "Não mostrar de novo",
+    "NotifNeverAsk": "Não mostrar novamente",
     "MetadataUpdateTitle": "Atualização de metadados para o Launcher está disponível",
     "MetadataUpdateSubtitle": "Novos metadados para o Launcher estão disponíveis! Recomendamos que procedas com a atualização para assegurar que o Launcher possa comunicar com os servidores da miHoYo/HoYoverse. Clica em \"Atualizar metadados\" para atualizar.",
     "MetadataUpdateBtn": "Atualizar metadados",
@@ -349,7 +349,7 @@
     "Yes": "Sim",
     "YesRedownload": "Sim, descarregar de novo",
     "YesResume": "Sim, retomar",
-    "YesRelocate": "Sim, retomar",
+    "YesRelocate": "Sim, realocar",
     "YesMigrateIt": "Sim, migrar",
     "YesConvertIt": "Sim, converter",
     "YesIHaveBeefyPC": "Sim, tenho um bom PC!",
@@ -478,7 +478,7 @@
   "_InstallConvert": {
     "PageTitle": "Conversão entre versões",
     "Step1Title": "Selecionar jogo e reunir dependências",
-    "Step2Title": "Descarregar a receitar",
+    "Step2Title": "Descarregar a receita",
     "Step2Subtitle": "A consultar o API...",
     "Step3Title": "Preparar os ingredientes",
     "Step3Title1": "Reparar os ingredientes",
