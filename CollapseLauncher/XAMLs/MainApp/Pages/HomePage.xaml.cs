@@ -1612,7 +1612,7 @@ namespace CollapseLauncher.Pages
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
         {
-            object ImageTag = ((ImageEx)sender).Tag;
+            object ImageTag = ((Image)sender).Tag;
             if (ImageTag == null) return;
             SpawnWebView2.SpawnWebView2Window((string)ImageTag);
         }
