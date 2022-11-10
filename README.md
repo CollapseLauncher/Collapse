@@ -42,11 +42,11 @@ This launcher also supports other game client, including:
 Some features like Game Data Repair and Preload Download are available for this game but other things like Game Settings and Caches Download aren't available for this Game Client.
 
 # Download Ready-to-use build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.5-stable/CL-1.0.52.5_Installer.exe)
-> **Note**: The version for this build is 1.0.52.5 (Released on: October 27th, 2022)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.8-stable/CL-1.0.52.8_Installer.exe)
+> **Note**: The version for this build is 1.0.52.8 (Released on: November 10th, 2022)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.5-RC3/CL-1.0.52.5-RC3_Installer.exe)
-> **Note**: The version for this build is 1.0.52.5 [Release Candidate 3] (Released on: October 27th, 2022).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.8-pre/CL-1.0.52.8-preview_Installer.exe)
+> **Note**: The version for this build is 1.0.52.8 (Released on: November 10th, 2022).
 
 To see all releases, [**go here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
