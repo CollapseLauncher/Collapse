@@ -10,3 +10,6 @@
 [submodule "Hi3Helper.Core/Classes/Data/Tools/SharpZipLib"]
 	path = Hi3Helper.Core/Classes/Data/Tools/SharpZipLib
 	url = https://github.com/icsharpcode/SharpZipLib
+[submodule "Hi3Helper.Core/Classes/Data/Tools/AssetsTools"]
+	path = Hi3Helper.Core/Classes/Data/Tools/AssetsTools
+	url = https://github.com/neon-nyan/AssetsTools
