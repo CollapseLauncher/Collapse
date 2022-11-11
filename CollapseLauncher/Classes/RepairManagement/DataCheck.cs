@@ -416,39 +416,30 @@ namespace CollapseLauncher.Pages
 
         private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
 
-        Stopwatch swRefresh = Stopwatch.StartNew();
         private void GetComputeBlockStatus()
         {
-            if (swRefresh.ElapsedMilliseconds >= 50)
+            long Speed = (long)(BlockCurrentReadSize / sw.Elapsed.TotalSeconds);
+            DispatcherQueue.TryEnqueue(() =>
             {
-                long Speed = (long)(BlockCurrentReadSize / sw.Elapsed.TotalSeconds);
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    RepairStatus.Text = string.Format(Lang._GameRepairPage.Status5, CurrentCheckName);
-                    RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
-                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
-                    RepairPerFileProgressBar.Value = GetPercentageNumber(BlockCurrentReadSize, BlockSize);
-                    RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
-                });
-                swRefresh = Stopwatch.StartNew();
-            }
+                RepairStatus.Text = string.Format(Lang._GameRepairPage.Status5, CurrentCheckName);
+                RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
+                RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
+                RepairPerFileProgressBar.Value = GetPercentageNumber(BlockCurrentReadSize, BlockSize);
+                RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
+            });
         }
 
         private void GetComputeStatus()
         {
-            if (swRefresh.ElapsedMilliseconds >= 50)
+            long Speed = (long)(SingleCurrentReadSize / sw.Elapsed.TotalSeconds);
+            DispatcherQueue.TryEnqueue(() =>
             {
-                long Speed = (long)(SingleCurrentReadSize / sw.Elapsed.TotalSeconds);
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    RepairStatus.Text = string.Format(Lang._GameRepairPage.Status6, CurrentCheckName);
-                    RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
-                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
-                    RepairPerFileProgressBar.Value = GetPercentageNumber(SingleCurrentReadSize, SingleSize);
-                    RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
-                });
-                swRefresh = Stopwatch.StartNew();
-            }
+                RepairStatus.Text = string.Format(Lang._GameRepairPage.Status6, CurrentCheckName);
+                RepairTotalStatus.Text = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, TotalCurrentReadCount, TotalIndexedCount);
+                RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(Speed));
+                RepairPerFileProgressBar.Value = GetPercentageNumber(SingleCurrentReadSize, SingleSize);
+                RepairTotalProgressBar.Value = GetPercentageNumber(TotalCurrentReadCount, TotalIndexedCount);
+            });
         }
 
         private void DataFetchingProgress(object sender, DownloadEvent e)

@@ -409,18 +409,11 @@ namespace CollapseLauncher
             }
         }
 
-        private Stopwatch InnerRefreshSw = Stopwatch.StartNew();
-        private void ResetInnerRefreshSw() => InnerRefreshSw = Stopwatch.StartNew();
         public void UpdateProgress(long StartSize, long EndSize, int StartCount, int EndCount,
                 TimeSpan TimeSpan, string StatusMsg = "", string DetailMsg = "", bool UseCountUnit = false)
         {
-            double Lastms = InnerRefreshSw.Elapsed.TotalMilliseconds;
-            if (Lastms >= 33)
-            {
-                ProgressChanged?.Invoke(this, new ConvertProgress(StartSize, EndSize, StartCount, EndCount,
-                    TimeSpan, StatusMsg, DetailMsg, UseCountUnit));
-                ResetInnerRefreshSw();
-            }
+            ProgressChanged?.Invoke(this, new ConvertProgress(StartSize, EndSize, StartCount, EndCount,
+                TimeSpan, StatusMsg, DetailMsg, UseCountUnit));
         }
 
         public class ConvertProgress

@@ -206,15 +206,11 @@ namespace CollapseLauncher.Pages
 
         private void GenericFilesDownloadProgress(object sender, DownloadEvent e)
         {
-            if (refreshTime.Elapsed.Milliseconds > 33)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                refreshTime = Stopwatch.StartNew();
-                DispatcherQueue.TryEnqueue(() =>
-                {
-                    RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
-                    RepairPerFileProgressBar.Value = Math.Round(UnInfinity(e.ProgressPercentage), 2);
-                });
-            }
+                RepairPerFileStatus.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
+                RepairPerFileProgressBar.Value = Math.Round(UnInfinity(e.ProgressPercentage), 2);
+            });
         }
     }
 }

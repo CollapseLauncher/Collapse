@@ -854,30 +854,24 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.StatusTitle);
         }
 
-        Stopwatch LastTimeSpan = Stopwatch.StartNew();
-
         private void InstallerDownloadPreProgressChanged(object sender, InstallManagementProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (LastTimeSpan.ElapsedMilliseconds >= RefreshTime)
-                {
-                    InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressSpeed);
-                    InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressDownloadedSize);
-                    InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
-                    DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-                    DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
+                InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressSpeed);
+                InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressDownloadedSize);
+                InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
+                DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+                DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
 
-                    ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                    ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-                    ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                    ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                    progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                    progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
-                    progressPreBar.IsIndeterminate = false;
-                    progressPrePerFileBar.IsIndeterminate = false;
-                    ResetLastTimeSpan();
-                }
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
+                progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
+                progressPreBar.IsIndeterminate = false;
+                progressPrePerFileBar.IsIndeterminate = false;
             });
         }
 
@@ -1295,15 +1289,11 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (LastTimeSpan.ElapsedMilliseconds >= RefreshTime)
-                {
-                    progressRing.Value = e.ProgressPercentage;
-                    progressRingPerFile.Value = e.ProgressPercentagePerFile;
-                    ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-                    ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
-                    ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                    ResetLastTimeSpan();
-                }
+                progressRing.Value = e.ProgressPercentage;
+                progressRingPerFile.Value = e.ProgressPercentagePerFile;
+                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
+                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
             });
         }
 

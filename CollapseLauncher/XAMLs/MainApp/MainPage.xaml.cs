@@ -488,11 +488,13 @@ namespace CollapseLauncher
 
             LoadSavedGameSelection();
 
+            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
             IsLoadSuccess = await LoadRegionFromCurrentConfigV2();
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
             if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             CheckRunningGameInstance();
         }
