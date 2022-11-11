@@ -16,14 +16,16 @@ namespace Hi3Helper.EncTool
 
         ~XORFileStream() => Dispose();
 
+        public int ReadNoDecrypt(Span<byte> buffer) => base.Read(buffer);
+        public int ReadNoDecrypt(byte[] buffer, int offset, int count) => base.Read(buffer, offset, count);
         public override int Read(Span<byte> buffer) => ReadBytes(buffer);
-
         public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
 
+        public void WriteNoEncrypt(ReadOnlySpan<byte> buffer) => base.Write(buffer);
+        public void WriteNoEncrypt(byte[] buffer, int offset, int count) => base.Write(buffer, offset, count);
         public override void Write(ReadOnlySpan<byte> buffer) => base.Write(WriteBytes(buffer));
-
         public override void Write(byte[] buffer, int offset, int count)
         {
             WriteBytes(buffer);
