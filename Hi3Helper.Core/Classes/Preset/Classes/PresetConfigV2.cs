@@ -272,7 +272,7 @@ namespace Hi3Helper.Preset
             return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
 
-        private string SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
+        private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
         public string? ProfileName { get; set; }
         public GameChannel GameChannel { get; set; } = GameChannel.Stable;
         public bool IsExperimental { get; set; } = false;
