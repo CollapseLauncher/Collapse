@@ -43,6 +43,9 @@
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\benchmark\**" />
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\samples\**" />
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\**\AssemblyInfo.cs" />
+		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\GZip\*" />
+		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Lzw\*" />
+		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Tar\*" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
