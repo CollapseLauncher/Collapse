@@ -26,11 +26,7 @@ namespace Hi3Helper.EncTool
         public void WriteNoEncrypt(ReadOnlySpan<byte> buffer) => base.Write(buffer);
         public void WriteNoEncrypt(byte[] buffer, int offset, int count) => base.Write(buffer, offset, count);
         public override void Write(ReadOnlySpan<byte> buffer) => base.Write(WriteBytes(buffer));
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            WriteBytes(buffer);
-            base.Write(buffer, offset, count);
-        }
+        public override void Write(byte[] buffer, int offset, int count) { WriteBytes(buffer); base.Write(buffer, offset, count); }
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
 
