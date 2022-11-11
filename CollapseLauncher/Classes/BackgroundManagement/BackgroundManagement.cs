@@ -261,12 +261,14 @@ namespace CollapseLauncher
 
         private async Task GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
         {
-            using (InMemoryRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
+            (uint, uint) OrigSize;
+            (uint, uint) ResizedSize;
+            using (IRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
                 using (stream)
                 {
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-                    (uint, uint) ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, decoder.PixelWidth, decoder.PixelHeight);
+                    ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, OrigSize.Item1 = decoder.PixelWidth, OrigSize.Item2 = decoder.PixelHeight);
                     BitmapTransform transform = new BitmapTransform()
                     {
                         ScaledWidth = ResizedSize.Item1,
@@ -285,10 +287,19 @@ namespace CollapseLauncher
                     encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
 
                     await encoder.FlushAsync();
-                }
 
-                PaletteBitmap = await Task.Run(() => Stream2Bitmap(BackgroundStream));
-                BackgroundBitmap = await Stream2BitmapImage(BackgroundStream);
+                    if (OrigSize.Item1 > ResizedSize.Item1
+                     && OrigSize.Item2 > ResizedSize.Item2)
+                    {
+                        PaletteBitmap = await Task.Run(() => Stream2Bitmap(BackgroundStream));
+                    }
+                    else
+                    {
+                        PaletteBitmap = await Task.Run(() => Stream2Bitmap(stream));
+                    }
+
+                    BackgroundBitmap = await Stream2BitmapImage(BackgroundStream);
+                }
             }
         }
 
