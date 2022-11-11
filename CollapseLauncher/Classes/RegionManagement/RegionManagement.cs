@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using CollapseLauncher.Pages;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -33,6 +34,9 @@ namespace CollapseLauncher
         {
             LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
 
+            // Set IsLoadRegionComplete to false
+            IsLoadRegionComplete = false;
+
             // Clear MainPage State, like NavigationView, Load State, etc.
             ClearMainPageState();
 
@@ -52,6 +56,9 @@ namespace CollapseLauncher
             // Finalize Region Load
             await ChangeBackgroundImageAsRegion();
             FinalizeLoadRegion();
+
+            // Set IsLoadRegionComplete to false
+            IsLoadRegionComplete = true;
 
             return true;
         }
@@ -78,9 +85,6 @@ namespace CollapseLauncher
             // Reset Retry Counter
             CurrentRetry = 0;
 
-            // Set IsLoadRegionComplete to false
-            IsLoadRegionComplete = false;
-
             // Clear NavigationViewControl Items and Reset Region props
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
@@ -89,11 +93,6 @@ namespace CollapseLauncher
 
             // Set LoadingFooter empty
             LoadingFooter.Text = string.Empty;
-
-            // Toggle Loading Popup
-            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
-
-            IsLoadRegionComplete = true;
         }
 
         private async Task<bool> TryLoadGameRegionTask(Task InnerTask, uint Timeout, uint TimeoutStep)
@@ -168,7 +167,7 @@ namespace CollapseLauncher
             LoadingFooter.Text = string.Empty;
 
             // Hide Loading Popup
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+            // HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {CurrentConfigV2.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
@@ -209,9 +208,11 @@ namespace CollapseLauncher
             SetAndSaveConfigValue("GameRegion", GameRegion);
 
             // Load Game ConfigV2 List before loading the region
+            IsLoadRegionComplete = false;
             LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GameRegion);
 
             // Start region loading
+            DelayedLoadingRegionPageTask();
             await LoadRegionFromCurrentConfigV2();
 
             // Finalize loading
@@ -221,26 +222,33 @@ namespace CollapseLauncher
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)
         {
-            Type page;
             if (IsHide)
             {
                 // Hide element
                 ChangeRegionConfirmBtn.Flyout.Hide();
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Visible;
-                page = typeof(Pages.BlankPage);
             }
             else
             {
                 // Show element
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                page = m_appMode == AppMode.Hi3CacheUpdater ? typeof(Pages.CachesPage) : typeof(Pages.HomePage);
+                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+                MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
             }
 
             (sender as Button).IsEnabled = !IsHide;
+        }
 
-            // Load page
-            MainFrameChanger.ChangeMainFrame(page);
+        private async void DelayedLoadingRegionPageTask()
+        {
+            await Task.Delay(1000);
+            if (!IsLoadRegionComplete)
+            {
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+                MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
+                while (!IsLoadRegionComplete) { await Task.Delay(1000); }
+            }
         }
     }
 }

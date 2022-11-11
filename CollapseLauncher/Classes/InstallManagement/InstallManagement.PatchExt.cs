@@ -26,10 +26,7 @@ namespace CollapseLauncher
         List<FileProperties> SourceFileManifest;
 
         string IngredientPath;
-        private void ResetSw()
-        {
-            DownloadStopwatch = Stopwatch.StartNew();
-        }
+        private void ResetSw() => DownloadStopwatch = Stopwatch.StartNew();
         string ConvertStatus;
 
         public async Task StartPreparation()

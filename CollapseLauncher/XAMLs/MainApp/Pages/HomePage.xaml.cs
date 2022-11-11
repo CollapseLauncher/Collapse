@@ -40,7 +40,7 @@ namespace CollapseLauncher.Pages
     public sealed partial class HomePage : Page
     {
         Http HttpTool = new Http();
-        public HomeMenuPanel MenuPanels { get { return regionNewsProp; } }
+        public HomeMenuPanel MenuPanels => regionNewsProp;
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         public HomePage()
@@ -128,7 +128,6 @@ namespace CollapseLauncher.Pages
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
         }
 
-        public void ResetLastTimeSpan() => LastTimeSpan = Stopwatch.StartNew();
         private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
         {
             if (MenuPanels.imageCarouselPanel == null) return;
@@ -684,7 +683,6 @@ namespace CollapseLauncher.Pages
                 GameZipVoiceUrl = VoicePackFile.path;
                 GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
                 GameZipVoiceRemoteHash = VoicePackFile.md5.ToLower();
-                GameZipVoiceSize = VoicePackFile.package_size;
                 GameZipVoiceRequiredSize = VoicePackFile.size;
             }
 
@@ -1350,7 +1348,6 @@ namespace CollapseLauncher.Pages
                     GameZipVoiceUrl = a.Value.path;
                     GameZipVoiceRemoteHash = a.Value.md5;
                     GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                    GameZipVoiceSize = a.Value.package_size;
                     GameZipVoiceRequiredSize = a.Value.size;
                     InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
                 }
@@ -1544,7 +1541,6 @@ namespace CollapseLauncher.Pages
                     GameZipVoiceUrl = a.Value.path;
                     GameZipVoiceRemoteHash = a.Value.md5;
                     GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                    GameZipVoiceSize = a.Value.package_size;
                     GameZipVoiceRequiredSize = a.Value.size;
                     InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
                 }

@@ -87,8 +87,7 @@ namespace CollapseLauncher.Pages
         private async void StartUpdateRoutine()
         {
             string ChannelName = (IsPreview ? "Preview" : "Stable");
-            if (IsPortable)
-                ChannelName += "Portable";
+            if (IsPortable) ChannelName += "Portable";
 
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());

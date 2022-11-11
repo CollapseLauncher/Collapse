@@ -36,14 +36,32 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public void AddIgnoredMsgIds(int MsgId, bool IsAppPush = true)
         {
-            if ((IsAppPush ? !AppPushIgnoreMsgIds.Contains(MsgId) : !RegionPushIgnoreMsgIds.Contains(MsgId)))
-                if (IsAppPush) AppPushIgnoreMsgIds.Add(MsgId); else RegionPushIgnoreMsgIds.Add(MsgId);
+            if (IsAppPush ? !AppPushIgnoreMsgIds.Contains(MsgId) : !RegionPushIgnoreMsgIds.Contains(MsgId))
+            {
+                if (IsAppPush)
+                {
+                    AppPushIgnoreMsgIds.Add(MsgId);
+                }
+                else
+                {
+                    RegionPushIgnoreMsgIds.Add(MsgId);
+                }
+            }
         }
 
         public void RemoveIgnoredMsgIds(int MsgId, bool IsAppPush = true)
         {
-            if ((IsAppPush ? AppPushIgnoreMsgIds.Contains(MsgId) : RegionPushIgnoreMsgIds.Contains(MsgId)))
-                if (IsAppPush) AppPushIgnoreMsgIds.Remove(MsgId); else RegionPushIgnoreMsgIds.Remove(MsgId);
+            if (IsAppPush ? AppPushIgnoreMsgIds.Contains(MsgId) : RegionPushIgnoreMsgIds.Contains(MsgId))
+            {
+                if (IsAppPush)
+                {
+                    AppPushIgnoreMsgIds.Remove(MsgId);
+                }
+                else
+                {
+                    RegionPushIgnoreMsgIds.Remove(MsgId);
+                }
+            }
         }
 
         public void EliminatePushList()

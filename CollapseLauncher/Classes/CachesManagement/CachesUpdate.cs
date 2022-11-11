@@ -148,11 +148,9 @@ namespace CollapseLauncher.Pages
         string timeLeftString;
         private void CachesDownloadProgress(object sender, DownloadEvent e)
         {
-            if (http.DownloadState != MultisessionState.Merging)
-                cachesRead += e.Read;
+            if (http.DownloadState != MultisessionState.Merging) cachesRead += e.Read;
 
             timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
-
 
             DispatcherQueue.TryEnqueue(() =>
             {

@@ -224,7 +224,6 @@ namespace CollapseLauncher
     }
     #endregion
     #region NotificationPushRegion
-
     internal static class NotificationSender
     {
         static NotificationInvoker invoker = new NotificationInvoker();

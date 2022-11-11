@@ -21,7 +21,6 @@ namespace CollapseLauncher.Pages
         string GameZipVoiceUrl;
         string GameZipVoicePath;
         string GameZipVoiceRemoteHash;
-        long GameZipVoiceSize;
         long GameZipVoiceRequiredSize;
 
         RegionResourceVersion VoicePackFile = new RegionResourceVersion();

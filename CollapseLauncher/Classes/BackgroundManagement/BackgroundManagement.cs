@@ -78,12 +78,12 @@ namespace CollapseLauncher
 
         private async Task<RegionResourceProp> TryGetMultiLangResourceProp()
         {
-            RegionResourceProp? ret = (RegionResourceProp?)await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
+            RegionResourceProp ret = (RegionResourceProp)await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
 
             return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? (RegionResourceProp?)await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us") : ret;
         }
 
-        private async Task<object?> GetMultiLangResourceProp(string langID)
+        private async Task<object> GetMultiLangResourceProp(string langID)
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
@@ -123,6 +123,7 @@ namespace CollapseLauncher
 
             regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
+            {
                 regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
                 {
                     URL = item.url,
@@ -132,6 +133,7 @@ namespace CollapseLauncher
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
                     Description = string.IsNullOrEmpty(item.title) || CurrentConfigV2.IsHideSocMedDesc ? item.url : item.title
                 });
+            }
         }
 
         private async Task GetLauncherCarouselInfo()
@@ -140,12 +142,14 @@ namespace CollapseLauncher
 
             regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
+            {
                 regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
                 {
                     URL = item.url,
                     Icon = await GetCachedSprites(item.img),
                     Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
                 });
+            }
         }
 
         private async Task GetLauncherEventInfo()
@@ -346,7 +350,9 @@ namespace CollapseLauncher
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            await GetResizedBitmap(new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream(), Width, Height);
+            IRandomAccessStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream();
+
+            await GetResizedBitmap(stream, Width, Height);
 
             await ApplyAccentColor();
 
@@ -455,7 +461,6 @@ namespace CollapseLauncher
                 storyboard.Begin();
             }
         }
-
 
         private void HideBackgroundImage(bool hideImage = true, bool absoluteTransparent = true)
         {
