@@ -162,7 +162,6 @@ namespace CollapseLauncher
         {
             DownloadStopwatch = Stopwatch.StartNew();
             CountTotalToDownload = DownloadProperty.Count;
-            // bool IsPerFile = DownloadProperty.Count > 1;
             bool IsPerFile = true;
 
             InstallStatus = new InstallManagementStatus
@@ -293,8 +292,7 @@ namespace CollapseLauncher
 
         private void DownloadProgressAdapter(object sender, DownloadEvent e)
         {
-            if (e.State != MultisessionState.Merging)
-                DownloadLocalSize += e.Read;
+            if (e.State != MultisessionState.Merging) DownloadLocalSize += e.Read;
 
             DownloadLocalPerFileSize = e.SizeDownloaded;
             DownloadRemotePerFileSize = e.SizeToBeDownloaded;
@@ -676,7 +674,6 @@ namespace CollapseLauncher
             // Temporarily disable the PostInstallVerification for both Post Install Check and
             // Repair Mechanism.
             if (!(this.SourceProfile.IsGenshin ?? false)) return;
-            // return;
 
             InstallStatus = new InstallManagementStatus
             {
@@ -779,22 +776,23 @@ namespace CollapseLauncher
                 // Load Dispatch Info in JSON
                 YSDispatchInfo DispatcherData = await DispatchReader.LoadDispatchInfo();
 
-#if DEBUG
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
                 string dFormat = string.Format("Query Response (from server in encrypted form):\r\n{0}", DispatcherData.content);
-                Console.WriteLine(dFormat);
-                Logger.WriteLog(dFormat, LogType.Default);
+#if DEBUG
+                LogWriteLine(dFormat);
 #endif
+                WriteLog(dFormat, LogType.Default);
 
                 // Get Protobuf Encrypted content and decrypt it. Then load it to LoadDispatch.
                 byte[] ProtoDecrypted = Decryptor.DecryptYSDispatch(DispatcherData.content);
 
-#if DEBUG
                 // DEBUG ONLY: Show the decrypted Proto as Base64 format
                 dFormat = string.Format("Proto Response (from server after decryption process):\r\n{0}", Convert.ToBase64String(ProtoDecrypted));
-                Console.WriteLine(dFormat);
-                Logger.WriteLog(dFormat, LogType.Default);
+#if DEBUG
+                LogWriteLine(dFormat);
 #endif
+                WriteLog(dFormat, LogType.Default);
+
                 await DispatchReader.LoadDispatch(ProtoDecrypted);
             }
             catch (Exception ex)
@@ -824,9 +822,8 @@ namespace CollapseLauncher
                 if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                     await Download(ParentURL + "/data_versions", fs, null, null, Token);
-#if DEBUG
-                LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}");
-#endif
+
+                LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}", LogType.Default, true);
 
                 BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
             }
@@ -838,9 +835,8 @@ namespace CollapseLauncher
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 await Download(ParentURL + "/data_versions", fs, null, null, Token);
-#if DEBUG
-            LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}");
-#endif
+
+            LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}", LogType.Default, true);
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
 
@@ -851,9 +847,9 @@ namespace CollapseLauncher
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
                 await Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
-#if DEBUG
-            LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}");
-#endif
+
+            LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}", LogType.Default, true);
+
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent", "", ParentURL, true, ParentAudioURL);
 
