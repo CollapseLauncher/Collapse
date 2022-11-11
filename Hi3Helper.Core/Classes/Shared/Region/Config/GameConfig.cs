@@ -26,7 +26,7 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitRegKey()
         {
-            RegKey = Registry.CurrentUser.OpenSubKey($"{CurrentConfigV2.ConfigRegistryLocation}", true);
+            RegKey = Registry.CurrentUser.OpenSubKey(CurrentConfigV2.ConfigRegistryLocation, true);
             IsRegKeyExist = !(RegKey == null);
         }
 

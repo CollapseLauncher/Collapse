@@ -43,6 +43,10 @@ namespace Hi3Helper.Preset
 
     public class PresetConfigV2
     {
+        private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
+        private const string PrefixRegGameConfig = "Software\\miHoYo\\{0}";
+        private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
+
         public string? GetSteamInstallationPath()
         {
             try
@@ -268,6 +272,7 @@ namespace Hi3Helper.Preset
             return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
 
+        private string SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
         public string? ProfileName { get; set; }
         public GameChannel GameChannel { get; set; } = GameChannel.Stable;
         public bool IsExperimental { get; set; } = false;
@@ -276,9 +281,9 @@ namespace Hi3Helper.Preset
         public string? ZoneDescription { get; set; }
         public string? ZoneURL { get; set; }
 #nullable disable
-        public string InstallRegistryLocation { get; set; }
-        public string DefaultGameLocation { get; set; }
-        public string ConfigRegistryLocation { get; set; }
+        private string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
+        private string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
+        public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, InternalGameNameInConfig); }
 #nullable enable
         public string? BetterHi3LauncherVerInfoReg { get; set; }
         public BHI3LInfo? BetterHi3LauncherConfig { get; private set; }
@@ -312,5 +317,7 @@ namespace Hi3Helper.Preset
         public int? DispatcherKeyBitLength { get; set; }
         public bool? IsRepairEnabled { get; set; }
         public bool? IsCacheUpdateEnabled { get; set; }
+        public string? InternalGameNameFolder { get; set; }
+        public string? InternalGameNameInConfig { get; set; }
     }
 }

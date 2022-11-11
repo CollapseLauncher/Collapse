@@ -458,7 +458,8 @@ namespace CollapseLauncher.Pages
             string GameVersion = gameIni.Config["General"]["game_version"].ToString();
 
             // If the default value is null or empty, return NotInstalled.
-            if (string.IsNullOrEmpty(GameDirPath)) return GameInstallStateEnum.NotInstalled;
+            bool _IsAppInfoValid = IsAppInfoValid();
+            if (string.IsNullOrEmpty(GameDirPath) && !_IsAppInfoValid) return GameInstallStateEnum.NotInstalled;
 
             // Normalize game path starts from here to avoid crash if GameDirPath is empty.
             GameDirPath = NormalizePath(GameDirPath);
@@ -479,6 +480,18 @@ namespace CollapseLauncher.Pages
 
             // Return if the game doesn't exist.
             return GameInstallStateEnum.NotInstalled;
+        }
+
+        private bool IsAppInfoValid()
+        {
+            FileInfo iFile = new FileInfo(Path.Combine(GameDirPath, string.Format(@"{0}_Data\app.info", Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName))));
+            if (!iFile.Exists) return false;
+            try
+            {
+                string[] infoLines = File.ReadAllLines(iFile.FullName);
+                return infoLines[1] == CurrentConfigV2.InternalGameNameInConfig;
+            }
+            catch { return false; }
         }
 
         private void PreloadDialogBox_Closed(InfoBar sender, InfoBarClosedEventArgs args)
