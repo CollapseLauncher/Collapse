@@ -18,6 +18,13 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+using Hi3Helper.UABT;
+using Hi3Helper.EncTool;
+using System.IO;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace CollapseLauncher
 {
     public static class MainEntryPoint
@@ -33,6 +40,15 @@ namespace CollapseLauncher
 #endif
             AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             InitializeConsole(true, AppGameLogsFolder);
+
+            using (Stream stream = new XORStream(@"C:\Users\neon-nyan\Downloads\DataVersion.unity3d", FileMode.Open, FileAccess.Read))
+            {
+                BundleFile bundle = new BundleFile(stream);
+                SerializedFile serialized = new SerializedFile(bundle.fileList.First().stream);
+                byte[] data = serialized.GetDataFirstOrDefaultByName("packageversion.txt");
+                TextAsset dataT = new TextAsset(data);
+                List<string> lines = dataT.GetStringList();
+            }
 
             try
             {

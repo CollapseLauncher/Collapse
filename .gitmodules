@@ -7,9 +7,9 @@
 [submodule "ColorThief"]
 	path = ColorThief
 	url = https://github.com/neon-nyan/ColorThief
+[submodule "Hi3Helper.Core/Classes/Data/Tools/UABT"]
+	path = Hi3Helper.Core/Classes/Data/Tools/UABT
+	url = https://github.com/neon-nyan/UABT
 [submodule "Hi3Helper.Core/Classes/Data/Tools/SharpZipLib"]
 	path = Hi3Helper.Core/Classes/Data/Tools/SharpZipLib
-	url = https://github.com/icsharpcode/SharpZipLib
-[submodule "Hi3Helper.Core/Classes/Data/Tools/AssetsTools"]
-	path = Hi3Helper.Core/Classes/Data/Tools/AssetsTools
-	url = https://github.com/neon-nyan/AssetsTools
+	url = https://github.com/neon-nyan/SharpZipLib

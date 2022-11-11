@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
-
+ 
 namespace Hi3Helper.BsDiff
 {
     /*

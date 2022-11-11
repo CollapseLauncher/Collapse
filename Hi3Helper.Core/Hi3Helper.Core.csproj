@@ -5,6 +5,7 @@
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release;Publish;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
 		<WarningLevel>6</WarningLevel>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
