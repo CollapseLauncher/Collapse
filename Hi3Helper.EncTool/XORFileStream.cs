@@ -1,44 +1,46 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Hi3Helper.EncTool
 {
-    internal class XORFileStream : FileStream
+    public class XORStream : Stream
     {
+        private protected readonly Stream _stream;
         private protected readonly byte _xorKey;
-        public XORFileStream(string path, FileMode fileMode, FileAccess fileAccess, FileShare fileShare = FileShare.Read, FileOptions fileOptions = FileOptions.None, byte XORKey = 0xA5)
-            : base(path, fileMode, fileAccess, fileShare, 4 << 10, fileOptions)
+        public XORStream(string path, FileMode fileMode, FileAccess fileAccess, FileShare fileShare = FileShare.Read, FileOptions fileOptions = FileOptions.None, byte XORKey = 0xA5)
+            : base()
         {
             _xorKey = XORKey;
+            _stream = new FileStream(path, fileMode, fileAccess, fileShare, 4 << 10, fileOptions);
         }
 
-        ~XORFileStream() => Dispose();
+        public XORStream(Stream stream, byte XORKey = 0xA5)
+            : base()
+        {
+            _xorKey = XORKey;
+            _stream = stream;
+        }
 
-        public int ReadNoDecrypt(Span<byte> buffer) => base.Read(buffer);
-        public int ReadNoDecrypt(byte[] buffer, int offset, int count) => base.Read(buffer, offset, count);
-        public override int Read(Span<byte> buffer) => ReadBytes(buffer);
-        public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
-        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public XORStream(byte XORKey = 0xA5)
+            : base()
+        {
+            _xorKey = XORKey;
+            _stream = new MemoryStream();
+        }
 
-        public void WriteNoEncrypt(ReadOnlySpan<byte> buffer) => base.Write(buffer);
-        public void WriteNoEncrypt(byte[] buffer, int offset, int count) => base.Write(buffer, offset, count);
-        public override void Write(ReadOnlySpan<byte> buffer) => base.Write(WriteBytes(buffer));
-        public override void Write(byte[] buffer, int offset, int count) { WriteBytes(buffer); base.Write(buffer, offset, count); }
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+        ~XORStream() => Dispose();
 
-        private void WriteBytes(byte[] buffer)
+        private void WriteBytes(byte[] buffer, int offset, int count)
         {
             for (int i = 0; i < buffer.Length; i++)
             {
                 buffer[i] ^= _xorKey;
             }
+
+            _stream.Write(buffer, offset, count);
         }
 
-        private ReadOnlySpan<byte> WriteBytes(ReadOnlySpan<byte> buffer)
+        private void WriteBytes(ReadOnlySpan<byte> buffer)
         {
             byte[] inBuffer = new byte[buffer.Length];
             Array.Copy(buffer.ToArray(), inBuffer, buffer.Length);
@@ -47,31 +49,82 @@ namespace Hi3Helper.EncTool
                 inBuffer[i] ^= _xorKey;
             }
 
-            return inBuffer;
+            _stream.Write(inBuffer);
         }
 
         private int ReadBytes(Span<byte> buffer)
         {
-            int i = 0;
-            base.Read(buffer);
-            for (; i < buffer.Length; i++)
-            {
-                buffer[i] ^= _xorKey;
-            }
+            int i = _stream.Read(buffer);
+            ReadXOR(buffer, i);
             return i;
         }
 
         private int ReadBytes(byte[] buffer, int offset, int count)
         {
-            int i = 0;
-            base.Read(buffer, offset, count);
-            for (; i < buffer.Length; i++)
-            {
-                buffer[i] ^= _xorKey;
-            }
+            int i = _stream.Read(buffer, offset, count);
+            ReadXOR(buffer, i);
             return i;
         }
 
-        public new void Dispose() => base.Dispose(true);
+        public override int Read(Span<byte> buffer) => ReadBytes(buffer);
+        public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
+
+        public override void Write(ReadOnlySpan<byte> buffer) => WriteBytes(buffer);
+        public override void Write(byte[] buffer, int offset, int count) => WriteBytes(buffer, offset, count);
+
+        public override bool CanRead
+        {
+            get { return true; }
+        }
+
+        public override bool CanSeek
+        {
+            get { return true; }
+        }
+
+        public override bool CanWrite
+        {
+            get { return false; }
+        }
+
+        public override void Flush()
+        {
+            _stream.Flush();
+        }
+
+        public override long Length
+        {
+            get { return _stream.Length; }
+        }
+
+        public override long Position
+        {
+            get { return _stream.Position; }
+            set { _stream.Position = value; }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return _stream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            _stream.SetLength(value);
+        }
+
+        private void ReadXOR(Span<byte> buffer, int i)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                buffer[j] ^= _xorKey;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _stream.Dispose();
+        }
     }
 }
