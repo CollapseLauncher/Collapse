@@ -35,12 +35,12 @@
                     ItemsSource="{x:Bind brokenCachesListUI}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding FileName}" Tag="CacheName" Width="260" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding FileName}" Tag="CacheName" Width="330" FontSize="13"/>
                             <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding DataType}" Tag="CacheType" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding FileSource}" Tag="Source" Width="260" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding FileSource}" Tag="Source" Width="330" FontSize="13"/>
                             <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" Binding="{Binding FileSizeStr}" Tag="CacheSize" Width="112" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding FileLastModified}" Tag="CacheLastDate" Width="136" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding FileNewModified}" Tag="CacheNewDate" Width="136" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding FileLastModified}" Tag="CacheLastDate" Width="150" FontSize="13"/>
+                            <!--<control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding FileNewModified}" Tag="CacheNewDate" Width="136" FontSize="13"/>-->
                             <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol7}" Binding="{Binding CacheStatus}" Tag="CacheStatus" Width="128" FontSize="13"/>
                         </control:DataGrid.Columns>
                     </control:DataGrid>
