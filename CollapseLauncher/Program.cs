@@ -168,12 +168,10 @@ namespace CollapseLauncher
             w_windowsVersionNumbers = osDetail.Version.ToString().Split('.').Select(ushort.Parse).ToArray();
             if (w_windowsVersionNumbers[2] >= 22000)
             {
-                m_windowSupportCustomTitle = true;
                 return $"Windows 11 (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }
             else
             {
-                m_windowSupportCustomTitle = false;
                 return $"Windows {w_windowsVersionNumbers[0]} (build: {w_windowsVersionNumbers[2]}.{w_windowsVersionNumbers[3]})";
             }
         }

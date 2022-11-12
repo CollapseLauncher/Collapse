@@ -121,7 +121,7 @@ namespace CollapseLauncher
 
             // Check to see if customization is supported.
             // Currently only supported on Windows 11.
-            // m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
+            m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
             
             if (m_windowSupportCustomTitle)
             {
