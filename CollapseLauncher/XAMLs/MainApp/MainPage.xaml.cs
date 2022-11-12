@@ -713,9 +713,7 @@ namespace CollapseLauncher
                             break;
 
                         case "caches":
-                            if (CurrentConfigV2.CachesListGameVerID != null
-                                && CurrentConfigV2.CachesListAPIURL != null
-                                && CurrentConfigV2.CachesEndpointURL != null)
+                            if (CurrentConfigV2.IsCacheUpdateEnabled ?? false)
                                 Navigate(IsGameInstalled() ? typeof(Pages.CachesPage) : typeof(Pages.NotInstalledPage), true, item);
                             else
                                 Navigate(typeof(Pages.UnavailablePage), true, item);
