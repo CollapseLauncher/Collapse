@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -30,8 +31,15 @@ namespace Hi3Helper.Shared.ClassStruct
     public class DataPropertiesContent
     {
         // Concatenate N and CRC to get the filepath.
-        public string ConcatN() => $"{N}_{CRC}.unity3d";
-        public string ConcatNRemote() => $"{N}_{CRC}";
+        public string ConcatN
+        {
+            get => $"{N}_{CRC}.unity3d";
+        }
+
+        public string ConcatNRemote
+        {
+            get => $"{N}_{CRC}";
+        }
 
         // Filepath for input.
         // You have to concatenate the N with CRC to get the filepath using ConcatN()
@@ -43,7 +51,17 @@ namespace Hi3Helper.Shared.ClassStruct
         public string CRC { get; set; }
 
         // File size of the cache file.
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public long CS { get; set; }
+        public CachesType DataType { get; set; }
         public CachesDataStatus Status { get; set; }
+        public PatchDataPropertiesContent PatchProperty { get; set; }
+    }
+
+    public class PatchDataPropertiesContent
+    {
+        public string PatchFileName { get; set; }
+        public string PatchFileSize { get; set; }
+        public string PatchAfterName { get; set; }
     }
 }

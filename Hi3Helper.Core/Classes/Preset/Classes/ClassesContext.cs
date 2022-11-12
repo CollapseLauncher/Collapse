@@ -49,6 +49,10 @@ namespace Hi3Helper
     [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class DataPropertiesContext : JsonSerializerContext { }
 
+    [JsonSerializable(typeof(DataPropertiesContent))]
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    public partial class DataPropertiesContentContext : JsonSerializerContext { }
+
     [JsonSerializable(typeof(RegionResourceProp))]
     [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class RegionResourcePropContext : JsonSerializerContext { }

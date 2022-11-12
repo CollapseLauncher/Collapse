@@ -41,6 +41,8 @@ namespace CollapseLauncher.Pages
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CheckUpdateBtn.Visibility = Visibility.Visible;
                 CancelBtn.IsEnabled = false;
+
+                ResetCacheList();
             }
             catch (OperationCanceledException)
             {
@@ -53,27 +55,22 @@ namespace CollapseLauncher.Pages
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CancelBtn.IsEnabled = false;
                 http.DownloadProgress -= CachesDownloadProgress;
+
+                ResetCacheList();
             }
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
+                ResetCacheList();
             }
         }
 
         private async Task DownloadCachesUpdate()
         {
             string cachesPathType;
-            foreach (DataProperties dataType in brokenCachesList)
+            foreach (DataProperties dataType in BrokenCachesProperties)
             {
-                switch (dataType.DataType)
-                {
-                    case CachesType.Data:
-                        cachesPathType = Path.Combine(cachesBasePath, "Data");
-                        break;
-                    default:
-                        cachesPathType = Path.Combine(cachesBasePath, "Resources");
-                        break;
-                }
+                cachesPathType = GetCachePathByType(dataType.DataType);
 
                 cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
                 LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
@@ -84,8 +81,8 @@ namespace CollapseLauncher.Pages
                     foreach (DataPropertiesContent content in dataType.Content)
                     {
                         cachesCount++;
-                        cachesURL = cachesEndpointURL + content.ConcatNRemote();
-                        cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
+                        cachesURL = cachesEndpointURL + content.ConcatNRemote;
+                        cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN));
 
                         if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
                             Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
@@ -121,23 +118,15 @@ namespace CollapseLauncher.Pages
 
             using (StreamWriter sw = new StreamWriter(indexPath))
             {
-                foreach (DataProperties dataType in cachesList)
+                foreach (DataProperties dataType in CacheProperties)
                 {
-                    switch (dataType.DataType)
-                    {
-                        case CachesType.Data:
-                            cachesPathType = Path.Combine(cachesBasePath, "Data");
-                            break;
-                        default:
-                            cachesPathType = Path.Combine(cachesBasePath, "Resources");
-                            break;
-                    }
+                    cachesPathType = GetCachePathByType(dataType.DataType);
 
                     foreach (DataPropertiesContent content in dataType.Content)
                     {
                         // Why concating "/" between them?
                         // Well, It's just miHoYo's thing.
-                        cachesPath = cachesPathType.Replace('\\', '/') + $"//{content.ConcatN()}";
+                        cachesPath = cachesPathType.Replace('\\', '/') + $"//{content.ConcatN}";
                         sw.WriteLine(cachesPath);
                     }
                 }

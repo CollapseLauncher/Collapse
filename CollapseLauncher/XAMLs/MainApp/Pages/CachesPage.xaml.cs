@@ -48,6 +48,7 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             cancellationTokenSource?.Cancel();
+            ResetCacheList();
         }
     }
 }

@@ -2,6 +2,8 @@
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.UABT;
+using Hi3Helper.UABT.Binary;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -10,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,16 +37,20 @@ namespace CollapseLauncher.Pages
         string cachesAPIURL, cachesURL, cachesEndpointURL, cachesBasePath, cachesPath;
         HMACSHA1 hashTool;
 
-        string Pkcs1Salt;
-
         int cachesTotalCount,
             cachesCount;
 
         long cachesTotalSize,
              cachesRead;
 
-        List<DataProperties> cachesList;
-        List<DataProperties> brokenCachesList;
+        List<DataProperties> CacheProperties = new List<DataProperties>();
+        List<DataProperties> BrokenCachesProperties = new List<DataProperties>();
+
+        private void ResetCacheList()
+        {
+            CacheProperties.Clear();
+            BrokenCachesProperties.Clear();
+        }
 
         private async Task DoCachesCheck()
         {
@@ -75,58 +82,129 @@ namespace CollapseLauncher.Pages
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CancelBtn.IsEnabled = false;
                 http.DownloadProgress -= DataFetchingProgress;
+                ResetCacheList();
             }
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
                 LogWriteLine(ex.ToString(), LogType.Error, true);
+                ResetCacheList();
             }
+        }
+
+        private async Task<(uint, long)> ReadDataVersion(CachesType type)
+        {
+            using (cachesStream = new MemoryStream())
+            {
+                cachesAPIURL = string.Format(CurrentConfigV2.CachesEndpointURL + "{1}Version.unity3d", type.ToString().ToLowerInvariant(), type == CachesType.Data ? "Data" : "Resource");
+                LogWriteLine($"Fetching CachesType: {type}");
+
+                CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
+
+                http.DownloadProgress += DataFetchingProgress;
+                await http.Download(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
+                http.DownloadProgress -= DataFetchingProgress;
+                cachesStream.Position = 0;
+
+                using (Stream stream = new XORStream(cachesStream))
+                {
+                    BundleFile bundleFile = new BundleFile(stream);
+                    SerializedFile serializedFile = new SerializedFile(bundleFile.fileList[0].stream);
+                    byte[] dataRaw = serializedFile.GetDataFirstOrDefaultByName("packageversion.txt");
+                    TextAsset dataTextAsset = new TextAsset(dataRaw);
+                    return BuildVersioningList(dataTextAsset.GetStringEnumeration(), type);
+                }
+            }
+        }
+
+        private (uint, long) BuildVersioningList(SpanLineEnumerator dataList, CachesType type)
+        {
+            uint count = 0;
+            long size = 0;
+            bool isFirst = type == CachesType.Data;
+
+            if (isFirst)
+            {
+                // BuildVersioningPatchList(type);
+            }
+
+            DataProperties localProp = new DataProperties()
+            {
+                DataType = type
+            };
+            localProp.Content = new List<DataPropertiesContent>();
+
+            foreach (ReadOnlySpan<char> data in dataList)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                    localProp.HashSalt = data.ToString();
+                    continue;
+                }
+                if (data.Length > 0)
+                {
+                    DataPropertiesContent content = (DataPropertiesContent)JsonSerializer.Deserialize(data, typeof(DataPropertiesContent), DataPropertiesContentContext.Default);
+                    content.DataType = type;
+                    if (FilterRegion(content.N, cachesLanguage) > 0)
+                    {
+                        count++;
+                        size += content.CS;
+                        localProp.Content.Add(content);
+                    }
+                }
+            }
+
+            CacheProperties.Add(localProp);
+
+            return (count, size);
+        }
+
+        private Dictionary<string, PatchDataPropertiesContent> BuildVersioningPatchList(CachesType type)
+        {
+            Dictionary<string, PatchDataPropertiesContent> ret = new Dictionary<string, PatchDataPropertiesContent>();
+            cachesAPIURL = string.Format(CurrentConfigV2.CachesEndpointURL + "patch/patchconfig.xmf", type.ToString().ToLowerInvariant());
+
+            using (cachesStream = new MemoryStream())
+            {
+                http.DownloadProgress += DataFetchingProgress;
+                http.DownloadSync(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
+                http.DownloadProgress -= DataFetchingProgress;
+                cachesStream.Position = 0;
+
+                using (EndianBinaryReader br = new EndianBinaryReader(cachesStream))
+                {
+                    uint count = br.ReadUInt32();
+                    for (uint i = 0; i < count; i++)
+                    {
+                        string FileOld = br.ReadString();
+                        string FileNew = br.ReadString();
+                        string PatchOld = br.ReadString();
+                        string PatchNew = br.ReadString();
+                        uint PatchNewSize = br.ReadUInt32();
+                    }
+                }
+            }
+
+            return ret;
         }
 
         private async Task FetchCachesAPI()
         {
-            DataProperties cacheCatalog;
-            cachesList = new List<DataProperties>();
             foreach (CachesType type in Enum.GetValues(typeof(CachesType)))
             {
-                using (cachesStream = new MemoryStream())
-                {
-                    cachesAPIURL = string.Format(CurrentConfigV2.CachesListAPIURL, (byte)type, CurrentConfigV2.CachesListGameVerID);
-                    LogWriteLine($"Fetching CachesType: {type}");
-
-                    CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
-
-                    http.DownloadProgress += DataFetchingProgress;
-                    await http.Download(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
-                    http.DownloadProgress -= DataFetchingProgress;
-                    cachesStream.Position = 0;
-
-                    cacheCatalog = (DataProperties)JsonSerializer.Deserialize(cachesStream, typeof(DataProperties), DataPropertiesContext.Default);
-
-                    if (cacheCatalog.HashSalt != null)
-                        Pkcs1Salt = cacheCatalog.HashSalt;
-
-                    EliminateNonRegionalCaches(cacheCatalog);
-
-                    cacheCatalog.DataType = type;
-                }
+                (uint, long) Count_Size = await ReadDataVersion(type);
 
                 LogWriteLine($"Cache Metadata:"
-                    + $"\r\n\t\tDate (Local Time) = {DateTimeOffset.FromUnixTimeSeconds(cacheCatalog.Timestamp).ToLocalTime().ToString("dddd, dd MMMM yyyy HH:mm:ss")}"
-                    + $"\r\n\t\tVersion = {cacheCatalog.PackageVersion}"
-                    + $"\r\n\t\tCache Count = {cacheCatalog.Content.Count}"
-                    + $"\r\n\t\tCache Size = {SummarizeSizeSimple(cacheCatalog.Content.Sum(x => x.CS))}", LogType.NoTag);
-
-                cachesList.Add(cacheCatalog);
+                    + $"\r\n\t\tCache Count = {Count_Size.Item1}"
+                    + $"\r\n\t\tCache Size = {SummarizeSizeSimple(Count_Size.Item2)}", LogType.NoTag);
             }
 
-            cachesTotalCount = cachesList.Sum(x => x.Content.Count);
-            cachesTotalSize = cachesList.Sum(x => x.Content.Sum(y => y.CS));
+            cachesTotalCount = CacheProperties.Sum(x => x.Content.Count);
+            cachesTotalSize = CacheProperties.Sum(x => x.Content.Sum(x => x.CS));
 
             LogWriteLine($"Cache Counts (in Catalog): {cachesTotalCount} | Cache Size (in Catalog): {SummarizeSizeSimple(cachesTotalSize)}");
         }
-
-        private void EliminateNonRegionalCaches(in DataProperties data) => data.Content = new List<DataPropertiesContent>(data.Content.Where(x => FilterRegion(x.N, cachesLanguage) > 0).ToList());
 
         private byte FilterRegion(string input, string regionName)
         {
@@ -141,29 +219,33 @@ namespace CollapseLauncher.Pages
             return 2;
         }
 
+        private string GetCachePathByType(CachesType type)
+        {
+            switch (type)
+            {
+                case CachesType.Data:
+                    return Path.Combine(cachesBasePath, "Data");
+                default:
+                    return Path.Combine(cachesBasePath, "Resources");
+            }
+        }
+
         private async Task CheckCachesIntegrity()
         {
             cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation));
             string cachesPathType;
             string hash;
             List<DataPropertiesContent> brokenCaches;
-            brokenCachesList = new List<DataProperties>();
-            byte[] salt = new mhyEncTool(Pkcs1Salt, ConfigV2.MasterKey).GetSalt();
+            BrokenCachesProperties = new List<DataProperties>();
+            byte[] salt = new mhyEncTool(CacheProperties.Where(x => x.DataType == CachesType.Data)
+                .FirstOrDefault().HashSalt, ConfigV2.MasterKey).GetSalt();
             hashTool = new HMACSHA1(salt);
 
-            foreach (DataProperties dataType in cachesList)
+            foreach (DataProperties dataType in CacheProperties)
             {
                 brokenCaches = new List<DataPropertiesContent>();
 
-                switch (dataType.DataType)
-                {
-                    case CachesType.Data:
-                        cachesPathType = Path.Combine(cachesBasePath, "Data");
-                        break;
-                    default:
-                        cachesPathType = Path.Combine(cachesBasePath, "Resources");
-                        break;
-                }
+                cachesPathType = GetCachePathByType(dataType.DataType);
 
                 CleanUpCaches(dataType, cachesPathType);
 
@@ -172,7 +254,7 @@ namespace CollapseLauncher.Pages
                     cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     cachesCount++;
-                    cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN()));
+                    cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN));
                     CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusChecking, dataType.DataType, content.N);
                     CachesTotalStatus.Text = string.Format(Lang._CachesPage.CachesTotalStatusChecking, cachesCount, cachesTotalCount);
                     CachesTotalProgressBar.Value = GetPercentageNumber(cachesCount, cachesTotalCount);
@@ -224,7 +306,7 @@ namespace CollapseLauncher.Pages
 
                 if (brokenCaches.Count > 0)
                 {
-                    brokenCachesList.Add(new DataProperties
+                    BrokenCachesProperties.Add(new DataProperties
                     {
                         DataType = dataType.DataType,
                         PackageVersion = dataType.PackageVersion,
@@ -234,10 +316,10 @@ namespace CollapseLauncher.Pages
                 }
             }
 
-            if (brokenCachesList.Count > 0)
+            if (BrokenCachesProperties.Count > 0)
             {
-                cachesTotalCount = brokenCachesList.Sum(x => x.Content.Count);
-                cachesTotalSize = brokenCachesList.Sum(x => x.Content.Sum(y => y.CS));
+                cachesTotalCount = BrokenCachesProperties.Sum(x => x.Content.Count);
+                cachesTotalSize = BrokenCachesProperties.Sum(x => x.Content.Sum(y => y.CS));
                 CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusNeedUpdate, cachesTotalCount, SummarizeSizeSimple(cachesTotalSize));
                 CachesTotalStatus.Text = Lang._CachesPage.CachesTotalStatusNone;
                 CachesTotalProgressBar.Value = 0;
@@ -269,7 +351,7 @@ namespace CollapseLauncher.Pages
             foreach (string file in localFiles)
             {
                 localFileName = Path.GetFileNameWithoutExtension(file);
-                if (!prop.Content.Where(x => Path.GetFileNameWithoutExtension(x.ConcatN()).Contains(localFileName)).Any())
+                if (!prop.Content.Where(x => Path.GetFileNameWithoutExtension(x.ConcatN).Contains(localFileName)).Any())
                 {
                     LogWriteLine($"Removing unused cache: {file}", LogType.Default, true);
                     File.Delete(file);
