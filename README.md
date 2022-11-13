@@ -45,8 +45,8 @@ Some features like Game Data Repair and Preload Download are available for this 
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.8-stable/CL-1.0.52.8_Installer.exe)
 > **Note**: The version for this build is 1.0.52.8 (Released on: November 10th, 2022)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.52.8-pre/CL-1.0.52.8-preview_Installer.exe)
-> **Note**: The version for this build is 1.0.52.8 (Released on: November 10th, 2022).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.53.0-pre/CL-1.0.53.0-preview_Installer.exe)
+> **Note**: The version for this build is 1.0.53.0 (Released on: November 13rd, 2022).
 
 To see all releases, [**go here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -58,12 +58,17 @@ To see all releases, [**go here**](https://github.com/neon-nyan/CollapseLauncher
 ***
 
 # Prequesties for self-build/development environment
-To develop and build it for yourself, you need to install [**.NET Core 6 SDK (6.0.402 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), [**WinUI 3 (WindowsAppSDK 1.2-preview 2 Runtime)**](https://aka.ms/windowsappsdk/1.2/1.2.220930.4-preview2/windowsappruntimeinstall-x64.exe) and **Windows 10 SDK (10.0.19043.0 or later)** via Visual Studio Installer.
+To develop and build it for yourself, you need to install [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), [**WinUI 3 (WindowsAppSDK 1.2 Stable Runtime)**](https://aka.ms/windowsappsdk/1.2/latest/windowsappruntimeinstall-x64.exe) and **Windows 10 SDK (10.0.19043.0 or later)** via Visual Studio Installer.
 
-You may also need **Visual Studio 2019** or later with **WindowsAppSDK 1.2-preview 2 C# Extension** installed.
-Please refer to this link to download the extension for your Visual Studio version:
-- [**Visual Studio 2019 C# Extension**](https://aka.ms/windowsappsdk/1.2/1.2.220909.2-experimental2/WindowsAppSDK.Cs.Extension.Dev16.Experimental.vsix)
-- [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.2/1.2.220909.2-experimental2/WindowsAppSDK.Cs.Extension.Dev17.Experimental.Standalone.vsix)
+> **Note**:
+> 
+> Starting from November 13<sup>rd</sup> 2022, you must have Visual Studio 2022 installed on your computer due to minimum requirement of WinUI 3 1.2 Stable release.
+> 
+> Using lower Visual Studio version (like VS2019) is possible, but you have to downgrade the **WindowsAppSDK** via NuGet to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building.
+
+You may also need **Visual Studio 2022** or later with **WindowsAppSDK 1.2 Stable C# Extension** installed.
+Please refer to this link to download the extension for your Visual Studio version
+- [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.2/latest/WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix)
 
 # Third-party repositories and references being used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
