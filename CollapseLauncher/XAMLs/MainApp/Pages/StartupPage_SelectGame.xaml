@@ -9,19 +9,20 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}">
     <Grid>
-        <Button x:Name="NextPage" Style="{StaticResource AccentButtonStyle}"
+        <Frame x:Name="BackgroundFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Button x:Name="NextPage" Style="{ThemeResource AccentButtonStyle}"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="32" IsEnabled="False"
                 Click="NextPage_Click" CornerRadius="16">
             <StackPanel Orientation="Horizontal" Margin="8,0">
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2NextBtn}" FontWeight="Medium" Margin="0,0,8,0"/>
-                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
+                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
             </StackPanel>
         </Button>
-        <Button x:Name="PrevPage" Style="{StaticResource AccentButtonStyle}"
+        <Button x:Name="PrevPage" Style="{ThemeResource AccentButtonStyle}"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="32" IsEnabled="True"
                 Click="PrevPage_Click" CornerRadius="16">
             <StackPanel Orientation="Horizontal" Margin="8,0">
-                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf060;" FontSize="14"/>
+                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf060;" FontSize="14"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2PrevBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
             </StackPanel>
         </Button>
@@ -30,26 +31,20 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="32,0,0,0" x:Name="LeftPanel">
-                <StackPanel.Transitions>
-                    <EntranceThemeTransition/>
-                </StackPanel.Transitions>
-                <Image Source="/Assets/BG/AponiaFly.png" Width="400" Height="400" HorizontalAlignment="Center"/>
-            </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" HorizontalAlignment="Left" x:Name="RightPanel">
-                <StackPanel.Transitions>
+                <!--<StackPanel.Transitions>
                     <EntranceThemeTransition/>
-                </StackPanel.Transitions>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
-                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}">
+                </StackPanel.Transitions>-->
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{ThemeResource SystemAccentColor}"/>
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" FontWeight="Normal"/>
-                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" Foreground="{ThemeResource SystemAccentColor}" FontWeight="Bold"/>
                 </TextBlock>
-                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,24">
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,24">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" FontWeight="Normal"/>
-                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" Foreground="{StaticResource SystemAccentColor}"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" Foreground="{ThemeResource SystemAccentColor}"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" FontWeight="Normal"/>
-                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{StaticResource SystemAccentColor}" FontWeight="Bold"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{ThemeResource SystemAccentColor}" FontWeight="Bold"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="GameCategorySelect" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameCategorySelect_SelectionChanged"/>
@@ -60,9 +55,10 @@
         <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,200,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
             </StackPanel>
         </Grid>
+        <ProgressBar x:Name="BarBGLoading" IsIndeterminate="true" VerticalAlignment="Bottom" Visibility="Collapsed"/>
     </Grid>
 </Page>

@@ -280,6 +280,8 @@ namespace Hi3Helper.Preset
         public string? ZoneFullname { get; set; }
         public string? ZoneDescription { get; set; }
         public string? ZoneURL { get; set; }
+        public string? ZoneLogoURL { get; set; }
+        public string? ZonePosterURL { get; set; }
 #nullable disable
         private string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
         private string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }

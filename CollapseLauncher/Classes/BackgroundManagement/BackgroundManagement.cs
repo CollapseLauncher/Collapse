@@ -63,7 +63,7 @@ namespace CollapseLauncher
                 IsFirstStartup = false;
             }
 
-            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+            ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
         private async Task FetchLauncherResourceAsRegion()
@@ -195,50 +195,56 @@ namespace CollapseLauncher
             return cachePath;
         }
 
-        private async Task ApplyAccentColor()
+        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput)
         {
+            Windows.UI.Color[] _colors;
             switch (CurrentAppTheme)
             {
                 case AppThemeMode.Light:
-                    await SetLightColors();
+                    _colors = await SetLightColors(bitmapinput);
                     break;
                 case AppThemeMode.Dark:
-                    await SetDarkColors();
+                    _colors = await SetDarkColors(bitmapinput);
                     break;
                 default:
                     if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        await SetLightColors();
+                        _colors = await SetLightColors(bitmapinput);
                     else
-                        await SetDarkColors();
+                        _colors = await SetDarkColors(bitmapinput);
                     break;
             }
 
-            ReloadPageTheme(ConvertAppThemeToElementTheme(CurrentAppTheme));
+            ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
+            return _colors;
         }
 
-        private async Task SetLightColors()
+        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(4, true);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
+
+            return _colors;
         }
 
-        private async Task SetDarkColors()
+        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(4, false);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
+
+            return _colors;
         }
 
-        private async Task<Windows.UI.Color[]> GetPaletteList(int ColorCount = 4, bool IsLight = false)
+        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(PaletteBitmap, 10, 3));
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(bitmapinput, 10, 3));
 
             QuantizedColor Single = null;
 
@@ -257,7 +263,7 @@ namespace CollapseLauncher
             return output;
         }
 
-        private Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
+        private static Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
 
         private async Task GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
         {
@@ -310,7 +316,7 @@ namespace CollapseLauncher
             b.Item2 = _b.Item1;
         }
 
-        private async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
+        public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
         {
             BitmapImage ret = new BitmapImage();
             image.Seek(0);
@@ -318,7 +324,7 @@ namespace CollapseLauncher
             return ret;
         }
 
-        private Bitmap Stream2Bitmap(IRandomAccessStream image)
+        public static Bitmap Stream2Bitmap(IRandomAccessStream image)
         {
             image.Seek(0);
             return new Bitmap(image.AsStream());
@@ -365,7 +371,7 @@ namespace CollapseLauncher
 
             await GetResizedBitmap(stream, Width, Height);
 
-            await ApplyAccentColor();
+            await ApplyAccentColor(this, PaletteBitmap);
 
             FadeOutFrontBg();
             FadeOutBackBg();

@@ -419,22 +419,22 @@ namespace CollapseLauncher
             SaveLocalNotificationData();
         }
 
-        private void ReloadPageTheme(ElementTheme startTheme)
+        public static void ReloadPageTheme(Page page, ElementTheme startTheme)
         {
             bool IsComplete = false;
             while (!IsComplete)
             {
                 try
                 {
-                    if (this.RequestedTheme == ElementTheme.Dark)
-                        this.RequestedTheme = ElementTheme.Light;
-                    else if (this.RequestedTheme == ElementTheme.Light)
-                        this.RequestedTheme = ElementTheme.Default;
-                    else if (this.RequestedTheme == ElementTheme.Default)
-                        this.RequestedTheme = ElementTheme.Dark;
+                    if (page.RequestedTheme == ElementTheme.Dark)
+                        page.RequestedTheme = ElementTheme.Light;
+                    else if (page.RequestedTheme == ElementTheme.Light)
+                        page.RequestedTheme = ElementTheme.Default;
+                    else if (page.RequestedTheme == ElementTheme.Default)
+                        page.RequestedTheme = ElementTheme.Dark;
 
-                    if (this.RequestedTheme != startTheme)
-                        ReloadPageTheme(startTheme);
+                    if (page.RequestedTheme != startTheme)
+                        ReloadPageTheme(page, startTheme);
                     IsComplete = true;
                 }
                 catch (Exception)
@@ -444,7 +444,7 @@ namespace CollapseLauncher
             }
         }
 
-        private ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)
+        public static ElementTheme ConvertAppThemeToElementTheme(AppThemeMode Theme)
         {
             switch (Theme)
             {
