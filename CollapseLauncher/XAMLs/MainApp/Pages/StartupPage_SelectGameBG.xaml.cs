@@ -8,8 +8,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+using CommunityToolkit.WinUI.UI;
+using Hi3Helper.Shared.ClassStruct;
 using static CollapseLauncher.Pages.StartupPage_SelectGameBGProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -24,6 +27,12 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
 
+            if (!IsDarkTheme)
+            {
+                (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.25;
+                (this.Resources["DetailsTextShadowController"] as AttachedDropShadow).Opacity = 0.25;
+            }
+
             if (!IsLoadDescription)
             {
                 GameDetails.Visibility = Visibility.Collapsed;
@@ -36,6 +45,10 @@ namespace CollapseLauncher.Pages
             this.GameDetailsPoster.Source = _gamePosterBitmapImage;
             this.GameDetailsLogo.Source = _gameLogoBitmapImage;
         }
+
+        private bool IsDarkTheme { get => CurrentAppTheme == AppThemeMode.Light
+                ? false : CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"
+                ? false : true; }
     }
 
     public static class StartupPage_SelectGameBGProp
