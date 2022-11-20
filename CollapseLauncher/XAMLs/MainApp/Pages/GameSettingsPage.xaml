@@ -39,11 +39,11 @@
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <ComboBox CornerRadius="14" x:Name="GameResolutionSelector"
                                                   PlaceholderText="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResSelectPlaceholder}" Width="128"
-                                                  IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={ThemeResource BooleanInverse}}"
+                                                  IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameCustomResolutionCheckbox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
                                                   VerticalAlignment="Center" Margin="16,0,0,0"
-                                                  IsEnabled="{x:Bind IsExclusiveFullscreenEnabled, Mode=OneWay, Converter={ThemeResource BooleanInverse}}"
+                                                  IsEnabled="{x:Bind IsExclusiveFullscreenEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </StackPanel>
