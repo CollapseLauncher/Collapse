@@ -4,6 +4,7 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
@@ -225,6 +226,7 @@ namespace CollapseLauncher
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
 
             return _colors;
         }
@@ -236,6 +238,7 @@ namespace CollapseLauncher
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
 
             return _colors;
         }

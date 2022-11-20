@@ -16,6 +16,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -346,6 +347,48 @@ namespace CollapseLauncher
         }
 
         public DragAreaTemplate Template { get; private set; }
+    }
+    #endregion
+    #region ChangeThemeRegion
+    internal static class ChangeTheme
+    {
+        static ChangeThemeInvoker invoker = new ChangeThemeInvoker();
+        public static void Change(AppThemeMode Theme)
+        {
+            invoker.Change(AppThemeMode2ElementTheme(Theme), Theme);
+        }
+
+        private static ElementTheme AppThemeMode2ElementTheme(AppThemeMode mode)
+        {
+            switch (mode)
+            {
+                default:
+                    return SystemAppTheme.ToString() == "#FFFFFFFF" ? ElementTheme.Light : ElementTheme.Dark;
+                case AppThemeMode.Light:
+                    return ElementTheme.Light;
+                case AppThemeMode.Dark:
+                    return ElementTheme.Dark;
+            }
+        }
+    }
+
+    internal class ChangeThemeInvoker
+    {
+        public static event EventHandler<ChangeThemeProperty> ThemeEvent;
+        public void Change(ElementTheme Theme, AppThemeMode AppTheme) => ThemeEvent?.Invoke(this, new ChangeThemeProperty(Theme, AppTheme));
+    }
+
+    internal class ChangeThemeProperty
+    {
+        internal ChangeThemeProperty(ElementTheme Theme, AppThemeMode AppTheme)
+        {
+            this.Theme = Theme;
+            this.AppTheme = AppTheme;
+        }
+
+        public ElementTheme Theme { get; private set; }
+        public AppThemeMode AppTheme { get; private set; }
+        public bool IsChangeCompleted { get; set; }
     }
     #endregion
 }
