@@ -154,7 +154,5 @@ namespace CollapseLauncher.Pages
                 CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
             });
         }
-
-        private void nothing() { }
     }
 }
