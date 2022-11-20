@@ -14,32 +14,32 @@
                 <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
             <StackPanel HorizontalAlignment="Left" Grid.Column="0">
-                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                 <StackPanel x:Name="AppSettings" Margin="0,16" HorizontalAlignment="Left">
                     <StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
                         <StackPanel Margin="0,0,0,16">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                             <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" SelectionChanged="LanguageChanged"/>
-                            <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                            <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,-8,0,16">
                             <RadioButtons x:Name="AppThemeSelection" SelectedIndex="{x:Bind CurrentThemeSelection, Mode=TwoWay}">
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
                             </RadioButtons>
-                            <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                            <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,0,0,16" HorizontalAlignment="Left">
                             <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
                             <StackPanel Orientation="Horizontal" Margin="-2,8,0,0">
                                 <Button x:Name="BGSelector" IsEnabled="False" Margin="-32,0,0,0" CornerRadius="0,16,16,0" Click="SelectBackgroundImg" Style="{ThemeResource AccentButtonStyle}">
                                     <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                        <TextBlock FontFamily="{StaticResource FontAwesome}" Text="&#xF03E;" FontSize="22"/>
+                                        <TextBlock FontFamily="{ThemeResource FontAwesome}" Text="&#xF03E;" FontSize="22"/>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
@@ -49,10 +49,10 @@
                                    Width="368" TextWrapping="Wrap"
                                    HorizontalAlignment="Left"
                                    Margin="0,16,0,0" FontSize="12"
-                                   FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                   FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                             <Button Margin="16,0" CornerRadius="16">
                                 <Button.Content>
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE11B;" FontSize="12"/>
@@ -60,26 +60,26 @@
                                 <Button.Flyout>
                                     <Flyout>
                                         <StackPanel Width="318">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Style="{ThemeResource SubtitleTextBlockStyle}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help1}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}"/>
-                                            <Run Text="8" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                            <Run Text="8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                             </TextBlock>
                                             <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
-                                            <Run Text="2 - 8" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                            <Run Text="2 - 8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                             </TextBlock>
-                                            <!--<TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
+                                            <!--<TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,0"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help5}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help6}"/>
                                             <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help2}"/>
-                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help4}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                             </TextBlock>
                                             <TextBlock TextWrapping="Wrap" Margin="0,0,0,0">
                                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Help3}"/>
-                                            <Run Text="0 - 128" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                                            <Run Text="0 - 128" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                             </TextBlock>-->
                                         </StackPanel>
                                     </Flyout>
@@ -90,18 +90,18 @@
                             <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="8" SpinButtonPlacementMode="Compact"/>
                             <!--<NumberBox x:Name="ExtractionThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Margin="16,0,0,0" Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" Minimum="0" Maximum="128" Width="128" SpinButtonPlacementMode="Compact"/>-->
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Vertical" Margin="0,0,0,16">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center" Margin="0,0,0,16">
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CurVer}"/>
-                                <Run x:Name="CurrentVersion" Text="0.0.0.0" Foreground="{StaticResource AccentColor}" FontWeight="Bold"/>
+                                <Run x:Name="CurrentVersion" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
                                 </TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Button x:Name="CheckUpdateBtn" Margin="-32,0,0,0" Height="38" CornerRadius="0,17,17,0" Click="CheckUpdate" Style="{ThemeResource AccentButtonStyle}">
                                     <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                        <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf105;" FontSize="22"/>
+                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf105;" FontSize="22"/>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
@@ -112,7 +112,7 @@
                                     <TextBlock Text="😆" FontSize="20"/>
                                     <TextBlock Margin="8,0,0,0" VerticalAlignment="Center">
                                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}"/>
-                                    <Run x:Name="UpdateAvailableLabel" Text="0.0.0.0" Foreground="{StaticResource AccentColor}" FontWeight="Bold"/>
+                                    <Run x:Name="UpdateAvailableLabel" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
                                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer2}"/>
                                     </TextBlock>
                                 </StackPanel>
@@ -123,27 +123,27 @@
                             </StackPanel>
                             <Button x:Name="ForceUpdateBtn" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="ForceUpdate" Style="{ThemeResource AccentButtonStyle}">
                                 <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
-                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder">
+                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" FontWeight="Medium"/>
                                 </StackPanel>
                             </Button>
-                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Click="RelocateFolder">
+                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="RelocateFolder">
                                 <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" FontWeight="Medium"/>
                             </Button>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder">
+                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder">
                                 <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" FontWeight="Medium"/>
                             </Button>
-                            <Button CornerRadius="15" Style="{StaticResource AccentButtonStyle}" Click="ClearImgFolder">
+                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearImgFolder">
                                 <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" FontWeight="Medium"/>
                             </Button>
                         </StackPanel>
@@ -153,38 +153,38 @@
             <StackPanel x:Name="AboutApp" Grid.Column="1" VerticalAlignment="Top">
                 <StackPanel>
                     <Image Source="/Assets/CollapseLauncherLogo.png" Width="192" HorizontalAlignment="Left"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.About}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.About}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                     <Grid>
                         <StackPanel Grid.Column="1">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Collapse Launcher" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock x:Name="AppVersionTextBlock" Text=" 1.0.0" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="Collapse Launcher" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="AppVersionTextBlock" Text=" 1.0.0" Style="{ThemeResource BodyTextBlockStyle}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright1}" Style="{StaticResource BodyTextBlockStyle}"/>
-                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright2}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright1}" Style="{ThemeResource BodyTextBlockStyle}"/>
+                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright2}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap">
                                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}"/>
                                     <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/blob/main/LICENSE" UnderlineStyle="None"><Run Text="MIT License" FontWeight="Bold"/></Hyperlink>
                                 </TextBlock>
-                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" Style="{ThemeResource BodyTextBlockStyle}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,8,0,4" HorizontalAlignment="Left">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,4" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/issues" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/></Hyperlink>
                         </TextBlock>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,4,0,8" HorizontalAlignment="Left">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,4,0,8" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/pulls" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/></Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Margin="0,8">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
-                    <TextBlock TextWrapping="Wrap" Style="{StaticResource BodyTextBlockStyle}">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
+                    <TextBlock TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}">
                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer1}"/>
                             <Hyperlink NavigateUri="https://www.mihoyo.com" UnderlineStyle="None" FontWeight="Bold"><Run Text="miHoYo"/></Hyperlink>
                             <Run Text="/"/>
@@ -194,11 +194,11 @@
                     </TextBlock>
                 </StackPanel>
                 <StackPanel Margin="0,16" x:Name="HerLegacy" Visibility="Collapsed">
-                    <TextBlock Text="Dedication" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
-                    <TextBlock Text="This app is also dedicated for my crush who passed away from fighting" Style="{StaticResource BodyTextBlockStyle}"/>
-                    <TextBlock Text="against her's TB disease. This app has been Dedicated with Love for her." Style="{StaticResource BodyTextBlockStyle}"/>
-                    <TextBlock Text="" Style="{StaticResource BodyTextBlockStyle}"/>
-                    <TextBlock Text="Rest In Peace~ (Jan 31st 2022)" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="Dedication" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
+                    <TextBlock Text="This app is also dedicated for my crush who passed away from fighting" Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="against her's TB disease. This app has been Dedicated with Love for her." Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="" Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="Rest In Peace~ (Jan 31st 2022)" Style="{ThemeResource BodyTextBlockStyle}"/>
                     <TextBlock FontSize="24">
                         <Run Text="Yui" FontWeight="Bold"/>
                         <Run Text="( a.k.a"/>
@@ -219,7 +219,7 @@
                         <Run Text="Thank you... for everything."/>
                     </TextBlock>
                     <TextBlock HorizontalAlignment="Left">
-                        <Run Text="I love you " FontWeight="Bold" Foreground="{StaticResource AccentColor}"/><Run Text=",^__ ,^)" FontWeight="Bold"/>
+                        <Run Text="I love you " FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/><Run Text=",^__ ,^)" FontWeight="Bold"/>
                         <Hyperlink NavigateUri="https://www.youtube.com/watch?v=4cugGAKsSNY&amp;list=PLLH-gVOGJkTLB_ixlYZ2fo51yPxn3m1LB" UnderlineStyle="None"><Run Text="❤️"/></Hyperlink>
                     </TextBlock>
                     <TextBlock Width="360" Margin="0,16,0,0" HorizontalAlignment="Left" FontWeight="Bold">
@@ -228,30 +228,30 @@
                 </StackPanel>
                 <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/NAYQ8TT2Ge" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
-                        <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </Button>
                 <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/hi3" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
-                        <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </Button>
                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Left">
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xF082;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,0,6,0"
                                Tag="https://web.facebook.com/kemalsetya.adhisetya/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xF092;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://github.com/neon-nyan/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xF1A2;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://www.reddit.com/user/justanewbie1-ID/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xF081;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xF081;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://twitter.com/neonnyann"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xE055;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xE055;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="6,0,6,0"
                                Tag="https://instagram.com/neonnyann/"/>
-                    <TextBlock FontFamily="{StaticResource FontAwesomeBrand}" Foreground="{StaticResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
+                    <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

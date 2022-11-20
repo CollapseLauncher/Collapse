@@ -12,7 +12,7 @@
 
     <Grid>
         <StackPanel Margin="32,80,32,32" x:Name="PageContent">
-            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
+            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PageTitle}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="422"/>
@@ -55,28 +55,28 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PerProgressTitle1}" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
                             <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="RepairPerFileStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="{Binding Value, ElementName=RepairPerFileProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="RepairPerFileStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Value, ElementName=RepairPerFileProgressBar}" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </control:DockPanel>
                             <ProgressBar x:Name="RepairPerFileProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="32,0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.TotalProgressTitle1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
                             <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="RepairTotalStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="{Binding Value, ElementName=RepairTotalProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="RepairTotalStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.StatusNone}" control:DockPanel.Dock="Left" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Value, ElementName=RepairTotalProgressBar}" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </control:DockPanel>
                             <ProgressBar x:Name="RepairTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
                             <Button x:Name="RepairFilesBtn" CornerRadius="16" Width="128"
-                                    Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Click="StartGameRepair">
+                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartGameRepair">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" FontWeight="Medium" Margin="8,0"/>
                             </Button>
                             <Button x:Name="CheckFilesBtn" CornerRadius="16" Width="128"
-                                    Style="{StaticResource AccentButtonStyle}" Click="StartGameCheck">
+                                    Style="{ThemeResource AccentButtonStyle}" Click="StartGameCheck">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2}" FontWeight="Medium" Margin="8,0"/>
                             </Button>
                             <Button x:Name="CancelBtn" IsEnabled="False" CornerRadius="16" 
@@ -91,8 +91,8 @@
         <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
             </StackPanel>
         </Grid>
     </Grid>

@@ -17,7 +17,7 @@
             </StackPanel>
             <TextBlock FontSize="16" VerticalAlignment="Bottom" Opacity="0.75">
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}"/>
-                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}" FontWeight="Bold" Foreground="{StaticResource AccentColor}"/>
+                <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer2}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer3}"/>
             </TextBlock>
         </Grid>

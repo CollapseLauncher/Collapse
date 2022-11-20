@@ -12,7 +12,7 @@
 
     <StackPanel Margin="32">
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.PageTitle}"
-                   Style="{StaticResource TitleLargeTextBlockStyle}"
+                   Style="{ThemeResource TitleLargeTextBlockStyle}"
                    Margin="0,0,0,24"/>
         <Grid
               HorizontalAlignment="Stretch" Height="500">
@@ -46,41 +46,41 @@
             <StackPanel x:Name="Step1" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="1">
                 <ProgressRing x:Name="Step1ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="True" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step1ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step1Title}" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <TextBlock x:Name="Step1ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock x:Name="Step1ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step1Title}" VerticalAlignment="Center"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step1ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step2" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
                 <ProgressRing x:Name="Step2ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="False" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step2ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step2Title}" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <TextBlock x:Name="Step2ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock x:Name="Step2ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step2Title}" VerticalAlignment="Center"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step2ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step3" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
                 <ProgressRing x:Name="Step3ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step3ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step3Title}" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <TextBlock x:Name="Step3ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock x:Name="Step3ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step3Title}" VerticalAlignment="Center"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step3ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step4" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
                 <ProgressRing x:Name="Step4ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step4ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step4Title}" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <TextBlock x:Name="Step4ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock x:Name="Step4ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step4Title}" VerticalAlignment="Center"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step4ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="Step5" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="0.25">
                 <ProgressRing x:Name="Step5ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="false" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step5ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step5Title}" VerticalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <TextBlock x:Name="Step5ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock x:Name="Step5ProgressTitle" Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.Step5Title}" VerticalAlignment="Center"  Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <TextBlock x:Name="Step5ProgressStatus" Text="{x:Bind helper:Locale.Lang._Misc.NotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>
         <TextBlock x:Name="MigrationSubtextStatus"
-                   Style="{StaticResource BodyTextBlockStyle}" Margin="0,12,4,0"
+                   Style="{ThemeResource BodyTextBlockStyle}" Margin="0,12,4,0"
                    HorizontalAlignment="Right">
                 <Span>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallMigrateSteam.PageFooter1}"/>

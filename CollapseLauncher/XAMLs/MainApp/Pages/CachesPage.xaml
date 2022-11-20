@@ -12,7 +12,7 @@
 
     <Grid>
         <StackPanel Margin="32,80,32,32" x:Name="PageContent">
-            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
+            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="422"/>
@@ -55,19 +55,19 @@
                         <StackPanel Grid.Column="0" Margin="0,0,32,0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
                             <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="CachesTotalStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}" control:DockPanel.Dock="Left" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="{Binding Value, ElementName=CachesTotalProgressBar}" control:DockPanel.Dock="Right" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock x:Name="CachesTotalStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}" control:DockPanel.Dock="Left" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Value, ElementName=CachesTotalProgressBar}" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                             </control:DockPanel>
                             <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
                             <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
-                                    Visibility="Collapsed" Style="{StaticResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
+                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
                             </Button>
                             <Button x:Name="CheckUpdateBtn" CornerRadius="16" 
-                                    Style="{StaticResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
+                                    Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" FontWeight="Medium" Margin="8,0"/>
                             </Button>
                             <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False"
@@ -82,8 +82,8 @@
         <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
             </StackPanel>
         </Grid>
     </Grid>

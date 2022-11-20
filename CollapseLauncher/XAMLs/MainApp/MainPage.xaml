@@ -19,13 +19,13 @@
             <Image x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
             <Image x:Name="BackgroundBackBuffer" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
         </Grid>
-        <Grid x:Name="BackgroundAcrylicMask" Background="{StaticResource BackgroundMaskAcrylicBrush}" Visibility="Collapsed"/>
+        <Grid x:Name="BackgroundAcrylicMask" Background="{ThemeResource BackgroundMaskAcrylicBrush}" Visibility="Collapsed"/>
         <NavigationView x:Name="NavigationViewControl"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="true"
             PaneDisplayMode="LeftMinimal"
             Visibility="Visible" IsPaneOpen="False"
-            Background="{StaticResource NavigationBarBrush}"
+            Background="{ThemeResource NavigationBarBrush}"
             Margin="-2"
             ItemInvoked="NavView_ItemInvoked"
             Loaded="NavView_Loaded">
@@ -49,7 +49,7 @@
                         <ColumnDefinition Width="25"/>
                         <ColumnDefinition Width="137"/>
                     </Grid.ColumnDefinitions>
-                    <Grid x:Name="TitleBarBg" Background="{StaticResource WindowTrayBrush}"
+                    <Grid x:Name="TitleBarBg" Background="{ThemeResource WindowTrayBrush}"
                           Grid.ColumnSpan="8" Grid.Column="0"
                           CornerRadius="0,0,0,0"/>
                     <Grid x:Name="TitleBarDrag1" Grid.Column="1"  Grid.ColumnSpan="2"/>
@@ -78,7 +78,7 @@
                                             FontSize="12"
                                             Opacity="0.8"
                                             Margin="0,-3,0,0"
-                                            Foreground="{StaticResource AccentColor}"
+                                            Foreground="{ThemeResource AccentColor}"
                                             HorizontalAlignment="Left"
                                             Visibility="Visible">
                                 </TextBlock>
@@ -94,7 +94,7 @@
                                   CornerRadius="15,0,0,15" Width="167" Canvas.ZIndex="2" Margin="0,0,-1,0" SelectionChanged="SetGameCategoryChange"/>
                                 <ComboBox x:Name="ComboBoxGameRegion" PlaceholderText="Southeast Asia"
                                   CornerRadius="0,15,15,0" Width="148" Canvas.ZIndex="2"  Margin="-1,0,8,0" SelectionChanged="EnableRegionChangeButton"/>
-                                <Button CornerRadius="15" x:Name="ChangeRegionConfirmBtn" Style="{StaticResource AccentButtonStyle}" IsEnabled="False">
+                                <Button CornerRadius="15" x:Name="ChangeRegionConfirmBtn" Style="{ThemeResource AccentButtonStyle}" IsEnabled="False">
                                     <Button.Content>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Change}" FontWeight="Medium" Margin="4,0"/>
                                     </Button.Content>
@@ -102,12 +102,12 @@
                                         <Flyout>
                                             <StackPanel>
                                                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" FontWeight="Medium" Margin="0,0,0,12" />
-                                                <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{StaticResource AccentButtonStyle}">
+                                                <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{ThemeResource AccentButtonStyle}">
                                                     <Button.Content>
                                                         <Grid Margin="-36,-8" Padding="36,8">
                                                             <ProgressBar x:Name="ChangeRegionConfirmProgressBar" IsIndeterminate="True" ShowPaused="False" ShowError="False" Margin="-36,0,-36,-28" Visibility="Collapsed"/>
                                                             <StackPanel Orientation="Horizontal">
-                                                                <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf362;" FontSize="16" VerticalAlignment="Center"/>
+                                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf362;" FontSize="16" VerticalAlignment="Center"/>
                                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirmBtn}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
                                                             </StackPanel>
                                                         </Grid>
@@ -127,10 +127,10 @@
                 <Grid x:Name="LoadingPopup" Background="Transparent" Margin="0,32,0,0" Visibility="Collapsed" Opacity="0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,172,0,0">
                         <ProgressRing x:Name="LoadingRing" IsActive="True" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                        <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        <TextBlock x:Name="LoadingTitle" Text="{x:Bind helper:Locale.Lang._MainPage.RegionLoadingTitle}" Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBlock x:Name="LoadingSubtitle" Text="Mainland China" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
                         <TextBlock x:Name="LoadingFooter" Text="" FontWeight="Bold"
-                                   Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0"
+                                   Style="{ThemeResource BodyTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,192,0,0"
                                    CharacterSpacing="0"/>
                     </StackPanel>
                 </Grid>
@@ -141,8 +141,8 @@
                 </StackPanel>
             </Grid>
         </NavigationView>
-        <Grid x:Name="WebView2Panel" Background="{StaticResource WebView2GridBackground}"
-              Shadow="{StaticResource SharedShadow}" Visibility="Collapsed"
+        <Grid x:Name="WebView2Panel" Background="{ThemeResource WebView2GridBackground}"
+              Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
               Canvas.ZIndex="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="24"/>
@@ -163,19 +163,19 @@
                     <Button x:Name="WebView2BackBtn" IsEnabled="False" Click="WebView2BackBtn_Click"
                             CornerRadius="16,0,0,16" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
                         <Button.Content>
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf104;" FontSize="14"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf104;" FontSize="14"/>
                         </Button.Content>
                     </Button>
                     <Button x:Name="WebView2ForwardBtn" IsEnabled="False" Click="WebView2ForwardBtn_Click"
                             CornerRadius="0,16,16,0" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
                         <Button.Content>
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="14"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="14"/>
                         </Button.Content>
                     </Button>
                     <Button x:Name="WebView2ReloadBtn" Click="WebView2ReloadBtn_Click"
                             Margin="8,0,0,0" CornerRadius="16" Width="48" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}">
                         <Button.Content>
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf01e;" FontSize="14"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf01e;" FontSize="14"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
@@ -186,13 +186,13 @@
                 <Button x:Name="WebView2OpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" CornerRadius="16" Width="64"
                         HorizontalAlignment="Center" Click="WebView2OpenExternalBtn_Click">
                     <Button.Content>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf08e;" FontSize="14"/>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf08e;" FontSize="14"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="WebView2CloseBtn" Grid.Column="5" VerticalAlignment="Stretch" CornerRadius="16"
                         HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2CloseBtn_Click">
                     <Button.Content>
-                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="14"/>
+                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="14"/>
                     </Button.Content>
                 </Button>
             </Grid>

@@ -6,7 +6,7 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="{StaticResource PagesSolidAcrylicBrush}"
+    Background="{ThemeResource PagesSolidAcrylicBrush}"
     mc:Ignorable="d">
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
@@ -26,6 +26,6 @@
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
         <Button x:Name="NextBtn" Content="Next" Grid.Row="2" HorizontalAlignment="Stretch" IsEnabled="False"
-                VerticalAlignment="Bottom" Style="{StaticResource AccentButtonStyle}" Click="NextBtn_Click"/>
+                VerticalAlignment="Bottom" Style="{ThemeResource AccentButtonStyle}" Click="NextBtn_Click"/>
     </Grid>
 </Page>

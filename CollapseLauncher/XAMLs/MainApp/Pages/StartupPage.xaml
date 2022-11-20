@@ -14,12 +14,12 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="NextPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource AccentButtonStyle}"
+            <Button x:Name="NextPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource AccentButtonStyle}"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom" IsEnabled="False"
                 Click="NextPage_Click" CornerRadius="16">
                 <StackPanel Orientation="Horizontal" Margin="8,0">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}" FontWeight="Medium" Margin="0,0,8,0"/>
-                    <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
+                    <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
                 </StackPanel>
             </Button>
             <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="32,0,0,0" x:Name="LeftPanel">
@@ -27,29 +27,29 @@
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
                 <Image Source="/Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{StaticResource DisplayTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{ThemeResource DisplayTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" x:Name="RightPanel">
                 <StackPanel.Transitions>
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" Style="{StaticResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{StaticResource SystemAccentColor}"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{ThemeResource SystemAccentColor}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}"
-                Style="{StaticResource SubtitleTextBlockStyle}"
+                Style="{ThemeResource SubtitleTextBlockStyle}"
                 FontWeight="Normal"
                 Margin="0,0,0,32"/>
-                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,16">
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16">
                 <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}" FontWeight="Normal"/>
-                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" Foreground="{StaticResource SystemAccentColor}"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" Foreground="{ThemeResource SystemAccentColor}"/>
                 <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" FontWeight="Normal"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource AccentButtonStyle}" Click="ChooseFolder" CornerRadius="16">
+                    <Button Style="{ThemeResource AccentButtonStyle}" Click="ChooseFolder" CornerRadius="16">
                         <StackPanel Orientation="Horizontal" Margin="8,0">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" Margin="0,0,8,0" FontWeight="Medium"/>
-                            <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf07b;" FontSize="14"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf07b;" FontSize="14"/>
                         </StackPanel>
                     </Button>
                     <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimary}"/>
@@ -59,8 +59,8 @@
         <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,200,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
-                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
+                <TextBlock x:Name="OverlayTitle" Text="Title" Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="OverlaySubtitle" Text="Subtitle" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,192"/>
             </StackPanel>
         </Grid>
     </Grid>

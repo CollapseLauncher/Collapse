@@ -19,8 +19,8 @@
                HorizontalAlignment="Left" Opacity="0.30"
                Width="480" Grid.ColumnSpan="2"/>
         <StackPanel Grid.Column="0">
-            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" FontWeight="Light" FontSize="96"/>
-            <TextBlock Style="{StaticResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" FontWeight="ExtraBold" FontSize="44" Margin="0,-22,0,0"/>
+            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" FontWeight="Light" FontSize="96"/>
+            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" FontWeight="ExtraBold" FontSize="44" Margin="0,-22,0,0"/>
             <StackPanel Orientation="Horizontal" Margin="0,48,0,0">
                 <TextBlock FontSize="16">
                     <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}"/>
@@ -92,11 +92,11 @@
                 <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ReleaseNote}" Style="{ThemeResource TitleTextBlockStyle}"/>
                 <Grid
                     Margin="0,48,0,48"
                     CornerRadius="8"
-                    Background="{StaticResource WindowTrayBrush}">
+                    Background="{ThemeResource WindowTrayBrush}">
                     <ScrollViewer>
                         <control:MarkdownTextBlock
                             x:Name="ReleaseNotesBox"
@@ -115,7 +115,7 @@
             </Grid>
             <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
                 <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
-                <Button Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">
+                <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" FontWeight="Medium" Margin="16,0"/>
                 </Button>
             </StackPanel>

@@ -19,7 +19,7 @@
                 <ColumnDefinition Width="1224*"/>
                 <ColumnDefinition Width="227"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Cutscenes" Style="{StaticResource TitleLargeTextBlockStyle}"/>
+            <TextBlock Text="Cutscenes" Style="{ThemeResource TitleLargeTextBlockStyle}"/>
         </Grid>
     </Grid>
 </Page>

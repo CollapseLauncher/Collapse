@@ -19,10 +19,10 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageTitle}" Grid.Column="0"
-                   Style="{StaticResource TitleLargeTextBlockStyle}"/>
+                   Style="{ThemeResource TitleLargeTextBlockStyle}"/>
         <StackPanel Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Orientation="Vertical">
             <TextBlock x:Name="MigrationSubtextStatus" Grid.Column="0"
-                   Style="{StaticResource BodyTextBlockStyle}" Margin="0,-38,0,0"
+                   Style="{ThemeResource BodyTextBlockStyle}" Margin="0,-38,0,0"
                    HorizontalAlignment="Center">
                 <Span>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallMigrate.PageFooter1}"/>
@@ -31,7 +31,7 @@
                 </Span>
             </TextBlock>
             <TextBlock x:Name="MigrationTextStatus" Text="Please specify the location of the game" Grid.Column="0"
-                   Style="{StaticResource SubtitleTextBlockStyle}"
+                   Style="{ThemeResource SubtitleTextBlockStyle}"
                    HorizontalAlignment="Center" Margin="0,-72,0,0"/>
             <ProgressBar x:Name="MigrationProgressBar" IsIndeterminate="True"/>
         </StackPanel>

@@ -13,9 +13,9 @@
                     VerticalAlignment="Stretch"
                     Grid.Row="0">
             <TextBlock x:Name="Title"
-                       Margin="0,0,0,24" Style="{StaticResource TitleLargeTextBlockStyle}"/>
+                       Margin="0,0,0,24" Style="{ThemeResource TitleLargeTextBlockStyle}"/>
             <TextBlock x:Name="Subtitle"
-                       Margin="0,0,0,8" Style="{StaticResource BodyStrongTextBlockStyle}" FontSize="18"/>
+                       Margin="0,0,0,8" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
             <TextBox x:Name="ExceptionTextBox"
                      IsReadOnly="True"
                      HorizontalAlignment="Stretch"
@@ -28,10 +28,10 @@
                      Margin="0,0,0,16">
             </TextBox>
             <Button x:Name="CopyThrow" Content="{x:Bind helper:Locale.Lang._UnhandledExceptionPage.CopyClipboardBtn1}"
-                    HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
                     Click="CopyTextToClipboard"/>
             <Button x:Name="BackToPreviousPage"
-                    HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
                     Click="GoBackPreviousPage" Visibility="Collapsed" Margin="0,16,0,0">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;" FontSize="14"/>

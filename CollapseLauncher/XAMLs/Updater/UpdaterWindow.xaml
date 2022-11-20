@@ -8,7 +8,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid x:Name="DragArea" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="320"/>
-        <Page Background="{StaticResource PagesSolidAcrylicBrush}">
+        <Page Background="{ThemeResource PagesSolidAcrylicBrush}">
             <Grid Margin="24">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -16,8 +16,8 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,0,40">
                     <StackPanel>
-                        <TextBlock Text="We're updating" Style="{StaticResource TitleTextBlockStyle}" FontWeight="Normal"/>
-                        <TextBlock Text="Collapse Launcher" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Bold"/>
+                        <TextBlock Text="We're updating" Style="{ThemeResource TitleTextBlockStyle}" FontWeight="Normal"/>
+                        <TextBlock Text="Collapse Launcher" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom">
                         <Grid>
