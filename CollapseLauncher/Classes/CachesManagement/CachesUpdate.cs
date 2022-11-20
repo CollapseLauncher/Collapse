@@ -54,7 +54,6 @@ namespace CollapseLauncher.Pages
                 CheckUpdateBtn.IsEnabled = true;
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CancelBtn.IsEnabled = false;
-                http.DownloadProgress -= CachesDownloadProgress;
 
                 ResetCacheList();
             }
@@ -68,44 +67,47 @@ namespace CollapseLauncher.Pages
         private async Task DownloadCachesUpdate()
         {
             string cachesPathType;
-            foreach (DataProperties dataType in BrokenCachesProperties)
+            await Task.Run(() =>
             {
-                cachesPathType = GetCachePathByType(dataType.DataType);
-
-                cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
-                LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
-
-                http.DownloadProgress += CachesDownloadProgress;
-                await Task.Run(() =>
+                using (Http _client = new Http())
                 {
-                    foreach (DataPropertiesContent content in dataType.Content)
+                    foreach (DataProperties dataType in BrokenCachesProperties)
                     {
-                        cachesCount++;
-                        cachesURL = cachesEndpointURL + content.ConcatNRemote;
-                        cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN));
+                        cachesPathType = GetCachePathByType(dataType.DataType);
 
-                        if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
-                            Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
+                        cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
+                        LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
 
-                        DispatcherQueue.TryEnqueue(() => CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N));
-
-                        if (content.CS >= 10 << 20)
+                        _client.DownloadProgress += CachesDownloadProgress;
+                        foreach (DataPropertiesContent content in dataType.Content)
                         {
-                            http.DownloadSync(cachesURL, cachesPath, (byte)DownloadThread, true, cancellationTokenSource.Token);
-                            http.MergeSync();
-                        }
-                        else
-                        {
-                            http.DownloadSync(cachesURL, cachesPath, true, null, null, cancellationTokenSource.Token);
-                        }
+                            cachesCount++;
+                            cachesURL = cachesEndpointURL + content.ConcatNRemote;
+                            cachesPath = Path.Combine(cachesPathType, NormalizePath(content.ConcatN));
 
-                        LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
+                            if (!Directory.Exists(Path.GetDirectoryName(cachesPath)))
+                                Directory.CreateDirectory(Path.GetDirectoryName(cachesPath));
 
-                        DispatcherQueue.TryEnqueue(() => brokenCachesListUI.RemoveAt(0));
+                            DispatcherQueue.TryEnqueue(() => CachesStatus.Text = string.Format(Lang._Misc.Downloading + " {0}: {1}", dataType.DataType, content.N));
+
+                            if (content.CS >= 10 << 20)
+                            {
+                                _client.DownloadSync(cachesURL, cachesPath, (byte)DownloadThread, true, cancellationTokenSource.Token);
+                                _client.MergeSync();
+                            }
+                            else
+                            {
+                                _client.DownloadSync(cachesURL, cachesPath, true, null, null, cancellationTokenSource.Token);
+                            }
+
+                            LogWriteLine($"Downloaded: {content.N}", LogType.Default, true);
+
+                            DispatcherQueue.TryEnqueue(() => brokenCachesListUI.RemoveAt(0));
+                        }
+                        _client.DownloadProgress -= CachesDownloadProgress;
                     }
-                });
-                http.DownloadProgress -= CachesDownloadProgress;
-            }
+                }
+            });
         }
 
         private void CacheReindexing()
@@ -137,7 +139,10 @@ namespace CollapseLauncher.Pages
         string timeLeftString;
         private void CachesDownloadProgress(object sender, DownloadEvent e)
         {
-            if (http.DownloadState != MultisessionState.Merging) cachesRead += e.Read;
+            if (e.State != MultisessionState.Merging)
+            {
+                cachesRead += e.Read;
+            }
 
             timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((cachesTotalSize - cachesRead) / Unzeroed((long)(cachesRead / SpeedStopwatch.Elapsed.TotalSeconds))));
 
@@ -149,5 +154,7 @@ namespace CollapseLauncher.Pages
                 CachesTotalProgressBar.Value = GetPercentageNumber(cachesRead, cachesTotalSize);
             });
         }
+
+        private void nothing() { }
     }
 }

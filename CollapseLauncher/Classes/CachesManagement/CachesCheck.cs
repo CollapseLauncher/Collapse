@@ -29,7 +29,6 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         ObservableCollection<DataPropertiesUI> brokenCachesListUI = new ObservableCollection<DataPropertiesUI>();
 
-        Http http = new Http();
         Stream cachesStream;
         FileInfo cachesFileInfo;
         string[] cacheRegionalCheckName = new string[1] { "sprite" };
@@ -81,7 +80,6 @@ namespace CollapseLauncher.Pages
                 CheckUpdateBtn.IsEnabled = true;
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CancelBtn.IsEnabled = false;
-                http.DownloadProgress -= DataFetchingProgress;
                 ResetCacheList();
             }
             catch (Exception ex)
@@ -94,6 +92,7 @@ namespace CollapseLauncher.Pages
 
         private async Task<(uint, long)> ReadDataVersion(CachesType type)
         {
+            using (Http _client = new Http())
             using (cachesStream = new MemoryStream())
             {
                 cachesAPIURL = string.Format(CurrentConfigV2.CachesEndpointURL + "{1}Version.unity3d", type.ToString().ToLowerInvariant(), type == CachesType.Data ? "Data" : "Resource");
@@ -101,9 +100,9 @@ namespace CollapseLauncher.Pages
 
                 CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
 
-                http.DownloadProgress += DataFetchingProgress;
-                await http.Download(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
-                http.DownloadProgress -= DataFetchingProgress;
+                _client.DownloadProgress += DataFetchingProgress;
+                await _client.Download(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
+                _client.DownloadProgress -= DataFetchingProgress;
                 cachesStream.Position = 0;
 
                 using (Stream stream = new XORStream(cachesStream))
@@ -158,35 +157,6 @@ namespace CollapseLauncher.Pages
             CacheProperties.Add(localProp);
 
             return (count, size);
-        }
-
-        private Dictionary<string, PatchDataPropertiesContent> BuildVersioningPatchList(CachesType type)
-        {
-            Dictionary<string, PatchDataPropertiesContent> ret = new Dictionary<string, PatchDataPropertiesContent>();
-            cachesAPIURL = string.Format(CurrentConfigV2.CachesEndpointURL + "patch/patchconfig.xmf", type.ToString().ToLowerInvariant());
-
-            using (cachesStream = new MemoryStream())
-            {
-                http.DownloadProgress += DataFetchingProgress;
-                http.DownloadSync(cachesAPIURL, cachesStream, null, null, cancellationTokenSource.Token);
-                http.DownloadProgress -= DataFetchingProgress;
-                cachesStream.Position = 0;
-
-                using (EndianBinaryReader br = new EndianBinaryReader(cachesStream))
-                {
-                    uint count = br.ReadUInt32();
-                    for (uint i = 0; i < count; i++)
-                    {
-                        string FileOld = br.ReadString();
-                        string FileNew = br.ReadString();
-                        string PatchOld = br.ReadString();
-                        string PatchNew = br.ReadString();
-                        uint PatchNewSize = br.ReadUInt32();
-                    }
-                }
-            }
-
-            return ret;
         }
 
         private async Task FetchCachesAPI()
