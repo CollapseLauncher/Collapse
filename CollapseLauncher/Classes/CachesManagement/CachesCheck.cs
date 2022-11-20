@@ -3,7 +3,6 @@ using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.UABT;
-using Hi3Helper.UABT.Binary;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
