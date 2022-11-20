@@ -195,22 +195,22 @@ namespace CollapseLauncher
             return cachePath;
         }
 
-        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput)
+        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality = 10)
         {
             Windows.UI.Color[] _colors;
             switch (CurrentAppTheme)
             {
                 case AppThemeMode.Light:
-                    _colors = await SetLightColors(bitmapinput);
+                    _colors = await SetLightColors(bitmapinput, quality);
                     break;
                 case AppThemeMode.Dark:
-                    _colors = await SetDarkColors(bitmapinput);
+                    _colors = await SetDarkColors(bitmapinput, quality);
                     break;
                 default:
                     if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        _colors = await SetLightColors(bitmapinput);
+                        _colors = await SetLightColors(bitmapinput, quality);
                     else
-                        _colors = await SetDarkColors(bitmapinput);
+                        _colors = await SetDarkColors(bitmapinput, quality);
                     break;
             }
 
@@ -218,9 +218,9 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput)
+        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 10)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
@@ -229,9 +229,9 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput)
+        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 10)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
@@ -240,11 +240,11 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false)
+        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false, int quality = 10)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(bitmapinput, 10, 3));
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(bitmapinput, quality, 3));
 
             QuantizedColor Single = null;
 
@@ -265,10 +265,12 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
 
-        private async Task GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
         {
             (uint, uint) OrigSize;
             (uint, uint) ResizedSize;
+            Bitmap bitmapRet;
+            BitmapImage bitmapImageRet;
             using (IRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
                 using (stream)
@@ -297,19 +299,21 @@ namespace CollapseLauncher
                     if (OrigSize.Item1 > ResizedSize.Item1
                      && OrigSize.Item2 > ResizedSize.Item2)
                     {
-                        PaletteBitmap = await Task.Run(() => Stream2Bitmap(BackgroundStream));
+                        bitmapRet = await Task.Run(() => Stream2Bitmap(BackgroundStream));
                     }
                     else
                     {
-                        PaletteBitmap = await Task.Run(() => Stream2Bitmap(stream));
+                        bitmapRet = await Task.Run(() => Stream2Bitmap(stream));
                     }
 
-                    BackgroundBitmap = await Stream2BitmapImage(BackgroundStream);
+                    bitmapImageRet = await Stream2BitmapImage(BackgroundStream);
                 }
             }
+
+            return (bitmapRet, bitmapImageRet);
         }
 
-        private void FlipSize(ref (uint, uint) b)
+        private static void FlipSize(ref (uint, uint) b)
         {
             (uint, uint) _b = b;
             b.Item1 = _b.Item2;
@@ -332,7 +336,7 @@ namespace CollapseLauncher
 
         // Reference:
         // https://stackoverflow.com/questions/1940581/c-sharp-image-resizing-to-different-size-while-preserving-aspect-ratio
-        private (uint, uint) GetPreservedImageRatio(uint canvasWidth, uint canvasHeight, uint imgWidth, uint imgHeight)
+        private static (uint, uint) GetPreservedImageRatio(uint canvasWidth, uint canvasHeight, uint imgWidth, uint imgHeight)
         {
             double ratioX = (double)canvasWidth / imgWidth;
             double ratioY = (double)canvasHeight / imgHeight;
@@ -369,7 +373,7 @@ namespace CollapseLauncher
 
             IRandomAccessStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream();
 
-            await GetResizedBitmap(stream, Width, Height);
+            (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
             await ApplyAccentColor(this, PaletteBitmap);
 

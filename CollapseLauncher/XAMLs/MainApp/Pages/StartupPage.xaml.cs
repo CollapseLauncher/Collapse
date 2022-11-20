@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.FileDialogNative;
@@ -26,6 +27,7 @@ namespace CollapseLauncher.Pages
         private void StartupPage_Loaded(object sender, RoutedEventArgs e)
         {
             MainWindow.SetInitialDragArea();
+            m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
         }
 
         private async void ChooseFolder(object sender, RoutedEventArgs e)

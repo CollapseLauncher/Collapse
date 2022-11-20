@@ -44,24 +44,23 @@ namespace CollapseLauncher.Pages
             {
                 _selectedRegion = GetComboBoxGameRegionValue(value);
 
-                NextPage.IsEnabled = false;
+                NextPage.IsEnabled = true;
 
                 BarBGLoading.Visibility = Visibility.Visible;
                 BarBGLoading.IsIndeterminate = true;
                 FadeBackground(1, 0.25);
-                await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
+                bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
 
-                if (_gamePosterBitmap is not null)
+                if (_gamePosterBitmap is not null && IsSuccess)
                 {
-                    _ = await MainPage.ApplyAccentColor(this, _gamePosterBitmap);
+                    await MainPage.ApplyAccentColor(this, _gamePosterBitmap, 8);
                     MainPage.ReloadPageTheme(this, MainPage.ConvertAppThemeToElementTheme(CurrentAppTheme));
                 }
+
                 this.BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG), null, new DrillInNavigationTransitionInfo());
                 FadeBackground(0.25, 1);
                 BarBGLoading.IsIndeterminate = false;
                 BarBGLoading.Visibility = Visibility.Collapsed;
-
-                NextPage.IsEnabled = true;
 
                 return;
             }

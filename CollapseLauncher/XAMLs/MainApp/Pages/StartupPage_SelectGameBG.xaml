@@ -18,16 +18,25 @@
             <Image x:Name="GameDetailsPoster"
                VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
             <StackPanel Width="466" VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right" Margin="0,0,40,128">
+                    HorizontalAlignment="Right" Margin="0,0,40,110">
                 <Grid x:Name="GameDetailsLogoShadow"/>
                 <Image x:Name="GameDetailsLogo"
                    Width="220" HorizontalAlignment="Right"
                    s:Effects.Shadow="{StaticResource DetailsLogoShadowController}"
-                   Margin="0,0,0,32"/>
+                   Margin="0,0,0,24"/>
                 <Grid x:Name="GameDetailsTextShadow"/>
                 <TextBlock x:Name="GameDetailsDescription"
                        s:Effects.Shadow="{StaticResource DetailsTextShadowController}"
                        TextWrapping="Wrap" TextAlignment="Right" FontSize="16" FontWeight="Medium"/>
+                <Button x:Name="GameDetailsHomepage" HorizontalAlignment="Right" Margin="0,16,0,0"
+                        Tag="{x:Bind GameDetailsHomepageLink}"
+                        ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}"
+                        Padding="16,4,16,8" Click="GameDetailsHomepage_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="GameDetailsHomepageText" Text="{x:Bind GameDetailsHomepageLink}" MaxWidth="250" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        <FontIcon FontFamily="{StaticResource FontAwesomeSolid}" Glyph="&#xf0c1;" FontSize="14" Margin="10,0,0,-3"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Grid>
         <Grid x:Name="GameDetailsDummy"
