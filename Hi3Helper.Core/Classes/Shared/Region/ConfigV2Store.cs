@@ -11,7 +11,6 @@ namespace Hi3Helper.Preset
 {
     public static class ConfigV2Store
     {
-        public static Http.Http http = new Http.Http();
         public static Metadata ConfigV2 = new Metadata();
         public static PresetConfigV2 CurrentConfigV2;
         public static string CurrentConfigV2GameCategory;
@@ -109,25 +108,28 @@ namespace Hi3Helper.Preset
         {
             string URL;
 
-            if (!Directory.Exists(AppGameConfigMetadataFolder))
-                Directory.CreateDirectory(AppGameConfigMetadataFolder);
-
-            if (Stamp)
+            using (Http.Http _httpClient = new Http.Http())
             {
-                URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
-                if (File.Exists(AppGameConfigV2StampPath))
-                    File.Delete(AppGameConfigV2StampPath);
+                if (!Directory.Exists(AppGameConfigMetadataFolder))
+                    Directory.CreateDirectory(AppGameConfigMetadataFolder);
 
-                await http.Download(URL, AppGameConfigV2StampPath, true, null, null);
-            }
+                if (Stamp)
+                {
+                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
+                    if (File.Exists(AppGameConfigV2StampPath))
+                        File.Delete(AppGameConfigV2StampPath);
 
-            if (Content)
-            {
-                URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
-                if (File.Exists(AppGameConfigV2MetadataPath))
-                    File.Delete(AppGameConfigV2MetadataPath);
+                    await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                }
 
-                await http.Download(URL, AppGameConfigV2MetadataPath, true, null, null);
+                if (Content)
+                {
+                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
+                    if (File.Exists(AppGameConfigV2MetadataPath))
+                        File.Delete(AppGameConfigV2MetadataPath);
+
+                    await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                }
             }
         }
 

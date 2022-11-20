@@ -671,8 +671,6 @@ namespace CollapseLauncher
 
         public async Task PostInstallVerification(UIElement Content)
         {
-            // Temporarily disable the PostInstallVerification for both Post Install Check and
-            // Repair Mechanism.
             if (!(this.SourceProfile.IsGenshin ?? false)) return;
 
             InstallStatus = new InstallManagementStatus
@@ -731,22 +729,22 @@ namespace CollapseLauncher
             BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build local audio entry.
-            foreach (string _Entry in Directory.GetFiles(GameDirPath, "Audio_*_pkg_version"))
+            foreach (string _Entry in Directory.EnumerateFiles(GameDirPath, "Audio_*_pkg_version"))
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build additional blks entry.
-            foreach (string _Entry in Directory.GetFiles(
+            foreach (string _Entry in Directory.EnumerateFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "data_versions_*"))
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", RepoRemoteURL);
-            foreach (string _Entry in Directory.GetFiles(
+            foreach (string _Entry in Directory.EnumerateFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "silence_versions_*"))
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", "", RepoRemoteURL);
-            foreach (string _Entry in Directory.GetFiles(
+            foreach (string _Entry in Directory.EnumerateFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets"), "res_versions_*"))
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", RepoRemoteURL);
 
             // Build cutscenes entry.
-            foreach (string _Entry in Directory.GetFiles(
+            foreach (string _Entry in Directory.EnumerateFiles(
                 Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets"), "*_versions_*"))
                 BuildManifestList(_Entry, Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\StreamingAssets\\VideoAssets", "", RepoRemoteURL);
         }

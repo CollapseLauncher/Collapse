@@ -20,7 +20,7 @@ namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
-        private Http Http = new Http(default, 4, 250);
+        private Http _httpClient;
         private bool IsLoadRegionComplete;
         private bool IsInnerTaskSuccess;
         private string PreviousTag = string.Empty;
@@ -32,35 +32,38 @@ namespace CollapseLauncher
 
         public async Task<bool> LoadRegionFromCurrentConfigV2()
         {
-            LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
-
-            // Set IsLoadRegionComplete to false
-            IsLoadRegionComplete = false;
-
-            // Clear MainPage State, like NavigationView, Load State, etc.
-            ClearMainPageState();
-
-            // Load Game Region File
-            LoadGameRegionFromCurrentConfigV2();
-
-            // Load Region Resource from Launcher API
-            bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
-            bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
-
-            if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
+            using (_httpClient = new Http(default, 4, 250))
             {
-                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
-                return false;
+                LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
+
+                // Set IsLoadRegionComplete to false
+                IsLoadRegionComplete = false;
+
+                // Clear MainPage State, like NavigationView, Load State, etc.
+                ClearMainPageState();
+
+                // Load Game Region File
+                LoadGameRegionFromCurrentConfigV2();
+
+                // Load Region Resource from Launcher API
+                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
+                bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
+
+                if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
+                {
+                    MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                    return false;
+                }
+
+                // Finalize Region Load
+                await ChangeBackgroundImageAsRegion();
+                FinalizeLoadRegion();
+
+                // Set IsLoadRegionComplete to false
+                IsLoadRegionComplete = true;
+
+                return true;
             }
-
-            // Finalize Region Load
-            await ChangeBackgroundImageAsRegion();
-            FinalizeLoadRegion();
-
-            // Set IsLoadRegionComplete to false
-            IsLoadRegionComplete = true;
-
-            return true;
         }
 
         private void LoadGameRegionFromCurrentConfigV2()

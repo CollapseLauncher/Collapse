@@ -1126,6 +1126,7 @@ namespace CollapseLauncher.Pages
         {
             PageToken.Cancel();
             InstallerDownloadTokenSource.Cancel();
+            GC.Collect();
         }
 
         private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)

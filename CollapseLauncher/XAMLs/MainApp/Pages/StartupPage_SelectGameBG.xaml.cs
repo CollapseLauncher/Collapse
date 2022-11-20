@@ -132,15 +132,17 @@ namespace CollapseLauncher.Pages
 
         private static async Task<string> GetCachedSprites(string URL)
         {
-            Http _client = new Http();
-            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-            if (!Directory.Exists(cacheFolder))
-                Directory.CreateDirectory(cacheFolder);
+            using (Http _client = new Http())
+            {
+                string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
+                string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
+                if (!Directory.Exists(cacheFolder))
+                    Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await _client.Download(URL, cachePath, true, null, null, new CancellationToken());
+                if (!File.Exists(cachePath)) await _client.Download(URL, cachePath, true, null, null, new CancellationToken());
 
-            return cachePath;
+                return cachePath;
+            }
         }
     }
 }

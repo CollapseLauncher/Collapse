@@ -71,7 +71,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, default);
+                await _httpClient.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, default);
                 memoryStream.Position = 0;
                 regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
@@ -88,7 +88,7 @@ namespace CollapseLauncher
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, langID), memoryStream, null, null, default);
+                await _httpClient.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, langID), memoryStream, null, null, default);
                 memoryStream.Position = 0;
                 return JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
@@ -99,7 +99,7 @@ namespace CollapseLauncher
             RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                await Http.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
+                await _httpClient.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
                 memoryStream.Position = 0;
                 ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
@@ -191,12 +191,12 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await Http.Download(URL, cachePath, true, null, null, token);
+            if (!File.Exists(cachePath)) await _httpClient.Download(URL, cachePath, true, null, null, token);
 
             return cachePath;
         }
 
-        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality = 10)
+        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality = 7)
         {
             Windows.UI.Color[] _colors;
             switch (CurrentAppTheme)
@@ -219,7 +219,7 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 10)
+        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 3)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
@@ -231,7 +231,7 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 10)
+        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 3)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
@@ -243,13 +243,15 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false, int quality = 10)
+        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false, int quality = 3)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => new ColorThief().GetPalette(bitmapinput, quality, 3));
 
             QuantizedColor Single = null;
+            IEnumerable<QuantizedColor> Colors;
+            ColorThief cT = new ColorThief();
+            Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
 
             try
             {
@@ -262,6 +264,8 @@ namespace CollapseLauncher
             }
 
             for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single);
+
+            GC.Collect();
 
             return output;
         }
@@ -295,7 +299,8 @@ namespace CollapseLauncher
 
                     if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
                     BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
-                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelData.DetachPixelData());
+                    byte[] pixelDataBytes = pixelData.DetachPixelData();
+                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelDataBytes);
 
                     await encoder.FlushAsync();
 
@@ -312,6 +317,8 @@ namespace CollapseLauncher
                     bitmapImageRet = await Stream2BitmapImage(BackgroundStream);
                 }
             }
+
+            GC.Collect();
 
             return (bitmapRet, bitmapImageRet);
         }
@@ -360,8 +367,8 @@ namespace CollapseLauncher
 
             if (!fI.Exists)
             {
-                await Http.Download(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, false, default);
-                await Http.Merge();
+                await _httpClient.Download(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, false, default);
+                await _httpClient.Merge();
             }
         }
 

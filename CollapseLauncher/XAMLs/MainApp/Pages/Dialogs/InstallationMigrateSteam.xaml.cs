@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.GameConversion;
 using Microsoft.UI.Xaml;
@@ -87,9 +88,10 @@ namespace CollapseLauncher.Dialogs
         {
             repoListURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
 
+            using (Http _client = new Http())
             using (MemoryStream s = new MemoryStream())
             {
-                await http.Download(repoListURL, s, null, null, tokenSource.Token);
+                await _client.Download(repoListURL, s, null, null, tokenSource.Token);
                 Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
                 repoURL = repoList[regionResourceProp.data.game.latest.version] + '/';
                 repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
