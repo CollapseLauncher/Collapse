@@ -795,7 +795,7 @@ namespace CollapseLauncher.Pages
             InstallerDownloadTokenSource = new CancellationTokenSource();
             CancellationToken token = InstallerDownloadTokenSource.Token;
 
-            InstallTool = new InstallManagement(Content,
+            using (InstallTool = new InstallManagement(Content,
                                 DownloadType.FirstInstall,
                                 CurrentConfigV2,
                                 destinationFolder,
@@ -809,33 +809,34 @@ namespace CollapseLauncher.Pages
                                 CurrentConfigV2.ProtoDispatchKey,
                                 CurrentConfigV2.GameDispatchURL,
                                 CurrentConfigV2.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
-
-            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
-            if (IsGameHasVoicePack)
-                InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
-
-            ProgressStatusGrid.Visibility = Visibility.Visible;
-            UpdateGameBtn.Visibility = Visibility.Collapsed;
-            CancelDownloadBtn.Visibility = Visibility.Visible;
-
-            InstallTool.InstallStatusChanged += InstallToolStatus;
-            InstallTool.InstallProgressChanged += InstallToolProgress;
-            bool RetryRoutine = true;
-
-            await InstallTool.CheckDriveFreeSpace(Content);
-            await InstallTool.CheckExistingDownloadAsync(Content);
-
-            while (RetryRoutine)
+                                Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName)))
             {
-                await InstallTool.StartDownloadAsync();
-                RetryRoutine = await InstallTool.StartVerificationAsync(Content);
+                InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
+                if (IsGameHasVoicePack)
+                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
+
+                ProgressStatusGrid.Visibility = Visibility.Visible;
+                UpdateGameBtn.Visibility = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+
+                InstallTool.InstallStatusChanged += InstallToolStatus;
+                InstallTool.InstallProgressChanged += InstallToolProgress;
+                bool RetryRoutine = true;
+
+                await InstallTool.CheckDriveFreeSpace(Content);
+                await InstallTool.CheckExistingDownloadAsync(Content);
+
+                while (RetryRoutine)
+                {
+                    await InstallTool.StartDownloadAsync();
+                    RetryRoutine = await InstallTool.StartVerificationAsync(Content);
+                }
+
+                await Task.Run(InstallTool.StartInstall);
+
+                ApplyGameConfig(GameDirPath);
+                await InstallTool.FinalizeInstallationAsync(Content);
             }
-
-            await Task.Run(InstallTool.StartInstall);
-
-            ApplyGameConfig(GameDirPath);
-            await InstallTool.FinalizeInstallationAsync(Content);
 
             return returnVal;
         }
@@ -1203,7 +1204,7 @@ namespace CollapseLauncher.Pages
                     InstallerDownloadTokenSource = new CancellationTokenSource();
                     CancellationToken token = InstallerDownloadTokenSource.Token;
 
-                    InstallTool = new InstallManagement(Content,
+                    using (InstallTool = new InstallManagement(Content,
                                         DownloadType.FirstInstall,
                                         CurrentConfigV2,
                                         GameDirPath,
@@ -1217,15 +1218,16 @@ namespace CollapseLauncher.Pages
                                         CurrentConfigV2.ProtoDispatchKey,
                                         CurrentConfigV2.GameDispatchURL,
                                         CurrentConfigV2.GetRegServerNameID(),
-                                        Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
+                                        Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName)))
+                    {
+                        InstallTool.InstallProgressChanged += InstallToolProgress;
+                        InstallTool.InstallStatusChanged += InstallToolStatus;
+                        await InstallTool.PostInstallVerification(Content);
+                        InstallTool.InstallProgressChanged -= InstallToolProgress;
+                        InstallTool.InstallStatusChanged -= InstallToolStatus;
 
-                    InstallTool.InstallProgressChanged += InstallToolProgress;
-                    InstallTool.InstallStatusChanged += InstallToolStatus;
-                    await InstallTool.PostInstallVerification(Content);
-                    InstallTool.InstallProgressChanged -= InstallToolProgress;
-                    InstallTool.InstallStatusChanged -= InstallToolStatus;
-
-                    await Dialog_RepairCompleted(Content, InstallTool.GetBrokenFilesCount());
+                        await Dialog_RepairCompleted(Content, InstallTool.GetBrokenFilesCount());
+                    }
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                 }
                 else
@@ -1412,6 +1414,10 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Update error on {CurrentConfigV2.ZoneFullname} game!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+            finally
+            {
+                InstallTool.Dispose();
+            }
         }
 
         private Dictionary<string, RegionResourceVersion> TryAddVoicePack(RegionResourceVersion diffVer)
@@ -1588,6 +1594,10 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Pre-Download paused!", Hi3Helper.LogType.Warning);
+            }
+            finally
+            {
+                InstallTool.Dispose();
             }
         }
 
