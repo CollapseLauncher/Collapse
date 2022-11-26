@@ -35,7 +35,7 @@ namespace CollapseLauncher.Pages
     {
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
-        Http http = new Http();
+        Http _httpClient = new Http();
         MemoryStream memBuffer;
         byte[] buffer = new byte[0x400000];
 
@@ -74,25 +74,28 @@ namespace CollapseLauncher.Pages
             {
                 string repoURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
 
-                using (memBuffer = new MemoryStream())
+                using (_httpClient = new Http())
                 {
-                    http.DownloadProgress += DataFetchingProgress;
-                    await http.Download(repoURL, memBuffer, null, null, cancellationTokenSource.Token);
-                    http.DownloadProgress -= DataFetchingProgress;
-                    memBuffer.Position = 0;
-                    RepoURLDict = (Dictionary<string, string>)JsonSerializer.Deserialize(memBuffer, typeof(Dictionary<string, string>), D_StringString.Default);
-                }
-                GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
+                    using (memBuffer = new MemoryStream())
+                    {
+                        _httpClient.DownloadProgress += DataFetchingProgress;
+                        await _httpClient.Download(repoURL, memBuffer, null, null, cancellationTokenSource.Token);
+                        _httpClient.DownloadProgress -= DataFetchingProgress;
+                        memBuffer.Position = 0;
+                        RepoURLDict = (Dictionary<string, string>)JsonSerializer.Deserialize(memBuffer, typeof(Dictionary<string, string>), D_StringString.Default);
+                    }
+                    GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
 
-                string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
+                    string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
 
-                using (memBuffer = new MemoryStream())
-                {
-                    http.DownloadProgress += DataFetchingProgress;
-                    await http.Download(indexURL, memBuffer, null, null, cancellationTokenSource.Token);
-                    http.DownloadProgress -= DataFetchingProgress;
-                    memBuffer.Position = 0;
-                    FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(memBuffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                    using (memBuffer = new MemoryStream())
+                    {
+                        _httpClient.DownloadProgress += DataFetchingProgress;
+                        await _httpClient.Download(indexURL, memBuffer, null, null, cancellationTokenSource.Token);
+                        _httpClient.DownloadProgress -= DataFetchingProgress;
+                        memBuffer.Position = 0;
+                        FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(memBuffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                    }
                 }
 
                 await Task.Run(CheckGameFiles);

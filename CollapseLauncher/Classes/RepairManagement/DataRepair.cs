@@ -47,21 +47,24 @@ namespace CollapseLauncher.Pages
                 RepairTotalProgressBar.Value = 0;
             });
 
-            foreach (var BrokenFile in BrokenFileIndexesProperty)
+            using (_httpClient = new Http())
             {
-                FilePath = Path.Combine(GameBasePath, NormalizePath(BrokenFile.N));
-                if (!Directory.Exists(Path.GetDirectoryName(FilePath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
-
-                switch (BrokenFile.FT)
+                foreach (var BrokenFile in BrokenFileIndexesProperty)
                 {
-                    case FileType.Generic:
-                    case FileType.Audio:
-                        await RepairGenericAudioFiles(BrokenFile);
-                        break;
-                    case FileType.Blocks:
-                        await RepairBlockFiles(BrokenFile);
-                        break;
+                    FilePath = Path.Combine(GameBasePath, NormalizePath(BrokenFile.N));
+                    if (!Directory.Exists(Path.GetDirectoryName(FilePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
+
+                    switch (BrokenFile.FT)
+                    {
+                        case FileType.Generic:
+                        case FileType.Audio:
+                            await RepairGenericAudioFiles(BrokenFile);
+                            break;
+                        case FileType.Blocks:
+                            await RepairBlockFiles(BrokenFile);
+                            break;
+                    }
                 }
             }
 
@@ -102,18 +105,18 @@ namespace CollapseLauncher.Pages
                 RepairFileInfo.Create();
             else
             {
-                http.DownloadProgress += GenericFilesDownloadProgress;
+                _httpClient.DownloadProgress += GenericFilesDownloadProgress;
 
                 if (input.S > MultipleDownloadSizeStart)
                 {
-                    await http.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
-                    await http.Merge();
+                    await _httpClient.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
+                    await _httpClient.Merge();
                 }
                 else
                     using (RepairFileStream = RepairFileInfo.Create())
-                        await http.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
+                        await _httpClient.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
 
-                http.DownloadProgress -= GenericFilesDownloadProgress;
+                _httpClient.DownloadProgress -= GenericFilesDownloadProgress;
             }
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -145,18 +148,19 @@ namespace CollapseLauncher.Pages
                         RepairTotalProgressBar.Value = GetPercentageNumber(RepairedFilesCount, BrokenFilesCount, 2);
                     });
 
-                    http.DownloadProgress += GenericFilesDownloadProgress;
+                    _httpClient.DownloadProgress += GenericFilesDownloadProgress;
 
                     if (block.BlockSize > MultipleDownloadSizeStart)
                     {
-                        await http.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
-                        await http.Merge();
+                        await _httpClient.Download(FileURL, FilePath, DownloadThread, true, cancellationTokenSource.Token);
+                        await _httpClient.Merge();
                     }
                     else
-                        using (RepairFileStream = RepairFileInfo.Create())
-                            await http.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
+                    {
+                        await _httpClient.Download(FileURL, FilePath, true, null, null, cancellationTokenSource.Token);
+                    }
 
-                    http.DownloadProgress -= GenericFilesDownloadProgress;
+                    _httpClient.DownloadProgress -= GenericFilesDownloadProgress;
 
                     DispatcherQueue.TryEnqueue(() =>
                     {
@@ -180,10 +184,10 @@ namespace CollapseLauncher.Pages
 
                             using (MemoryStream RepairMemoryStream = new MemoryStream())
                             {
-                                http.DownloadProgress += GenericFilesDownloadProgress;
-                                await http.Download(FileURL, RepairMemoryStream,
+                                _httpClient.DownloadProgress += GenericFilesDownloadProgress;
+                                await _httpClient.Download(FileURL, RepairMemoryStream,
                                     chunk._startoffset, chunk._startoffset + chunk._filesize, cancellationTokenSource.Token);
-                                http.DownloadProgress -= GenericFilesDownloadProgress;
+                                _httpClient.DownloadProgress -= GenericFilesDownloadProgress;
 
                                 RepairFileStream.Position = chunk._startoffset;
                                 await RepairFileStream.WriteAsync(RepairMemoryStream.GetBuffer(), 0,

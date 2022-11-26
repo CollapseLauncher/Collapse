@@ -43,9 +43,10 @@ namespace CollapseLauncher
                 {
                     try
                     {
+                        using (Http http = new Http())
                         using (MemoryStream RemoteData = new MemoryStream())
                         {
-                            await new Http().Download(ChannelURL + "fileindex.json", RemoteData, null, null, new CancellationToken());
+                            await http.Download(ChannelURL + "fileindex.json", RemoteData, null, null, new CancellationToken());
                             RemoteData.Position = 0;
                             UpdateProperty = (Prop)JsonSerializer.Deserialize(RemoteData, typeof(Prop), PropContext.Default);
                         }
