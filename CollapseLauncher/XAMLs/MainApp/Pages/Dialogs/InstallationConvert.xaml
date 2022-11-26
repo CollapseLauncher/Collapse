@@ -9,7 +9,6 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}"
     x:FieldModifier="public" Loaded="Page_Loaded">
-
     <StackPanel Margin="32">
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}"
                    Style="{ThemeResource TitleLargeTextBlockStyle}"
@@ -40,7 +39,7 @@
                     <CompositeTransform Rotation="180"/>
                 </Slider.RenderTransform>
             </Slider>
-            <Rectangle Fill="Transparent" Grid.Column="0" Grid.RowSpan="5">
+            <Rectangle Fill="Transparent" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="5">
             </Rectangle>
             <StackPanel x:Name="Step1" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="1">
                 <ProgressRing x:Name="Step1ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="True" Margin="0,0,16,0"/>
@@ -85,15 +84,15 @@
                     <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
                 </StackPanel>
             </Button>
-        </Grid>
-        <TextBlock x:Name="MigrationSubtextStatus"
-                   Style="{ThemeResource BodyTextBlockStyle}" Margin="0,12,4,0"
-                   HorizontalAlignment="Right">
+            <TextBlock x:Name="MigrationSubtextStatus" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"
+                   Style="{ThemeResource BodyTextBlockStyle}" Margin="0,0,0,-26"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Span>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter1}"/>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter2}" FontWeight="Black"/>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter3}"/>
                 </Span>
-        </TextBlock>
+            </TextBlock>
+        </Grid>
     </StackPanel>
 </Page>
