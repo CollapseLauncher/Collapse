@@ -104,7 +104,7 @@ namespace CollapseLauncher
             while (IsContinue = await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
             {
                 // If true (fail), then log the retry attempt
-                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", LoadTimeout);
+                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", Timeout);
                 LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has timed-out (> {Timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
                 Timeout += TimeoutStep;
                 CurrentRetry++;
