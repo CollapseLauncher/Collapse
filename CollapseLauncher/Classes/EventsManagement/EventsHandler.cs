@@ -75,11 +75,11 @@ namespace CollapseLauncher
             uint concatLocalVer = 0, concatRemoteVer = 0;
 
             byte[] LocalVersion = CurrentVer.Split('.')
-                .Select(x => byte.Parse(x))
+                .Select(byte.Parse)
                 .ToArray();
 
             byte[] RemoteVersion = ComparedVer.Split('.')
-                .Select(x => byte.Parse(x))
+                .Select(byte.Parse)
                 .ToArray();
 
             for (int i = 0; i < LocalVersion.Length; i++)

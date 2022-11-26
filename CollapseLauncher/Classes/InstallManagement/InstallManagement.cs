@@ -423,7 +423,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task TryUnassignReadOnlyFilesAsync() => await Task.Run(() => TryUnassignReadOnlyFiles());
+        private async Task TryUnassignReadOnlyFilesAsync() => await Task.Run(TryUnassignReadOnlyFiles);
 
         private void TryUnassignReadOnlyFiles()
         {

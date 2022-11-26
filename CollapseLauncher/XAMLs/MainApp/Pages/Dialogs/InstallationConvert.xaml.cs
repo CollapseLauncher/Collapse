@@ -333,7 +333,7 @@ namespace CollapseLauncher.Dialogs
                 }
             }
 
-            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, TargetDataIntegrityURL, GameVersion, cPath, tokenSource.Token);
+            Converter = new GameConversionManagement(SourceProfile, TargetProfile, SourceDataIntegrityURL, GameVersion, cPath, tokenSource.Token);
 
             DispatcherQueue.TryEnqueue(() =>
             {

@@ -26,7 +26,7 @@ namespace CollapseLauncher
         List<FileProperties> SourceFileManifest;
         List<FileProperties> TargetFileManifest;
 
-        string SourceBaseURL, TargetBaseURL;
+        string BaseURL;
         string GameVersion;
         string CookbookPath;
         Stopwatch ConvertSw;
@@ -36,12 +36,11 @@ namespace CollapseLauncher
         byte DownloadThread;
 
         public GameConversionManagement(PresetConfigV2 SourceProfile, PresetConfigV2 TargetProfile,
-            string SourceBaseURL, string TargetBaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
+            string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
         {
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
-            this.SourceBaseURL = SourceBaseURL;
-            this.TargetBaseURL = TargetBaseURL;
+            this.BaseURL = BaseURL;
             this.GameVersion = GameVersion;
             this.DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
             this.CookbookPath = CookbookPath;
@@ -248,7 +247,7 @@ namespace CollapseLauncher
             {
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = SourceBaseURL + Entry.FileName;
+                InputURL = BaseURL + Entry.FileName;
 
                 ConvertDetail = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
