@@ -191,7 +191,19 @@ namespace CollapseLauncher
             if (!Directory.Exists(cacheFolder))
                 Directory.CreateDirectory(cacheFolder);
 
-            if (!File.Exists(cachePath)) await _httpClient.Download(URL, cachePath, true, null, null, token);
+            FileInfo fInfo = new FileInfo(cachePath);
+
+            if (!fInfo.Exists || fInfo.Length < (1 << 10))
+            {
+                if (fInfo.Length < (1 << 10))
+                {
+                    Console.WriteLine($"{fInfo.Name} {fInfo.Length}");
+                }
+                using (FileStream fs = fInfo.Create())
+                {
+                    await _httpClient.Download(URL, fs, null, null, token);
+                }
+            }
 
             return cachePath;
         }
