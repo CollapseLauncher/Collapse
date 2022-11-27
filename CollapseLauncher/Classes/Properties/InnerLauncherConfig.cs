@@ -64,6 +64,7 @@ namespace CollapseLauncher
         public static AppThemeMode CurrentAppTheme;
         public static Color SystemAppTheme;
         public static NotificationPush NotificationData;
+        public static bool IsCustomBG = false;
 
         public static ApplicationTheme GetAppTheme()
         {

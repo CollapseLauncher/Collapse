@@ -126,6 +126,11 @@ namespace CollapseLauncher.Pages
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
+
+            if (IsCustomBG)
+            {
+                ImageEventImgGrid.Margin = new Thickness(0, 0, 0, 16);
+            }
         }
 
         private async void StartCarouselAutoScroll(CancellationToken token = new CancellationToken(), int delay = 5)
@@ -1475,7 +1480,10 @@ namespace CollapseLauncher.Pages
             IsGameHasVoicePack = false;
         }
 
-        private void ConvertVersionButton_Click(object sender, RoutedEventArgs e) => MainFrameChanger.ChangeWindowFrame(typeof(InstallationConvert));
+        private void ConvertVersionButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrameChanger.ChangeWindowFrame(typeof(InstallationConvert));
+        }
 
         private List<string> EnumerateAudioLanguageString(RegionResourceVersion diffVer)
         {

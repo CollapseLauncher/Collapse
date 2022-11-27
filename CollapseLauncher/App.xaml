@@ -21,7 +21,7 @@
                             <AcrylicBrush x:Key="CustomAcrylicBrush" TintColor="#000000" TintOpacity="0.33" />
                             <AcrylicBrush x:Key="ProgressAcrylicBrush" TintColor="#000000" TintOpacity="0.33" FallbackColor="#AA222222"/>
                             <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#000000" TintOpacity="0.25" FallbackColor="#EE333333"/>
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#000000" TintOpacity="0.60" FallbackColor="#EE303030"/>
+                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#000000" TintOpacity="0.50" FallbackColor="#EE303030"/>
 
                             <AcrylicBrush x:Key="OverlayAcrylicBrush" TintColor="#000000" TintOpacity="0.25" />
                             <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />

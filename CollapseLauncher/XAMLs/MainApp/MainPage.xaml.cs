@@ -142,6 +142,8 @@ namespace CollapseLauncher
         {
             e.IsImageLoaded = false;
             regionBackgroundProp.imgLocalPath = e.ImgPath;
+            IsCustomBG = e.IsCustom;
+
             if (e.IsCustom)
                 SetAndSaveConfigValue("CustomBGPath", regionBackgroundProp.imgLocalPath);
 

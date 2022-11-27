@@ -97,12 +97,16 @@ namespace CollapseLauncher.Pages
             RepairFileInfo = new FileInfo(FilePath);
 
             if (input.FT == FileType.Generic)
+            {
                 FileURL = GameBaseURL + input.N;
+            }
             else
+            {
                 FileURL = GameBaseURL + Path.GetDirectoryName(input.N).Replace('\\', '/') + $"/{input.RN}";
+            }
 
             if (input.S == 0)
-                RepairFileInfo.Create();
+                File.Create(FilePath).Dispose();
             else
             {
                 _httpClient.DownloadProgress += GenericFilesDownloadProgress;
@@ -113,8 +117,9 @@ namespace CollapseLauncher.Pages
                     await _httpClient.Merge();
                 }
                 else
-                    using (RepairFileStream = RepairFileInfo.Create())
-                        await _httpClient.Download(FileURL, RepairFileStream, null, null, cancellationTokenSource.Token);
+                {
+                    await _httpClient.Download(FileURL, FilePath, true, null, null, cancellationTokenSource.Token);
+                }
 
                 _httpClient.DownloadProgress -= GenericFilesDownloadProgress;
             }
@@ -205,8 +210,6 @@ namespace CollapseLauncher.Pages
                 }
             }
         }
-
-        Stopwatch refreshTime = Stopwatch.StartNew();
 
         private void GenericFilesDownloadProgress(object sender, DownloadEvent e)
         {

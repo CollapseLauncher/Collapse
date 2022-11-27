@@ -312,22 +312,21 @@
                                     </FlipView.ItemTemplate>
                                 </FlipView>
                                 <Grid x:Name="ImageCarouselPipsPager"
-                                  Padding="4,4" Margin="10,-14,10,0" CornerRadius="14"
+                                  Padding="4,4" Margin="10,-15,10,0" CornerRadius="14"
                                   Shadow="{ThemeResource SharedShadow}"
                                   Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                                  HorizontalAlignment="Right" Visibility="Collapsed"
+                                  HorizontalAlignment="Center" Visibility="Collapsed"
                                   VerticalAlignment="Center">
                                     <PipsPager
-                                      Margin="0,0,0,0"
                                       VerticalAlignment="Center"
-                                      PreviousButtonVisibility="Visible"
-                                      NextButtonVisibility="Visible"
+                                      PreviousButtonVisibility="VisibleOnPointerOver"
+                                      NextButtonVisibility="VisibleOnPointerOver"
                                       NumberOfPages="{x:Bind MenuPanels.imageCarouselPanel.Count}"
                                       SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}"
                                       Orientation="Horizontal"/>
                                 </Grid>
                             </StackPanel>
-                            <Grid x:Name="PostPanel" Padding="8" Width="390" Height="140" Visibility="Collapsed"
+                            <Grid x:Name="PostPanel" Padding="8" Width="390" Height="137" Visibility="Collapsed"
                               Margin="0,16,0,0" CornerRadius="8"
                               Background="{ThemeResource PostAcrylicBrush}" Shadow="{ThemeResource SharedShadow}">
                                 <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
