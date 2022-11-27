@@ -639,12 +639,13 @@ namespace CollapseLauncher
                 TryRemoveDeleteFilesList();
 
                 // Remove any _tmp or .diff files
-                IEnumerable<string> UnusedFiles = Directory.GetFiles(GameDirPath, "*.*", SearchOption.AllDirectories)
-                        .Where(x => x.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
-                                 || x.EndsWith("_tmp", StringComparison.OrdinalIgnoreCase)
-                                 || x.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase));
-
-                foreach (string _Entry in UnusedFiles) File.Delete(_Entry);
+                foreach (string _Entry in Directory.EnumerateFiles(GameDirPath, "*.*", SearchOption.AllDirectories)
+                                                   .Where(x => x.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
+                                                            || x.EndsWith("_tmp", StringComparison.OrdinalIgnoreCase)
+                                                            || x.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase)))
+                {
+                    File.Delete(_Entry);
+                }
             }
             catch (Exception ex)
             {
@@ -664,7 +665,7 @@ namespace CollapseLauncher
             Util.Init(new FileStream(XmfPath, FileMode.Open, FileAccess.Read, FileShare.Read), XMFFileFormat.XMF);
             Util.CheckForUnusedBlocks(XmfDir);
             List<string> UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
-            UnusedFiles.AddRange(Directory.EnumerateFiles(XmfDir, "Blocks_*.xmf"));
+            UnusedFiles.AddRange(Directory.GetFiles(XmfDir, "Blocks_*.xmf"));
 
             foreach (string _Entry in UnusedFiles) File.Delete(_Entry);
         }

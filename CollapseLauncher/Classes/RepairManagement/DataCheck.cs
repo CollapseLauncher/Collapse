@@ -186,7 +186,7 @@ namespace CollapseLauncher.Pages
             Util.Init(new FileStream(XmfPath, FileMode.Open, FileAccess.Read, FileShare.Read), XMFFileFormat.XMF);
             Util.CheckForUnusedBlocks(XmfDir);
             List<string> UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
-            UnusedFiles.AddRange(Directory.EnumerateFiles(XmfDir, "Blocks_*.xmf"));
+            UnusedFiles.AddRange(Directory.GetFiles(XmfDir, "Blocks_*.xmf"));
 
             foreach (string _Entry in UnusedFiles)
             {
@@ -208,6 +208,7 @@ namespace CollapseLauncher.Pages
             List<XMFBlockList> BrokenBlock = new List<XMFBlockList>();
             List<XMFFileProperty> BrokenChunk = new List<XMFFileProperty>();
             string BlockBasePath = FilePath;
+
             foreach (var block in input.BlkC)
             {
                 FilePath = Path.Combine(BlockBasePath, block.BlockHash + ".wmv");
