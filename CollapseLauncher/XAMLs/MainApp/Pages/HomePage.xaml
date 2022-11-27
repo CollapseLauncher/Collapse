@@ -315,7 +315,7 @@
                                   Padding="4,4" Margin="10,-15,10,0" CornerRadius="14"
                                   Shadow="{ThemeResource SharedShadow}"
                                   Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                                  HorizontalAlignment="Center" Visibility="Collapsed"
+                                  HorizontalAlignment="Right" Visibility="Collapsed"
                                   VerticalAlignment="Center">
                                     <PipsPager
                                       VerticalAlignment="Center"

@@ -47,7 +47,7 @@ namespace CollapseLauncher
 
         private async Task ChangeBackgroundImageAsRegion()
         {
-            bool IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
+            IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
@@ -59,7 +59,7 @@ namespace CollapseLauncher
 
             if (!IsCustomBG || IsFirstStartup)
             {
-                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
                 IsFirstStartup = false;
             }
