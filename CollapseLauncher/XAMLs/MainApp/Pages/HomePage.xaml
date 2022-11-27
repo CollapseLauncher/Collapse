@@ -300,7 +300,7 @@
                                 Margin="0,0,0,52" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                             <StackPanel HorizontalAlignment="Left">
                                 <FlipView x:Name="ImageCarousel" Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
-                                  MaxWidth="390" Height="181" 
+                                  MaxWidth="399" Height="185" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
                                   HorizontalAlignment="Center"
                                   PointerEntered="CarouselStopScroll"
@@ -326,7 +326,7 @@
                                       Orientation="Horizontal"/>
                                 </Grid>
                             </StackPanel>
-                            <Grid x:Name="PostPanel" Padding="8" Width="390" Height="137" Visibility="Collapsed"
+                            <Grid x:Name="PostPanel" Padding="8" Width="399" Height="137" Visibility="Collapsed"
                               Margin="0,16,0,0" CornerRadius="8"
                               Background="{ThemeResource PostAcrylicBrush}" Shadow="{ThemeResource SharedShadow}">
                                 <Pivot HorizontalAlignment="Left" Margin="0,-12,-16,8">
