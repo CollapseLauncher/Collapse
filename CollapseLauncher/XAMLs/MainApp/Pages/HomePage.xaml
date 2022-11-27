@@ -307,7 +307,7 @@
                                   PointerExited="CarouselRestartScroll">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="/Assets/BG/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/BG/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -359,7 +359,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}">
                                                 <Grid>
-                                                    <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
@@ -400,7 +400,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                                 <Grid>
-                                                    <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
@@ -441,7 +441,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                                 <Grid>
-                                                    <Image Source="/Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="96" Margin="0,-32,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
                                                            Width="100" TextWrapping="Wrap"
