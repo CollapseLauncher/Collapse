@@ -26,7 +26,7 @@
                 <StackPanel.Transitions>
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
-                <Image Source="/Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
+                <Image Source="ms-appx:///Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{ThemeResource DisplayTextBlockStyle}"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
             </StackPanel>

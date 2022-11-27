@@ -96,9 +96,9 @@
                 </ResourceDictionary>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="FontAwesomeBrand">/Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
-            <FontFamily x:Key="FontAwesome">/Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
-            <FontFamily x:Key="FontAwesomeSolid">/Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
+            <FontFamily x:Key="FontAwesomeBrand">ms-appx:///Assets/Fonts/FontAwesomeBrand6.otf#Font Awesome 6 Brands</FontFamily>
+            <FontFamily x:Key="FontAwesome">ms-appx:///Assets/Fonts/FontAwesomeRegular6.otf#Font Awesome 6 Free</FontFamily>
+            <FontFamily x:Key="FontAwesomeSolid">ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid</FontFamily>
             <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>

@@ -31,7 +31,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppCurrentVersion;
         public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
-        public static string AppLangFolder = Path.Combine(AppFolder, @"Lang");
+        public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
@@ -69,7 +69,7 @@ namespace Hi3Helper.Shared.Region
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
             { "CurrentRegion", new IniValue(0) },
-            { "CurrentBackground", new IniValue("/Assets/BG/default.png") },
+            { "CurrentBackground", new IniValue("ms-appx:///Assets/BG/default.png") },
             { "DownloadThread", new IniValue(4) },
             { "ExtractionThread", new IniValue(0) },
             { "GameFolder", new IniValue() },

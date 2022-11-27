@@ -12,7 +12,7 @@
             <RowDefinition Height="46"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <!--<Image Grid.Row="0" Grid.RowSpan="2" x:Name="BackgroundBack" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1"/>-->
+        <!--<Image Grid.Row="0" Grid.RowSpan="2" x:Name="BackgroundBack" Source="ms-appx:///Assets/BG/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1"/>-->
         <Grid x:Name="AppTitleBar" 
             Opacity="0"
             Height="46">
@@ -118,7 +118,7 @@
                 <NavigationViewItem Icon="Home" Content="Launcher" Tag="launcher"/>
             </NavigationView.MenuItems>
             <Grid Margin="0,0,0,0">
-                <!--<Image x:Name="BackgroundFront" Source="Assets\BG\default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!--<Image x:Name="BackgroundFront" Source="ms-appx:///Assets/BG/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image.RenderTransform>
                         <TranslateTransform />
                     </Image.RenderTransform>

@@ -273,9 +273,21 @@ namespace CollapseLauncher.Pages
                 {
                     string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(BGPath))
+                    {
                         regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                    }
                     else
-                        regionBackgroundProp.imgLocalPath = BGPath;
+                    {
+                        if (!File.Exists(BGPath))
+                        {
+                            regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                        }
+                        else
+                        {
+                            regionBackgroundProp.imgLocalPath = BGPath;
+                        }
+                    }
+                    BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
                     BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
                 }
                 BGSelector.IsEnabled = value;
