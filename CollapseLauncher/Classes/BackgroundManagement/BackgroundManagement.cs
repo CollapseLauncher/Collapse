@@ -195,10 +195,6 @@ namespace CollapseLauncher
 
             if (!fInfo.Exists || fInfo.Length < (1 << 10))
             {
-                if (fInfo.Length < (1 << 10))
-                {
-                    Console.WriteLine($"{fInfo.Name} {fInfo.Length}");
-                }
                 using (FileStream fs = fInfo.Create())
                 {
                     await _httpClient.Download(URL, fs, null, null, token);
