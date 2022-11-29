@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/Banner20220719.webp"/>
+  <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBanner2022.webp"/>
 </p>
+
+> Art used for light mode by: [**Rafa** (@Pixiv)](https://www.pixiv.net/en/artworks/102448848)
 
 **Collapse** was firstly made specifically for **Honkai Impact 3rd**. But since the progress of this project, this launcher is now an advanced launcher for **miHoYo Games**.
 
