@@ -1,15 +1,13 @@
 ﻿using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using System;
-using System.IO;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using static Hi3Helper.Shared.Region.LauncherConfig;
-using static Hi3Helper.Logger;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Web.WebView2.Core;
+using System;
+using System.Diagnostics;
+using System.IO;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
