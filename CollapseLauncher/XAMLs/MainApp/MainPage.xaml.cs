@@ -491,12 +491,12 @@ namespace CollapseLauncher
             if (m_appMode == AppMode.Hi3CacheUpdater)
             {
                 LoadConfigV2CacheOnly();
-                Page = typeof(Pages.CachesPage);
+                Page = typeof(CachesPage);
             }
             else
             {
                 LoadConfigV2();
-                Page = typeof(Pages.HomePage);
+                Page = typeof(HomePage);
             }
 
             // Lock ChangeBtn for first start
