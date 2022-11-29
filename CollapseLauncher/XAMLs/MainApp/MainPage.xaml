@@ -9,9 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Unloaded="Page_Unloaded">
     <Page.Resources>
-        <Thickness x:Key="NavigationViewContentMargin">0,40,0,0</Thickness>
-        <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
-        <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
         <ThemeShadow x:Name="SharedShadow"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
