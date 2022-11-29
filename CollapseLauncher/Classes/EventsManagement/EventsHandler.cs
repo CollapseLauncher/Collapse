@@ -290,9 +290,9 @@ namespace CollapseLauncher
 
     internal class SpawnWebView2Property
     {
-        internal SpawnWebView2Property(string URL) => this.URL = new Uri(URL);
+        internal SpawnWebView2Property(string URL) => this.URL = URL;
 
-        public Uri URL { get; set; }
+        public string URL { get; set; }
     }
     #endregion
     #region ShowLoadingPage

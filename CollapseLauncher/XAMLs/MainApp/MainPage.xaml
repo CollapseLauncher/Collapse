@@ -135,68 +135,12 @@
                     </StackPanel>
                 </Grid>
                 <StackPanel x:Name="NotificationBar" Margin="0,44,0,0">
-                    <StackPanel.ChildrenTransitions>
+                    <!--<StackPanel.ChildrenTransitions>
                         <AddDeleteThemeTransition/>
-                    </StackPanel.ChildrenTransitions>
+                    </StackPanel.ChildrenTransitions>-->
                 </StackPanel>
             </Grid>
         </NavigationView>
-        <Grid x:Name="WebView2Panel" Background="{ThemeResource WebView2GridBackground}"
-              Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
-              Canvas.ZIndex="8">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="64"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <TextBlock x:Name="WebViewWindowTitle" Margin="16,12" Grid.Row="0" FontWeight="Bold" FontSize="13" Grid.RowSpan="2"/>
-            <Grid x:Name="WebViewNavPanel" Grid.Row="1" Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="72"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="64"/>
-                    <ColumnDefinition Width="44"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="3">
-                    <Button x:Name="WebView2BackBtn" IsEnabled="False" Click="WebView2BackBtn_Click"
-                            CornerRadius="16,0,0,16" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
-                        <Button.Content>
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf104;" FontSize="14"/>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="WebView2ForwardBtn" IsEnabled="False" Click="WebView2ForwardBtn_Click"
-                            CornerRadius="0,16,16,0" Width="48" VerticalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}">
-                        <Button.Content>
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="14"/>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="WebView2ReloadBtn" Click="WebView2ReloadBtn_Click"
-                            Margin="8,0,0,0" CornerRadius="16" Width="48" VerticalAlignment="Stretch" HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}">
-                        <Button.Content>
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf01e;" FontSize="14"/>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
-                <Grid Grid.Column="3" Margin="8,0" CornerRadius="5">
-                    <TextBox x:Name="WebView2URLBox" IsReadOnly="True"/>
-                    <ProgressBar x:Name="WebView2LoadingStatus" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-                </Grid>
-                <Button x:Name="WebView2OpenExternalBtn" Grid.Column="4" VerticalAlignment="Stretch" CornerRadius="16" Width="64"
-                        HorizontalAlignment="Center" Click="WebView2OpenExternalBtn_Click">
-                    <Button.Content>
-                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf08e;" FontSize="14"/>
-                    </Button.Content>
-                </Button>
-                <Button x:Name="WebView2CloseBtn" Grid.Column="5" VerticalAlignment="Stretch" CornerRadius="16"
-                        HorizontalAlignment="Center" Style="{ThemeResource AccentButtonStyle}" Click="WebView2CloseBtn_Click">
-                    <Button.Content>
-                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00d;" FontSize="14"/>
-                    </Button.Content>
-                </Button>
-            </Grid>
-            <Grid x:Name="WebView2WindowContainer" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-        </Grid>
+        <Frame x:Name="WebView2Frame"/>
     </Grid>
 </Page>

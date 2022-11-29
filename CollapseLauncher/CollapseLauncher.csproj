@@ -55,6 +55,7 @@
 	<ItemGroup>
 	  <None Remove="XAMLs\MainApp\Pages\NotInstalledPage.xaml" />
 	  <None Remove="XAMLs\MainApp\Pages\StartupPage_SelectGameBG.xaml" />
+	  <None Remove="XAMLs\MainApp\Pages\WebView2Frame.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -133,6 +134,9 @@
 	</Target>
 
 	<ItemGroup>
+		<Page Update="XAMLs\MainApp\Pages\WebView2Frame.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="XAMLs\MainApp\Pages\StartupPage_SelectGameBG.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>

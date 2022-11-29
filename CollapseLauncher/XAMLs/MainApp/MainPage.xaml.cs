@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Pages;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
@@ -28,7 +29,6 @@ namespace CollapseLauncher
 {
     public partial class MainPage : Page
     {
-        private WebView2 WebView2Runtime;
         private bool LockRegionChangeBtn;
 
         private RectInt32[] DragAreaMode_Normal
@@ -136,7 +136,16 @@ namespace CollapseLauncher
             HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
         }
 
-        private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e) => SpawnWebView2Panel(e.URL);
+        private void SpawnWebView2Invoker_SpawnEvent(object sender, SpawnWebView2Property e)
+        {
+            if (e.URL == null)
+            {
+                WebView2Frame.Navigate(typeof(BlankPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
+                return;
+            }
+
+            SpawnWebView2Panel(new Uri(e.URL));
+        }
 
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
@@ -794,31 +803,12 @@ namespace CollapseLauncher
             m_appCurrentFrameName = e.FrameTo.Name;
         }
 
-        private async void SpawnWebView2Panel(Uri URL)
+        private void SpawnWebView2Panel(Uri URL)
         {
             try
             {
-                Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
-
-                WebView2Runtime = new WebView2()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch
-                };
-                WebView2Runtime.CoreWebView2Initialized += WebView2Window_CoreWebView2Initialized;
-                WebView2Runtime.NavigationStarting += WebView2Window_PageLoading;
-                WebView2Runtime.NavigationCompleted += WebView2Window_PageLoaded;
-
-                WebView2WindowContainer.Children.Clear();
-                WebView2WindowContainer.Children.Add(WebView2Runtime);
-
-                WebView2Panel.Visibility = Visibility.Visible;
-                WebView2Panel.Translation += Shadow32;
-                await WebView2Runtime.EnsureCoreWebView2Async();
-                WebView2Runtime.Source = URL;
-
-                SetWebView2Bindings();
-                ChangeTitleDragArea.Change(DragAreaTemplate.Full);
+                WebView2FramePage.WebView2URL = URL;
+                WebView2Frame.Navigate(typeof(WebView2FramePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom});
             }
             catch (Exception ex)
             {
@@ -831,66 +821,7 @@ namespace CollapseLauncher
                         FileName = URL.ToString()
                     }
                 }.Start();
-
-                WebView2Runtime?.Close();
             }
-        }
-
-        private void SetWebView2Bindings()
-        {
-            BindingOperations.SetBinding(WebView2BackBtn, IsEnabledProperty, new Binding()
-            {
-                Source = WebView2Runtime,
-                Path = new PropertyPath("CanGoBack"),
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
-            BindingOperations.SetBinding(WebView2ForwardBtn, IsEnabledProperty, new Binding()
-            {
-                Source = WebView2Runtime,
-                Path = new PropertyPath("CanGoForward"),
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
-            BindingOperations.SetBinding(WebView2URLBox, TextBox.TextProperty, new Binding()
-            {
-                Source = WebView2Runtime,
-                Path = new PropertyPath("Source"),
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
-        }
-
-        private void CoreWebView2_DocumentTitleChanged(CoreWebView2 sender, object args) => WebViewWindowTitle.Text = sender.DocumentTitle;
-        private void WebView2Window_CoreWebView2Initialized(WebView2 sender, CoreWebView2InitializedEventArgs args) => sender.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
-        private void WebView2Window_PageLoaded(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args) => WebView2LoadingStatus.IsIndeterminate = false;
-        private void WebView2Window_PageLoading(WebView2 sender, CoreWebView2NavigationStartingEventArgs args) => WebView2LoadingStatus.IsIndeterminate = true;
-        private void WebView2BackBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.GoBack();
-        private void WebView2ForwardBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.GoForward();
-        private void WebView2ReloadBtn_Click(object sender, RoutedEventArgs e) => WebView2Runtime.Reload();
-        private void WebView2OpenExternalBtn_Click(object sender, RoutedEventArgs e)
-        {
-            new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = true,
-                    FileName = WebView2Runtime.Source.ToString()
-                }
-            }.Start();
-        }
-
-        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-            WebView2Runtime.Visibility = Visibility.Collapsed;
-            WebView2Runtime.Close();
-            WebView2Panel.Visibility = Visibility.Collapsed;
-            WebView2Panel.Translation -= Shadow32;
-
-            WebView2Runtime.CoreWebView2Initialized -= WebView2Window_CoreWebView2Initialized;
-            WebView2Runtime.NavigationStarting -= WebView2Window_PageLoading;
-            WebView2Runtime.NavigationCompleted -= WebView2Window_PageLoaded;
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
