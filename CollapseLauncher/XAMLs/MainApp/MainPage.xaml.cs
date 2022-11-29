@@ -140,7 +140,7 @@ namespace CollapseLauncher
         {
             if (e.URL == null)
             {
-                WebView2Frame.Navigate(typeof(BlankPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
+                WebView2Frame.Navigate(typeof(BlankPage));
                 return;
             }
 
