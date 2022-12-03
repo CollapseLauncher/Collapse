@@ -8,12 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource PagesSolidAcrylicBrush}"
     mc:Ignorable="d">
-    <Page.Resources>
-        <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
-        <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
-        <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"></SolidColorBrush>
-    </Page.Resources>
-    <Grid x:Name="MainPageGrid" Margin="16">
+    <Grid x:Name="MainPageGrid" Margin="16,32,16,16">
         <Grid.RowDefinitions>
             <RowDefinition Height="56"/>
             <RowDefinition/>
