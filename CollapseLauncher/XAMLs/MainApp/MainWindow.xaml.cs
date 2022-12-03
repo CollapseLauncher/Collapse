@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Windows.Graphics;
@@ -42,7 +43,7 @@ namespace CollapseLauncher
                 if (IsFirstInstall)
                 {
                     ExtendsContentIntoTitleBar = false;
-                    SetWindowSize(m_windowHandle, 360, 230);
+                    SetWindowSize(m_windowHandle, 360, 280);
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
@@ -207,9 +208,13 @@ namespace CollapseLauncher
             width = (int)(width * scalingFactor);
             height = (int)(height * scalingFactor);
 
+            Size desktopSize = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+            int xOff = (desktopSize.Width / 2) - (width / 2);
+            int hOff = (desktopSize.Height / 2) - (height / 2);
+
             SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
-                                        x, y, width, height,
-                                        SetWindowPosFlags.SWP_NOMOVE);
+                                        xOff, hOff, width, height,
+                                        SetWindowPosFlags.SWP_SHOWWINDOW);
 
             m_windowPosSize = this.Bounds;
         }

@@ -22,6 +22,7 @@ namespace Hi3Helper
         public enum SetWindowPosFlags : uint
         {
             SWP_NOMOVE = 2,
+            SWP_SHOWWINDOW = 40,
         }
 
         public enum SpecialWindowHandles
