@@ -28,6 +28,7 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
+        private bool IsChangeDragArea = true;
 
         private RectInt32[] DragAreaMode_Normal
         {
@@ -586,7 +587,7 @@ namespace CollapseLauncher
                     CornerRadius = new CornerRadius(16)
                 };
 
-                UpdateMetadatabtn.Click += (async (a, b) =>
+                UpdateMetadatabtn.Click += async (a, b) =>
                 {
                     TextBlock Text = new TextBlock
                     {
@@ -611,6 +612,7 @@ namespace CollapseLauncher
                     try
                     {
                         await DownloadConfigV2Files(true, true);
+                        IsChangeDragArea = false;
                         MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                     }
                     catch (Exception ex)
@@ -618,7 +620,7 @@ namespace CollapseLauncher
                         LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
                         ErrorSender.SendException(ex, ErrorType.Unhandled);
                     }
-                });
+                };
 
                 SpawnNotificationPush(
                     Lang._MainPage.MetadataUpdateTitle,
@@ -824,7 +826,10 @@ namespace CollapseLauncher
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            MainWindow.SetDragArea(DragAreaMode_Full);
+            if (IsChangeDragArea)
+            {
+                MainWindow.SetDragArea(DragAreaMode_Full);
+            }
         }
     }
 }
