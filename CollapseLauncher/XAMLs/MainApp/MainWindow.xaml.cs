@@ -209,8 +209,8 @@ namespace CollapseLauncher
             height = (int)(height * scalingFactor);
 
             Size desktopSize = Hi3Helper.Screen.ScreenProp.GetScreenSize();
-            int xOff = (desktopSize.Width / 2) - (width / 2);
-            int hOff = (desktopSize.Height / 2) - (height / 2);
+            int xOff = (desktopSize.Width - width) / 2;
+            int hOff = (desktopSize.Height - height) / 2;
 
             SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
                                         xOff, hOff, width, height,
