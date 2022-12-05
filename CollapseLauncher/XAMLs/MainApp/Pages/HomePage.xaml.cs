@@ -920,6 +920,7 @@ namespace CollapseLauncher.Pages
 
             PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
             ResumeDownloadPreBtn.Visibility = Visibility.Visible;
+            ResumeDownloadPreBtn.IsEnabled = true;
         }
 
         private void CancelUpdateDownload()
