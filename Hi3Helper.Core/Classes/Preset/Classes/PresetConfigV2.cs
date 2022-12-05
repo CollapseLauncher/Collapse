@@ -97,7 +97,7 @@ namespace Hi3Helper.Preset
 
                 regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
                 GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default);
-                return (RegValues)?.deviceVoiceLanguageType ?? 2;
+                return RegValues?.deviceVoiceLanguageType ?? 2;
             }
             catch (JsonException ex)
             {
