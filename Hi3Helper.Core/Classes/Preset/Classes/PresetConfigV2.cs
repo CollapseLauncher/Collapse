@@ -82,19 +82,32 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public int GetVoiceLanguageID()
         {
-            ReadOnlySpan<char> regValue;
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
-
-            if (keys is null || value is null || value.Length is 0)
+            try
             {
-                LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning, true);
+                ReadOnlySpan<char> regValue;
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596");
+
+                if (keys is null || value is null || value.Length is 0)
+                {
+                    LogWriteLine($"Voice Language ID registry on \u001b[32;1m{Path.GetFileName(ConfigRegistryLocation)}\u001b[0m doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning, true);
+                    return 2;
+                }
+
+                regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
+                GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default);
+                return (RegValues)?.deviceVoiceLanguageType ?? 2;
+            }
+            catch (JsonException ex)
+            {
+                LogWriteLine($"System.Text.Json cannot deserialize language ID registry in this path: {Path.GetFileName(ConfigRegistryLocation)}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}", LogType.Warning, true);
                 return 2;
             }
-
-            regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-            GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default);
-            return (RegValues)?.deviceVoiceLanguageType ?? 2;
+            catch (Exception ex)
+            {
+                LogWriteLine($"Launcher cannot evaluate an existing language ID registry on {Path.GetFileName(ConfigRegistryLocation)}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}", LogType.Warning, true);
+                return 2;
+            }
         }
 
         // WARNING!!!
