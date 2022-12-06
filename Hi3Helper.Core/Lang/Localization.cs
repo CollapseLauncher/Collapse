@@ -11,8 +11,6 @@ namespace Hi3Helper
     {
         public static void LoadLocalization(string appLang)
         {
-            LangFallback = LanguageNames["en-US"].LangData;
-
             try
             {
                 Lang = LanguageNames[appLang].LangData;
@@ -25,10 +23,44 @@ namespace Hi3Helper
             }
         }
 
+        private static void LoadFallbackLanguage()
+        {
+            try
+            {
+                string langPath = Path.Combine(AppLangFolder, "en.json");
+                if (!File.Exists(langPath))
+                    throw new FileNotFoundException($"Fallback/Default language file \"en.json\" doesn't exist!");
+
+                using (Stream s = new FileStream(langPath, FileMode.Open, FileAccess.Read))
+                {
+                    LocalizationParams lang = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
+                    LogWriteLine($"Loaded lang. resource: {lang.LanguageName} ({lang.LanguageID}) by {lang.Author}", LogType.Scheme);
+                    LanguageNames.Add(lang.LanguageID, new LangMetadata
+                    {
+                        LangData = lang,
+                        LangFilePath = langPath
+                    });
+
+                    LangFallback = lang;
+                }
+            }
+            catch (JsonException ex)
+            {
+                LogWriteLine($"Error while parsing fallback/default language: \"en.json\"\r\n{ex}", LogType.Error, true);
+                throw new LocalizationException($"Error occured while parsing fallback/default language file: \"en.json\"", ex);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error while parsing fallback/default language: \"en.json\"\r\n{ex}", LogType.Error, true);
+                throw new LocalizationException($"Error occured while parsing fallback/default language file: \"en.json\"", ex);
+            }
+        }
+
         public static void TryParseLocalizations()
         {
             LanguageNames.Clear();
-            foreach (string Entry in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
+            LoadFallbackLanguage();
+            foreach (string Entry in Directory.EnumerateFiles(AppLangFolder, "*-*.json", SearchOption.AllDirectories))
             {
                 LocalizationParams lang = new LocalizationParams();
                 try
