@@ -584,8 +584,8 @@
     "NotifFirstWelcomeSubtitle": "To get started, click \"{0}\" button below to see how to install or migrate an existing game.",
     "NotifFirstWelcomeBtn": "Visit GitHub Wiki",
 
-    "NotifPreviewBuildUsedTitle": "You are using Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "You're using preview build and you may experience some issues if you're using the experimental feature in this build. If you have an issue to report, click \"{0}\" button below to submit your issue.",
+    "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
+    "NotifPreviewBuildUsedSubtitle": "You are currently using a PREVIEW build which is still being tested. You may experience some issues if you are using the experimental feature(s) in this build. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
     "NotifPreviewBuildUsedBtn": "Submit an Issue"
   }
 }
