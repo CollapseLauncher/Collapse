@@ -79,7 +79,7 @@
     "PageTitle": "Launcher",
     "PreloadTitle": "Pre-load is Available!",
     "PreloadNotifTitle": "Pre-load package for v{0} is available!",
-    "PreloadNotifSubtitle": "Click \"Download\" to begin downloading it in background.",
+    "PreloadNotifSubtitle": "Click \"Download Game\" to begin downloading it in background.",
     "PreloadNotifCompleteTitle": "Pre-load package has been downloaded!",
     "PreloadNotifCompleteSubtitle": "You have downloaded pre-load package for v{0}!",
     "PreloadNotifIntegrityCheckBtn": "Verify Package Integrity",
