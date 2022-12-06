@@ -158,7 +158,7 @@ namespace CollapseLauncher
         {
             // Init Registry Key and Push Region Notification
             InitRegKey();
-            PushRegionNotification(CurrentConfigV2.ProfileName);
+            SpawnRegionNotification(CurrentConfigV2.ProfileName);
 
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)
@@ -176,7 +176,7 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {CurrentConfigV2.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
         }
 
-        private void PushRegionNotification(string RegionProfileName)
+        private void SpawnRegionNotification(string RegionProfileName)
         {
             if (NotificationData.RegionPush == null) return;
 

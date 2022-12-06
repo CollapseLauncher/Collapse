@@ -72,11 +72,7 @@
     "RegionLoadingSubtitleTimeOut": "Terjadi masa tenggang saat membaca wilayah {0} (> {1} detik). Mencoba lagi...",
     "RegionLoadingSubtitleTooLong": "Proses memakan waktu lebih lama dari perkiraan. Pastikan bahwa koneksimu stabil.",
     "NavCtrlTitleSettings": "Pengaturan App",
-    "NotifNeverAsk": "Jangan munculkan ini lagi",
-    "MetadataUpdateTitle": "Pembaruan Metadata Launcher Tersedia",
-    "MetadataUpdateSubtitle": "Metadata baru untuk launcher telah tersedia! Kamu direkomendasikan untuk memperbarui metadata agar launcher tetap dapat terhubung dengan server miHoYo/HoYoverse. Klik \"Perbarui Metadata\" untuk memperbarui.",
-    "MetadataUpdateBtn": "Perbarui Metadata",
-    "MetadataUpdateBtnUpdating": "Memperbarui Metadata..."
+    "NotifNeverAsk": "Jangan munculkan ini lagi"
   },
 
   "_HomePage": {
@@ -576,5 +572,20 @@
     "UpdateMessage4": "Kembali ke launcher sebentar lagi...",
     "UpdateStatus5": "Versi launcher telah diperbarui ke {0}!",
     "UpdateMessage5": "Kita akan kembali ke launcher sebentar lagi..."
+  },
+
+  "_AppNotification": {
+    "NotifMetadataUpdateTitle": "Pembaruan Metadata Launcher Tersedia!",
+    "NotifMetadataUpdateSubtitle": "Metadata baru untuk launcher telah tersedia! Kamu direkomendasikan untuk memperbarui metadata agar launcher tetap dapat terhubung dengan server miHoYo/HoYoverse. Klik \"Perbarui Metadata\" untuk memperbarui.",
+    "NotifMetadataUpdateBtn": "Perbarui Metadata",
+    "NotifMetadataUpdateBtnUpdating": "Memperbarui Metadata...",
+
+    "NotifFirstWelcomeTitle": "Selamat datang di Collapse!",
+    "NotifFirstWelcomeSubtitle": "Untuk memulai, klik tombol \"{0}\" di bawah ini untuk melihat bagaimana cara memasang atau migrasi game kamu yang sudah ada.",
+    "NotifFirstWelcomeBtn": "Kunjungi Wiki GitHub",
+
+    "NotifPreviewBuildUsedTitle": "Kamu sedang menggunakan Build Preview!",
+    "NotifPreviewBuildUsedSubtitle": "Kamu sedang menggunakan build preview dan kamu mungkin akan mengalami beberapa issue pada saat mencoba fitur eksperimental. Apabila kamu ingin melaporkan issue yang kamu dapat, klik tombol \"{0}\" di bawah ini untuk mengirim issue-mu.",
+    "NotifPreviewBuildUsedBtn": "Kirim Issue"
   }
 }

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Pages;
+using Google.Protobuf.Reflection;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
@@ -200,17 +201,20 @@ namespace CollapseLauncher
                 e.OtherContent, e.IsAppNotif, e.Notification.Show);
         }
 
-        private async void RunBackgroundUpdateCheck()
+        private async void RunBackgroundCheck()
         {
             try
             {
-                await Task.Run(() =>
-                {
-                    GetNotificationFeed();
-                    GetAppUpdateNotification();
-                });
-                PushAppNotification();
-                CheckMetadataUpdateInBackground();
+                // Spawn Updated App Notification if Applicable
+                SpawnAppUpdatedNotification();
+
+                // Fetch the Notification Feed in CollapseLauncher-Repo
+                await FetchNotificationFeed();
+                // Then Spawn the Notification Feed
+                SpawnPushAppNotification();
+
+                // Check Metadata Update in Background
+                await CheckMetadataUpdateInBackground();
             }
             catch (JsonException ex)
             {
@@ -223,7 +227,7 @@ namespace CollapseLauncher
         }
 
         bool IsLoadNotifComplete = false;
-        private void GetNotificationFeed()
+        private async Task FetchNotificationFeed()
         {
             try
             {
@@ -235,8 +239,8 @@ namespace CollapseLauncher
                 using (_http)
                 using (MemoryStream buffer = new MemoryStream())
                 {
-                    _http.DownloadSync(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                        buffer, null, null, TokenSource.Token);
+                    await _http.Download(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
+                                         buffer, null, null, TokenSource.Token);
                     buffer.Position = 0;
                     NotificationData = (NotificationPush)JsonSerializer.Deserialize(buffer, typeof(NotificationPush), NotificationPushContext.Default);
                     IsLoadNotifComplete = true;
@@ -246,7 +250,93 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
+            GenerateLocalAppNotification();
             LoadLocalNotificationData();
+        }
+
+        private void GenerateLocalAppNotification()
+        {
+            NotificationData.AppPush.Add(new NotificationProp
+            {
+                Show = true,
+                MsgId = 0,
+                IsDisposable = false,
+                Severity = NotifSeverity.Success,
+                Title = Lang._AppNotification.NotifFirstWelcomeTitle,
+                Message = string.Format(Lang._AppNotification.NotifFirstWelcomeSubtitle, Lang._AppNotification.NotifFirstWelcomeBtn),
+                OtherUIElement = GenerateNotificationButtonStartProcess(
+                    "",
+                    "https://github.com/neon-nyan/CollapseLauncher/wiki",
+                    Lang._AppNotification.NotifFirstWelcomeBtn)
+            });
+
+            if (IsPreview)
+            {
+                NotificationData.AppPush.Add(new NotificationProp
+                {
+                    Show = true,
+                    MsgId = -1,
+                    IsDisposable = false,
+                    Severity = NotifSeverity.Informational,
+                    Title = Lang._AppNotification.NotifPreviewBuildUsedTitle,
+                    Message = string.Format(Lang._AppNotification.NotifPreviewBuildUsedSubtitle, Lang._AppNotification.NotifPreviewBuildUsedBtn),
+                    OtherUIElement = GenerateNotificationButtonStartProcess(
+                        "",
+                        "https://github.com/neon-nyan/CollapseLauncher/issues",
+                        Lang._AppNotification.NotifPreviewBuildUsedBtn)
+                });
+            }
+        }
+
+        private Button GenerateNotificationButtonStartProcess(string IconGlyph, string PathOrURL, string Text, bool IsUseShellExecute = true)
+        {
+            return GenerateNotificationButton(IconGlyph, Text, (s, e) =>
+            {
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = IsUseShellExecute,
+                        FileName = PathOrURL
+                    }
+                }.Start();
+            });
+        }
+
+        private Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null)
+        {
+            StackPanel BtnStack = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
+            BtnStack.Children.Add(
+                new FontIcon
+                {
+                    Glyph = IconGlyph,
+                    FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                    FontSize = 16
+                });
+
+            BtnStack.Children.Add(
+                new TextBlock
+                {
+                    Text = Text,
+                    FontWeight = FontWeights.Medium,
+                    Margin = new Thickness(8, 0, 0, 0),
+                    VerticalAlignment = VerticalAlignment.Center
+                });
+
+            Button Btn = new Button
+            {
+                Content = BtnStack,
+                Margin = new Thickness(0, 0, 0, 16),
+                Style = (Style)Application.Current.Resources["AccentButtonStyle"],
+                CornerRadius = new CornerRadius(16)
+            };
+
+            if (ButtonAction != null)
+            {
+                Btn.Click += ButtonAction;
+            }
+
+            return Btn;
         }
 
         private async void RunTimeoutCancel(CancellationTokenSource Token)
@@ -259,7 +349,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void PushAppNotification()
+        private async void SpawnPushAppNotification()
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
             if (NotificationData.AppPush == null) return;
@@ -286,12 +376,12 @@ namespace CollapseLauncher
                         && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
                     || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow))
                     SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
-                        Entry.IsDisposable ?? true, ClickCloseAction, null, true, Entry.Show);
+                        Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show);
                 await Task.Delay(250);
             }
         }
 
-        private void GetAppUpdateNotification()
+        private void SpawnAppUpdatedNotification()
         {
             try
             {
@@ -303,9 +393,6 @@ namespace CollapseLauncher
 
                 if (File.Exists(UpdateNotifFile))
                 {
-                    string updateElevatorTemp = Path.Combine(AppFolder, "_Temp", "ApplyUpdate.exe");
-                    string updateElevator = Path.Combine(AppFolder, "ApplyUpdate.exe");
-
                     string VerString = File.ReadAllLines(UpdateNotifFile)[0];
                     SpawnNotificationPush(
                         Lang._Misc.UpdateCompleteTitle,
@@ -476,7 +563,7 @@ namespace CollapseLauncher
 
         private async void InitializeStartup()
         {
-            RunBackgroundUpdateCheck();
+            RunBackgroundCheck();
 
             bool IsLoadSuccess;
 
@@ -556,7 +643,7 @@ namespace CollapseLauncher
             return index == -1 || index == null ? 0 : index ?? 0;
         }
 
-        private async void CheckMetadataUpdateInBackground()
+        private async Task CheckMetadataUpdateInBackground()
         {
             bool IsUpdate = await CheckForNewConfigV2();
             if (IsUpdate)
@@ -573,7 +660,7 @@ namespace CollapseLauncher
                 Text.Children.Add(
                     new TextBlock
                     {
-                        Text = Lang._MainPage.MetadataUpdateBtn,
+                        Text = Lang._AppNotification.NotifMetadataUpdateBtn,
                         FontWeight = FontWeights.Medium,
                         Margin = new Thickness(8, 0, 0, 0),
                         VerticalAlignment = VerticalAlignment.Center
@@ -591,7 +678,7 @@ namespace CollapseLauncher
                 {
                     TextBlock Text = new TextBlock
                     {
-                        Text = Lang._MainPage.MetadataUpdateBtnUpdating,
+                        Text = Lang._AppNotification.NotifMetadataUpdateBtnUpdating,
                         FontWeight = FontWeights.Medium,
                         VerticalAlignment = VerticalAlignment.Center
                     };
@@ -623,8 +710,8 @@ namespace CollapseLauncher
                 };
 
                 SpawnNotificationPush(
-                    Lang._MainPage.MetadataUpdateTitle,
-                    Lang._MainPage.MetadataUpdateSubtitle,
+                    Lang._AppNotification.NotifMetadataUpdateTitle,
+                    Lang._AppNotification.NotifMetadataUpdateSubtitle,
                     NotifSeverity.Informational,
                     -886135731,
                     true,
@@ -688,7 +775,7 @@ namespace CollapseLauncher
         {
             if (args.IsSettingsInvoked)
             {
-                MainFrameChanger.ChangeMainFrame(typeof(Pages.SettingsPage));
+                MainFrameChanger.ChangeMainFrame(typeof(SettingsPage));
                 PreviousTag = "settings";
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
@@ -720,28 +807,28 @@ namespace CollapseLauncher
                     switch (item.Tag)
                     {
                         case "launcher":
-                            Navigate(typeof(Pages.HomePage), false, item);
+                            Navigate(typeof(HomePage), false, item);
                             break;
 
                         case "repair":
                             if (!(CurrentConfigV2.IsRepairEnabled ?? false))
-                                Navigate(typeof(Pages.UnavailablePage), true, item);
+                                Navigate(typeof(UnavailablePage), true, item);
                             else
-                                Navigate(IsGameInstalled() ? typeof(Pages.RepairPage) : typeof(Pages.NotInstalledPage), true, item);
+                                Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), true, item);
                             break;
 
                         case "caches":
                             if (CurrentConfigV2.IsCacheUpdateEnabled ?? false)
-                                Navigate(IsGameInstalled() ? typeof(Pages.CachesPage) : typeof(Pages.NotInstalledPage), true, item);
+                                Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), true, item);
                             else
-                                Navigate(typeof(Pages.UnavailablePage), true, item);
+                                Navigate(typeof(UnavailablePage), true, item);
                             break;
 
                         case "cutscenes":
                             throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
 
                         case "gamesettings":
-                            Navigate(IsGameInstalled() ? typeof(Pages.GameSettingsPage) : typeof(Pages.NotInstalledPage), true, item);
+                            Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);

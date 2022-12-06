@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.UI.Xaml;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -16,6 +17,9 @@ namespace Hi3Helper.Shared.ClassStruct
         public string RegionProfile { get; set; }
         public string ValidForVerAbove { get; set; }
         public string ValidForVerBelow { get; set; }
+#nullable enable
+        public object? OtherUIElement { get; set; }
+#nullable disable
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

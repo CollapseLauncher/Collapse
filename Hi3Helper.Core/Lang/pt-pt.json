@@ -72,11 +72,7 @@
     "RegionLoadingSubtitleTimeOut": "O tempo de carregamento da Região {0} passou o esperado (> {1} seconds). Tentando novamente...",
     "RegionLoadingSubtitleTooLong": "Está a demorar mais do que o esperado. Por favor verifica se a tua conexão é estável.",
     "NavCtrlTitleSettings": "Definições da aplicação",
-    "NotifNeverAsk": "Não mostrar novamente",
-    "MetadataUpdateTitle": "Atualização de metadados para o Launcher está disponível",
-    "MetadataUpdateSubtitle": "Novos metadados para o Launcher estão disponíveis! Recomendamos que procedas com a atualização para assegurar que o Launcher possa comunicar com os servidores da miHoYo/HoYoverse. Clica em \"Atualizar metadados\" para atualizar.",
-    "MetadataUpdateBtn": "Atualizar metadados",
-    "MetadataUpdateBtnUpdating": "A atualizar metadados..."
+    "NotifNeverAsk": "Não mostrar novamente"
   },
 
   "_HomePage": {
@@ -578,5 +574,12 @@
     "UpdateMessage4": "A voltar ao Launcher em alguns instantes...",
     "UpdateStatus5": "Versão atualizada para {0}!",
     "UpdateMessage5": "Vamos reabrir o launcher em alguns instantes..."
+  },
+
+  "_AppNotification": {
+    "NotifMetadataUpdateTitle": "Atualização de metadados para o Launcher está disponível",
+    "NotifMetadataUpdateSubtitle": "Novos metadados para o Launcher estão disponíveis! Recomendamos que procedas com a atualização para assegurar que o Launcher possa comunicar com os servidores da miHoYo/HoYoverse. Clica em \"Atualizar metadados\" para atualizar.",
+    "NotifMetadataUpdateBtn": "Atualizar metadados",
+    "NotifMetadataUpdateBtnUpdating": "A atualizar metadados..."
   }
 }

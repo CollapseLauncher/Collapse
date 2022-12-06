@@ -68,11 +68,7 @@
     "RegionLoadingSubtitleTimeOut": "加载区服{0}已经超时（>{1}秒）.正在重新尝试...",
     "RegionLoadingSubtitleTooLong": "这比预期的时间要长一些.请确保你的网络连接稳定.",
     "NavCtrlTitleSettings": "程序设置",
-    "NotifNeverAsk": "不要再给我看这个",
-    "MetadataUpdateTitle": "启动器元数据更新已推出",
-    "MetadataUpdateSubtitle": "启动器的新元数据已经可用 我们建议你进行更新,以确保启动器能够与miHoYo/HoYoverse服务器通信.点击 \"更新元数据\"进行更新.",
-    "MetadataUpdateBtn": "更新元数据",
-    "MetadataUpdateBtnUpdating": "更新元数据中..."
+    "NotifNeverAsk": "不要再给我看这个"
   },
   "_HomePage": {
     "PageTitle": "启动器",
@@ -529,5 +525,12 @@
     "UpdateMessage4": "很快就会回到启动器...",
     "UpdateStatus5": "版本已更新到 {0}!",
     "UpdateMessage5": "我们将很快重新启动启动器..."
+  },
+
+  "_AppNotification": {
+    "NotifMetadataUpdateTitle": "启动器元数据更新已推出",
+    "NotifMetadataUpdateSubtitle": "启动器的新元数据已经可用 我们建议你进行更新,以确保启动器能够与miHoYo/HoYoverse服务器通信.点击 \"更新元数据\"进行更新.",
+    "NotifMetadataUpdateBtn": "更新元数据",
+    "NotifMetadataUpdateBtnUpdating": "更新元数据中..."
   }
 }

@@ -72,11 +72,7 @@
     "RegionLoadingSubtitleTimeOut": "Loading Region {0} has timed-out (> {1} seconds). Retrying...",
     "RegionLoadingSubtitleTooLong": "Retry is taking a bit longer than expected. Please ensure that your connection is stable!",
     "NavCtrlTitleSettings": "App Settings",
-    "NotifNeverAsk": "Never show again",
-    "MetadataUpdateTitle": "Launcher Metadata Update is Available",
-    "MetadataUpdateSubtitle": "New metadata for the launcher is available! We recommend you to proceed with installing the update in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. Click on \"Update Metadata\" to update.",
-    "MetadataUpdateBtn": "Update Metadata",
-    "MetadataUpdateBtnUpdating": "Updating Metadata, please wait..."
+    "NotifNeverAsk": "Never show again"
   },
 
   "_HomePage": {
@@ -576,5 +572,20 @@
     "UpdateMessage4": "Returning to game launcher scope shortly...",
     "UpdateStatus5": "Version has been updated to {0}!",
     "UpdateMessage5": "Your launcher will re-open momentarily..."
+  },
+
+  "_AppNotification": {
+    "NotifMetadataUpdateTitle": "Launcher Metadata Update is Available!",
+    "NotifMetadataUpdateSubtitle": "New metadata for the launcher is available! We recommend you to proceed with installing the update in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. Click on \"Update Metadata\" to update.",
+    "NotifMetadataUpdateBtn": "Update Metadata",
+    "NotifMetadataUpdateBtnUpdating": "Updating Metadata, please wait...",
+
+    "NotifFirstWelcomeTitle": "Welcome to Collapse!",
+    "NotifFirstWelcomeSubtitle": "To get started, click \"{0}\" button below to see how to install or migrate an existing game.",
+    "NotifFirstWelcomeBtn": "Visit GitHub Wiki",
+
+    "NotifPreviewBuildUsedTitle": "You are using Preview Build!",
+    "NotifPreviewBuildUsedSubtitle": "You're using preview build and you may experience some issues if you're using the experimental feature in this build. If you have an issue to report, click \"{0}\" button below to submit your issue.",
+    "NotifPreviewBuildUsedBtn": "Submit an Issue"
   }
 }
