@@ -235,7 +235,7 @@ namespace CollapseLauncher
                 switch (await Dialog_GameInstallationFileCorrupt(Content, VerificationResult.RemoteHash, VerificationResult.LocalHash))
                 {
                     case ContentDialogResult.Primary:
-                        DeleteDownloadedFile(VerificationResult.Output);
+                        DeleteDownloadedFile(VerificationResult.Output, DownloadThread);
                         return true;
                     case ContentDialogResult.None:
                         throw new OperationCanceledException();
