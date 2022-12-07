@@ -73,6 +73,10 @@ namespace CollapseLauncher
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 Loaded += StartRoutine;
+                if (!IsPreview)
+                {
+                    PreviewBuildIndicator.Visibility = Visibility.Collapsed;
+                }
             }
             catch (Exception ex)
             {

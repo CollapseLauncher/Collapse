@@ -39,11 +39,11 @@
                 <Grid Height="44" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="52"/>
-                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="150"/>
                         <ColumnDefinition x:Name="GridBG_RegionMargin"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="65"/>
                         <ColumnDefinition Width="137"/>
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="TitleBarBg" Background="{ThemeResource WindowTrayBrush}"
@@ -79,6 +79,13 @@
                                             HorizontalAlignment="Left"
                                             Visibility="Visible">
                                 </TextBlock>
+                            </StackPanel>
+                            <StackPanel x:Name="PreviewBuildIndicator"
+                                Margin="-16,-16,0,0" Grid.Column="4" Grid.ColumnSpan="2"
+                                Background="{ThemeResource AccentColor}" HorizontalAlignment="Right"
+                                VerticalAlignment="Center" CornerRadius="3">
+                                <TextBlock Padding="3,0,3,1" FontSize="8" Text="PRE" VerticalAlignment="Center"
+                                           FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

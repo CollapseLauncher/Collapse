@@ -15,6 +15,8 @@
                             <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight3">#ffd52a</Color>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                            <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#FFFFFF"/>
+                            <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#000000"/>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
 
@@ -58,6 +60,8 @@
                             <Color x:Key="SystemAccentColorDark2">#693758</Color>
                             <Color x:Key="SystemAccentColorDark3">#693758</Color>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
+                            <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#000000"/>
+                            <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#FFFFFF"/>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#FFFFFF" TintOpacity="1" />
 
