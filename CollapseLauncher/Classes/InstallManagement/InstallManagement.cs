@@ -694,11 +694,18 @@ namespace CollapseLauncher
             // Build primary manifest list
             await BuildPrimaryManifest(Entries, HashtableManifest);
 
-            // Initialize Dispatch
-            await InitializeNewGenshinDispatch();
+            try
+            {
+                // Initialize Dispatch
+                await InitializeNewGenshinDispatch();
 
-            // Build persistent manifest list
-            await BuildPersistentManifest(Entries, HashtableManifest);
+                // Build persistent manifest list
+                await BuildPersistentManifest(Entries, HashtableManifest);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"There's a problem while fetching the list of the persistent manifest via dispatcher. Skipping!\r\n{ex}", LogType.Warning, true);
+            }
 
             BrokenFiles = await CheckFileIntegrity(Entries);
 
