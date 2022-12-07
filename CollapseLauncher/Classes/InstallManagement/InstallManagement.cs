@@ -172,12 +172,12 @@ namespace CollapseLauncher
                 IsPerFile = IsPerFile
             };
 
+            CountCurrentDownload = 0;
+
             DownloadProgress += DownloadStatusAdapter;
             DownloadProgress += DownloadProgressAdapter;
             DownloadLog += DownloadLogAdapter;
 
-            CountCurrentDownload = 0;
-            DownloadLocalSize = 0;
             foreach (DownloadAddressProperty prop in DownloadProperty)
             {
                 FileInfo file = new FileInfo(prop.Output);
@@ -235,7 +235,7 @@ namespace CollapseLauncher
                 switch (await Dialog_GameInstallationFileCorrupt(Content, VerificationResult.RemoteHash, VerificationResult.LocalHash))
                 {
                     case ContentDialogResult.Primary:
-                        new FileInfo(VerificationResult.Output).Delete();
+                        DeleteDownloadedFile(VerificationResult.Output);
                         return true;
                     case ContentDialogResult.None:
                         throw new OperationCanceledException();
@@ -360,10 +360,16 @@ namespace CollapseLauncher
 
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
-                if ((fileInfo = new FileInfo(DownloadProperty[i].Output)).Exists)
-                    fileInfo.Delete();
-                DeleteMultisessionFiles(DownloadProperty[i].Output, DownloadThread);
+                DeleteDownloadedFile(DownloadProperty[i].Output, DownloadThread);
             }
+        }
+
+        private void DeleteDownloadedFile(string FileOutput, byte Thread)
+        {
+            FileInfo fileInfo = new FileInfo(FileOutput);
+            if (fileInfo.Exists)
+                fileInfo.Delete();
+            DeleteMultisessionFiles(FileOutput, Thread);
         }
 
         long GetExistingPartialDownloadLength(string fileOutput)
