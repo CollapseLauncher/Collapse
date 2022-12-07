@@ -69,7 +69,7 @@
     "RegionLoadingTitle": "A carregar região",
     "RegionLoadingAPITitle1": "A carregar",
     "RegionLoadingAPITitle2": "API do Launcher",
-    "RegionLoadingSubtitleTimeOut": "O tempo de carregamento da Região {0} passou o esperado (> {1} seconds). Tentando novamente...",
+    "RegionLoadingSubtitleTimeOut": "O tempo de carregamento da região {0} passou o esperado (> {1} seconds). Tentando novamente...",
     "RegionLoadingSubtitleTooLong": "Está a demorar mais do que o esperado. Por favor verifica se a tua conexão é estável.",
     "NavCtrlTitleSettings": "Definições da aplicação",
     "NotifNeverAsk": "Não mostrar novamente"
@@ -112,7 +112,9 @@
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
     "PostPanel_Info": "Info",
-    "PostPanel_NoNews": "O quê?\nHoje não há novidades?"
+    "PostPanel_NoNews": "O quê?\nHoje não há novidades?",
+    "PreloadNotifDeltaDetectTitle": "Pacote de pré-carregamento no formato de atualização Delta para a v{0} foi detetada!",
+    "PreloadNotifDeltaDetectSubtitle": "Baixaste um pacote de pré-carregamento no formato de atualização Delta. Este formato de pré-carregamento irá ser usado para atualizar o teu jogo mais tarde."
   },
 
   "_GameRepairPage": {
@@ -580,6 +582,14 @@
     "NotifMetadataUpdateTitle": "Atualização de metadados para o Launcher está disponível",
     "NotifMetadataUpdateSubtitle": "Novos metadados para o Launcher estão disponíveis! Recomendamos que procedas com a atualização para assegurar que o Launcher possa comunicar com os servidores da miHoYo/HoYoverse. Clica em \"Atualizar metadados\" para atualizar.",
     "NotifMetadataUpdateBtn": "Atualizar metadados",
-    "NotifMetadataUpdateBtnUpdating": "A atualizar metadados..."
+    "NotifMetadataUpdateBtnUpdating": "A atualizar metadados...",
+    
+    "NotifFirstWelcomeTitle": "Bem-vindo ao Collapse!",
+    "NotifFirstWelcomeSubtitle": "Para começar, clica no botão \"{0}\" abaixo para ver como instalar ou migrar uma instalação existente.",
+    "NotifFirstWelcomeBtn": "Visitar Wiki no GitHub",
+
+    "NotifPreviewBuildUsedTitle": "Estás a usar uma versão de pré-visualização!",
+    "NotifPreviewBuildUsedSubtitle": "Estás a usar uma versão de pré-visualização e poderás encontrar alguns problemas se estiveres a usar as funcionalidades experimentais desta versão. Se tiveres um problema para reportar, clica  no botão \"{0}\" abaixo para submeter o teu problema.",
+    "NotifPreviewBuildUsedBtn": "Submeter um problema"
   }
 }
