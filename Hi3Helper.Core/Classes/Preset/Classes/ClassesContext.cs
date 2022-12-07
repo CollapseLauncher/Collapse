@@ -21,7 +21,7 @@ namespace Hi3Helper
     internal partial class LocalizationParamsContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(GeneralDataProp))]
-    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSourceGenerationOptions(WriteIndented = true, GenerationMode = JsonSourceGenerationMode.Default, IncludeFields = true)]
     internal partial class GeneralDataPropContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(Metadata))]
