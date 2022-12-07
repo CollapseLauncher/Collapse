@@ -115,25 +115,32 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public void SetVoiceLanguageID(int LangID)
         {
-            ReadOnlySpan<char> regValue;
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
-            GeneralDataProp initValue = new GeneralDataProp();
-            byte[]? result;
-
-            if (keys is null)
-                keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
-            else
+            try
             {
-                result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                if (result is null) return;
-                regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
-            }
+                ReadOnlySpan<char> regValue;
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+                GeneralDataProp initValue = new GeneralDataProp();
+                byte[]? result;
 
-            initValue.deviceVoiceLanguageType = LangID;
-            keys.SetValue("GENERAL_DATA_h2389025596",
-                Encoding.UTF8.GetBytes(
-                    JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+                if (keys is null)
+                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+                else
+                {
+                    result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
+                    if (result is null) return;
+                    regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
+                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
+                }
+
+                initValue.deviceVoiceLanguageType = LangID;
+                keys.SetValue("GENERAL_DATA_h2389025596",
+                    Encoding.UTF8.GetBytes(
+                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Cannot save voice language ID: {LangID} to the registry!\r\n{ex}", LogType.Error, true);
+            }
         }
 
         // WARNING!!!
