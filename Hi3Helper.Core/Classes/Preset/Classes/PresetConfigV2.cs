@@ -115,25 +115,32 @@ namespace Hi3Helper.Preset
         // This feature is only available for Genshin.
         public void SetVoiceLanguageID(int LangID)
         {
-            ReadOnlySpan<char> regValue;
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
-            GeneralDataProp initValue = new GeneralDataProp();
-            byte[]? result;
-
-            if (keys is null)
-                keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
-            else
+            try
             {
-                result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                if (result is null) return;
-                regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
-            }
+                ReadOnlySpan<char> regValue;
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+                GeneralDataProp initValue = new GeneralDataProp();
+                byte[]? result;
 
-            initValue.deviceVoiceLanguageType = LangID;
-            keys.SetValue("GENERAL_DATA_h2389025596",
-                Encoding.UTF8.GetBytes(
-                    JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+                if (keys is null)
+                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+                else
+                {
+                    result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
+                    if (result is null) return;
+                    regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
+                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
+                }
+
+                initValue.deviceVoiceLanguageType = LangID;
+                keys.SetValue("GENERAL_DATA_h2389025596",
+                    Encoding.UTF8.GetBytes(
+                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Cannot save voice language ID: {LangID} to the registry!\r\n{ex}", LogType.Error, true);
+            }
         }
 
         // WARNING!!!
@@ -154,7 +161,7 @@ namespace Hi3Helper.Preset
 
             try
             {
-                return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName ?? ServerRegionID.os_usa);
+                return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName);
             }
             catch (Exception ex)
             {
@@ -171,15 +178,14 @@ namespace Hi3Helper.Preset
             public string userLocalDataVersionId { get; set; } = "0.0.1";
             public int deviceLanguageType { get; set; } = 1;
             public int deviceVoiceLanguageType { get; set; } = 2;
-            public ServerRegionID? selectedServerName { get; set; }
+            public ServerRegionID selectedServerName { get; set; } = ServerRegionID.os_asia;
             public int localLevelIndex { get; set; } = 0;
             public string deviceID { get; set; } = "";
             public string targetUID { get; set; } = "";
             public string curAccountName { get; set; } = "";
             public string uiSaveData { get; set; } = "";
             public string inputData { get; set; } = "";
-            // Initialize 60 fps limit if it's blank
-            public string graphicsData { get; set; } = "{\"customVolatileGrades\":[{\"key\":1,\"value\":2}]";
+            public string graphicsData { get; set; } = "";
             public string globalPerfData { get; set; } = "";
             public int miniMapConfig { get; set; } = 1;
             public bool enableCameraSlope { get; set; } = true;
@@ -196,7 +202,6 @@ namespace Hi3Helper.Preset
             public int volumeVoice { get; set; } = 10;
             public int audioAPI { get; set; } = -1;
             public int audioDynamicRange { get; set; } = 0;
-            // Use Surround by default if it's blank
             public int audioOutput { get; set; } = 1;
             public bool _audioSuccessInit { get; set; } = true;
             public bool enableAudioChangeAndroidMinimumBufferCapacity { get; set; } = true;
@@ -207,20 +212,42 @@ namespace Hi3Helper.Preset
             public double maxLuminosity { get; set; } = 0.0f;
             public double uiPaperWhite { get; set; } = 0.0f;
             public double scenePaperWhite { get; set; } = 0.0f;
-            public double gammaValue { get; set; } = 2.200000047683716f;
-            public IEnumerable<object> _overrideControllerMapKeyList { get; set; } = new List<object>();
-            public IEnumerable<object> _overrideControllerMapValueList { get; set; } = new List<object>();
+            public double gammaValue { get; set; } = 2.200000047683716;
+            public List<object> _overrideControllerMapKeyList { get; set; } = new List<object>();
+            public List<object> _overrideControllerMapValueList { get; set; } = new List<object>();
+            public bool rewiredDisableKeyboard { get; set; } = false;
+            public bool rewiredEnableKeyboard { get; set; } = false;
+            public bool rewiredEnableEDS { get; set; } = false;
+            public bool disableRewiredDelayInit { get; set; } = false;
+            public bool disableRewiredInitProtection { get; set; } = false;
             public int lastSeenPreDownloadTime { get; set; } = 0;
-            public bool mtrCached { get; set; } = false;
-            public bool mtrIsOpen { get; set; } = false;
-            public int mtrMaxTTL { get; set; } = 0x20;
-            public int mtrTimeOut { get; set; } = 0x1388;
+            public bool enableEffectAssembleInEditor { get; set; } = true;
+            public bool forceDisableQuestResourceManagement { get; set; } = false;
+            public bool needReportQuestResourceDeleteStatusFiles { get; set; } = false;
+            public bool mtrCached { get; set; } = true;
+            public bool mtrIsOpen { get; set; } = true;
+            public int mtrMaxTTL { get; set; } = 32;
+            public int mtrTimeOut { get; set; } = 5000;
             public int mtrTraceCount { get; set; } = 5;
             public int mtrAbortTimeOutCount { get; set; } = 3;
-            public int mtrAutoTraceInterval { get; set; } = 0;
-            public int mtrTraceCDEachReason { get; set; } = 0x258;
-            public IEnumerable<object> _customDataKeyList { get; set; } = new List<object>();
-            public IEnumerable<object> _customDataValueList { get; set; } = new List<object>();
+            public int mtrAutoTraceInterval { get; set; } = 3600;
+            public int mtrTraceCDEachReason { get; set; } = 600;
+            public int mtrTimeInterval { get; set; } = 1000;
+            public List<object> mtrBanReasons { get; set; } = new List<object>();
+            public List<object> _customDataKeyList { get; set; } = new List<object>();
+            public List<object> _customDataValueList { get; set; } = new List<object>();
+            public List<object> _serializedCodeSwitches { get; set; } = new List<object>();
+            public bool urlCheckCached { get; set; } = false;
+            public bool urlCheckIsOpen { get; set; } = false;
+            public bool urlCheckAllIP { get; set; } = false;
+            public int urlCheckTimeOut { get; set; } = 5000;
+            public int urlCheckSueecssTraceCount { get; set; } = 5;
+            public int urlCheckErrorTraceCount { get; set; } = 30;
+            public int urlCheckAbortTimeOutCount { get; set; } = 3;
+            public int urlCheckTimeInterval { get; set; } = 1000;
+            public int urlCheckCDEachReason { get; set; } = 600;
+            public List<object> urlCheckBanReasons { get; set; } = new List<object>();
+            public bool mtrUseOldWinVersion { get; set; } = false;
         }
 
         public bool CheckExistingGameBetterLauncher()

@@ -156,9 +156,8 @@ namespace CollapseLauncher
 
         private void FinalizeLoadRegion()
         {
-            // Init Registry Key and Push Region Notification
+            // Init Registry Key
             InitRegKey();
-            SpawnRegionNotification(CurrentConfigV2.ProfileName);
 
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)

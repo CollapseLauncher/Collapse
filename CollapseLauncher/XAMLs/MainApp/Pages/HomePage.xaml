@@ -514,7 +514,7 @@
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
-                                <StackPanel Width="200">
+                                <StackPanel Width="224">
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                     <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
                                         <Button.Content>

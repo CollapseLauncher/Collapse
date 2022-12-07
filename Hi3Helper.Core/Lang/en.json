@@ -78,8 +78,10 @@
   "_HomePage": {
     "PageTitle": "Launcher",
     "PreloadTitle": "Pre-load is Available!",
-    "PreloadNotifTitle": "Pre-load package for v{0} is available!",
-    "PreloadNotifSubtitle": "Click \"Download Game\" to begin downloading it in background.",
+    "PreloadNotifTitle": "Pre-load package for v{0} is Available!",
+    "PreloadNotifDeltaDetectTitle": "Pre-load package in Delta-Patch format for v{0} is detected!",
+    "PreloadNotifSubtitle": "Click \"Download\" to begin downloading it in background.",
+    "PreloadNotifDeltaDetectSubtitle": "You have downloaded a pre-load in Delta-Patch format. This pre-load format will be used to update your game later.",
     "PreloadNotifCompleteTitle": "Pre-load package has been downloaded!",
     "PreloadNotifCompleteSubtitle": "You have successfully downloaded the pre-load package for v{0}!",
     "PreloadNotifIntegrityCheckBtn": "Verify Package Integrity",

@@ -11,7 +11,9 @@
                 public string PageTitle { get; set; } = LangFallback?._HomePage.PageTitle;
                 public string PreloadTitle { get; set; } = LangFallback?._HomePage.PreloadTitle;
                 public string PreloadNotifTitle { get; set; } = LangFallback?._HomePage.PreloadNotifTitle;
+                public string PreloadNotifDeltaDetectTitle { get; set; } = LangFallback?._HomePage.PreloadNotifDeltaDetectTitle;
                 public string PreloadNotifSubtitle { get; set; } = LangFallback?._HomePage.PreloadNotifSubtitle;
+                public string PreloadNotifDeltaDetectSubtitle { get; set; } = LangFallback?._HomePage.PreloadNotifDeltaDetectSubtitle;
                 public string PreloadNotifCompleteTitle { get; set; } = LangFallback?._HomePage.PreloadNotifCompleteTitle;
                 public string PreloadNotifCompleteSubtitle { get; set; } = LangFallback?._HomePage.PreloadNotifCompleteSubtitle;
                 public string PreloadNotifIntegrityCheckBtn { get; set; } = LangFallback?._HomePage.PreloadNotifIntegrityCheckBtn;
