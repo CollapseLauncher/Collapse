@@ -426,14 +426,35 @@ namespace CollapseLauncher.Pages
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
             PreloadDialogBox.IsOpen = true;
 
+            string ver = regionResourceProp.data.pre_download_game.latest.version;
+
+            try
+            {
+                if (!(CurrentConfigV2.IsGenshin ?? false))
+                {
+                    DeltaPatchProperty prop = InstallManagement.CheckDeltaPatchUpdate(GameDirPath, CurrentConfigV2.ProfileName, ver, DownloadType.PreDownload);
+                    if (prop != null)
+                    {
+                        PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
+                        PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
+                        DownloadPreBtn.Visibility = Visibility.Collapsed;
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", Hi3Helper.LogType.Error, true);
+            }
+
             if (!IsPreDownloadCompleted())
             {
-                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, ver);
             }
             else
             {
                 PreloadDialogBox.Title = Lang._HomePage.PreloadNotifCompleteTitle;
-                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, regionResourceProp.data.pre_download_game.latest.version);
+                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, ver);
                 PreloadDialogBox.IsClosable = true;
 
                 StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
@@ -661,7 +682,7 @@ namespace CollapseLauncher.Pages
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
-            }
+            }   
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
@@ -860,7 +881,6 @@ namespace CollapseLauncher.Pages
                 InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
                 DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
                 ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                LogWrite($"{e.State}: {InstallDownloadSpeedString}", Hi3Helper.LogType.Empty, false, true);
                 ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
                 ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);

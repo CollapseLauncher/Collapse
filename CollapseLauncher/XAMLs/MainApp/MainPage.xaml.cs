@@ -217,6 +217,9 @@ namespace CollapseLauncher
                 // Then Spawn the Notification Feed
                 SpawnPushAppNotification();
 
+                // Spawn Region Notification
+                SpawnRegionNotification(CurrentConfigV2.ProfileName);
+
                 // Check Metadata Update in Background
                 await CheckMetadataUpdateInBackground();
             }
@@ -280,7 +283,7 @@ namespace CollapseLauncher
                 {
                     Show = true,
                     MsgId = -1,
-                    IsDisposable = false,
+                    IsDisposable = true,
                     Severity = NotifSeverity.Informational,
                     Title = Lang._AppNotification.NotifPreviewBuildUsedTitle,
                     Message = string.Format(Lang._AppNotification.NotifPreviewBuildUsedSubtitle, Lang._AppNotification.NotifPreviewBuildUsedBtn),
@@ -567,8 +570,6 @@ namespace CollapseLauncher
 
         private async void InitializeStartup()
         {
-            RunBackgroundCheck();
-
             bool IsLoadSuccess;
 
             Type Page;
@@ -605,6 +606,7 @@ namespace CollapseLauncher
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             CheckRunningGameInstance();
+            RunBackgroundCheck();
         }
 
         private void LoadSavedGameSelection()
@@ -795,7 +797,7 @@ namespace CollapseLauncher
             string tagStr = (string)tag.Tag;
             if (((CurrentConfigV2.IsGenshin ?? false) && (string)tag.Tag != "launcher"))
             {
-                sourceType = typeof(Pages.UnavailablePage);
+                sourceType = typeof(UnavailablePage);
                 tagStr = "unavailable";
             }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
@@ -859,13 +861,13 @@ namespace CollapseLauncher
                 {
                     PreviousTag = "unavailable";
                     HideBackgroundImage();
-                    MainFrameChanger.ChangeMainFrame(typeof(Pages.UnavailablePage));
+                    MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
                 }
                 else
                 {
                     PreviousTag = "crashinfo";
                     HideBackgroundImage();
-                    MainFrameChanger.ChangeMainFrame(typeof(Pages.UnhandledExceptionPage));
+                    MainFrameChanger.ChangeMainFrame(typeof(UnhandledExceptionPage));
                 }
             });
         }

@@ -110,24 +110,26 @@ namespace CollapseLauncher
             CanDeleteZip = !File.Exists(Path.Combine(GameDirPath, "@NoDeleteZip"));
             CanSkipVerif = File.Exists(Path.Combine(GameDirPath, "@NoVerification"));
             CanSkipExtract = File.Exists(Path.Combine(GameDirPath, "@NoExtraction"));
-            CanDeltaPatch = CheckDeltaPatchUpdate(GameDirPath);
+            CanDeltaPatch = (PatchProp = CheckDeltaPatchUpdate(GameDirPath, SourceProfile.ProfileName, GameVersionString, ModeType)) != null;
         }
 
-        public bool CheckDeltaPatchUpdate(string GamePath)
+        public static DeltaPatchProperty CheckDeltaPatchUpdate(string GamePath, string ProfileName, string GameVersion, DownloadType ModType)
         {
             string[] GamePaths = Directory.GetFiles(GamePath, "*.patch", SearchOption.TopDirectoryOnly);
-            if (GamePaths.Length == 0) return false;
+            if (GamePaths.Length == 0) return null;
+
+            DeltaPatchProperty Prop;
 
             try
             {
-                PatchProp = new DeltaPatchProperty(GamePaths.First());
-                if (PatchProp.ProfileName != SourceProfile.ProfileName) return false;
-                if (ModeType != DownloadType.Update) return false;
-                if (PatchProp.TargetVer != GameVersionString) return false;
+                Prop = new DeltaPatchProperty(GamePaths.First());
+                if (Prop.ProfileName != ProfileName) return null;
+                if (!(ModType == DownloadType.PreDownload || ModType == DownloadType.Update)) return null;
+                if (Prop.TargetVer != GameVersion) return null;
             }
-            catch (IndexOutOfRangeException) { return false; }
+            catch (IndexOutOfRangeException) { return null; }
 
-            return true;
+            return Prop;
         }
 
         public void AddDownloadProperty(string URL, string OutputPath, string OutputDir, string RemoteHash, long RemoteRequiredSize) => DownloadProperty.Add(new DownloadAddressProperty
@@ -1114,28 +1116,29 @@ namespace CollapseLauncher
         private void UpdateProgress(InstallManagementProgress e) => InstallProgressChanged?.Invoke(this, e);
         private void UpdateStatus(InstallManagementStatus e) => InstallStatusChanged?.Invoke(this, e);
 
-        public class DeltaPatchProperty
-        {
-            public DeltaPatchProperty(string PatchFile)
-            {
-                ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(PatchFile).Split('_');
-                this.MD5hash = strings[5];
-                this.ZipHash = strings[4];
-                this.ProfileName = strings[0];
-                this.SourceVer = strings[1];
-                this.TargetVer = strings[2];
-                this.PatchCompr = strings[3];
-                this.PatchPath = PatchFile;
-            }
+    }
 
-            public string ZipHash { get; set; }
-            public string MD5hash { get; set; }
-            public string ProfileName { get; set; }
-            public string SourceVer { get; set; }
-            public string TargetVer { get; set; }
-            public string PatchCompr { get; set; }
-            public string PatchPath { get; set; }
+    public class DeltaPatchProperty
+    {
+        public DeltaPatchProperty(string PatchFile)
+        {
+            ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(PatchFile).Split('_');
+            this.MD5hash = strings[5];
+            this.ZipHash = strings[4];
+            this.ProfileName = strings[0];
+            this.SourceVer = strings[1];
+            this.TargetVer = strings[2];
+            this.PatchCompr = strings[3];
+            this.PatchPath = PatchFile;
         }
+
+        public string ZipHash { get; set; }
+        public string MD5hash { get; set; }
+        public string ProfileName { get; set; }
+        public string SourceVer { get; set; }
+        public string TargetVer { get; set; }
+        public string PatchCompr { get; set; }
+        public string PatchPath { get; set; }
     }
 
     public class InstallManagementStatus
