@@ -235,6 +235,7 @@ namespace CollapseLauncher
                 switch (await Dialog_GameInstallationFileCorrupt(Content, VerificationResult.RemoteHash, VerificationResult.LocalHash))
                 {
                     case ContentDialogResult.Primary:
+                        DownloadLocalSize = 0;
                         DeleteDownloadedFile(VerificationResult.Output, DownloadThread);
                         return true;
                     case ContentDialogResult.None:
@@ -356,7 +357,6 @@ namespace CollapseLauncher
         public void ResetDownload()
         {
             DownloadLocalSize = 0;
-            FileInfo fileInfo;
 
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
