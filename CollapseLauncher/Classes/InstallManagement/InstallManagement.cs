@@ -177,6 +177,7 @@ namespace CollapseLauncher
             DownloadLog += DownloadLogAdapter;
 
             CountCurrentDownload = 0;
+            DownloadLocalSize = 0;
             foreach (DownloadAddressProperty prop in DownloadProperty)
             {
                 FileInfo file = new FileInfo(prop.Output);
