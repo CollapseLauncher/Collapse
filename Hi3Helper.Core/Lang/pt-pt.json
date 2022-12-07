@@ -589,7 +589,7 @@
     "NotifFirstWelcomeBtn": "Visitar Wiki no GitHub",
 
     "NotifPreviewBuildUsedTitle": "Estás a usar uma versão de pré-visualização!",
-    "NotifPreviewBuildUsedSubtitle": "Estás a usar uma versão de pré-visualização e poderás encontrar alguns problemas se estiveres a usar as funcionalidades experimentais desta versão. Se tiveres um problema para reportar, clica  no botão \"{0}\" abaixo para submeter o teu problema.",
+    "NotifPreviewBuildUsedSubtitle": "Estás a usar uma versão de pré-visualização e poderás encontrar alguns problemas se estiveres a usar as funcionalidades experimentais desta versão. Se tiveres um problema para reportar, clica no botão \"{0}\" abaixo para submeter o teu problema.",
     "NotifPreviewBuildUsedBtn": "Submeter um problema"
   }
 }
