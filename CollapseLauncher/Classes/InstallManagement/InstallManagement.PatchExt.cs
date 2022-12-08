@@ -27,6 +27,7 @@ namespace CollapseLauncher
 
         string IngredientPath;
         private void ResetSw() => DownloadStopwatch = Stopwatch.StartNew();
+        private Dictionary<string, string> RepoList;
         string ConvertStatus;
 
         public async Task StartPreparation()
@@ -45,7 +46,6 @@ namespace CollapseLauncher
 
             UpdateStatus(InstallStatus);
 
-            Dictionary<string, string> RepoList;
             string RepoListURL = string.Format(AppGameRepoIndexURLPrefix, SourceProfile.ProfileName);
 
             using (MemoryStream buffer = new MemoryStream())
@@ -335,6 +335,8 @@ namespace CollapseLauncher
             int i = 0;
             int j = BrokenFile.Count;
 
+            RepoRemoteURL = RepoList[PatchProp.SourceVer] + '/';
+
             foreach (FileProperties Entry in BrokenFile)
             {
                 i++;
@@ -353,13 +355,25 @@ namespace CollapseLauncher
                     File.Delete(OutputPath);
 
                 DownloadProgress += RepairIngredients_Progress;
-                if (Entry.FileSize >= 20 << 20)
+                try
                 {
-                    await Download(InputURL, OutputPath, this.DownloadThread, true, Token);
-                    await Merge();
+                    if (Entry.FileSize >= 20 << 20)
+                    {
+                        await Download(InputURL, OutputPath, this.DownloadThread, true, Token);
+                        await Merge();
+                    }
+                    else
+                    {
+                        await Download(InputURL, OutputPath, true, null, null, Token);
+                    }
+                    LogWriteLine($"Downloaded: {OutputPath} ({InputURL})", LogType.Default, true);
                 }
-                else
-                    await Download(InputURL, OutputPath, true, null, null, Token);
+                catch (TaskCanceledException) { throw; }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Failed while trying to download a missing file with details below.\r\nLocal Path: {OutputPath}\r\nURL: {InputURL}", ex);
+                }
                 DownloadProgress -= RepairIngredients_Progress;
             }
         }
