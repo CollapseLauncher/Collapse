@@ -243,7 +243,7 @@
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
     "OverlayGameRunningTitle": "Game is Currently Running!",
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
-    "OverlayFirstTimeTitle": "You haven't launched the game yet!",
+    "OverlayFirstTimeTitle": "You have never played this game before!",
     "OverlayFirstTimeSubtitle": "Please run the game first to generate the necessary files, then come back here to use this feature.",
 
     "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
