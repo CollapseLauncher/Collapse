@@ -308,7 +308,11 @@ namespace Hi3Helper.Preset
             IniFile Ini = new IniFile();
             Ini.Load(ConfigPath);
 
-            ActualGameDataLocation = ConverterTool.NormalizePath(Ini["launcher"]["game_install_path"].ToString());
+            string? path1 = Ini["launcher"]["game_install_path"].ToString();
+
+            if (path1 == null) return false;
+
+            ActualGameDataLocation = ConverterTool.NormalizePath(path1);
 
             return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
