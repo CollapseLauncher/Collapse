@@ -573,7 +573,7 @@
     "UpdateStatus4": "You're using the latest version ({0}) now!",
     "UpdateMessage4": "Returning to game launcher scope shortly...",
     "UpdateStatus5": "Version has been updated to {0}!",
-    "UpdateMessage5": "Your launcher will re-open momentarily..."
+    "UpdateMessage5": "Your launcher will re-open in a moment..."
   },
 
   "_AppNotification": {
