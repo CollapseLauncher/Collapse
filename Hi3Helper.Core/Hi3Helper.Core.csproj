@@ -105,8 +105,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Crc32.NET" Version="1.2.0" />
-		<PackageReference Include="Google.Protobuf" Version="3.21.9" />
-		<PackageReference Include="System.Text.Json" Version="7.0.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.21.12" />
+		<PackageReference Include="System.Text.Json" Version="7.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
