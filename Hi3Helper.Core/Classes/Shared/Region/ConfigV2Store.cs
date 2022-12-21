@@ -39,7 +39,7 @@ namespace Hi3Helper.Preset
             foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> a in ConfigV2.MetadataV2)
             {
                 phase1 = a.Value
-                    .Where(b => !string.IsNullOrEmpty(b.Value.CachesListAPIURL))
+                    .Where(b => b.Value.IsCacheUpdateEnabled ?? false)
                     .ToDictionary(b => b.Key, b => b.Value);
 
                 if (phase1.Count > 0) res.Add(a.Key, phase1);
