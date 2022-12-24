@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using Windows.Graphics;
 using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -66,8 +67,21 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
-                Console.ReadLine();
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+                {
+                    WindowsPrincipal principal = new WindowsPrincipal(identity);
+                    if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator)) {
+                        // Ideally implement a self-restart using admin option here, but this works for now. Would also need to add it in the GUI
+                        // if the user does not have console enabled.
+                        LogWriteLine("You are not running as administrator. Please restart the application as an administrator to continue updating.", Hi3Helper.LogType.Warning, false);
+                        LogWriteLine("Press any key to continue...", Hi3Helper.LogType.Warning, false);
+                        // LogWriteLine($"\r{ex}", Hi3Helper.LogType.Error, false);
+                        Console.ReadLine();
+                        this.Close();
+                    }
+                }
+                // LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                // Console.ReadLine();
             }
         }
 
