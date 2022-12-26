@@ -24,6 +24,7 @@ namespace CollapseLauncher
         public static string applyPath = Path.Combine(workingDir, $"ApplyUpdate.exe");
         public static string applyElevatedPath = Path.Combine(workingDir, "_Temp", $"ApplyUpdate.exe");
         public static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
+        public static string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
 
         public UpdaterWindow()
         {
@@ -71,13 +72,24 @@ namespace CollapseLauncher
                 {
                     WindowsPrincipal principal = new WindowsPrincipal(identity);
                     if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator)) {
-                        // Ideally implement a self-restart using admin option here, but this works for now. Would also need to add it in the GUI
-                        // if the user does not have console enabled.
-                        LogWriteLine("You are not running as administrator. Please restart the application as an administrator to continue updating.", Hi3Helper.LogType.Warning, false);
-                        LogWriteLine("Press any key to continue...", Hi3Helper.LogType.Warning, false);
+                        // Ideally this would be localized
+                        LogWriteLine("You are not running as Administrator. The application will now attempt to restart as an Administrator to continue updating.", Hi3Helper.LogType.Warning, false);
+                        // NOTE: Lines 79-81 are not required but have been left for debugging purposes, which could be enabled if there is
+                        // a way to check if the user has Console enabled.
+                        // LogWriteLine("Press any key to continue...", Hi3Helper.LogType.Warning, false);
                         // LogWriteLine($"\r{ex}", Hi3Helper.LogType.Error, false);
-                        Console.ReadLine();
+                        // Console.ReadLine();
                         this.Close();
+                        new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                Verb = "runas",
+                                FileName = launcherPath,
+                                WorkingDirectory = workingDir
+                            }
+                        }.Start();
                     }
                 }
                 // LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
