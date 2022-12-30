@@ -161,7 +161,7 @@ namespace Hi3Helper.Preset
 
             try
             {
-                return (int)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName);
+                return (int?)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName) ?? 0;
             }
             catch (Exception ex)
             {
