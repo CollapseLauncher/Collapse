@@ -155,7 +155,7 @@ namespace Hi3Helper.Shared.GameConversion
 
         private void HttpAdapter(object sender, Http.DownloadEvent e)
         {
-            if (e.State != Http.MultisessionState.Merging)
+            if (e.State != Http.DownloadState.Merging)
                 TotalRead += e.Read;
 
             OnProgressChanged(new ConversionTaskChanged(TotalRead, TotalSizeToRead, sw.Elapsed.TotalSeconds)

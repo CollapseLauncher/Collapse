@@ -27,7 +27,7 @@ namespace CollapseLauncher
 {
     public enum DownloadType { Update, FirstInstall, PreDownload }
 
-    internal partial class InstallManagement : Http
+    internal sealed partial class InstallManagement : IDisposable
     {
         public event EventHandler<InstallManagementStatus> InstallStatusChanged;
         public event EventHandler<InstallManagementProgress> InstallProgressChanged;
@@ -40,6 +40,7 @@ namespace CollapseLauncher
         private DeltaPatchProperty PatchProp;
         private PresetConfigV2 SourceProfile;
         private UIElement Content;
+        private Http _httpClient;
 
         private DownloadType ModeType;
         private CancellationToken Token;
@@ -82,8 +83,9 @@ namespace CollapseLauncher
             int extractionThread, CancellationToken token, string DecompressedRemotePath = null,
             // These sections are for Genshin only
             string GameVerString = "", string DispatchKey = null, string DispatchURLPrefix = null, int RegionID = 0,
-            string ExecutablePrefix = "BH3") : base(true, 10)
+            string ExecutablePrefix = "BH3")
         {
+            this._httpClient = new Http(true, 10);
             this.Content = Content;
             this.SourceProfile = SourceProfile;
             this.ModeType = downloadType;
@@ -104,6 +106,10 @@ namespace CollapseLauncher
 
             ApplyParameter();
         }
+
+        ~InstallManagement() => this.Dispose();
+
+        public void Dispose() => this._httpClient?.Dispose();
 
         private void ApplyParameter()
         {
@@ -174,9 +180,9 @@ namespace CollapseLauncher
 
             CountCurrentDownload = 0;
 
-            DownloadProgress += DownloadStatusAdapter;
-            DownloadProgress += DownloadProgressAdapter;
-            DownloadLog += DownloadLogAdapter;
+            _httpClient.DownloadProgress += DownloadStatusAdapter;
+            _httpClient.DownloadProgress += DownloadProgressAdapter;
+            HttpLogInvoker.DownloadLog += DownloadLogAdapter;
 
             foreach (DownloadAddressProperty prop in DownloadProperty)
             {
@@ -186,14 +192,14 @@ namespace CollapseLauncher
                 LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
                 if (!file.Exists || file.Length < prop.LocalSize)
                 {
-                    await Download(prop.URL, prop.Output, DownloadThread, false, Token);
-                    await Merge();
+                    await _httpClient.Download(prop.URL, prop.Output, DownloadThread, false, Token);
+                    await _httpClient.Merge();
                 }
             }
 
-            DownloadProgress -= DownloadStatusAdapter;
-            DownloadProgress -= DownloadProgressAdapter;
-            DownloadLog -= DownloadLogAdapter;
+            _httpClient.DownloadProgress -= DownloadStatusAdapter;
+            _httpClient.DownloadProgress -= DownloadProgressAdapter;
+            HttpLogInvoker.DownloadLog -= DownloadLogAdapter;
         }
 
         public DownloadAddressProperty StartVerification()
@@ -282,10 +288,10 @@ namespace CollapseLauncher
         {
             switch (e.State)
             {
-                case MultisessionState.Downloading:
+                case DownloadState.Downloading:
                     DownloadStateStr = Lang._Misc.Downloading;
                     break;
-                case MultisessionState.Merging:
+                case DownloadState.Merging:
                     DownloadStateStr = Lang._Misc.Merging;
                     break;
             }
@@ -296,7 +302,7 @@ namespace CollapseLauncher
 
         private void DownloadProgressAdapter(object sender, DownloadEvent e)
         {
-            if (e.State != MultisessionState.Merging) DownloadLocalSize += e.Read;
+            if (e.State != DownloadState.Merging) DownloadLocalSize += e.Read;
 
             DownloadLocalPerFileSize = e.SizeDownloaded;
             DownloadRemotePerFileSize = e.SizeToBeDownloaded;
@@ -308,13 +314,13 @@ namespace CollapseLauncher
 
         private void DownloadLogAdapter(object sender, DownloadLogEvent e) => LogWriteLine(e.Message, LogSeverity2LogType(e.Severity), true);
 
-        private LogType LogSeverity2LogType(LogSeverity e)
+        private LogType LogSeverity2LogType(DownloadLogSeverity e)
         {
             switch (e)
             {
-                case LogSeverity.Error:
+                case DownloadLogSeverity.Error:
                     return LogType.Error;
-                case LogSeverity.Warning:
+                case DownloadLogSeverity.Warning:
                     return LogType.Warning;
                 default:
                     return LogType.Default;
@@ -332,8 +338,8 @@ namespace CollapseLauncher
 
             for (int i = 0; i < DownloadProperty.Count; i++)
             {
-                DownloadRemoteSize += DownloadProperty[i].RemoteSize = await Task.Run(() => TryGetContentLength(DownloadProperty[i].URL, Token) ?? 0);
-                DownloadLocalSize += DownloadProperty[i].LocalSize = CalculateExistingMultisessionFilesWithExpctdSize(DownloadProperty[i].Output, DownloadThread, DownloadProperty[i].RemoteSize);
+                DownloadRemoteSize += DownloadProperty[i].RemoteSize = await Task.Run(() => _httpClient.TryGetContentLength(DownloadProperty[i].URL, Token) ?? 0);
+                DownloadLocalSize += DownloadProperty[i].LocalSize = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(DownloadProperty[i].Output, DownloadThread, DownloadProperty[i].RemoteSize);
             }
 
             return DownloadLocalSize == 0 ? true : DownloadLocalSize == DownloadRemoteSize;
@@ -369,7 +375,7 @@ namespace CollapseLauncher
             FileInfo fileInfo = new FileInfo(FileOutput);
             if (fileInfo.Exists)
                 fileInfo.Delete();
-            DeleteMultisessionFiles(FileOutput, Thread);
+            _httpClient.DeleteMultisessionFiles(FileOutput, Thread);
         }
 
         long GetExistingPartialDownloadLength(string fileOutput)
@@ -742,7 +748,7 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(GameDirPath, "pkg_version");
             if (!File.Exists(ManifestPath))
-                await Download(RepoRemoteURL + "/pkg_version", ManifestPath, true, null, null, Token);
+                await _httpClient.Download(RepoRemoteURL + "/pkg_version", ManifestPath, true, null, null, Token);
             BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build local audio entry.
@@ -815,6 +821,10 @@ namespace CollapseLauncher
                 LogWriteLine($"Failed while loading the dispatcher! :(\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+            finally
+            {
+                DispatchReader?.Dispose();
+            }
         }
 
         private async Task BuildPersistentManifest(List<PkgVersionProperties> Entries,
@@ -836,7 +846,7 @@ namespace CollapseLauncher
             {
                 if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                    await Download(ParentURL + "/data_versions", fs, null, null, Token);
+                    await _httpClient.Download(ParentURL + "/data_versions", fs, null, null, Token);
 
                 LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}", LogType.Default, true);
 
@@ -849,7 +859,7 @@ namespace CollapseLauncher
             ParentURL = $"{QueryProperty.ClientDesignDataURL}/AssetBundles";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await Download(ParentURL + "/data_versions", fs, null, null, Token);
+                await _httpClient.Download(ParentURL + "/data_versions", fs, null, null, Token);
 
             LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}", LogType.Default, true);
 
@@ -861,7 +871,7 @@ namespace CollapseLauncher
             ParentAudioURL = $"{QueryProperty.ClientAudioAssetsURL}/StandaloneWindows64";
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
+                await _httpClient.Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
 
             LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}", LogType.Default, true);
 
@@ -1049,8 +1059,8 @@ namespace CollapseLauncher
             int BrokenFilesCount = EntryIn.Count;
             int FilesRead = 0;
 
-            DownloadLog += DownloadLogAdapter;
-            DownloadProgress += DownloadProgressAdapter;
+            HttpLogInvoker.DownloadLog += DownloadLogAdapter;
+            _httpClient.DownloadProgress += DownloadProgressAdapter;
             foreach (PkgVersionProperties Entry in EntryIn)
             {
                 FilesRead++;
@@ -1073,11 +1083,11 @@ namespace CollapseLauncher
                     LogWriteLine($"Downloading: {RemotePath}...", LogType.Default, true);
                     if (Entry.fileSize >= 10 << 20)
                     {
-                        await Download(RemotePath, LocalPath, DownloadThread, true, Token);
-                        await Merge();
+                        await _httpClient.Download(RemotePath, LocalPath, DownloadThread, true, Token);
+                        await _httpClient.Merge();
                     }
                     else
-                        await Download(RemotePath, LocalPath, true, null, null, Token);
+                        await _httpClient.Download(RemotePath, LocalPath, true, null, null, Token);
                 }
                 catch (TaskCanceledException ex)
                 {
@@ -1094,8 +1104,8 @@ namespace CollapseLauncher
                     LogWriteLine($"{ex}", LogType.Error, true);
                 }
             }
-            DownloadProgress -= DownloadProgressAdapter;
-            DownloadLog -= DownloadLogAdapter;
+            _httpClient.DownloadProgress -= DownloadProgressAdapter;
+            HttpLogInvoker.DownloadLog -= DownloadLogAdapter;
 
             await Dialog_AdditionalDownloadCompleted(Content);
         }
