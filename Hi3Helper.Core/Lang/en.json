@@ -573,7 +573,7 @@
     "UpdateStatus4": "You're using the latest version ({0}) now!",
     "UpdateMessage4": "Returning to game launcher scope shortly...",
     "UpdateStatus5": "Version has been updated to {0}!",
-    "UpdateMessage5": "Your launcher will re-open momentarily..."
+    "UpdateMessage5": "Your launcher will re-open shortly..."
   },
 
   "_AppNotification": {
@@ -587,7 +587,7 @@
     "NotifFirstWelcomeBtn": "Visit GitHub Wiki",
 
     "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "You are currently using a PREVIEW build which is still being tested. You may experience some issues if you are using the experimental feature(s) in this build. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
+    "NotifPreviewBuildUsedSubtitle": "You are currently using a PREVIEW build which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
     "NotifPreviewBuildUsedBtn": "Submit an Issue"
   }
 }
