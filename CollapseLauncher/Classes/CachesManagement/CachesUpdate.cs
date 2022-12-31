@@ -139,7 +139,7 @@ namespace CollapseLauncher.Pages
         string timeLeftString;
         private void CachesDownloadProgress(object sender, DownloadEvent e)
         {
-            if (e.State != MultisessionState.Merging)
+            if (e.State != DownloadState.Merging)
             {
                 cachesRead += e.Read;
             }

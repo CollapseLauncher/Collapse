@@ -79,32 +79,29 @@ namespace CollapseLauncher
 
         private async Task<RegionResourceProp> TryGetMultiLangResourceProp()
         {
-            RegionResourceProp ret = (RegionResourceProp)await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
+            RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
 
-            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? (RegionResourceProp?)await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us") : ret;
+            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us") : ret;
         }
 
-        private async Task<object> GetMultiLangResourceProp(string langID)
+        private async Task<RegionResourceProp?> GetMultiLangResourceProp(string langID)
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await _httpClient.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, langID), memoryStream, null, null, default);
                 memoryStream.Position = 0;
-                return JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                return (RegionResourceProp?)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
             }
         }
 
         private async Task<RegionResourceProp> TryGetSingleLangResourceProp()
         {
-            RegionResourceProp ret = new RegionResourceProp();
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await _httpClient.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
                 memoryStream.Position = 0;
-                ret = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                return (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
             }
-
-            return ret;
         }
 
         private void ResetRegionProp()

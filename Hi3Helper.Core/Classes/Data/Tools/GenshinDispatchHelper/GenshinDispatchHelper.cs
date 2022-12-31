@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,9 @@ using static System.Convert;
 
 namespace Hi3Helper.Data
 {
-    public class GenshinDispatchHelper : Http.Http
+    public class GenshinDispatchHelper : IDisposable
     {
+        private Http.Http _httpClient;
         private string DispatchBaseURL { get; set; }
         private string RegionSubdomain { get; set; }
         private string ChannelName = "OSRELWin";
@@ -22,19 +24,24 @@ namespace Hi3Helper.Data
         private QueryProperty returnValProp;
         private CancellationToken cancelToken;
 
-        public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken()) : base(false, 1, 1)
+        public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken())
         {
+            this._httpClient = new Http.Http(false, 1, 1);
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
             this.DispatchBaseURL = string.Format(DispatchURLPrefix, RegionSubdomain, $"{ChannelName}{VersionString}", DispatchKey);
             this.cancelToken = cancelToken;
         }
 
+        ~GenshinDispatchHelper() => Dispose();
+
+        public void Dispose() => this._httpClient?.Dispose();
+
         private async Task<byte[]> LoadRemoteDispatch()
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await Download(DispatchBaseURL, response, null, null, cancelToken);
+                await this._httpClient.Download(DispatchBaseURL, response, null, null, cancelToken).ConfigureAwait(false);
 
                 return response.GetBuffer();
             }
@@ -51,7 +58,7 @@ namespace Hi3Helper.Data
                 Console.WriteLine(dFormat);
                 Logger.WriteLog(dFormat, LogType.Default);
 #endif
-                await Download(DispatchBaseURL, s, null, null, cancelToken);
+                await this._httpClient.Download(DispatchBaseURL, s, null, null, cancelToken).ConfigureAwait(false);
                 s.Position = 0;
                 DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
             }
@@ -61,7 +68,7 @@ namespace Hi3Helper.Data
 
         public async Task LoadDispatch(byte[] CustomDispatchData = null)
         {
-            string stringdata = Encoding.UTF8.GetString(await LoadRemoteDispatch());
+            string stringdata = Encoding.UTF8.GetString(await LoadRemoteDispatch().ConfigureAwait(false));
             byte[] ProtoData = CustomDispatchData == null
                 ? FromBase64String(stringdata)
                 : CustomDispatchData;
@@ -91,7 +98,7 @@ namespace Hi3Helper.Data
 
             ParseGameResPkgProp(ref returnValProp);
             ParseDesignDataURL(ref returnValProp);
-            await ParseAudioAssetsURL(returnValProp);
+            await ParseAudioAssetsURL(returnValProp).ConfigureAwait(false);
         }
 
         private void ParseDesignDataURL(ref QueryProperty ValProp)
@@ -117,7 +124,7 @@ namespace Hi3Helper.Data
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await Download(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, null, null, cancelToken);
+                await this._httpClient.Download(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, null, null, cancelToken).ConfigureAwait(false);
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",

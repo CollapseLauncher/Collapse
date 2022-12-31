@@ -26,7 +26,6 @@ namespace CollapseLauncher.Dialogs
     public partial class InstallationConvert : Page
     {
         string SourceDataIntegrityURL;
-        string TargetDataIntegrityURL;
         string GameVersion;
         bool IsAlreadyConverted = false;
         PresetConfigV2 SourceProfile;
@@ -122,6 +121,10 @@ namespace CollapseLauncher.Dialogs
                 RevertConversion();
                 LogWriteLine($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex));
+            }
+            finally
+            {
+                Converter?.Dispose();
             }
         }
 
@@ -309,7 +312,6 @@ namespace CollapseLauncher.Dialogs
             });
 
             SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
-            TargetDataIntegrityURL = await FetchDataIntegrityURL(TargetProfile);
 
             bool IsChoosen = false;
             string cPath = null;
@@ -382,7 +384,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private void Step3ProgressEvents(object sender, GameConversionManagement.ConvertProgress e)
+        private void Step3ProgressEvents(object sender, ConvertProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -419,7 +421,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private void Step4ProgressEvents(object sender, GameConversionManagement.ConvertProgress e)
+        private void Step4ProgressEvents(object sender, ConvertProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -455,7 +457,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private void Step5ProgressEvents(object sender, GameConversionManagement.ConvertProgress e)
+        private void Step5ProgressEvents(object sender, ConvertProgress e)
         {
             DispatcherQueue.TryEnqueue(() =>
             {

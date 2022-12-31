@@ -19,7 +19,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    internal partial class InstallManagement : Http
+    internal sealed partial class InstallManagement
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
@@ -50,9 +50,9 @@ namespace CollapseLauncher
 
             using (MemoryStream buffer = new MemoryStream())
             {
-                DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(RepoListURL, buffer, null, null, Token);
-                DownloadProgress -= FetchIngredientsAPI_Progress;
+                _httpClient.DownloadProgress += FetchIngredientsAPI_Progress;
+                await _httpClient.Download(RepoListURL, buffer, null, null, Token);
+                _httpClient.DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
             }
@@ -62,9 +62,9 @@ namespace CollapseLauncher
 
             using (MemoryStream buffer = new MemoryStream())
             {
-                DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(IndexRemoteURL, buffer, null, null, Token);
-                DownloadProgress -= FetchIngredientsAPI_Progress;
+                _httpClient.DownloadProgress += FetchIngredientsAPI_Progress;
+                await _httpClient.Download(IndexRemoteURL, buffer, null, null, Token);
+                _httpClient.DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
@@ -354,17 +354,17 @@ namespace CollapseLauncher
                 if (File.Exists(OutputPath))
                     File.Delete(OutputPath);
 
-                DownloadProgress += RepairIngredients_Progress;
+                _httpClient.DownloadProgress += RepairIngredients_Progress;
                 try
                 {
                     if (Entry.FileSize >= 20 << 20)
                     {
-                        await Download(InputURL, OutputPath, this.DownloadThread, true, Token);
-                        await Merge();
+                        await _httpClient.Download(InputURL, OutputPath, this.DownloadThread, true, Token);
+                        await _httpClient.Merge();
                     }
                     else
                     {
-                        await Download(InputURL, OutputPath, true, null, null, Token);
+                        await _httpClient.Download(InputURL, OutputPath, true, null, null, Token);
                     }
                     LogWriteLine($"Downloaded: {OutputPath} ({InputURL})", LogType.Default, true);
                 }
@@ -374,13 +374,13 @@ namespace CollapseLauncher
                 {
                     throw new Exception($"Failed while trying to download a missing file with details below.\r\nLocal Path: {OutputPath}\r\nURL: {InputURL}", ex);
                 }
-                DownloadProgress -= RepairIngredients_Progress;
+                _httpClient.DownloadProgress -= RepairIngredients_Progress;
             }
         }
 
         private void RepairIngredients_Progress(object sender, DownloadEvent e)
         {
-            if (e.State != MultisessionState.Merging)
+            if (e.State != DownloadState.Merging)
                 RepairRead += e.Read;
 
             DownloadLocalSize = RepairRead;

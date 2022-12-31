@@ -13,16 +13,17 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    public class Updater : Http
+    public class Updater
     {
-        string ChannelURL;
-        string TargetPath;
-        string TempPath;
-        string RepoURL = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/{0}/";
-        Prop FileProp = new Prop();
-        List<fileProp> UpdateFiles = new List<fileProp>();
-        CancellationTokenSource TokenSource = new CancellationTokenSource();
-        Stopwatch UpdateStopwatch;
+        private string ChannelURL;
+        private string TargetPath;
+        private string TempPath;
+        private string RepoURL = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/{0}/";
+        private Prop FileProp = new Prop();
+        private List<fileProp> UpdateFiles = new List<fileProp>();
+        private CancellationTokenSource TokenSource = new CancellationTokenSource();
+        private Stopwatch UpdateStopwatch;
+        private Http _httpClient;
 
         public event EventHandler<UpdaterStatus> UpdaterStatusChanged;
         public event EventHandler<UpdaterProgress> UpdaterProgressChanged;
@@ -37,11 +38,14 @@ namespace CollapseLauncher
 
         public Updater(string TargetFolder, string ChannelName, byte DownloadThread)
         {
+            this._httpClient = new Http();
             this.ChannelURL = string.Format(RepoURL, ChannelName);
             this.TargetPath = NormalizePath(TargetFolder);
             this.TempPath = Path.Combine(TargetPath, "_Temp");
             this.DownloadThread = DownloadThread;
         }
+
+        ~Updater() => _httpClient.Dispose();
 
         public async Task StartFetch()
         {
@@ -56,7 +60,7 @@ namespace CollapseLauncher
                 UpdateStatus();
                 UpdateStopwatch = Stopwatch.StartNew();
 
-                await Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
+                await _httpClient.Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
                 _databuf.Position = 0;
                 FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
             }
@@ -111,7 +115,7 @@ namespace CollapseLauncher
             string Output;
             int FilesCount = UpdateFiles.Count;
 
-            DownloadProgress += Updater_DownloadProgressAdapter;
+            _httpClient.DownloadProgress += Updater_DownloadProgressAdapter;
 
             int i = 1;
             foreach (fileProp _entry in UpdateFiles)
@@ -128,16 +132,16 @@ namespace CollapseLauncher
 
                 if (_entry.s >= (20 << 20))
                 {
-                    await Download(URL, Output, DownloadThread, true, TokenSource.Token);
-                    await Merge();
+                    await _httpClient.Download(URL, Output, DownloadThread, true, TokenSource.Token);
+                    await _httpClient.Merge();
                 }
                 else
-                    await Download(URL, Output, true, null, null, TokenSource.Token);
+                    await _httpClient.Download(URL, Output, true, null, null, TokenSource.Token);
 
                 i++;
             }
 
-            DownloadProgress -= Updater_DownloadProgressAdapter;
+            _httpClient.DownloadProgress -= Updater_DownloadProgressAdapter;
         }
 
         public async Task FinishUpdate(bool NoSuicide = false)
@@ -195,7 +199,7 @@ namespace CollapseLauncher
 
         private void Updater_DownloadProgressAdapter(object sender, DownloadEvent e)
         {
-            if (e.State != MultisessionState.Merging)
+            if (e.State != DownloadState.Merging)
                 Read += e.Read;
 
             Progress = new UpdaterProgress(Read, TotalSize, e.Read, UpdateStopwatch.Elapsed);

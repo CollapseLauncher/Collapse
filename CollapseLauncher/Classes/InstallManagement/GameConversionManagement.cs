@@ -18,13 +18,14 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class GameConversionManagement : Http
+    public class GameConversionManagement : IDisposable
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
-        PresetConfigV2 SourceProfile, TargetProfile;
-        List<FileProperties> SourceFileManifest;
-        List<FileProperties> TargetFileManifest;
+        private PresetConfigV2 SourceProfile, TargetProfile;
+        private List<FileProperties> SourceFileManifest;
+        private List<FileProperties> TargetFileManifest;
+        private Http _http;
 
         string BaseURL;
         string GameVersion;
@@ -38,6 +39,7 @@ namespace CollapseLauncher
         public GameConversionManagement(PresetConfigV2 SourceProfile, PresetConfigV2 TargetProfile,
             string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
         {
+            this._http = new Http();
             this.SourceProfile = SourceProfile;
             this.TargetProfile = TargetProfile;
             this.BaseURL = BaseURL;
@@ -46,6 +48,10 @@ namespace CollapseLauncher
             this.CookbookPath = CookbookPath;
             this.Token = Token;
         }
+
+        ~GameConversionManagement() => Dispose();
+
+        public void Dispose() => this._http?.Dispose();
 
         public async Task StartPreparation()
         {
@@ -61,9 +67,9 @@ namespace CollapseLauncher
             {
                 URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(URL, buffer, null, null, Token);
-                DownloadProgress -= FetchIngredientsAPI_Progress;
+                this._http.DownloadProgress += FetchIngredientsAPI_Progress;
+                await this._http.Download(URL, buffer, null, null, Token);
+                this._http.DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
@@ -71,9 +77,9 @@ namespace CollapseLauncher
             {
                 URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                DownloadProgress += FetchIngredientsAPI_Progress;
-                await Download(URL, buffer, null, null, Token);
-                DownloadProgress -= FetchIngredientsAPI_Progress;
+                this._http.DownloadProgress += FetchIngredientsAPI_Progress;
+                await this._http.Download(URL, buffer, null, null, Token);
+                this._http.DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
             }
@@ -256,21 +262,21 @@ namespace CollapseLauncher
                 if (File.Exists(OutputPath))
                     File.Delete(OutputPath);
 
-                DownloadProgress += RepairIngredients_Progress;
+                _http.DownloadProgress += RepairIngredients_Progress;
                 if (Entry.FileSize >= 20 << 20)
                 {
-                    await Download(InputURL, OutputPath, DownloadThread, true, Token);
-                    await Merge();
+                    await _http.Download(InputURL, OutputPath, DownloadThread, true, Token);
+                    await _http.Merge();
                 }
                 else
-                    await Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
-                DownloadProgress -= RepairIngredients_Progress;
+                    await _http.Download(InputURL, new FileStream(OutputPath, FileMode.Create, FileAccess.Write), null, null, Token);
+                _http.DownloadProgress -= RepairIngredients_Progress;
             }
         }
 
         private void RepairIngredients_Progress(object sender, DownloadEvent e)
         {
-            if (DownloadState != MultisessionState.Merging)
+            if (_http.DownloadState != DownloadState.Merging)
                 RepairRead += e.Read;
 
             UpdateProgress(RepairRead, RepairTotalSize, 1, 1, ConvertSw.Elapsed,
@@ -414,48 +420,48 @@ namespace CollapseLauncher
             ProgressChanged?.Invoke(this, new ConvertProgress(StartSize, EndSize, StartCount, EndCount,
                 TimeSpan, StatusMsg, DetailMsg, UseCountUnit));
         }
+    }
 
-        public class ConvertProgress
+    public class ConvertProgress
+    {
+        public ConvertProgress(long StartSize, long EndSize, int StartCount, int EndCount,
+            TimeSpan TimeSpan, string StatusMsg = "", string DetailMsg = "", bool UseCountUnit = false)
         {
-            public ConvertProgress(long StartSize, long EndSize, int StartCount, int EndCount,
-                TimeSpan TimeSpan, string StatusMsg = "", string DetailMsg = "", bool UseCountUnit = false)
-            {
-                this.StartSize = StartSize;
-                this.EndSize = EndSize;
-                this.StartCount = StartCount;
-                this.EndCount = EndCount;
-                this.UseCountUnit = UseCountUnit;
-                this._TimeSecond = TimeSpan.TotalSeconds;
-                this._StatusMsg = StatusMsg;
-                this._DetailMsg = DetailMsg;
-            }
-
-            private double _TimeSecond = 0f;
-            private string _StatusMsg = "";
-            private string _DetailMsg = "";
-            public bool UseCountUnit { get; private set; }
-            public long StartSize { get; private set; }
-            public long EndSize { get; private set; }
-            public int StartCount { get; private set; }
-            public int EndCount { get; private set; }
-            public double Percentage => UseCountUnit ? Math.Round((StartCount / (double)EndCount) * 100, 2) :
-                                                       Math.Round((StartSize / (double)EndSize) * 100, 2);
-            public long ProgressSpeed => (long)(StartSize / _TimeSecond);
-            public TimeSpan RemainingTime => UseCountUnit ? TimeSpan.FromSeconds(0f) :
-                                                            TimeSpan.FromSeconds((EndSize - StartSize) / Unzeroed(ProgressSpeed));
-            private double Unzeroed(double i) => i == 0 ? 1 : i;
-            public string ProgressStatus => _StatusMsg;
-            public string ProgressDetail => string.Format(
-                            "[{0}] ({1})\r\n{2}...",
-                            UseCountUnit ? string.Format(Lang._Misc.PerFromTo, StartCount, EndCount) :
-                                           string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(StartSize), SummarizeSizeSimple(EndSize)),
-                            UseCountUnit ? $"{Percentage}%" :
-                                           string.Format("{0}% {1} - {2}",
-                                                         Percentage,
-                                                         string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(ProgressSpeed)),
-                                                         string.Format(Lang._Misc.TimeRemainHMSFormat, RemainingTime)),
-                            _DetailMsg
-                            );
+            this.StartSize = StartSize;
+            this.EndSize = EndSize;
+            this.StartCount = StartCount;
+            this.EndCount = EndCount;
+            this.UseCountUnit = UseCountUnit;
+            this._TimeSecond = TimeSpan.TotalSeconds;
+            this._StatusMsg = StatusMsg;
+            this._DetailMsg = DetailMsg;
         }
+
+        private double _TimeSecond = 0f;
+        private string _StatusMsg = "";
+        private string _DetailMsg = "";
+        public bool UseCountUnit { get; private set; }
+        public long StartSize { get; private set; }
+        public long EndSize { get; private set; }
+        public int StartCount { get; private set; }
+        public int EndCount { get; private set; }
+        public double Percentage => UseCountUnit ? Math.Round((StartCount / (double)EndCount) * 100, 2) :
+                                                   Math.Round((StartSize / (double)EndSize) * 100, 2);
+        public long ProgressSpeed => (long)(StartSize / _TimeSecond);
+        public TimeSpan RemainingTime => UseCountUnit ? TimeSpan.FromSeconds(0f) :
+                                                        TimeSpan.FromSeconds((EndSize - StartSize) / Unzeroed(ProgressSpeed));
+        private double Unzeroed(double i) => i == 0 ? 1 : i;
+        public string ProgressStatus => _StatusMsg;
+        public string ProgressDetail => string.Format(
+                        "[{0}] ({1})\r\n{2}...",
+                        UseCountUnit ? string.Format(Lang._Misc.PerFromTo, StartCount, EndCount) :
+                                       string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(StartSize), SummarizeSizeSimple(EndSize)),
+                        UseCountUnit ? $"{Percentage}%" :
+                                       string.Format("{0}% {1} - {2}",
+                                                     Percentage,
+                                                     string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(ProgressSpeed)),
+                                                     string.Format(Lang._Misc.TimeRemainHMSFormat, RemainingTime)),
+                        _DetailMsg
+                        );
     }
 }
