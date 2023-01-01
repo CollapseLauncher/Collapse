@@ -87,12 +87,15 @@ namespace Hi3Helper.Preset
             try
             {
                 using (Http.Http _http = new Http.Http())
-                using (MemoryStream Stream = new MemoryStream())
                 {
-                    string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
-                    await _http.Download(URL, Stream).ConfigureAwait(false);
-                    Stream.Position = 0;
-                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(Stream, typeof(Stamp), StampContext.Default);
+                    using (Stream s = (await _http.DownloadFromSessionStreamAsync(
+                        string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"),
+                        0,
+                        null,
+                        default).ConfigureAwait(false)).Item1)
+                    {
+                        ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), StampContext.Default);
+                    }
                 }
             }
             catch (Exception ex)

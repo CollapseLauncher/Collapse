@@ -24,6 +24,7 @@ namespace CollapseLauncher
         private bool IsLoadRegionComplete;
         private bool IsInnerTaskSuccess;
         private string PreviousTag = string.Empty;
+        private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
 
         private uint CurrentRetry;
         private uint MaxRetry = 5; // Max 5 times of retry attempt
@@ -46,8 +47,8 @@ namespace CollapseLauncher
                 LoadGameRegionFromCurrentConfigV2();
 
                 // Load Region Resource from Launcher API
-                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(FetchLauncherLocalizedResources(), LoadTimeout, LoadTimeoutStep);
-                bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(FetchLauncherResourceAsRegion(), LoadTimeout, LoadTimeoutStep);
+                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(Task.Run(() => FetchLauncherLocalizedResources(InnerTokenSource.Token)), LoadTimeout, LoadTimeoutStep);
+                bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(Task.Run(() => FetchLauncherResourceAsRegion(InnerTokenSource.Token)), LoadTimeout, LoadTimeoutStep);
 
                 if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
                 {

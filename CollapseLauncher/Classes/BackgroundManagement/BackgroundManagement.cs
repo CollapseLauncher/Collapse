@@ -1,6 +1,5 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -31,17 +30,17 @@ namespace CollapseLauncher
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        private async Task FetchLauncherLocalizedResources()
+        private void FetchLauncherLocalizedResources(CancellationToken Token)
         {
             regionBackgroundProp = CurrentConfigV2.LauncherSpriteURLMultiLang ?
-                await TryGetMultiLangResourceProp() :
-                await TryGetSingleLangResourceProp();
+                TryGetMultiLangResourceProp(Token) :
+                TryGetSingleLangResourceProp(Token);
 
-            await DownloadBackgroundImage();
+            DownloadBackgroundImage(Token);
 
-            await GetLauncherAdvInfo();
-            await GetLauncherCarouselInfo();
-            await GetLauncherEventInfo();
+            GetLauncherAdvInfo(Token);
+            GetLauncherCarouselInfo(Token);
+            GetLauncherEventInfo(Token);
             GetLauncherPostInfo();
         }
 
@@ -67,40 +66,49 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private async Task FetchLauncherResourceAsRegion()
+        private void FetchLauncherResourceAsRegion(CancellationToken Token)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (Stream netStream = _httpClient.DownloadFromSessionStream(
+                CurrentConfigV2.LauncherResourceURL,
+                0,
+                null,
+                Token
+                ).Item1)
             {
-                await _httpClient.Download(CurrentConfigV2.LauncherResourceURL, memoryStream, null, null, default);
-                memoryStream.Position = 0;
-                regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
             }
         }
 
-        private async Task<RegionResourceProp> TryGetMultiLangResourceProp()
+        private RegionResourceProp TryGetMultiLangResourceProp(CancellationToken Token)
         {
-            RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower());
+            RegionResourceProp ret = GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token);
 
-            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? await GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us") : ret;
+            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us", Token) : ret;
         }
 
-        private async Task<RegionResourceProp?> GetMultiLangResourceProp(string langID)
+        private RegionResourceProp GetMultiLangResourceProp(string langID, CancellationToken token)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (Stream netStream = _httpClient.DownloadFromSessionStream(
+                string.Format(CurrentConfigV2.LauncherSpriteURL, langID),
+                0,
+                null,
+                token
+                ).Item1)
             {
-                await _httpClient.Download(string.Format(CurrentConfigV2.LauncherSpriteURL, langID), memoryStream, null, null, default);
-                memoryStream.Position = 0;
-                return (RegionResourceProp?)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
+                return (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
             }
         }
 
-        private async Task<RegionResourceProp> TryGetSingleLangResourceProp()
+        private RegionResourceProp TryGetSingleLangResourceProp(CancellationToken Token)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (Stream netStream = _httpClient.DownloadFromSessionStream(
+                CurrentConfigV2.LauncherSpriteURL,
+                0,
+                null,
+                Token
+                ).Item1)
             {
-                await _httpClient.Download(CurrentConfigV2.LauncherSpriteURL, memoryStream, null, null, default);
-                memoryStream.Position = 0;
-                return (RegionResourceProp)JsonSerializer.Deserialize(memoryStream, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                return (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
             }
         }
 
@@ -115,7 +123,7 @@ namespace CollapseLauncher
             };
         }
 
-        private async Task GetLauncherAdvInfo()
+        private void GetLauncherAdvInfo(CancellationToken Token)
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -125,16 +133,16 @@ namespace CollapseLauncher
                 regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
                 {
                     URL = item.url,
-                    Icon = await GetCachedSprites(item.img),
-                    IconHover = await GetCachedSprites(item.img_hover),
-                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img),
+                    Icon = GetCachedSprites(item.img, Token),
+                    IconHover = GetCachedSprites(item.img_hover, Token),
+                    QR = string.IsNullOrEmpty(item.qr_img) ? null : GetCachedSprites(item.qr_img, Token),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
                     Description = string.IsNullOrEmpty(item.title) || CurrentConfigV2.IsHideSocMedDesc ? item.url : item.title
                 });
             }
         }
 
-        private async Task GetLauncherCarouselInfo()
+        private void GetLauncherCarouselInfo(CancellationToken Token)
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
@@ -144,20 +152,20 @@ namespace CollapseLauncher
                 regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
                 {
                     URL = item.url,
-                    Icon = await GetCachedSprites(item.img),
+                    Icon = GetCachedSprites(item.img, Token),
                     Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
                 });
             }
         }
 
-        private async Task GetLauncherEventInfo()
+        private void GetLauncherEventInfo(CancellationToken Token)
         {
             if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
 
             regionNewsProp.eventPanel = new RegionBackgroundProp
             {
                 url = regionBackgroundProp.data.adv.url,
-                icon = await GetCachedSprites(regionBackgroundProp.data.adv.icon)
+                icon = GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
             };
         }
 
@@ -181,7 +189,7 @@ namespace CollapseLauncher
                 }
         }
 
-        private async Task<string> GetCachedSprites(string URL, CancellationToken token = new CancellationToken())
+        public string GetCachedSprites(string URL, CancellationToken token)
         {
             string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
             string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
@@ -194,7 +202,10 @@ namespace CollapseLauncher
             {
                 using (FileStream fs = fInfo.Create())
                 {
-                    await _httpClient.Download(URL, fs, null, null, token);
+                    using (Stream netStream = _httpClient.DownloadFromSessionStream(URL, 0, null, token).Item1)
+                    {
+                        netStream.CopyTo(fs);
+                    }
                 }
             }
 
@@ -254,9 +265,8 @@ namespace CollapseLauncher
             Windows.UI.Color[] output = new Windows.UI.Color[4];
 
             QuantizedColor Single = null;
-            IEnumerable<QuantizedColor> Colors;
             ColorThief cT = new ColorThief();
-            Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
+            IEnumerable<QuantizedColor> Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
 
             try
             {
@@ -270,7 +280,7 @@ namespace CollapseLauncher
 
             for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single);
 
-            GC.Collect();
+            cT = null;
 
             return output;
         }
@@ -283,11 +293,16 @@ namespace CollapseLauncher
             (uint, uint) ResizedSize;
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
+
             using (IRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
             {
                 using (stream)
                 {
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                    BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
+                    BitmapAlphaMode alpMod = decoder.DecoderInformation.CodecId != BitmapDecoder.PngDecoderId ?
+                        BitmapAlphaMode.Ignore :
+                        BitmapAlphaMode.Straight;
                     ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, OrigSize.Item1 = decoder.PixelWidth, OrigSize.Item2 = decoder.PixelHeight);
                     BitmapTransform transform = new BitmapTransform()
                     {
@@ -295,17 +310,18 @@ namespace CollapseLauncher
                         ScaledHeight = ResizedSize.Item2,
                         InterpolationMode = BitmapInterpolationMode.Fant
                     };
+
                     PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
-                                                        BitmapPixelFormat.Rgba8,
-                                                        BitmapAlphaMode.Straight,
+                                                        pixFmt,
+                                                        alpMod,
                                                         transform,
                                                         ExifOrientationMode.RespectExifOrientation,
                                                         ColorManagementMode.DoNotColorManage);
 
                     if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, BackgroundStream);
+                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, BackgroundStream);
                     byte[] pixelDataBytes = pixelData.DetachPixelData();
-                    encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Straight, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelDataBytes);
+                    encoder.SetPixelData(pixFmt, alpMod, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelDataBytes);
 
                     await encoder.FlushAsync();
 
@@ -322,8 +338,6 @@ namespace CollapseLauncher
                     bitmapImageRet = await Stream2BitmapImage(BackgroundStream);
                 }
             }
-
-            GC.Collect();
 
             return (bitmapRet, bitmapImageRet);
         }
@@ -360,7 +374,7 @@ namespace CollapseLauncher
             return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
         }
 
-        private async Task DownloadBackgroundImage()
+        private void DownloadBackgroundImage(CancellationToken Token)
         {
             regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
             SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
@@ -370,10 +384,14 @@ namespace CollapseLauncher
 
             FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
 
-            if (!fI.Exists)
+            if (fI.Exists) return;
+
+            using (Stream netStream = _httpClient.DownloadFromSessionStream(regionBackgroundProp.data.adv.background, 0, null, default).Item1)
             {
-                await _httpClient.Download(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, 4, false, default);
-                await _httpClient.Merge();
+                using (Stream outStream = fI.Create())
+                {
+                    netStream.CopyTo(outStream);
+                }
             }
         }
 
