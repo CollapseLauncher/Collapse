@@ -39,7 +39,7 @@ namespace CollapseLauncher
             try
             {
                 InitializeWindowSettings();
-
+                
                 if (IsFirstInstall)
                 {
                     ExtendsContentIntoTitleBar = false;

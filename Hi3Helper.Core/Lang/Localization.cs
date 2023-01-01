@@ -2,104 +2,105 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper
 {
+    public class LangMetadata
+    {
+        public LangMetadata(string filePath, int index)
+        {
+            this.LangFilePath = filePath;
+            this.LangIndex = index;
+            this.LangIsLoaded = false;
+
+            ReadOnlySpan<char> langRelativePath = filePath.AsSpan().Slice(AppLangFolder.Length + 1);
+
+            try
+            {
+                _ = LoadLang();
+                LogWriteLine($"Locale file: {langRelativePath} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"Failed while parsing locale file: {langRelativePath}. Ignoring!\r\n{e}", LogType.Warning, true);
+            }
+        }
+
+        public LocalizationParams LoadLang()
+        {
+            using (Stream s = new FileStream(this.LangFilePath, FileMode.Open, FileAccess.Read))
+            {
+                LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
+                this.LangAuthor = _langData.Author;
+                this.LangID = _langData.LanguageID.ToLower();
+                this.LangName = _langData.LanguageName;
+                this.LangIsLoaded = true;
+
+                return _langData;
+            }
+        }
+
+        public int LangIndex { get; private set; }
+        public string LangFilePath { get; private set; }
+        public string LangAuthor { get; private set; }
+        public string LangID { get; private set; }
+        public string LangName { get; private set; }
+        public bool LangIsLoaded { get; private set; }
+    }
+
     public partial class Locale
     {
-        public static void LoadLocalization(string appLang)
+        public const string FallbackLangID = "en-us";
+        public static void InitializeLocale()
+        {
+            int i = 0;
+            foreach (string langPath in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
+            {
+                LangMetadata Metadata = new LangMetadata(langPath, i);
+                if (Metadata.LangIsLoaded)
+                {
+                    LanguageNames.Add(Metadata.LangID, Metadata);
+                    LanguageIDIndex.Add(Metadata.LangID);
+                    i++;
+                }
+            }
+
+            if (!LanguageNames.ContainsKey(FallbackLangID))
+            {
+                throw new LocalizationNotFoundException($"Fallback locale file with ID: \"{FallbackLangID}\" doesn't exist!");
+            }
+        }
+
+        public static void LoadLocale(string langID)
         {
             try
             {
-                Lang = LanguageNames[appLang].LangData;
-                LogWriteLine($"Using language: {Lang.LanguageName} by {Lang.Author}");
-            }
-            catch (Exception ex)
-            {
-                Lang = LangFallback;
-                LogWriteLine($"Failed to load LanguageID: {appLang}. Fallback to: {Lang.LanguageName} by {Lang.Author}\r\n{ex}", LogType.Warning, true);
-            }
-        }
-
-        private static void LoadFallbackLanguage()
-        {
-            try
-            {
-                string langPath = Path.Combine(AppLangFolder, "en.json");
-                if (!File.Exists(langPath))
-                    throw new FileNotFoundException($"Fallback/Default language file \"en.json\" doesn't exist!");
-
-                using (Stream s = new FileStream(langPath, FileMode.Open, FileAccess.Read))
+                LangFallback = LanguageNames[FallbackLangID].LoadLang();
+                langID = langID.ToLower();
+                if (!LanguageNames.ContainsKey(langID))
                 {
-                    LocalizationParams lang = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
-                    LogWriteLine($"Loaded lang. resource: {lang.LanguageName} ({lang.LanguageID}) by {lang.Author}", LogType.Scheme);
-                    LanguageNames.Add(lang.LanguageID, new LangMetadata
-                    {
-                        LangData = lang,
-                        LangFilePath = langPath
-                    });
-
-                    LangFallback = lang;
+                    Lang = LanguageNames[FallbackLangID].LoadLang();
+                    LogWriteLine($"Locale file with ID: {langID} doesn't exist! Fallback locale will be loaded instead.", LogType.Warning, true);
+                    return;
                 }
+
+                Lang = LanguageNames[langID].LoadLang();
             }
-            catch (JsonException ex)
+            catch (Exception e)
             {
-                LogWriteLine($"Error while parsing fallback/default language: \"en.json\"\r\n{ex}", LogType.Error, true);
-                throw new LocalizationException($"Error occured while parsing fallback/default language file: \"en.json\"", ex);
+                throw new LocalizationInnerException($"Failed while loading locale with ID {langID}!", e);
             }
-            catch (Exception ex)
+            finally
             {
-                LogWriteLine($"Error while parsing fallback/default language: \"en.json\"\r\n{ex}", LogType.Error, true);
-                throw new LocalizationException($"Error occured while parsing fallback/default language file: \"en.json\"", ex);
+                LangFallback = null;
             }
-        }
-
-        public static void TryParseLocalizations()
-        {
-            LanguageNames.Clear();
-            LoadFallbackLanguage();
-            foreach (string Entry in Directory.EnumerateFiles(AppLangFolder, "*-*.json", SearchOption.AllDirectories))
-            {
-                LocalizationParams lang = new LocalizationParams();
-                try
-                {
-                    using (Stream s = new FileStream(Entry, FileMode.Open, FileAccess.Read))
-                    {
-                        lang = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
-
-                        if (!LanguageNames.ContainsKey(lang.LanguageID))
-                        {
-                            LogWriteLine($"Loaded lang. resource: {lang.LanguageName} ({lang.LanguageID}) by {lang.Author}", LogType.Scheme);
-                            LanguageNames.Add(lang.LanguageID, new LangMetadata
-                            {
-                                LangData = lang,
-                                LangFilePath = Entry
-                            });
-                        }
-                    }
-                }
-                catch (JsonException ex)
-                {
-                    LogWriteLine($"Error while parsing lang. resource: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
-                    throw new LocalizationException($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"", ex);
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"Error while parsing lang. resource: \"{Path.GetFileName(Entry)}\"\r\n{ex}", LogType.Error, true);
-                    throw new LocalizationException($"Error occured while parsing translation file: \"{Path.GetFileName(Entry)}\"", ex);
-                }
-            }
-        }
-
-        public struct LangMetadata
-        {
-            public string LangFilePath;
-            public LocalizationParams LangData;
         }
 
         public static Dictionary<string, LangMetadata> LanguageNames = new Dictionary<string, LangMetadata>();
+        public static List<string> LanguageIDIndex = new List<string>();
         public static LocalizationParams Lang;
 #nullable enable
         public static LocalizationParams? LangFallback;
@@ -111,15 +112,15 @@ namespace Hi3Helper
         }
     }
 
-    [Serializable]
-    public class LocalizationException : Exception
+    public class LocalizationNotFoundException : Exception
     {
-        public LocalizationException() { }
-
-        public LocalizationException(string message)
+        public LocalizationNotFoundException(string message)
             : base(message) { }
+    }
 
-        public LocalizationException(string message, Exception inner)
-            : base(message, inner) { }
+    public class LocalizationInnerException : Exception
+    {
+        public LocalizationInnerException(string message, Exception ex)
+            : base(message, ex) { }
     }
 }

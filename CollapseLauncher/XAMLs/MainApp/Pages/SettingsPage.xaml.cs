@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
@@ -34,26 +33,9 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
-            GetLanguageList();
-        }
 
-        private void GetLanguageList()
-        {
-            List<string> _out = new List<string>();
-            string CurrentLang = GetAppConfigValue("AppLanguage").ToString();
-            int Index = -1;
-            int SelectedIndex = -1;
-            foreach (KeyValuePair<string, LangMetadata> Entry in LanguageNames)
-            {
-                Index++;
-                if (Entry.Key == CurrentLang)
-                    SelectedIndex = Index;
-
-                _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, Entry.Value.LangData.LanguageName, Entry.Value.LangData.Author));
-            }
-
-            LanguageSelector.ItemsSource = _out;
-            LanguageSelector.SelectedIndex = SelectedIndex;
+            if (IsAppLangNeedRestart)
+                AppLangSelectionWarning.Visibility = Visibility.Visible;
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -227,25 +209,6 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        bool EnableLanguageChange = false;
-        private void LanguageChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (IsAppLangNeedRestart)
-                AppLangSelectionWarning.Visibility = Visibility.Visible;
-
-            if (EnableLanguageChange)
-            {
-                string LangName = LanguageNames
-                    .Values
-                    .ToList()[(sender as ComboBox).SelectedIndex]
-                    .LangData.LanguageID;
-                SetAndSaveConfigValue("AppLanguage", new IniValue(LangName));
-                AppLangSelectionWarning.Visibility = Visibility.Visible;
-                IsAppLangNeedRestart = true;
-            }
-            EnableLanguageChange = true;
-        }
-
         public bool IsBGCustom
         {
             get
@@ -315,8 +278,7 @@ namespace CollapseLauncher.Pages
                     AppThemeSelectionWarning.Visibility = Visibility.Visible;
 
                 string AppTheme = GetAppConfigValue("ThemeMode").ToString();
-                object ThemeIndex;
-                bool IsParseSuccess = Enum.TryParse(typeof(AppThemeMode), AppTheme, out ThemeIndex);
+                bool IsParseSuccess = Enum.TryParse(typeof(AppThemeMode), AppTheme, out object ThemeIndex);
                 return IsParseSuccess ? (int)ThemeIndex : -1;
             }
             set
@@ -335,6 +297,37 @@ namespace CollapseLauncher.Pages
         {
             get => GetAppConfigValue("ExtractionThread").ToInt();
             set => SetAndSaveConfigValue("ExtractionThread", value);
+        }
+        public List<string> LanguageList
+        {
+            get
+            {
+                List<string> _out = new List<string>();
+                foreach (var a in LanguageNames)
+                {
+                    _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, a.Value.LangName, a.Value.LangAuthor));
+                }
+
+                return _out;
+            }
+        }
+        public int LanguageSelectedIndex
+        {
+            get
+            {
+                string key = GetAppConfigValue("AppLanguage").ToString().ToLower();
+
+                return LanguageNames.ContainsKey(key) ? LanguageNames[key].LangIndex : -1;
+            }
+            set
+            {
+                IsAppLangNeedRestart = true;
+                AppLangSelectionWarning.Visibility = Visibility.Visible;
+
+                string key = LanguageIDIndex[value];
+
+                SetAndSaveConfigValue("AppLanguage", key);
+            }
         }
     }
 }

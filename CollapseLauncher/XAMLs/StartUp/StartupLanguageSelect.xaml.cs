@@ -28,21 +28,15 @@ namespace CollapseLauncher
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangData.LanguageID;
-            LoadLocalization(LangID);
+            string LangID = LanguageIDIndex[(sender as ComboBox).SelectedIndex];
             SetAndSaveConfigValue("AppLanguage", LangID);
+            LoadLocale(LangID);
             NextBtn.IsEnabled = true;
         }
 
-        private List<string> LangList
+        private IEnumerable<string> LangList
         {
-            get
-            {
-                List<string> list = new List<string>();
-                foreach (KeyValuePair<string, LangMetadata> entry in LanguageNames)
-                    list.Add($"{entry.Value.LangData.LanguageName} ({entry.Key}) by {entry.Value.LangData.Author}");
-                return list;
-            }
+            get => LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})");
         }
 
         private void NextBtn_Click(object sender, RoutedEventArgs e) => (m_window as MainWindow).StartSetupPage();

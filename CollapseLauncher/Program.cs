@@ -130,14 +130,17 @@ namespace CollapseLauncher
         public static void InitializeAppSettings()
         {
             InitLog(true, AppGameLogsFolder);
-            TryParseLocalizations();
+            InitializeLocale();
             if (IsFirstInstall)
             {
-                LoadLocalization(CultureInfo.CurrentUICulture.Name);
+                LoadLocale(CultureInfo.CurrentUICulture.Name);
                 SetAppConfigValue("AppLanguage", Lang.LanguageID);
             }
             else
-                LoadLocalization(GetAppConfigValue("AppLanguage").ToString());
+            {
+                LoadLocale(GetAppConfigValue("AppLanguage").ToString());
+            }
+
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
         }
