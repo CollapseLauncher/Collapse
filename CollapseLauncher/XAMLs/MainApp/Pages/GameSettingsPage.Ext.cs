@@ -279,7 +279,7 @@ namespace CollapseLauncher.Pages
 
         public int GraphicsVolumetricLight
         {
-            get => Boolean2IntFallback(gameIni.Settings[SectionName]["VolumetricLight"].ToBoolNullable());
+            get => gameIni.Settings[SectionName]["VolumetricLight"].ToInt();
             set => gameIni.Settings[SectionName]["VolumetricLight"] = value;
         }
         #endregion
