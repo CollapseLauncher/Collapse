@@ -100,6 +100,9 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+            GC.WaitForPendingFinalizers();
         }
 
         private async Task StartGameConfigBrokenDialog()
