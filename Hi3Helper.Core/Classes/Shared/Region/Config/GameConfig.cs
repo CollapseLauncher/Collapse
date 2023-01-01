@@ -142,8 +142,7 @@ namespace Hi3Helper.Shared.Region
             }
         }
 
-        public static async void SaveGameSettings() =>
-        await Task.Run(() =>
+        public static void SaveGameSettings()
         {
             gameIni.Settings.Save(gameIni.SettingsPath);
             gameIni.Settings.Load(gameIni.SettingsPath);
@@ -151,7 +150,7 @@ namespace Hi3Helper.Shared.Region
             SaveWindowValue();
             SavePersonalGraphicsSettingsValue();
             SavePersonalAudioSettingsValue();
-        });
+        }
 
         public static IniValue GetGameConfigValue(string key)
         {
@@ -283,11 +282,11 @@ namespace Hi3Helper.Shared.Region
             HIGH = 2
         }
 
-        public enum EnumQualityLOD
+        public enum EnumQualityVolLight
         {
-            High = 0,
+            High = 2,
             Medium = 1,
-            Low = 2
+            Low = 0
         }
 
         public enum EnumQualityCloseableOLH
@@ -369,7 +368,7 @@ namespace Hi3Helper.Shared.Region
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQualityOLH AmbientOcclusion { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
-            public EnumQuality VolumetricLight { get; set; }
+            public EnumQualityVolLight VolumetricLight { get; set; }
             public bool UsePostFX { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public EnumQuality PostFXGrade { get; set; }
@@ -421,7 +420,7 @@ namespace Hi3Helper.Shared.Region
                             value = new IniValue(ConvertEnumToIntOLH(data.AmbientOcclusion));
                             break;
                         case "VolumetricLight":
-                            value = new IniValue(ConvertEnumToInt(data.VolumetricLight));
+                            value = new IniValue(ConvertEnumVolLightToInt(data.VolumetricLight));
                             break;
                         case "UsePostFX":
                             value = new IniValue(data.UsePostFX);
@@ -463,7 +462,7 @@ namespace Hi3Helper.Shared.Region
                 UseFXAA = gameIni.Settings[SectionName]["UseFXAA"].ToBool(),
                 GlobalIllumination = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["GlobalIllumination"].ToBool()),
                 AmbientOcclusion = ConvertIntToEnumOLH(gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt()),
-                VolumetricLight = ConvertIntToEnum(gameIni.Settings[SectionName]["VolumetricLight"].ToInt()),
+                VolumetricLight = ConvertIntToEnumVolLight(gameIni.Settings[SectionName]["VolumetricLight"].ToInt()),
                 UsePostFX = gameIni.Settings[SectionName]["UsePostFX"].ToBool(),
                 PostFXGrade = ConvertBoolToEnumHighLow(gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool()),
                 UseHDR = gameIni.Settings[SectionName]["UseHDR"].ToBool(),
@@ -476,6 +475,7 @@ namespace Hi3Helper.Shared.Region
         }
 
         private static int ConvertEnumToInt(EnumQuality value) => (int)value;
+        private static int ConvertEnumVolLightToInt(EnumQualityVolLight value) => (int)value;
         public static bool ConvertEnumHighLowToBool(EnumQuality input) => input == EnumQuality.High;
         private static int ConvertEnumToIntCloseable(EnumQualityCloseable value) => (int)value;
         private static int ConvertEnumToIntOLH(EnumQualityOLH value) => (int)value;
@@ -483,6 +483,7 @@ namespace Hi3Helper.Shared.Region
 
 
         public static EnumQuality ConvertIntToEnum(int value) => (EnumQuality)value;
+        public static EnumQualityVolLight ConvertIntToEnumVolLight(int value) => (EnumQualityVolLight)value;
         public static EnumQuality ConvertBoolToEnumHighLow(bool input) => input ? (EnumQuality.High) : (EnumQuality.Low);
         public static EnumQualityCloseable ConvertIntToEnumCloseable(int value) => (EnumQualityCloseable)value;
         public static EnumQualityOLH ConvertIntToEnumOLH(int value) => (EnumQualityOLH)value;
