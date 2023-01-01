@@ -21,8 +21,6 @@ namespace CollapseLauncher
 {
     internal sealed partial class InstallManagement
     {
-        public event EventHandler<ConvertProgress> ProgressChanged;
-
         List<FileProperties> SourceFileManifest;
 
         string IngredientPath;

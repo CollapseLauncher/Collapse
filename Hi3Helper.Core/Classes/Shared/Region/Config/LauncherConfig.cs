@@ -23,7 +23,6 @@ namespace Hi3Helper.Shared.Region
         public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
         public static RegionResourceProp regionResourceProp = new RegionResourceProp();
         public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
-        public static IEnumerable<string> GameConfigName = new List<string>();
         public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();

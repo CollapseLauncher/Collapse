@@ -33,36 +33,28 @@ namespace CollapseLauncher
 
         private RectInt32[] DragAreaMode_Normal
         {
-            get
+            get => new RectInt32[2]
             {
-                List<RectInt32> area = new List<RectInt32>
-                {
-                    new RectInt32((int)(TitleBarDrag1.ActualOffset.X * m_appDPIScale),
-                                  0,
-                                  (int)(TitleBarDrag1.ActualWidth * m_appDPIScale),
-                                  (int)(48 * m_appDPIScale)),
-                    new RectInt32((int)(TitleBarDrag2.ActualOffset.X * m_appDPIScale),
-                                  0,
-                                  (int)(TitleBarDrag2.ActualWidth * m_appDPIScale),
-                                  (int)(48 * m_appDPIScale))
-                };
-                return area.ToArray();
-            }
+                new RectInt32((int)(TitleBarDrag1.ActualOffset.X * m_appDPIScale),
+                              0,
+                              (int)(TitleBarDrag1.ActualWidth * m_appDPIScale),
+                              (int)(48 * m_appDPIScale)),
+                new RectInt32((int)(TitleBarDrag2.ActualOffset.X * m_appDPIScale),
+                              0,
+                              (int)(TitleBarDrag2.ActualWidth * m_appDPIScale),
+                              (int)(48 * m_appDPIScale))
+            };
         }
 
         private RectInt32[] DragAreaMode_Full
         {
-            get
+            get => new RectInt32[1]
             {
-                List<RectInt32> area = new List<RectInt32>
-                {
-                    new RectInt32(0,
-                                  0,
-                                  (int)(m_windowPosSize.Width * m_appDPIScale),
-                                  (int)(40 * m_appDPIScale))
-                };
-                return area.ToArray();
-            }
+                new RectInt32(0,
+                              0,
+                              (int)(m_windowPosSize.Width * m_appDPIScale),
+                              (int)(40 * m_appDPIScale))
+            };
         }
 
         public MainPage()
@@ -173,7 +165,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                await RunApplyBackgroundTask();
+                // await RunApplyBackgroundTask();
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
@@ -238,19 +230,21 @@ namespace CollapseLauncher
         {
             try
             {
-                Http _http = new Http(true, 5, 1000, null);
                 IsLoadNotifComplete = false;
                 NotificationData = new NotificationPush();
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
-                using (_http)
-                using (MemoryStream buffer = new MemoryStream())
+                using (Http _http = new Http(true, 5, 1000, null))
                 {
-                    await _http.Download(string.Format(AppNotifURLPrefix, (IsPreview ? "preview" : "stable")),
-                                         buffer, null, null, TokenSource.Token);
-                    buffer.Position = 0;
-                    NotificationData = (NotificationPush)JsonSerializer.Deserialize(buffer, typeof(NotificationPush), NotificationPushContext.Default);
-                    IsLoadNotifComplete = true;
+                    using (Stream s = (await _http.DownloadFromSessionStreamAsync(
+                        string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"),
+                        0,
+                        null,
+                        TokenSource.Token)).Item1)
+                    {
+                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(s, typeof(NotificationPush), NotificationPushContext.Default);
+                        IsLoadNotifComplete = true;
+                    }
                 }
             }
             catch (Exception ex)
