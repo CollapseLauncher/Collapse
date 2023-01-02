@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using static Hi3Helper.Logger;
 
 namespace Hi3Helper
@@ -126,12 +125,6 @@ namespace Hi3Helper
         [DllImport("Kernel32.dll")]
         public static extern void FreeConsole();
 
-        [DllImport("Kernel32", CharSet = CharSet.Unicode)]
-        public static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
-
-        [DllImport("kernel32", CharSet = CharSet.Unicode)]
-        public static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
-
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
@@ -150,17 +143,11 @@ namespace Hi3Helper
         [DllImport("Shcore.dll", SetLastError = true)]
         public static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
 
-        [DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
-
         [DllImport("shell32.dll")]
         public static extern IntPtr SHBrowseForFolder(ref BROWSEINFO lpbi);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
-
-        [DllImport("user32.dll", PreserveSig = true)]
-        public static extern IntPtr SendMessage(HandleRef hWnd, uint Msg, int wParam, IntPtr lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, string lParam);
@@ -177,9 +164,6 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr LoadImage(IntPtr hinst, string lpszName, uint uType, int cxDesired, int cyDesired, uint fuLoad);
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
