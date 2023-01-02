@@ -1298,13 +1298,15 @@ namespace CollapseLauncher.Pages
             RegionResourceVersion diff;
             try
             {
+                string GameVer = gameIni.Config["General"]["game_version"].ToString();
+
                 if (isPredownload)
                     diff = regionResourceProp.data.pre_download_game.diffs
-                            .Where(x => x.version == gameIni.Config["General"]["game_version"].ToString())
+                            .Where(x => x.version == GameVer)
                             .First();
                 else
                     diff = regionResourceProp.data.game.diffs
-                            .Where(x => x.version == gameIni.Config["General"]["game_version"].ToString())
+                            .Where(x => x.version == GameVer)
                             .First();
             }
             catch
@@ -1451,13 +1453,13 @@ namespace CollapseLauncher.Pages
 
         private Dictionary<string, RegionResourceVersion> TryAddVoicePack(RegionResourceVersion diffVer)
         {
-            int langID;
+            int langID = CurrentConfigV2.GetVoiceLanguageID();
             if (diffVer.voice_packs != null
                 && diffVer.voice_packs.Count > 0)
             {
                 Dictionary<string, RegionResourceVersion> VoicePacks = new Dictionary<string, RegionResourceVersion>();
                 IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[langID = CurrentConfigV2.GetVoiceLanguageID()];
+                VoicePackFile = diffVer.voice_packs[langID];
                 VoicePackFile.languageID = langID;
                 VoicePacks.Add(VoicePackFile.language, VoicePackFile);
                 TryAddOtherInstalledVoicePacks(ref VoicePacks, diffVer.voice_packs);
@@ -1491,12 +1493,12 @@ namespace CollapseLauncher.Pages
 
         private async Task TrySetVoicePack(RegionResourceVersion diffVer)
         {
-            int langID;
             if (diffVer.voice_packs != null
                 && diffVer.voice_packs.Count > 0)
             {
+                int langID = await Dialog_ChooseAudioLanguage(Content, EnumerateAudioLanguageString(diffVer));
                 IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[langID = await Dialog_ChooseAudioLanguage(Content, EnumerateAudioLanguageString(diffVer))];
+                VoicePackFile = diffVer.voice_packs[langID];
                 VoicePackFile.languageID = langID;
                 return;
             }
