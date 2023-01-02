@@ -48,7 +48,7 @@ namespace CollapseLauncher
         {
             try
             {
-                Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower(), 4);
+                Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower(), 4, false);
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
@@ -64,10 +64,33 @@ namespace CollapseLauncher
                 });
                 await updater.FinishUpdate();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
-                Console.ReadLine();
+                LogWriteLine("An exception occured while fetching update files. " +
+                    "The Updater will now attempt to download the update files using the fallback CDN.", Hi3Helper.LogType.Warning, true);
+                try
+                {
+                    Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower(), 4, true);
+                    updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+                    updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
+
+                    await updater.StartFetch();
+                    await updater.StartCheck();
+                    await updater.StartUpdate();
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        SpeedStatus.Visibility = Visibility.Collapsed;
+                        TimeEstimation.Visibility = Visibility.Collapsed;
+                        ActivitySubStatus.Visibility = Visibility.Collapsed;
+                        ProgressStatus.Visibility = Visibility.Collapsed;
+                    });
+                    await updater.FinishUpdate();
+                } catch (Exception failFallback)
+                {
+                    LogWriteLine($"FATAL ERROR - UpdaterWindow. Press any key to exit the application.\n\rStack Trace below:\n\n\n\r{failFallback}", Hi3Helper.LogType.Error, true);
+                    Console.ReadLine();
+                    this.Close();
+                }
             }
         }
 
