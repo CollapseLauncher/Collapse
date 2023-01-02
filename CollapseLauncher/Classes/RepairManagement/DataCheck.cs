@@ -35,22 +35,23 @@ namespace CollapseLauncher.Pages
     {
         public ObservableCollection<FileProperties> NeedRepairListUI = new ObservableCollection<FileProperties>();
 
-        Http _httpClient = new Http();
-        MemoryStream memBuffer;
-        byte[] buffer = new byte[0x400000];
+        private Http _httpClient = new Http();
+        private MemoryStream memBuffer;
+        private Crc32Algorithm _crcForceInstance = new Crc32Algorithm();
+        private byte[] buffer = new byte[4 << 20];
 
-        long SingleSize,
-             SingleCurrentReadSize,
-             BlockSize,
-             BlockCurrentReadSize,
-             BrokenFilesSize;
+        private long SingleSize,
+                     SingleCurrentReadSize,
+                     BlockSize,
+                     BlockCurrentReadSize,
+                     BrokenFilesSize;
 
-        int TotalIndexedCount,
-            TotalCurrentReadCount;
+        private int TotalIndexedCount,
+                     TotalCurrentReadCount;
 
-        Dictionary<string, string> RepoURLDict;
+        private Dictionary<string, string> RepoURLDict;
 
-        string CurrentCheckName = "";
+        private string CurrentCheckName = "";
 
         private async void StartGameCheck(object sender, RoutedEventArgs e)
         {
@@ -390,35 +391,34 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        Crc32Algorithm crcTool;
         private string GenerateCRC(Stream input)
         {
-            crcTool = new Crc32Algorithm();
-            int read = 0;
-
-            if (input.Length == 0) return "00000000";
+            _crcForceInstance.Initialize();
 
             using (input)
             {
+                if (input.Length == 0) return "00000000";
+
                 SingleCurrentReadSize = 0;
                 SingleSize = input.Length;
-                while ((read = input.Read(buffer)) >= buffer.Length)
+
+                int read;
+
+                Span<byte> buf = buffer;
+
+                while ((read = input.Read(buf)) > 0)
                 {
                     cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                    crcTool.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
+                    _crcForceInstance.Append(buf.Slice(0, read));
                     SingleCurrentReadSize += read;
                     GetComputeStatus();
                 }
-
-                crcTool.TransformFinalBlock(buffer, 0, read);
-                SingleCurrentReadSize += read;
-                GetComputeStatus();
             }
 
-            return BytesToHex(crcTool.Hash).ToLower();
+            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(_crcForceInstance.Hash);
         }
 
-        private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
+        private string GenerateCRC(ReadOnlySpan<byte> input) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(_crcForceInstance.ComputeHashByte(input));
 
         private void GetComputeBlockStatus()
         {

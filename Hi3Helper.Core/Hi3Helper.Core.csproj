@@ -48,6 +48,9 @@
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\GZip\*" />
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Lzw\*" />
 		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Tar\*" />
+		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Benchmarks\**" />
+		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Tests\**" />
+		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET\Properties\**" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
 		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
@@ -73,6 +76,9 @@
 		<None Remove="Classes\Data\Tools\SharpZipLib\*.xml" />
 		<None Remove="Classes\Data\Tools\SharpZipLib\*.txt" />
 		<None Remove="Classes\Data\Tools\SharpZipLib\.*" />
+		<None Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Benchmarks\**" />
+		<None Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Tests\**" />
+		<None Remove="Classes\Data\Tools\Crc32.NET\*.*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -104,7 +110,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Crc32.NET" Version="1.2.0" />
 		<PackageReference Include="Google.Protobuf" Version="3.21.12" />
 		<PackageReference Include="System.Text.Json" Version="7.0.1" />
 	</ItemGroup>
