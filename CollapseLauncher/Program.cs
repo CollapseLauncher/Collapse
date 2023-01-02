@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Runtime.InteropServices;
 using Windows.UI.ViewManagement;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
@@ -22,7 +23,10 @@ namespace CollapseLauncher
 {
     public static class MainEntryPoint
     {
-        [STAThread]
+        [DllImport("Microsoft.ui.xaml.dll")]
+        private static extern void XamlCheckProcessRequirements();
+
+        [STAThreadAttribute]
         public static void Main(params string[] args)
         {
 #if PREVIEW
@@ -91,14 +95,15 @@ namespace CollapseLauncher
 
                 if (!DecideRedirection())
                 {
+                    XamlCheckProcessRequirements();
+
                     ComWrappersSupport.InitializeComWrappers();
-                    Application.Start(new ApplicationInitializationCallback((p) =>
-                    {
-                        SynchronizationContext.SetSynchronizationContext(
-                            new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread()));
+                    Application.Start((p) => {
+                        DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
+                        SynchronizationContext.SetSynchronizationContext(context);
 
                         new App();
-                    }));
+                    });
                 }
 
                 return;
