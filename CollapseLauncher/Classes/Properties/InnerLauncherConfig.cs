@@ -1,7 +1,6 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;

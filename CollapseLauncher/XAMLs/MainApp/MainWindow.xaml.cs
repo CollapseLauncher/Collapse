@@ -2,7 +2,6 @@
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -10,7 +9,6 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Windows.Graphics;
-using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
@@ -39,7 +37,7 @@ namespace CollapseLauncher
             try
             {
                 InitializeWindowSettings();
-                
+
                 if (IsFirstInstall)
                 {
                     ExtendsContentIntoTitleBar = false;
@@ -79,7 +77,6 @@ namespace CollapseLauncher
             m_windowHandle = GetActiveWindow();
             m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
             m_appWindow = AppWindow.GetFromWindowId(m_windowID);
-            m_appWindow.Changed += AppWindow_Changed;
             m_presenter = m_appWindow.Presenter as OverlappedPresenter;
 
             string title = $"Collapse";
@@ -112,6 +109,7 @@ namespace CollapseLauncher
             string path = Path.Combine(AppFolder, "icon.ico");
             if (!File.Exists(path)) return;
             m_appWindow.SetIcon(path);
+            m_appWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
         }
 
         public void InitializeWindowSettings()
@@ -122,25 +120,25 @@ namespace CollapseLauncher
             SetWindowSize(m_windowHandle);
 
             // Check to see if customization is supported.
-            // Currently only supported on Windows 11.
             m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
-            
+
             if (m_windowSupportCustomTitle)
             {
-                AppTitleBar.Loaded += AppTitleBar_Loaded;
+                SetInitialDragArea();
                 m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
-                CustomTitleBar.Visibility = Visibility.Collapsed;
 
                 switch (GetAppTheme())
                 {
                     case ApplicationTheme.Light:
                         m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
+                        m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 96, B = 0, G = 0, R = 0 };
                         break;
                     case ApplicationTheme.Dark:
                         m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
+                        m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 64, B = 0, G = 0, R = 0 };
                         break;
                 }
 
@@ -151,13 +149,7 @@ namespace CollapseLauncher
             {
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
-                Grid.SetColumn(RegionChangerPanel, 4);
-                RegionChangerPanel.HorizontalAlignment = HorizontalAlignment.Right;
-                ExtendsContentIntoTitleBar = true;
-                AppTitleBar.Visibility = Visibility.Collapsed;
-                CustomTitleBar.Visibility = Visibility.Visible;
-                SetTitleBar(CustomTitleBar);
-                SetLegacyTitleBarColor();
+                ExtendsContentIntoTitleBar = false;
             }
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
@@ -219,14 +211,6 @@ namespace CollapseLauncher
             m_windowPosSize = this.Bounds;
         }
 
-        private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (AppWindowTitleBar.IsCustomizationSupported())
-            {
-                SetInitialDragArea();
-            }
-        }
-
         [DllImport("Shcore.dll", SetLastError = true)]
         internal static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
 
@@ -240,34 +224,18 @@ namespace CollapseLauncher
 
         public static void SetInitialDragArea()
         {
-            if (AppWindowTitleBar.IsCustomizationSupported()
-                && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
-            {
-                double scaleAdjustment = m_appDPIScale;
-                RectInt32[] dragRects = new RectInt32[] { new RectInt32(0, 0, (int)(m_window.Bounds.Width * scaleAdjustment), (int)(48 * scaleAdjustment)) };
+            double scaleAdjustment = m_appDPIScale;
+            RectInt32[] dragRects = new RectInt32[] { new RectInt32(0, 0, (int)(m_window.Bounds.Width * scaleAdjustment), (int)(48 * scaleAdjustment)) };
 
-                SetDragArea(dragRects);
-            }
+            SetDragArea(dragRects);
         }
 
-        public static void SetDragArea(RectInt32[] area) => m_appWindow.TitleBar.SetDragRectangles(area);
-
-        PointInt32 LastPos;
-        private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
+        public static void SetDragArea(RectInt32[] area)
         {
-            // TEMPORARY HACK:
-            // This one to prevent app to maximize since Maximize button in Windows 10 cannot be disabled.
-            if (args.DidPresenterChange && !m_windowSupportCustomTitle)
+            if (m_windowSupportCustomTitle && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
-                if (m_appWindow.Position.X > -128 || m_appWindow.Position.Y > -128)
-                    m_presenter.Restore();
-
-                sender.Move(LastPos);
-                SetWindowSize(m_windowHandle);
+                m_appWindow.TitleBar.SetDragRectangles(area);
             }
-
-            if (!(m_appWindow.Position.X < 0 || m_appWindow.Position.Y < 0))
-                LastPos = m_appWindow.Position;
         }
     }
 }

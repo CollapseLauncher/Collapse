@@ -12,11 +12,11 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
 {
