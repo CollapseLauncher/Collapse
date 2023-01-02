@@ -600,7 +600,7 @@ namespace Hi3Helper.Shared.Region
 
         #region LaunchArgumentBuilder
 
-        public static async Task<string> GetLaunchArguments()
+        public static string GetLaunchArguments()
         {
             StringBuilder parameter = new StringBuilder();
 
@@ -608,7 +608,7 @@ namespace Hi3Helper.Shared.Region
             {
                 if (!(CurrentConfigV2.IsGenshin ?? false))
                 {
-                    await Task.Run(CheckExistingGameSettings);
+                    CheckExistingGameSettings();
 
                     if (GetGameConfigValue("FullscreenExclusive").ToBool())
                     {

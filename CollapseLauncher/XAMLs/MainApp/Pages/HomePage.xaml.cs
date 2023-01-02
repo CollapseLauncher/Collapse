@@ -56,7 +56,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                GameDirPath = NormalizePath(await LoadGameConfig());
+                GameDirPath = NormalizePath(LoadGameConfig());
 
                 GetCurrentGameState();
 
@@ -685,7 +685,7 @@ namespace CollapseLauncher.Pages
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
-            }   
+            }
             catch (OperationCanceledException)
             {
                 LogWriteLine($"Installation cancelled for game {CurrentConfigV2.ZoneFullname}");
@@ -1016,7 +1016,7 @@ namespace CollapseLauncher.Pages
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()), CurrentConfigV2.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = await GetLaunchArguments();
+                proc.StartInfo.Arguments = GetLaunchArguments();
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
                 proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString()));
                 proc.StartInfo.Verb = "runas";

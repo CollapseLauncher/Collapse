@@ -1,7 +1,6 @@
 ﻿using Hi3Helper.Data;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.GameConfig;
@@ -33,7 +32,7 @@ namespace Hi3Helper.Shared.Region
             BuildGameIniConfig();
         }
 
-        public static async Task<string> LoadGameConfig()
+        public static string LoadGameConfig()
         {
             try
             {
@@ -44,7 +43,7 @@ namespace Hi3Helper.Shared.Region
                     gameIni.Config.Load(gameIni.ConfigPath);
 
                 if (Directory.Exists(GamePath))
-                    await Task.Run(CheckExistingGameSettings);
+                    CheckExistingGameSettings();
 
                 return GamePath;
             }
