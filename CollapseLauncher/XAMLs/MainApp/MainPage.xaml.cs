@@ -468,7 +468,7 @@ namespace CollapseLauncher
                     Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
-                    Width = m_windowSupportCustomTitle ? 720 : double.NaN,
+                    Width = m_windowSupportCustomTitle ? 640 : double.NaN,
                     HorizontalAlignment = m_windowSupportCustomTitle ? HorizontalAlignment.Right : HorizontalAlignment.Stretch,
                     Shadow = SharedShadow,
                     IsOpen = true
