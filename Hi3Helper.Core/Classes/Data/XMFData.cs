@@ -160,7 +160,7 @@ namespace Hi3Helper.Data
             filesize = GetFileSize();
 
 #if DEBUG   
-            LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+            // LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
@@ -187,7 +187,7 @@ namespace Hi3Helper.Data
             filehasharray = BitConverter.ToInt32(buffer, 0);
 
 #if DEBUG   
-            LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
+            // LogWriteLine($"[C:{curFileRead}] {filename} | Offset: {fileoffset} | Size: {filesize}", LogType.NoTag);
 #endif
             curFileRead++;
 
