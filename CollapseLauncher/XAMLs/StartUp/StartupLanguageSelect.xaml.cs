@@ -29,8 +29,10 @@ namespace CollapseLauncher
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangData.LanguageID;
+            (m_window as MainWindow).InitializeWindowProperties();
             LoadLocalization(LangID);
             SetAndSaveConfigValue("AppLanguage", LangID);
+            //sender. = LangID;
             NextBtn.IsEnabled = true;
         }
 

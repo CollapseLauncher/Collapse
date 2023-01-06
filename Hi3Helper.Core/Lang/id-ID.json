@@ -4,6 +4,7 @@
   "Author": "neon-nyan",
 
   "_StartupPage": {
+    "InitLangSelect": "id translation",
     "PageTitle": "Halaman Startup Awal",
     "Title1": "Selamat Datang",
     "Title2": "di Collapse Launcher",

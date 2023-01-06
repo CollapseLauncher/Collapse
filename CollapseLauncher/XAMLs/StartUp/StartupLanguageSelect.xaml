@@ -14,7 +14,7 @@
             <RowDefinition/>
             <RowDefinition Height="48"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Please select your language to start this launcher for the first time!"
+        <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.InitLangSelect}"
                    Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
                    TextWrapping="Wrap"/>
         <ComboBox PlaceholderText="Select your language" Grid.Row="1"

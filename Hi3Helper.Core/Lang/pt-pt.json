@@ -4,6 +4,7 @@
   "Author": "gablm",
 
   "_StartupPage": {
+    "InitLangSelect": "pt translation",
     "PageTitle": "Primeira inicialização",
     "Title1": "Bem-vindo",
     "Title2": "ao Collapse Launcher",

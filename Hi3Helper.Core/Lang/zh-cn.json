@@ -3,6 +3,7 @@
   "LanguageID": "zh-CN",
   "Author": "misaka10843",
   "_StartupPage": {
+    "InitLangSelect": "cn translation",
     "PageTitle": "第一次启动页面",
     "Title1": "欢迎来到",
     "Title2": "Collapse Launcher",
