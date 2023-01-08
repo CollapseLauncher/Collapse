@@ -8,7 +8,7 @@
 	path = ColorThief
 	url = https://github.com/neon-nyan/ColorThief
 [submodule "Hi3Helper.Core/Classes/Data/Tools/UABT"]
-	path = Hi3Helper.Core/Classes/Data/Tools/UABT
+	path = Hi3Helper.EncTool/UABT
 	url = https://github.com/neon-nyan/UABT
 [submodule "Hi3Helper.Core/Classes/Data/Tools/SharpZipLib"]
 	path = Hi3Helper.Core/Classes/Data/Tools/SharpZipLib
