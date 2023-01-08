@@ -59,16 +59,23 @@ namespace Hi3Helper.Data
 
     public class ConverterTool
     {
-        static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
-        public static string BytesToCRC32Simple(in byte[] buffer) => BytesToHex(CRCEncoder.ComputeHash(new MemoryStream(buffer, false)));
-        public static string BytesToCRC32Simple(Stream buffer) => BytesToHex(CRCEncoder.ComputeHash(buffer));
-        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => BytesToHex(await Task.Run(() => CRCEncoder.ComputeHash(buffer)).ConfigureAwait(false));
-        public static string CreateMD5(Stream fs) => BytesToHex(MD5.Create().ComputeHash(fs));
-        public static async Task<string> CreateMD5Async(Stream fs) => BytesToHex(await Task.Run(() => MD5.Create().ComputeHash(fs)).ConfigureAwait(false));
-        public static int BytesToCRC32Int(Stream buffer) => BitConverter.ToInt32(CRCEncoder.ComputeHash(buffer), 0);
-        public static string BytesToHex(byte[] bytes) => BitConverter.ToString(bytes).Replace("-", string.Empty);
-        public static string CreateMD5(Stream fs, CancellationToken token) => BytesToHex(MD5.Create().ComputeHash(fs));
-
+        private static readonly MD5 MD5Hash = MD5.Create();
+        private static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
+        private static readonly string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        public static string BytesToCRC32Simple(Stream buffer) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(CRCEncoder.ComputeHash(buffer));
+        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(await Task.Run(() => CRCEncoder.ComputeHash(buffer)).ConfigureAwait(false));
+        public static string CreateMD5(Stream fs)
+        {
+            MD5Hash.Initialize();
+            ReadOnlySpan<byte> res = MD5Hash.ComputeHash(fs);
+            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(res);
+        }
+        public static async Task<string> CreateMD5Async(Stream fs)
+        {
+            MD5Hash.Initialize();
+            Memory<byte> res = await MD5Hash.ComputeHashAsync(fs).ConfigureAwait(false);
+            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(res.Span);
+        }
         public static double Unzeroed(double i) => i == 0 ? 1 : i;
         public static double UnInfinity(double i) => double.IsInfinity(i) ? 0.0001f : i;
 
@@ -85,8 +92,6 @@ namespace Hi3Helper.Data
         public static double GetPercentageNumber(double cur, double max, int round = 2) => Math.Round((100 * cur) / max, round);
 
         public static ushort ToUInt16Big(ushort value) => (ushort)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
-
-        public static string BytesToMD5(byte[] stream) => BytesToHex(MD5.Create().ComputeHash(stream));
 
         public static string NormalizePath(string i) =>
             Path.Combine(Path.GetDirectoryName(i), Path.GetFileName(i));
@@ -112,8 +117,6 @@ namespace Hi3Helper.Data
 
             return a | b;
         }
-
-        internal readonly static string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
         public static string SummarizeSizeSimple(double value, int decimalPlaces = 2)
         {
