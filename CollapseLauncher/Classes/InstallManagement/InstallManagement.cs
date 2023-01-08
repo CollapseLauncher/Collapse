@@ -280,7 +280,7 @@ namespace CollapseLauncher
 
             md5.TransformFinalBlock(buffer, 0, read);
 
-            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(md5.Hash);
+            return HexTool.BytesToHexUnsafe(md5.Hash);
         }
 
         string DownloadStateStr = "";

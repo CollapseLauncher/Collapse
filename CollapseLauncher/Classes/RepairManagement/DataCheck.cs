@@ -415,10 +415,10 @@ namespace CollapseLauncher.Pages
                 }
             }
 
-            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(_crcForceInstance.Hash);
+            return HexTool.BytesToHexUnsafe(_crcForceInstance.Hash);
         }
 
-        private string GenerateCRC(ReadOnlySpan<byte> input) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(_crcForceInstance.ComputeHashByte(input));
+        private string GenerateCRC(ReadOnlySpan<byte> input) => HexTool.BytesToHexUnsafe(_crcForceInstance.ComputeHashByte(input));
 
         private void GetComputeBlockStatus()
         {

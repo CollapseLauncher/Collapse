@@ -236,7 +236,7 @@ namespace CollapseLauncher.Pages
                         using (cachesStream = new FileStream(cachesPath, FileMode.Open, FileAccess.Read))
                         {
                             await hashTool.ComputeHashAsync(cachesStream);
-                            hash = ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(hashTool.Hash);
+                            hash = HexTool.BytesToHexUnsafe(hashTool.Hash);
 
                             if (hash != content.CRC)
                             {

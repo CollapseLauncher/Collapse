@@ -235,10 +235,10 @@ namespace Hi3Helper.Shared.GameConversion
                 });
             }
 
-            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(FileCRCTool.Hash);
+            return HexTool.BytesToHexUnsafe(FileCRCTool.Hash);
         }
 
-        private string GenerateCRC(in byte[] input) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(new Crc32Algorithm().ComputeHash(input));
+        private string GenerateCRC(in byte[] input) => HexTool.BytesToHexUnsafe(new Crc32Algorithm().ComputeHash(input));
 
         private void HttpAdapter(object sender, Http.DownloadEvent e)
         {

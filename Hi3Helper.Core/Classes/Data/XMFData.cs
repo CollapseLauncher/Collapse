@@ -129,7 +129,7 @@ namespace Hi3Helper.Data
             _blocklist.BlockContent = new List<XMFFileProperty>();
 
             stream.Read(buffer = new byte[16], 0, 16);
-            blockhash = ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(buffer);
+            blockhash = HexTool.BytesToHexUnsafe(buffer);
             stream.Position += jumper;
             stream.Read(buffer = new byte[4], 0, 4);
             blocksize = isBigEndian ? BytesToUInt32Big(buffer) : BitConverter.ToUInt32(buffer, 0);
