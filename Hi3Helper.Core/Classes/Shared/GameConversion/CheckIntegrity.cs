@@ -1,4 +1,5 @@
 ﻿using Force.Crc32;
+using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -234,10 +235,10 @@ namespace Hi3Helper.Shared.GameConversion
                 });
             }
 
-            return BytesToHex(FileCRCTool.Hash).ToLower();
+            return ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(FileCRCTool.Hash);
         }
 
-        private string GenerateCRC(in byte[] input) => BytesToHex(new Crc32Algorithm().ComputeHash(input)).ToLower();
+        private string GenerateCRC(in byte[] input) => ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(new Crc32Algorithm().ComputeHash(input));
 
         private void HttpAdapter(object sender, Http.DownloadEvent e)
         {

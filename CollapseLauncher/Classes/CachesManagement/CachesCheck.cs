@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
@@ -235,7 +236,7 @@ namespace CollapseLauncher.Pages
                         using (cachesStream = new FileStream(cachesPath, FileMode.Open, FileAccess.Read))
                         {
                             await hashTool.ComputeHashAsync(cachesStream);
-                            hash = BytesToHex(hashTool.Hash);
+                            hash = ConverterToolUnsafe.ByteArrayToHexViaLookup32Unsafe(hashTool.Hash);
 
                             if (hash != content.CRC)
                             {

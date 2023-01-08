@@ -88,7 +88,7 @@ namespace CollapseLauncher
                 if (FileProp.Exists)
                 {
                     using (FilePropStream = FileProp.OpenRead())
-                        FileLocalHash = CreateMD5(FilePropStream).ToLower();
+                        FileLocalHash = CreateMD5(FilePropStream);
 
                     if (FileRemoteHash != FileLocalHash)
                     {
