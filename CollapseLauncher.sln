@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Http", "Hi3Helper
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\ColorThief\ColorThief.csproj", "{C13639A5-693B-414A-BDFB-8509C3C3A350}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool.Test", "Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj", "{1BAB5CE4-640E-41A7-B529-4842D378BD4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -125,6 +127,16 @@ Global
 		{C13639A5-693B-414A-BDFB-8509C3C3A350}.ReleaseILTrim|x64.Build.0 = Release|x64
 		{C13639A5-693B-414A-BDFB-8509C3C3A350}.Release-Portable|x64.ActiveCfg = Release|x64
 		{C13639A5-693B-414A-BDFB-8509C3C3A350}.Release-Portable|x64.Build.0 = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Debug|x64.ActiveCfg = Debug|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Debug|x64.Build.0 = Debug|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.DebugILTrim|x64.ActiveCfg = Debug|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.DebugILTrim|x64.Build.0 = Debug|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Publish|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.PublishILTrim|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Publish-Portable|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.ReleaseILTrim|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release-Portable|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
