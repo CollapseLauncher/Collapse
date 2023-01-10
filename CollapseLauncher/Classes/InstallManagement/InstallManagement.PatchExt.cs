@@ -30,7 +30,7 @@ namespace CollapseLauncher
         private Dictionary<string, string> RepoList;
         string ConvertStatus;
 
-        public async Task StartPreparation()
+        public async Task StartPreparation(bool forceFallback = false)
         {
             List<FilePropertiesRemote> SourceFileRemote;
             ResetSw();
