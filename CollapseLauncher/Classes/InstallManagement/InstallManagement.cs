@@ -455,7 +455,21 @@ namespace CollapseLauncher
             CountCurrentDownload = 1;
             CountTotalToDownload = 1;
 
-            await StartPreparation();
+            try
+            {
+                await StartPreparation();
+            } catch (Exception ex)
+            {
+                LogWriteLine($"[InstallManagement] Game Conversion Prep failed!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
+                try
+                {
+                    await StartPreparation(forceFallback: true);
+                } catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"[InstallManagement] Failed to fetch from fallback URL.\r\n{fallbackFailedException}", LogType.Error, true);
+                }
+            }
+            
             await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
             await Task.Run(StartConversion);
         }
