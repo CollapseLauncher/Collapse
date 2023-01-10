@@ -94,6 +94,8 @@ namespace CollapseLauncher
             this.Token = token;
             this.DownloadProperty = new List<DownloadAddressProperty>();
             this.GameDirPath = GameDirPath;
+            // IMO this should be changed to default from fallback. The other option would be to specify fallback in the
+            // function definition itself
             this.IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVerString);
             this.RepoRemoteURL = DecompressedRemotePath;
             this.DispatchKey = DispatchKey;

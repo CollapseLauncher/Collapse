@@ -370,7 +370,23 @@ namespace CollapseLauncher.Dialogs
             });
 
             Converter.ProgressChanged += Step3ProgressEvents;
-            await Converter.StartPreparation();
+            try
+            {
+                await Converter.StartPreparation();
+            } catch (Exception ex)
+            {
+                LogWriteLine($"[InstallConvertXAML] Game Conversion Prep failed!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
+                try
+                {
+                    await Converter.StartPreparation(forceFallback: true);
+                }
+                catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"[InstallConvertXAML] Failed to fetch from fallback URL.\r\n{fallbackFailedException}", LogType.Error, true);
+                }
+            }
+            
+            
             Converter.ProgressChanged -= Step3ProgressEvents;
 
             DispatcherQueue.TryEnqueue(() =>
