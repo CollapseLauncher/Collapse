@@ -97,7 +97,22 @@ namespace Hi3Helper.Preset
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}\r\nAttemping to use fallback metadata URL.", LogType.Warning, true);
+                try
+                {
+                    using (Http.Http _http = new Http.Http())
+                    using (MemoryStream Stream = new MemoryStream())
+                    {
+                        string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
+                        await _http.Download(URL, Stream).ConfigureAwait(false);
+                        Stream.Position = 0;
+                        ConfigStamp = (Stamp)JsonSerializer.Deserialize(Stream, typeof(Stamp), StampContext.Default);
+                    }
+                } catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"Failed while checking for new metadata using fallback CDN.", LogType.Error, true);
+                }
+                
                 return false;
             }
 
