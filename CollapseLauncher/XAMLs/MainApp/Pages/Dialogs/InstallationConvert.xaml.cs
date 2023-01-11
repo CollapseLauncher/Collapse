@@ -145,7 +145,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
+        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile, bool forceFallback = false)
         {
             Http _Http = new Http();
             Dictionary<string, string> _RepoList;
@@ -311,7 +311,21 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
 
-            SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
+            try
+            {
+                SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
+            } catch (Exception ex)
+            {
+                LogWriteLine($"Failed to fetch integrity metadata from URL.\r\n{ex}\r\nAttemping to use fallback.");
+                try
+                {
+                    SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile, forceFallback: true);
+                } catch (Exception failedFallbackException)
+                {
+                    LogWriteLine($"Failed to load metadata from fallback URL.\r\n{failedFallbackException}");
+                }
+            }
+            
 
             bool IsChoosen = false;
             string cPath = null;
