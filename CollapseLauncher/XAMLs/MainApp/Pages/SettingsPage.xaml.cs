@@ -111,6 +111,24 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = false;
         }
 
+        private void ForceRestart(object sender, RoutedEventArgs e)
+        {
+            App.Current.Exit();
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.exe"),
+                    Arguments = UpdateArgument,
+                    Verb = "runas"
+                }
+            }.Start();
+            MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
+            
+            
+        }
+
         private void ForceUpdate(object sender, RoutedEventArgs e)
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
