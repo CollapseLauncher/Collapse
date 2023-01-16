@@ -139,7 +139,10 @@ namespace CollapseLauncher.Pages
                 return;
             }
         }
-
+        public void StartSetupPage(object sender, RoutedEventArgs e)
+        {
+            MainFrameChanger.ChangeMainFrame(typeof(StartupPage));
+        }
         private void CheckUpdate(object sender, RoutedEventArgs e)
         {
             UpdateLoadingStatus.Visibility = Visibility.Visible;
