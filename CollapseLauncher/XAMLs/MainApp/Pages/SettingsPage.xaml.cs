@@ -1,4 +1,4 @@
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
@@ -117,6 +118,7 @@ namespace CollapseLauncher.Pages
             string workingDir = Path.GetDirectoryName(execPath);
             string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
             App.Current.Exit();
+            Thread.Sleep(1000);
             new Process
             {
                 StartInfo = new ProcessStartInfo
