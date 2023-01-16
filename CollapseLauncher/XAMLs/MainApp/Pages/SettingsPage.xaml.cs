@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Data;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -113,15 +113,18 @@ namespace CollapseLauncher.Pages
 
         private void ForceRestart(object sender, RoutedEventArgs e)
         {
+            string execPath = Process.GetCurrentProcess().MainModule.FileName;
+            string workingDir = Path.GetDirectoryName(execPath);
+            string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
             App.Current.Exit();
             new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = Path.Combine(ExecutableLocation, "CollapseLauncher.exe"),
-                    Arguments = UpdateArgument,
-                    Verb = "runas"
+                    Verb = "runas",
+                    FileName = launcherPath,
+                    WorkingDirectory = workingDir
                 }
             }.Start();
             MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
