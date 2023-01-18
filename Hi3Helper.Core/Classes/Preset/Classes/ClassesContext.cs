@@ -47,6 +47,9 @@ namespace Hi3Helper
     [JsonSerializable(typeof(RegionResourceProp))]
     public partial class RegionResourcePropContext : JsonSerializerContext { }
 
+    [JsonSerializable(typeof(FilePropertiesRemote[]))]
+    public partial class Array_FilePropertiesRemoteContext : JsonSerializerContext { }
+
     [JsonSerializable(typeof(List<FilePropertiesRemote>))]
     public partial class L_FilePropertiesRemoteContext : JsonSerializerContext { }
 
