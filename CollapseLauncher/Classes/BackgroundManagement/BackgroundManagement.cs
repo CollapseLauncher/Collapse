@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
+#if DEBUG
+using static Hi3Helper.Logger;
+#endif
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -76,6 +79,13 @@ namespace CollapseLauncher
                 ).Item1)
             {
                 regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
+
+#if DEBUG
+                if (regionResourceProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {regionResourceProp.data.game.latest.decompressed_path}", LogType.Default, true);
+                if (regionResourceProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {regionResourceProp.data.game.latest.path}", LogType.Default, true);
+                if (regionResourceProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {regionResourceProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
+                if (regionResourceProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {regionResourceProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
+#endif
             }
         }
 
