@@ -105,7 +105,7 @@ namespace Hi3Helper.EncTool
         /// <summary>
         /// Get the enumeration of the asset file name in a string form.
         /// </summary>
-        /// <returns>Ennumeration of the asset file names.</returns>
+        /// <returns>Enumeration of the asset file names.</returns>
         public IEnumerable<string> EnumerateAssetNames()
         {
             uint count = AssetCount;

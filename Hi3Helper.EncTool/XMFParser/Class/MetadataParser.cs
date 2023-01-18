@@ -23,7 +23,7 @@ namespace Hi3Helper.EncTool
             }
 
             // Try enumerate XMF file from the given path.
-            string assumedXMFPath = Directory.EnumerateFiles(_xmfPath, "Blocks*.xmf", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            string assumedXMFPath = Directory.EnumerateFiles(_xmfPath, "Blocks.xmf", SearchOption.TopDirectoryOnly).FirstOrDefault();
             if (assumedXMFPath != null)
             {
                 _xmfPath = assumedXMFPath;
@@ -40,12 +40,12 @@ namespace Hi3Helper.EncTool
             using (Stream stream = new FileStream(_xmfPath, FileMode.Open, FileAccess.Read))
             {
                 // Read XMF with Endianess-aware BinaryReader
-                using (_bigEndBinReader = new EndianBinaryReader(stream))
+                using (EndianBinaryReader reader = new EndianBinaryReader(stream))
                 {
                     // Start read the header of the XMF file.
-                    ReadHeader();
+                    ReadHeader(reader);
                     // Start read the metadata including block info and asset indexes.
-                    ReadMetadata();
+                    ReadMetadata(reader);
                     // Finalize by creating catalog for block lookup as hash name and index.
                     // This will make searching process for the block easier.
                     CreateBlockIndexCatalog(BlockCount);
@@ -63,44 +63,58 @@ namespace Hi3Helper.EncTool
             }
         }
 
-        private void ReadHeader()
+        internal static byte[] ReadSignature(EndianBinaryReader reader)
         {
             // Switch to Little-endian to read header.
-            _bigEndBinReader.endian = UABT.EndianType.LittleEndian;
-            VersionSignature = _bigEndBinReader.ReadBytes(0x10);
+            reader.endian = UABT.EndianType.LittleEndian;
+            return reader.ReadBytes(_signatureLength);
+        }
 
+        internal static int[] ReadVersion(EndianBinaryReader reader)
+        {
             // Read block version.
-            Version = new int[_versioningLength];
+            int[] ver = new int[_versioningLength];
             for (int i = 0; i < _versioningLength; i++)
             {
-                Version[i] = _bigEndBinReader.ReadInt32();
-                if (Version[i] < _allowedMinVersion || Version[i] > _allowedMaxVersion)
+                ver[i] = reader.ReadInt32();
+                if (ver[i] < _allowedMinVersion || ver[i] > _allowedMaxVersion)
                 {
-                    throw new InvalidDataException($"Header version on array: {i} is invalid with value: {Version[i]}. The allowed range is: ({_allowedMinVersion} - {_allowedMaxVersion})");
+                    throw new InvalidDataException($"Header version on array: {i} is invalid with value: {ver[i]}. The allowed range is: ({_allowedMinVersion} - {_allowedMaxVersion})");
                 }
             }
 
+            return ver;
+        }
+
+        private void ReadHeader(EndianBinaryReader reader)
+        {
+            // Read signature (32 bytes).
+            VersionSignature = ReadSignature(reader);
+
+            // Read block version.
+            Version = ReadVersion(reader);
+
             // Try read endian mode.
-            byte readMode = _bigEndBinReader.ReadByte();
+            byte readMode = reader.ReadByte();
             if (readMode > 1)
             {
                 throw new InvalidDataException("Read mode is invalid! The value should be 0 for Big-endian and 1 for Little-endian");
             }
 
             // If readMode == 0, then switch to Big-endian.
-            if (readMode == 0) _bigEndBinReader.endian = UABT.EndianType.BigEndian;
+            if (readMode == 0) reader.endian = UABT.EndianType.BigEndian;
 
             // Allocate the size of Block array.
-            BlockEntry = new XMFBlock[_bigEndBinReader.ReadUInt32()];
+            BlockEntry = new XMFBlock[reader.ReadUInt32()];
         }
 
-        private void ReadMetadata()
+        private void ReadMetadata(EndianBinaryReader reader)
         {
             // Initialize the XMFBlock instance to the BlockEntry array.
             // At the same time, the XMFBlock will read the metadata section of the block.
             for (int i = 0; i < BlockEntry.Length; i++)
             {
-                BlockEntry[i] = new XMFBlock(_bigEndBinReader);
+                BlockEntry[i] = new XMFBlock(reader);
             }
         }
 
@@ -127,7 +141,7 @@ namespace Hi3Helper.EncTool
         /// <summary>
         /// Get the enumeration of the block hashes in a string form.
         /// </summary>
-        /// <returns>Ennumeration of the block hashes.</returns>
+        /// <returns>Enumeration of the block hashes.</returns>
         public IEnumerable<string> EnumerateBlockHashString()
         {
             uint count = BlockCount;
@@ -138,9 +152,22 @@ namespace Hi3Helper.EncTool
         }
 
         /// <summary>
+        /// Get the enumeration of the block file path.
+        /// </summary>
+        /// <returns>Enumeration of the block hashes.</returns>
+        public IEnumerable<string> EnumerateBlockPath()
+        {
+            uint count = BlockCount;
+            for (uint i = 0; i < count; i++)
+            {
+                yield return Path.Combine(_folderPath, BlockEntry[i].HashString + ".wmv");
+            }
+        }
+
+        /// <summary>
         /// Get the enumeration of the block hashes in a byte array.
         /// </summary>
-        /// <returns>Ennumeration of the block hashes in byte array form.</returns>
+        /// <returns>Enumeration of the block hashes in byte array form.</returns>
         public IEnumerable<byte[]> EnumerateBlockHash()
         {
             uint count = BlockCount;

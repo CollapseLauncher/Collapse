@@ -8,12 +8,12 @@ namespace Hi3Helper.EncTool
 {
     public sealed partial class XMFParser
     {
-        private const byte _versioningLength = 4;
-        private const byte _allowedMinVersion = 0;
-        private const byte _allowedMaxVersion = 64;
-        private string _xmfPath { get; set; }
+        internal const byte _signatureLength = 0x10;    // 16
+        internal const byte _versioningLength = 0x04;   // 4
+        internal const byte _allowedMinVersion = 0x00;  // 0
+        internal const byte _allowedMaxVersion = 0x40;  // 64
+        internal string _xmfPath;
         internal static string _folderPath;
-        private EndianBinaryReader _bigEndBinReader { get; set; }
 
         /// <summary>
         /// Represent the class of the XMFParser.<br/>
@@ -52,6 +52,11 @@ namespace Hi3Helper.EncTool
         /// The version of the game defined as Int32 array.
         /// </summary>
         public int[] Version { get; private set; }
+
+        /// <summary>
+        /// The directory location of the block files.
+        /// </summary>
+        public string BlockDirectory { get => _folderPath; }
 
         /// <summary>
         /// Entries of the Block file defined as an array of <c>XMFBlock</c> class.
