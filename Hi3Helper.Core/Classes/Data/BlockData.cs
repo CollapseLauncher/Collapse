@@ -33,12 +33,12 @@ namespace Hi3Helper.Data
         {
             if (BrokenBlocks == null)
                 BrokenBlocks = new List<XMFBlockList>();
-            List<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.ToLowerInvariant().EndsWith("wmv")).ToList();
+            List<string> fileList = Directory.EnumerateFiles(localPath, "*.wmv").Where(file => file.EndsWith("wmv")).ToList();
             string blockLocal;
             long blockLocalSize;
             foreach (string file in fileList)
             {
-                blockLocal = Path.GetFileNameWithoutExtension(file).ToUpperInvariant();
+                blockLocal = Path.GetFileNameWithoutExtension(file);
                 blockLocalSize = new FileInfo(file).Length;
                 if (!util.XMFBook.Any(item => item.BlockHash == blockLocal))
                 {

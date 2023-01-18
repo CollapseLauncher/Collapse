@@ -49,6 +49,7 @@ namespace Hi3Helper.Shared.ClassStruct
         // For more information:
         // https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1
         public string CRC { get; set; }
+        public string CRCLower { get => CRC.ToLower(); }
 
         // File size of the cache file.
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]

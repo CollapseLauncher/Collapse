@@ -238,7 +238,7 @@ namespace CollapseLauncher.Pages
                             await hashTool.ComputeHashAsync(cachesStream);
                             hash = HexTool.BytesToHexUnsafe(hashTool.Hash);
 
-                            if (hash != content.CRC)
+                            if (hash != content.CRCLower)
                             {
                                 content.Status = CachesDataStatus.Obsolete;
                                 brokenCaches.Add(content);

@@ -5,6 +5,34 @@ namespace Hi3Helper.Data
 {
     unsafe public class HexTool
     {
+        private static readonly byte[] _lookupFromHexTable = new byte[] {
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 0,   1,
+            2,   3,   4,   5,   6,   7,   8,   9,   255, 255,
+            255, 255, 255, 255, 255, 10,  11,  12,  13,  14,
+            15,  255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 10,  11,  12,
+            13,  14,  15
+        };
+
+        private static readonly byte[] _lookupFromHexTable16 = new byte[] {
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 0,   16,
+            32,  48,  64,  80,  96,  112, 128, 144, 255, 255,
+            255, 255, 255, 255, 255, 160, 176, 192, 208, 224,
+            240, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255, 255, 255, 160, 176, 192,
+            208, 224, 240
+        };
+
         private static readonly uint[] _lookup32Unsafe = new uint[]
         {
             0x300030, 0x310030, 0x320030, 0x330030, 0x340030, 0x350030, 0x360030, 0x370030, 0x380030, 0x390030, 0x610030, 0x620030,
@@ -47,6 +75,53 @@ namespace Hi3Helper.Data
                 }
             }
             return new string(result);
+        }
+
+        public static byte[] HexToBytesUnsafe(string source)
+        {
+            if (string.IsNullOrEmpty(source)) return new byte[0];
+
+            if (source.Length % 2 == 1) throw new ArgumentException();
+
+            int index = 0;
+            int len = source.Length >> 1;
+
+            fixed (char* sourceRef = source)
+            {
+                if (*(int*)sourceRef == 7864368)
+                {
+                    if (source.Length == 2)
+                    {
+                        throw new ArgumentException();
+                    }
+
+                    index += 2;
+                    len -= 1;
+                }
+
+                byte add = 0;
+                byte[] result = new byte[len];
+                
+                fixed (byte* hiRef = _lookupFromHexTable16)
+                
+                fixed (byte* lowRef = _lookupFromHexTable)
+                
+                fixed (byte* resultRef = result)
+                {
+                    char* s = &sourceRef[index];
+                    byte* r = resultRef;
+                    
+                    while (*s != 0)
+                    {
+                        if (*s > 102 || (*r = hiRef[*s++]) == 255 || *s > 102 || (add = lowRef[*s++]) == 255)
+                        {
+                            throw new ArgumentException();
+                        }
+                        *r++ += add;
+                    }
+                    return result;
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hi3Helper.Data;
+using System.Collections.Generic;
 
 namespace Hi3Helper.Preset
 {
@@ -52,6 +53,7 @@ namespace Hi3Helper.Preset
         public long _filesize { get; set; }
         public long _startoffset { get; set; }
         public string _filecrc32 { get; set; }
+        public byte[] _filecrc32array { get => HexTool.HexToBytesUnsafe(_filecrc32); }
     }
 
     public class PatchFilesList

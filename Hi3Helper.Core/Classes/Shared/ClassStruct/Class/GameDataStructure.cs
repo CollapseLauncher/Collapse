@@ -1,4 +1,6 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
@@ -13,6 +15,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public string N { get; set; }
         public string RN { get; set; }
         public string CRC { get; set; }
+        public byte[] CRCArray { get => HexTool.HexToBytesUnsafe(CRC); }
         public string M { get; set; }
         public FileType FT { get; set; }
         public List<XMFBlockList> BlkC { get; set; }
