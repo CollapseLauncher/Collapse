@@ -55,12 +55,14 @@ namespace Hi3Helper.Shared.Region
             { "UseDistortion", new IniValue(true) },
             { "LodGrade", new IniValue(0) },
 
-            { "BGMVolume", new IniValue(3) },
-            { "SoundEffectVolume", new IniValue(3) },
-            { "VoiceVolume", new IniValue(3) },
-            { "ElfVolume", new IniValue(3) },
-            { "CGVolume", new IniValue(3) },
+            { "MasterVolume", new IniValue(100f) },
+            { "BGMVolume", new IniValue(100f) },
+            { "SoundEffectVolume", new IniValue(100f) },
+            { "VoiceVolume", new IniValue(100f) },
+            { "ElfVolume", new IniValue(100f) },
+            { "CGVolume", new IniValue(100f) },
             { "CVLanguage", new IniValue(1) },
+            { "MuteVolume", new IniValue(false) },
 
             { "CustomArgs", new IniValue("") },
         };
@@ -124,12 +126,14 @@ namespace Hi3Helper.Shared.Region
                             break;
 
                         // Registry: PersonalAudioSetting
+                        case "MasterVolume":
                         case "BGMVolume":
                         case "SoundEffectVolume":
                         case "VoiceVolume":
                         case "ElfVolume":
                         case "CGVolume":
                         case "CVLanguage":
+                        case "MuteVolume":
                             GetOrCreatePersonalAudioSettingsValue(keyValue.Key, keyValue.Value);
                             break;
 
@@ -494,22 +498,53 @@ namespace Hi3Helper.Shared.Region
         #region Registry_PersonalAudioSetting
 
         public const string PersonalAudioSettingReg = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
+        public const string PersonalAudioSettingBeforeMuteReg = "GENERAL_DATA_V2_PersonalAudioSettingBeforeMute_h3867268048";
+        public const string PersonalAudioSettingVolumeReg = "GENERAL_DATA_V2_PersonalAudioSettingVolume_h600615720";
 
         public class PersonalAudioSetting
         {
             public PersonalAudioSetting()
             {
-                IsUserDefined = false;
+                IsUserDefined = true;
             }
 
-            public byte BGMVolume { get; set; }
-            public byte SoundEffectVolume { get; set; }
-            public byte VoiceVolume { get; set; }
-            public byte ElfVolume { get; set; }
-            public byte CGVolume { get; set; }
+            public PersonalAudioVolumeValueSetting ToVolumeValue()
+            {
+                return new PersonalAudioVolumeValueSetting
+                {
+                    MasterVolumeValue = ConvertRangeValue(0f, 100f, MasterVolume, 0f, 3f),
+                    BGMVolumeValue = ConvertRangeValue(0f, 100f, BGMVolume, 0f, 3f),
+                    SoundEffectVolumeValue = ConvertRangeValue(0f, 100f, SoundEffectVolume, 0f, 3f),
+                    VoiceVolumeValue = ConvertRangeValue(0f, 100f, VoiceVolume, 0f, 3f),
+                    ElfVolumeValue = ConvertRangeValue(0f, 100f, ElfVolume, 0f, 3f),
+                    CGVolumeValue = ConvertRangeValue(0f, 100f, CGVolumeV2, 0f, 1.8f),
+                    CreatedByDefault = false
+                };
+            }
+
+            private float ConvertRangeValue(float sMin, float sMax, float sValue, float tMin, float tMax) => (((sValue - sMin) * (tMax - tMin)) / (sMax - sMin)) + tMin;
+
+            public float MasterVolume { get; set; }
+            public float BGMVolume { get; set; }
+            public float SoundEffectVolume { get; set; }
+            public float VoiceVolume { get; set; }
+            public float ElfVolume { get; set; }
+            public float CGVolumeV2 { get; set; }
             public string CVLanguage { get; set; }
             public string _userCVLanguage { get; set; }
+            public bool Mute { get; set; }
             public bool IsUserDefined { get; set; }
+        }
+
+        public class PersonalAudioVolumeValueSetting
+        {
+            public float MasterVolumeValue { get; set; }
+            public float BGMVolumeValue { get; set; }
+            public float SoundEffectVolumeValue { get; set; }
+            public float VoiceVolumeValue { get; set; }
+            public float ElfVolumeValue { get; set; }
+            public float CGVolumeValue { get; set; }
+            public bool CreatedByDefault { get; set; }
         }
 
         private static void GetOrCreatePersonalAudioSettingsValue(in string key, in IniValue fallbackValue)
@@ -526,23 +561,29 @@ namespace Hi3Helper.Shared.Region
 
                     switch (key)
                     {
+                        case "MasterVolume":
+                            value = data.MasterVolume;
+                            break;
                         case "BGMVolume":
-                            value = new IniValue(data.BGMVolume);
+                            value = data.BGMVolume;
                             break;
                         case "SoundEffectVolume":
-                            value = new IniValue(data.SoundEffectVolume);
+                            value = data.SoundEffectVolume;
                             break;
                         case "VoiceVolume":
-                            value = new IniValue(data.VoiceVolume);
+                            value = data.VoiceVolume;
                             break;
                         case "ElfVolume":
-                            value = new IniValue(data.ElfVolume);
+                            value = data.ElfVolume;
                             break;
                         case "CGVolume":
-                            value = new IniValue(data.CGVolume);
+                            value = data.CGVolumeV2;
                             break;
                         case "CVLanguage":
                             value = data.IsUserDefined ? 0 : 1;
+                            break;
+                        case "MuteVolume":
+                            value = data.Mute;
                             break;
                     }
                 }
@@ -558,19 +599,31 @@ namespace Hi3Helper.Shared.Region
 
         private static void SavePersonalAudioSettingsValue()
         {
-            string data = JsonSerializer.Serialize(new PersonalAudioSetting
+            PersonalAudioSetting set1 = new PersonalAudioSetting
             {
-                BGMVolume = (byte)gameIni.Settings[SectionName]["BGMVolume"].ToInt(),
-                SoundEffectVolume = (byte)gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt(),
-                VoiceVolume = (byte)gameIni.Settings[SectionName]["VoiceVolume"].ToInt(),
-                ElfVolume = (byte)gameIni.Settings[SectionName]["ElfVolume"].ToInt(),
-                CGVolume = (byte)gameIni.Settings[SectionName]["CGVolume"].ToInt(),
+                MasterVolume = gameIni.Settings[SectionName]["MasterVolume"].ToFloat(),
+                BGMVolume = gameIni.Settings[SectionName]["BGMVolume"].ToFloat(),
+                SoundEffectVolume = gameIni.Settings[SectionName]["SoundEffectVolume"].ToFloat(),
+                VoiceVolume = gameIni.Settings[SectionName]["VoiceVolume"].ToFloat(),
+                ElfVolume = gameIni.Settings[SectionName]["ElfVolume"].ToFloat(),
+                CGVolumeV2 = gameIni.Settings[SectionName]["CGVolume"].ToFloat(),
                 CVLanguage = "Japanese",
                 _userCVLanguage = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0 ? "Chinese(PRC)" : null,
-                IsUserDefined = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0
-            }, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) + '\0';
+                IsUserDefined = (byte)gameIni.Settings[SectionName]["CVLanguage"].ToInt() == 0,
+                Mute = gameIni.Settings[SectionName]["MuteVolume"].ToBoolNullable() ?? false
+            };
 
+            PersonalAudioVolumeValueSetting set2 = set1.ToVolumeValue();
+
+            string data = JsonSerializer.Serialize(set1, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) + '\0';
             SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalAudioSettingReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
+
+            string data2 = JsonSerializer.Serialize(set2, typeof(PersonalAudioVolumeValueSetting), PersonalAudioVolumeValueSettingContext.Default) + '\0';
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalAudioSettingVolumeReg, Encoding.UTF8.GetBytes(data2), RegistryValueKind.Binary);
+
+            set1.Mute = false;
+            data = JsonSerializer.Serialize(set1, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) + '\0';
+            SaveRegistryValue(CurrentConfigV2.ConfigRegistryLocation, PersonalAudioSettingBeforeMuteReg, Encoding.UTF8.GetBytes(data), RegistryValueKind.Binary);
         }
 
         public static byte ConvertStringToByte(string value)

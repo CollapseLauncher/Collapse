@@ -62,8 +62,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private int Boolean2IntFallback(bool? val) => val == null ? 0 : 2;
-
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             try

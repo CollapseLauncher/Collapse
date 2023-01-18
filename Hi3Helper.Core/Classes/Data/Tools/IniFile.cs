@@ -59,6 +59,21 @@ namespace Hi3Helper.Data
             return false;
         }
 
+        private static bool TryParseFloat(string text, out float value)
+        {
+            float res;
+            if (float.TryParse(text,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out res))
+            {
+                value = res;
+                return true;
+            }
+            value = float.NaN;
+            return false;
+        }
+
         public string Value;
 
         public IniValue(object value)
@@ -193,6 +208,30 @@ namespace Hi3Helper.Data
                 return false;
             }
             if (TryParseInt(Value.Trim(), out result))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public float ToFloat(float valueIfInvalid = 0)
+        {
+            float res;
+            if (TryConvertFloat(out res))
+            {
+                return res;
+            }
+            return valueIfInvalid;
+        }
+
+        public bool TryConvertFloat(out float result)
+        {
+            if (Value == null)
+            {
+                result = default(float);
+                return false; ;
+            }
+            if (TryParseFloat(Value.Trim(), out result))
             {
                 return true;
             }
