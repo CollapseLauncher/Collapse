@@ -32,15 +32,15 @@
                     IsReadOnly="True"
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
-                    ItemsSource="{x:Bind NeedRepairListUI}"
+                    ItemsSource="{x:Bind _repairTool.RepairAssetEntry}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding FileName}" Tag="FileName" Width="296" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding DataType}" Tag="DataType" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding FileSource}" Tag="Source" Width="436" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding FileSizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding CurrCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding ExpctCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding AssetType}" Tag="DataType" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding SizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
+                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
                         </control:DataGrid.Columns>
                     </control:DataGrid>
                 </Grid>

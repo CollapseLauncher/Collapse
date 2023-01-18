@@ -6,34 +6,105 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Preset.ConfigV2Store;
+using System.Threading.Tasks;
+using System;
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {
+        IRepair _repairTool;
         public RepairPage()
         {
+            string gamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+
+            if (CurrentConfigV2.IsGenshin ?? false)
+            {
+                _repairTool = new GenshinRepair(this, regionResourceProp.data.game.latest.version, gamePath, CurrentConfigV2);
+            }
+            else
+            {
+                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, CurrentConfigV2);
+            }
+
+            _repairTool.ProgressChanged += _repairTool_ProgressChanged;
+            _repairTool.StatusChanged += _repairTool_StatusChanged;
+
             this.InitializeComponent();
-            GameBasePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
         }
 
-        private void CancelOperation(object sender, RoutedEventArgs e)
+        private async void StartGameCheck(object sender, RoutedEventArgs e)
         {
-            sw.Stop();
+            CheckFilesBtn.IsEnabled = false;
+            CancelBtn.IsEnabled = true;
+
+            try
+            {
+                await _repairTool.StartCheckRoutine();
+
+                RepairFilesBtn.IsEnabled = true;
+                CheckFilesBtn.IsEnabled = false;
+                CancelBtn.IsEnabled = false;
+
+                RepairFilesBtn.Visibility = Visibility.Visible;
+                CheckFilesBtn.Visibility = Visibility.Collapsed;
+            }
+            catch (TaskCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            catch (OperationCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            finally
+            {
+            }
+
+            return;
+        }
+
+        private void _repairTool_StatusChanged(object sender, RepairStatus e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                RepairDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
+                RepairStatus.Text = e.RepairActivityStatus;
+
+                RepairPerFileStatus.Text = e.RepairActivityPerFile;
+                RepairTotalStatus.Text = e.RepairActivityTotal;
+            });
+        }
+
+        private void _repairTool_ProgressChanged(object sender, RepairProgress e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                RepairPerFileProgressBar.Value = e.ProgressPerFilePercentage;
+
+                RepairTotalProgressBar.Value = e.ProgressTotalPercentage;
+            });
+        }
+
+        private void ResetStatusAndButtonState()
+        {
+            RepairStatus.Text = Lang._GameRepairPage.Status1;
+
             CancelBtn.IsEnabled = false;
             CheckFilesBtn.Visibility = Visibility.Visible;
             CheckFilesBtn.IsEnabled = true;
             RepairFilesBtn.Visibility = Visibility.Collapsed;
+        }
 
-            _httpClient.DownloadProgress -= DataFetchingProgress;
-
-            cancellationTokenSource.Cancel();
+        private void CancelOperation(object sender, RoutedEventArgs e)
+        {
+            _repairTool.CancelRoutine();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            sw.Stop();
-            cancellationTokenSource.Cancel();
+            _repairTool.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)

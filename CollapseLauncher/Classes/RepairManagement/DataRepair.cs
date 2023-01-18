@@ -27,7 +27,9 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await CategorizeRepairAction();
+                await _repairTool.StartRepairRoutine();
+
+                return;
             }
             catch (OperationCanceledException)
             {

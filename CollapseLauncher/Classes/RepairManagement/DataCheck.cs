@@ -1,11 +1,13 @@
 ﻿using Force.Crc32;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,73 +55,14 @@ namespace CollapseLauncher.Pages
 
         private string CurrentCheckName = "";
 
-        private async void StartGameCheck(object sender, RoutedEventArgs e)
-        {
-            RepairStatus.Text = Lang._GameRepairPage.Status2;
-            NeedRepairListUI.Clear();
-            cancellationTokenSource = new CancellationTokenSource();
-            FileIndexesProperty = new List<FilePropertiesRemote>();
-            BrokenFileIndexesProperty = new List<FilePropertiesRemote>();
-            CheckFilesBtn.IsEnabled = false;
-            CancelBtn.IsEnabled = true;
-
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                RepairPerFileStatus.Text = Lang._GameRepairPage.StatusNone;
-                RepairTotalStatus.Text = Lang._GameRepairPage.StatusNone;
-                RepairPerFileProgressBar.Value = 0;
-                RepairTotalProgressBar.Value = 0;
-            });
-
-            try
-            {
-                string repoURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
-
-                using (_httpClient = new Http())
-                {
-                    using (memBuffer = new MemoryStream())
-                    {
-                        _httpClient.DownloadProgress += DataFetchingProgress;
-                        await _httpClient.Download(repoURL, memBuffer, null, null, cancellationTokenSource.Token);
-                        _httpClient.DownloadProgress -= DataFetchingProgress;
-                        memBuffer.Position = 0;
-                        RepoURLDict = (Dictionary<string, string>)JsonSerializer.Deserialize(memBuffer, typeof(Dictionary<string, string>), D_StringString.Default);
-                    }
-                    GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
-
-                    string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-
-                    using (memBuffer = new MemoryStream())
-                    {
-                        _httpClient.DownloadProgress += DataFetchingProgress;
-                        await _httpClient.Download(indexURL, memBuffer, null, null, cancellationTokenSource.Token);
-                        _httpClient.DownloadProgress -= DataFetchingProgress;
-                        memBuffer.Position = 0;
-                        FileIndexesProperty = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(memBuffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
-                    }
-                }
-
-                await Task.Run(CheckGameFiles);
-            }
-            catch (OperationCanceledException)
-            {
-                LogWriteLine($"Game Check Cancelled!");
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
-            sw.Stop();
-        }
-
         Stopwatch sw = new Stopwatch();
         string FileCRC, FilePath, FileURL, GameBasePath, GameBaseURL;
         FileInfo FileInfoProp;
         int BrokenFilesCount;
         private void CheckGameFiles()
         {
-            StashOldBlock();
+            // StashOldBlock();
+            TryCleanupUnusedAssetsInBlockDir(GameBasePath, Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName));
 
             sw = Stopwatch.StartNew();
             TotalCurrentReadCount = 0;
@@ -175,12 +118,53 @@ namespace CollapseLauncher.Pages
             SummarizeResult();
         }
 
+        public static void TryCleanupUnusedAssetsInBlockDir(string basePath, string execName)
+        {
+            string xmfPath = Path.Combine(basePath, $"{execName}_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
+            if (!File.Exists(xmfPath))
+            {
+                LogWriteLine($"XMF file: \"{xmfPath}\" for Executable name: {execName} doesn't exist. Skipping!", LogType.Warning, true);
+                return;
+            }
+
+            XMFParser parser = new XMFParser(xmfPath);
+            List<string> exceptionList = new List<string>()
+            {
+                xmfPath,
+                Path.Combine(parser.BlockDirectory, "BlockMeta.xmf"),
+                Path.Combine(parser.BlockDirectory, "blockVerifiedVersion.txt")
+            };
+            exceptionList.AddRange(parser.EnumerateBlockPath());
+
+            foreach (string path in Directory.EnumerateFiles(parser.BlockDirectory, "*.*", SearchOption.AllDirectories))
+            {
+                if (!exceptionList.Contains(path))
+                {
+                    try
+                    {
+                        FileInfo fileInfo = new FileInfo(path);
+                        fileInfo.IsReadOnly = false;
+                        fileInfo.Delete();
+
+                        LogWriteLine($"Removed unused file: \"{path}\"", LogType.Default, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed while deleting unused file: \"{path}\". Skipping!\r\n{ex}", LogType.Warning, true);
+                    }
+                }
+            }
+        }
+
         private void StashOldBlock()
         {
             string XmfPath = Path.Combine(GameBasePath, $"{Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName)}_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
             string XmfDir = Path.GetDirectoryName(XmfPath);
 
             if (!File.Exists(XmfPath)) return;
+
+            XMFParser Xmf = new XMFParser(XmfPath);
+
 
             BlockData Util = new BlockData();
 
