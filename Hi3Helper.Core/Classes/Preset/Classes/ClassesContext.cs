@@ -45,6 +45,9 @@ namespace Hi3Helper
     [JsonSerializable(typeof(PersonalAudioSetting))]
     internal partial class PersonalAudioSettingContext : JsonSerializerContext { }
 
+    [JsonSerializable(typeof(PersonalAudioVolumeValueSetting))]
+    internal partial class PersonalAudioVolumeValueSettingContext : JsonSerializerContext { }
+
     [JsonSerializable(typeof(DataProperties))]
     [JsonSourceGenerationOptions(WriteIndented = true)]
     public partial class DataPropertiesContext : JsonSerializerContext { }
