@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hi3Helper.EncTool
 {
@@ -11,8 +13,9 @@ namespace Hi3Helper.EncTool
         private long _curPos { get; set; }
         private long _remain { get => _size - _curPos; }
         private protected readonly Stream _stream;
+        private bool _isDisposing { get; set; }
 
-        public ChunkStream(Stream stream, long start, long end)
+        public ChunkStream(Stream stream, long start, long end, bool isDisposing = false)
             : base()
         {
             _stream = stream;
@@ -31,9 +34,10 @@ namespace Hi3Helper.EncTool
             _start = start;
             _end = end;
             _curPos = 0;
+            _isDisposing = isDisposing;
         }
 
-        ~ChunkStream() => Dispose();
+        ~ChunkStream() => this.Dispose(_isDisposing);
 
         public override int Read(Span<byte> buffer)
         {
@@ -43,6 +47,16 @@ namespace Hi3Helper.EncTool
             _curPos += toSlice;
 
             return _stream.Read(buffer.Slice(0, toSlice));
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+        {
+            if (_remain == 0) return 0;
+
+            int toSlice = (int)(buffer.Length > _remain ? _remain : buffer.Length);
+            _curPos += toSlice;
+
+            return await _stream.ReadAsync(buffer.Slice(0, toSlice), token);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -57,6 +71,18 @@ namespace Hi3Helper.EncTool
             return _stream.Read(buffer, offset, toRead);
         }
 
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+        {
+            if (_remain == 0) return 0;
+
+            int toRead = (int)(_remain < count ? _remain : count);
+            int toOffset = offset > _remain ? 0 : offset;
+            _stream.Position += toOffset;
+            _curPos += toOffset + toRead;
+
+            return await _stream.ReadAsync(buffer, offset, toRead, token);
+        }
+
         public override void Write(ReadOnlySpan<byte> buffer)
         {
             if (_remain == 0) return;
@@ -67,6 +93,16 @@ namespace Hi3Helper.EncTool
             _stream.Write(buffer.Slice(0, toSlice));
         }
 
+        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+        {
+            if (_remain == 0) return;
+
+            int toSlice = (int)(buffer.Length > _remain ? _remain : buffer.Length);
+            _curPos += toSlice;
+
+            await _stream.WriteAsync(buffer.Slice(0, toSlice), token);
+        }
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             int toRead = (int)(_remain < count ? _remain : count);
@@ -75,6 +111,16 @@ namespace Hi3Helper.EncTool
             _curPos += toOffset + toRead;
 
             _stream.Write(buffer, offset, toRead);
+        }
+
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
+        {
+            int toRead = (int)(_remain < count ? _remain : count);
+            int toOffset = offset > _remain ? 0 : offset;
+            _stream.Position += toOffset;
+            _curPos += toOffset + toRead;
+
+            await _stream.WriteAsync(buffer, offset, toRead, token);
         }
 
         public override void CopyTo(Stream destination, int bufferSize)
@@ -163,8 +209,9 @@ namespace Hi3Helper.EncTool
 
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
-            _stream.Dispose();
+            if (disposing) base.Dispose(disposing);
+            if (_isDisposing) _stream.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
