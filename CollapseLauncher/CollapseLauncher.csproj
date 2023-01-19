@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>net7.0-windows10.0.19041.0</TargetFrameworks>
@@ -54,6 +54,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="XAMLs\MainApp\Pages\NotInstalledPage.xaml" />
+	  <None Remove="XAMLs\MainApp\Pages\StartupPage_SelectCDN.xaml" />
 	  <None Remove="XAMLs\MainApp\Pages\StartupPage_SelectGameBG.xaml" />
 	  <None Remove="XAMLs\MainApp\Pages\WebView2Frame.xaml" />
 	</ItemGroup>
@@ -133,6 +134,11 @@
 		</ItemGroup>
 	</Target>
 
+	<ItemGroup>
+	  <Page Update="XAMLs\MainApp\Pages\StartupPage_SelectCDN.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
 	<ItemGroup>
 		<Page Update="XAMLs\MainApp\Pages\WebView2Frame.xaml">
 		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
