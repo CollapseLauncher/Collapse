@@ -226,6 +226,7 @@
     "SpecMaximum": "Maximum",
 
     "Audio_Title": "Audio Settings",
+    "Audio_Master": "Master Volume",
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VOLang": "Voice Over Language",
@@ -235,6 +236,7 @@
     "Audio_VO": "Voice Over Volume",
     "Audio_Elf": "Elf Voice Over Volume",
     "Audio_Cutscenes": "Cutscenes Volume",
+    "Audio_Mute": "Mute Audio",
 
     "ApplyBtn": "Apply Settings",
     "SettingsApplied": "Changes have been saved!",
