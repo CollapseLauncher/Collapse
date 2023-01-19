@@ -16,7 +16,7 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="NextPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource AccentButtonStyle}"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom" IsEnabled="False"
-                CornerRadius="16">
+                Click="NextPage_Click" CornerRadius="16">
                 <StackPanel Orientation="Horizontal" Margin="8,0">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Pg1NextBtn}" FontWeight="Medium" Margin="0,0,8,0"/>
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>

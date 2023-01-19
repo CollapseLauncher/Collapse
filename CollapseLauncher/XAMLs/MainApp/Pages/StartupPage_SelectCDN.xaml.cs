@@ -29,7 +29,14 @@ namespace CollapseLauncher.Pages
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {
+            NextPage.IsEnabled = true;
             (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+        }
+
+        private void NextPage_Click(object sender, RoutedEventArgs e)
+        {
+            // Update string urls here
+            (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight});
         }
     }
 }
