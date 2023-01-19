@@ -17,6 +17,14 @@
                 public string Subtitle4_1 { get; set; } = LangFallback?._StartupPage.Subtitle4_1;
                 public string Subtitle4_2 { get; set; } = LangFallback?._StartupPage.Subtitle4_2;
                 public string Subtitle4_3 { get; set; } = LangFallback?._StartupPage.Subtitle4_3;
+                public string SubtitleCDN_1 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_1;
+                public string SubtitleCDN_2 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_2;
+                public string SubtitleCDN_3 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_3;
+                public string SubtitleCDN_4_1 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_1;
+                public string SubtitleCDN_4_2 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_2;
+                public string SubtitleCDN_4_3 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_3;
+                public string SubtitleCDN_4_4 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_4;
+                public string SubtitleCDN_4_5 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_5;
                 public string FolderInsufficientPermission { get; set; } = LangFallback?._StartupPage.FolderInsufficientPermission;
                 public string FolderNotSelected { get; set; } = LangFallback?._StartupPage.FolderNotSelected;
                 public string ChooseFolderBtn { get; set; } = LangFallback?._StartupPage.ChooseFolderBtn;

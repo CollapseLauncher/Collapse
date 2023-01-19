@@ -38,5 +38,10 @@ namespace CollapseLauncher.Pages
             // Update string urls here
             (m_window as MainWindow).rootFrame.Navigate(typeof(StartupPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight});
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

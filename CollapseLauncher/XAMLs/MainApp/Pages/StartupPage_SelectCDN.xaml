@@ -42,24 +42,23 @@
                 <StackPanel.Transitions>
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle1}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{ThemeResource SystemAccentColor}"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle2}" Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle3}"
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_1}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,32" Foreground="{ThemeResource SystemAccentColor}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_2}" Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_3}"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 FontWeight="Normal"
                 Margin="0,0,0,32"/>
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16">
-                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_1}" FontWeight="Normal"/>
-                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" Foreground="{ThemeResource SystemAccentColor}"/>
-                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" FontWeight="Normal"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_1}" FontWeight="Normal"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_2}" Foreground="{ThemeResource SystemAccentColor}"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_3}" FontWeight="Normal"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_4}" FontWeight="Normal"/>
+                <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_5}" FontWeight="Normal"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <Button Style="{ThemeResource AccentButtonStyle}" CornerRadius="16">
-                        <StackPanel Orientation="Horizontal" Margin="8,0">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" Margin="0,0,8,0" FontWeight="Medium"/>
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf07b;" FontSize="14"/>
-                        </StackPanel>
-                    </Button>
+                    <ComboBox PlaceholderText="Select your language" Grid.Row="1"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    SelectionChanged="ComboBox_SelectionChanged"/>
                     <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimary}"/>
                 </StackPanel>
             </StackPanel>
