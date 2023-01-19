@@ -47,6 +47,8 @@
                 public string SpecVeryHigh { get; set; } = LangFallback?._GameSettingsPage.SpecVeryHigh;
                 public string SpecMaximum { get; set; } = LangFallback?._GameSettingsPage.SpecMaximum;
                 public string Audio_Title { get; set; } = LangFallback?._GameSettingsPage.Audio_Title;
+                public string Audio_Mute { get; set; } = LangFallback?._GameSettingsPage.Audio_Mute;
+                public string Audio_Master { get; set; } = LangFallback?._GameSettingsPage.Audio_Master;
                 public string Audio_BGM { get; set; } = LangFallback?._GameSettingsPage.Audio_BGM;
                 public string Audio_SFX { get; set; } = LangFallback?._GameSettingsPage.Audio_SFX;
                 public string Audio_VOLang { get; set; } = LangFallback?._GameSettingsPage.Audio_VOLang;

@@ -403,6 +403,7 @@ namespace CollapseLauncher
             CountCurrentDownload = 0;
 
             TryUnassignReadOnlyFiles();
+            TryRemoveRedundantHDiffList();
 
             if (CanSkipExtract) return;
 
@@ -444,11 +445,31 @@ namespace CollapseLauncher
 
         private void TryUnassignReadOnlyFiles()
         {
-            foreach (string File in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
             {
-                FileInfo fileInfo = new FileInfo(File);
+                FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.IsReadOnly)
                     fileInfo.IsReadOnly = false;
+            }
+        }
+
+        private void TryRemoveRedundantHDiffList()
+        {
+            foreach (string file in Directory.EnumerateFiles(GameDirPath, "*.txt", SearchOption.TopDirectoryOnly))
+            {
+                string name = Path.GetFileName(file);
+                if (name.StartsWith("deletefiles", StringComparison.OrdinalIgnoreCase)
+                 || name.StartsWith("hdifffiles", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Be careful that the installation process might have some problem since the launcher can't remove HDiff list file: {name}!\r\n{ex}", LogType.Warning, true);
+                    }
+                }
             }
         }
 

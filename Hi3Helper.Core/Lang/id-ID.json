@@ -226,6 +226,7 @@
     "SpecMaximum": "Maksimum",
 
     "Audio_Title": "Pengaturan Suara",
+    "Audio_Master": "Volume Utama",
     "Audio_BGM": "Volume BGM",
     "Audio_SFX": "Volume Efek Suara",
     "Audio_VOLang": "Bahasa Pengisi Suara",
@@ -235,6 +236,7 @@
     "Audio_VO": "Volume Pengisi Suara",
     "Audio_Elf": "Volume Pengisi Suara Elf",
     "Audio_Cutscenes": "Volume Cutscene",
+    "Audio_Mute": "Mute Suara",
 
     "ApplyBtn": "Terapkan Pengaturan",
     "SettingsApplied": "Perubahan telah disimpan!",

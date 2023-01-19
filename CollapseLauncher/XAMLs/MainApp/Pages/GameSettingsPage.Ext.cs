@@ -284,33 +284,39 @@ namespace CollapseLauncher.Pages
         }
         #endregion
         #region Audio
-        public int AudioBGMVolume
+        public float AudioMasterVolume
         {
-            get => gameIni.Settings[SectionName]["BGMVolume"].ToInt();
+            get => gameIni.Settings[SectionName]["MasterVolume"].ToFloat();
+            set => gameIni.Settings[SectionName]["MasterVolume"] = value;
+        }
+
+        public float AudioBGMVolume
+        {
+            get => gameIni.Settings[SectionName]["BGMVolume"].ToFloat();
             set => gameIni.Settings[SectionName]["BGMVolume"] = value;
         }
 
-        public int AudioSFXVolume
+        public float AudioSFXVolume
         {
-            get => gameIni.Settings[SectionName]["SoundEffectVolume"].ToInt();
+            get => gameIni.Settings[SectionName]["SoundEffectVolume"].ToFloat();
             set => gameIni.Settings[SectionName]["SoundEffectVolume"] = value;
         }
 
-        public int AudioVoiceVolume
+        public float AudioVoiceVolume
         {
-            get => gameIni.Settings[SectionName]["VoiceVolume"].ToInt();
+            get => gameIni.Settings[SectionName]["VoiceVolume"].ToFloat();
             set => gameIni.Settings[SectionName]["VoiceVolume"] = value;
         }
 
-        public int AudioElfVolume
+        public float AudioElfVolume
         {
-            get => gameIni.Settings[SectionName]["ElfVolume"].ToInt();
+            get => gameIni.Settings[SectionName]["ElfVolume"].ToFloat();
             set => gameIni.Settings[SectionName]["ElfVolume"] = value;
         }
 
-        public int AudioCutsceneVolume
+        public float AudioCutsceneVolume
         {
-            get => gameIni.Settings[SectionName]["CGVolume"].ToInt();
+            get => gameIni.Settings[SectionName]["CGVolume"].ToFloat();
             set => gameIni.Settings[SectionName]["CGVolume"] = value;
         }
 
@@ -319,6 +325,13 @@ namespace CollapseLauncher.Pages
             get => gameIni.Settings[SectionName]["CVLanguage"].ToInt();
             set => gameIni.Settings[SectionName]["CVLanguage"] = value;
         }
+
+        public bool AudioMute
+        {
+            get => gameIni.Settings[SectionName]["MuteVolume"].ToBoolNullable() ?? false;
+            set => gameIni.Settings[SectionName]["MuteVolume"] = value;
+        }
+
         #endregion
     }
 }
