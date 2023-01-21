@@ -1,7 +1,6 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using static CollapseLauncher.Pages.RepairData;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -25,11 +24,8 @@ namespace CollapseLauncher.Pages
             }
             else
             {
-                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, CurrentConfigV2);
+                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, (byte)GetAppConfigValue("DownloadThread").ToInt());
             }
-
-            _repairTool.ProgressChanged += _repairTool_ProgressChanged;
-            _repairTool.StatusChanged += _repairTool_StatusChanged;
 
             this.InitializeComponent();
         }
@@ -41,14 +37,16 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await _repairTool.StartCheckRoutine();
+                AddRepairEvent();
 
-                RepairFilesBtn.IsEnabled = true;
-                CheckFilesBtn.IsEnabled = false;
+                bool IsGameBroken = await _repairTool.StartCheckRoutine();
+
+                RepairFilesBtn.IsEnabled = IsGameBroken;
+                CheckFilesBtn.IsEnabled = !IsGameBroken;
                 CancelBtn.IsEnabled = false;
 
-                RepairFilesBtn.Visibility = Visibility.Visible;
-                CheckFilesBtn.Visibility = Visibility.Collapsed;
+                RepairFilesBtn.Visibility = IsGameBroken ? Visibility.Visible : Visibility.Collapsed;
+                CheckFilesBtn.Visibility = IsGameBroken ? Visibility.Collapsed : Visibility.Visible;
             }
             catch (TaskCanceledException)
             {
@@ -60,9 +58,58 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                RemoveRepairEvent();
             }
+        }
 
-            return;
+        private async void StartGameRepair(object sender, RoutedEventArgs e)
+        {
+            RepairFilesBtn.IsEnabled = false;
+            CancelBtn.IsEnabled = true;
+
+            try
+            {
+                AddRepairEvent();
+
+                await _repairTool.StartRepairRoutine();
+
+                RepairFilesBtn.IsEnabled = false;
+                CheckFilesBtn.IsEnabled = true;
+                CancelBtn.IsEnabled = false;
+
+                RepairFilesBtn.Visibility = Visibility.Collapsed;
+                CheckFilesBtn.Visibility = Visibility.Visible;
+            }
+            catch (TaskCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            catch (OperationCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            finally
+            {
+                RemoveRepairEvent();
+            }
+        }
+
+        private void AddRepairEvent()
+        {
+            _repairTool.ProgressChanged += _repairTool_ProgressChanged;
+            _repairTool.StatusChanged += _repairTool_StatusChanged;
+
+            RepairTotalProgressBar.IsIndeterminate = true;
+            RepairPerFileProgressBar.IsIndeterminate = true;
+        }
+
+        private void RemoveRepairEvent()
+        {
+            _repairTool.ProgressChanged -= _repairTool_ProgressChanged;
+            _repairTool.StatusChanged -= _repairTool_StatusChanged;
+
+            RepairTotalProgressBar.IsIndeterminate = false;
+            RepairPerFileProgressBar.IsIndeterminate = false;
         }
 
         private void _repairTool_StatusChanged(object sender, RepairStatus e)
@@ -74,6 +121,8 @@ namespace CollapseLauncher.Pages
 
                 RepairPerFileStatus.Text = e.RepairActivityPerFile;
                 RepairTotalStatus.Text = e.RepairActivityTotal;
+                RepairTotalProgressBar.IsIndeterminate = e.IsProgressTotalIndetermined;
+                RepairPerFileProgressBar.IsIndeterminate = e.IsProgressPerFileIndetermined;
             });
         }
 

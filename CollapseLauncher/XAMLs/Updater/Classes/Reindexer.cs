@@ -36,7 +36,7 @@ namespace CollapseLauncher
                 if (Path.GetFileName(file) != "CollapseLauncher.Updater.exe")
                 {
                     nameRoot = file.Substring(baseLength).Replace('\\', '/');
-                    fileCrc = CreateMD5(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+                    fileCrc = CreateMD5Shared(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
                     Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
                     LogWriteLine($"{nameRoot} -> {fileCrc}");
                 }

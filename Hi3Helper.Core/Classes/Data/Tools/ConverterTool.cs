@@ -13,10 +13,15 @@ namespace Hi3Helper.Data
         private static readonly string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
         public static string BytesToCRC32Simple(Stream buffer) => HexTool.BytesToHexUnsafe(CRCEncoder.ComputeHash(buffer));
         public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => HexTool.BytesToHexUnsafe(await Task.Run(() => CRCEncoder.ComputeHash(buffer)).ConfigureAwait(false));
+        public static string CreateMD5Shared(Stream fs)
+        {
+            MD5Hash.Initialize();
+            ReadOnlySpan<byte> res = MD5Hash.ComputeHash(fs);
+            return HexTool.BytesToHexUnsafe(res);
+        }
         public static string CreateMD5(Stream fs)
         {
-            MD5 md5Instance = MD5.Create();
-            ReadOnlySpan<byte> res = md5Instance.ComputeHash(fs);
+            ReadOnlySpan<byte> res = MD5.Create().ComputeHash(fs);
             return HexTool.BytesToHexUnsafe(res);
         }
         public static async Task<string> CreateMD5Async(Stream fs)

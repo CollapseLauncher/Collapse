@@ -101,8 +101,8 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex);
             }
 
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
-            GC.WaitForPendingFinalizers();
+            // GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+            // GC.WaitForPendingFinalizers();
         }
 
         private async Task StartGameConfigBrokenDialog()

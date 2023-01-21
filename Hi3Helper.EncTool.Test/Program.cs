@@ -1,11 +1,26 @@
-﻿namespace Hi3Helper.EncTool.Test
+﻿using Hi3Helper.Http;
+
+namespace Hi3Helper.EncTool.Test
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             string path = @"C:\Program Files\Honkai Impact 3 sea\Games\BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
             string pathTarget = @"G:\Data\CollapseLauncher\Hi3SEA\pc\";
+
+            string URL = "https://d2wztyirwsuyyo.cloudfront.net/ptpublic/bh3_global/20230109172630_NRBvwa9qTB4EUXIz/extract/BH3_Data/StreamingAssets/Asb/pc/0fae6f42832ea16a84ac496c38437a1d.wmv";
+            path = @"C:\Program Files\Honkai Impact 3rd glb\Games\BH3_Data\StreamingAssets\Asb\pc\0fae6f42832ea16a84ac496c38437a1d.wmv";
+
+            using (FileStream fs = new(path, FileMode.Open, FileAccess.Write))
+            {
+                using (ChunkStream cs = new(fs, 0, 457688, false))
+                {
+                    Http.Http client = new(false);
+                    await client.Download(URL, cs, 0, 457688, default, true);
+                }
+            }
+            /*
 
             XMFParser parser = new XMFParser(path);
             foreach (string blockName in parser.EnumerateBlockHashString())
@@ -38,6 +53,7 @@
                     }
                 }
             }
+            */
         }
     }
 }

@@ -2,7 +2,6 @@
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -24,6 +23,7 @@ namespace CollapseLauncher
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
 
+            // Use HttpClient instance on fetching
             using (Http _httpClient = new Http(true, 5, 1000, _userAgent))
             {
                 // Fetch metadata
@@ -89,7 +89,7 @@ namespace CollapseLauncher
             if (XMFUtility.CheckIfXMFVersionMatches(xmfPath, _gameVersion.VersionArrayXMF)) return;
 
             // Set XMF URL
-            string urlXMF = _repoURL + "/BH3_Data/StreamingAssets/Asb/pc/Blocks.xmf";
+            string urlXMF = _repoURL + _blockBasePath + "Blocks.xmf";
 
             // Start downloading XMF
             _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
@@ -98,6 +98,19 @@ namespace CollapseLauncher
         }
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
+        {
+            // Sum total size
+            long blockSize = assetIndex
+                .Where(x => x.BlkC != null)
+                .Sum(x => x.BlkC
+                    .Sum(y => y.BlockSize));
+            _progressTotalSize = assetIndex.Sum(x => x.S) + blockSize;
+
+            // Sum total count by adding AssetIndex.Count + Counts from assets with "Blocks" type.
+            _progressTotalCount = assetIndex.Count + assetIndex.Where(x => x.BlkC != null).Sum(y => y.BlkC.Sum(z => z.BlockContent.Count));
+        }
+
+        private void CountAssetFinalIndex(List<FilePropertiesRemote> assetIndex)
         {
             // Sum total size
             long blockSize = assetIndex

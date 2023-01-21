@@ -923,7 +923,7 @@ namespace CollapseLauncher
 
             // Get base_res_version_hash content
             string FilePath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\StreamingAssets\\res_versions_streaming");
-            string Hash = ConverterTool.CreateMD5(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
+            string Hash = ConverterTool.CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
             File.WriteAllText(PersistentPath + "\\base_res_version_hash", Hash);
             // Get data_revision content
             File.WriteAllText(PersistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");

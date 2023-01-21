@@ -135,6 +135,7 @@
     "Status8": "Repairing: {0}",
     "Status9": "Repairing Blk: {0}",
     "Status10": "Repairing Blk: {0} | Offset: 0x{1} - Size: 0x{2}",
+    "Status11": "Waiting for repair process to start...",
     "StatusNone": "None",
     "PerProgressTitle1": "Per File Progress",
     "PerProgressSubtitle1": "Waiting...",

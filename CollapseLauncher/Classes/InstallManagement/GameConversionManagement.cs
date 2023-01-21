@@ -155,7 +155,7 @@ namespace CollapseLauncher
                         {
                             LocalHash = Entry.DataType != FileType.Blocks ?
                                 BytesToCRC32Simple(fs) :
-                                CreateMD5(fs);
+                                CreateMD5Shared(fs);
 
                             Token.ThrowIfCancellationRequested();
                             if (LocalHash.ToLower() != Entry.CurrCRC)
