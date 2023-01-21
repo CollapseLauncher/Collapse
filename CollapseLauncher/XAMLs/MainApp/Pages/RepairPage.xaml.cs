@@ -17,6 +17,8 @@ namespace CollapseLauncher.Pages
         public RepairPage()
         {
             string gamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            int threadVal = (byte)GetAppConfigValue("ExtractionThread").ToInt();
+            byte thread = (byte)(threadVal <= 0 ? Environment.ProcessorCount : threadVal);
 
             if (CurrentConfigV2.IsGenshin ?? false)
             {
@@ -24,7 +26,7 @@ namespace CollapseLauncher.Pages
             }
             else
             {
-                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, (byte)GetAppConfigValue("DownloadThread").ToInt());
+                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, thread);
             }
 
             this.InitializeComponent();
