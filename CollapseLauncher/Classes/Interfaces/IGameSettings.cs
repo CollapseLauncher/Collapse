@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace CollapseLauncher.Interfaces
 {
     internal interface IGameSettings
     {
-        void ImportSettings();
-        void ExportSettings();
+        Exception ImportSettings();
+        Exception ExportSettings();
         void RevertSettings();
         void SaveSettings();
         IGameSettingsUniversal AsIGameSettingsUniversal();

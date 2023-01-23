@@ -240,6 +240,18 @@
 
     "ApplyBtn": "Terapkan Pengaturan",
     "SettingsApplied": "Perubahan telah disimpan!",
+    "SettingsRegExported": "Registry berhasil diekspor!",
+    "SettingsRegExportTitle": "Simpan file Collapse Registry ke...",
+    "SettingsRegImported": "Registry berhasil diimpor! (Mohon restart launcher untuk menerapkan perubahan)",
+    "SettingsRegImportTitle": "Pilih file Collapse Registry...",
+    "SettingsRegErr1": "Lokasi belum ditentukan!",
+    "SettingsRegErr2": "Header dari file Collapse Registry tidak valid!",
+
+    "RegImportExport": "Impor/Ekspor Registry",
+    "RegExportTitle": "Ekspor",
+    "RegExportTooltip": "Ekspor keys registry ke file Collapse Registry",
+    "RegImportTitle": "Impor",
+    "RegImportTooltip": "Impor keys registry dari file Collapse Registry",
 
     "OverlayNotInstalledTitle": "Kamu tidak dapat menggunakan fitur ini karena game tidak terpasang/butuh diperbarui!",
     "OverlayNotInstalledSubtitle": "Mohon pasang/perbarui game terlebih dahulu!",

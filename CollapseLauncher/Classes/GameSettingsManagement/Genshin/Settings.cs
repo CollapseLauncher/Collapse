@@ -8,7 +8,7 @@ using static CollapseLauncher.GameSettings.Statics;
 
 namespace CollapseLauncher.GameSettings.Honkai
 {
-    internal class HonkaiSettings : IGameSettings, IGameSettingsUniversal
+    internal class HonkaiSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
     {
         public CustomArgs SettingsCustomArgument { get; set; }
         public PersonalGraphicsSettingV2 SettingsGraphics { get; set; }
@@ -40,16 +40,6 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCustomArgument = CustomArgs.Load();
             SettingsScreen = ScreenSettingData.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
-        }
-
-        public void ImportSettings()
-        {
-
-        }
-
-        public void ExportSettings()
-        {
-
         }
 
         public void RevertSettings() => InitializeSettings();

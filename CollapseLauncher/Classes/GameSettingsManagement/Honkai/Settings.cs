@@ -8,7 +8,7 @@ using static CollapseLauncher.GameSettings.Statics;
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class GenshinSettings : IGameSettings, IGameSettingsUniversal
+    internal class GenshinSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
     {
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
@@ -34,16 +34,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
-        }
-
-        public void ImportSettings()
-        {
-
-        }
-
-        public void ExportSettings()
-        {
-
         }
 
         public void RevertSettings() => InitializeSettings();

@@ -16,7 +16,7 @@
     <Grid>
         <Grid x:Name="PageContent">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="32,80,32,32" Padding="0,0,0,64">
+                <StackPanel Margin="32,80,32,32" Padding="0,0,0,74">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -451,7 +451,9 @@
                     </TextBlock>
                 </StackPanel>
             </ScrollViewer>
-            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource MyAcrylicBrush}" HorizontalAlignment="Stretch" Padding="16">
+            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource MyAcrylicBrush}"
+                  HorizontalAlignment="Stretch" CornerRadius="8" Margin="0" Padding="24,16"
+                  Shadow="{ThemeResource SharedShadow}">
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="ApplyButton" HorizontalAlignment="Left" Style="{ThemeResource AccentButtonStyle}" CornerRadius="16"
                             VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{ThemeResource SharedShadow}">
@@ -460,7 +462,30 @@
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,0,0,0" Visibility="Collapsed"/>
+                    <TextBlock x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" Visibility="Collapsed"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" Margin="16,-4,16,0" VerticalAlignment="Center" FontWeight="Medium"/>
+                    <Button x:Name="RegistryExport" CornerRadius="16,0,0,16" Height="32"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Click="RegistryExportClick"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}">
+                        <StackPanel Orientation="Horizontal" Margin="8,0">
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf56e;" FontSize="14"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTitle}" Margin="8,0,0,0" FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="RegistryImport" CornerRadius="0,16,16,0" Height="32"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Click="RegistryImportClick"
+                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}">
+                        <StackPanel Orientation="Horizontal" Margin="8,0">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTitle}" Margin="0,0,8,0" FontWeight="Medium"/>
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf56f;" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

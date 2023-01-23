@@ -241,6 +241,18 @@
 
     "ApplyBtn": "Apply Settings",
     "SettingsApplied": "Changes have been saved!",
+    "SettingsRegExported": "Registry has been exported!",
+    "SettingsRegExportTitle": "Save Collapse Registry file to...",
+    "SettingsRegImported": "Registry has been imported! (Please restart the launcher to take effect)",
+    "SettingsRegImportTitle": "Choose Collapse Registry file...",
+    "SettingsRegErr1": "Path hasn't been choosen!",
+    "SettingsRegErr2": "The header of Collapse Registry is not valid!",
+
+    "RegImportExport": "Registry Import/Export",
+    "RegExportTitle": "Export",
+    "RegExportTooltip": "Export registry keys to a Collapse Registry file",
+    "RegImportTitle": "Import",
+    "RegImportTooltip": "Import registry keys from a Collapse Registry file",
 
     "OverlayNotInstalledTitle": "You can't use this feature since the region isn't yet installed or need to be updated!",
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",

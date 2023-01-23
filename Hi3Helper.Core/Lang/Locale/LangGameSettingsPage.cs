@@ -60,6 +60,17 @@
                 public string Audio_Cutscenes { get; set; } = LangFallback?._GameSettingsPage.Audio_Cutscenes;
                 public string ApplyBtn { get; set; } = LangFallback?._GameSettingsPage.ApplyBtn;
                 public string SettingsApplied { get; set; } = LangFallback?._GameSettingsPage.SettingsApplied;
+                public string SettingsRegExported { get; set; } = LangFallback?._GameSettingsPage.SettingsRegExported;
+                public string SettingsRegExportTitle { get; set; } = LangFallback?._GameSettingsPage.SettingsRegExportTitle;
+                public string SettingsRegImported { get; set; } = LangFallback?._GameSettingsPage.SettingsRegImported;
+                public string SettingsRegImportTitle { get; set; } = LangFallback?._GameSettingsPage.SettingsRegImportTitle;
+                public string SettingsRegErr1 { get; set; } = LangFallback?._GameSettingsPage.SettingsRegErr1;
+                public string SettingsRegErr2 { get; set; } = LangFallback?._GameSettingsPage.SettingsRegErr2;
+                public string RegImportExport { get; set; } = LangFallback?._GameSettingsPage.RegImportExport;
+                public string RegExportTitle { get; set; } = LangFallback?._GameSettingsPage.RegExportTitle;
+                public string RegExportTooltip { get; set; } = LangFallback?._GameSettingsPage.RegExportTooltip;
+                public string RegImportTitle { get; set; } = LangFallback?._GameSettingsPage.RegImportTitle;
+                public string RegImportTooltip { get; set; } = LangFallback?._GameSettingsPage.RegImportTooltip;
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._GameSettingsPage.OverlayNotInstalledTitle;
                 public string OverlayNotInstalledSubtitle { get; set; } = LangFallback?._GameSettingsPage.OverlayNotInstalledSubtitle;
                 public string OverlayGameRunningTitle { get; set; } = LangFallback?._GameSettingsPage.OverlayGameRunningTitle;
