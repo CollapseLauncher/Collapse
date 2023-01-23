@@ -4,7 +4,7 @@
 
 > Art used for light mode by: [**Rafa** (@Pixiv)](https://www.pixiv.net/en/artworks/102448848)
 
-**Collapse** was originally specifically designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
+**Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
 # Why "Collapse"?
 Collapse came from the **Honkai Impact** translation in Chinese and Japanese. The word came from [**崩坏**] or **Bēng huài** in Chinese and also [**崩壊**] or **Houkai** in Japanese, both meaning "**Collapse**" which is why we chose it as our launcher name with the added inspiration that this was supposed to be an alternative (enhanced) launcher for *Honkai Impact 3rd* in the first place.
@@ -16,7 +16,7 @@ Collapse came from the **Honkai Impact** translation in Chinese and Japanese. Th
 * Multi-Region Game Download Support (Allows for downloading and launching different versions of the game).
 * Steam to Global version conversion (without re-downloading the whole game).
 * Global to SEA version (or vice versa) conversion.
-* Multi-session Download for Game Download/Installation (faster download).
+* Multi-session Download for faster Game Download/Installation.
 * Multi-thread Game Extraction for faster installation.
 * Delta-Patch Update Mechanism for smaller updates ([**Click here**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) for more info).
 * Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
@@ -42,14 +42,14 @@ This launcher also supports other game client, including:
 * ~~Zenless Zone Zero~~ (Waiting for Official Release)
 
 > **Note**:
-> Some features such as Game Data Repair and Preloading are available for Genshin Impact, but others such as Game Settings modification and Caches  Download are not available and presently unsupported.
+> Some features such as Game Data Repair and Preloading are available for Genshin Impact, but others such as Game Settings modification and Caches Download are not available and presently unsupported.
 
-# Ready-to-use build
+# Download Ready-To-Use Build
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.55.6-stable/CL-1.0.55.6_Installer.exe)
-> **Note**: The version for this build is 1.0.55.6 (Released on: January 19th, 2022)
+> **Note**: The version for this build is `1.0.55.6` (Released on: January 19th, 2022)
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.55.6-pre/CL-1.0.55.6-preview_Installer.exe)
-> **Note**: The version for this build is 1.0.55.6 (Released on: January 19th, 2022).
+> **Note**: The version for this build is `1.0.55.6` (Released on: January 19th, 2022).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -71,7 +71,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 > 
 > Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.2 Stable`.
 > 
-> Using a lower Visual Studio version (like VS2019) is possible, but you is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, minimal support will be provided for this method. **This is not recommended for beginner users.**
+> Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, minimal support will be provided for this method. **This is not recommended for beginner users.**
 
 # Third-party repositories and libraries used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
@@ -89,7 +89,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 # How can I support this project?
 Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[DANA (Indonesian-only Digital Wallet)](https://link.dana.id/qr/bbjthkk)**
+- **[DANA (Indonesian-only Digital Wallet)](https://link.dana.id/qr/bbjthkk)** (Note that due to circumstances beyond our control, this form of payment is currently unsupported)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Made by all captains around the world with ❤️. May all beauty be blessed!
