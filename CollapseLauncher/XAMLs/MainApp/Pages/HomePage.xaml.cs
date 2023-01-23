@@ -829,7 +829,7 @@ namespace CollapseLauncher.Pages
                                 CurrentConfigV2,
                                 destinationFolder,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                GetAppExtractConfigValue(),
+                                AppCurrentThread,
                                 token,
                                 CurrentConfigV2.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :
@@ -1082,11 +1082,11 @@ namespace CollapseLauncher.Pages
 
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = Hi3Helper.InvokeProp.GetProcessWindowHandle(CurrentConfigV2.GameExecutableName);
+            IntPtr _windowPtr = InvokeProp.GetProcessWindowHandle(CurrentConfigV2.GameExecutableName);
             await Task.Delay(1000);
-            new Hi3Helper.InvokeProp.InvokePresence(_windowPtr).HideWindow();
+            new InvokeProp.InvokePresence(_windowPtr).HideWindow();
             await Task.Delay(1000);
-            new Hi3Helper.InvokeProp.InvokePresence(_windowPtr).ShowWindow();
+            new InvokeProp.InvokePresence(_windowPtr).ShowWindow();
         }
 
         public async void ReadOutputLog()
@@ -1095,7 +1095,7 @@ namespace CollapseLauncher.Pages
             {
                 string line;
                 int barwidth = ((Console.BufferWidth - 22) / 2) - 1;
-                LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
+                LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
                 try
                 {
                     m_presenter.Minimize();
@@ -1238,7 +1238,7 @@ namespace CollapseLauncher.Pages
                                         CurrentConfigV2,
                                         GameDirPath,
                                         appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                        GetAppExtractConfigValue(),
+                                        AppCurrentThread,
                                         token,
                                         CurrentConfigV2.IsGenshin ?? false ?
                                             regionResourceProp.data.game.latest.decompressed_path :
@@ -1360,7 +1360,7 @@ namespace CollapseLauncher.Pages
                                 CurrentConfigV2,
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                GetAppExtractConfigValue(),
+                                AppCurrentThread,
                                 token,
                                 regionResourceProp.data.game.latest.decompressed_path,
                                 regionResourceProp.data.game.latest.version,
@@ -1557,7 +1557,7 @@ namespace CollapseLauncher.Pages
                                 CurrentConfigV2,
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                GetAppExtractConfigValue(),
+                                AppCurrentThread,
                                 token,
                                 CurrentConfigV2.IsGenshin ?? false ?
                                     regionResourceProp.data.game.latest.decompressed_path :

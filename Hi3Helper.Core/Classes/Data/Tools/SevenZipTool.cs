@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Data
 {
@@ -128,7 +129,8 @@ namespace Hi3Helper.Data
                 extractedCount = 0;
                 this.thread = thread;
 
-                Console.Write(string.Format(@"Input File: {0}
+                Console.Write(string.Format(@"
+Input File: {0}
 Output Directory: {1}
 Processing Thread: {2}
 Files Count: {3}
@@ -137,10 +139,16 @@ Compressed Size: {5}
 Uncompressed Size: {6}
 Comp. > Uncomp. Ratio: {7}
 
-Initializing...", inputFilePath, outputDirectory,
-                       inputFileType == ArchiveType.AutoLoad7Zip ? $"Auto ({Environment.ProcessorCount})" : $"{this.thread}",
-                       filesCount, foldersCount, totalCompressedSize,
-                       totalUncompressedSize, $"{(float)((float)totalCompressedSize / totalUncompressedSize) * 100}%"));
+Initializing...
+",
+                       inputFilePath,
+                       outputDirectory,
+                       $"{AppCurrentThread}",
+                       filesCount,
+                       foldersCount,
+                       totalCompressedSize,
+                       totalUncompressedSize,
+                       $"{(float)((float)totalCompressedSize / totalUncompressedSize) * 100}%"));
 
                 switch (inputFileType)
                 {
