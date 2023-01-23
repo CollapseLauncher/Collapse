@@ -1,16 +1,19 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
     public partial class GameSettingsPage : Page
     {
+        private HonkaiSettings Settings { get => (HonkaiSettings)PageStatics._GameSettings; }
         public GameSettingsPage()
         {
             try
@@ -47,13 +50,6 @@ namespace CollapseLauncher.Pages
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
                 }
-                else if (!IsRegKeyExist)
-                {
-                    Overlay.Visibility = Visibility.Visible;
-                    PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayFirstTimeTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayFirstTimeSubtitle;
-                }
             }
             catch (Exception ex)
             {
@@ -68,7 +64,7 @@ namespace CollapseLauncher.Pages
             {
                 ApplyText.Visibility = Visibility.Visible;
 
-                SaveGameSettings();
+                Settings.SaveSettings();
             }
             catch (Exception ex)
             {
@@ -79,8 +75,8 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => GetGameConfigValue("CustomArgs").ToString();
-            set => SetGameConfigValue("CustomArgs", value);
+            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
         }
     }
 }

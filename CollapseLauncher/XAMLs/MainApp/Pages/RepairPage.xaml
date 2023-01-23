@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:statics="using:CollapseLauncher.Statics"
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -32,7 +33,7 @@
                     IsReadOnly="True"
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
-                    ItemsSource="{x:Bind _repairTool.RepairAssetEntry}"
+                    ItemsSource="{x:Bind statics:PageStatics._GameRepair.RepairAssetEntry}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
                             <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>

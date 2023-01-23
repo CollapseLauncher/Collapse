@@ -8,6 +8,7 @@ namespace Hi3Helper.Screen
     {
         internal protected static DEVMODE devMode;
         public static List<Size> screenResolutions;
+        public static Size currentResolution { get => GetScreenSize(); }
         public static void InitScreenResolution()
         {
             devMode = new DEVMODE();

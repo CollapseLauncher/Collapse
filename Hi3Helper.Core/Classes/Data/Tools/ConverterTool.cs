@@ -81,5 +81,7 @@ namespace Hi3Helper.Data
             }
             return true;
         }
+
+        public static float ConvertRangeValue(float sMin, float sMax, float sValue, float tMin, float tMax) => ((sValue - sMin) * (tMax - tMin) / (sMax - sMin)) + tMin;
     }
 }

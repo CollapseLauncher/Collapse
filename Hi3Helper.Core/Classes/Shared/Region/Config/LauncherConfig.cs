@@ -46,6 +46,7 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameRepoIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
+        public static int AppCurrentThread = Environment.ProcessorCount;
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
@@ -156,7 +157,6 @@ namespace Hi3Helper.Shared.Region
                 HideConsoleWindow();
         }
 
-        public static int GetAppExtractConfigValue() => GetAppConfigValue("ExtractionThread").ToInt() == 0 ? Environment.ProcessorCount : GetAppConfigValue("ExtractionThread").ToInt();
         public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
         public static void SetAndSaveConfigValue(string key, IniValue value)
         {

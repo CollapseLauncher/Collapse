@@ -1,10 +1,8 @@
-﻿using Hi3Helper.Data;
+﻿using CollapseLauncher.GameSettings.Honkai.Enums;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.Drawing;
-using static Hi3Helper.Shared.Region.GameConfig;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 
 namespace CollapseLauncher.Pages
 {
@@ -26,15 +24,15 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class GameSettingsPage : Page
     {
-        private int? prevGraphSelect;
+        private int prevGraphSelect;
 
         #region GameResolution
         public bool IsFullscreenEnabled
         {
-            get => gameIni.Settings[SectionName]["Fullscreen"].ToBool();
+            get => Settings.SettingsScreen.isfullScreen;
             set
             {
-                gameIni.Settings[SectionName]["Fullscreen"] = value;
+                Settings.SettingsScreen.isfullScreen = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
@@ -47,10 +45,10 @@ namespace CollapseLauncher.Pages
 
         public bool IsCustomResolutionEnabled
         {
-            get => gameIni.Settings[SectionName]["CustomScreenResolution"].ToBool();
+            get => Settings.SettingsCollapseScreen.UseCustomResolution;
             set
             {
-                gameIni.Settings[SectionName]["CustomScreenResolution"] = value;
+                Settings.SettingsCollapseScreen.UseCustomResolution = value;
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = false;
@@ -87,11 +85,11 @@ namespace CollapseLauncher.Pages
                 {
                     return false;
                 }
-                return gameIni.Settings[SectionName]["FullscreenExclusive"].ToBool();
+                return Settings.SettingsCollapseScreen.UseExclusiveFullscreen;
             }
             set
             {
-                gameIni.Settings[SectionName]["FullscreenExclusive"] = value;
+                Settings.SettingsCollapseScreen.UseExclusiveFullscreen = value;
                 if (value)
                 {
                     GameCustomResolutionCheckbox.IsEnabled = false;
@@ -106,30 +104,14 @@ namespace CollapseLauncher.Pages
 
         public int ResolutionW
         {
-            get
-            {
-                Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
-                return size.Width;
-            }
-            set
-            {
-                Size size = new Size(value, ResolutionH);
-                gameIni.Settings[SectionName]["ScreenResolution"] = new IniValue(size);
-            }
+            get => Settings.SettingsScreen.sizeRes.Width;
+            set => Settings.SettingsScreen.sizeRes = new Size(value, ResolutionH);
         }
 
         public int ResolutionH
         {
-            get
-            {
-                Size size = gameIni.Settings[SectionName]["ScreenResolution"].ToSize();
-                return size.Height;
-            }
-            set
-            {
-                Size size = new Size(ResolutionW, value);
-                gameIni.Settings[SectionName]["ScreenResolution"] = new IniValue(size);
-            }
+            get => Settings.SettingsScreen.sizeRes.Height;
+            set => Settings.SettingsScreen.sizeRes = new Size(ResolutionW, value);
         }
 
         public bool IsCanResolutionWH
@@ -141,7 +123,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string res = gameIni.Settings[SectionName]["ScreenResolution"].ToString();
+                string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
                     Size size = Hi3Helper.Screen.ScreenProp.GetScreenSize();
@@ -149,26 +131,26 @@ namespace CollapseLauncher.Pages
                 }
                 return res;
             }
-            set => gameIni.Settings[SectionName]["ScreenResolution"] = value;
+            set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
         #region FPS
-        public int FPSInCombat
+        public short FPSInCombat
         {
-            get => gameIni.Settings[SectionName]["TargetFrameRateForInLevel"].ToInt();
-            set => gameIni.Settings[SectionName]["TargetFrameRateForInLevel"] = value;
+            get => Settings.SettingsGraphics.TargetFrameRateForInLevel;
+            set => Settings.SettingsGraphics.TargetFrameRateForInLevel = value;
         }
 
-        public int FPSInMainMenu
+        public short FPSInMainMenu
         {
-            get => gameIni.Settings[SectionName]["TargetFrameRateForOthers"].ToInt();
-            set => gameIni.Settings[SectionName]["TargetFrameRateForOthers"] = value;
+            get => Settings.SettingsGraphics.TargetFrameRateForOthers;
+            set => Settings.SettingsGraphics.TargetFrameRateForOthers = value;
         }
         #endregion
         #region Rendering
         public int GraphicsRenderingAccuracy
         {
-            get => (prevGraphSelect = gameIni.Settings[SectionName]["ResolutionQuality"].ToInt()) ?? 0;
+            get => prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
             set => TryChallengeRenderingAccuracySet(value, value < 3);
         }
 
@@ -176,38 +158,38 @@ namespace CollapseLauncher.Pages
         {
             if (!BypassChallenge)
             {
-                prevGraphSelect = gameIni.Settings[SectionName]["ResolutionQuality"].ToInt();
+                prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
                 var result = await Dialogs.SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
 
                 switch (result)
                 {
                     case ContentDialogResult.Secondary:
-                        RenderingAccuracySelector.SelectedIndex = prevGraphSelect ?? 0;
+                        RenderingAccuracySelector.SelectedIndex = prevGraphSelect;
                         break;
                 }
             }
 
-            gameIni.Settings[SectionName]["ResolutionQuality"] = value;
+            Settings.SettingsGraphics.ResolutionQuality = (SelectResolutionQuality)value;
         }
 
         public int GraphicsShadowQuality
         {
-            get => gameIni.Settings[SectionName]["ShadowLevel"].ToInt();
-            set => gameIni.Settings[SectionName]["ShadowLevel"] = value;
+            get => (int)Settings.SettingsGraphics.ShadowLevel;
+            set => Settings.SettingsGraphics.ShadowLevel = (SelectShadowLevel)value;
         }
 
         public int GraphicsReflectionQuality
         {
-            get => gameIni.Settings[SectionName]["ReflectionQuality"].ToInt();
-            set => gameIni.Settings[SectionName]["ReflectionQuality"] = value;
+            get => (int)Settings.SettingsGraphics.ReflectionQuality;
+            set => Settings.SettingsGraphics.ReflectionQuality = (SelectReflectionQuality)value;
         }
 
         public bool IsGraphicsPostFXEnabled
         {
-            get => gameIni.Settings[SectionName]["UsePostFX"].ToBool();
+            get => Settings.SettingsGraphics.UsePostFX;
             set
             {
-                gameIni.Settings[SectionName]["UsePostFX"] = value;
+                Settings.SettingsGraphics.UsePostFX = value;
                 if (!(GameFXPostProcExpander.IsExpanded = value))
                 {
                     GameFXHDRCheckBox.IsChecked = GameFXHDRCheckBox.IsEnabled = false;
@@ -225,111 +207,111 @@ namespace CollapseLauncher.Pages
 
         public bool IsGraphicsPhysicsEnabled
         {
-            get => gameIni.Settings[SectionName]["UseDynamicBone"].ToBool();
-            set => gameIni.Settings[SectionName]["UseDynamicBone"] = value;
+            get => Settings.SettingsGraphics.UseDynamicBone;
+            set => Settings.SettingsGraphics.UseDynamicBone = value;
         }
 
         public bool IsGraphicsFXHDREnabled
         {
-            get => !IsGraphicsPostFXEnabled ? false : gameIni.Settings[SectionName]["UseHDR"].ToBool();
-            set => gameIni.Settings[SectionName]["UseHDR"] = value;
+            get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseHDR;
+            set => Settings.SettingsGraphics.UseHDR = value;
         }
 
         public bool IsGraphicsFXHighQualityEnabled
         {
-            get => !IsGraphicsPostFXEnabled ? false : gameIni.Settings[SectionName]["HighQualityPostFX"].ToBool();
-            set => gameIni.Settings[SectionName]["HighQualityPostFX"] = value;
+            get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.PostFXGradeBool;
+            set => Settings.SettingsGraphics.PostFXGradeBool = value;
         }
 
         public bool IsGraphicsFXFXAAEnabled
         {
-            get => !IsGraphicsPostFXEnabled ? false : gameIni.Settings[SectionName]["UseFXAA"].ToBool();
-            set => gameIni.Settings[SectionName]["UseFXAA"] = value;
+            get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseFXAA;
+            set => Settings.SettingsGraphics.UseFXAA = value;
         }
 
         public bool IsGraphicsFXDistortionEnabled
         {
-            get => !IsGraphicsPostFXEnabled ? false : gameIni.Settings[SectionName]["UseDistortion"].ToBool();
-            set => gameIni.Settings[SectionName]["UseDistortion"] = value;
+            get => !IsGraphicsPostFXEnabled ? false : Settings.SettingsGraphics.UseDistortion;
+            set => Settings.SettingsGraphics.UseDistortion = value;
         }
 
-        public int GraphicsAPI
+        public byte GraphicsAPI
         {
-            get => gameIni.Settings[SectionName]["GameGraphicsAPI"].ToInt();
-            set => gameIni.Settings[SectionName]["GameGraphicsAPI"] = value;
+            get => Settings.SettingsCollapseScreen.GameGraphicsAPI;
+            set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value;
         }
 
         public int GraphicsGlobalIllumination
         {
-            get => gameIni.Settings[SectionName]["GlobalIllumination"].ToBool() ? 1 : 0;
-            set => gameIni.Settings[SectionName]["GlobalIllumination"] = value == 1;
+            get => (int)Settings.SettingsGraphics.GlobalIllumination;
+            set => Settings.SettingsGraphics.GlobalIllumination = (SelectGlobalIllumination)value;
         }
 
         public int GraphicsAmbientOcclusion
         {
-            get => gameIni.Settings[SectionName]["AmbientOcclusion"].ToInt();
-            set => gameIni.Settings[SectionName]["AmbientOcclusion"] = value;
+            get => (int)Settings.SettingsGraphics.AmbientOcclusion;
+            set => Settings.SettingsGraphics.AmbientOcclusion = (SelectAmbientOcclusion)value;
         }
 
         public int GraphicsLevelOfDetail
         {
-            get => gameIni.Settings[SectionName]["LodLevel"].ToInt();
-            set => gameIni.Settings[SectionName]["LodLevel"] = value;
+            get => (int)Settings.SettingsGraphics.LodGrade;
+            set => Settings.SettingsGraphics.LodGrade = (SelectLodGrade)value;
         }
 
         public int GraphicsVolumetricLight
         {
-            get => gameIni.Settings[SectionName]["VolumetricLight"].ToInt();
-            set => gameIni.Settings[SectionName]["VolumetricLight"] = value;
+            get => (int)Settings.SettingsGraphics.VolumetricLight;
+            set => Settings.SettingsGraphics.VolumetricLight = (SelectVolumetricLight)value;
         }
         #endregion
         #region Audio
-        public float AudioMasterVolume
+        public int AudioMasterVolume
         {
-            get => gameIni.Settings[SectionName]["MasterVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["MasterVolume"] = value;
+            get => Settings.SettingsAudio.MasterVolume;
+            set => Settings.SettingsAudio.MasterVolume = value;
         }
 
-        public float AudioBGMVolume
+        public int AudioBGMVolume
         {
-            get => gameIni.Settings[SectionName]["BGMVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["BGMVolume"] = value;
+            get => Settings.SettingsAudio.BGMVolume;
+            set => Settings.SettingsAudio.BGMVolume = value;
         }
 
-        public float AudioSFXVolume
+        public int AudioSFXVolume
         {
-            get => gameIni.Settings[SectionName]["SoundEffectVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["SoundEffectVolume"] = value;
+            get => Settings.SettingsAudio.SoundEffectVolume;
+            set => Settings.SettingsAudio.SoundEffectVolume = value;
         }
 
-        public float AudioVoiceVolume
+        public int AudioVoiceVolume
         {
-            get => gameIni.Settings[SectionName]["VoiceVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["VoiceVolume"] = value;
+            get => Settings.SettingsAudio.VoiceVolume;
+            set => Settings.SettingsAudio.VoiceVolume = value;
         }
 
-        public float AudioElfVolume
+        public int AudioElfVolume
         {
-            get => gameIni.Settings[SectionName]["ElfVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["ElfVolume"] = value;
+            get => Settings.SettingsAudio.ElfVolume;
+            set => Settings.SettingsAudio.ElfVolume = value;
         }
 
-        public float AudioCutsceneVolume
+        public int AudioCutsceneVolume
         {
-            get => gameIni.Settings[SectionName]["CGVolume"].ToFloat();
-            set => gameIni.Settings[SectionName]["CGVolume"] = value;
+            get => Settings.SettingsAudio.CGVolumeV2;
+            set => Settings.SettingsAudio.CGVolumeV2 = value;
         }
 
         public int AudioVoiceLanguage
         {
-            get => gameIni.Settings[SectionName]["CVLanguage"].ToInt();
-            set => gameIni.Settings[SectionName]["CVLanguage"] = value;
+            get => Settings.SettingsAudio._userCVLanguageInt;
+            set => Settings.SettingsAudio._userCVLanguageInt = value;
         }
 
         public bool AudioMute
         {
-            get => gameIni.Settings[SectionName]["MuteVolume"].ToBoolNullable() ?? false;
-            set => gameIni.Settings[SectionName]["MuteVolume"] = value;
+            get => Settings.SettingsAudio.Mute;
+            set => Settings.SettingsAudio.Mute = value;
         }
 
         #endregion

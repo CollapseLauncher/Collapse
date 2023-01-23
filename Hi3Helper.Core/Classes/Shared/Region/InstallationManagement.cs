@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper.Shared.Region
@@ -12,8 +11,8 @@ namespace Hi3Helper.Shared.Region
     {
         public struct GameIniStruct
         {
-            public IniFile Profile, Config, Settings;
-            public string ProfilePath, ConfigPath, SettingsPath;
+            public IniFile Profile, Config;
+            public string ProfilePath, ConfigPath;
         }
 
         public static GameIniStruct gameIni = new GameIniStruct();
@@ -42,9 +41,6 @@ namespace Hi3Helper.Shared.Region
                 if (File.Exists(gameIni.ConfigPath))
                     gameIni.Config.Load(gameIni.ConfigPath);
 
-                if (Directory.Exists(GamePath))
-                    CheckExistingGameSettings();
-
                 return GamePath;
             }
             catch (ArgumentNullException)
@@ -57,9 +53,5 @@ namespace Hi3Helper.Shared.Region
                 throw new Exception($"The Game Profile config.ini seems to be messed up. Please check your Game Profile \"config.ini\" located in this folder:\r\n{gameIni.ProfilePath}", ex);
             }
         }
-        public static void SaveGameConfig() => gameIni.Config.Save(gameIni.ConfigPath);
-
-        public static void LoadGameProfile() => appIni.Profile.Load(gameIni.ProfilePath);
-        public static void SaveGameProfile() => gameIni.Profile.Save(gameIni.ProfilePath);
     }
 }

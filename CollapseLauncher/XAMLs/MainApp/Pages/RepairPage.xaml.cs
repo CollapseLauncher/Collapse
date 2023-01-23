@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using static CollapseLauncher.Statics.PageStatics;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.InstallationManagement;
@@ -8,27 +9,14 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Preset.ConfigV2Store;
 using System.Threading.Tasks;
 using System;
+using CollapseLauncher.Interfaces;
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {
-        IRepair _repairTool;
         public RepairPage()
         {
-            string gamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
-            int threadVal = (byte)GetAppConfigValue("ExtractionThread").ToInt();
-            byte thread = (byte)(threadVal <= 0 ? Environment.ProcessorCount : threadVal);
-
-            if (CurrentConfigV2.IsGenshin ?? false)
-            {
-                _repairTool = new GenshinRepair(this, regionResourceProp.data.game.latest.version, gamePath, CurrentConfigV2);
-            }
-            else
-            {
-                _repairTool = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, thread);
-            }
-
             this.InitializeComponent();
         }
 
@@ -41,7 +29,7 @@ namespace CollapseLauncher.Pages
             {
                 AddRepairEvent();
 
-                bool IsGameBroken = await _repairTool.StartCheckRoutine();
+                bool IsGameBroken = await _GameRepair.StartCheckRoutine();
 
                 RepairFilesBtn.IsEnabled = IsGameBroken;
                 CheckFilesBtn.IsEnabled = !IsGameBroken;
@@ -73,7 +61,7 @@ namespace CollapseLauncher.Pages
             {
                 AddRepairEvent();
 
-                await _repairTool.StartRepairRoutine();
+                await _GameRepair.StartRepairRoutine();
 
                 RepairFilesBtn.IsEnabled = false;
                 CheckFilesBtn.IsEnabled = true;
@@ -98,8 +86,8 @@ namespace CollapseLauncher.Pages
 
         private void AddRepairEvent()
         {
-            _repairTool.ProgressChanged += _repairTool_ProgressChanged;
-            _repairTool.StatusChanged += _repairTool_StatusChanged;
+            _GameRepair.ProgressChanged += _repairTool_ProgressChanged;
+            _GameRepair.StatusChanged += _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = true;
             RepairPerFileProgressBar.IsIndeterminate = true;
@@ -107,8 +95,8 @@ namespace CollapseLauncher.Pages
 
         private void RemoveRepairEvent()
         {
-            _repairTool.ProgressChanged -= _repairTool_ProgressChanged;
-            _repairTool.StatusChanged -= _repairTool_StatusChanged;
+            _GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
+            _GameRepair.StatusChanged -= _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = false;
             RepairPerFileProgressBar.IsIndeterminate = false;
@@ -150,12 +138,12 @@ namespace CollapseLauncher.Pages
 
         private void CancelOperation(object sender, RoutedEventArgs e)
         {
-            _repairTool.CancelRoutine();
+            _GameRepair.CancelRoutine();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _repairTool.CancelRoutine();
+            _GameRepair.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)

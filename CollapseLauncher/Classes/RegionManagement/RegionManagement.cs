@@ -11,10 +11,13 @@ using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseLauncher.Statics;
+using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameSettings.Genshin;
 
 namespace CollapseLauncher
 {
@@ -157,9 +160,6 @@ namespace CollapseLauncher
 
         private void FinalizeLoadRegion()
         {
-            // Init Registry Key
-            InitRegKey();
-
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)
                 InitializeNavigationItems();
@@ -174,6 +174,26 @@ namespace CollapseLauncher
 
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {CurrentConfigV2.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
+
+            // Initializing Game Statics
+            InitializeStatics();
+        }
+
+        private void InitializeStatics()
+        {
+            string gamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
+            int threadVal = (byte)GetAppConfigValue("ExtractionThread").ToInt();
+            AppCurrentThread = threadVal <= 0 ? Environment.ProcessorCount : threadVal;
+
+            if (!(CurrentConfigV2.IsGenshin ?? false))
+            {
+                PageStatics._GameSettings = new HonkaiSettings(CurrentConfigV2);
+                PageStatics._GameRepair = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, (byte)AppCurrentThread);
+            }
+            else
+            {
+                PageStatics._GameSettings = new GenshinSettings(CurrentConfigV2);
+            }
         }
 
         private void SpawnRegionNotification(string RegionProfileName)

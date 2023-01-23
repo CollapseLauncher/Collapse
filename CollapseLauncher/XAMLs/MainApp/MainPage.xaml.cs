@@ -1,5 +1,7 @@
-﻿using CollapseLauncher.Pages;
-using Google.Protobuf.Reflection;
+﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.Pages;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
@@ -19,9 +21,11 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
+using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -596,9 +600,9 @@ namespace CollapseLauncher
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
+
             if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
-
             CheckRunningGameInstance();
             RunBackgroundCheck();
         }

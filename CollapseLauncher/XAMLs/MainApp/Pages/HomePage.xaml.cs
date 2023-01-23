@@ -1,7 +1,11 @@
 ﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -16,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Text;
@@ -26,7 +31,6 @@ using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.GameConfig;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -632,7 +636,6 @@ namespace CollapseLauncher.Pages
                         case ContentDialogResult.Primary:
 #if DISABLEMOVEMIGRATE
                             gameIni.Profile["launcher"]["game_install_path"] = CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/');
-                            SaveGameProfile();
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
 #else
                             MigrationWatcher.IsMigrationRunning = true;
@@ -655,7 +658,6 @@ namespace CollapseLauncher.Pages
                         case ContentDialogResult.Primary:
 #if DISABLEMOVEMIGRATE
                             gameIni.Profile["launcher"]["game_install_path"] = CurrentConfigV2.ActualGameDataLocation.Replace('\\', '/');
-                            SaveGameProfile();
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
 #else
                             MigrationWatcher.IsMigrationRunning = true;
@@ -779,7 +781,6 @@ namespace CollapseLauncher.Pages
 
             string gamePath = Path.GetDirectoryName(targetPath);
             gameIni.Profile["launcher"]["game_install_path"] = gamePath.Replace('\\', '/');
-            SaveGameProfile();
             if (CurrentConfigV2.IsGenshin ?? false)
                 CurrentConfigV2.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
 
@@ -800,7 +801,6 @@ namespace CollapseLauncher.Pages
         private void ApplyGameConfig(string destinationFolder)
         {
             gameIni.Profile["launcher"]["game_install_path"] = destinationFolder.Replace('\\', '/');
-            SaveGameProfile();
             PrepareGameConfig();
             if (IsGameHasVoicePack && (CurrentConfigV2.IsGenshin ?? false))
                 CurrentConfigV2.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
@@ -1031,9 +1031,78 @@ namespace CollapseLauncher.Pages
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentConfigV2.ZoneName}\r\nTraceback: {ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentConfigV2.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
+
+
+        #region LaunchArgumentBuilder
+        bool RequireWindowExclusivePayload = false;
+        public string GetLaunchArguments()
+        {
+            StringBuilder parameter = new StringBuilder();
+
+            IGameSettingsUniversal _Settings = PageStatics._GameSettings.AsIGameSettingsUniversal();
+            if (!(CurrentConfigV2.IsGenshin ?? false))
+            {
+                // CheckExistingGameSettings();
+
+                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
+                {
+                    parameter.Append("-window-mode exclusive ");
+                    RequireWindowExclusivePayload = true;
+                }
+
+                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+
+                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+
+
+                switch (apiID)
+                {
+                    case 0:
+                        parameter.Append("-force-feature-level-10-1 ");
+                        break;
+                    default:
+                    case 1:
+                        parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
+                        break;
+                    case 2:
+                        parameter.Append("-force-feature-level-11-1 ");
+                        break;
+                    case 3:
+                        parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
+                        break;
+                    case 4:
+                        parameter.Append("-force-d3d12 ");
+                        break;
+                }
+            }
+
+            if (!GetAppConfigValue("EnableConsole").ToBool())
+                parameter.Append("-nolog ");
+
+            string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
+
+            if (!string.IsNullOrEmpty(customArgs))
+                parameter.Append(customArgs);
+
+            return parameter.ToString();
+        }
+
+        #endregion
+
 
         public async Task<bool> CheckMediaPackInstalled()
         {
@@ -1648,8 +1717,8 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => GetGameConfigValue("CustomArgs").ToString();
-            set => SetAndSaveGameConfigValue("CustomArgs", value);
+            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
         }
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
