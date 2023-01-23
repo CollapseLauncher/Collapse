@@ -460,7 +460,9 @@
     "CookbookLocateSubtitle4": "Selanjutnya",
     "CookbookLocateSubtitle5": "untuk memilih file Cookbook yang sudah terunduh dan memulai proses konversi.\r\n\r\n",
     "CookbookLocateSubtitle6": "Catatan:\r\n",
-    "CookbookLocateSubtitle7": "Berikut adalah nama file Cookbook yang perlu kamu unduh:\r\n"
+    "CookbookLocateSubtitle7": "Berikut adalah nama file Cookbook yang perlu kamu unduh:\r\n",
+    "PrivilegeMustRunTitle": "Collapse membutuhkan elevasi hak akses!",
+    "PrivilegeMustRunSubtitle": "Collapse membutuhkan hak akses sebagai administrator untuk berjalan. Apakah kamu ingin restart Collapse and jalankan sebagai adminisrator?"
   },
 
   "_InstallMgmt": {

@@ -76,6 +76,8 @@
                 public string CookbookLocateSubtitle5 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle5;
                 public string CookbookLocateSubtitle6 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle6;
                 public string CookbookLocateSubtitle7 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle7;
+                public string PrivilegeMustRunTitle { get; set; } = LangFallback?._Dialogs.PrivilegeMustRunTitle;
+                public string PrivilegeMustRunSubtitle { get; set; } = LangFallback?._Dialogs.PrivilegeMustRunSubtitle;
             }
         }
         #endregion

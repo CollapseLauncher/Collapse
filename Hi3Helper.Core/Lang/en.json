@@ -461,7 +461,9 @@
     "CookbookLocateSubtitle4": "Next",
     "CookbookLocateSubtitle5": "to locate the downloaded Cookbook file and continue.\r\n\r\n",
     "CookbookLocateSubtitle6": "Note:\r\n",
-    "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n"
+    "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n",
+    "PrivilegeMustRunTitle": "Collapse requires privilege elevation!",
+    "PrivilegeMustRunSubtitle": "Collapse requires an elevation to run under administrator privilege. Would you like to restart Collapse and run it as administrator?"
   },
 
   "_InstallMgmt": {

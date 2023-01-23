@@ -86,10 +86,10 @@ namespace CollapseLauncher
         {
             ContentDialog dialog = new ContentDialog
             {
-                Title = "The launcher requires privilege elevation!",
-                Content = "This application requires an elevation to run under administrator privilege. Would you like to restart this application and run it as administrator?",
-                PrimaryButtonText = "Yes",
-                CloseButtonText = "Exit",
+                Title = Lang._Dialogs.PrivilegeMustRunTitle,
+                Content = Lang._Dialogs.PrivilegeMustRunSubtitle,
+                PrimaryButtonText = Lang._Misc.Yes,
+                CloseButtonText = Lang._Misc.Close,
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = root.XamlRoot
             };
