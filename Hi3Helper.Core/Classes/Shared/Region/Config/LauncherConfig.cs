@@ -33,6 +33,16 @@ namespace Hi3Helper.Shared.Region
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
+        public static string[] AppCurrentArgument;
+        public static string AppExecutablePath
+        {
+            get
+            {
+                string execName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
+                string dirPath = AppFolder;
+                return Path.Combine(dirPath, execName + ".exe");
+            }
+        }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");

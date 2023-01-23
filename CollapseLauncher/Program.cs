@@ -8,8 +8,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.UI.ViewManagement;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
@@ -29,6 +29,7 @@ namespace CollapseLauncher
         [STAThreadAttribute]
         public static void Main(params string[] args)
         {
+            AppCurrentArgument = args;
 #if PREVIEW
             IsPreview = true;
 #endif
@@ -98,7 +99,8 @@ namespace CollapseLauncher
                     XamlCheckProcessRequirements();
 
                     ComWrappersSupport.InitializeComWrappers();
-                    Application.Start((p) => {
+                    Application.Start((p) =>
+                    {
                         DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
                         SynchronizationContext.SetSynchronizationContext(context);
 

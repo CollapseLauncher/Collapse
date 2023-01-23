@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,10 +82,60 @@ namespace CollapseLauncher
             }
         }
 
-        private void StartRoutine(object sender, RoutedEventArgs e)
+        public static async Task<bool> CheckForAdminAccess(UIElement root)
+        {
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "The launcher requires privilege elevation!",
+                Content = "This application requires an elevation to run under administrator privilege. Would you like to restart this application and run it as administrator?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "Exit",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = root.XamlRoot
+            };
+
+            if (IsPrincipalHasAdministratorAccess())
+            {
+                switch (await dialog.ShowAsync())
+                {
+                    case ContentDialogResult.Primary:
+                        new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                Verb = "runas",
+                                FileName = AppExecutablePath,
+                                WorkingDirectory = AppFolder,
+                                Arguments = string.Join(' ', AppCurrentArgument)
+                            }
+                        }.Start();
+                        break;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsPrincipalHasAdministratorAccess()
+        {
+            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+            {
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                return principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+        }
+
+        private async void StartRoutine(object sender, RoutedEventArgs e)
         {
             try
             {
+                if (!await CheckForAdminAccess(this))
+                {
+                    App.Current.Exit();
+                    return;
+                }
+
                 MainWindow.SetDragArea(DragAreaMode_Normal);
                 LoadGamePreset();
                 SetThemeParameters();
