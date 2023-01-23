@@ -3,6 +3,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using CollapseLauncher.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -123,6 +124,10 @@ namespace CollapseLauncher
         {
             try
             {
+                // Define if the status is still running
+                _status.IsRunning = true;
+
+                // Run the task
                 return await action;
             }
             catch (TaskCanceledException)
@@ -154,6 +159,9 @@ namespace CollapseLauncher
                 {
                     _assetIndex.Clear();
                 }
+
+                // Define that the status is not running
+                _status.IsRunning = false;
             }
         }
 

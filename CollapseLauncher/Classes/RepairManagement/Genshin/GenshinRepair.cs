@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using CollapseLauncher.Interfaces;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
