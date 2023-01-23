@@ -22,8 +22,8 @@
 
                             <AcrylicBrush x:Key="CustomAcrylicBrush" TintColor="#000000" TintOpacity="0.33" />
                             <AcrylicBrush x:Key="ProgressAcrylicBrush" TintColor="#000000" TintOpacity="0.33" FallbackColor="#AA222222"/>
-                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#000000" TintOpacity="0.25" FallbackColor="#EE333333"/>
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#000000" TintOpacity="0.50" FallbackColor="#EE303030"/>
+                            <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.4" FallbackColor="#EE333333"/>
+                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.7"  FallbackColor="#EE303030"/>
 
                             <AcrylicBrush x:Key="OverlayAcrylicBrush" TintColor="#000000" TintOpacity="0.25" />
                             <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintColor="#000000" TintOpacity="0.0" />
@@ -38,7 +38,7 @@
 
                             <AcrylicBrush x:Key="NavigationAcrylicBrush" TintColor="#111111" TintOpacity="0" />
 
-                            <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="#000000" TintOpacity="0" />
+                            <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="#666666" TintOpacity="0"  TintLuminosityOpacity="0.1"/>
 
                             <AcrylicBrush x:Key="DialogAcrylicBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.50" FallbackColor="#FF222222"/>
 
@@ -68,7 +68,7 @@
                             <AcrylicBrush x:Key="CustomAcrylicBrush" TintColor="#FFFFFF" TintOpacity="1" />
                             <AcrylicBrush x:Key="ProgressAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.75" FallbackColor="#CCFFFFFF"/>
                             <AcrylicBrush x:Key="CarouselPipsAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#DDFFFFFF"/>
-                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#CCFFFFFF"/>
+                            <AcrylicBrush x:Key="PostAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.8" FallbackColor="#CCFFFFFF"/>
 
                             <AcrylicBrush x:Key="OverlayAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" />
                             <AcrylicBrush x:Key="BackgroundMaskAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" />
@@ -79,7 +79,7 @@
                             <AcrylicBrush x:Key="PagesSolidAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.0" FallbackColor="#FFEEEEEE"/>
                             <AcrylicBrush x:Key="UpdatePageAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0.25" TintLuminosityOpacity="0.75" FallbackColor="#FFEAEAEA"/>
 
-                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5" FallbackColor="#CCFFFFFF"/>
+                            <AcrylicBrush x:Key="SocMedPanelAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.75" FallbackColor="#CCFFFFFF"/>
 
                             <AcrylicBrush x:Key="MyAcrylicBrush" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.0"/>
 
