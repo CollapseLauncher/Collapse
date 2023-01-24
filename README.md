@@ -89,7 +89,7 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 # How can I support this project?
 Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[DANA (Indonesian-only Digital Wallet)](https://link.dana.id/qr/bbjthkk)** (Note that due to circumstances beyond our control, this form of payment is currently unsupported)
+- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Made by all captains around the world with ❤️. May all beauty be blessed!
