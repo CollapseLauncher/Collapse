@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
@@ -79,11 +81,37 @@ namespace CollapseLauncher
             string assetURL = _gameRepoURL + '/' + asset.N;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
-            // Start asset download task
-            await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient);
+            if (asset.FT == FileType.Unused)
+            {
+                // Remove unused asset
+                RemoveUnusedAssetTypeGeneric(assetPath);
+            }
+            else
+            {
+                // Start asset download task
+                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient);
+            }
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
+        }
+
+        private void RemoveUnusedAssetTypeGeneric(string filePath)
+        {
+            try
+            {
+                FileInfo fInfo = new FileInfo(filePath);
+                _progressTotalSizeCurrent += fInfo.Length;
+                if (fInfo.Exists)
+                {
+                    fInfo.IsReadOnly = false;
+                    fInfo.Delete();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Unable to delete unused asset: {filePath}\r\n{ex}", LogType.Warning, true);
+            }
         }
         #endregion
 
@@ -168,7 +196,14 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
-        private void PopRepairAssetEntry() => Dispatch(() => RepairAssetEntry.RemoveAt(0));
+        private void PopRepairAssetEntry() => Dispatch(() =>
+        {
+            try
+            {
+                RepairAssetEntry.RemoveAt(0);
+            }
+            catch { }
+        });
 
         private void UpdateRepairStatus(string activityStatus, string activityTotal, bool isPerFileIndetermined)
         {

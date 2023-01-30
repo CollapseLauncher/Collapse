@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace CollapseLauncher
                 using (MemoryStream mfs = new MemoryStream())
                 {
                     // Set manifest URL
-                    string urlManifest = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
+                    string urlManifest = string.Format(AppGameRepoIndexURLPrefix, PageStatics._GameVersion.GamePreset.ProfileName);
 
                     // Start downloading manifest
                     _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
@@ -44,7 +45,7 @@ namespace CollapseLauncher
                 using (MemoryStream mfs = new MemoryStream())
                 {
                     // Set asset index URL
-                    string urlIndex = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, _gameVersion.VersionString);
+                    string urlIndex = string.Format(AppGameRepairIndexURLPrefix, PageStatics._GameVersion.GamePreset.ProfileName, _gameVersion.VersionString);
 
                     // Start downloading asset index
                     _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;

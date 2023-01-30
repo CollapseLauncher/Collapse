@@ -29,6 +29,8 @@ namespace CollapseLauncher
             // Reset stopwatch
             RestartStopwatch();
 
+            CheckUnusedAsset(assetIndex, brokenAssetIndex);
+
             // Iterate assets and check it using different method for each type
             foreach (FilePropertiesRemote asset in assetIndex)
             {
@@ -254,6 +256,94 @@ namespace CollapseLauncher
             }
         }
 
+        #endregion
+
+        #region UnusedAssetCheck
+        private void CheckUnusedAsset(List<FilePropertiesRemote> assetIndex, List<FilePropertiesRemote> targetAssetIndex)
+        {
+            List<string> Assets = new List<string>();
+            BuildAssetIndexList(Assets, assetIndex);
+            BuildVideoIndexList(Assets);
+            BuildAudioIndexList(Assets);
+            BuildUnusedAssetIndexList(Assets, targetAssetIndex);
+        }
+
+        private void BuildAssetIndexList(List<string> assets, List<FilePropertiesRemote> assetIndex)
+        {
+            foreach (FilePropertiesRemote asset in assetIndex)
+            {
+                string path = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+                if (asset.FT == FileType.Blocks)
+                {
+                    assets.Add(Path.Combine(path, "blockVerifiedVersion.txt"));
+                    foreach (XMFBlockList block in asset.BlkC)
+                    {
+                        string blockPath = Path.Combine(path, block.BlockHash + ".wmv");
+                        assets.Add(blockPath);
+                    }
+                }
+                else
+                {
+                    assets.Add(path);
+                }
+            }
+        }
+
+        private void BuildVideoIndexList(List<string> assets)
+        {
+            foreach (string video in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Video"), "*", SearchOption.AllDirectories))
+            {
+                if ((video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase)
+                  || video.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase))
+                  && !assets.Contains(video)) assets.Add(video);
+            }
+        }
+
+        private void BuildAudioIndexList(List<string> assets)
+        {
+            foreach (string audio in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows"), "*", SearchOption.AllDirectories))
+            {
+                if ((audio.EndsWith(".pck", StringComparison.OrdinalIgnoreCase)
+                  || audio.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase)
+                  || audio.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase))
+                  && !assets.Contains(audio)) assets.Add(audio);
+            }
+        }
+
+        private void BuildUnusedAssetIndexList(List<string> assets, List<FilePropertiesRemote> targetAssetIndex)
+        {
+            int pathOffset = _gamePath.Length + 1;
+            foreach (string asset in Directory.EnumerateFiles(Path.Combine(_gamePath), "*", SearchOption.AllDirectories))
+            {
+                if (!assets.Contains(asset)
+                 && !asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)
+                 && !asset.Contains("webCaches")
+                 && !asset.Contains("SDKCaches"))
+                {
+                    string n = asset.AsSpan().Slice(pathOffset).ToString();
+                    FileInfo f = new FileInfo(asset);
+                    targetAssetIndex.Add(new FilePropertiesRemote()
+                    {
+                        N = n,
+                        S = f.Length,
+                        FT = FileType.Unused
+                    });
+                    Dispatch(() => RepairAssetEntry.Add(
+                            new RepairAssetProperty(
+                                Path.GetFileName(n),
+                                RepairAssetType.Unused,
+                                Path.GetDirectoryName(n),
+                                f.Length,
+                                null,
+                                null
+                            )
+                        ));
+
+                    _progressTotalSizeFound += f.Length;
+                    _progressTotalCountFound++;
+                }
+            }
+        }
         #endregion
 
         #region Tools
