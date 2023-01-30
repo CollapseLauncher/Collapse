@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -75,7 +76,7 @@ namespace CollapseLauncher.Pages
                     {
                         cachesPathType = GetCachePathByType(dataType.DataType);
 
-                        cachesEndpointURL = string.Format(CurrentConfigV2.CachesEndpointURL, dataType.DataType.ToString().ToLower());
+                        cachesEndpointURL = string.Format(PageStatics._GameVersion.GamePreset.CachesEndpointURL, dataType.DataType.ToString().ToLower());
                         LogWriteLine($"Downloading Cache Type {dataType.DataType} with endpoint: {cachesEndpointURL}", LogType.Default, true);
 
                         _client.DownloadProgress += CachesDownloadProgress;

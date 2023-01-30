@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 // Load YSDispatch from this namespace
 using Hi3Helper.EncTool;
@@ -804,8 +805,8 @@ namespace CollapseLauncher
                 // Grab Genshin and Master Key to decrypt first
                 string MasterKey = ConfigV2.MasterKey;
                 int MasterKeyBitLength = ConfigV2.MasterKeyBitLength;
-                string GenshinKey = CurrentConfigV2.DispatcherKey;
-                int GenshinKeyBitLength = CurrentConfigV2.DispatcherKeyBitLength ?? 0;
+                string GenshinKey = PageStatics._GameVersion.GamePreset.DispatcherKey;
+                int GenshinKeyBitLength = PageStatics._GameVersion.GamePreset.DispatcherKeyBitLength ?? 0;
 
                 YSDispatchDec Decryptor = new YSDispatchDec();
                 Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);

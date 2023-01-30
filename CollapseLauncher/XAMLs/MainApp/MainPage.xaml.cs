@@ -1,9 +1,8 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Honkai;
-using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -22,11 +21,9 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -132,7 +129,7 @@ namespace CollapseLauncher
             {
                 if (!await CheckForAdminAccess(this))
                 {
-                    App.Current.Exit();
+                    Application.Current.Exit();
                     return;
                 }
 
@@ -239,7 +236,7 @@ namespace CollapseLauncher
         {
             while (true && !App.IsAppKilled)
             {
-                string execName = Path.GetFileNameWithoutExtension(CurrentConfigV2.GameExecutableName);
+                string execName = Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
                 await Task.Delay(250);
             }
@@ -265,7 +262,7 @@ namespace CollapseLauncher
                 SpawnPushAppNotification();
 
                 // Spawn Region Notification
-                SpawnRegionNotification(CurrentConfigV2.ProfileName);
+                SpawnRegionNotification(PageStatics._GameVersion.GamePreset.ProfileName);
 
                 // Check Metadata Update in Background
                 await CheckMetadataUpdateInBackground();
@@ -644,21 +641,21 @@ namespace CollapseLauncher
             // Lock ChangeBtn for first start
             LockRegionChangeBtn = true;
 
-            LoadSavedGameSelection();
+            PresetConfigV2 Preset = LoadSavedGameSelection();
 
-            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
-            IsLoadSuccess = await LoadRegionFromCurrentConfigV2();
+            HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+            IsLoadSuccess = await LoadRegionFromCurrentConfigV2(Preset);
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
 
             if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             CheckRunningGameInstance();
             RunBackgroundCheck();
         }
 
-        private void LoadSavedGameSelection()
+        private PresetConfigV2 LoadSavedGameSelection()
         {
             ComboBoxGameCategory.ItemsSource = ConfigV2GameCategory;
 
@@ -678,7 +675,7 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
-            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
+            return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
@@ -795,7 +792,7 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if (!(CurrentConfigV2.IsGenshin ?? false))
+            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Honkai)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
 
@@ -844,7 +841,7 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (((CurrentConfigV2.IsGenshin ?? false) && (string)tag.Tag != "launcher"))
+            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin && (string)tag.Tag != "launcher")
             {
                 sourceType = typeof(UnavailablePage);
                 tagStr = "unavailable";
@@ -866,14 +863,14 @@ namespace CollapseLauncher
                             break;
 
                         case "repair":
-                            if (!(CurrentConfigV2.IsRepairEnabled ?? false))
+                            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
                                 Navigate(typeof(UnavailablePage), true, item);
                             else
                                 Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), true, item);
                             break;
 
                         case "caches":
-                            if (CurrentConfigV2.IsCacheUpdateEnabled ?? false)
+                            if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                                 Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), true, item);
                             else
                                 Navigate(typeof(UnavailablePage), true, item);

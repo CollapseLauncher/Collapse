@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
@@ -65,7 +66,7 @@ namespace CollapseLauncher.Pages
                 CancelBtn.Visibility = Visibility.Visible;
                 CheckUpdateBtn.IsEnabled = false;
                 CancelBtn.IsEnabled = true;
-                cachesLanguage = CurrentConfigV2.GetGameLanguage();
+                cachesLanguage = PageStatics._GameVersion.GamePreset.GetGameLanguage();
                 await FetchCachesAPI();
                 CachesDataTableGrid.Visibility = Visibility.Visible;
                 await CheckCachesIntegrity();
@@ -95,7 +96,7 @@ namespace CollapseLauncher.Pages
             using (Http _client = new Http())
             using (cachesStream = new MemoryStream())
             {
-                cachesAPIURL = string.Format(CurrentConfigV2.CachesEndpointURL + "{1}Version.unity3d", type.ToString().ToLowerInvariant(), type == CachesType.Data ? "Data" : "Resource");
+                cachesAPIURL = string.Format(PageStatics._GameVersion.GamePreset.CachesEndpointURL + "{1}Version.unity3d", type.ToString().ToLowerInvariant(), type == CachesType.Data ? "Data" : "Resource");
                 LogWriteLine($"Fetching CachesType: {type}");
 
                 CachesStatus.Text = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
@@ -202,7 +203,7 @@ namespace CollapseLauncher.Pages
 
         private async Task CheckCachesIntegrity()
         {
-            cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(CurrentConfigV2.ConfigRegistryLocation));
+            cachesBasePath = Path.Combine(GameAppDataFolder, Path.GetFileName(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation));
             string cachesPathType;
             string hash;
             List<DataPropertiesContent> brokenCaches;

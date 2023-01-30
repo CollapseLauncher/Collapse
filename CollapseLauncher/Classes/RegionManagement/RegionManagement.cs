@@ -1,6 +1,11 @@
-﻿using CollapseLauncher.Pages;
+﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Pages;
+using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,15 +14,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseLauncher.Statics;
-using CollapseLauncher.GameSettings.Honkai;
-using CollapseLauncher.GameSettings.Genshin;
 
 namespace CollapseLauncher
 {
@@ -34,11 +36,11 @@ namespace CollapseLauncher
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
-        public async Task<bool> LoadRegionFromCurrentConfigV2()
+        public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             using (_httpClient = new Http(default, 4, 250))
             {
-                LogWriteLine($"Initializing {CurrentConfigV2.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
+                LogWriteLine($"Initializing {preset.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
 
                 // Set IsLoadRegionComplete to false
                 IsLoadRegionComplete = false;
@@ -46,12 +48,15 @@ namespace CollapseLauncher
                 // Clear MainPage State, like NavigationView, Load State, etc.
                 ClearMainPageState();
 
-                // Load Game Region File
-                LoadGameRegionFromCurrentConfigV2();
-
                 // Load Region Resource from Launcher API
-                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(Task.Run(() => FetchLauncherLocalizedResources(InnerTokenSource.Token)), LoadTimeout, LoadTimeoutStep);
-                bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(Task.Run(() => FetchLauncherResourceAsRegion(InnerTokenSource.Token)), LoadTimeout, LoadTimeoutStep);
+                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(Task.Run(() => 
+                    FetchLauncherLocalizedResources(InnerTokenSource.Token, preset)),
+                    LoadTimeout,
+                    LoadTimeoutStep);
+                bool IsLoadResourceRegionSuccess = await TryLoadGameRegionTask(Task.Run(() =>
+                    FetchLauncherResourceAsRegion(InnerTokenSource.Token, preset)),
+                    LoadTimeout,
+                    LoadTimeoutStep);
 
                 if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
                 {
@@ -61,30 +66,13 @@ namespace CollapseLauncher
 
                 // Finalize Region Load
                 await ChangeBackgroundImageAsRegion();
-                FinalizeLoadRegion();
+                FinalizeLoadRegion(preset);
 
                 // Set IsLoadRegionComplete to false
                 IsLoadRegionComplete = true;
 
                 return true;
             }
-        }
-
-        private void LoadGameRegionFromCurrentConfigV2()
-        {
-            gameIni = new GameIniStruct();
-
-            gamePath = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
-            gameIni.ProfilePath = Path.Combine(gamePath, $"config.ini");
-
-            if (!Directory.Exists(gamePath))
-                Directory.CreateDirectory(gamePath);
-
-            if (!File.Exists(gameIni.ProfilePath))
-                PrepareInstallation();
-
-            gameIni.Profile = new IniFile();
-            gameIni.Profile.Load(gameIni.ProfilePath);
         }
 
         public void ClearMainPageState()
@@ -158,14 +146,8 @@ namespace CollapseLauncher
             }
         }
 
-        private void FinalizeLoadRegion()
+        private void FinalizeLoadRegion(PresetConfigV2 preset)
         {
-            // Init NavigationPanel Items
-            if (m_appMode != AppMode.Hi3CacheUpdater)
-                InitializeNavigationItems();
-            else
-                NavigationViewControl.IsSettingsVisible = false;
-
             // Set LoadingFooter empty
             LoadingFooter.Text = string.Empty;
 
@@ -173,26 +155,39 @@ namespace CollapseLauncher
             // HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
 
             // Log if region has been successfully loaded
-            LogWriteLine($"Initializing Region {CurrentConfigV2.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
 
             // Initializing Game Statics
-            InitializeStatics();
+            InitializeStatics(preset);
+
+            // Init NavigationPanel Items
+            if (m_appMode != AppMode.Hi3CacheUpdater)
+                InitializeNavigationItems();
+            else
+                NavigationViewControl.IsSettingsVisible = false;
         }
 
-        private void InitializeStatics()
+        private void InitializeStatics(PresetConfigV2 preset)
         {
-            string gamePath = NormalizePath(gameIni.Profile["launcher"]["game_install_path"].ToString());
             int threadVal = (byte)GetAppConfigValue("ExtractionThread").ToInt();
             AppCurrentThread = threadVal <= 0 ? Environment.ProcessorCount : threadVal;
 
-            if (!(CurrentConfigV2.IsGenshin ?? false))
+            LoadGameStaticsByGameType(preset);
+        }
+
+        private void LoadGameStaticsByGameType(PresetConfigV2 preset)
+        {
+            switch (preset.GameType)
             {
-                PageStatics._GameSettings = new HonkaiSettings(CurrentConfigV2);
-                PageStatics._GameRepair = new HonkaiRepair(this, regionResourceProp.data.game.latest.version, gamePath, regionResourceProp.data.game.latest.decompressed_path, CurrentConfigV2, (byte)AppCurrentThread);
-            }
-            else
-            {
-                PageStatics._GameSettings = new GenshinSettings(CurrentConfigV2);
+                case GameType.Honkai:
+                    PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
+                    PageStatics._GameSettings = new HonkaiSettings(preset);
+                    string GamePath = PageStatics._GameVersion.GameDirPath;
+                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.version, GamePath, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset, (byte)AppCurrentThread);
+                    break;
+                case GameType.Genshin:
+                    PageStatics._GameSettings = new GenshinSettings(preset);
+                    break;
             }
         }
 
@@ -232,15 +227,15 @@ namespace CollapseLauncher
 
             // Load Game ConfigV2 List before loading the region
             IsLoadRegionComplete = false;
-            LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GameRegion);
+            PresetConfigV2 Preset = LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GameRegion);
 
             // Start region loading
             DelayedLoadingRegionPageTask();
-            await LoadRegionFromCurrentConfigV2();
+            await LoadRegionFromCurrentConfigV2(Preset);
 
             // Finalize loading
             ToggleChangeRegionBtn(in sender, false);
-            LogWriteLine($"Region changed to {CurrentConfigV2.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
         }
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)
@@ -256,7 +251,7 @@ namespace CollapseLauncher
                 // Show element
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, PageStatics._GameVersion.GamePreset.ZoneFullname);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
             }
 
@@ -268,7 +263,7 @@ namespace CollapseLauncher
             await Task.Delay(1000);
             if (!IsLoadRegionComplete)
             {
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, PageStatics._GameVersion.GamePreset.ZoneFullname);
                 MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
                 while (!IsLoadRegionComplete) { await Task.Delay(1000); }
             }

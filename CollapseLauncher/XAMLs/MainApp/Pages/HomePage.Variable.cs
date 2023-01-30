@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -11,7 +12,7 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
-        string GameDirPath;
+        string GameDirPath { get => PageStatics._GameVersion.GameDirPath; }
 
         string GameZipUrl;
         string GameZipPath;

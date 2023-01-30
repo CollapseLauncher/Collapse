@@ -29,6 +29,15 @@ namespace Hi3Helper.Preset
         DevRelease = 2
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum GameType
+    {
+        Honkai = 0,
+        Genshin = 1,
+        StarRail = 2,
+        Zenless = 3
+    }
+
     public class Stamp
     {
         public long LastUpdated { get; set; }
@@ -329,7 +338,7 @@ namespace Hi3Helper.Preset
         public string? ZonePosterURL { get; set; }
 #nullable disable
         private string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
-        private string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
+        public string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
         public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, InternalGameNameInConfig); }
 #nullable enable
         public string? BetterHi3LauncherVerInfoReg { get; set; }
@@ -354,6 +363,7 @@ namespace Hi3Helper.Preset
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
         public List<string>? ConvertibleTo { get; set; }
+        public GameType GameType { get; set; }
         public string? ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
         public bool LauncherSpriteURLMultiLang { get; set; }

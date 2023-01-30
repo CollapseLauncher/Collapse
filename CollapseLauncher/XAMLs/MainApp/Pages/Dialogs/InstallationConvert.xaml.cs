@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -52,7 +53,7 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                string EndpointURL = string.Format(CurrentConfigV2.ZipFileURL, Path.GetFileNameWithoutExtension(regionResourceProp.data.game.latest.path));
+                string EndpointURL = string.Format(PageStatics._GameVersion.GamePreset.ZipFileURL, Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GameAPIProp.data.game.latest.path));
                 bool IsAskContinue = true;
                 while (IsAskContinue)
                 {
@@ -108,12 +109,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (Exception ex)
@@ -468,13 +469,8 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            CurrentConfigV2 = TargetProfile;
-            CurrentConfigV2.GameDirectoryName = Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation);
-            gamePath = Path.GetDirectoryName(TargetProfile.ActualGameDataLocation);
-            string IniPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName);
-            gameIni.ProfilePath = Path.Combine(IniPath, "config.ini");
-            gameIni.Profile = new IniFile();
-            BuildGameIniProfile();
+            PageStatics._GameVersion.GamePreset = TargetProfile;
+            PageStatics._GameVersion.UpdateGamePath(Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation));
 
             SetAndSaveConfigValue("GameRegion", TargetProfile.ZoneName);
             LoadAppConfig();

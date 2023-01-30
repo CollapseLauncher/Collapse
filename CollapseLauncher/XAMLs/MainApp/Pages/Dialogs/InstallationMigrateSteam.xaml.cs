@@ -1,6 +1,8 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.GameConversion;
 using Microsoft.UI.Xaml;
@@ -26,6 +28,8 @@ namespace CollapseLauncher.Dialogs
 {
     public partial class InstallationMigrateSteam : Page
     {
+        RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
+        PresetConfigV2 GamePreset { get => PageStatics._GameVersion.GamePreset; }
         string sourcePath;
         string targetPath;
         string repoURL;
@@ -74,7 +78,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
             }
             catch (Exception ex)
             {
@@ -86,38 +90,21 @@ namespace CollapseLauncher.Dialogs
 
         public async Task DoGetRepoURL()
         {
-            repoListURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
+            repoListURL = string.Format(AppGameRepoIndexURLPrefix, GamePreset.ProfileName);
 
             using (Http _client = new Http())
             using (MemoryStream s = new MemoryStream())
             {
                 await _client.Download(repoListURL, s, null, null, tokenSource.Token);
                 Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
-                repoURL = repoList[regionResourceProp.data.game.latest.version] + '/';
-                repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
+                repoURL = repoList[GameAPIProp.data.game.latest.version] + '/';
+                repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, GamePreset.ProfileName, GameAPIProp.data.game.latest.version);
             }
         }
 
         public void ApplyConfiguration()
         {
-            gameIni.Profile["launcher"]["game_install_path"] = targetPath;
-            gameIni.Profile.Save(gameIni.ProfilePath);
-
-            gameIni.Config = new IniFile
-            {
-                {
-                    "General",
-                    new Dictionary<string, IniValue>
-                    {
-                            { "channel", new IniValue(1) },
-                            { "cps", new IniValue() },
-                            { "game_version", new IniValue(regionResourceProp.data.game.latest.version) },
-                            { "sub_channel", new IniValue(1) },
-                            { "sdk_version", new IniValue() },
-                    }
-                }
-            };
-            gameIni.Config.Save(Path.Combine(targetPath, "config.ini"));
+            PageStatics._GameVersion.UpdateGamePath(targetPath);
 
             File.Delete(Path.Combine(targetPath, "_conversion_unfinished"));
         }
@@ -142,7 +129,7 @@ namespace CollapseLauncher.Dialogs
 
             foreach (var file in BrokenFileIndexesProperty)
             {
-                LogWriteLine($"\t{file.N} {SummarizeSizeSimple(file.S)}", Hi3Helper.LogType.Empty);
+                LogWriteLine($"\t{file.N} {SummarizeSizeSimple(file.S)}", LogType.Empty);
             }
 
             switch (await Dialog_SteamConversionDownloadDialog(Content, SummarizeSizeSimple(TotalSizeOfBrokenFile)))
@@ -294,7 +281,7 @@ namespace CollapseLauncher.Dialogs
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{CurrentConfigV2.SteamInstallRegistryLocation}\" --keyname InstallLocation";
+                proc.StartInfo.Arguments = $"movesteam --input \"{sourcePath}\" --output \"{targetPath}\" --regloc \"{PageStatics._GameVersion.GamePreset.SteamInstallRegistryLocation}\" --keyname InstallLocation";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
@@ -358,7 +345,7 @@ namespace CollapseLauncher.Dialogs
                         break;
                     case ContentDialogResult.Primary:
                         sourcePath = GamePathOnSteam;
-                        folder = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
+                        folder = Path.Combine(AppGameFolder, PageStatics._GameVersion.GamePreset.ProfileName);
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Text;
+﻿using CollapseLauncher.Statics;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
@@ -174,7 +175,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, CurrentConfigV2.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, PageStatics._GameVersion.GamePreset.ActualGameDataLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,
@@ -184,7 +185,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallBHI3LTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path),
+                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,

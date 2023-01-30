@@ -12,7 +12,7 @@ namespace Hi3Helper.Preset
     public static class ConfigV2Store
     {
         public static Metadata ConfigV2 = new Metadata();
-        public static PresetConfigV2 CurrentConfigV2;
+        internal static PresetConfigV2 CurrentConfigV2;
         public static string CurrentConfigV2GameCategory;
         public static string CurrentConfigV2GameRegion;
 
@@ -23,11 +23,13 @@ namespace Hi3Helper.Preset
         public static List<string> ConfigV2GameCategory;
         public static List<string> ConfigV2GameRegions;
 
-        public static void LoadCurrentConfigV2(string Key, string Value)
+        public static PresetConfigV2 LoadCurrentConfigV2(string Key, string Value)
         {
             CurrentConfigV2 = ConfigV2.MetadataV2[Key][Value];
             CurrentConfigV2GameCategory = Key;
             CurrentConfigV2GameRegion = Value;
+
+            return CurrentConfigV2;
         }
 
         public static void LoadConfigV2CacheOnly()

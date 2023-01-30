@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.Statics;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -36,14 +37,14 @@ namespace CollapseLauncher.Dialogs
             }
             catch (ArgumentNullException)
             {
-                LogWriteLine($"Migration process is cancelled for Game {CurrentConfigV2.ZoneFullname}");
+                LogWriteLine($"Migration process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
                 MigrationWatcher.IsMigrationRunning = false;
                 MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                 return;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error occured while migrating Game {CurrentConfigV2.ZoneFullname}\r\nTraceback: {ex}");
+                LogWriteLine($"Error occured while migrating Game {PageStatics._GameVersion.GamePreset.ZoneFullname}\r\nTraceback: {ex}");
                 MigrationWatcher.IsMigrationRunning = false;
                 MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
                 return;
@@ -61,7 +62,7 @@ namespace CollapseLauncher.Dialogs
                 Title = Lang._Dialogs.MigrationTitle,
                 Content = Lang._Dialogs.MigrationSubtitle,
                 CloseButtonText = Lang._Misc.Cancel,
-                PrimaryButtonText = CurrentConfigV2.MigrateFromBetterHi3Launcher ? Lang._Misc.UseCurrentDir : Lang._Misc.UseDefaultDir,
+                PrimaryButtonText = PageStatics._GameVersion.GamePreset.MigrateFromBetterHi3Launcher ? Lang._Misc.UseCurrentDir : Lang._Misc.UseDefaultDir,
                 SecondaryButtonText = Lang._Misc.YesChangeLocation,
                 DefaultButton = ContentDialogButton.Primary,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
@@ -82,13 +83,13 @@ namespace CollapseLauncher.Dialogs
                         await MigrationCancelled(3000);
                     break;
                 case ContentDialogResult.Primary:
-                    if (CurrentConfigV2.MigrateFromBetterHi3Launcher)
+                    if (PageStatics._GameVersion.GamePreset.MigrateFromBetterHi3Launcher)
                     {
-                        folder = CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path;
+                        folder = PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path;
                         UseCurrentBHI3LFolder = true;
                     }
                     else
-                        folder = Path.Combine(AppGameFolder, CurrentConfigV2.ProfileName);
+                        folder = Path.Combine(AppGameFolder, PageStatics._GameVersion.GamePreset.ProfileName);
                     break;
                 case ContentDialogResult.None:
                     await MigrationCancelled(3000);
@@ -133,10 +134,10 @@ namespace CollapseLauncher.Dialogs
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(AppFolder, "CollapseLauncher.exe");
                 proc.StartInfo.UseShellExecute = true;
-                if (CurrentConfigV2.MigrateFromBetterHi3Launcher)
-                    proc.StartInfo.Arguments = $"migratebhi3l --gamever {CurrentConfigV2.BetterHi3LauncherConfig.game_info.version} --regloc {CurrentConfigV2.BetterHi3LauncherVerInfoReg} --input \"{CurrentConfigV2.BetterHi3LauncherConfig.game_info.install_path}\" --output \"{targetPath}\"";
+                if (PageStatics._GameVersion.GamePreset.MigrateFromBetterHi3Launcher)
+                    proc.StartInfo.Arguments = $"migratebhi3l --gamever {PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.version} --regloc {PageStatics._GameVersion.GamePreset.BetterHi3LauncherVerInfoReg} --input \"{PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path}\" --output \"{targetPath}\"";
                 else
-                    proc.StartInfo.Arguments = $"migrate --input \"{CurrentConfigV2.ActualGameLocation}\" --output \"{targetPath}\"";
+                    proc.StartInfo.Arguments = $"migrate --input \"{PageStatics._GameVersion.GamePreset.ActualGameLocation}\" --output \"{targetPath}\"";
                 proc.StartInfo.Verb = "runas";
 
                 LogWriteLine($"Launching Invoker with Argument:\r\n\t{proc.StartInfo.Arguments}");
@@ -151,11 +152,9 @@ namespace CollapseLauncher.Dialogs
                 });
 
                 if (UseCurrentBHI3LFolder)
-                    gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath).Replace('\\', '/');
+                    PageStatics._GameVersion.UpdateGamePath(Path.Combine(targetPath).Replace('\\', '/'));
                 else
-                    gameIni.Profile["launcher"]["game_install_path"] = Path.Combine(targetPath, CurrentConfigV2.GameDirectoryName).Replace('\\', '/');
-
-                gameIni.Profile.Save(gameIni.ProfilePath);
+                    PageStatics._GameVersion.UpdateGamePath(Path.Combine(targetPath, PageStatics._GameVersion.GamePreset.GameDirectoryName).Replace('\\', '/'));
             }
             catch (Exception)
             {

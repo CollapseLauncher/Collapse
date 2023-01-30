@@ -54,13 +54,15 @@ namespace CollapseLauncher
             string[] ver = version.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             if (ver.Length != 3)
             {
-                throw new ArgumentException($"Version form should be in \"x.x.x\" format! (current value: \"{version}\")");
+                throw new ArgumentException($"Version in the config.ini should be in \"x.x.x\" format! (current value: \"{version}\")");
             }
 
             if (!int.TryParse(ver[0], out Major)) throw new ArgumentException($"Major version is not a number! (current value: {ver[0]}");
             if (!int.TryParse(ver[1], out Minor)) throw new ArgumentException($"Minor version is not a number! (current value: {ver[1]}");
             if (!int.TryParse(ver[2], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[2]}");
         }
+
+        public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Revision == versionToCompare.Revision;
 
         public string VersionString { get => string.Join('.', VersionArray); }
         public int[] VersionArrayXMF { get => new int[4] { 0, Major, Minor, Revision }; }

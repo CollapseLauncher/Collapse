@@ -336,7 +336,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        private void Save(Stream stream)
+        public void Save(Stream stream)
         {
             using (var writer = new StreamWriter(stream))
             {
@@ -359,15 +359,15 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(string path, bool ordered = false)
+        public void Load(string path, bool ordered = false, bool openOrCreate = false)
         {
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(path, openOrCreate ? FileMode.OpenOrCreate : FileMode.Open, FileAccess.Read))
             {
                 Load(stream, ordered);
             }
         }
 
-        private void Load(Stream stream, bool ordered)
+        public void Load(Stream stream, bool ordered)
         {
             using (var reader = new StreamReader(stream))
             {

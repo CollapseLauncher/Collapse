@@ -23,25 +23,29 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseLauncher.Statics;
+using Hi3Helper.Preset;
 
 namespace CollapseLauncher
 {
     public sealed partial class MainPage : Page
     {
+        private RegionResourceProp _gameAPIProp { get; set; }
+
         private BitmapImage BackgroundBitmap;
         private Bitmap PaletteBitmap;
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        private void FetchLauncherLocalizedResources(CancellationToken Token)
+        private void FetchLauncherLocalizedResources(CancellationToken Token, PresetConfigV2 Preset)
         {
-            regionBackgroundProp = CurrentConfigV2.LauncherSpriteURLMultiLang ?
-                TryGetMultiLangResourceProp(Token) :
-                TryGetSingleLangResourceProp(Token);
+            regionBackgroundProp = Preset.LauncherSpriteURLMultiLang ?
+                TryGetMultiLangResourceProp(Token, Preset) :
+                TryGetSingleLangResourceProp(Token, Preset);
 
             DownloadBackgroundImage(Token);
 
-            GetLauncherAdvInfo(Token);
+            GetLauncherAdvInfo(Token, Preset);
             GetLauncherCarouselInfo(Token);
             GetLauncherEventInfo(Token);
             GetLauncherPostInfo();
@@ -69,37 +73,37 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private void FetchLauncherResourceAsRegion(CancellationToken Token)
+        private void FetchLauncherResourceAsRegion(CancellationToken Token, PresetConfigV2 Preset)
         {
             using (Stream netStream = _httpClient.DownloadFromSessionStream(
-                CurrentConfigV2.LauncherResourceURL,
+                Preset.LauncherResourceURL,
                 0,
                 null,
                 Token
                 ).Item1)
             {
-                regionResourceProp = (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
+                _gameAPIProp = (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
 
 #if DEBUG
-                if (regionResourceProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {regionResourceProp.data.game.latest.decompressed_path}", LogType.Default, true);
-                if (regionResourceProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {regionResourceProp.data.game.latest.path}", LogType.Default, true);
-                if (regionResourceProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {regionResourceProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
-                if (regionResourceProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {regionResourceProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
+                if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
+                if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
+                if (_gameAPIProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
+                if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
 #endif
             }
         }
 
-        private RegionResourceProp TryGetMultiLangResourceProp(CancellationToken Token)
+        private RegionResourceProp TryGetMultiLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
         {
-            RegionResourceProp ret = GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token);
+            RegionResourceProp ret = GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token, Preset);
 
-            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? GetMultiLangResourceProp(CurrentConfigV2.LauncherSpriteURLMultiLangFallback ?? "en-us", Token) : ret;
+            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) : ret;
         }
 
-        private RegionResourceProp GetMultiLangResourceProp(string langID, CancellationToken token)
+        private RegionResourceProp GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
         {
             using (Stream netStream = _httpClient.DownloadFromSessionStream(
-                string.Format(CurrentConfigV2.LauncherSpriteURL, langID),
+                string.Format(Preset.LauncherSpriteURL, langID),
                 0,
                 null,
                 token
@@ -109,10 +113,10 @@ namespace CollapseLauncher
             }
         }
 
-        private RegionResourceProp TryGetSingleLangResourceProp(CancellationToken Token)
+        private RegionResourceProp TryGetSingleLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
         {
             using (Stream netStream = _httpClient.DownloadFromSessionStream(
-                CurrentConfigV2.LauncherSpriteURL,
+                Preset.LauncherSpriteURL,
                 0,
                 null,
                 Token
@@ -133,7 +137,7 @@ namespace CollapseLauncher
             };
         }
 
-        private void GetLauncherAdvInfo(CancellationToken Token)
+        private void GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -147,7 +151,7 @@ namespace CollapseLauncher
                     IconHover = GetCachedSprites(item.img_hover, Token),
                     QR = string.IsNullOrEmpty(item.qr_img) ? null : GetCachedSprites(item.qr_img, Token),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = string.IsNullOrEmpty(item.title) || CurrentConfigV2.IsHideSocMedDesc ? item.url : item.title
+                    Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
                 });
             }
         }
