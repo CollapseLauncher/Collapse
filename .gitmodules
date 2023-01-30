@@ -10,6 +10,3 @@
 [submodule "Hi3Helper.Core/Classes/Data/Tools/SharpZipLib"]
 	path = Hi3Helper.Core/Classes/Data/Tools/SharpZipLib
 	url = https://github.com/neon-nyan/SharpZipLib
-[submodule "Hi3Helper.EncTool"]
-	path = Hi3Helper.EncTool
-	url = https://github.com/neon-nyan/Hi3Helper.EncTool
