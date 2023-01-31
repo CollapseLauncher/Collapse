@@ -188,6 +188,7 @@ namespace CollapseLauncher
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new GenshinSettings(preset);
+                    PageStatics._GameRepair = null;
                     break;
             }
         }
