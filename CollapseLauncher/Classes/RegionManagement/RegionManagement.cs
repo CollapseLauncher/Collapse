@@ -186,6 +186,7 @@ namespace CollapseLauncher
                     PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.version, GamePath, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset, (byte)AppCurrentThread);
                     break;
                 case GameType.Genshin:
+                    PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new GenshinSettings(preset);
                     break;
             }

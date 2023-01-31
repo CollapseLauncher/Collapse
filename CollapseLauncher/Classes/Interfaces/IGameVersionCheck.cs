@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using CollapseLauncher.GameVersioning;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 
@@ -6,6 +7,11 @@ namespace CollapseLauncher.Interfaces
 {
     internal interface IGameVersionCheck
     {
+        /// <summary>
+        /// Get the base of the instance
+        /// </summary>
+        GameVersionBase AsVersionBase { get; }
+        
         /// <summary>
         /// Returns or sets the path of the game
         /// </summary>

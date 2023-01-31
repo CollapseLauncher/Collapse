@@ -1,17 +1,17 @@
-﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.EncTool;
+﻿using Hi3Helper.EncTool;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System.IO;
-using System.Collections.Generic;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeHonkaiVersion : GameVersionBase, IGameVersionCheck
+    internal class GameTypeHonkaiVersion : GameVersionBase
     {
+        #region Properties
         private string GameXMFPath { get => Path.Combine(GameDirPath, $"{GamePreset.GameExecutableName}_Data", "StreamingAssets\\Asb\\pc\\Blocks.xmf"); }
         private DeltaPatchProperty GameDeltaPatchProp { get; init; }
+        #endregion
 
         public GameTypeHonkaiVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
@@ -23,6 +23,10 @@ namespace CollapseLauncher.GameVersioning
             // If there's no Delta-Patch, then set it to null.
             GameDeltaPatchProp = CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI);
         }
+
+        public override bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;
+
+        public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
 
         private void TryReinitializeGameVersion()
         {
@@ -46,7 +50,7 @@ namespace CollapseLauncher.GameVersioning
                 // Sanitation check if the directory doesn't exist, then return null.
                 if (!Directory.Exists(gamePath)) return null;
                 string[] PossiblePaths = Directory.GetFiles(gamePath, $"{profileName}*.patch", SearchOption.TopDirectoryOnly);
-                
+
                 // If there's a patch file found, then go to the next check.
                 if (PossiblePaths.Length > 0)
                 {
@@ -61,36 +65,6 @@ namespace CollapseLauncher.GameVersioning
 
             // If all not passed, then return null.
             return null;
-        }
-
-        public bool IsGameHasPreload() => IsGameVersionMatch() && !IsGameHasDeltaPatch() && GameAPIProp.data.pre_download_game != null;
-        public bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;
-
-        public GameInstallStateEnum GetGameState()
-        {
-            if (IsGameInstalled())
-            {
-                if (!IsGameVersionMatch()) return GameInstallStateEnum.NeedsUpdate;
-                if (IsGameHasPreload()) return GameInstallStateEnum.InstalledHavePreload;
-
-                return GameInstallStateEnum.Installed;
-            }
-
-            return GameInstallStateEnum.NotInstalled;
-        }
-
-        public List<RegionResourceVersion> GetGameLatestZip() => new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
-
-        public List<RegionResourceVersion> GetGamePreloadZip() => GameAPIProp.data.pre_download_game == null ? null : new List<RegionResourceVersion> { GameAPIProp.data.pre_download_game.latest };
-
-        public DeltaPatchProperty GetDeltaPatchInfo()
-        {
-            if (GameDeltaPatchProp == null)
-            {
-                return null;
-            }
-
-            return GameDeltaPatchProp;
         }
     }
 }
