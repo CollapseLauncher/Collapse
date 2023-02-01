@@ -36,11 +36,14 @@ namespace CollapseLauncher
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
+        private string RegionToChangeName;
+
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             using (_httpClient = new Http(default, 4, 250))
             {
-                LogWriteLine($"Initializing {preset.ZoneFullname}...", Hi3Helper.LogType.Scheme, true);
+                RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
+                LogWriteLine($"Initializing {RegionToChangeName}...", Hi3Helper.LogType.Scheme, true);
 
                 // Set IsLoadRegionComplete to false
                 IsLoadRegionComplete = false;
@@ -253,7 +256,7 @@ namespace CollapseLauncher
                 // Show element
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, PageStatics._GameVersion.GamePreset.ZoneFullname);
+                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
             }
 
@@ -265,7 +268,7 @@ namespace CollapseLauncher
             await Task.Delay(1000);
             if (!IsLoadRegionComplete)
             {
-                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, PageStatics._GameVersion.GamePreset.ZoneFullname);
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
                 while (!IsLoadRegionComplete) { await Task.Delay(1000); }
             }
