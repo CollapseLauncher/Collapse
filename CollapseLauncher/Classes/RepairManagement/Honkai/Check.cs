@@ -317,6 +317,8 @@ namespace CollapseLauncher
             {
                 if (!assets.Contains(asset)
                  && !asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)
+                 && !asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase)
+                 && !asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase)
                  && !asset.Contains("webCaches")
                  && !asset.Contains("SDKCaches"))
                 {
