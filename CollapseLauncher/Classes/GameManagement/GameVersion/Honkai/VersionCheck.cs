@@ -26,6 +26,17 @@ namespace CollapseLauncher.GameVersioning
 
         public override bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;
 
+        public override bool IsGameVersionMatch()
+        {
+            // In this override, the check will be done twice.
+            // Check the version in INI file first, then check the version based on XMF file.
+            bool IsBaseGameVersionMatch = base.IsGameVersionMatch();
+            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayXMF);
+
+            // Choose either one of them in which one is matches.
+            return IsBaseGameVersionMatch || IsXMFVersionMatches;
+        }
+
         public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
 
         private void TryReinitializeGameVersion()

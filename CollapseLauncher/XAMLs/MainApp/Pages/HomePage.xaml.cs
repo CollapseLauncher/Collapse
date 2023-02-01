@@ -614,7 +614,7 @@ namespace CollapseLauncher.Pages
                             return;
                     }
                 }
-                else if (await Task.Run(PageStatics._GameVersion.GamePreset.CheckExistingGame))
+                else if (PageStatics._GameVersion.GamePreset.CheckExistingGame())
                 {
                     switch (await Dialog_ExistingInstallation(Content))
                     {
@@ -672,9 +672,10 @@ namespace CollapseLauncher.Pages
 
         private async Task StartInstallationProcedure(string destinationFolder)
         {
-            PageStatics._GameVersion.UpdateGamePath(destinationFolder);
             if (CheckExistingGame(destinationFolder))
             {
+                PageStatics._GameVersion.UpdateGamePath(destinationFolder);
+                PageStatics._GameVersion.Reinitialize();
                 CancelInstallationDownload();
                 return;
             }
@@ -705,38 +706,14 @@ namespace CollapseLauncher.Pages
 
         private bool CheckExistingGame(string destinationFolder)
         {
-            bool isExist;
             if (destinationFolder == null) return false;
 
-            string targetPath = Path.Combine(destinationFolder, PageStatics._GameVersion.GamePreset.GameExecutableName),
-                   iniPath = Path.Combine(destinationFolder, "config.ini");
-
-            /* OLD
-            // Phase 1 Check
-            if (File.Exists(targetPath) && File.Exists(iniPath))
+            string path = PageStatics._GameVersion.FindGameInstallationPath(destinationFolder);
+            if (path != null)
             {
-                GameIni.Config = new IniFile();
-                GameIni.ConfigPath = iniPath;
-                GameIni.Config.Load(GameIni.ConfigPath);
-                isExist = true;
-
-                return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);
+                PageStatics._GameVersion.GameDirPath = path;
+                return true;
             }
-
-            // Phase 2 Check
-            targetPath = Path.Combine(destinationFolder, PageStatics._GameVersion.GamePreset.GameDirectoryName, PageStatics._GameVersion.GamePreset.GameExecutableName);
-            iniPath = Path.Combine(destinationFolder, PageStatics._GameVersion.GamePreset.GameDirectoryName, "config.ini");
-
-            if (File.Exists(targetPath) && File.Exists(iniPath))
-            {
-                GameIni.Config = new IniFile();
-                GameIni.ConfigPath = iniPath;
-                GameIni.Config.Load(GameIni.ConfigPath);
-                isExist = true;
-
-                return CheckExistingGameVerAndSet(targetPath, iniPath, isExist);
-            }
-            */
 
             return false;
         }

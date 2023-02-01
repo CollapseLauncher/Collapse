@@ -11,9 +11,10 @@ namespace CollapseLauncher.Interfaces
         /// Get the base of the instance
         /// </summary>
         GameVersionBase AsVersionBase { get; }
-        
+
         /// <summary>
-        /// Returns or sets the path of the game
+        /// Returns or sets the path of the game.<br/>
+        /// If you set the value from this property, the value won't be saved until you execute <c>UpdateGamePath()</c>
         /// </summary>
         string GameDirPath { get; set; }
 
@@ -83,21 +84,37 @@ namespace CollapseLauncher.Interfaces
         /// </summary>
         List<RegionResourceVersion> GetGamePreloadZip();
 
+#nullable enable
+        /// <summary>
+        /// Try find game installation path from the given path.
+        /// If it returns null, then there's no game installation found.
+        /// </summary>
+        string? FindGameInstallationPath(string path);
+#nullable disable
+
         /// <summary>
         /// Update the location of the game folder and also save it to the Game Profile's Ini file.
         /// </summary>
         /// <param name="path">The path of the game folder</param>
-        void UpdateGamePath(string path);
+        /// <param name="saveValue">Save the config file</param>
+        void UpdateGamePath(string path, bool saveValue = true);
 
         /// <summary>
         /// Update the version of the game to the latest one provided by miHoYo's API and also save it to the Game Profile's Ini file.
         /// </summary>
-        void UpdateGameVersionToLatest();
+        /// <param name="saveValue">Save the config file</param>
+        void UpdateGameVersionToLatest(bool saveValue = true);
 
         /// <summary>
         /// Update the version of the game to the given value and also save it to the Game Profile's Ini file.
         /// </summary>
         /// <param name="version">The version to change</param>
-        void UpdateGameVersion(GameVersion version);
+        /// <param name="saveValue">Save the config file</param>
+        void UpdateGameVersion(GameVersion version, bool saveValue = true);
+
+        /// <summary>
+        /// Reinitialize the game version configs, including the INIs.
+        /// </summary>
+        void Reinitialize();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -55,7 +56,7 @@ namespace CollapseLauncher.GameVersioning
         public string GameDirPath
         {
             get => Path.GetDirectoryName(GameIniVersionPath);
-            set => UpdateGamePath(value);
+            set => UpdateGamePath(value, false);
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
@@ -83,11 +84,9 @@ namespace CollapseLauncher.GameVersioning
             GamePreset = gamePreset;
             ParentUIElement = parentUIElement;
             GameAPIProp = gameRegionProp;
-            GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName);
 
-            // Initialize INIs
-            InitializeIniProp(GameIniProfilePath, ref GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
-            InitializeIniProp(GameIniVersionPath, ref GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
+            // Initialize INIs props
+            InitializeIniProp();
         }
 
         public GameVersion? GetGameExistingVersion() => GameVersionInstalled;
@@ -122,7 +121,7 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual bool IsGameHasDeltaPatch() => false;
 
-        public bool IsGameVersionMatch()
+        public virtual bool IsGameVersionMatch()
         {
             // Ensure if the GameVersionInstalled is available (this is coming from the Game Profile's Ini file.
             // If not, then return false to indicate that the game isn't installed.
@@ -133,7 +132,7 @@ namespace CollapseLauncher.GameVersioning
             return GameVersionInstalled.Value.IsMatch(GameVersionAPI);
         }
 
-        public bool IsGameInstalled()
+        public virtual bool IsGameInstalled()
         {
             // If the GameVersionInstalled doesn't have a value (not null), then return as false.
             if (!GameVersionInstalled.HasValue) return false;
@@ -158,26 +157,101 @@ namespace CollapseLauncher.GameVersioning
             return false;
         }
 
-        public void UpdateGamePath(string path)
+#nullable enable
+        public virtual string? FindGameInstallationPath(string path)
+        {
+            // Try find the base game path from the executable location.
+            string basePath = TryFindGamePathFromExecutableAndConfig(path);
+
+            // If the executable file and version config doesn't exist (null), then return null.
+            if (basePath == null) return null;
+
+            // Check if the ini file does have the "game_version" value.
+            string iniPath = Path.Combine(basePath, "config.ini");
+            if (IsTryParseIniVersionExist(iniPath))
+            {
+                return path;
+            }
+
+            // If the file doesn't exist, return as null.
+            return null;
+        }
+#nullable disable
+
+        public void Reinitialize() => InitializeIniProp();
+
+        public void UpdateGamePath(string path, bool saveValue = true)
         {
             GameIniProfile[_defaultIniProfileSection]["game_install_path"] = path.Replace('\\', '/');
-            SaveGameIni(GameIniProfilePath, GameIniProfile);
+            if (saveValue)
+            {
+                SaveGameIni(GameIniProfilePath, GameIniProfile);
+            }
         }
 
-        public void UpdateGameVersionToLatest()
+        public void UpdateGameVersionToLatest(bool saveValue = true)
         {
             GameIniVersion[_defaultIniVersionSection]["game_version"] = GameVersionAPI.VersionString;
-            SaveGameIni(GameIniVersionPath, GameIniVersion);
+            if (saveValue)
+            {
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
         }
 
-        public void UpdateGameVersion(GameVersion version)
+        public void UpdateGameVersion(GameVersion version, bool saveValue = true)
         {
             GameIniVersion[_defaultIniVersionSection]["game_version"] = version.VersionString;
-            SaveGameIni(GameIniVersionPath, GameIniVersion);
+            if (saveValue)
+            {
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
         }
-            
+
+        private void InitializeIniProp()
+        {
+            GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName);
+
+            // Initialize INIs
+            InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
+            InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
+        }
+
+        private string TryFindGamePathFromExecutableAndConfig(string path)
+        {
+            // Phase 1: Check on the root directory
+            string targetPath = Path.Combine(path, GamePreset.GameExecutableName);
+            string configPath = Path.Combine(path, "config.ini");
+            if (File.Exists(targetPath) && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
+
+            // Phase 2: Check on the launcher directory + GamePreset.GameDirectoryName
+            targetPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", GamePreset.GameExecutableName);
+            configPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", "config.ini");
+            if (File.Exists(targetPath) && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
+
+            // If none of them passes, then return null.
+            return null;
+        }
+
+        private bool IsTryParseIniVersionExist(string iniPath)
+        {
+            // Load version config file.
+            IniFile iniFile = new IniFile();
+            iniFile.Load(iniPath);
+
+            // Check whether the config has game_version value and it must be a non-null value.
+            if (iniFile[_defaultIniVersionSection].ContainsKey("game_version"))
+            {
+                string val = iniFile[_defaultIniVersionSection]["game_version"].ToString();
+                if (val != null) return true;
+            }
+
+            // If above doesn't passes, then return false.
+            return false;
+        }
+
         private void SaveGameIni(string filePath, in IniFile INI)
         {
+            // Check if the disk partition exist. If it's exist, then save the INI.
             if (IsDiskPartitionExist(filePath))
             {
                 INI.Save(filePath);
@@ -190,7 +264,7 @@ namespace CollapseLauncher.GameVersioning
             return info.IsReady;
         }
 
-        private void InitializeIniProp(string iniFilePath, ref IniFile ini, IniSection defaults, string section)
+        private void InitializeIniProp(string iniFilePath, in IniFile ini, IniSection defaults, string section)
         {
             // Get the file path of the INI file and normalize it
             iniFilePath = ConverterTool.NormalizePath(iniFilePath);
@@ -212,10 +286,13 @@ namespace CollapseLauncher.GameVersioning
             }
 
             // Initialize and ensure the non-existed values to their defaults.
-            InitializeIniDefaults(ref ini, defaults, section);
+            InitializeIniDefaults(ini, defaults, section);
+
+            // Always save the file to ensure file existency
+            SaveGameIni(iniFilePath, ini);
         }
 
-        private void InitializeIniDefaults(ref IniFile ini, IniSection defaults, string section)
+        private void InitializeIniDefaults(in IniFile ini, IniSection defaults, string section)
         {
             // If the section doesn't exist, then add the section.
             if (!ini.ContainsSection(section))
