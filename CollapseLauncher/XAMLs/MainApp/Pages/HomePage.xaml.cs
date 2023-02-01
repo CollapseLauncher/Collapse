@@ -743,6 +743,7 @@ namespace CollapseLauncher.Pages
 
         private void ApplyGameConfig(string destinationFolder)
         {
+            PageStatics._GameVersion.UpdateGameVersionToLatest();
             PageStatics._GameVersion.UpdateGamePath(destinationFolder);
             if (IsGameHasVoicePack && (PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin))
                 PageStatics._GameVersion.GamePreset.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);

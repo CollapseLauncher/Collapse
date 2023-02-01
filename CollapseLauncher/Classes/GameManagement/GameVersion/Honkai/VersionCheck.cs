@@ -9,7 +9,7 @@ namespace CollapseLauncher.GameVersioning
     internal class GameTypeHonkaiVersion : GameVersionBase
     {
         #region Properties
-        private string GameXMFPath { get => Path.Combine(GameDirPath, $"{GamePreset.GameExecutableName}_Data", "StreamingAssets\\Asb\\pc\\Blocks.xmf"); }
+        private string GameXMFPath { get => Path.Combine(GameDirPath, $"{Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName)}_Data", "StreamingAssets\\Asb\\pc\\Blocks.xmf"); }
         private DeltaPatchProperty GameDeltaPatchProp { get; init; }
         #endregion
 
@@ -33,7 +33,8 @@ namespace CollapseLauncher.GameVersioning
             // Check if the GameVersionInstalled == null (version config doesn't exist)
             // and if the XMF file version matches the version from GameVersionAPI, then reinitialize the version config
             // and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null && XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayXMF))
+            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayXMF);
+            if (GameVersionInstalled == null && IsXMFVersionMatches)
             {
                 GameVersionInstalled = GameVersionAPI;
             }

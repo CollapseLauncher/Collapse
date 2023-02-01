@@ -160,7 +160,7 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGamePath(string path)
         {
-            GameIniProfile[_defaultIniProfileSection]["game_install_path"] = path;
+            GameIniProfile[_defaultIniProfileSection]["game_install_path"] = path.Replace('\\', '/');
             SaveGameIni(GameIniProfilePath, GameIniProfile);
         }
 
@@ -175,7 +175,7 @@ namespace CollapseLauncher.GameVersioning
             GameIniVersion[_defaultIniVersionSection]["game_version"] = version.VersionString;
             SaveGameIni(GameIniVersionPath, GameIniVersion);
         }
-
+            
         private void SaveGameIni(string filePath, in IniFile INI)
         {
             if (IsDiskPartitionExist(filePath))
