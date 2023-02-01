@@ -674,8 +674,6 @@ namespace CollapseLauncher.Pages
         {
             if (CheckExistingGame(destinationFolder))
             {
-                PageStatics._GameVersion.UpdateGamePath(destinationFolder);
-                PageStatics._GameVersion.Reinitialize();
                 CancelInstallationDownload();
                 return;
             }
@@ -711,7 +709,8 @@ namespace CollapseLauncher.Pages
             string path = PageStatics._GameVersion.FindGameInstallationPath(destinationFolder);
             if (path != null)
             {
-                PageStatics._GameVersion.GameDirPath = path;
+                PageStatics._GameVersion.UpdateGamePath(path);
+                PageStatics._GameVersion.Reinitialize();
                 return true;
             }
 
