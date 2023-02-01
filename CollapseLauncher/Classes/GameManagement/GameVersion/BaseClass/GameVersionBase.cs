@@ -170,7 +170,7 @@ namespace CollapseLauncher.GameVersioning
             string iniPath = Path.Combine(basePath, "config.ini");
             if (IsTryParseIniVersionExist(iniPath))
             {
-                return path;
+                return basePath;
             }
 
             // If the file doesn't exist, return as null.
