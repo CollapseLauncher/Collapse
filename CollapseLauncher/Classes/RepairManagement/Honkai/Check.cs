@@ -293,9 +293,8 @@ namespace CollapseLauncher
         {
             foreach (string video in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Video"), "*", SearchOption.AllDirectories))
             {
-                if ((video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase)
-                  || video.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase))
-                  && !assets.Contains(video)) assets.Add(video);
+                if ((video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
+                 && !assets.Contains(video)) assets.Add(video);
             }
         }
 
@@ -304,7 +303,6 @@ namespace CollapseLauncher
             foreach (string audio in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows"), "*", SearchOption.AllDirectories))
             {
                 if ((audio.EndsWith(".pck", StringComparison.OrdinalIgnoreCase)
-                  || audio.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase)
                   || audio.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase))
                   && !assets.Contains(audio)) assets.Add(audio);
             }
@@ -319,6 +317,7 @@ namespace CollapseLauncher
                  && !asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)
                  && !asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase)
                  && !asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase)
+                 && !asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase)
                  && !asset.Contains("webCaches")
                  && !asset.Contains("SDKCaches"))
                 {
