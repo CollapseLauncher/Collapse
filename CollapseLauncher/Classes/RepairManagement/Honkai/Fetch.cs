@@ -89,7 +89,7 @@ namespace CollapseLauncher
             if (XMFUtility.CheckIfXMFVersionMatches(xmfPath, _gameVersion.VersionArrayXMF)) return;
 
             // Set XMF URL
-            string urlXMF = _repoURL + _blockBasePath + "Blocks.xmf";
+            string urlXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
 
             // Start downloading XMF
             _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
