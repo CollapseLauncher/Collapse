@@ -2,6 +2,7 @@
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using System.Collections;
 using System.IO;
 
 namespace CollapseLauncher.GameVersioning
@@ -61,17 +62,17 @@ namespace CollapseLauncher.GameVersioning
             {
                 // Sanitation check if the directory doesn't exist, then return null.
                 if (!Directory.Exists(gamePath)) return null;
-                string[] PossiblePaths = Directory.GetFiles(gamePath, $"{profileName}*.patch", SearchOption.TopDirectoryOnly);
 
-                // If there's a patch file found, then go to the next check.
-                if (PossiblePaths.Length > 0)
+                // Iterate the possible path
+                IEnumerable PossiblePaths = Directory.EnumerateFiles(gamePath, $"{profileName}*.patch", SearchOption.TopDirectoryOnly);
+                foreach (string path in PossiblePaths)
                 {
                     // Initialize patchProperty for versioning check.
-                    DeltaPatchProperty patchProperty = new DeltaPatchProperty(PossiblePaths[0]);
+                    DeltaPatchProperty patchProperty = new DeltaPatchProperty(path);
                     // Convert TargetVer into GameVersion type.
                     GameVersion targetVer = new GameVersion(patchProperty.TargetVer);
-                    // If the version of the game is valid, then return the property.
-                    if (GameVersionInstalled.Value.IsMatch(targetVer)) return patchProperty;
+                    // If the version of the game is valid and the profile name matches, then return the property.
+                    if (GameVersionInstalled.Value.IsMatch(targetVer) && patchProperty.ProfileName == GamePreset.ProfileName) return patchProperty;
                 }
             }
 
