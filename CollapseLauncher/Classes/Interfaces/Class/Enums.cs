@@ -10,9 +10,11 @@
         Unused
     }
 
-    internal enum RepairAssetAction
+    internal enum CacheAssetType
     {
-        Repair,
-        Delete
+        Data,
+        Event,
+        AssetIndex,
+        Unused
     }
 }

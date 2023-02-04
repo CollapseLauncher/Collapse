@@ -3,7 +3,7 @@ using System;
 
 namespace CollapseLauncher
 {
-    internal struct RepairProgress
+    internal struct TotalPerfileProgress
     {
         public double ProgressPerFilePercentage;
         public double ProgressTotalPercentage;
@@ -11,14 +11,14 @@ namespace CollapseLauncher
         public double ProgressTotalSpeed;
     }
 
-    internal struct RepairStatus
+    internal struct TotalPerfileStatus
     {
-        public string RepairActivityStatus;
+        public string ActivityStatus;
 
-        public string RepairActivityTotal;
+        public string ActivityTotal;
         public bool IsProgressTotalIndetermined;
 
-        public string RepairActivityPerFile;
+        public string ActivityPerFile;
         public bool IsProgressPerFileIndetermined;
 
         public bool IsAssetEntryPanelShow;
@@ -72,10 +72,10 @@ namespace CollapseLauncher
         public readonly int Revision;
     }
 
-    internal readonly struct RepairAssetProperty
+    internal readonly struct AssetProperty<T>
     {
-        internal RepairAssetProperty(
-            string name, RepairAssetType assetType, string source,
+        internal AssetProperty(
+            string name, T assetType, string source,
             long size, byte[] localCRCByte, byte[] remoteCRCByte)
         {
             Name = name;
@@ -87,7 +87,7 @@ namespace CollapseLauncher
         }
 
         public string Name { get; private init; }
-        public RepairAssetType AssetType { get; private init; }
+        public T AssetType { get; private init; }
         public string Source { get; private init; }
         public long Size { get; private init; }
         public string SizeStr { get => ConverterTool.SummarizeSizeSimple(Size); }

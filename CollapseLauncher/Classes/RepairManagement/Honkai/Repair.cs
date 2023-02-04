@@ -19,7 +19,7 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            _status.RepairActivityStatus = Lang._GameRepairPage.Status11;
+            _status.ActivityStatus = Lang._GameRepairPage.Status11;
             _status.IsProgressTotalIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
@@ -200,7 +200,7 @@ namespace CollapseLauncher
         {
             try
             {
-                RepairAssetEntry.RemoveAt(0);
+                AssetEntry.RemoveAt(0);
             }
             catch { }
         });
@@ -208,8 +208,8 @@ namespace CollapseLauncher
         private void UpdateRepairStatus(string activityStatus, string activityTotal, bool isPerFileIndetermined)
         {
             // Set repair activity status
-            _status.RepairActivityStatus = activityStatus;
-            _status.RepairActivityTotal = activityTotal;
+            _status.ActivityStatus = activityStatus;
+            _status.ActivityTotal = activityTotal;
             _status.IsProgressPerFileIndetermined = isPerFileIndetermined;
 
             // Update status
@@ -236,8 +236,8 @@ namespace CollapseLauncher
                 // Update current activity status
                 _status.IsProgressTotalIndetermined = false;
                 _status.IsProgressPerFileIndetermined = false;
-                _status.RepairActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
-                _status.RepairActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
+                _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
 
                 // Trigger update
                 UpdateAll();

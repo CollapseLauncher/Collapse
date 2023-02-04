@@ -16,9 +16,9 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiRepair : IRepair
     {
-        public ObservableCollection<RepairAssetProperty> RepairAssetEntry { get; set; }
-        public event EventHandler<RepairProgress> ProgressChanged;
-        public event EventHandler<RepairStatus> StatusChanged;
+        public ObservableCollection<AssetProperty<RepairAssetType>> AssetEntry { get; set; }
+        public event EventHandler<TotalPerfileProgress> ProgressChanged;
+        public event EventHandler<TotalPerfileStatus> StatusChanged;
 
         private const int _refreshInterval = 33;
         private const int _bufferLength = 4 << 10;
@@ -27,8 +27,8 @@ namespace CollapseLauncher
         private const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         private const string _blockBasePath = "BH3_Data/StreamingAssets/Asb/pc/";
         private UIElement _parentUI { get; init; }
-        private RepairStatus _status;
-        private RepairProgress _progress;
+        private TotalPerfileStatus _status;
+        private TotalPerfileProgress _progress;
         private byte _repairThread { get; set; }
         private CancellationTokenSource _token { get; set; }
         private GameVersion _gameVersion { get; init; }
@@ -52,8 +52,8 @@ namespace CollapseLauncher
             string gameRepoURL, PresetConfigV2 gamePreset, byte repairThread)
         {
             _parentUI = parentUI;
-            _status = new RepairStatus();
-            _progress = new RepairProgress();
+            _status = new TotalPerfileStatus();
+            _progress = new TotalPerfileProgress();
             _token = new CancellationTokenSource();
             _gameVersion = new GameVersion(gameVersion);
             _gamePath = gamePath;
@@ -62,7 +62,7 @@ namespace CollapseLauncher
             _repairThread = repairThread;
             _stopwatch = Stopwatch.StartNew();
             _refreshStopwatch = Stopwatch.StartNew();
-            RepairAssetEntry = new ObservableCollection<RepairAssetProperty>();
+            AssetEntry = new ObservableCollection<AssetProperty<RepairAssetType>>();
         }
 
         ~HonkaiRepair() => Dispose();
@@ -112,7 +112,7 @@ namespace CollapseLauncher
             // Set as completed
             _status.IsCompleted = true;
             _status.IsCanceled = false;
-            _status.RepairActivityStatus = Lang._GameRepairPage.Status7;
+            _status.ActivityStatus = Lang._GameRepairPage.Status7;
 
             // Update status and progress
             UpdateAll();
@@ -190,7 +190,7 @@ namespace CollapseLauncher
             _status.IsAssetEntryPanelShow = IsBrokenFound;
             _status.IsCompleted = true;
             _status.IsCanceled = false;
-            _status.RepairActivityStatus = IsBrokenFound ? string.Format(Lang._GameRepairPage.Status3, _progressTotalCount, ConverterTool.SummarizeSizeSimple(_progressTotalSize))
+            _status.ActivityStatus = IsBrokenFound ? string.Format(Lang._GameRepairPage.Status3, _progressTotalCount, ConverterTool.SummarizeSizeSimple(_progressTotalSize))
                 : Lang._GameRepairPage.Status4;
 
             // Update status and progress
@@ -203,7 +203,7 @@ namespace CollapseLauncher
         private void ResetStatusAndProgress()
         {
             // Reset RepairAssetProperty list
-            RepairAssetEntry.Clear();
+            AssetEntry.Clear();
 
             // Reset status and progress properties
             ResetStatusAndProgressProperty();
@@ -221,12 +221,12 @@ namespace CollapseLauncher
             _status.IsAssetEntryPanelShow = false;
 
             // Reset all total activity status
-            _status.RepairActivityStatus = Lang._GameRepairPage.StatusNone;
-            _status.RepairActivityTotal = Lang._GameRepairPage.StatusNone;
+            _status.ActivityStatus = Lang._GameRepairPage.StatusNone;
+            _status.ActivityTotal = Lang._GameRepairPage.StatusNone;
             _status.IsProgressTotalIndetermined = false;
 
             // Reset all per-file activity status
-            _status.RepairActivityPerFile = Lang._GameRepairPage.StatusNone;
+            _status.ActivityPerFile = Lang._GameRepairPage.StatusNone;
             _status.IsProgressPerFileIndetermined = false;
 
             // Reset all status indicators

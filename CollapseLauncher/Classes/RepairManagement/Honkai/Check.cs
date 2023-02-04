@@ -29,6 +29,7 @@ namespace CollapseLauncher
             // Reset stopwatch
             RestartStopwatch();
 
+            // Find unused assets
             CheckUnusedAsset(assetIndex, brokenAssetIndex);
 
             // Iterate assets and check it using different method for each type
@@ -52,7 +53,7 @@ namespace CollapseLauncher
         private async Task CheckAssetTypeGenericAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
         {
             // Update activity status
-            _status.RepairActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
 
             // Increment current total count
             _progressTotalCountCurrent++;
@@ -74,8 +75,8 @@ namespace CollapseLauncher
 
                 _progressPerFileSizeCurrent = asset.S;
 
-                Dispatch(() => RepairAssetEntry.Add(
-                    new RepairAssetProperty(
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
                         asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.General,
                         Path.GetDirectoryName(asset.N),
@@ -99,8 +100,8 @@ namespace CollapseLauncher
                 _progressTotalSizeFound += asset.S;
                 _progressTotalCountFound++;
 
-                Dispatch(() => RepairAssetEntry.Add(
-                    new RepairAssetProperty(
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
                         asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.General,
                         Path.GetDirectoryName(asset.N),
@@ -157,7 +158,7 @@ namespace CollapseLauncher
         private void CheckBlockCRC(XMFBlockList sourceBlock, List<XMFBlockList> targetBlockList)
         {
             // Update activity status
-            _status.RepairActivityStatus = string.Format(Lang._GameRepairPage.Status5, sourceBlock.BlockHash);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, sourceBlock.BlockHash);
 
             // Get block file path
             string blockDirPath = "BH3_Data\\StreamingAssets\\Asb\\pc";
@@ -174,8 +175,8 @@ namespace CollapseLauncher
                 sourceBlock.BlockMissing = true;
                 targetBlockList.Add(sourceBlock);
 
-                Dispatch(() => RepairAssetEntry.Add(
-                    new RepairAssetProperty(
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
                         sourceBlock.BlockHash + ".wmv",
                         RepairAssetType.Block,
                         blockDirPath,
@@ -238,16 +239,16 @@ namespace CollapseLauncher
 
                         block.BlockContent.Add(chunk);
 
-                        Dispatch(() => RepairAssetEntry.Add(
-                            new RepairAssetProperty(
+                        Dispatch(() => AssetEntry.Add(
+                            new AssetProperty<RepairAssetType>(
                                 $"*{chunk._startoffset:x8} -> {chunk._startoffset + chunk._filesize:x8}",
                                 RepairAssetType.Chunk,
                                 sourceBlock.BlockHash,
                                 chunk._filesize,
                                 localCRC,
                                 chunk._filecrc32array
-                            )
-                        ));
+                                )
+                            ));
                     }
                 }
 
@@ -329,8 +330,8 @@ namespace CollapseLauncher
                         S = f.Length,
                         FT = FileType.Unused
                     });
-                    Dispatch(() => RepairAssetEntry.Add(
-                            new RepairAssetProperty(
+                    Dispatch(() => AssetEntry.Add(
+                            new AssetProperty<RepairAssetType>(
                                 Path.GetFileName(n),
                                 RepairAssetType.Unused,
                                 Path.GetDirectoryName(n),
@@ -431,10 +432,10 @@ namespace CollapseLauncher
 
                 // Calculate current speed and update the status and progress speed
                 _progress.ProgressTotalSpeed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-                _status.RepairActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
+                _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
 
                 // Update current activity status
-                _status.RepairActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
 
                 // Trigger update
                 UpdateAll();

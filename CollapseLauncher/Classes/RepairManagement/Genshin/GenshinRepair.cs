@@ -12,14 +12,14 @@ namespace CollapseLauncher
 {
     internal partial class GenshinRepair : IRepair
     {
-        public ObservableCollection<RepairAssetProperty> RepairAssetEntry { get; set; }
-        public event EventHandler<RepairProgress> ProgressChanged;
-        public event EventHandler<RepairStatus> StatusChanged;
+        public ObservableCollection<AssetProperty<RepairAssetType>> AssetEntry { get; set; }
+        public event EventHandler<TotalPerfileProgress> ProgressChanged;
+        public event EventHandler<TotalPerfileStatus> StatusChanged;
 
         private const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         private UIElement _parentUI { get; init; }
-        private RepairStatus _status;
-        private RepairProgress _progress;
+        private TotalPerfileStatus _status;
+        private TotalPerfileProgress _progress;
         private CancellationTokenSource _token { get; set; }
         private GameVersion _gameVersion { get; init; }
         private string _gamePath { get; init; }
@@ -28,8 +28,8 @@ namespace CollapseLauncher
         public GenshinRepair(UIElement parentUI, string gameVersion, string gamePath, PresetConfigV2 gamePreset)
         {
             _parentUI = parentUI;
-            _status = new RepairStatus();
-            _progress = new RepairProgress();
+            _status = new TotalPerfileStatus();
+            _progress = new TotalPerfileProgress();
             _token = new CancellationTokenSource();
             _gameVersion = new GameVersion(gameVersion);
             _gamePath = gamePath;
@@ -65,12 +65,12 @@ namespace CollapseLauncher
             _token = new CancellationTokenSource();
 
             // Reset all total activity status
-            _status.RepairActivityStatus = Lang._GameRepairPage.StatusNone;
-            _status.RepairActivityTotal = Lang._GameRepairPage.StatusNone;
+            _status.ActivityStatus = Lang._GameRepairPage.StatusNone;
+            _status.ActivityTotal = Lang._GameRepairPage.StatusNone;
             _status.IsProgressTotalIndetermined = false;
 
             // Reset all per-file activity status
-            _status.RepairActivityPerFile = Lang._GameRepairPage.StatusNone;
+            _status.ActivityPerFile = Lang._GameRepairPage.StatusNone;
             _status.IsProgressPerFileIndetermined = false;
 
             // Reset all status indicators

@@ -19,7 +19,7 @@ namespace CollapseLauncher
         private async Task<List<FilePropertiesRemote>> Fetch()
         {
             // Set total activity string as "Loading Indexes..."
-            _status.RepairActivityStatus = Lang._GameRepairPage.Status2;
+            _status.ActivityStatus = Lang._GameRepairPage.Status2;
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
 
@@ -127,7 +127,7 @@ namespace CollapseLauncher
         {
             // Update fetch status
             _status.IsProgressPerFileIndetermined = false;
-            _status.RepairActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
+            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
 
             // Update fetch progress
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;

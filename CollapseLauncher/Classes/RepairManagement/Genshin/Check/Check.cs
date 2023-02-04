@@ -8,7 +8,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -18,7 +17,7 @@ namespace CollapseLauncher
         private async Task<FilePropertiesRemote[]> FetchCacheAssetIndex()
         {
             // Set total activity string as "Loading Indexes..."
-            _status.RepairActivityStatus = Lang._GameRepairPage.Status2;
+            _status.ActivityStatus = Lang._GameRepairPage.Status2;
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
 
@@ -64,7 +63,7 @@ namespace CollapseLauncher
         private void _httpClient_FetchManifestAssetProgress(object sender, DownloadEvent e)
         {
             _status.IsProgressPerFileIndetermined = false;
-            _status.RepairActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
+            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
 
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
 
