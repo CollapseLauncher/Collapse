@@ -117,7 +117,7 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual DeltaPatchProperty GetDeltaPatchInfo() => null;
 
-        public virtual bool IsGameHasPreload() => IsGameVersionMatch() && !IsGameHasDeltaPatch() && GameAPIProp.data.pre_download_game != null;
+        public virtual bool IsGameHasPreload() => GameAPIProp.data.pre_download_game != null;
 
         public virtual bool IsGameHasDeltaPatch() => false;
 
