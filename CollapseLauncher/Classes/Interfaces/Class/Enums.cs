@@ -14,7 +14,14 @@
     {
         Data,
         Event,
-        AssetIndex,
+        AI,
+        Unused,
+    }
+
+    internal enum CacheAssetStatus
+    {
+        New,
+        Obsolete,
         Unused
     }
 }

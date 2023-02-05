@@ -8,7 +8,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim;DebugILTrim</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.0.62.1</Version>
+		<Version>1.0.63.0</Version>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
@@ -63,7 +63,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<PackageReference Include="System.Text.Json" Version="7.0.1" />

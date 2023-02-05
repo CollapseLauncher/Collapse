@@ -140,7 +140,7 @@ namespace CollapseLauncher
             {
                 try
                 {
-                    Parallel.ForEach(asset.BlkC, new ParallelOptions { MaxDegreeOfParallelism = _repairThread }, (block) =>
+                    Parallel.ForEach(asset.BlkC, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (block) =>
                     {
                         CheckBlockCRC(block, blocks.BlkC);
                     });
@@ -349,17 +349,6 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
-        private void SetFoundToTotalValue()
-        {
-            // Assign found count and size to total count and size
-            _progressTotalCount = _progressTotalCountFound;
-            _progressTotalSize = _progressTotalSizeFound;
-
-            // Reset found count and size
-            _progressTotalCountFound = 0;
-            _progressTotalSizeFound = 0;
-        }
-
         private bool IsCRCArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source[0] == target[0] && source[1] == target[1]
                                                                                            && source[2] == target[2] && source[3] == target[3];
 

@@ -15,7 +15,6 @@ namespace Hi3Helper.Shared.GameConversion
     public class SteamConversion
     {
         private string targetPath;
-        private string repoIndexURL;
         private string repoURL;
         private Http.Http http;
         private Stream stream;
@@ -35,12 +34,11 @@ namespace Hi3Helper.Shared.GameConversion
         private FileInfo FileInfo;
         private FilePropertiesRemote FileIndex;
 
-        public SteamConversion(string targetPath, string repoURL, string repoIndexURL, List<FilePropertiesRemote> FileList, CancellationTokenSource tokenSource)
+        public SteamConversion(string targetPath, string repoURL, List<FilePropertiesRemote> FileList, CancellationTokenSource tokenSource)
         {
             this.sw = Stopwatch.StartNew();
             this.targetPath = targetPath;
             this.repoURL = repoURL;
-            this.repoIndexURL = repoIndexURL;
             this.tokenSource = tokenSource;
             this.http = new Http.Http();
             this.BrokenFileIndexesProperty = FileList;

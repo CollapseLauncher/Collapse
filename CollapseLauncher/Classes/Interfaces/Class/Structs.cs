@@ -26,6 +26,8 @@ namespace CollapseLauncher
         public bool IsCompleted;
         public bool IsCanceled;
         public bool IsRunning;
+
+        public bool IsIncludePerFileIndicator;
     }
 
     public struct GameVersion
@@ -73,6 +75,7 @@ namespace CollapseLauncher
     }
 
     internal readonly struct AssetProperty<T>
+        where T : Enum
     {
         internal AssetProperty(
             string name, T assetType, string source,

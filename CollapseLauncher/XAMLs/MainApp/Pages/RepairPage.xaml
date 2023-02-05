@@ -33,7 +33,7 @@
                     IsReadOnly="True"
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
-                    ItemsSource="{x:Bind statics:PageStatics._GameRepair.RepairAssetEntry}"
+                    ItemsSource="{x:Bind statics:PageStatics._GameRepair.AssetEntry}"
                     Margin="0,0,0,16">
                         <control:DataGrid.Columns>
                             <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>

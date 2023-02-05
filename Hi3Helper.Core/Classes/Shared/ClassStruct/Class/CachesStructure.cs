@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Google.Protobuf;
+using Hi3Helper.Data;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json.Serialization;
 
 namespace Hi3Helper.Shared.ClassStruct
@@ -31,15 +34,12 @@ namespace Hi3Helper.Shared.ClassStruct
     public class DataPropertiesContent
     {
         // Concatenate N and CRC to get the filepath.
-        public string ConcatN
-        {
-            get => $"{N}_{CRC}.unity3d";
-        }
-
-        public string ConcatNRemote
-        {
-            get => $"{N}_{CRC}";
-        }
+        public string ConcatN => $"{N}_{CRC}.unity3d";
+        public string ConcatNRemote => $"{N}_{CRC}";
+        public string BaseURL { get; set; }
+        public string BasePath { get; set; }
+        public string ConcatURL => $"{BaseURL}{ConcatNRemote}";
+        public string ConcatPath => Path.Combine(BasePath, ConverterTool.NormalizePath(ConcatN));
 
         // Filepath for input.
         // You have to concatenate the N with CRC to get the filepath using ConcatN()
@@ -49,6 +49,7 @@ namespace Hi3Helper.Shared.ClassStruct
         // For more information:
         // https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1
         public string CRC { get; set; }
+        public byte[] CRCArray => HexTool.HexToBytesUnsafe(CRC.ToLower());
         public string CRCLower { get => CRC.ToLower(); }
 
         // File size of the cache file.

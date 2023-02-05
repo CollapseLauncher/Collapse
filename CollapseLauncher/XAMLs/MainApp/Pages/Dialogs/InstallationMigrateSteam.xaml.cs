@@ -160,7 +160,7 @@ namespace CollapseLauncher.Dialogs
 
         private async Task StartConversionTask()
         {
-            SteamConversion conversionTool = new SteamConversion(targetPath, repoURL, repoIndexURL, BrokenFileIndexesProperty, tokenSource);
+            SteamConversion conversionTool = new SteamConversion(targetPath, repoURL, BrokenFileIndexesProperty, tokenSource);
 
             conversionTool.ProgressChanged += ConversionProgressChanged;
             await conversionTool.StartConverting();

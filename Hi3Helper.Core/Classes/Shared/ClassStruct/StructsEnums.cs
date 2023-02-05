@@ -44,7 +44,7 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         New = 0,
         Obsolete = 1,
-        Unecessary = 2
+        Unused = 2
     }
 
     public enum HPatchUtilStat
