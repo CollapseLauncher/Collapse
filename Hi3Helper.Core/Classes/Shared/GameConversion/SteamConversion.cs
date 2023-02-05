@@ -29,7 +29,7 @@ namespace Hi3Helper.Shared.GameConversion
         private string CheckStatus;
         private long TotalSizeToRead, TotalRead;
         private int TotalCountToRead, TotalCount;
-        private byte DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
+        private byte DownloadThread = (byte)AppCurrentDownloadThread;
 
         private string FilePath, FileURL;
         private FileInfo FileInfo;

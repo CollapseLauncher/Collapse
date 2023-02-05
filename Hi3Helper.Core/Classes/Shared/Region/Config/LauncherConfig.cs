@@ -55,7 +55,8 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameRepoIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
-        public static int AppCurrentThread = Environment.ProcessorCount;
+        public static int AppCurrentThread { get; set; } = Environment.ProcessorCount;
+        public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }

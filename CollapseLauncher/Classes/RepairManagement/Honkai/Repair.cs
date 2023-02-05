@@ -255,7 +255,7 @@ namespace CollapseLauncher
             // Start downloading asset
             if (assetSize >= _sizeForMultiDownload)
             {
-                await _httpClient.Download(assetURL, assetPath, (byte)_repairThread, true, _token.Token);
+                await _httpClient.Download(assetURL, assetPath, _downloadThreadCount, true, _token.Token);
                 await _httpClient.Merge();
             }
             else

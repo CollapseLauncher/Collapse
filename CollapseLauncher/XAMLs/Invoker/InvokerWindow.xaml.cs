@@ -46,7 +46,7 @@ namespace CollapseLauncher
 
                 Updater updater = new Updater(m_arguments.Updater.AppPath,
                     m_arguments.Updater.UpdateChannel.ToString().ToLower(),
-                    (byte)GetAppConfigValue("DownloadThread").ToInt());
+                    (byte)AppCurrentDownloadThread);
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 

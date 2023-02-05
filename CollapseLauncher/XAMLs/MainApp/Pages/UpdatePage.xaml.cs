@@ -90,7 +90,7 @@ namespace CollapseLauncher.Pages
             if (IsPortable) ChannelName += "Portable";
 
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
+            Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)AppCurrentDownloadThread);
             updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
             updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 

@@ -44,7 +44,7 @@ namespace CollapseLauncher
             this.TargetProfile = TargetProfile;
             this.BaseURL = BaseURL;
             this.GameVersion = GameVersion;
-            this.DownloadThread = (byte)GetAppConfigValue("DownloadThread").ToInt();
+            this.DownloadThread = (byte)AppCurrentDownloadThread;
             this.CookbookPath = CookbookPath;
             this.Token = Token;
         }
