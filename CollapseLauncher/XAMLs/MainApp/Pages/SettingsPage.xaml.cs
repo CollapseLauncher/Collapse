@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
@@ -109,6 +110,28 @@ namespace CollapseLauncher.Pages
 
             Directory.CreateDirectory(AppGameLogsFolder);
             (sender as Button).IsEnabled = false;
+        }
+
+        private void ForceRestart(object sender, RoutedEventArgs e)
+        {
+            string execPath = Process.GetCurrentProcess().MainModule.FileName;
+            string workingDir = Path.GetDirectoryName(execPath);
+            string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
+            App.Current.Exit();
+            Thread.Sleep(1000);
+            new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    FileName = launcherPath,
+                    WorkingDirectory = workingDir
+                }
+            }.Start();
+            MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
+            
+            
         }
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
