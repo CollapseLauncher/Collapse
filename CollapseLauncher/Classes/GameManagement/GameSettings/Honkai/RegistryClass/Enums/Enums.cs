@@ -33,10 +33,10 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     internal enum SelectAmbientOcclusion : int { OFF, LOW, HIGH }
 
     /// <summary>
-    /// This selection has 3 name types: Low (0), Medium (1), High (2)<br/>
+    /// This selection has 3 name types: Low (0), Middle (1), High (2)<br/>
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    internal enum SelectVolumetricLight : int { Low, Medium, High }
+    internal enum SelectVolumetricLight : int { Low, Middle, High }
 
     /// <summary>
     /// This selection has 2 name types: Low (0), High (1)<br/>
