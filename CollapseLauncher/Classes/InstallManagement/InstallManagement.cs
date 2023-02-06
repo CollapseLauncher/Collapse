@@ -94,6 +94,8 @@ namespace CollapseLauncher
             this.Token = token;
             this.DownloadProperty = new List<DownloadAddressProperty>();
             this.GameDirPath = GameDirPath;
+            // IMO this should be changed to default from fallback. The other option would be to specify fallback in the
+            // function definition itself
             this.IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVerString);
             this.RepoRemoteURL = DecompressedRemotePath;
             this.DispatchKey = DispatchKey;
@@ -401,6 +403,7 @@ namespace CollapseLauncher
             CountCurrentDownload = 0;
 
             TryUnassignReadOnlyFiles();
+            TryRemoveRedundantHDiffList();
 
             if (CanSkipExtract) return;
 
@@ -442,11 +445,31 @@ namespace CollapseLauncher
 
         private void TryUnassignReadOnlyFiles()
         {
-            foreach (string File in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(GameDirPath, "*", SearchOption.AllDirectories))
             {
-                FileInfo fileInfo = new FileInfo(File);
+                FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.IsReadOnly)
                     fileInfo.IsReadOnly = false;
+            }
+        }
+
+        private void TryRemoveRedundantHDiffList()
+        {
+            foreach (string file in Directory.EnumerateFiles(GameDirPath, "*.txt", SearchOption.TopDirectoryOnly))
+            {
+                string name = Path.GetFileName(file);
+                if (name.StartsWith("deletefiles", StringComparison.OrdinalIgnoreCase)
+                 || name.StartsWith("hdifffiles", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Be careful that the installation process might have some problem since the launcher can't remove HDiff list file: {name}!\r\n{ex}", LogType.Warning, true);
+                    }
+                }
             }
         }
 
@@ -455,7 +478,21 @@ namespace CollapseLauncher
             CountCurrentDownload = 1;
             CountTotalToDownload = 1;
 
-            await StartPreparation();
+            try
+            {
+                await StartPreparation();
+            } catch (Exception ex)
+            {
+                LogWriteLine($"[InstallManagement] Game Conversion Prep failed!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
+                try
+                {
+                    await StartPreparation(forceFallback: true);
+                } catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"[InstallManagement] Failed to fetch from fallback URL.\r\n{fallbackFailedException}", LogType.Error, true);
+                }
+            }
+            
             await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
             await Task.Run(StartConversion);
         }

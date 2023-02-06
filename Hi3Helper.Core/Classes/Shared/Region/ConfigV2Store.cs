@@ -97,10 +97,23 @@ namespace Hi3Helper.Preset
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"[ConfigV2Store] Failed while checking for new metadata!\r\n{ex}\r\nAttemping to use fallback metadata URL.", LogType.Warning, true);
+                try
+                {
+                    using (Http.Http _http = new Http.Http())
+                    using (MemoryStream Stream = new MemoryStream())
+                    {
+                        string URL = string.Format(AppGameConfigV2URLPrefixFallback, (IsPreview ? "preview" : "stable") + "stamp");
+                        await _http.Download(URL, Stream).ConfigureAwait(false);
+                        Stream.Position = 0;
+                        ConfigStamp = (Stamp)JsonSerializer.Deserialize(Stream, typeof(Stamp), StampContext.Default);
+                    }
+                } catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"[ConfigV2Store] Failed while checking for new metadata using fallback CDN.\r\n{fallbackFailedException}", LogType.Error, true);
+                }
                 return false;
             }
-
             return ConfigV2LastUpdate != ConfigStamp?.LastUpdated;
         }
 
@@ -115,20 +128,54 @@ namespace Hi3Helper.Preset
 
                 if (Stamp)
                 {
-                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
-                    if (File.Exists(AppGameConfigV2StampPath))
-                        File.Delete(AppGameConfigV2StampPath);
+                    try
+                    {
+                        URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
+                        if (File.Exists(AppGameConfigV2StampPath))
+                            File.Delete(AppGameConfigV2StampPath);
 
-                    await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                        await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                    } catch (Exception ex)
+                    {
+                        LogWriteLine($"[ConfigV2Store] Failed to download new Config files!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
+                        try
+                        {
+                            URL = string.Format(AppGameConfigV2URLPrefixFallback, (IsPreview ? "preview" : "stable") + "stamp");
+                            if (File.Exists(AppGameConfigV2StampPath))
+                                File.Delete(AppGameConfigV2StampPath);
+
+                            await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                        } catch (Exception fallbackFailedException)
+                        {
+                            LogWriteLine($"[ConfigV2Store] Failed to download new Config files using fallback CDN!\r\n{fallbackFailedException}", LogType.Error, true);
+                        }
+                    }
                 }
 
                 if (Content)
                 {
-                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
-                    if (File.Exists(AppGameConfigV2MetadataPath))
-                        File.Delete(AppGameConfigV2MetadataPath);
+                    try {
+                        URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
+                        if (File.Exists(AppGameConfigV2MetadataPath))
+                            File.Delete(AppGameConfigV2MetadataPath);
 
-                    await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                        await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                    } catch (Exception ex)
+                    {
+                        LogWriteLine($"[ConfigV2Store] Failed to download new Config files!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
+                        try
+                        {
+                            URL = string.Format(AppGameConfigV2URLPrefixFallback, (IsPreview ? "preview" : "stable") + "config");
+                            if (File.Exists(AppGameConfigV2MetadataPath))
+                                File.Delete(AppGameConfigV2MetadataPath);
+
+                            await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                        } catch (Exception fallbackFailedException)
+                        {
+                            LogWriteLine($"[ConfigV2Store] Failed to download new Config files using fallback CDN!\r\n{fallbackFailedException}", LogType.Error, true);
+                        }
+                    }
+                    
                 }
             }
         }

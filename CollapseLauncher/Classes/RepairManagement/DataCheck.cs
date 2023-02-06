@@ -72,7 +72,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string repoURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
+                string repoURL = string.Format(AppGameRepoIndexURLPrefixFallback, CurrentConfigV2.ProfileName);
 
                 using (_httpClient = new Http())
                 {
@@ -86,8 +86,8 @@ namespace CollapseLauncher.Pages
                     }
                     GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
 
-                    string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-
+                    
+                    string indexURL = string.Format(AppGameRepairIndexURLPrefixFallback, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
                     using (memBuffer = new MemoryStream())
                     {
                         _httpClient.DownloadProgress += DataFetchingProgress;

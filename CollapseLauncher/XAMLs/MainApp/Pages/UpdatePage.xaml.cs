@@ -88,16 +88,32 @@ namespace CollapseLauncher.Pages
         {
             string ChannelName = (IsPreview ? "Preview" : "Stable");
             if (IsPortable) ChannelName += "Portable";
-
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
-            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-            updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
+            try
+            {
+                Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt(), false);
+                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
-            await updater.StartFetch();
-            await updater.StartCheck();
-            await updater.StartUpdate();
-            await updater.FinishUpdate();
+                await updater.StartFetch();
+                await updater.StartCheck();
+                await updater.StartUpdate();
+                await updater.FinishUpdate();
+            } catch (Exception)
+            {
+                Console.WriteLine("An exception occured while fetching update files. " +
+                    "The Updater will now attempt to download the update files using the fallback CDN.");
+                try
+                {
+                    Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'),
+                        ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt(), true);
+                } catch (Exception failFallback)
+                {
+                    Console.WriteLine($"FATAL ERROR - UpdatePage. Press any key to exit the application.\n\rStack Trace below:\n\n\n\r{failFallback}");
+                    Console.ReadLine();
+                }
+            }
+            
         }
 
         private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)

@@ -255,7 +255,27 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
+                LogWriteLine($"Failed to load notification push!\r\n{ex}\r\nAttemping to use fallback metadata URL.", LogType.Warning, true);
+                try {
+                    Http _http = new Http(true, 5, 1000, null);
+                    IsLoadNotifComplete = false;
+                    NotificationData = new NotificationPush();
+                    CancellationTokenSource TokenSource = new CancellationTokenSource();
+                    RunTimeoutCancel(TokenSource);
+                    using (_http)
+                    using (MemoryStream buffer = new MemoryStream())
+                    {
+                        await _http.Download(string.Format(AppNotifURLPrefixFallback, (IsPreview ? "preview" : "stable")),
+                                             buffer, null, null, TokenSource.Token);
+                        buffer.Position = 0;
+                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(buffer, typeof(NotificationPush), NotificationPushContext.Default);
+                        IsLoadNotifComplete = true;
+                    }
+                } catch (Exception fallbackFailedException)
+                {
+                    LogWriteLine($"Failed to load notification push using fallback metadata url!\r\n{ex}", LogType.Error, true);
+                }
+                
             }
             GenerateLocalAppNotification();
             LoadLocalNotificationData();

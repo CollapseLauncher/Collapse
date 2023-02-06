@@ -2,6 +2,7 @@
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
   "Author": "misaka10843",
+  
   "_StartupPage": {
     "InitLangSelect": "cn translation",
     "PageTitle": "第一次启动页面",
@@ -39,6 +40,7 @@
     "Pg2ComboBox": "选择游戏",
     "Pg2ComboBoxRegion": "选择区服"
   },
+
   "_DisconnectedPage": {
     "PageTitle": "断开链接",
     "Header1": "你的互联网被",

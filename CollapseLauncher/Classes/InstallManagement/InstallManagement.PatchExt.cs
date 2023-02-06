@@ -30,7 +30,7 @@ namespace CollapseLauncher
         private Dictionary<string, string> RepoList;
         string ConvertStatus;
 
-        public async Task StartPreparation()
+        public async Task StartPreparation(bool forceFallback = false)
         {
             List<FilePropertiesRemote> SourceFileRemote;
             ResetSw();
@@ -47,11 +47,16 @@ namespace CollapseLauncher
             UpdateStatus(InstallStatus);
 
             string RepoListURL = string.Format(AppGameRepoIndexURLPrefix, SourceProfile.ProfileName);
+            string RepoListURLFallback = string.Format(AppGameRepoIndexURLPrefixFallback, SourceProfile.ProfileName);
 
             using (MemoryStream buffer = new MemoryStream())
             {
                 _httpClient.DownloadProgress += FetchIngredientsAPI_Progress;
-                await _httpClient.Download(RepoListURL, buffer, null, null, Token);
+                if (forceFallback == true)
+                {
+                    await _httpClient.Download(RepoListURLFallback, buffer, null, null, Token);
+                }
+                //await _httpClient.Download(RepoListURL, buffer, null, null, Token);
                 _httpClient.DownloadProgress -= FetchIngredientsAPI_Progress;
                 buffer.Position = 0;
                 RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
@@ -59,6 +64,10 @@ namespace CollapseLauncher
 
             RepoRemoteURL = RepoList[GameVersionString] + '/';
             IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, PatchProp.SourceVer);
+            if (forceFallback == true)
+            {
+                IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefixFallback, SourceProfile.ProfileName, PatchProp.SourceVer);
+            }
 
             using (MemoryStream buffer = new MemoryStream())
             {
