@@ -2,7 +2,7 @@
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
   "Author": "misaka10843",
-  
+
   "_StartupPage": {
     "InitLangSelect": "cn translation",
     "PageTitle": "第一次启动页面",
@@ -25,11 +25,12 @@
     "OverlayPrepareFolderTitle": "准备程序文件夹",
     "OverlayPrepareFolderSubtitle": "申请权限...",
     "Pg1NextBtn": "下一步 - 选择游戏",
+    "Pg1_5NextBtn": "下一步 - CDN",
     "Pg1LoadingTitle1": "正在载入游戏列表...",
     "Pg1LoadingSubitle1": "为你准备一份支持的游戏列表...",
     "Pg1LoadingSubitle2": "完成了!随时可以继续!",
     "Pg2NextBtn": "完成 - 进入启动器",
-    "Pg2PrevBtn": "返回 - 选择文件夹",
+    "Pg2PrevBtn": "返回 - 选择 CDN",
     "Pg2Title": "Time to fly~",
     "Pg2Subtitle1_1": "只需再一步就可以玩你的游戏了",
     "Pg2Subtitle1_2": "Collapse Launcher.",
