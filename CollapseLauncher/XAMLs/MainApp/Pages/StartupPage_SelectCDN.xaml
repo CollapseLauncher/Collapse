@@ -35,8 +35,8 @@
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
                 <Image Source="ms-appx:///Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
-                <TextBlock Text="Select CDN" Style="{ThemeResource DisplayTextBlockStyle}"/>
-                <TextBlock Text="Another subtitle" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1_5}" Style="{ThemeResource DisplayTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1_6}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" x:Name="RightPanel">
                 <StackPanel.Transitions>
