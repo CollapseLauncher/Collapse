@@ -22,8 +22,8 @@
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf061;" FontSize="14"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="PrevPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource AccentButtonStyle}" Margin="0, 0, 200, 0"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom" IsEnabled="True"
+            <Button x:Name="PrevPage" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource AccentButtonStyle}"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" IsEnabled="True"
                 Click="PrevPage_Click" CornerRadius="16">
                 <StackPanel Orientation="Horizontal" Margin="8,0">
                     <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf060;" FontSize="14" Margin="0,0,8,0"/>
@@ -56,9 +56,9 @@
                 <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SubtitleCDN_4_5}" FontWeight="Normal"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
-                    <ComboBox PlaceholderText="Select your language" Grid.Row="1"
+                    <ComboBox PlaceholderText="Select a CDN from the list" Grid.Row="1"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                    SelectionChanged="ComboBox_SelectionChanged"/>
+                    SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind CDNList, Mode=OneTime}" Name="CDNSelect"/>
                     <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimary}"/>
                 </StackPanel>
             </StackPanel>
