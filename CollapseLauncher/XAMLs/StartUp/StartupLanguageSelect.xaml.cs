@@ -31,6 +31,7 @@ namespace CollapseLauncher
             string LangID = LanguageNames.ToList()[(sender as ComboBox).SelectedIndex].Value.LangData.LanguageID;
             LoadLocalization(LangID);
             SetAndSaveConfigValue("AppLanguage", LangID);
+            TextBlock_WelcomeMsg.Text = Lang._StartupPage.InitLangSelect; // This *has* to load after the LoadLocalization, otherwise the index is wrong
             NextBtn.IsEnabled = true;
         }
 
