@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 using Windows.Graphics;
 using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -23,6 +24,7 @@ namespace CollapseLauncher
         public static string applyPath = Path.Combine(workingDir, $"ApplyUpdate.exe");
         public static string applyElevatedPath = Path.Combine(workingDir, "_Temp", $"ApplyUpdate.exe");
         public static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
+        public static string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
 
         public UpdaterWindow()
         {
@@ -66,31 +68,32 @@ namespace CollapseLauncher
             }
             catch (Exception)
             {
-                LogWriteLine("An exception occured while fetching update files. " +
-                    "The Updater will now attempt to download the update files using the fallback CDN.", Hi3Helper.LogType.Warning, true);
-                try
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                 {
-                    Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower(), 4, true);
-                    updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-                    updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-
-                    await updater.StartFetch();
-                    await updater.StartCheck();
-                    await updater.StartUpdate();
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        SpeedStatus.Visibility = Visibility.Collapsed;
-                        TimeEstimation.Visibility = Visibility.Collapsed;
-                        ActivitySubStatus.Visibility = Visibility.Collapsed;
-                        ProgressStatus.Visibility = Visibility.Collapsed;
-                    });
-                    await updater.FinishUpdate();
-                } catch (Exception failFallback)
-                {
-                    LogWriteLine($"FATAL ERROR - UpdaterWindow. Press any key to exit the application.\n\rStack Trace below:\n\n\n\r{failFallback}", Hi3Helper.LogType.Error, true);
-                    Console.ReadLine();
-                    this.Close();
+                    WindowsPrincipal principal = new WindowsPrincipal(identity);
+                    if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator)) {
+                        // Ideally this would be localized
+                        LogWriteLine("You are not running as Administrator. The application will now attempt to restart as an Administrator to continue updating.", Hi3Helper.LogType.Warning, false);
+                        // NOTE: Lines 79-81 are not required but have been left for debugging purposes, which could be enabled if there is
+                        // a way to check if the user has Console enabled.
+                        // LogWriteLine("Press any key to continue...", Hi3Helper.LogType.Warning, false);
+                        // LogWriteLine($"\r{ex}", Hi3Helper.LogType.Error, false);
+                        // Console.ReadLine();
+                        this.Close();
+                        new Process()
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                Verb = "runas",
+                                FileName = launcherPath,
+                                WorkingDirectory = workingDir
+                            }
+                        }.Start();
+                    }
                 }
+                // LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                // Console.ReadLine();
             }
         }
 
