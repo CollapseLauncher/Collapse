@@ -59,7 +59,7 @@ namespace CollapseLauncher.Pages
             get
             {
                 List<string> list = new List<string>();
-                list.Add($"Default (No CDN)");
+                list.Add($"Default (GitHub)");
                 list.Add($"Statically");
                 return list;
             }
