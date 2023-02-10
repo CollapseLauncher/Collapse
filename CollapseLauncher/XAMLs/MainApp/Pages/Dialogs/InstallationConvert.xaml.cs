@@ -145,7 +145,7 @@ namespace CollapseLauncher.Dialogs
             });
         }
 
-        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile, bool forceFallback = false)
+        private async Task<string> FetchDataIntegrityURL(PresetConfigV2 Profile)
         {
             Http _Http = new Http();
             Dictionary<string, string> _RepoList;
@@ -316,14 +316,7 @@ namespace CollapseLauncher.Dialogs
                 SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
             } catch (Exception ex)
             {
-                LogWriteLine($"Failed to fetch integrity metadata from URL.\r\n{ex}\r\nAttemping to use fallback.");
-                try
-                {
-                    SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile, forceFallback: true);
-                } catch (Exception failedFallbackException)
-                {
-                    LogWriteLine($"Failed to load metadata from fallback URL.\r\n{failedFallbackException}");
-                }
+                LogWriteLine($"Failed to fetch integrity metadata from URL.\r\n{ex}");
             }
             
 
@@ -389,15 +382,7 @@ namespace CollapseLauncher.Dialogs
                 await Converter.StartPreparation();
             } catch (Exception ex)
             {
-                LogWriteLine($"[InstallConvertXAML] Game Conversion Prep failed!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
-                try
-                {
-                    await Converter.StartPreparation(forceFallback: true);
-                }
-                catch (Exception fallbackFailedException)
-                {
-                    LogWriteLine($"[InstallConvertXAML] Failed to fetch from fallback URL.\r\n{fallbackFailedException}", LogType.Error, true);
-                }
+                LogWriteLine($"[InstallConvertXAML] Game Conversion Prep failed!\r\n{ex}", LogType.Warning, true);
             }
             
             

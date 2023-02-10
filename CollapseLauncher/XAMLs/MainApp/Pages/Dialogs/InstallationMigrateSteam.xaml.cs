@@ -84,13 +84,9 @@ namespace CollapseLauncher.Dialogs
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
 
-        public async Task DoGetRepoURL(bool forceFallback = false)
+        public async Task DoGetRepoURL()
         {
             repoListURL = string.Format(AppGameRepoIndexURLPrefix, CurrentConfigV2.ProfileName);
-            if (forceFallback == true)
-            {
-                repoListURL = string.Format(AppGameRepoIndexURLPrefixFallback, CurrentConfigV2.ProfileName);
-            }
 
             using (Http _client = new Http())
             using (MemoryStream s = new MemoryStream())
@@ -98,14 +94,7 @@ namespace CollapseLauncher.Dialogs
                 await _client.Download(repoListURL, s, null, null, tokenSource.Token);
                 Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
                 repoURL = repoList[regionResourceProp.data.game.latest.version] + '/';
-                if (forceFallback == true)
-                {
-                    repoIndexURL = string.Format(AppGameRepairIndexURLPrefixFallback, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-                } else
-                {
-                    repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-                }
-                
+                repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
             }
         }
 

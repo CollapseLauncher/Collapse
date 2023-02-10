@@ -14,7 +14,7 @@ namespace CollapseLauncher
         long reindexTime;
         byte downloadThread;
 
-        public Reindexer(string filePath, string clientVer, byte downloadThread) : base(filePath, "", downloadThread, true)
+        public Reindexer(string filePath, string clientVer, byte downloadThread) : base(filePath, "", downloadThread)
         {
             // FIXME: Convert all GitHub repo strings to CDN which is globally accessible (incl. China)
             // Current fix is that we set it to true to force FallbackRepoURL use

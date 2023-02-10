@@ -19,7 +19,6 @@ namespace CollapseLauncher
         private string TargetPath;
         private string TempPath;
         private string RepoURL = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/{0}/";
-        private string FallbackRepoURL = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/{0}/";
         private Prop FileProp = new Prop();
         private List<fileProp> UpdateFiles = new List<fileProp>();
         private CancellationTokenSource TokenSource = new CancellationTokenSource();
@@ -37,16 +36,10 @@ namespace CollapseLauncher
 
         private byte DownloadThread;
 
-        public Updater(string TargetFolder, string ChannelName, byte DownloadThread, bool useFallback)
+        public Updater(string TargetFolder, string ChannelName, byte DownloadThread)
         {
             this._httpClient = new Http();
-            if (useFallback == true)
-            {
-                this.ChannelURL = string.Format(FallbackRepoURL, ChannelName);
-            } else
-            {
-                this.ChannelURL = string.Format(RepoURL, ChannelName);
-            }
+            this.ChannelURL = string.Format(RepoURL, ChannelName);
             this.TargetPath = NormalizePath(TargetFolder);
             this.TempPath = Path.Combine(TargetPath, "_Temp");
             this.DownloadThread = DownloadThread;

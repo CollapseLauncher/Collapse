@@ -53,7 +53,7 @@ namespace CollapseLauncher
 
         public void Dispose() => this._http?.Dispose();
 
-        public async Task StartPreparation(bool forceFallback = false)
+        public async Task StartPreparation()
         {
             List<FilePropertiesRemote> SourceFileRemote;
             List<FilePropertiesRemote> TargetFileRemote;
@@ -65,12 +65,7 @@ namespace CollapseLauncher
 
             using (MemoryStream buffer = new MemoryStream())
             {
-                if (forceFallback == true) {
-                    string.Format(AppGameRepairIndexURLPrefixFallback, SourceProfile.ProfileName, this.GameVersion);
-                } else
-                {
-                    string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
-                }
+                string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 this._http.DownloadProgress += FetchIngredientsAPI_Progress;
                 await this._http.Download(URL, buffer, null, null, Token);
@@ -80,14 +75,7 @@ namespace CollapseLauncher
             }
             using (MemoryStream buffer = new MemoryStream())
             {
-                if (forceFallback == true)
-                {
-                    URL = string.Format(AppGameRepairIndexURLPrefixFallback, TargetProfile.ProfileName, this.GameVersion);
-                }
-                else
-                {
-                    URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
-                }
+                URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 this._http.DownloadProgress += FetchIngredientsAPI_Progress;
                 await this._http.Download(URL, buffer, null, null, Token);

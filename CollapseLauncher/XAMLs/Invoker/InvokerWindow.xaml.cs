@@ -46,7 +46,7 @@ namespace CollapseLauncher
 
                 Updater updater = new Updater(m_arguments.Updater.AppPath,
                     m_arguments.Updater.UpdateChannel.ToString().ToLower(),
-                    (byte)GetAppConfigValue("DownloadThread").ToInt(), false);
+                    (byte)GetAppConfigValue("DownloadThread").ToInt());
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
@@ -57,19 +57,7 @@ namespace CollapseLauncher
             {
                 //LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 //Console.ReadLine();
-                LogWriteLine($"An exception occured while fetching update files. " +
-                    $"The Updater will now attempt to download the update files using the fallback CDN", Hi3Helper.LogType.Warning, true);
-                try
-                {
-                    Updater updater = new Updater(m_arguments.Updater.AppPath,
-                        m_arguments.Updater.UpdateChannel.ToString().ToLower(),
-                        (byte)GetAppConfigValue("DownloadThread").ToInt(), true);
-                } catch (Exception failFallback)
-                {
-                    LogWriteLine($"FATAL ERROR - InvokerWindow. Press any key to exit the application.\n\rStack Trace below:\n\n\n\r{failFallback}", Hi3Helper.LogType.Error, true);
-                    Console.ReadLine();
-                    this.Close();
-                }
+                LogWriteLine($"An exception occured while fetching update files. ", Hi3Helper.LogType.Warning, true);
             }
         }
 

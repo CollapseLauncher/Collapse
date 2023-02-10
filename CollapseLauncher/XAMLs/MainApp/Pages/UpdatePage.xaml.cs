@@ -91,7 +91,7 @@ namespace CollapseLauncher.Pages
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             try
             {
-                Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt(), false);
+                Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
@@ -101,17 +101,8 @@ namespace CollapseLauncher.Pages
                 await updater.FinishUpdate();
             } catch (Exception)
             {
-                Console.WriteLine("An exception occured while fetching update files. " +
-                    "The Updater will now attempt to download the update files using the fallback CDN.");
-                try
-                {
-                    Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'),
-                        ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt(), true);
-                } catch (Exception failFallback)
-                {
-                    Console.WriteLine($"FATAL ERROR - UpdatePage. Press any key to exit the application.\n\rStack Trace below:\n\n\n\r{failFallback}");
-                    Console.ReadLine();
-                }
+                Console.WriteLine("An exception occured while fetching update files. ");
+                //Console.ReadLine();
             }
             
         }

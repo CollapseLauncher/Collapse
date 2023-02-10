@@ -94,8 +94,6 @@ namespace CollapseLauncher
             this.Token = token;
             this.DownloadProperty = new List<DownloadAddressProperty>();
             this.GameDirPath = GameDirPath;
-            // IMO this should be changed to default from fallback. The other option would be to specify fallback in the
-            // function definition itself
             this.IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, GameVerString);
             this.RepoRemoteURL = DecompressedRemotePath;
             this.DispatchKey = DispatchKey;
@@ -483,14 +481,7 @@ namespace CollapseLauncher
                 await StartPreparation();
             } catch (Exception ex)
             {
-                LogWriteLine($"[InstallManagement] Game Conversion Prep failed!\r\n{ex}\r\nAttemping to use fallback URL.", LogType.Warning, true);
-                try
-                {
-                    await StartPreparation(forceFallback: true);
-                } catch (Exception fallbackFailedException)
-                {
-                    LogWriteLine($"[InstallManagement] Failed to fetch from fallback URL.\r\n{fallbackFailedException}", LogType.Error, true);
-                }
+                LogWriteLine($"[InstallManagement] Game Conversion Prep failed!\r\n{ex}", LogType.Warning, true);
             }
             
             await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
