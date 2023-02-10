@@ -81,9 +81,7 @@ namespace CollapseLauncher.Pages
             } else
             {
                 SetAndSaveConfigValue("CDNType", s);
-                // 
                 // 1: statically
-                // This doesn't set 
                 switch(s)
                 {
                     case "Statically":
