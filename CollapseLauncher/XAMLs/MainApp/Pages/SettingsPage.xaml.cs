@@ -1,4 +1,4 @@
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -129,27 +129,26 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = false;
         }
 
-        private void ForceRestart(object sender, RoutedEventArgs e)
-        {
-            string execPath = Process.GetCurrentProcess().MainModule.FileName;
-            string workingDir = Path.GetDirectoryName(execPath);
-            string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
-            App.Current.Exit();
-            Thread.Sleep(1000);
-            new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    FileName = launcherPath,
-                    WorkingDirectory = workingDir
-                }
-            }.Start();
-            MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
-            
-            
-        }
+        // For debugging
+        //private void ForceRestart(object sender, RoutedEventArgs e)
+        //{
+        //    string execPath = Process.GetCurrentProcess().MainModule.FileName;
+        //    string workingDir = Path.GetDirectoryName(execPath);
+        //    string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
+        //    App.Current.Exit();
+        //    Thread.Sleep(1000);
+        //    new Process
+        //    {
+        //        StartInfo = new ProcessStartInfo
+        //        {
+        //            UseShellExecute = true,
+        //            Verb = "runas",
+        //            FileName = launcherPath,
+        //            WorkingDirectory = workingDir
+        //        }
+        //    }.Start();
+        //    MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
+        //}
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
         {

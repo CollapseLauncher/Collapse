@@ -133,12 +133,12 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button x:Name="ViewSetupPage" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="StartSetupPage" Style="{ThemeResource AccentButtonStyle}">
+                            <!--<Button x:Name="ViewSetupPage" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="StartSetupPage" Style="{ThemeResource AccentButtonStyle}">
                                 <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
                                     <TextBlock Text="Start Setup" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                 </StackPanel>
-                            </Button>
+                            </Button>-->
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
