@@ -47,6 +47,7 @@ namespace CollapseLauncher
                 Console.WriteLine("Initializing...", LogType.Empty);
 
                 InitializeAppSettings();
+                CheckRepoStatus();
                 ParseArguments(args);
 
                 switch (m_appMode)
