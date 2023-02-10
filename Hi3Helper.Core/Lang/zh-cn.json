@@ -253,6 +253,7 @@
     "Debug_Console": "显示控制台",
     "Language": "语言设置",
     "LanguageEntry": "{0} by {1}",
+    "CDN": "Download Server (CDN)",
     "AppLang_ApplyNeedRestart": "*你需要重新启动应用程序,以便语言修改生效.",
     "AppThemes": "主题",
     "AppThemes_Default": "默认（使用系统设置）",

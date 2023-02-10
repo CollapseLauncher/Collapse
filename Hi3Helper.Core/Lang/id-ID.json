@@ -275,6 +275,7 @@
 
     "Language": "Bahasa",
     "LanguageEntry": "{0} oleh {1}",
+    "CDN": "Download Server (CDN)",
 
     "AppThemes": "Tema",
     "AppThemes_Default": "Asal (Menggunakan pengaturan sistem)",

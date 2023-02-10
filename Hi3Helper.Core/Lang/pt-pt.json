@@ -273,6 +273,7 @@
 
     "Language": "Idioma",
     "LanguageEntry": "{0} por {1}",
+    "CDN": "Download Server (CDN)",
     "AppLang_ApplyNeedRestart": "*Tens de reiniciar a aplicação para a mudança de idioma entrar em efeito.",
 
     "AppThemes": "Temas",

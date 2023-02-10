@@ -24,6 +24,11 @@
                             <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" SelectionChanged="LanguageChanged"/>
                             <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.CDN}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                            <ComboBox x:Name="CDNSelector" MinWidth="256" CornerRadius="14" SelectionChanged="CDNChanged"/>
+                            <TextBlock x:Name="CDNSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                        </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,-8,0,16">
                             <RadioButtons x:Name="AppThemeSelection" SelectedIndex="{x:Bind CurrentThemeSelection, Mode=TwoWay}">

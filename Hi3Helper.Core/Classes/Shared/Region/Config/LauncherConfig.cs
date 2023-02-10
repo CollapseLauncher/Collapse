@@ -63,6 +63,7 @@ namespace Hi3Helper.Shared.Region
         public static bool IsPortable = false;
         public static bool IsAppThemeNeedRestart = false;
         public static bool IsAppLangNeedRestart = false;
+        public static bool IsAppCDNNeedRestart = false;
         public static bool IsFirstInstall = false;
         public static bool ForceInvokeUpdate = false;
         public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";

@@ -275,6 +275,7 @@
 
     "Language": "App Language",
     "LanguageEntry": "{0} by {1}",
+    "CDN": "Download Server (CDN)",
     "AppLang_ApplyNeedRestart": "*You need to restart the app for language changes to take effect.",
 
     "AppThemes": "App Themes",
