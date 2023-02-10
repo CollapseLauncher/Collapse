@@ -68,16 +68,45 @@ namespace CollapseLauncher.Pages
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string s = CDNSelect.SelectedItem.ToString();
+            // LogWriteLine("Before if:" + s);
             // There is probably a better way to do this but it's 3AM and I don't feel like thinking about
             // Complex data types so it's a problem for either me or the person looking at this code. Sorry in advance ;-;
             if (s.Contains("Default")){
                 SetAndSaveConfigValue("CDNType", "Default");
+                AppNotifURLPrefix = AppNotifURLPrefix.Replace(AppNotifURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/notification_{0}.json");
+                AppGameConfigURLPrefix = AppGameConfigURLPrefix.Replace(AppGameConfigURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadata_{0}.json");
+                AppGameConfigV2URLPrefix = AppGameConfigV2URLPrefix.Replace(AppGameConfigV2URLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadatav2_{0}.json");
+                AppGameRepairIndexURLPrefix = AppGameRepairIndexURLPrefix.Replace(AppGameRepairIndexURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/{1}/index");
+                AppGameRepoIndexURLPrefix = AppGameRepoIndexURLPrefix.Replace(AppGameRepoIndexURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/repo");
             } else
             {
                 SetAndSaveConfigValue("CDNType", s);
+                // 
+                // 1: statically
+                // This doesn't set 
+                switch(s)
+                {
+                    case "Statically":
+                        // there is probably a better way to do this instead of replacing the entire string (maybe prepending?)
+                        // LogWriteLine(s);
+                        // LogWriteLine("Statically case");
+                        AppNotifURLPrefix = AppNotifURLPrefix.Replace(AppNotifURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/notification_{0}.json");
+                        AppGameConfigURLPrefix = AppGameConfigURLPrefix.Replace(AppGameConfigURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadata_{0}.json");
+                        AppGameConfigV2URLPrefix = AppGameConfigV2URLPrefix.Replace(AppGameConfigV2URLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadatav2_{0}.json");
+                        AppGameRepairIndexURLPrefix = AppGameRepairIndexURLPrefix.Replace(AppGameRepairIndexURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/{1}/index");
+                        AppGameRepoIndexURLPrefix = AppGameRepoIndexURLPrefix.Replace(AppGameRepoIndexURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/repo");
+                        break;
+                }   
             }
             NextPage.IsEnabled = true;
             // LogWriteLine(GetAppConfigValue("CDNType").ToString());
+            // LogWriteLine("-----------------");
+            // LogWriteLine(AppNotifURLPrefix);
+            // LogWriteLine(AppGameConfigURLPrefix);
+            // LogWriteLine(AppGameConfigV2URLPrefix);
+            // LogWriteLine(AppGameRepairIndexURLPrefix);
+            // LogWriteLine(AppGameRepoIndexURLPrefix);
+            // LogWriteLine("-----------------");
         }
     }
 }
