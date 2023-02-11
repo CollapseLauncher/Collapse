@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
@@ -193,6 +194,12 @@ namespace CollapseLauncher
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new GenshinSettings(preset);
+                    PageStatics._GameRepair = null;
+                    PageStatics._GameCache = null;
+                    break;
+                case GameType.StarRail:
+                    PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
+                    PageStatics._GameSettings = new StarRailSettings(preset);
                     PageStatics._GameRepair = null;
                     PageStatics._GameCache = null;
                     break;
