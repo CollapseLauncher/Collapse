@@ -6,17 +6,15 @@ using Microsoft.Win32;
 using System.IO;
 using static CollapseLauncher.GameSettings.Statics;
 
-namespace CollapseLauncher.GameSettings.Honkai
+namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class HonkaiSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
+    internal class GenshinSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
     {
         public CustomArgs SettingsCustomArgument { get; set; }
-        public PersonalGraphicsSettingV2 SettingsGraphics { get; set; }
-        public PersonalAudioSetting SettingsAudio { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
 
-        public HonkaiSettings(PresetConfigV2 gameConfig)
+        public GenshinSettings(PresetConfigV2 gameConfig)
         {
             // Init Root Registry Key
             RegistryPath = Path.Combine(RegistryRootPath, gameConfig.InternalGameNameInConfig);
@@ -35,11 +33,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         private void InitializeSettings()
         {
             // Load Settings
-            SettingsGraphics = PersonalGraphicsSettingV2.Load();
-            SettingsAudio = PersonalAudioSetting.Load();
             SettingsCustomArgument = CustomArgs.Load();
-            SettingsScreen = ScreenSettingData.Load();
-            SettingsCollapseScreen = CollapseScreenSetting.Load();
         }
 
         public void RevertSettings() => InitializeSettings();
@@ -47,11 +41,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         public void SaveSettings()
         {
             // Save Settings
-            SettingsGraphics.Save();
-            SettingsAudio.Save();
             SettingsCustomArgument.Save();
-            SettingsScreen.Save();
-            SettingsCollapseScreen.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
