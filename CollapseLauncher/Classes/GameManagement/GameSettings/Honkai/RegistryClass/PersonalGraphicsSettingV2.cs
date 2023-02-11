@@ -93,9 +93,9 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// <summary>
         /// This defines "<c>Volumetric Light</c>" combobox In-game settings -> Video.<br/><br/>
         /// <inheritdoc cref="SelectVolumetricLight"/><br/>
-        /// Default: Medium
+        /// Default: Middle
         /// </summary>
-        public SelectVolumetricLight VolumetricLight { get; set; } = SelectVolumetricLight.Medium;
+        public SelectVolumetricLight VolumetricLight { get; set; } = SelectVolumetricLight.Middle;
 
         /// <summary>
         /// This defines "<c>Post Processing</c>" checkbox In-game settings -> Video.<br/><br/>
@@ -151,7 +151,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 object? value = RegistryRoot.GetValue(_ValueName, null);
 
@@ -173,7 +173,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

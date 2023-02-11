@@ -47,7 +47,7 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 object? value = RegistryRoot.GetValue(_ValueName, null);
 
@@ -69,7 +69,7 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = JsonSerializer.Serialize(this, typeof(CollapseScreenSetting), CollapseScreenSettingContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

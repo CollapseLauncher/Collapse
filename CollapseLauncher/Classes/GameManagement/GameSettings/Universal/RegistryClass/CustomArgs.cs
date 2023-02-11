@@ -35,7 +35,7 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 return new CustomArgs { CustomArgumentValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "" };
             }
@@ -50,7 +50,7 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not intialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 RegistryRoot.SetValue(_ValueName, CustomArgumentValue, RegistryValueKind.String);
             }
