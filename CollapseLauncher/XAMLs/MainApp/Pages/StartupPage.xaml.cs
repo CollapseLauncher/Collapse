@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -13,6 +14,7 @@ using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -53,6 +55,7 @@ namespace CollapseLauncher.Pages
                             AppGameFolder = folder;
                             SetAppConfigValue("GameFolder", AppGameFolder);
                             Selected = true;
+                            Logger._log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
                         }
                         else
                         {

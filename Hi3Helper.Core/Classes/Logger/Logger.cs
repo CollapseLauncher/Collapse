@@ -4,64 +4,12 @@ using System.IO;
 namespace Hi3Helper
 {
 #nullable enable
-    public enum LogType { Error, Warning, Default, Scheme, Empty, NoTag, Game }
     public static class Logger
     {
-        public static StreamWriter? logstream;
-        internal static string? logdir,
-                               filename;
-        public static bool EnableConsole = true;
-        private static ILogger? logger;
-        public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
-
-        public static void InitLog(bool enableLog = true, string? defaultLogLocation = null)
-        {
-            if (!EnableConsole)
-                logger = new DummyLogger();
-            else
-                logger = new ConsoleLogger();
-
-            if (enableLog)
-            {
-                logdir = string.IsNullOrEmpty(defaultLogLocation) ?
-                        Directory.GetCurrentDirectory()
-                      : defaultLogLocation;
-
-                if (!Directory.Exists(logdir))
-                    Directory.CreateDirectory(logdir);
-                filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.log";
-
-                if (logstream != null)
-                {
-                    logstream.Dispose();
-                }
-                try
-                {
-                    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
-                }
-                catch
-                {
-                    filename = $"log-{GetCurrentTime("yyyy-MM-dd")}.{Path.GetFileNameWithoutExtension(Path.GetTempFileName())}.log";
-                    logstream = new StreamWriter(Path.Combine(logdir, filename), true);
-                }
-            }
-        }
-
-        public static void LogWriteLine() => logger?.LogWriteLine(string.Empty, LogType.Empty);
-        public static void LogWriteLine(
-            string i = "",
-            LogType a = LogType.Default,
-            bool writeToLog = false) =>
-            logger?.LogWriteLine(i, a, writeToLog);
-
-        public static void LogWrite(
-            string i = "",
-            LogType a = LogType.Default,
-            bool writeToLog = false,
-            bool overwriteCurLine = false) =>
-            logger?.LogWrite(i, a, writeToLog, overwriteCurLine);
-
-        public static void WriteLog(string i = "", LogType a = LogType.Default) =>
-            logger?.WriteLog(i, a);
+        public static ILog? _log { get; set; }
+        public static void LogWriteLine() => _log?.LogWriteLine();
+        public static void LogWriteLine(string line, LogType type = LogType.Default, bool writeToLog = false) => _log?.LogWriteLine(line, type, writeToLog);
+        public static void LogWrite(string line, LogType type = LogType.Default, bool writeToLog = false, bool resetLinePosition = false) => _log?.LogWrite(line, type, writeToLog, resetLinePosition);
+        public static void WriteLog(string line, LogType type = LogType.Default) => _log?.WriteLog(line, type);
     }
 }

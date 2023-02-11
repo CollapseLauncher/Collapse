@@ -37,9 +37,9 @@ namespace CollapseLauncher
                     (int, long) count = await FetchByType(type, _httpClient, returnAsset);
 
                     // Write a log about the metadata
-                    LogWriteLine("Cache Metadata:"
-                        + $"\r\n\t\tCache Count = {count.Item1}"
-                        + $"\r\n\t\tCache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag);
+                    LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
+                    LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
+                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
 
                     // Increment the Total Size and Count
                     _progressTotalCount += count.Item1;

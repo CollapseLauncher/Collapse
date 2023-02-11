@@ -31,7 +31,11 @@ namespace Hi3Helper.Shared.Region
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        public static string AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
+        public static string AppGameFolder
+        {
+            get => GetAppConfigValue("GameFolder").ToString();
+            set => SetAppConfigValue("GameFolder", value);
+        }
         public static string[] AppCurrentArgument;
         public static string AppExecutablePath
         {
@@ -72,6 +76,11 @@ namespace Hi3Helper.Shared.Region
         public static bool IsAppThemeNeedRestart = false;
         public static bool IsAppLangNeedRestart = false;
         public static bool IsFirstInstall = false;
+        public static bool IsConsoleEnabled
+        {
+            get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
+            set => SetAppConfigValue("EnableConsole", value);
+        }
         public static bool ForceInvokeUpdate = false;
         public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
@@ -82,7 +91,7 @@ namespace Hi3Helper.Shared.Region
             { "CurrentBackground", new IniValue("ms-appx:///Assets/BG/default.png") },
             { "DownloadThread", new IniValue(4) },
             { "ExtractionThread", new IniValue(0) },
-            { "GameFolder", new IniValue() },
+            { "GameFolder", new IniValue(Path.Combine(AppDataFolder, "GameFolder")) },
 #if DEBUG
             { "EnableConsole", new IniValue(true) },
 #else
@@ -111,60 +120,44 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitAppPreset()
         {
-            IsFirstInstall = !File.Exists(AppConfigFile);
+            // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
-
-            if (!Directory.Exists(AppDataFolder))
-                Directory.CreateDirectory(AppDataFolder);
-
-            appIni.Profile = new IniFile();
             appIni.ProfilePath = AppConfigFile;
 
-            if (IsFirstInstall)
+            // Set user permission check to its default and check for the existence of config file.
+            bool IsConfigFileExist = File.Exists(appIni.ProfilePath);
+
+            // If the config file is exist, then continue to load the file
+            appIni.Profile = new IniFile();
+            if (IsConfigFileExist)
+            {
+                appIni.Profile.Load(appIni.ProfilePath);
+            }
+
+            // If the section doesn't exist, then add the section template
+            if (!appIni.Profile.ContainsSection(SectionName))
             {
                 appIni.Profile.Add(SectionName, AppSettingsTemplate);
-                SaveAppConfig();
             }
-            else
-            {
-                LoadAppConfig();
-                CheckAndSetDefaultConfigValue();
-            }
+
+            // Check and assign default for the null and non-existence values.
+            CheckAndSetDefaultConfigValue();
+
+            // Set the startup background path and GameFolder to check if user has permission.
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
+            string GameFolder = GetAppConfigValue("GameFolder").ToString();
 
-            bool IsGameFolderExist = Directory.Exists(GetAppConfigValue("GameFolder").ToString());
+            // Check if user has permission
+            bool IsUserHasPermission = ConverterTool.IsUserHasPermission(GameFolder);
 
-            // The app will also set IsFirstInstall to True if GameFolder value is empty.
-            // Or if the directory doesn't exist or user doesn't have permission.
-            IsFirstInstall = !(IsGameFolderExist
-                && ConverterTool.IsUserHasPermission(GetAppConfigValue("GameFolder").ToString()))
-                || string.IsNullOrEmpty(GetAppConfigValue("GameFolder").ToString());
-
-            try
-            {
-                if (IsGameFolderExist)
-                    AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString());
-                else
-                    AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
-            }
-            catch (ArgumentNullException)
-            {
-                IsFirstInstall = true;
-            }
+            // Assign boolean if IsConfigFileExist and IsUserHasPermission.
+            IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
         }
 
         private static void InitScreenResSettings()
         {
             ScreenProp.InitScreenResolution();
             GetScreenResolutionString();
-        }
-
-        public static void InitConsoleSetting(bool forceShowConsole = false)
-        {
-            if (GetAppConfigValue("EnableConsole").ToBool() || forceShowConsole)
-                ShowConsoleWindow();
-            else
-                HideConsoleWindow();
         }
 
         public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
@@ -187,7 +180,6 @@ namespace Hi3Helper.Shared.Region
             }
             if (GetAppConfigValue("DownloadThread").ToInt() > 8)
                 SetAppConfigValue("DownloadThread", 8);
-            SaveAppConfig();
         }
     }
 }

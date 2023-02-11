@@ -105,16 +105,16 @@ namespace Hi3Helper
         }
 
         [DllImport("kernel32.dll")]
-        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+        public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
         [DllImport("kernel32.dll")]
-        private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+        public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetConsoleWindow();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int nStdHandle);
+        public static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
@@ -164,47 +164,6 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
-
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
-
-        public static void HideConsoleWindow()
-        {
-            var handle = GetConsoleWindow();
-            ShowWindow(handle, SW_HIDE);
-            EnableConsole = false;
-            WriteLog($"Console toggle: Hidden", LogType.Default);
-        }
-
-        public static void ShowConsoleWindow()
-        {
-            var handle = GetConsoleWindow();
-            ShowWindow(handle, SW_SHOW);
-            EnableConsole = true;
-            WriteLog($"Console toggle: Show", LogType.Default);
-        }
-
-        public static void InitializeConsole(bool writeToLog = true, string defaultLogLocation = null)
-        {
-            AllocConsole();
-            m_consoleHandle = GetStdHandle(-11);
-            if (!GetConsoleMode(m_consoleHandle, out var lpMode))
-            {
-                LogWriteLine("failed to get output console mode", LogType.Error);
-                Console.ReadKey();
-                return;
-            }
-            lpMode |= 0xCu;
-            if (!SetConsoleMode(m_consoleHandle, lpMode))
-            {
-                LogWriteLine($"failed to set output console mode, error code {GetLastError()}", LogType.Error);
-                Console.ReadKey();
-            }
-            else
-            {
-                InitLog(writeToLog, defaultLogLocation);
-            }
-        }
 
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 

@@ -129,7 +129,7 @@ namespace CollapseLauncher.Dialogs
 
             foreach (var file in BrokenFileIndexesProperty)
             {
-                LogWriteLine($"\t{file.N} {SummarizeSizeSimple(file.S)}", LogType.Empty);
+                LogWriteLine($"\t{file.N} {SummarizeSizeSimple(file.S)}", LogType.Default);
             }
 
             switch (await Dialog_SteamConversionDownloadDialog(Content, SummarizeSizeSimple(TotalSizeOfBrokenFile)))

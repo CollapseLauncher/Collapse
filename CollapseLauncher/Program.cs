@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using Windows.UI.ViewManagement;
 using WinRT;
@@ -37,19 +38,18 @@ namespace CollapseLauncher
             IsPortable = true;
 #endif
             AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            InitializeConsole(true, AppGameLogsFolder);
 
             try
             {
                 InitAppPreset();
-                InitConsoleSetting();
-
-                Console.WriteLine("App Version: {0} {3} Started\r\nOS Version: {1}\r\nCurrent Username: {2}",
+                string logPath = AppGameLogsFolder;
+                _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);
+                
+                LogWriteLine(string.Format("You're running v{0} {3} under {1} as {2}",
                     AppCurrentVersion,
                     GetVersionString(),
                     Environment.UserName,
-                    (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : ""));
-                Console.WriteLine("Initializing...", LogType.Empty);
+                    (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : "")), LogType.Scheme, true);
 
                 InitializeAppSettings();
                 ParseArguments(args);
@@ -57,22 +57,22 @@ namespace CollapseLauncher
                 switch (m_appMode)
                 {
                     case AppMode.Launcher:
-                        InitConsoleSetting();
+                        if (!IsConsoleEnabled)
+                        {
+                            LoggerConsole.DisposeConsole();
+                            _log = new LoggerNull(logPath, Encoding.UTF8);
+                        }
                         break;
                     case AppMode.ElevateUpdater:
-                        InitConsoleSetting();
                         RunElevateUpdate();
                         return;
                     case AppMode.Reindex:
-                        InitConsoleSetting(true);
                         new Reindexer(m_arguments.Reindexer.AppPath, m_arguments.Reindexer.Version, 4).RunReindex();
                         return;
                     case AppMode.InvokerTakeOwnership:
-                        InitConsoleSetting(true);
                         new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
                         return;
                     case AppMode.InvokerMigrate:
-                        InitConsoleSetting(true);
                         if (m_arguments.Migrate.IsBHI3L)
                             new Migrate().DoMigrationBHI3L(
                                 m_arguments.Migrate.GameVer,
@@ -85,7 +85,6 @@ namespace CollapseLauncher
                                 m_arguments.Migrate.OutputPath);
                         return;
                     case AppMode.InvokerMoveSteam:
-                        InitConsoleSetting(true);
                         new Migrate().DoMoveSteam(
                             m_arguments.Migrate.InputPath,
                             m_arguments.Migrate.OutputPath,
@@ -114,7 +113,6 @@ namespace CollapseLauncher
             {
                 Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}", LogType.Error, true);
                 Console.WriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
-                InitConsoleSetting(true);
                 Console.ReadLine();
                 return;
             }
@@ -136,7 +134,6 @@ namespace CollapseLauncher
 
         public static void InitializeAppSettings()
         {
-            InitLog(true, AppGameLogsFolder);
             InitializeLocale();
             if (IsFirstInstall)
             {

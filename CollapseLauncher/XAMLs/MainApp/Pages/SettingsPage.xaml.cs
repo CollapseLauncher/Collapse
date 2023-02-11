@@ -3,6 +3,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +12,7 @@ using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -83,10 +85,9 @@ namespace CollapseLauncher.Pages
         {
             if (Directory.Exists(AppGameLogsFolder))
             {
-                logstream.Dispose();
-                logstream = null;
+                _log.Dispose();
                 Directory.Delete(AppGameLogsFolder, true);
-                InitLog(true, AppDataFolder);
+                _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
             }
 
             Directory.CreateDirectory(AppGameLogsFolder);
@@ -261,13 +262,13 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("EnableConsole").ToBool();
             set
             {
+                _log.Dispose();
                 if (value)
-                    ShowConsoleWindow();
+                    _log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
                 else
-                    HideConsoleWindow();
+                    _log = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
 
                 SetAndSaveConfigValue("EnableConsole", value);
-                InitLog(true, AppDataFolder);
             }
         }
         public int CurrentThemeSelection
