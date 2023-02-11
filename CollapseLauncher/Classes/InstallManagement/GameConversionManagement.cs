@@ -65,7 +65,7 @@ namespace CollapseLauncher
 
             using (MemoryStream buffer = new MemoryStream())
             {
-                URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
+                string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
                 ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                 this._http.DownloadProgress += FetchIngredientsAPI_Progress;
                 await this._http.Download(URL, buffer, null, null, Token);

@@ -13,6 +13,7 @@
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
                 public string Language { get; set; } = LangFallback?._SettingsPage.Language;
                 public string LanguageEntry { get; set; } = LangFallback?._SettingsPage.LanguageEntry;
+                public string CDN { get; set; } = LangFallback?._SettingsPage.CDN;
                 public string AppThemes { get; set; } = LangFallback?._SettingsPage.AppThemes;
                 public string AppThemes_Default { get; set; } = LangFallback?._SettingsPage.AppThemes_Default;
                 public string AppThemes_Light { get; set; } = LangFallback?._SettingsPage.AppThemes_Light;

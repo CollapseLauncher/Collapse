@@ -53,10 +53,11 @@ namespace CollapseLauncher
                 UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
                 CurrentVersionLabel.Text = AppCurrentVersion;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
-                Console.ReadLine();
+                //LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                //Console.ReadLine();
+                LogWriteLine($"An exception occured while fetching update files. ", Hi3Helper.LogType.Warning, true);
             }
         }
 

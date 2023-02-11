@@ -476,7 +476,14 @@ namespace CollapseLauncher
             CountCurrentDownload = 1;
             CountTotalToDownload = 1;
 
-            await StartPreparation();
+            try
+            {
+                await StartPreparation();
+            } catch (Exception ex)
+            {
+                LogWriteLine($"[InstallManagement] Game Conversion Prep failed!\r\n{ex}", LogType.Warning, true);
+            }
+            
             await RepairIngredients(await VerifyIngredients(SourceFileManifest, IngredientPath), IngredientPath);
             await Task.Run(StartConversion);
         }

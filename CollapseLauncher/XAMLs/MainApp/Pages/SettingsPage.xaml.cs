@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
@@ -35,6 +36,7 @@ namespace CollapseLauncher.Pages
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
             GetLanguageList();
+            GetCDNList();
         }
 
         private void GetLanguageList()
@@ -54,6 +56,22 @@ namespace CollapseLauncher.Pages
 
             LanguageSelector.ItemsSource = _out;
             LanguageSelector.SelectedIndex = SelectedIndex;
+        }
+
+        private void GetCDNList()
+        {
+            List<string> list = new List<string>();
+            string CurrentCDN = GetAppConfigValue("CDNType").ToString();
+            list.Add($"Default (GitHub)");
+            list.Add($"Statically");
+            CDNSelector.ItemsSource = list;
+            if (CurrentCDN.Contains("Default"))
+            {
+                CDNSelector.SelectedIndex = 0;
+            } else
+            {
+                CDNSelector.SelectedIndex = 1;
+            }
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -111,6 +129,27 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = false;
         }
 
+        // For debugging
+        //private void ForceRestart(object sender, RoutedEventArgs e)
+        //{
+        //    string execPath = Process.GetCurrentProcess().MainModule.FileName;
+        //    string workingDir = Path.GetDirectoryName(execPath);
+        //    string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
+        //    App.Current.Exit();
+        //    Thread.Sleep(1000);
+        //    new Process
+        //    {
+        //        StartInfo = new ProcessStartInfo
+        //        {
+        //            UseShellExecute = true,
+        //            Verb = "runas",
+        //            FileName = launcherPath,
+        //            WorkingDirectory = workingDir
+        //        }
+        //    }.Start();
+        //    MainFrameChanger.ChangeMainFrame(typeof(StartupLanguageSelect));
+        //}
+
         private void ForceUpdate(object sender, RoutedEventArgs e)
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
@@ -139,7 +178,10 @@ namespace CollapseLauncher.Pages
                 return;
             }
         }
-
+        public void StartSetupPage(object sender, RoutedEventArgs e)
+        {
+            MainFrameChanger.ChangeMainFrame(typeof(StartupPage));
+        }
         private void CheckUpdate(object sender, RoutedEventArgs e)
         {
             UpdateLoadingStatus.Visibility = Visibility.Visible;
@@ -228,6 +270,7 @@ namespace CollapseLauncher.Pages
         }
 
         bool EnableLanguageChange = false;
+        bool EnableCDNChange = false;
         private void LanguageChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsAppLangNeedRestart)
@@ -244,6 +287,49 @@ namespace CollapseLauncher.Pages
                 IsAppLangNeedRestart = true;
             }
             EnableLanguageChange = true;
+        }
+
+        private void CDNChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsAppCDNNeedRestart)
+                CDNSelectionWarning.Visibility = Visibility.Visible;
+
+            if (EnableCDNChange)
+            {
+                string s = CDNSelector.SelectedItem.ToString();
+                // Better to call a function
+                if (s.Contains("Default"))
+                {
+                    SetAndSaveConfigValue("CDNType", "Default");
+                    AppNotifURLPrefix = AppNotifURLPrefix.Replace(AppNotifURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/notification_{0}.json");
+                    AppGameConfigURLPrefix = AppGameConfigURLPrefix.Replace(AppGameConfigURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadata_{0}.json");
+                    AppGameConfigV2URLPrefix = AppGameConfigV2URLPrefix.Replace(AppGameConfigV2URLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadatav2_{0}.json");
+                    AppGameRepairIndexURLPrefix = AppGameRepairIndexURLPrefix.Replace(AppGameRepairIndexURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/{1}/index");
+                    AppGameRepoIndexURLPrefix = AppGameRepoIndexURLPrefix.Replace(AppGameRepoIndexURLPrefix, "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/repo");
+                }
+                else
+                {
+                    SetAndSaveConfigValue("CDNType", s);
+                    // 1: statically
+                    switch (s)
+                    {
+                        case "Statically":
+                            // there is probably a better way to do this instead of replacing the entire string (maybe prepending?)
+                            // LogWriteLine(s);
+                            // LogWriteLine("Statically case");
+                            AppNotifURLPrefix = AppNotifURLPrefix.Replace(AppNotifURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/notification_{0}.json");
+                            AppGameConfigURLPrefix = AppGameConfigURLPrefix.Replace(AppGameConfigURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadata_{0}.json");
+                            AppGameConfigV2URLPrefix = AppGameConfigV2URLPrefix.Replace(AppGameConfigV2URLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/metadatav2_{0}.json");
+                            AppGameRepairIndexURLPrefix = AppGameRepairIndexURLPrefix.Replace(AppGameRepairIndexURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/{1}/index");
+                            AppGameRepoIndexURLPrefix = AppGameRepoIndexURLPrefix.Replace(AppGameRepoIndexURLPrefix, "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main/metadata/repair_indexes/{0}/repo");
+                            break;
+                    }
+                }
+                SetAndSaveConfigValue("CDNType", new IniValue(s));
+                CDNSelectionWarning.Visibility = Visibility.Visible;
+                IsAppCDNNeedRestart = true;
+            }
+            EnableCDNChange = true;
         }
 
         public bool IsBGCustom

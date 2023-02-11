@@ -311,7 +311,14 @@ namespace CollapseLauncher.Dialogs
                 Step2ProgressStatus.Text = Lang._InstallConvert.Step2Subtitle;
             });
 
-            SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
+            try
+            {
+                SourceDataIntegrityURL = await FetchDataIntegrityURL(SourceProfile);
+            } catch (Exception ex)
+            {
+                LogWriteLine($"Failed to fetch integrity metadata from URL.\r\n{ex}");
+            }
+            
 
             bool IsChoosen = false;
             string cPath = null;
@@ -370,7 +377,15 @@ namespace CollapseLauncher.Dialogs
             });
 
             Converter.ProgressChanged += Step3ProgressEvents;
-            await Converter.StartPreparation();
+            try
+            {
+                await Converter.StartPreparation();
+            } catch (Exception ex)
+            {
+                LogWriteLine($"[InstallConvertXAML] Game Conversion Prep failed!\r\n{ex}", LogType.Warning, true);
+            }
+            
+            
             Converter.ProgressChanged -= Step3ProgressEvents;
 
             DispatcherQueue.TryEnqueue(() =>

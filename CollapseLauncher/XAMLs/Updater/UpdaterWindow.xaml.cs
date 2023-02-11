@@ -66,7 +66,7 @@ namespace CollapseLauncher
                 });
                 await updater.FinishUpdate();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                 {

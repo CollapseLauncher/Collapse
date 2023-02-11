@@ -60,9 +60,16 @@ namespace CollapseLauncher
                 UpdateStatus();
                 UpdateStopwatch = Stopwatch.StartNew();
 
-                await _httpClient.Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
-                _databuf.Position = 0;
-                FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
+                try
+                {
+                    await _httpClient.Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
+                    _databuf.Position = 0;
+                    FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                
             }
         }
 

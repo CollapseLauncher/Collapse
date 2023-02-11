@@ -86,8 +86,8 @@ namespace CollapseLauncher.Pages
                     }
                     GameBaseURL = RepoURLDict[regionResourceProp.data.game.latest.version] + '/';
 
+                    
                     string indexURL = string.Format(AppGameRepairIndexURLPrefix, CurrentConfigV2.ProfileName, regionResourceProp.data.game.latest.version);
-
                     using (memBuffer = new MemoryStream())
                     {
                         _httpClient.DownloadProgress += DataFetchingProgress;

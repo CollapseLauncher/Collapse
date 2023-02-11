@@ -8,8 +8,11 @@
             public LangStartupPage _StartupPage { get; set; } = LangFallback?._StartupPage;
             public class LangStartupPage
             {
+                public string InitLangSelect { get; set; } = LangFallback?._StartupPage.InitLangSelect;
                 public string PageTitle { get; set; } = LangFallback?._StartupPage.PageTitle;
                 public string Title1 { get; set; } = LangFallback?._StartupPage.Title1;
+                public string Title1_5 { get; set; } = LangFallback?._StartupPage.Title1_5;
+                public string Title1_6 { get; set; } = LangFallback?._StartupPage?.Title1_6;
                 public string Title2 { get; set; } = LangFallback?._StartupPage.Title2;
                 public string Subtitle1 { get; set; } = LangFallback?._StartupPage.Subtitle1;
                 public string Subtitle2 { get; set; } = LangFallback?._StartupPage.Subtitle2;
@@ -17,6 +20,14 @@
                 public string Subtitle4_1 { get; set; } = LangFallback?._StartupPage.Subtitle4_1;
                 public string Subtitle4_2 { get; set; } = LangFallback?._StartupPage.Subtitle4_2;
                 public string Subtitle4_3 { get; set; } = LangFallback?._StartupPage.Subtitle4_3;
+                public string SubtitleCDN_1 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_1;
+                public string SubtitleCDN_2 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_2;
+                public string SubtitleCDN_3 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_3;
+                public string SubtitleCDN_4_1 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_1;
+                public string SubtitleCDN_4_2 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_2;
+                public string SubtitleCDN_4_3 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_3;
+                public string SubtitleCDN_4_4 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_4;
+                public string SubtitleCDN_4_5 { get; set; } = LangFallback?._StartupPage.SubtitleCDN_4_5;
                 public string FolderInsufficientPermission { get; set; } = LangFallback?._StartupPage.FolderInsufficientPermission;
                 public string FolderNotSelected { get; set; } = LangFallback?._StartupPage.FolderNotSelected;
                 public string ChooseFolderBtn { get; set; } = LangFallback?._StartupPage.ChooseFolderBtn;
@@ -31,6 +42,7 @@
                 public string Pg1LoadingTitle1 { get; set; } = LangFallback?._StartupPage.Pg1LoadingTitle1;
                 public string Pg1LoadingSubitle1 { get; set; } = LangFallback?._StartupPage.Pg1LoadingSubitle1;
                 public string Pg1LoadingSubitle2 { get; set; } = LangFallback?._StartupPage.Pg1LoadingSubitle2;
+                public string Pg1_5NextBtn { get; set; } = LangFallback?._StartupPage.Pg1_5NextBtn;
                 public string Pg2NextBtn { get; set; } = LangFallback?._StartupPage.Pg2NextBtn;
                 public string Pg2PrevBtn { get; set; } = LangFallback?._StartupPage.Pg2PrevBtn;
                 public string Pg2Title { get; set; } = LangFallback?._StartupPage.Pg2Title;

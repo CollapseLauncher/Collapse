@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,6 +23,11 @@
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                             <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" SelectionChanged="LanguageChanged"/>
                             <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.CDN}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                            <ComboBox x:Name="CDNSelector" MinWidth="256" CornerRadius="14" SelectionChanged="CDNChanged"/>
+                            <TextBlock x:Name="CDNSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,-8,0,16">
@@ -127,6 +132,13 @@
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
+
+                            <!--<Button x:Name="ViewSetupPage" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="StartSetupPage" Style="{ThemeResource AccentButtonStyle}">
+                                <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
+                                    <TextBlock Text="Start Setup" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>-->
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">

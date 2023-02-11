@@ -88,16 +88,23 @@ namespace CollapseLauncher.Pages
         {
             string ChannelName = (IsPreview ? "Preview" : "Stable");
             if (IsPortable) ChannelName += "Portable";
-
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
-            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-            updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
+            try
+            {
+                Updater updater = new Updater(ExecutableLocation.Replace('\\', '/'), ChannelName.ToLower(), (byte)GetAppConfigValue("DownloadThread").ToInt());
+                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
-            await updater.StartFetch();
-            await updater.StartCheck();
-            await updater.StartUpdate();
-            await updater.FinishUpdate();
+                await updater.StartFetch();
+                await updater.StartCheck();
+                await updater.StartUpdate();
+                await updater.FinishUpdate();
+            } catch (Exception)
+            {
+                Console.WriteLine("An exception occured while fetching update files. ");
+                //Console.ReadLine();
+            }
+            
         }
 
         private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)

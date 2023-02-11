@@ -97,10 +97,9 @@ namespace Hi3Helper.Preset
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"[ConfigV2Store] Failed while checking for new metadata!\r\n{ex}", LogType.Warning, true);
                 return false;
             }
-
             return ConfigV2LastUpdate != ConfigStamp?.LastUpdated;
         }
 
@@ -115,20 +114,32 @@ namespace Hi3Helper.Preset
 
                 if (Stamp)
                 {
-                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
-                    if (File.Exists(AppGameConfigV2StampPath))
-                        File.Delete(AppGameConfigV2StampPath);
+                    try
+                    {
+                        URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp");
+                        if (File.Exists(AppGameConfigV2StampPath))
+                            File.Delete(AppGameConfigV2StampPath);
 
-                    await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                        await _httpClient.Download(URL, AppGameConfigV2StampPath, true, null, null).ConfigureAwait(false);
+                    } catch (Exception ex)
+                    {
+                        LogWriteLine($"[ConfigV2Store] Failed to download new Config files!\r\n{ex}", LogType.Warning, true);
+                    }
                 }
 
                 if (Content)
                 {
-                    URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
-                    if (File.Exists(AppGameConfigV2MetadataPath))
-                        File.Delete(AppGameConfigV2MetadataPath);
+                    try {
+                        URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "config");
+                        if (File.Exists(AppGameConfigV2MetadataPath))
+                            File.Delete(AppGameConfigV2MetadataPath);
 
-                    await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                        await _httpClient.Download(URL, AppGameConfigV2MetadataPath, true, null, null).ConfigureAwait(false);
+                    } catch (Exception ex)
+                    {
+                        LogWriteLine($"[ConfigV2Store] Failed to download new Config files!\r\n{ex}", LogType.Warning, true);
+                    }
+                    
                 }
             }
         }

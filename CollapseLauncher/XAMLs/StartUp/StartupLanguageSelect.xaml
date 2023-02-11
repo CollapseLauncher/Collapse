@@ -14,10 +14,10 @@
             <RowDefinition/>
             <RowDefinition Height="48"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Please select your language to start this launcher for the first time!"
+        <TextBlock x:Name="TextBlock_WelcomeMsg" 
                    Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
                    TextWrapping="Wrap"/>
-        <ComboBox PlaceholderText="Select your language" Grid.Row="1"
+        <ComboBox x:Name="ComboBox_LocaleSelect" PlaceholderText="Select your language" Grid.Row="1"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
         <Button x:Name="NextBtn" Content="Next" Grid.Row="2" HorizontalAlignment="Stretch" IsEnabled="False"
