@@ -5,12 +5,12 @@ using Microsoft.UI.Xaml;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeGenshinVersion : GameVersionBase, IGameVersionCheck
+    internal class GameTypeStarRailVersion : GameVersionBase, IGameVersionCheck
     {
         #region Properties
         #endregion
 
-        public GameTypeGenshinVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
+        public GameTypeStarRailVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
             : base(parentUIElement, gameRegionProp, gamePreset)
         {
             // Try check for reinitializing game version.
