@@ -36,6 +36,7 @@ namespace CollapseLauncher
             try
             {
                 InitializeWindowSettings();
+                m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
                 if (IsFirstInstall)
                 {
