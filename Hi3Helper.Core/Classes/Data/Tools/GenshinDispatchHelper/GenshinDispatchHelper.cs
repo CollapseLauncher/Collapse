@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Http;
+﻿using Hi3Helper.EncTool.Proto.Genshin;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Convert;
 
 namespace Hi3Helper.Data
 {
@@ -20,7 +19,7 @@ namespace Hi3Helper.Data
         private string ChannelName = "OSRELWin";
         private string Version { get; set; }
 
-        private QueryProto DispatchProto = new QueryProto();
+        private GenshinGateway Gateway;
         private QueryProperty returnValProp;
         private CancellationToken cancelToken;
 
@@ -36,16 +35,6 @@ namespace Hi3Helper.Data
         ~GenshinDispatchHelper() => Dispose();
 
         public void Dispose() => this._httpClient?.Dispose();
-
-        private async Task<byte[]> LoadRemoteDispatch()
-        {
-            using (MemoryStream response = new MemoryStream())
-            {
-                await this._httpClient.Download(DispatchBaseURL, response, null, null, cancelToken).ConfigureAwait(false);
-
-                return response.GetBuffer();
-            }
-        }
 
         public async Task<YSDispatchInfo> LoadDispatchInfo()
         {
@@ -68,30 +57,25 @@ namespace Hi3Helper.Data
 
         public async Task LoadDispatch(byte[] CustomDispatchData = null)
         {
-            string stringdata = Encoding.UTF8.GetString(await LoadRemoteDispatch().ConfigureAwait(false));
-            byte[] ProtoData = CustomDispatchData == null
-                ? FromBase64String(stringdata)
-                : CustomDispatchData;
-
-            DispatchProto = QueryProto.Parser.ParseFrom(ProtoData);
+            GenshinGateway Gateway = GenshinGateway.Parser.ParseFrom(CustomDispatchData);
             returnValProp = new QueryProperty()
             {
-                GameVoiceLangID = DispatchProto.Dispatcher.GameAudiolang,
+                GameServerName = Gateway.GatewayProperties.ServerName,
                 ClientGameResURL = string.Format("{0}/output_{1}_{2}/client",
-                                    DispatchProto.Dispatcher.ClientGameResurl,
-                                    DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
-                                    DispatchProto.Dispatcher.DispatcherInternal.ClientGameReshash),
+                                    Gateway.GatewayProperties.RepoResVersionURL,
+                                    Gateway.GatewayProperties.RepoResVersionProperties.ResVersionNumber,
+                                    Gateway.GatewayProperties.RepoResVersionProperties.ResVersionHash),
                 ClientDesignDataURL = string.Format("{0}/output_{1}_{2}/client/General",
-                                    DispatchProto.Dispatcher.ClientDesignDataurl,
-                                    DispatchProto.Dispatcher.ClientDesignDatanum,
-                                    DispatchProto.Dispatcher.ClientDesignDatahash),
+                                    Gateway.GatewayProperties.RepoDesignDataURL,
+                                    Gateway.GatewayProperties.RepoDesignDataNumber,
+                                    Gateway.GatewayProperties.RepoDesignDataHash),
                 ClientDesignDataSilURL = string.Format("{0}/output_{1}_{2}/client_silence/General",
-                                        DispatchProto.Dispatcher.ClientDesignDataurl,
-                                        DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
-                                        DispatchProto.Dispatcher.ClientDesignDatahashSlnt),
-                DataRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanum,
-                SilenceRevisionNum = DispatchProto.Dispatcher.ClientDesignDatanumSlnt,
-                ResRevisionNum = DispatchProto.Dispatcher.DispatcherInternal.ClientGameResnum,
+                                    Gateway.GatewayProperties.RepoDesignDataURL,
+                                    Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
+                                    Gateway.GatewayProperties.RepoDesignDataSilenceHash),
+                DataRevisionNum = Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
+                SilenceRevisionNum = Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
+                ResRevisionNum = Gateway.GatewayProperties.RepoResVersionProperties.ResVersionNumber,
                 ChannelName = this.ChannelName,
                 GameVersion = this.Version
             };
@@ -103,7 +87,7 @@ namespace Hi3Helper.Data
 
         private void ParseDesignDataURL(ref QueryProperty ValProp)
         {
-            IEnumerable<string> DataList = DispatchProto.Dispatcher.DispatcherInternal.ClientGameReslist.Split("\r\n");
+            string[] DataList = Gateway.GatewayProperties.RepoResVersionProperties.ResVersionMapJSON.Split("\r\n");
             ValProp.ClientGameRes = new List<PkgVersionProperties>();
             foreach (string Data in DataList)
             {
@@ -116,8 +100,8 @@ namespace Hi3Helper.Data
 
         private void ParseGameResPkgProp(ref QueryProperty ValProp)
         {
-            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(DispatchProto.Dispatcher.ClientDesignDatalist, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
-            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(DispatchProto.Dispatcher.ClientDesignDatalistSlnt, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataJSON, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataSilenceJSON, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
         }
 
         private async Task ParseAudioAssetsURL(QueryProperty ValProp)
@@ -128,10 +112,10 @@ namespace Hi3Helper.Data
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",
-                                                DispatchProto.Dispatcher.ClientGameResurl,
+                                                Gateway.GatewayProperties.RepoResVersionURL,
                                                 responseData[0],
                                                 responseData[1]);
-                ValProp.AudioRevisionNum = int.Parse(responseData[0]);
+                ValProp.AudioRevisionNum = uint.Parse(responseData[0]);
             }
         }
 

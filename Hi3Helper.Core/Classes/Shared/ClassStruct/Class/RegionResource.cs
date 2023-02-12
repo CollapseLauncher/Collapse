@@ -112,15 +112,15 @@ namespace Hi3Helper.Shared.ClassStruct
 
     public class QueryProperty
     {
-        public string GameVoiceLangID { get; set; }
+        public string GameServerName { get; set; }
         public string ClientGameResURL { get; set; }
         public string ClientDesignDataURL { get; set; }
         public string ClientDesignDataSilURL { get; set; }
         public string ClientAudioAssetsURL { get; set; }
-        public int AudioRevisionNum { get; set; }
-        public int DataRevisionNum { get; set; }
-        public int ResRevisionNum { get; set; }
-        public int SilenceRevisionNum { get; set; }
+        public uint AudioRevisionNum { get; set; }
+        public uint DataRevisionNum { get; set; }
+        public uint ResRevisionNum { get; set; }
+        public uint SilenceRevisionNum { get; set; }
         public string GameVersion { get; set; }
         public string ChannelName { get; set; }
         public IEnumerable<PkgVersionProperties> ClientGameRes { get; set; }
