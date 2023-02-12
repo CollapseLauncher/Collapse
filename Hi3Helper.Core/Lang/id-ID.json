@@ -66,6 +66,8 @@
     "PageTitle": "Halaman Awal",
     "RegionChangeConfirm": "Wilayah game akan diubah. Lanjutkan?",
     "RegionChangeConfirmBtn": "Ya, Ubah",
+    "RegionChangeWarnTitle": "Peringatan:",
+    "RegionChangeWarnExper1": "Game ini masih dalam tahap {0}.\r\nResiko ditanggung kamu sendiri!",
     "RegionLoadingTitle": "Memuat Wilayah",
     "RegionLoadingAPITitle1": "Memuat",
     "RegionLoadingAPITitle2": "API Launcher",

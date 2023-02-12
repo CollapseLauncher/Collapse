@@ -923,7 +923,19 @@ namespace CollapseLauncher
                                           GameInstallationState == GameInstallStateEnum.InstalledHavePreload ||
                                           GameInstallationState == GameInstallStateEnum.NeedsUpdate;
 
-        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e) => ChangeRegionConfirmBtn.IsEnabled = !LockRegionChangeBtn;
+        private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
+        {
+            object selValue = ((ComboBox)sender).SelectedValue;
+            if (selValue != null)
+            {
+                string category = (string)ComboBoxGameCategory.SelectedValue;
+                string region = GetComboBoxGameRegionValue(selValue);
+                PresetConfigV2 preset = ConfigV2.MetadataV2[category][region];
+                ChangeRegionWarningText.Text = preset.GameChannel != GameChannel.Stable ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel) : string.Empty;
+                ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
+            }
+            ChangeRegionConfirmBtn.IsEnabled = !LockRegionChangeBtn;
+        }
 
         private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
         {

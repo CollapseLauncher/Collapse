@@ -106,6 +106,10 @@
                                         <Flyout>
                                             <StackPanel>
                                                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeConfirm}" Width="200" FontWeight="Medium" Margin="0,0,0,12" />
+                                                <StackPanel x:Name="ChangeRegionWarning" Visibility="Collapsed">
+                                                    <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._MainPage.RegionChangeWarnTitle}" Width="200" FontWeight="Medium" FontSize="14"/>
+                                                    <TextBlock x:Name="ChangeRegionWarningText" Style="{ThemeResource BaseTextBlockStyle}" Text="" FontWeight="Normal" Width="200" FontSize="12" Margin="0,0,0,12"/>
+                                                </StackPanel>
                                                 <Button x:Name="ChangeRegionBtn" HorizontalAlignment="Stretch" CornerRadius="14" Click="ChangeRegion" Style="{ThemeResource AccentButtonStyle}">
                                                     <Button.Content>
                                                         <Grid Margin="-36,-8" Padding="36,8">
@@ -144,7 +148,7 @@
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Foreground="{ThemeResource DefaultFGColorAccent}" Glyph="&#xf00d;" FontSize="16" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Cancel" Foreground="{ThemeResource DefaultFGColorAccent}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" Foreground="{ThemeResource DefaultFGColorAccent}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>

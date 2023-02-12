@@ -66,6 +66,8 @@
     "PageTitle": "Root Page",
     "RegionChangeConfirm": "Game region will be changed. Do you want to continue?",
     "RegionChangeConfirmBtn": "Yes, change it!",
+    "RegionChangeWarnTitle": "Warning:",
+    "RegionChangeWarnExper1": "The game is currently in {0}.\r\nUse at your own risk!",
     "RegionLoadingTitle": "Loading Region",
     "RegionLoadingAPITitle1": "Loading",
     "RegionLoadingAPITitle2": "Launcher API",
