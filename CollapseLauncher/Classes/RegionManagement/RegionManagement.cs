@@ -4,22 +4,19 @@ using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
-using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
@@ -29,8 +26,10 @@ namespace CollapseLauncher
         private Http _httpClient;
         private bool IsLoadRegionComplete;
         private bool IsInnerTaskSuccess;
+        private bool IsExplicitCancel;
         private string PreviousTag = string.Empty;
         private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource InnerTaskTokenSource;
 
         private uint CurrentRetry;
         private uint MaxRetry = 5; // Max 5 times of retry attempt
@@ -38,11 +37,15 @@ namespace CollapseLauncher
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
         private string RegionToChangeName;
+        private IList<object> LastNavigationItem;
+        private HomeMenuPanel LastRegionNewsProp;
 
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             using (_httpClient = new Http(default, 4, 250))
             {
+                IsExplicitCancel = false;
+                InnerTokenSource = new CancellationTokenSource();
                 RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
                 LogWriteLine($"Initializing {RegionToChangeName}...", Hi3Helper.LogType.Scheme, true);
 
@@ -53,7 +56,7 @@ namespace CollapseLauncher
                 ClearMainPageState();
 
                 // Load Region Resource from Launcher API
-                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(Task.Run(() => 
+                bool IsLoadLocalizedResourceSuccess = await TryLoadGameRegionTask(Task.Run(() =>
                     FetchLauncherLocalizedResources(InnerTokenSource.Token, preset)),
                     LoadTimeout,
                     LoadTimeoutStep);
@@ -61,6 +64,20 @@ namespace CollapseLauncher
                     FetchLauncherResourceAsRegion(InnerTokenSource.Token, preset)),
                     LoadTimeout,
                     LoadTimeoutStep);
+
+                if (IsExplicitCancel)
+                {
+                    // If explicit cancel was triggered, restore the navigation menu item then return false
+                    foreach (object item in LastNavigationItem)
+                    {
+                        NavigationViewControl.MenuItems.Add(item);
+                    }
+                    NavigationViewControl.IsSettingsVisible = true;
+                    regionNewsProp = LastRegionNewsProp.Copy();
+                    LastRegionNewsProp = null;
+                    LastNavigationItem.Clear();
+                    return false;
+                }
 
                 if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
                 {
@@ -85,13 +102,11 @@ namespace CollapseLauncher
             CurrentRetry = 0;
 
             // Clear NavigationViewControl Items and Reset Region props
+            LastNavigationItem = new List<object>(NavigationViewControl.MenuItems);
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
             PreviousTag = "launcher";
             ResetRegionProp();
-
-            // Set LoadingFooter empty
-            LoadingFooter.Text = string.Empty;
         }
 
         private async Task<bool> TryLoadGameRegionTask(Task InnerTask, uint Timeout, uint TimeoutStep)
@@ -100,7 +115,9 @@ namespace CollapseLauncher
             while (IsContinue = await IsTryLoadGameRegionTaskFail(InnerTask, Timeout))
             {
                 // If true (fail), then log the retry attempt
-                LoadingFooter.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", Timeout);
+                LoadingCancelBtn.Visibility = Visibility.Visible;
+                LoadingTitle.Text = string.Empty;
+                LoadingSubtitle.Text = string.Format(Lang._MainPage.RegionLoadingSubtitleTimeOut, $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}", Timeout);
                 LogWriteLine($"Loading Game: {CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion} has timed-out (> {Timeout} seconds). Retrying...", Hi3Helper.LogType.Warning);
                 Timeout += TimeoutStep;
                 CurrentRetry++;
@@ -118,14 +135,14 @@ namespace CollapseLauncher
             }
 
             // Reset Task State
-            CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
+            InnerTaskTokenSource = new CancellationTokenSource();
             IsInnerTaskSuccess = false;
 
             try
             {
                 // Run Inner Task and watch for timeout
-                WatchAndCancelIfTimeout(InnerTokenSource, Timeout);
-                await InnerTask.WaitAsync(InnerTokenSource.Token);
+                WatchAndCancelIfTimeout(InnerTaskTokenSource, Timeout);
+                await InnerTask.WaitAsync(InnerTaskTokenSource.Token);
                 IsInnerTaskSuccess = true;
             }
             catch (Exception ex)
@@ -152,12 +169,6 @@ namespace CollapseLauncher
 
         private void FinalizeLoadRegion(PresetConfigV2 preset)
         {
-            // Set LoadingFooter empty
-            LoadingFooter.Text = string.Empty;
-
-            // Hide Loading Popup
-            // HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, CurrentConfigV2.ZoneFullname);
-
             // Log if region has been successfully loaded
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
 
@@ -248,6 +259,12 @@ namespace CollapseLauncher
             DelayedLoadingRegionPageTask();
             await LoadRegionFromCurrentConfigV2(Preset);
 
+            // If explicit cancel triggered, then ignore and return
+            if (IsExplicitCancel)
+            {
+                return;
+            }
+
             // Finalize loading
             ToggleChangeRegionBtn(in sender, false);
             LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
@@ -273,13 +290,26 @@ namespace CollapseLauncher
             (sender as Button).IsEnabled = !IsHide;
         }
 
+        private void CancelLoadRegion(object sender, RoutedEventArgs e)
+        {
+            IsExplicitCancel = true;
+            InnerTaskTokenSource.Cancel();
+            InnerTokenSource.Cancel();
+            ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
+            ChangeRegionConfirmBtn.IsEnabled = true;
+            ChangeRegionBtn.IsEnabled = true;
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+
+            (sender as Button).Visibility = Visibility.Collapsed;
+        }
+
         private async void DelayedLoadingRegionPageTask()
         {
             await Task.Delay(1000);
             if (!IsLoadRegionComplete)
             {
                 HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-                MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
+                // MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
                 while (!IsLoadRegionComplete) { await Task.Delay(1000); }
             }
         }

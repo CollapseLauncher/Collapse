@@ -3,9 +3,8 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
-using Hi3Helper.Preset;
-using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
@@ -31,8 +30,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -97,33 +94,11 @@ namespace CollapseLauncher.Pages
             catch (ArgumentNullException ex)
             {
                 LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error, true);
-                await StartGameConfigBrokenDialog();
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
-            }
-
-            // GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
-            // GC.WaitForPendingFinalizers();
-        }
-
-        private async Task StartGameConfigBrokenDialog()
-        {
-            return;
-            bool IsComplete = false;
-            while (!IsComplete)
-            {
-                // await Dialog_GameConfigBroken(Content, GameIni.ProfilePath);
-#if DISABLE_COM
-                string GamePath = GetFolderPicker();
-#else
-                string GamePath = await GetFolderPicker();
-#endif
-
-                // if (IsComplete = CheckExistingGame(GamePath))
-                //     MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
             }
         }
 
@@ -600,6 +575,7 @@ namespace CollapseLauncher.Pages
                                 PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/')
                             );
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                            MainPage.IsChangeDragArea = false;
 #else
                             MigrationWatcher.IsMigrationRunning = true;
                             CurrentRegion.MigrateFromBetterHi3Launcher = true;
@@ -624,6 +600,7 @@ namespace CollapseLauncher.Pages
                                 PageStatics._GameVersion.GamePreset.ActualGameDataLocation.Replace('\\', '/')
                             );
                             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
+                            MainPage.IsChangeDragArea = false;
 #else
                             MigrationWatcher.IsMigrationRunning = true;
                             MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));

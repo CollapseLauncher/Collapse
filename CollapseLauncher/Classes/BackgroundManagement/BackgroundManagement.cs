@@ -128,6 +128,7 @@ namespace CollapseLauncher
 
         private void ResetRegionProp()
         {
+            LastRegionNewsProp = regionNewsProp.Copy();
             regionNewsProp = new HomeMenuPanel()
             {
                 sideMenuPanel = null,
@@ -487,7 +488,7 @@ namespace CollapseLauncher
             await Task.Delay((int)(dur * 1000));
         }
 
-        private void HideLoadingPopup(bool hide, string title, string subtitle)
+        private async void HideLoadingPopup(bool hide, string title, string subtitle)
         {
             Storyboard storyboard = new Storyboard();
 
@@ -508,11 +509,12 @@ namespace CollapseLauncher
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
+                await Task.Delay(250 * 2);
                 LoadingPopup.Visibility = Visibility.Collapsed;
+                LoadingCancelBtn.Visibility = Visibility.Collapsed;
             }
             else
             {
-                LoadingFooter.Text = "";
                 LoadingRing.IsIndeterminate = true;
 
                 LoadingPopup.Visibility = Visibility.Visible;

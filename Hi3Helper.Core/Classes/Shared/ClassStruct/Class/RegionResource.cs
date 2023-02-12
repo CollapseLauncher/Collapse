@@ -49,6 +49,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public List<MenuPanelProp> imageCarouselPanel { get; set; }
         public PostCarouselTypes articlePanel { get; set; }
         public RegionBackgroundProp eventPanel { get; set; }
+        public HomeMenuPanel Copy() => this;
     }
 
     public class PostCarouselTypes

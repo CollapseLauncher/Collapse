@@ -31,7 +31,7 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
-        private bool IsChangeDragArea = true;
+        public static bool IsChangeDragArea = true;
 
         private RectInt32[] DragAreaMode_Normal
         {
@@ -66,6 +66,8 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
+                LoadingPopupPill.Translation += Shadow32;
+                LoadingCancelBtn.Translation += Shadow16;
                 Loaded += StartRoutine;
                 if (!IsPreview)
                 {
@@ -133,20 +135,14 @@ namespace CollapseLauncher
                     return;
                 }
 
-                MainWindow.SetDragArea(DragAreaMode_Normal);
                 LoadGamePreset();
                 SetThemeParameters();
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
-                ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
-                MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
-                NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
-                BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
-                SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
-                ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
-                ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
-                ChangeThemeInvoker.ThemeEvent += ChangeThemeInvoker_ThemeEvent;
+                SubscribeEvents();
+
+                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
@@ -157,6 +153,30 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void SubscribeEvents()
+        {
+            ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
+            MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
+            NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
+            BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
+            SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
+            ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
+            ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
+            ChangeThemeInvoker.ThemeEvent += ChangeThemeInvoker_ThemeEvent;
+        }
+
+        private void UnsubscribeEvents()
+        {
+            ErrorSenderInvoker.ExceptionEvent -= ErrorSenderInvoker_ExceptionEvent;
+            MainFrameChangerInvoker.FrameEvent -= MainFrameChangerInvoker_FrameEvent;
+            NotificationInvoker.EventInvoker -= NotificationInvoker_EventInvoker;
+            BackgroundImgChangerInvoker.ImgEvent -= CustomBackgroundChanger_Event;
+            SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
+            ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
+            ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
+            ChangeThemeInvoker.ThemeEvent -= ChangeThemeInvoker_ThemeEvent;
         }
 
         private async void ChangeThemeInvoker_ThemeEvent(object sender, ChangeThemeProperty e)
@@ -646,6 +666,12 @@ namespace CollapseLauncher
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             IsLoadSuccess = await LoadRegionFromCurrentConfigV2(Preset);
 
+            // If explicit cancel was triggered, then return
+            if (IsExplicitCancel)
+            {
+                return;
+            }
+
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
 
@@ -967,6 +993,7 @@ namespace CollapseLauncher
         {
             if (IsChangeDragArea)
             {
+                UnsubscribeEvents();
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
         }

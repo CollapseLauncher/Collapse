@@ -49,7 +49,7 @@
                             <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="#DD222222"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
 
-                            <AcrylicBrush x:Key="LoadingBrush" TintColor="#000000" TintOpacity="0.0"/>
+                            <AcrylicBrush x:Key="LoadingBrush" TintColor="{ThemeResource SystemAccentColorLight1}" TintOpacity="1"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
                             <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
                             <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
@@ -91,7 +91,7 @@
                             <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#EEEEEE" TintOpacity="0.1" TintLuminosityOpacity="0.2" FallbackColor="#FFFFFFFF"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
 
-                            <AcrylicBrush x:Key="LoadingBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.0"/>
+                            <AcrylicBrush x:Key="LoadingBrush" TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="1"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.7" FallbackColor="#FFEEEEEE"/>
                             <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5"/>
                             <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#FFFFFF" TintOpacity="0" TintLuminosityOpacity="0.5" FallbackColor="#EEEAEAEA"/>
