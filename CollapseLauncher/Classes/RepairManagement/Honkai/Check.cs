@@ -319,6 +319,7 @@ namespace CollapseLauncher
                  && !asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase)
                  && !asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase)
                  && !asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase)
+                 && !asset.Contains("ScreenShot")
                  && !asset.Contains("webCaches")
                  && !asset.Contains("SDKCaches"))
                 {
