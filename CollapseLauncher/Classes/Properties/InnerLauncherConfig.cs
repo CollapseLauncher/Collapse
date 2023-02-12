@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using ICSharpCode.SharpZipLib.Core;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -113,7 +114,7 @@ namespace CollapseLauncher
                     };
                     expTag.Children.Add(new TextBlock
                     {
-                        Text = "EXPER",
+                        Text = GetGameChannelLabel(config.GameChannel),
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
                         FontSize = 10,
@@ -130,6 +131,13 @@ namespace CollapseLauncher
             }
             return list;
         }
+
+        private static string GetGameChannelLabel(GameChannel channel) => channel switch
+        {
+            GameChannel.Beta => "BETA",
+            GameChannel.DevRelease => "DEV",
+            _ => throw new InvalidNameException("Only Beta and DevRelease is accepted!")
+        };
 
         public static void SaveLocalNotificationData()
         {
