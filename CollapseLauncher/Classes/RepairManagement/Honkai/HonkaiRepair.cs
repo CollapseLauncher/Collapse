@@ -4,7 +4,6 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 

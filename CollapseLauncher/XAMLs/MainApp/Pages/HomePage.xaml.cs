@@ -939,7 +939,7 @@ namespace CollapseLauncher.Pages
             StringBuilder parameter = new StringBuilder();
 
             IGameSettingsUniversal _Settings = PageStatics._GameSettings.AsIGameSettingsUniversal();
-            if (!(PageStatics._GameVersion.GamePreset.IsGenshin ?? false))
+            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Honkai)
             {
                 // CheckExistingGameSettings();
 
@@ -1058,8 +1058,11 @@ namespace CollapseLauncher.Pages
         {
             await Task.Run(() =>
             {
+                int consoleWidth = 24;
+                try { consoleWidth = Console.BufferWidth; } catch { }
+
                 string line;
-                int barwidth = ((Console.BufferWidth - 22) / 2) - 1;
+                int barwidth = ((consoleWidth - 22) / 2) - 1;
                 LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
                 try
                 {
