@@ -2,6 +2,7 @@
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -147,11 +148,30 @@ namespace Hi3Helper.Shared.Region
             startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
             string GameFolder = GetAppConfigValue("GameFolder").ToString();
 
+            // Check if the drive is exist. If not, then reset the GameFolder variable and set IsFirstInstall to true;
+            if (!IsDriveExist(GameFolder))
+            {
+                IsFirstInstall = true;
+
+                // Reset GameFolder to default value
+                SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
+
+                // Force enable Console Log and return
+                Logger._log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.LogWriteLine($"Game App Folder path: {GameFolder} doesn't exist! The launcher will be reinitialize the setup.", LogType.Error, true);
+                return;
+            }
+
             // Check if user has permission
             bool IsUserHasPermission = ConverterTool.IsUserHasPermission(GameFolder);
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
+        }
+
+        private static bool IsDriveExist(string path)
+        {
+            return new DriveInfo(Path.GetPathRoot(path)).IsReady;
         }
 
         private static void InitScreenResSettings()

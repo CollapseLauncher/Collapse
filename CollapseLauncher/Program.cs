@@ -111,7 +111,8 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}", LogType.Error, true);
+                LoggerConsole.AllocateConsole();
+                Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}");
                 Console.WriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
                 Console.ReadLine();
                 return;
