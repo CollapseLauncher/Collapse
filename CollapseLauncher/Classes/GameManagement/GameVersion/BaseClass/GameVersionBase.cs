@@ -48,7 +48,14 @@ namespace CollapseLauncher.GameVersioning
         protected readonly IniFile GameIniProfile = new IniFile();
         protected readonly IniFile GameIniVersion = new IniFile();
         protected string GameIniProfilePath { get => Path.Combine(GameConfigDirPath, "config.ini"); }
-        protected string GameIniVersionPath { get => Path.Combine(GameIniProfile[_defaultIniProfileSection]["game_install_path"].ToString(), "config.ini"); }
+        protected string GameIniVersionPath
+        {
+            get
+            {
+                string path = ConverterTool.NormalizePath(Path.Combine(GameIniProfile[_defaultIniProfileSection]["game_install_path"].ToString(), "config.ini"));
+                return IsDiskPartitionExist(path) ? path : Path.Combine(GameConfigDirPath, GamePreset.GameDirectoryName ?? "Games", "config.ini");
+            }
+        }
         protected string GameConfigDirPath { get; set; }
         public GameVersionBase AsVersionBase => this;
         public PresetConfigV2 GamePreset { get; set; }
