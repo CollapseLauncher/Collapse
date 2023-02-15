@@ -96,9 +96,6 @@ namespace CollapseLauncher
             // also convert type as lowered string.
             bool isFirst = type == CacheAssetType.Data;
 
-            // Set the base URL
-            baseURL = $"{baseURL}/";
-
             // Parse asset index file from UABT
             stream.Position = 0;
             BundleFile bundleFile = new BundleFile(stream);
