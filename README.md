@@ -48,8 +48,8 @@ This launcher also supports other game client, including:
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.55.6-stable/CL-1.0.55.6_Installer.exe)
 > **Note**: The version for this build is `1.0.55.6` (Released on: January 19th, 2023)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.64.0-pre/CL-1.0.64.0-preview_Installer.exe)
-> **Note**: The version for this build is `1.0.64.0` (Released on: February 6th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.69.1-pre/CL-1.0.69.1-preview_Installer.exe)
+> **Note**: The version for this build is `1.0.69.1` (Released on: February 15th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
