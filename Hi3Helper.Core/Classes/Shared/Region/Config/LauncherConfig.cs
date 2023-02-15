@@ -2,12 +2,11 @@
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
-using static Hi3Helper.InvokeProp;
+using System.Text;
 
 namespace Hi3Helper.Shared.Region
 {
