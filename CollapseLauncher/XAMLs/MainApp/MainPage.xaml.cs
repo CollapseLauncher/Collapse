@@ -651,6 +651,9 @@ namespace CollapseLauncher
             {
                 LoadConfigV2CacheOnly();
                 Page = typeof(CachesPage);
+
+                // Set background opacity to 0
+                BackgroundFront.Opacity = 0;
             }
             else
             {
