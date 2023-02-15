@@ -43,6 +43,10 @@ namespace CollapseLauncher.Pages
             {
                 ResetStatusAndButtonState();
             }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.GameError);
+            }
             finally
             {
                 RemoveEvent();
