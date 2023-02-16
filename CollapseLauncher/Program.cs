@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -125,7 +126,7 @@ namespace CollapseLauncher
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
             AppInstance keyInstance = AppInstance.FindOrRegisterForKey(m_appMode.ToString());
 
-            if (!keyInstance.IsCurrent)
+            if (!keyInstance.IsCurrent && !IsMultipleInstanceEnabled)
             {
                 isRedirect = true;
                 keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();

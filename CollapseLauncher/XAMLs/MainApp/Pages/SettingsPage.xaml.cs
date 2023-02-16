@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.Region;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using static Hi3Helper.FileDialogNative;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -270,6 +270,11 @@ namespace CollapseLauncher.Pages
 
                 SetAndSaveConfigValue("EnableConsole", value);
             }
+        }
+        public bool IsMultipleInstanceEnabled
+        {
+            get => LauncherConfig.IsMultipleInstanceEnabled;
+            set => LauncherConfig.IsMultipleInstanceEnabled = value;
         }
         public int CurrentThemeSelection
         {
