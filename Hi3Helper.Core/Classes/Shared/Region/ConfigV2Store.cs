@@ -55,8 +55,8 @@ namespace Hi3Helper.Preset
         {
             string stamp = File.ReadAllText(AppGameConfigV2StampPath);
             string content = File.ReadAllText(AppGameConfigV2MetadataPath);
-            if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException("stampv2.json file seems to be empty. Please remove it and restart the launcher!");
-            if (string.IsNullOrEmpty(content)) throw new NullReferenceException("metadatav2.json file seems to be empty. Please remove it and restart the launcher!");
+            if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
+            if (string.IsNullOrEmpty(content)) throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
 
             ConfigV2 = (Metadata)JsonSerializer
                 .Deserialize(content, typeof(Metadata), MetadataContext.Default);
