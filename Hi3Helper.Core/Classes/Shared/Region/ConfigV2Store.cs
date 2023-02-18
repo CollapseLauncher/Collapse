@@ -48,6 +48,7 @@ namespace Hi3Helper.Preset
             }
 
             ConfigV2.MetadataV2 = res;
+            ConfigV2.DecryptStrings();
             ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
         }
 
@@ -67,6 +68,8 @@ namespace Hi3Helper.Preset
 
             ConfigV2LastUpdate = ((Stamp)JsonSerializer
                 .Deserialize(stamp, typeof(Stamp), StampContext.Default)).LastUpdated;
+
+            ConfigV2.DecryptStrings();
         }
 
         public static bool GetConfigV2Regions(string GameCategoryName)

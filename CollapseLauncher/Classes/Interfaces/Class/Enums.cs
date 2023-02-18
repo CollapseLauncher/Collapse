@@ -16,6 +16,8 @@
         Event,
         AI,
         Unused,
+        Dispatcher,
+        Gateway
     }
 
     internal enum CacheAssetStatus

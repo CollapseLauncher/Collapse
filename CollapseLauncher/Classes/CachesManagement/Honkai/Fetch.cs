@@ -2,6 +2,7 @@
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
+using Hi3Helper.Shared.Region.Honkai;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,20 @@ namespace CollapseLauncher
             // Use HttpClient instance on fetching
             using (Http _httpClient = new Http(true, 5, 1000, _userAgent))
             {
+                // Build _gameRepoURL from loading Dispatcher and Gateway
+                await BuildGameRepoURL(_httpClient);
+
                 // Iterate type and do fetch
                 foreach (CacheAssetType type in Enum.GetValues(typeof(CacheAssetType)))
                 {
                     // Skip for unused type
-                    if (type == CacheAssetType.Unused) continue;
+                    switch (type)
+                    {
+                        case CacheAssetType.Unused:
+                        case CacheAssetType.Dispatcher:
+                        case CacheAssetType.Gateway:
+                            continue;
+                    }
 
                     // uint = Count of the assets available
                     // long = Total size of the assets available
@@ -49,6 +59,137 @@ namespace CollapseLauncher
 
             // Return asset index
             return returnAsset;
+        }
+
+        private async Task BuildGameRepoURL(Http _httpClient)
+        {
+            // Fetch dispatcher
+            Dispatcher dispatcher = null;
+            Exception lastException = null;
+
+            // Try fetch disppatcher by iterating the base URL
+            foreach (string baseURL in _gamePreset.GameDispatchArrayURL)
+            {
+                try
+                {
+                    // Try assign dispatcher
+                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL));
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                }
+
+                // If no exception being thrown, then break
+                if (lastException == null)
+                {
+                    break;
+                }
+            }
+
+            // If last exception wasn't null, then throw
+            if (lastException != null) throw lastException;
+
+            // Get gatewayURl and fetch the gateway
+            string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
+            Gateway gateway = await FetchGateway(_httpClient, gatewayURL);
+
+            // Set the Game Repo URL
+            _gameRepoURL = BuildAssetBundleURL(gateway);
+        }
+
+        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL)
+        {
+            // Set total activity string as "Fetching Caches Type: Dispatcher"
+            _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Dispatcher);
+            _status.IsProgressTotalIndetermined = true;
+            _status.IsIncludePerFileIndicator = false;
+            UpdateStatus();
+
+            // Get the dispatcher properties
+            MemoryStream stream = new MemoryStream();
+
+            try
+            {
+                // Start downloading the dispatcher
+                _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
+                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                stream.Position = 0;
+
+                // Try deserialize dispatcher
+                return (Dispatcher)JsonSerializer.Deserialize(stream, typeof(Dispatcher), DispatcherContext.Default);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe progress and dispose stream
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetIndexProgress;
+                stream.Dispose();
+            }
+        }
+
+        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL)
+        {
+            // Set total activity string as "Fetching Caches Type: Gateway"
+            _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Gateway);
+            _status.IsProgressTotalIndetermined = true;
+            _status.IsIncludePerFileIndicator = false;
+            UpdateStatus();
+
+            // Get the gateway properties
+            MemoryStream stream = new MemoryStream();
+
+            try
+            {
+                // Start downloading the gateway
+                _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
+                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                stream.Position = 0;
+
+                // Try deserialize gateway
+                return (Gateway)JsonSerializer.Deserialize(stream, typeof(Gateway), GatewayContext.Default);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe progress and dispose stream
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetIndexProgress;
+                stream.Dispose();
+            }
+        }
+
+        private string GetPreferredGatewayURL(Dispatcher dispatcher, string preferredGateway)
+        {
+            // If preferredGateway == null, then return the first dispatch_url
+            if (preferredGateway == null)
+            {
+                return BuildGatewayURL(dispatcher.region_list[0].dispatch_url);
+            }
+
+            // Find the preferred region_list and return the dispatcher_url if found or null if doesn't
+            return BuildGatewayURL(dispatcher.region_list.Where(x => x.name == preferredGateway).FirstOrDefault().dispatch_url);
+        }
+
+        private string BuildAssetBundleURL(Gateway gateway) => gateway.asset_bundle_url_list[0] + "/{0}/editor_compressed/";
+
+        private string BuildDispatcherURL(string baseDispatcherURL)
+        {
+            // Format the Dispatcher URL based on template
+            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+            return string.Format($"{baseDispatcherURL}{_gamePreset.GameDispatchURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
+        }
+
+        private string BuildGatewayURL(string baseGatewayURL)
+        {
+            // Format the Gateway URL based on template
+            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+            return string.Format($"{baseGatewayURL}{_gamePreset.GameGatewayURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex)

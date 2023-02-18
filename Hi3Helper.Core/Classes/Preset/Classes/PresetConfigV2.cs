@@ -1,9 +1,12 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.KianaManifest;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -48,6 +51,45 @@ namespace Hi3Helper.Preset
         public Dictionary<string, Dictionary<string, PresetConfigV2>>? MetadataV2 { get; set; }
         public string? MasterKey { get; set; }
         public int MasterKeyBitLength { get; set; }
+
+#nullable disable
+        public void DecryptStrings()
+        {
+            int gameCount = MetadataV2?.Count ?? 0;
+            mhyEncTool Decryptor = new mhyEncTool();
+            Decryptor.InitMasterKey(MasterKey, MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+
+            string[] gameKeys = MetadataV2.Keys.ToArray();
+            for (int i = 0; i < gameCount; i++)
+            {
+                string[] regionKeys = MetadataV2[gameKeys[i]].Keys.ToArray();
+                int segmentCount = MetadataV2[gameKeys[i]].Count;
+
+                for (int j = 0; j < segmentCount; j++)
+                {
+                    // Dec GameDispatchArrayURL
+                    string[] GameDispatchArrayURL = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchArrayURL ?? null;
+                    Decryptor.DecryptStringWithMasterKey(ref GameDispatchArrayURL);
+                    MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchArrayURL = GameDispatchArrayURL;
+
+                    // Dec GameDispatchChannelName
+                    string GameDispatchChannelName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName ?? null;
+                    Decryptor.DecryptStringWithMasterKey(ref GameDispatchChannelName);
+                    MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName = GameDispatchChannelName;
+
+                    // Dec GameDispatchURLTemplate
+                    string GameDispatchURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate ?? null;
+                    Decryptor.DecryptStringWithMasterKey(ref GameDispatchURLTemplate);
+                    MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate = GameDispatchURLTemplate;
+
+                    // Dec GameGatewayURLTemplate
+                    string GameGatewayURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameGatewayURLTemplate ?? null;
+                    Decryptor.DecryptStringWithMasterKey(ref GameGatewayURLTemplate);
+                    MetadataV2[gameKeys[i]][regionKeys[j]].GameGatewayURLTemplate = GameGatewayURLTemplate;
+                }
+            }
+        }
+#nullable enable
     }
 
     public class PresetConfigV2
@@ -355,6 +397,14 @@ namespace Hi3Helper.Preset
 #nullable enable
         public string? ZipFileURL { get; set; }
         public string? GameDispatchURL { get; set; }
+        public string[]? GameSupportedLanguages { get; set; }
+        public string[]? GameDispatchArrayURL { get; set; }
+        public string? GameDispatchChannelName { get; set; }
+        public string? GameDispatchURLTemplate { get; set; }
+        public string? GameGatewayURLTemplate { get; set; }
+        public string? GameGatewayDefault { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public AssetLanguage GameDefaultCVLanguage { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }

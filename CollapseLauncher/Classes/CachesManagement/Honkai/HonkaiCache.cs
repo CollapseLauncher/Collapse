@@ -25,7 +25,7 @@ namespace CollapseLauncher
                   parentUI,
                   gameVersion,
                   Path.Combine(GameAppDataFolder, presetConfigV2.InternalGameNameInConfig),
-                  presetConfigV2.CachesEndpointURL,
+                  null,
                   presetConfigV2,
                   thread,
                   downloadThread)

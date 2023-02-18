@@ -38,7 +38,7 @@ namespace CollapseLauncher.Interfaces
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
         protected string _gamePath { get; init; }
-        protected string _gameRepoURL { get; init; }
+        protected string _gameRepoURL { get; set; }
         protected PresetConfigV2 _gamePreset { get; set; }
         protected GameVersion _gameVersion { get; init; }
         protected List<T2> _assetIndex { get; set; }

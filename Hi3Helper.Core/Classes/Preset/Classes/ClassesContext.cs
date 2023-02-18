@@ -1,5 +1,6 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region.Honkai;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Locale;
@@ -45,4 +46,10 @@ namespace Hi3Helper
 
     [JsonSerializable(typeof(Dictionary<string, string>))]
     public partial class D_StringString : JsonSerializerContext { }
+
+    [JsonSerializable(typeof(Dispatcher))]
+    public partial class DispatcherContext : JsonSerializerContext { }
+
+    [JsonSerializable(typeof(Gateway))]
+    public partial class GatewayContext : JsonSerializerContext { }
 }
