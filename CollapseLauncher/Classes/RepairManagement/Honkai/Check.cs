@@ -294,8 +294,13 @@ namespace CollapseLauncher
         {
             foreach (string video in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Video"), "*", SearchOption.AllDirectories))
             {
-                if ((video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
-                 && !assets.Contains(video)) assets.Add(video);
+                bool isUSM = video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
+                bool isVersion = video.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
+                bool isIncluded = assets.Contains(video);
+                if (isUSM || isVersion || isIncluded)
+                {
+                    assets.Add(video);
+                }
             }
         }
 
@@ -305,7 +310,10 @@ namespace CollapseLauncher
             {
                 if ((audio.EndsWith(".pck", StringComparison.OrdinalIgnoreCase)
                   || audio.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase))
-                  && !assets.Contains(audio)) assets.Add(audio);
+                  && !assets.Contains(audio))
+                {
+                    assets.Add(audio);
+                }
             }
         }
 
@@ -314,14 +322,16 @@ namespace CollapseLauncher
             int pathOffset = _gamePath.Length + 1;
             foreach (string asset in Directory.EnumerateFiles(Path.Combine(_gamePath), "*", SearchOption.AllDirectories))
             {
-                if (!assets.Contains(asset)
-                 && !asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)
-                 && !asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase)
-                 && !asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase)
-                 && !asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase)
-                 && !asset.Contains("ScreenShot")
-                 && !asset.Contains("webCaches")
-                 && !asset.Contains("SDKCaches"))
+                bool isIncluded = assets.Contains(asset);
+                bool isini = asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase);
+                bool isXMFBlocks = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isVersion = asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
+                bool isScreenshot = asset.Contains("ScreenShot");
+                bool isWebcaches = asset.Contains("webCaches");
+                bool isSDKcaches = asset.Contains("SDKCaches");
+
+                if (!isIncluded && !isini && !isXMFBlocks && !isXMFMeta && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);
