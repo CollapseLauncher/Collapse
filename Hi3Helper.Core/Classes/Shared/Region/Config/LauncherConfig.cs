@@ -81,6 +81,11 @@ namespace Hi3Helper.Shared.Region
             get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
             set => SetAppConfigValue("EnableConsole", value);
         }
+        public static bool IsMultipleInstanceEnabled
+        {
+            get => GetAppConfigValue("EnableMultipleInstance").ToBoolNullable() ?? false;
+            set => SetAndSaveConfigValue("EnableMultipleInstance", value);
+        }
         public static bool ForceInvokeUpdate = false;
         public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
@@ -97,6 +102,7 @@ namespace Hi3Helper.Shared.Region
 #else
             { "EnableConsole", new IniValue(false) },
 #endif
+            { "EnableMultipleInstance", new IniValue(false) },
             { "DontAskUpdate", new IniValue(false) },
             { "ThemeMode", new IniValue(AppThemeMode.Dark) },
             { "AppLanguage", new IniValue("en-us") },
