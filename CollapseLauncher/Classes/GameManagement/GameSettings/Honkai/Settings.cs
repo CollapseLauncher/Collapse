@@ -19,6 +19,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         public HonkaiSettings(PresetConfigV2 gameConfig)
         {
             // Init Root Registry Key
+            RegistryRootPath = Path.GetDirectoryName(gameConfig.ConfigRegistryLocation);
             RegistryPath = Path.Combine(RegistryRootPath, gameConfig.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 

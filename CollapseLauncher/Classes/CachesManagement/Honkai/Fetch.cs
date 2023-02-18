@@ -105,6 +105,7 @@ namespace CollapseLauncher
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
+
             // Iterate lines of the TextAsset
             foreach (ReadOnlySpan<char> line in dataTextAsset.GetStringEnumeration())
             {
