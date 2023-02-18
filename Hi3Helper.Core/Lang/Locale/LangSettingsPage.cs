@@ -11,6 +11,7 @@
                 public string PageTitle { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug { get; set; } = LangFallback?._SettingsPage.Debug;
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
+                public string Debug_MultipleInstance { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string Language { get; set; } = LangFallback?._SettingsPage.Language;
                 public string LanguageEntry { get; set; } = LangFallback?._SettingsPage.LanguageEntry;
                 public string AppThemes { get; set; } = LangFallback?._SettingsPage.AppThemes;

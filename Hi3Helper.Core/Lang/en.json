@@ -275,6 +275,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Show Console",
+    "Debug_MultipleInstance": "Allow running in Multiple Instance",
 
     "Language": "App Language",
     "LanguageEntry": "{0} by {1}",

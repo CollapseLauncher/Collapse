@@ -274,6 +274,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Perlihatkan Konsol",
+    "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
 
     "Language": "Bahasa",
     "LanguageEntry": "{0} oleh {1}",
