@@ -3,9 +3,9 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.BZip2;
- 
-namespace Hi3Helper.BsDiff
+using System.IO.Compression;
+
+namespace Hi3Helper.Data
 {
     /*
 	The original bsdiff.c source code (http://www.daemonology.net/bsdiff/) is
@@ -110,9 +110,9 @@ namespace Hi3Helper.BsDiff
                 compressedExtraStream.Seek(c_headerSize + controlLength + diffLength, SeekOrigin.Current);
 
                 // decompress each part (to read it)
-                using (BZip2InputStream controlStream = new BZip2InputStream(compressedControlStream))
-                using (BZip2InputStream diffStream = new BZip2InputStream(compressedDiffStream))
-                using (BZip2InputStream extraStream = new BZip2InputStream(compressedExtraStream))
+                using (GZipStream controlStream = new GZipStream(compressedControlStream, CompressionMode.Decompress))
+                using (GZipStream diffStream = new GZipStream(compressedDiffStream, CompressionMode.Decompress))
+                using (GZipStream extraStream = new GZipStream(compressedExtraStream, CompressionMode.Decompress))
                 {
                     long[] control = new long[3];
                     byte[] buffer = new byte[8];
@@ -180,152 +180,6 @@ namespace Hi3Helper.BsDiff
                     }
                 }
             }
-        }
-
-        private static int CompareBytes(byte[] left, int leftOffset, byte[] right, int rightOffset)
-        {
-            for (int index = 0; index < left.Length - leftOffset && index < right.Length - rightOffset; index++)
-            {
-                int diff = left[index + leftOffset] - right[index + rightOffset];
-                if (diff != 0)
-                    return diff;
-            }
-            return 0;
-        }
-
-        private static int MatchLength(byte[] oldData, int oldOffset, byte[] newData, int newOffset)
-        {
-            int i;
-            for (i = 0; i < oldData.Length - oldOffset && i < newData.Length - newOffset; i++)
-            {
-                if (oldData[i + oldOffset] != newData[i + newOffset])
-                    break;
-            }
-            return i;
-        }
-
-        private static int Search(int[] I, byte[] oldData, byte[] newData, int newOffset, int start, int end, out int pos)
-        {
-            if (end - start < 2)
-            {
-                int startLength = MatchLength(oldData, I[start], newData, newOffset);
-                int endLength = MatchLength(oldData, I[end], newData, newOffset);
-
-                if (startLength > endLength)
-                {
-                    pos = I[start];
-                    return startLength;
-                }
-                else
-                {
-                    pos = I[end];
-                    return endLength;
-                }
-            }
-            else
-            {
-                int midPoint = start + (end - start) / 2;
-                return CompareBytes(oldData, I[midPoint], newData, newOffset) < 0 ?
-                    Search(I, oldData, newData, newOffset, midPoint, end, out pos) :
-                    Search(I, oldData, newData, newOffset, start, midPoint, out pos);
-            }
-        }
-
-        private static void Split(int[] I, int[] v, int start, int len, int h)
-        {
-            if (len < 16)
-            {
-                int j;
-                for (int k = start; k < start + len; k += j)
-                {
-                    j = 1;
-                    int x = v[I[k] + h];
-                    for (int i = 1; k + i < start + len; i++)
-                    {
-                        if (v[I[k + i] + h] < x)
-                        {
-                            x = v[I[k + i] + h];
-                            j = 0;
-                        }
-                        if (v[I[k + i] + h] == x)
-                        {
-                            Swap(ref I[k + j], ref I[k + i]);
-                            j++;
-                        }
-                    }
-                    for (int i = 0; i < j; i++)
-                        v[I[k + i]] = k + j - 1;
-                    if (j == 1)
-                        I[k] = -1;
-                }
-            }
-            else
-            {
-                int x = v[I[start + len / 2] + h];
-                int jj = 0;
-                int kk = 0;
-                for (int i2 = start; i2 < start + len; i2++)
-                {
-                    if (v[I[i2] + h] < x)
-                        jj++;
-                    if (v[I[i2] + h] == x)
-                        kk++;
-                }
-                jj += start;
-                kk += jj;
-
-                int i = start;
-                int j = 0;
-                int k = 0;
-                while (i < jj)
-                {
-                    if (v[I[i] + h] < x)
-                    {
-                        i++;
-                    }
-                    else if (v[I[i] + h] == x)
-                    {
-                        Swap(ref I[i], ref I[jj + j]);
-                        j++;
-                    }
-                    else
-                    {
-                        Swap(ref I[i], ref I[kk + k]);
-                        k++;
-                    }
-                }
-
-                while (jj + j < kk)
-                {
-                    if (v[I[jj + j] + h] == x)
-                    {
-                        j++;
-                    }
-                    else
-                    {
-                        Swap(ref I[jj + j], ref I[kk + k]);
-                        k++;
-                    }
-                }
-
-                if (jj > start)
-                    Split(I, v, start, jj - start, h);
-
-                for (i = 0; i < kk - jj; i++)
-                    v[I[jj + i]] = kk - 1;
-                if (jj == kk - 1)
-                    I[jj] = -1;
-
-                if (start + len > kk)
-                    Split(I, v, kk, start + len - kk, h);
-            }
-        }
-
-        private static void Swap(ref int first, ref int second)
-        {
-            int temp = first;
-            first = second;
-            second = temp;
         }
 
         private static long ReadInt64(byte[] buf, int offset)
