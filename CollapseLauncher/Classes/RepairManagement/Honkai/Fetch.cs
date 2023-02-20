@@ -90,6 +90,21 @@ namespace CollapseLauncher
 
             // Deserialize manifest and build Audio Index
             BuildAudioIndex(manifest, assetIndex);
+
+            // Build audio version file
+            BuildAudioVersioningFile(manifest);
+        }
+
+        private void BuildAudioVersioningFile(Manifest audioManifest)
+        {
+            // Build audio versioning file
+            using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "Version.txt"), false))
+            {
+                foreach (ManifestAssetInfo audioAsset in audioManifest.AudioAssets.Where(x => x.Language == _audioLanguage || x.Language == AssetLanguage.Common))
+                {
+                    sw.WriteLine($"{audioAsset.Name}.pck\t{audioAsset.HashString}");
+                }
+            }
         }
 
         private void CountAudioIndex(List<FilePropertiesRemote> audioIndex)
