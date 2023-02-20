@@ -101,7 +101,7 @@ namespace CollapseLauncher
 
         public void Dispose()
         {
-
+            CancelRoutine();
         }
     }
 }

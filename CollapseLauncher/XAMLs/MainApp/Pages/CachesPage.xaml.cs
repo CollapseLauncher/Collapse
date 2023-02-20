@@ -17,6 +17,8 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
         }
 
+        ~CachesPage() => _GameCache?.CancelRoutine();
+
         public async void StartCachesUpdate(object sender, RoutedEventArgs e)
         {
             UpdateCachesBtn.IsEnabled = false;
