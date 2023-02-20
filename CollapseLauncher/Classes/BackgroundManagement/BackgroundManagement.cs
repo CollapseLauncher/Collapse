@@ -21,9 +21,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 #endif
 using static Hi3Helper.Locale;
-using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseLauncher.Statics;
 using Hi3Helper.Preset;
 
 namespace CollapseLauncher

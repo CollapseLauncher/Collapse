@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -92,16 +93,38 @@ namespace Hi3Helper.Shared.ClassStruct
 
     public class RegionSocMedProp
     {
+        private string _url;
+
         public string icon_id { get; set; }
         public string img { get; set; }
         public string img_hover { get; set; }
         public string qr_img { get; set; }
         public string qr_desc { get; set; }
-        public string url { get; set; }
+        public string url
+        {
+            get => _url;
+            set => _url = StripTabsAndNewlines(value);
+        }
         public string name { get; set; }
         public string title { get; set; }
         public string show_time { get; set; }
         public PostCarouselType type { get; set; }
+
+        private unsafe string StripTabsAndNewlines(ReadOnlySpan<char> s)
+        {
+            int len = s.Length;
+            char* newChars = stackalloc char[len];
+            char* currentChar = newChars;
+
+            for (int i = 0; i < len; ++i)
+            {
+                char c = s[i];
+
+                if (c == '\r' || c == '\n' || c == '\t') continue;
+                *currentChar++ = c;
+            }
+            return new string(newChars, 0, (int)(currentChar - newChars));
+        }
     }
 
     public class YSDispatchInfo
