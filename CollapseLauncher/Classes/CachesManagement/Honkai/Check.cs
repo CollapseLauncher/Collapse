@@ -32,6 +32,12 @@ namespace CollapseLauncher
             {
                 try
                 {
+                    // Create the cache directory if it doesn't exist
+                    if (!Directory.Exists(_gamePath))
+                    {
+                        Directory.CreateDirectory(_gamePath);
+                    }
+
                     // Check for unused files
                     CheckUnusedAssets(assetIndex, returnAsset);
 
@@ -53,6 +59,7 @@ namespace CollapseLauncher
 
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
+            // Iterate the file contained in the _gamePath
             foreach (string filePath in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
             {
                 if (!filePath.Contains("output_log") && !filePath.Contains("Crashes") && !filePath.Contains("Verify.txt") && !filePath.Contains("APM") && !assetIndex.Exists(x => x.ConcatPath == filePath))
