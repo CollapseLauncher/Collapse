@@ -192,6 +192,7 @@ namespace CollapseLauncher
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
         {
+            DisposeAllPageStatics();
             switch (preset.GameType)
             {
                 case GameType.Honkai:
@@ -215,6 +216,12 @@ namespace CollapseLauncher
                     PageStatics._GameCache = null;
                     break;
             }
+        }
+
+        private void DisposeAllPageStatics()
+        {
+            PageStatics._GameRepair?.Dispose();
+            PageStatics._GameRepair?.Dispose();
         }
 
         private void SpawnRegionNotification(string RegionProfileName)
