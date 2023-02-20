@@ -145,7 +145,7 @@ namespace CollapseLauncher
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
-                        RepairAssetType.Audio,
+                        asset.IsPatchApplicable ? RepairAssetType.AudioUpdate : RepairAssetType.Audio,
                         Path.GetDirectoryName(asset.N),
                         asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S,
                         localCRC,

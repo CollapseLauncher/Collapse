@@ -5,6 +5,7 @@
         General,
         Block,
         Audio,
+        AudioUpdate,
         Video,
         Chunk,
         Unused
