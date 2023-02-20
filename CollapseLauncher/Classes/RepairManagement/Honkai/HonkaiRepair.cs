@@ -102,6 +102,9 @@ namespace CollapseLauncher
 
         private async Task<bool> RepairRoutine()
         {
+            // Restart Stopwatch
+            RestartStopwatch();
+
             // Assign repair task
             Task<bool> repairTask = Repair(_assetIndex);
 
