@@ -122,28 +122,31 @@ namespace CollapseLauncher
             Dispatch(() => AssetEntry.RemoveAt(0));
         }
 
-        private void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)
+        private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)
         {
-            // Only increase if the download state is not Mergin
-            if (e.State != DownloadState.Merging)
-            {
-                _progressTotalSizeCurrent += e.Read;
-            }
-
-            // Update fetch status
-            string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed((long)(e.Read / _stopwatch.Elapsed.TotalSeconds))));
-            _status.ActivityTotal = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
-                                       + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(e.Speed))
-                                       + $" | {timeLeftString}";
-            _status.IsProgressTotalIndetermined = false;
-
-            // Update fetch progress=
+            // Update current progress percentages and speed
             _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
                 ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
                 0;
 
-            // Push status and progress update
-            UpdateAll();
+            if (e.State != DownloadState.Merging)
+            {
+                _progressTotalSizeCurrent += e.Read;
+            }
+            long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Update current activity status
+                _status.IsProgressTotalIndetermined = false;
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                _status.ActivityTotal = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
+                                       + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
+                                       + $" | {timeLeftString}";
+
+                // Trigger update
+                UpdateAll();
+            }
         }
     }
 }
