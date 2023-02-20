@@ -36,8 +36,8 @@ namespace CollapseLauncher
             // Await the task for parallel processing
             await Task.Run(() =>
             {
-            try
-            {
+                try
+                {
                     // Check for skippable assets to skip the check
                     RemoveSkippableAssets(assetIndex);
 
@@ -618,12 +618,18 @@ namespace CollapseLauncher
                     ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
                     0;
 
+                // Calculate speed
+                long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+
                 // Calculate current speed and update the status and progress speed
                 _progress.ProgressTotalSpeed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
 
+                // Set time estimation string
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+
                 // Update current activity status
-                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount) + $" | {timeLeftString}";
 
                 // Trigger update
                 UpdateAll();
