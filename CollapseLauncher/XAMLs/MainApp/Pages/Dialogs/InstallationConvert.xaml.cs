@@ -19,7 +19,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.InstallationManagement;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
@@ -53,7 +52,6 @@ namespace CollapseLauncher.Dialogs
         {
             try
             {
-                string EndpointURL = string.Format(PageStatics._GameVersion.GamePreset.ZipFileURL, Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GameAPIProp.data.game.latest.path));
                 bool IsAskContinue = true;
                 while (IsAskContinue)
                 {
@@ -120,7 +118,7 @@ namespace CollapseLauncher.Dialogs
             catch (Exception ex)
             {
                 RevertConversion();
-                LogWriteLine($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex));
             }
             finally

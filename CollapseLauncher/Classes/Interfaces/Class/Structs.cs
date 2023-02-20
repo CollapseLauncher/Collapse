@@ -68,6 +68,7 @@ namespace CollapseLauncher
 
         public string VersionString { get => string.Join('.', VersionArray); }
         public int[] VersionArrayXMF { get => new int[4] { 0, Major, Minor, Revision }; }
+        public int[] VersionArrayAudioManifest { get => new int[4] { Major, Minor, Revision, 0 }; }
         public int[] VersionArray { get => new int[3] { Major, Minor, Revision }; }
         public readonly int Major;
         public readonly int Minor;

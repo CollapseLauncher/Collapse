@@ -116,6 +116,8 @@ namespace CollapseLauncher
                 await _httpClient.Download(baseURL, stream, null, null, _token.Token);
                 stream.Position = 0;
 
+                LogWriteLine($"Cache Update connected to dispatcher endpoint: {baseURL}", LogType.Default, true);
+
                 // Try deserialize dispatcher
                 return (Dispatcher)JsonSerializer.Deserialize(stream, typeof(Dispatcher), DispatcherContext.Default);
             }
@@ -148,6 +150,8 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
                 await _httpClient.Download(baseURL, stream, null, null, _token.Token);
                 stream.Position = 0;
+
+                LogWriteLine($"Cache Update connected to gateway endpoint: {baseURL}", LogType.Default, true);
 
                 // Try deserialize gateway
                 return (Gateway)JsonSerializer.Deserialize(stream, typeof(Gateway), GatewayContext.Default);

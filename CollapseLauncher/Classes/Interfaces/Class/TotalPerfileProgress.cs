@@ -2,12 +2,11 @@
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using static Hi3Helper.Locale;
-using Hi3Helper.Data;
 
 namespace CollapseLauncher.Interfaces
 {
@@ -39,7 +38,7 @@ namespace CollapseLauncher.Interfaces
         protected long _progressPerFileSizeCurrent;
         protected long _progressPerFileSize;
 
-        protected void ResetStatusAndProgress()
+        protected virtual void ResetStatusAndProgress()
         {
             // Reset RepairAssetProperty list
             AssetEntry.Clear();

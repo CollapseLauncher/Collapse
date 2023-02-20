@@ -45,7 +45,8 @@ namespace CollapseLauncher
                     ConfiguredTaskAwaitable assetTask = (asset.FT switch
                     {
                         FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient),
-                        _ => RepairAssetTypeGenericAudio(asset, _httpClient)
+                        FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient),
+                        _ => RepairAssetTypeGeneric(asset, _httpClient)
                     }).ConfigureAwait(false);
 
                     // Await the task
@@ -66,8 +67,101 @@ namespace CollapseLauncher
             }
         }
 
-        #region GenericAudioRepair
-        private async Task RepairAssetTypeGenericAudio(FilePropertiesRemote asset, Http _httpClient)
+        #region AudioRepairOrPatch
+        private async Task RepairOrPatchTypeAudio(FilePropertiesRemote asset, Http _httpClient)
+        {
+            if (asset.IsPatchApplicable)
+            {
+                await RepairTypeAudioActionPatching(asset, _httpClient);
+            }
+            else
+            {
+                string audioURL = string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + asset.RN;
+                await RepairAssetTypeGeneric(asset, _httpClient, audioURL);
+            }
+        }
+
+        private async Task RepairTypeAudioActionPatching(FilePropertiesRemote asset, Http _httpClient)
+        {
+            // Increment total count current
+            _progressTotalCountCurrent++;
+
+            // Declare variables for patch file and URL and new file path
+            string patchURL = string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + asset.AudioPatchInfo.Value.PatchFilename;
+            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_audioPatchBaseLocalPath), asset.AudioPatchInfo.Value.PatchFilename);
+            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            string outputFilePath = inputFilePath + "_tmp";
+
+            // Set downloading patch status
+            UpdateRepairStatus(
+                string.Format(Lang._GameRepairPage.Status12, asset.N),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, _progressTotalCountCurrent, _progressTotalCount),
+                true);
+
+            // Download patch File first
+            await RunDownloadTask(asset.AudioPatchInfo.Value.PatchFileSize, patchPath, patchURL, _httpClient);
+
+            // Start patching process
+            BinaryPatchUtility patchUtil = new BinaryPatchUtility();
+            try
+            {
+                // Subscribe patching progress and start applying patch
+                patchUtil.ProgressChanged += RepairTypeAudioActionPatching_ProgressChanged;
+                patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
+                await Task.Run(patchUtil.Apply).ConfigureAwait(false);
+
+                // Delete old file and rename the new file
+                File.Delete(inputFilePath);
+                File.Move(outputFilePath, inputFilePath);
+
+                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                // Delete the patch file and unsubscribe the patching progress
+                FileInfo fileInfo = new FileInfo(patchPath);
+                if (fileInfo.Exists)
+                {
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                }
+                patchUtil.ProgressChanged -= RepairTypeAudioActionPatching_ProgressChanged;
+            }
+
+            // Pop repair asset display entry
+            PopRepairAssetEntry();
+        }
+
+        private async void RepairTypeAudioActionPatching_ProgressChanged(object sender, BinaryPatchProgress e)
+        {
+            _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressTotalSpeed = e.Speed;
+
+            // Update current progress percentages
+            _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
+                ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
+                0;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Update current activity status
+                _status.IsProgressTotalIndetermined = false;
+                _status.IsProgressPerFileIndetermined = false;
+                _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle5, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
+
+                // Trigger update
+                UpdateAll();
+            }
+        }
+        #endregion
+
+        #region GenericRepair
+        private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, string customURL = null)
         {
             // Increment total count current
             _progressTotalCountCurrent++;
@@ -78,18 +172,20 @@ namespace CollapseLauncher
                 true);
 
             // Set URL of the asset
-            string assetURL = _gameRepoURL + '/' + asset.N;
+            string assetURL = customURL != null ? customURL : _gameRepoURL + '/' + asset.N;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
             if (asset.FT == FileType.Unused)
             {
                 // Remove unused asset
                 RemoveUnusedAssetTypeGeneric(assetPath);
+                LogWriteLine($"Unused {asset.N} has been deleted!", LogType.Default, true);
             }
             else
             {
                 // Start asset download task
                 await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient);
+                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
