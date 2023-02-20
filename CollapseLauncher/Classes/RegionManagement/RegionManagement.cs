@@ -293,6 +293,7 @@ namespace CollapseLauncher
         private void CancelLoadRegion(object sender, RoutedEventArgs e)
         {
             IsExplicitCancel = true;
+            LockRegionChangeBtn = false;
             InnerTaskTokenSource.Cancel();
             InnerTokenSource.Cancel();
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
