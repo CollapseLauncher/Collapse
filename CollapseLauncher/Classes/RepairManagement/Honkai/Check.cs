@@ -36,8 +36,11 @@ namespace CollapseLauncher
             // Await the task for parallel processing
             await Task.Run(() =>
             {
-                try
-                {
+            try
+            {
+                    // Check for skippable assets to skip the check
+                    RemoveSkippableAssets(assetIndex);
+
                     // Iterate assetIndex and check it using different method for each type and run it in parallel
                     Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
@@ -226,6 +229,28 @@ namespace CollapseLauncher
                 targetAssetIndex.Add(asset);
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {localCRC}", LogType.Warning, true);
+            }
+        }
+
+        private void RemoveSkippableAssets(List<FilePropertiesRemote> assetIndex)
+        {
+            List<FilePropertiesRemote> removableAssets = new List<FilePropertiesRemote>();
+
+            // Iterate the skippable asset and do LINQ check
+            foreach (string skippableAsset in _skippableAssets)
+            {
+                // Try get the IEnumerable to iterate the asset
+                foreach (FilePropertiesRemote asset in assetIndex.Where(x => x.N.Contains(skippableAsset)))
+                {
+                    // If there's any, then add it to removable assets list
+                    removableAssets.Add(asset);
+                }
+            }
+
+            // Remove all the removable assets in asset index
+            foreach (FilePropertiesRemote removableAsset in removableAssets)
+            {
+                assetIndex.Remove(removableAsset);
             }
         }
         #endregion

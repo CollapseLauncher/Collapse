@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
-using Force.Crc32;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.KianaManifest;
 using Hi3Helper.Preset;
@@ -8,9 +7,9 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Data.ConverterTool;
 
 namespace CollapseLauncher
 {
@@ -21,6 +20,7 @@ namespace CollapseLauncher
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private string _assetBaseURL { get; set; }
         private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
+        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
         #endregion
 
         #region ExtensionProperties
@@ -29,7 +29,6 @@ namespace CollapseLauncher
         private protected string _audioBaseRemotePath { get => _assetBaseURL + "Audio/{0}/Windows/"; }
         private protected string _audioPatchBaseLocalPath { get => _audioBaseLocalPath + "Patch/"; }
         private protected string _audioPatchBaseRemotePath { get => _audioBaseRemotePath + "Patch/"; }
-
         #endregion
 
         public HonkaiRepair(UIElement parentUI, string gameVersion, string gamePath,
