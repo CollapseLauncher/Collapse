@@ -32,6 +32,7 @@ LZMAUseSeparateProcess=yes
 LZMADictionarySize=1048576
 LZMAMatchFinder=BT
 LZMANumFastBytes=128
+PrivilegesRequired=admin
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
@@ -40,3 +41,7 @@ Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingD
 
 [Files]
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+
+[Run]
+Filename: "{app}\CollapseLauncher.exe"; Description: "{cm:LaunchProgram,CollapseLauncher}"; Flags: runascurrentuser nowait postinstall skipifsilent; Check: returnTrue()
+Filename: "{app}\CollapseLauncher.exe"; Flags: runascurrentuser; Parameters: "-install -svcName ""CollapseLauncher"" -svcDesc ""CollapseLauncher"" -mainExe ""CollapseLauncher.exe""  "; Check: returnFalse()
