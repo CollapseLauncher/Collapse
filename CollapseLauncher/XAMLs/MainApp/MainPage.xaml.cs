@@ -95,21 +95,36 @@ namespace CollapseLauncher
 
             if (IsPrincipalHasAdministratorAccess())
             {
-                switch (await dialog.ShowAsync())
+                bool IsStillLoop = true;
+                while (IsStillLoop)
                 {
-                    case ContentDialogResult.Primary:
-                        new Process()
-                        {
-                            StartInfo = new ProcessStartInfo
+                    switch (await dialog.ShowAsync())
+                    {
+                        case ContentDialogResult.Primary:
+                            try
                             {
-                                UseShellExecute = true,
-                                Verb = "runas",
-                                FileName = AppExecutablePath,
-                                WorkingDirectory = AppFolder,
-                                Arguments = string.Join(' ', AppCurrentArgument)
+                                Process proc = new Process()
+                                {
+                                    StartInfo = new ProcessStartInfo
+                                    {
+                                        UseShellExecute = true,
+                                        Verb = "runas",
+                                        FileName = AppExecutablePath,
+                                        WorkingDirectory = AppFolder,
+                                        Arguments = string.Join(' ', AppCurrentArgument)
+                                    }
+                                };
+                                proc.Start();
+                                IsStillLoop = false;
                             }
-                        }.Start();
-                        break;
+                            catch (Exception ex)
+                            {
+                                LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
+                            }
+                            break;
+                        default:
+                            return false;
+                    }
                 }
                 return false;
             }
