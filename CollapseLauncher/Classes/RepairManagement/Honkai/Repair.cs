@@ -327,13 +327,20 @@ namespace CollapseLauncher
                 _progressTotalSizeCurrent += e.Read;
             }
 
+            // Calculate speed
+            long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+
             if (await CheckIfNeedRefreshStopwatch())
             {
                 // Update current activity status
                 _status.IsProgressTotalIndetermined = false;
                 _status.IsProgressPerFileIndetermined = false;
+
+                // Set time estimation string
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
-                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount);
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount) + $" | {timeLeftString}";
 
                 // Trigger update
                 UpdateAll();
