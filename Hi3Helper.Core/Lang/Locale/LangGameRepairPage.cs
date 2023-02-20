@@ -26,11 +26,14 @@
                 public string Status9 { get; set; } = LangFallback?._GameRepairPage.Status9;
                 public string Status10 { get; set; } = LangFallback?._GameRepairPage.Status10;
                 public string Status11 { get; set; } = LangFallback?._GameRepairPage.Status11;
+                public string Status12 { get; set; } = LangFallback?._GameRepairPage.Status12;
                 public string StatusNone { get; set; } = LangFallback?._GameRepairPage.StatusNone;
                 public string TotalProgressTitle1 { get; set; } = LangFallback?._GameRepairPage.TotalProgressTitle1;
                 public string PerProgressTitle1 { get; set; } = LangFallback?._GameRepairPage.PerProgressTitle1;
                 public string PerProgressSubtitle2 { get; set; } = LangFallback?._GameRepairPage.PerProgressSubtitle2;
                 public string PerProgressSubtitle3 { get; set; } = LangFallback?._GameRepairPage.PerProgressSubtitle3;
+                public string PerProgressSubtitle4 { get; set; } = LangFallback?._GameRepairPage.PerProgressSubtitle4;
+                public string PerProgressSubtitle5 { get; set; } = LangFallback?._GameRepairPage.PerProgressSubtitle5;
                 public string RepairBtn1 { get; set; } = LangFallback?._GameRepairPage.RepairBtn1;
                 public string RepairBtn2 { get; set; } = LangFallback?._GameRepairPage.RepairBtn2;
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._GameRepairPage.OverlayNotInstalledTitle;
