@@ -40,6 +40,9 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual void ResetStatusAndProgress()
         {
+            // Reset the cancellation token
+            _token = new CancellationTokenSource();
+
             // Reset RepairAssetProperty list
             AssetEntry.Clear();
 
