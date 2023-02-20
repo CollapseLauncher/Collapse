@@ -130,8 +130,8 @@
                       VerticalAlignment="Top" HorizontalAlignment="Stretch"
                       CornerRadius="0,0,0,0" />
                 </Grid>
-                <Grid x:Name="LoadingPopup" Margin="2,47,2,2"
-                      Visibility="Collapsed" Opacity="0">
+                <Grid x:Name="LoadingPopup" Margin="0,47,0,0"
+                      Visibility="Collapsed" Opacity="0" Background="{ThemeResource LoadingGradientBG}">
                     <Grid x:Name="LoadingPopupPill" Background="{ThemeResource LoadingBrush}" Margin="28" CornerRadius="8"
                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="47" Shadow="{ThemeResource SharedShadow}">
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="8" HorizontalAlignment="Center">

@@ -17,6 +17,10 @@
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#FFFFFF"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#000000"/>
+                            <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#22000000" Offset="0.0"/>
+                                <GradientStop Color="#60000000" Offset="1"/>
+                            </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
 
@@ -62,6 +66,10 @@
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#000000"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#FFFFFF"/>
+                            <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#00000000" Offset="0.25"/>
+                                <GradientStop Color="#60000000" Offset="1"/>
+                            </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#FFFFFF" TintOpacity="1" />
 
