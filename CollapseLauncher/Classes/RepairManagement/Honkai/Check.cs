@@ -132,6 +132,8 @@ namespace CollapseLauncher
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
             {
+                // Increment/decrement the size of the file based on size differences
+                _progressTotalSizeCurrent += sizeDifference;
                 // Increment progress count and size
                 _progressTotalSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
                 _progressTotalCountFound++;
@@ -153,9 +155,6 @@ namespace CollapseLauncher
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} " + (asset.IsPatchApplicable ? "has an update and patch applicable" : $"is broken! Index CRC: {asset.CRC} <--> File CRC: {localCRC}"), LogType.Warning, true);
             }
-
-            // Increment current Total Size
-            _progressTotalSizeCurrent += asset.S;
         }
         #endregion
 
@@ -561,10 +560,14 @@ namespace CollapseLauncher
                     _token.Token.ThrowIfCancellationRequested();
                     // Append buffer into hash block
                     md5Instance.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
-                    // Increment total size counter
-                    // _progressTotalSizeCurrent += read;
-                    // Increment per file size counter
-                    _progressPerFileSizeCurrent += read;
+
+                    lock (this)
+                    {
+                        // Increment total size counter
+                        _progressTotalSizeCurrent += read;
+                        // Increment per file size counter
+                        _progressPerFileSizeCurrent += read;
+                    }
 
                     // Update status and progress for MD5 calculation
                     UpdateProgressCRC();
