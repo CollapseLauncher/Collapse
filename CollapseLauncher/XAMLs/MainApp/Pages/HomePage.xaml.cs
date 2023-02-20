@@ -124,6 +124,7 @@ namespace CollapseLauncher.Pages
                 while (true)
                 {
                     await Task.Delay(delay * 1000, token);
+                    if (MenuPanels.imageCarouselPanel == null) return;
                     if (ImageCarousel.SelectedIndex != MenuPanels.imageCarouselPanel.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
