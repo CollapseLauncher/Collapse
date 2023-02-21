@@ -119,7 +119,14 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                CachesTotalProgressBar.Value = e.ProgressTotalPercentage;
+                if (!double.IsInfinity(e.ProgressTotalPercentage))
+                {
+                    CachesTotalProgressBar.Value = e.ProgressTotalPercentage;
+                }
+                else
+                {
+                    CachesTotalProgressBar.Value = 0;
+                }
             });
         }
 
