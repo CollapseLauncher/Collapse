@@ -43,5 +43,4 @@ Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingD
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "{cm:LaunchProgram,CollapseLauncher}"; Flags: runascurrentuser nowait postinstall skipifsilent; Check: returnTrue()
-Filename: "{app}\CollapseLauncher.exe"; Flags: runascurrentuser; Parameters: "-install -svcName ""CollapseLauncher"" -svcDesc ""CollapseLauncher"" -mainExe ""CollapseLauncher.exe""  "; Check: returnFalse()
+Filename: "{app}\CollapseLauncher.exe"; Description: "Collapse - An advanced launcher for miHoYo Games"; Flags: postinstall nowait skipifsilent runascurrentuser;
