@@ -121,7 +121,8 @@ namespace CollapseLauncher
             foreach (ManifestAssetInfo audioInfo in audioManifest.AudioAssets)
             {
                 // Only add common and language specific audio file
-                if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage)
+                // if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage)
+                if (true)
                 {
                     // Assign based on each values
                     FilePropertiesRemote audioAsset = new FilePropertiesRemote
