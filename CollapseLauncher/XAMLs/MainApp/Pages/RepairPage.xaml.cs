@@ -16,8 +16,6 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
         }
 
-        ~RepairPage() => _GameRepair?.CancelRoutine();
-
         private async void StartGameCheck(object sender, RoutedEventArgs e)
         {
             CheckFilesBtn.IsEnabled = false;
@@ -136,12 +134,12 @@ namespace CollapseLauncher.Pages
 
         private void CancelOperation(object sender, RoutedEventArgs e)
         {
-            _GameRepair.CancelRoutine();
+            _GameRepair?.CancelRoutine();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _GameRepair.CancelRoutine();
+            _GameRepair?.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
