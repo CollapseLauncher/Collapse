@@ -125,12 +125,6 @@ namespace CollapseLauncher
             return repairTaskSuccess;
         }
 
-        protected override void ResetStatusAndProgress()
-        {
-            // Do reset on base level
-            base.ResetStatusAndProgress();
-        }
-
         public void CancelRoutine()
         {
             // Trigger token cancellation
