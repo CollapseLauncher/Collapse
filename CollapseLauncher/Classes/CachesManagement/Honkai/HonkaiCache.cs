@@ -49,10 +49,10 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            _assetIndex = await Fetch();
+            _assetIndex = await Fetch(_token.Token);
 
             // Step 2: Start assets checking
-            _updateAssetIndex = await Check(_assetIndex);
+            _updateAssetIndex = await Check(_assetIndex, _token.Token);
 
             // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be update.
             //         either way, returns false.
@@ -75,7 +75,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Assign update task
-            Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex);
+            Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token.Token);
 
             // Run update process
             bool updateTaskSuccess = await TryRunExamineThrow(updateTask);

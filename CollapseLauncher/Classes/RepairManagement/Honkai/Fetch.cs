@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -22,7 +23,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiRepair
     {
-        private async Task Fetch(List<FilePropertiesRemote> assetIndex)
+        private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
@@ -34,7 +35,7 @@ namespace CollapseLauncher
             {
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
-                Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient);
+                Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient, token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.ContainsKey(_gameVersion.VersionString))
@@ -44,24 +45,24 @@ namespace CollapseLauncher
 
                 // Region: XMFAndAssetIndex
                 // Fetch asset index
-                await FetchAssetIndex(_httpClient, assetIndex);
+                await FetchAssetIndex(_httpClient, assetIndex, token);
 
                 // Region: XMFAndAssetIndex
                 // Try check XMF file and fetch it if it doesn't exist
-                await FetchXMFFile(_httpClient, manifestDict[_gameVersion.VersionString]);
+                await FetchXMFFile(_httpClient, manifestDict[_gameVersion.VersionString], token);
 
                 // Region: AudioIndex
                 // Try check audio manifest.m file and fetch it if it doesn't exist
-                await FetchAudioIndex(_httpClient, assetIndex);
+                await FetchAudioIndex(_httpClient, assetIndex, token);
             }
         }
 
         #region AudioIndex
 
-        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex)
+        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Assign Base Asset URL
-            _assetBaseURL = await GetAssetBaseURL(_httpClient);
+            _assetBaseURL = await GetAssetBaseURL(_httpClient, token);
 
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
@@ -71,7 +72,7 @@ namespace CollapseLauncher
             // Try to get the audio manifest and deserialize it
             try
             {
-                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath);
+                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
             }
             // If a throw was thrown, then try to redownload the manifest.m file and try deserialize it again
             catch (Exception ex)
@@ -85,7 +86,7 @@ namespace CollapseLauncher
                     fileManifest.Delete();
                 }
 
-                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath);
+                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
             }
 
             // Deserialize manifest and build Audio Index
@@ -163,7 +164,7 @@ namespace CollapseLauncher
             return BuildGatewayURL(dispatcher.region_list.Where(x => x.name == preferredGateway).FirstOrDefault().dispatch_url);
         }
 
-        private async Task<string> GetAssetBaseURL(Http _httpClient)
+        private async Task<string> GetAssetBaseURL(Http _httpClient, CancellationToken token)
         {
             // Fetch dispatcher
             Dispatcher dispatcher = null;
@@ -175,7 +176,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Try assign dispatcher
-                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL));
+                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL), token);
                 }
                 catch (Exception ex)
                 {
@@ -194,13 +195,13 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
-            Gateway gateway = await FetchGateway(_httpClient, gatewayURL);
+            Gateway gateway = await FetchGateway(_httpClient, gatewayURL, token);
 
             // Return the first external resource list URL
             return $"http://{gateway.ex_resource_url_list[0]}/";
         }
 
-        private async Task<Manifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote)
+        private async Task<Manifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote, CancellationToken token)
         {
             // Check if the file exist. if not, then download it
             if (!File.Exists(manifestLocal))
@@ -212,7 +213,7 @@ namespace CollapseLauncher
 
                 // Start downloading manifest.m
                 _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(manifestRemote, manifestLocal, true, null, null, _token.Token);
+                await _httpClient.Download(manifestRemote, manifestLocal, true, null, null, token);
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
             }
 
@@ -221,7 +222,7 @@ namespace CollapseLauncher
             return new Manifest(manifestLocal, xmlKey, _gameVersion.VersionArrayAudioManifest);
         }
 
-        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL)
+        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL, CancellationToken token)
         {
             // Get the dispatcher properties
             MemoryStream stream = new MemoryStream();
@@ -230,7 +231,7 @@ namespace CollapseLauncher
             {
                 // Start downloading the dispatcher
                 _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
                 LogWriteLine($"Cache Update connected to dispatcher endpoint: {baseURL}", LogType.Default, true);
@@ -250,7 +251,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL)
+        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL, CancellationToken token)
         {
             // Get the gateway properties
             MemoryStream stream = new MemoryStream();
@@ -259,7 +260,7 @@ namespace CollapseLauncher
             {
                 // Start downloading the gateway
                 _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
                 LogWriteLine($"Cache Update connected to gateway endpoint: {baseURL}", LogType.Default, true);
@@ -297,7 +298,7 @@ namespace CollapseLauncher
 
         #region XMFAndAssetIndex
 
-        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient)
+        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
         {
             // Fetch metadata dictionary
             using (MemoryStream mfs = new MemoryStream())
@@ -307,7 +308,7 @@ namespace CollapseLauncher
 
                 // Start downloading metadata
                 _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(urlMetadata, mfs, null, null, _token.Token);
+                await _httpClient.Download(urlMetadata, mfs, null, null, token);
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
 
                 // Deserialize metadata
@@ -316,7 +317,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex)
+        private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Fetch asset index
             using (MemoryStream mfs = new MemoryStream())
@@ -326,7 +327,7 @@ namespace CollapseLauncher
 
                 // Start downloading asset index
                 _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(urlIndex, mfs, null, null, _token.Token);
+                await _httpClient.Download(urlIndex, mfs, null, null, token);
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
 
                 // Deserialize asset index and return
@@ -335,7 +336,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task FetchXMFFile(Http _httpClient, string _repoURL)
+        private async Task FetchXMFFile(Http _httpClient, string _repoURL, CancellationToken token)
         {
             // Set XMF Path and check if the XMF state is valid
             string xmfPath = Path.Combine(_gamePath, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
@@ -346,7 +347,7 @@ namespace CollapseLauncher
 
             // Start downloading XMF
             _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-            await _httpClient.Download(urlXMF, xmfPath, true, null, null, _token.Token);
+            await _httpClient.Download(urlXMF, xmfPath, true, null, null, token);
             _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
         }
 

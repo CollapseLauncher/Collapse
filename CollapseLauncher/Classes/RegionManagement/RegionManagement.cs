@@ -221,7 +221,7 @@ namespace CollapseLauncher
         private void DisposeAllPageStatics()
         {
             PageStatics._GameRepair?.Dispose();
-            PageStatics._GameRepair?.Dispose();
+            PageStatics._GameCache?.Dispose();
         }
 
         private void SpawnRegionNotification(string RegionProfileName)

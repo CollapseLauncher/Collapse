@@ -68,7 +68,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            await Fetch(_assetIndex);
+            await Fetch(_assetIndex, _token.Token);
 
             LogWriteLine($"Before adding generic files: {_progressTotalCount} assets {SummarizeSizeSimple(_progressTotalSize)} ({_progressTotalSize} bytes)");
             long beforeCount = _progressTotalCount;
@@ -90,7 +90,7 @@ namespace CollapseLauncher
             LogWriteLine($"Adding size: {afterCount} assets {SummarizeSizeSimple(afterSize)} ({afterSize} bytes)");
 
             // Step 3: Check for the asset indexes integrity
-            await Check(_assetIndex);
+            await Check(_assetIndex, _token.Token);
 
             // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.
@@ -106,7 +106,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Assign repair task
-            Task<bool> repairTask = Repair(_assetIndex);
+            Task<bool> repairTask = Repair(_assetIndex, _token.Token);
 
             // Run repair process
             bool repairTaskSuccess = await TryRunExamineThrow(repairTask);

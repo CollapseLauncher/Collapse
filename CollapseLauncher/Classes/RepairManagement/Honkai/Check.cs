@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -16,7 +17,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiRepair
     {
-        private async Task Check(List<FilePropertiesRemote> assetIndex)
+        private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
@@ -48,13 +49,13 @@ namespace CollapseLauncher
                         switch (asset.FT)
                         {
                             case FileType.Blocks:
-                                CheckAssetTypeBlocks(asset, brokenAssetIndex);
+                                CheckAssetTypeBlocks(asset, brokenAssetIndex, token);
                                 break;
                             case FileType.Audio:
-                                CheckAssetTypeAudio(asset, brokenAssetIndex);
+                                CheckAssetTypeAudio(asset, brokenAssetIndex, token);
                                 break;
                             default:
-                                CheckAssetTypeGeneric(asset, brokenAssetIndex);
+                                CheckAssetTypeGeneric(asset, brokenAssetIndex, token);
                                 break;
                         }
                     });
@@ -71,7 +72,7 @@ namespace CollapseLauncher
         }
 
         #region AudioCheck
-        private void CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
+        private void CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
@@ -120,7 +121,7 @@ namespace CollapseLauncher
             }
 
             // If pass the check above, then do MD5 Hash calculation
-            localCRC = CheckMD5(file.OpenRead());
+            localCRC = CheckMD5(file.OpenRead(), token);
 
             // Get size difference for summarize the _progressTotalSizeCurrent
             long sizeDifference = asset.S - file.Length;
@@ -162,7 +163,7 @@ namespace CollapseLauncher
         #endregion
 
         #region GenericCheck
-        private void CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
+        private void CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
@@ -206,7 +207,7 @@ namespace CollapseLauncher
             }
 
             // If pass the check above, then do CRC calculation
-            byte[] localCRC = CheckCRC(file.OpenRead());
+            byte[] localCRC = CheckCRC(file.OpenRead(), token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -256,7 +257,7 @@ namespace CollapseLauncher
         #endregion
 
         #region BlocksCheck
-        private void CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
+        private void CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Increment current total and size for the XMF
             _progressTotalSizeCurrent += asset.S;
@@ -278,7 +279,7 @@ namespace CollapseLauncher
             {
                 Parallel.ForEach(asset.BlkC, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (block) =>
                 {
-                    CheckBlockCRC(block, blocks.BlkC);
+                    CheckBlockCRC(block, blocks.BlkC, token);
                 });
             }
             catch (AggregateException ex)
@@ -290,7 +291,7 @@ namespace CollapseLauncher
             if (blocks.BlkC.Count != 0) targetAssetIndex.Add(blocks);
         }
 
-        private void CheckBlockCRC(XMFBlockList sourceBlock, List<XMFBlockList> targetBlockList)
+        private void CheckBlockCRC(XMFBlockList sourceBlock, List<XMFBlockList> targetBlockList, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, sourceBlock.BlockHash);
@@ -347,7 +348,7 @@ namespace CollapseLauncher
                     _progressTotalCountCurrent++;
 
                     // Throw if cancellation was given
-                    _token.Token.ThrowIfCancellationRequested();
+                    token.ThrowIfCancellationRequested();
 
                     byte[] localCRC;
 
@@ -540,7 +541,7 @@ namespace CollapseLauncher
             }
         }
 
-        private byte[] CheckCRC(Stream stream)
+        private byte[] CheckCRC(Stream stream, CancellationToken token)
         {
             // Reset CRC instance and assign buffer
             Crc32Algorithm _crcInstance = new Crc32Algorithm();
@@ -551,7 +552,7 @@ namespace CollapseLauncher
                 int read;
                 while ((read = stream.Read(buffer)) > 0)
                 {
-                    _token.Token.ThrowIfCancellationRequested();
+                    token.ThrowIfCancellationRequested();
                     _crcInstance.Append(buffer.Slice(0, read));
 
                     lock (this)
@@ -571,7 +572,7 @@ namespace CollapseLauncher
             return _crcInstance.Hash;
         }
 
-        private byte[] CheckMD5(Stream stream)
+        private byte[] CheckMD5(Stream stream, CancellationToken token)
         {
             // Initialize MD5 instance and assign buffer
             MD5 md5Instance = MD5.Create();
@@ -582,7 +583,7 @@ namespace CollapseLauncher
                 int read;
                 while ((read = stream.Read(buffer)) >= _bufferBigLength)
                 {
-                    _token.Token.ThrowIfCancellationRequested();
+                    token.ThrowIfCancellationRequested();
                     // Append buffer into hash block
                     md5Instance.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
 

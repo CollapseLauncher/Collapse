@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -16,7 +17,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiRepair
     {
-        private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex)
+        private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
             _status.ActivityStatus = Lang._GameRepairPage.Status11;
@@ -44,9 +45,9 @@ namespace CollapseLauncher
                     // Assign a task depends on the asset type
                     ConfiguredTaskAwaitable assetTask = (asset.FT switch
                     {
-                        FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient),
-                        FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient),
-                        _ => RepairAssetTypeGeneric(asset, _httpClient)
+                        FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient, token),
+                        FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient, token),
+                        _ => RepairAssetTypeGeneric(asset, _httpClient, token)
                     }).ConfigureAwait(false);
 
                     // Await the task
@@ -68,20 +69,20 @@ namespace CollapseLauncher
         }
 
         #region AudioRepairOrPatch
-        private async Task RepairOrPatchTypeAudio(FilePropertiesRemote asset, Http _httpClient)
+        private async Task RepairOrPatchTypeAudio(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             if (asset.IsPatchApplicable)
             {
-                await RepairTypeAudioActionPatching(asset, _httpClient);
+                await RepairTypeAudioActionPatching(asset, _httpClient, token);
             }
             else
             {
                 string audioURL = string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + asset.RN;
-                await RepairAssetTypeGeneric(asset, _httpClient, audioURL);
+                await RepairAssetTypeGeneric(asset, _httpClient, token, audioURL);
             }
         }
 
-        private async Task RepairTypeAudioActionPatching(FilePropertiesRemote asset, Http _httpClient)
+        private async Task RepairTypeAudioActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             // Increment total count current
             _progressTotalCountCurrent++;
@@ -99,7 +100,7 @@ namespace CollapseLauncher
                 true);
 
             // Download patch File first
-            await RunDownloadTask(asset.AudioPatchInfo.Value.PatchFileSize, patchPath, patchURL, _httpClient);
+            await RunDownloadTask(asset.AudioPatchInfo.Value.PatchFileSize, patchPath, patchURL, _httpClient, token);
 
             // Start patching process
             BinaryPatchUtility patchUtil = new BinaryPatchUtility();
@@ -161,7 +162,7 @@ namespace CollapseLauncher
         #endregion
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, string customURL = null)
+        private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, CancellationToken token, string customURL = null)
         {
             // Increment total count current
             _progressTotalCountCurrent++;
@@ -184,7 +185,7 @@ namespace CollapseLauncher
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient);
+                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
                 LogWriteLine($"File [T: {asset.FT}] {asset.N} has been downloaded!", LogType.Default, true);
             }
 
@@ -212,7 +213,7 @@ namespace CollapseLauncher
         #endregion
 
         #region BlocksRepair
-        private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient)
+        private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             // Iterate broken block and process the repair
             foreach (XMFBlockList block in asset.BlkC)
@@ -225,16 +226,16 @@ namespace CollapseLauncher
                 // Run block repair task
                 if (block.BlockMissing)
                 {
-                    await RepairSingleBlock(assetPath, assetURL, block, _httpClient);
+                    await RepairSingleBlock(assetPath, assetURL, block, _httpClient, token);
                 }
                 else
                 {
-                    await RepairChunkBlock(assetPath, assetURL, block, _httpClient);
+                    await RepairChunkBlock(assetPath, assetURL, block, _httpClient, token);
                 }
             }
         }
 
-        private async Task RepairSingleBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient)
+        private async Task RepairSingleBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient, CancellationToken token)
         {
             // Increment total count current and update the status
             _progressTotalCountCurrent++;
@@ -245,13 +246,13 @@ namespace CollapseLauncher
                 true);
 
             // Start asset download task
-            await RunDownloadTask(block.BlockSize, blockPath, blockURL, _httpClient);
+            await RunDownloadTask(block.BlockSize, blockPath, blockURL, _httpClient, token);
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
         }
 
-        private async Task RepairChunkBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient)
+        private async Task RepairChunkBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient, CancellationToken token)
         {
             // Initialize block file into FileStream
             using (FileStream fs = new FileStream(blockPath, FileMode.Open, FileAccess.Write))
@@ -268,7 +269,7 @@ namespace CollapseLauncher
                         true);
 
                     // Start chunk repair task
-                    await TryRepairChunk(fs, blockURL, chunk, _httpClient);
+                    await TryRepairChunk(fs, blockURL, chunk, _httpClient, token);
 
                     // Pop repair asset display entry
                     PopRepairAssetEntry();
@@ -276,7 +277,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task TryRepairChunk(FileStream blockFs, string blockURL, XMFFileProperty chunk, Http _httpClient)
+        private async Task TryRepairChunk(FileStream blockFs, string blockURL, XMFFileProperty chunk, Http _httpClient, CancellationToken token)
         {
             // Initialize offsets of the chunk
             long oStart = chunk._startoffset;
@@ -286,7 +287,7 @@ namespace CollapseLauncher
             using (ChunkStream chunkFs = new ChunkStream(blockFs, oStart, oEnd, false))
             {
                 // Start downloading task for the chunk
-                await _httpClient.Download(blockURL, chunkFs, oStart, oEnd, _token.Token, true);
+                await _httpClient.Download(blockURL, chunkFs, oStart, oEnd, token, true);
             }
         }
         #endregion
@@ -347,7 +348,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, Http _httpClient)
+        private async Task RunDownloadTask(long assetSize, string assetPath, string assetURL, Http _httpClient, CancellationToken token)
         {
             // Check for directory availability
             if (!Directory.Exists(Path.GetDirectoryName(assetPath)))
@@ -358,12 +359,12 @@ namespace CollapseLauncher
             // Start downloading asset
             if (assetSize >= _sizeForMultiDownload)
             {
-                await _httpClient.Download(assetURL, assetPath, _downloadThreadCount, true, _token.Token);
+                await _httpClient.Download(assetURL, assetPath, _downloadThreadCount, true, token);
                 await _httpClient.Merge();
             }
             else
             {
-                await _httpClient.Download(assetURL, assetPath, true, null, null, _token.Token);
+                await _httpClient.Download(assetURL, assetPath, true, null, null, token);
             }
         }
         #endregion

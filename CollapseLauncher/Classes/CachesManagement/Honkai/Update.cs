@@ -5,6 +5,7 @@ using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -13,7 +14,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiCache
     {
-        private async Task<bool> Update(List<CacheAsset> updateAssetIndex, List<CacheAsset> assetIndex)
+        private async Task<bool> Update(List<CacheAsset> updateAssetIndex, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Assign Http client
             Http httpClient = new Http(true, 5, 1000, _userAgent);
@@ -30,7 +31,7 @@ namespace CollapseLauncher
                     // Iterate the asset index and do update operation
                     foreach (CacheAsset asset in updateAssetIndex)
                     {
-                        UpdateCacheAsset(asset, httpClient);
+                        UpdateCacheAsset(asset, httpClient, token);
                     }
                 });
 
@@ -74,7 +75,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void UpdateCacheAsset(CacheAsset asset, Http httpClient)
+        private void UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
             _progressTotalCountCurrent++;
@@ -106,13 +107,13 @@ namespace CollapseLauncher
                 // Do multi-session download for asset that has applicable size
                 if (asset.CS >= _sizeForMultiDownload)
                 {
-                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, _token.Token);
+                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, token);
                     httpClient.MergeSync();
                 }
                 // Do single-session download for others
                 else
                 {
-                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, true, null, null, _token.Token);
+                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
                 }
 
                 LogWriteLine($"Downloaded cache [T: {asset.DataType}]: {asset.N}", LogType.Default, true);

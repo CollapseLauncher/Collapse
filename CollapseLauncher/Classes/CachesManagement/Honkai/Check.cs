@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -14,7 +15,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiCache
     {
-        private async Task<List<CacheAsset>> Check(List<CacheAsset> assetIndex)
+        private async Task<List<CacheAsset>> Check(List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new List<CacheAsset>();
@@ -44,7 +45,7 @@ namespace CollapseLauncher
                     // Do check in parallelization.
                     Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
-                        CheckAsset(asset, returnAsset);
+                        CheckAsset(asset, returnAsset, token);
                     });
                 }
                 catch (AggregateException ex)
@@ -97,7 +98,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset)
+        private void CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
         {
             // Increment the count and update the status
             lock (this)
@@ -128,7 +129,7 @@ namespace CollapseLauncher
             using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read))
             {
                 // Calculate the asset CRC (SHA1)
-                byte[] hashArray = TryCheckCRC(fs);
+                byte[] hashArray = TryCheckCRC(fs, token);
 
                 // If the asset CRC doesn't match, then add the file to asset index.
                 if (!IsCRCArrayMatch(asset.CRCArray, hashArray))
@@ -174,7 +175,7 @@ namespace CollapseLauncher
             UpdateProgressCRC();
         }
 
-        private byte[] TryCheckCRC(Stream fs)
+        private byte[] TryCheckCRC(Stream fs, CancellationToken token)
         {
             // Initialize buffer and put the chunk into the buffer using stack
             byte[] buffer = new byte[_bufferBigLength];
@@ -187,7 +188,7 @@ namespace CollapseLauncher
             while ((read = fs.Read(buffer)) > 0)
             {
                 // Throw Cancellation exception if detected
-                _token.Token.ThrowIfCancellationRequested();
+                token.ThrowIfCancellationRequested();
 
                 // Calculate the hash block
                 _hash.TransformBlock(buffer, 0, read, buffer, 0);
@@ -209,11 +210,7 @@ namespace CollapseLauncher
             return _hash.Hash;
         }
 
-        private bool IsCRCArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) =>
-                     source[0] == target[0] && source[1] == target[1] && source[2] == target[2] && source[3] == target[3] && source[4] == target[4]
-                  && source[5] == target[5] && source[6] == target[6] && source[7] == target[7] && source[8] == target[8] && source[9] == target[9]
-                  && source[10] == target[10] && source[11] == target[11] && source[12] == target[12] && source[13] == target[13] && source[14] == target[14]
-                  && source[15] == target[15] && source[16] == target[16] && source[17] == target[17] && source[18] == target[18] && source[19] == target[19];
+        private bool IsCRCArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
 
         private async void UpdateProgressCRC()
         {

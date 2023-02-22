@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -19,7 +20,7 @@ namespace CollapseLauncher
 {
     internal partial class HonkaiCache
     {
-        private async Task<List<CacheAsset>> Fetch()
+        private async Task<List<CacheAsset>> Fetch(CancellationToken token)
         {
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new List<CacheAsset>();
@@ -28,7 +29,7 @@ namespace CollapseLauncher
             using (Http _httpClient = new Http(true, 5, 1000, _userAgent))
             {
                 // Build _gameRepoURL from loading Dispatcher and Gateway
-                await BuildGameRepoURL(_httpClient);
+                await BuildGameRepoURL(_httpClient, token);
 
                 // Iterate type and do fetch
                 foreach (CacheAssetType type in Enum.GetValues(typeof(CacheAssetType)))
@@ -44,7 +45,7 @@ namespace CollapseLauncher
 
                     // uint = Count of the assets available
                     // long = Total size of the assets available
-                    (int, long) count = await FetchByType(type, _httpClient, returnAsset);
+                    (int, long) count = await FetchByType(type, _httpClient, returnAsset, token);
 
                     // Write a log about the metadata
                     LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
@@ -61,7 +62,7 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private async Task BuildGameRepoURL(Http _httpClient)
+        private async Task BuildGameRepoURL(Http _httpClient, CancellationToken token)
         {
             // Fetch dispatcher
             Dispatcher dispatcher = null;
@@ -73,7 +74,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Try assign dispatcher
-                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL));
+                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL), token);
                 }
                 catch (Exception ex)
                 {
@@ -92,13 +93,13 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
-            Gateway gateway = await FetchGateway(_httpClient, gatewayURL);
+            Gateway gateway = await FetchGateway(_httpClient, gatewayURL, token);
 
             // Set the Game Repo URL
             _gameRepoURL = BuildAssetBundleURL(gateway);
         }
 
-        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL)
+        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: Dispatcher"
             _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Dispatcher);
@@ -113,7 +114,7 @@ namespace CollapseLauncher
             {
                 // Start downloading the dispatcher
                 _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
-                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
                 LogWriteLine($"Cache Update connected to dispatcher endpoint: {baseURL}", LogType.Default, true);
@@ -133,7 +134,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL)
+        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: Gateway"
             _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Gateway);
@@ -148,7 +149,7 @@ namespace CollapseLauncher
             {
                 // Start downloading the gateway
                 _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
-                await _httpClient.Download(baseURL, stream, null, null, _token.Token);
+                await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
                 LogWriteLine($"Cache Update connected to gateway endpoint: {baseURL}", LogType.Default, true);
@@ -196,7 +197,7 @@ namespace CollapseLauncher
             return string.Format($"{baseGatewayURL}{_gamePreset.GameGatewayURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 
-        private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex)
+        private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
             _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, type);
@@ -214,7 +215,7 @@ namespace CollapseLauncher
             {
                 // Start downloading the asset index
                 _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
-                await _httpClient.Download(assetIndexURL, stream, null, null, _token.Token);
+                await _httpClient.Download(assetIndexURL, stream, null, null, token);
 
                 // Build the asset index and return the count and size of each type
                 return BuildAssetIndex(type, baseURL, xorStream, assetIndex);
