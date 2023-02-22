@@ -42,5 +42,8 @@ Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingD
 [Files]
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 
+[Tasks]
+Name: StartAfterInstall; Description: Run application after install
+
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "Collapse - An advanced launcher for miHoYo Games"; Flags: postinstall nowait skipifsilent runascurrentuser;
+Filename: "{app}\CollapseLauncher.exe"; Description: "Collapse Launcher Installer"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser
