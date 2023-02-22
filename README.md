@@ -1,3 +1,6 @@
+# Note: Changes are still being made
+We have a lot of changes since the last commit on [**#memory-squash**](https://github.com/neon-nyan/Collapse/tree/memory-squash) branch. Please use [**#memory-squash**](https://github.com/neon-nyan/Collapse/tree/memory-squash) as your base branch if you're going to work on this project or submitting your Pull Request.
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBanner2022.webp"/>
 </p>
