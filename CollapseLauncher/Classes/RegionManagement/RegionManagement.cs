@@ -173,21 +173,13 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
 
             // Initializing Game Statics
-            InitializeStatics(preset);
+            LoadGameStaticsByGameType(preset);
 
             // Init NavigationPanel Items
             if (m_appMode != AppMode.Hi3CacheUpdater)
                 InitializeNavigationItems();
             else
                 NavigationViewControl.IsSettingsVisible = false;
-        }
-
-        private void InitializeStatics(PresetConfigV2 preset)
-        {
-            int threadVal = (byte)GetAppConfigValue("ExtractionThread").ToInt();
-            AppCurrentThread = threadVal <= 0 ? Environment.ProcessorCount : threadVal;
-
-            LoadGameStaticsByGameType(preset);
         }
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)

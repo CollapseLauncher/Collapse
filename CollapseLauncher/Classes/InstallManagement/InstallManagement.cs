@@ -415,7 +415,7 @@ namespace CollapseLauncher
                 InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
                 UpdateStatus(InstallStatus);
 
-                ExtractTool.AutoLoad(prop.Output);
+                ExtractTool.LoadArchive(prop.Output);
 
                 ExtractTool.ExtractProgressChanged += ExtractProgressAdapter;
                 ExtractTool.ExtractToDirectory(GameDirPath, ExtractionThread, Token);
