@@ -57,7 +57,7 @@ namespace Hi3Helper.Data
 
         public async Task LoadDispatch(byte[] CustomDispatchData = null)
         {
-            GenshinGateway Gateway = GenshinGateway.Parser.ParseFrom(CustomDispatchData);
+            Gateway = GenshinGateway.Parser.ParseFrom(CustomDispatchData);
             returnValProp = new QueryProperty()
             {
                 GameServerName = Gateway.GatewayProperties.ServerName,
