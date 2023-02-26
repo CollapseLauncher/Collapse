@@ -10,8 +10,7 @@ using System.Text;
 
 namespace Hi3Helper.Shared.Region
 {
-    public static class LauncherConfig
-    {
+    public static class LauncherConfig {
         public static Vector3 Shadow16 = new Vector3(0, 0, 16);
         public static Vector3 Shadow32 = new Vector3(0, 0, 32);
         public static Vector3 Shadow48 = new Vector3(0, 0, 48);
@@ -31,16 +30,13 @@ namespace Hi3Helper.Shared.Region
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        public static string AppGameFolder
-        {
+        public static string AppGameFolder {
             get => GetAppConfigValue("GameFolder").ToString();
             set => SetAppConfigValue("GameFolder", value);
         }
         public static string[] AppCurrentArgument;
-        public static string AppExecutablePath
-        {
-            get
-            {
+        public static string AppExecutablePath {
+            get {
                 string execName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
                 string dirPath = AppFolder;
                 return Path.Combine(dirPath, execName + ".exe");
@@ -59,7 +55,14 @@ namespace Hi3Helper.Shared.Region
         public const string AppGameRepoIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
-        public static int AppCurrentThread => GetAppConfigValue("ExtractionThread").ToInt();
+        public static int AppCurrentThread
+        {
+            get
+            {
+                int val = GetAppConfigValue("ExtractionThread").ToInt();
+                return val <= 0 ? Environment.ProcessorCount : val;
+            }
+        }
         public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
