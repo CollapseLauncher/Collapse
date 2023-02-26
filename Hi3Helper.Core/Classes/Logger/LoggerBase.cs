@@ -58,7 +58,7 @@ namespace Hi3Helper
         public virtual async void LogWriteLine(string line, LogType type) { }
         public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
         public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }
-        public async void WriteLog(string line, LogType type) => _logWriter?.WriteLine(GetLine(line, type, false), type);
+        public async void WriteLog(string line, LogType type) => _logWriter?.WriteLine(GetLine(line, type, false));
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         #endregion
 
