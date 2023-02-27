@@ -278,7 +278,7 @@ namespace CollapseLauncher
                 entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
 
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
-                if (parentPath != "")
+                if (!string.IsNullOrEmpty(parentPath))
                 {
                     entry.remoteName = $"{parentPath.Replace('\\', '/')}/{entry.remoteName}";
                 }
@@ -319,6 +319,7 @@ namespace CollapseLauncher
                 .Where(x => x.EndsWith(onlyAcceptExt, StringComparison.OrdinalIgnoreCase)))
             {
                 Entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+                string parentPathSlash = parentPath.Replace('\\', '/');
 
                 IsHashHasValue = hashtable.ContainsKey(Entry.remoteName);
                 if (!IsHashHasValue)
@@ -336,8 +337,8 @@ namespace CollapseLauncher
                                     else
                                         Entry.remoteURL = $"{parentAudioURL}/AudioAssets/{Entry.remoteName}";
 
-                                    if (parentPath != "")
-                                        Entry.remoteName = $"{parentPath.Replace('\\', '/')}/AudioAssets/{Entry.remoteName}";
+                                    if (!string.IsNullOrEmpty(parentPath))
+                                        Entry.remoteName = $"{parentPathSlash}/AudioAssets/{Entry.remoteName}";
 
                                     hashtable.Add(Entry.remoteName, Entry);
                                     assetIndex.Add(Entry);
@@ -347,10 +348,10 @@ namespace CollapseLauncher
                                 if (Entry.isPatch)
                                 {
                                     Entry.remoteURL = $"{parentURL}/AssetBundles/{Entry.remoteName}";
-                                    if (parentPath != "")
-                                        Entry.remoteName = $"{parentPath.Replace('\\', '/')}/AssetBundles/{Entry.remoteName}";
+                                    if (!string.IsNullOrEmpty(parentPath))
+                                        Entry.remoteName = $"{parentPathSlash}/AssetBundles/{Entry.remoteName}";
 
-                                    Entry.remoteName = Entry.localName != null ? $"{parentPath.Replace('\\', '/')}/AssetBundles/{Entry.localName}" : Entry.remoteName;
+                                    Entry.remoteName = Entry.localName != null ? $"{parentPathSlash}/AssetBundles/{Entry.localName}" : Entry.remoteName;
                                     hashtable.Add(Entry.remoteName, Entry);
                                     assetIndex.Add(Entry);
                                 }
@@ -366,16 +367,16 @@ namespace CollapseLauncher
                                         break;
                                     case "ctable.dat":
                                         Entry.remoteURL = $"{parentAudioURL}/{Entry.remoteName}";
-                                        if (parentPath != "")
-                                            Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
+                                        if (!string.IsNullOrEmpty(parentPath))
+                                            Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
 
                                         hashtable.Add(Entry.remoteName, Entry);
                                         assetIndex.Add(Entry);
                                         break;
                                     default:
                                         Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
-                                        if (parentPath != "")
-                                            Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
+                                        if (!string.IsNullOrEmpty(parentPath))
+                                            Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
 
                                         hashtable.Add(Entry.remoteName, Entry);
                                         assetIndex.Add(Entry);
@@ -387,7 +388,7 @@ namespace CollapseLauncher
                     else
                     {
                         Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
-                        if (parentPath != "")
+                        if (!string.IsNullOrEmpty(parentPath))
                             Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
                         hashtable.Add(Entry.remoteName, Entry);
                         assetIndex.Add(Entry);
