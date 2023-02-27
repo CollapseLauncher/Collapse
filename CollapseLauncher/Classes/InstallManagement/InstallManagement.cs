@@ -181,26 +181,35 @@ namespace CollapseLauncher
 
             CountCurrentDownload = 0;
 
-            _httpClient.DownloadProgress += DownloadStatusAdapter;
-            _httpClient.DownloadProgress += DownloadProgressAdapter;
-            HttpLogInvoker.DownloadLog += DownloadLogAdapter;
-
-            foreach (DownloadAddressProperty prop in DownloadProperty)
+            try
             {
-                FileInfo file = new FileInfo(prop.Output);
-                CountCurrentDownload++;
-                InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
-                LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
-                if (!file.Exists || file.Length < prop.LocalSize)
+                _httpClient.DownloadProgress += DownloadStatusAdapter;
+                _httpClient.DownloadProgress += DownloadProgressAdapter;
+                HttpLogInvoker.DownloadLog += DownloadLogAdapter;
+
+                foreach (DownloadAddressProperty prop in DownloadProperty)
                 {
-                    await _httpClient.Download(prop.URL, prop.Output, DownloadThread, false, Token);
-                    await _httpClient.Merge();
+                    FileInfo file = new FileInfo(prop.Output);
+                    CountCurrentDownload++;
+                    InstallStatus.StatusTitle = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, CountCurrentDownload, CountTotalToDownload));
+                    LogWriteLine($"Download URL {CountCurrentDownload}/{DownloadProperty.Count}:\r\n{prop.URL}");
+                    if (!file.Exists || file.Length < prop.LocalSize)
+                    {
+                        await _httpClient.Download(prop.URL, prop.Output, DownloadThread, false, Token);
+                        await _httpClient.Merge();
+                    }
                 }
             }
-
-            _httpClient.DownloadProgress -= DownloadStatusAdapter;
-            _httpClient.DownloadProgress -= DownloadProgressAdapter;
-            HttpLogInvoker.DownloadLog -= DownloadLogAdapter;
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _httpClient.DownloadProgress -= DownloadStatusAdapter;
+                _httpClient.DownloadProgress -= DownloadProgressAdapter;
+                HttpLogInvoker.DownloadLog -= DownloadLogAdapter;
+            }
         }
 
         public DownloadAddressProperty StartVerification()
