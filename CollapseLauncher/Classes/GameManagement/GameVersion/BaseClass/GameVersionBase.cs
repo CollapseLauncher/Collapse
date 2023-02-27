@@ -60,6 +60,7 @@ namespace CollapseLauncher.GameVersioning
         public GameVersionBase AsVersionBase => this;
         public PresetConfigV2 GamePreset { get; set; }
         public RegionResourceProp GameAPIProp { get; set; }
+        public GameType GameType => GamePreset.GameType;
         public string GameDirPath
         {
             get => Path.GetDirectoryName(GameIniVersionPath);

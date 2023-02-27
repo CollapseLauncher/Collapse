@@ -234,7 +234,7 @@ namespace CollapseLauncher
 
         public async Task<bool> StartVerificationAsync(UIElement Content)
         {
-            if (CanDeltaPatch) return false;
+            if (CanDeltaPatch && PageStatics._GameVersion.GameType == GameType.Honkai) return false;
             DownloadAddressProperty VerificationResult = await Task.Run(StartVerification);
 
             if (VerificationResult != null)

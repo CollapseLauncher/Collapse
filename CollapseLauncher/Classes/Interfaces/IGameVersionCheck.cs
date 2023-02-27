@@ -29,6 +29,11 @@ namespace CollapseLauncher.Interfaces
         RegionResourceProp GameAPIProp { get; set; }
 
         /// <summary>
+        /// Returns the type of the game
+        /// </summary>
+        GameType GameType { get; }
+
+        /// <summary>
         /// Returns the current version of the game as provided by miHoYo's API.
         /// </summary>
         /// <returns>The current version of the game</returns>

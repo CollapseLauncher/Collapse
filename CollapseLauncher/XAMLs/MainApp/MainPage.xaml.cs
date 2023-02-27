@@ -836,7 +836,7 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Honkai)
+            if (PageStatics._GameVersion.GameType == GameType.Honkai)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
 
@@ -885,7 +885,7 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin && (string)tag.Tag != "launcher")
+            if (PageStatics._GameVersion.GameType == GameType.Genshin && (string)tag.Tag != "launcher")
             {
                 sourceType = typeof(UnavailablePage);
                 tagStr = "unavailable";

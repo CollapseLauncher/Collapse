@@ -358,7 +358,7 @@ namespace CollapseLauncher.Pages
             if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GamePreset.IsGenshin ?? false))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin)
+            if (PageStatics._GameVersion.GameType == GameType.Genshin)
             {
                 OpenScreenshotFolderButton.Visibility = Visibility.Visible;
                 OpenCacheFolderButton.Visibility = Visibility.Collapsed;
@@ -699,7 +699,7 @@ namespace CollapseLauncher.Pages
         {
             PageStatics._GameVersion.UpdateGameVersionToLatest();
             PageStatics._GameVersion.UpdateGamePath(destinationFolder);
-            if (IsGameHasVoicePack && (PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin))
+            if (IsGameHasVoicePack && (PageStatics._GameVersion.GameType == GameType.Genshin))
                 PageStatics._GameVersion.GamePreset.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
         }
 
@@ -728,7 +728,7 @@ namespace CollapseLauncher.Pages
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 AppCurrentThread,
                                 token,
-                                PageStatics._GameVersion.GamePreset.GameType == GameType.Genshin ?
+                                PageStatics._GameVersion.GameType == GameType.Genshin ?
                                     GameAPIProp.data.game.latest.decompressed_path :
                                     null,
                                 GameAPIProp.data.game.latest.version,
@@ -940,7 +940,7 @@ namespace CollapseLauncher.Pages
             StringBuilder parameter = new StringBuilder();
 
             IGameSettingsUniversal _Settings = PageStatics._GameSettings.AsIGameSettingsUniversal();
-            if (PageStatics._GameVersion.GamePreset.GameType == GameType.Honkai)
+            if (PageStatics._GameVersion.GameType == GameType.Honkai)
             {
                 // CheckExistingGameSettings();
 
