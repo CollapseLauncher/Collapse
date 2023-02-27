@@ -56,7 +56,7 @@ namespace CollapseLauncher
                        GameVersionString,
                        ExecutablePrefix;
 
-        private int DispatchServerID;
+        private int DispatchServerID { get; set; }
 
         // Debug Parameter
         private bool CanDeleteZip = true;
@@ -110,7 +110,10 @@ namespace CollapseLauncher
 
         ~InstallManagement() => this.Dispose();
 
-        public void Dispose() => this._httpClient?.Dispose();
+        public void Dispose()
+        {
+            this._httpClient?.Dispose();
+        }
 
         private void ApplyParameter()
         {

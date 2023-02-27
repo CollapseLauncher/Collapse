@@ -1,94 +1,109 @@
-﻿using Hi3Helper.Preset;
+﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.KianaManifest;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.ObjectModel;
-using System.Threading;
+using System.IO;
 using System.Threading.Tasks;
-using CollapseLauncher.Interfaces;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
-    internal partial class GenshinRepair : IRepair
+    public enum GenshinAudioLanguage : int
     {
-        public ObservableCollection<AssetProperty<RepairAssetType>> AssetEntry { get; set; }
-        public event EventHandler<TotalPerfileProgress> ProgressChanged;
-        public event EventHandler<TotalPerfileStatus> StatusChanged;
+        English = 0,
+        Chinese = 1,
+        Japanese = 2,
+        Korean = 3
+    }
 
-        private const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
-        private UIElement _parentUI { get; init; }
-        private TotalPerfileStatus _status;
-        private TotalPerfileProgress _progress;
-        private CancellationTokenSource _token { get; set; }
-        private GameVersion _gameVersion { get; init; }
-        private string _gamePath { get; init; }
-        private PresetConfigV2 _gamePreset { get; set; }
+    internal partial class GenshinRepair :
+        ProgressBase<RepairAssetType, PkgVersionProperties>, IRepair
+    {
+        #region ExtensionProperties
+        private protected string _execPrefix { get => Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName); }
+        private protected GenshinAudioLanguage _audioLanguage { get => (GenshinAudioLanguage)_gamePreset.GetRegServerNameID(); }
+        private protected int _dispatcherRegionID { get => _gamePreset.GetRegServerNameID(); }
+        private protected string _dispatcherURL { get => _gamePreset.GameDispatchURL ?? "" ; }
+        private protected string _dispatcherKey { get => _gamePreset.DispatcherKey ?? "" ; }
+        private protected int _dispatcherKeyLength { get => _gamePreset.DispatcherKeyBitLength ?? 0x100; }
+        #endregion
 
-        public GenshinRepair(UIElement parentUI, string gameVersion, string gamePath, PresetConfigV2 gamePreset)
+        public GenshinRepair(UIElement parentUI, string gameVersion, string gamePath,
+            string gameRepoURL, PresetConfigV2 gamePreset, byte repairThread, byte downloadThread)
+            : base(parentUI, gameVersion, gamePath, gameRepoURL, gamePreset, repairThread, downloadThread)
         {
-            _parentUI = parentUI;
-            _status = new TotalPerfileStatus();
-            _progress = new TotalPerfileProgress();
-            _token = new CancellationTokenSource();
-            _gameVersion = new GameVersion(gameVersion);
-            _gamePath = gamePath;
-            _gamePreset = gamePreset;
         }
 
         ~GenshinRepair() => Dispose();
 
         public async Task<bool> StartCheckRoutine()
         {
+            return await TryRunExamineThrow(CheckRoutine());
+        }
+
+        public async Task StartRepairRoutine(bool showInteractivePrompt = false)
+        {
+            if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
+
+            _ = await TryRunExamineThrow(RepairRoutine());
+        }
+
+        private async Task<bool> CheckRoutine()
+        {
             // Reset status and progress
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            Memory<FilePropertiesRemote> assetIndex = await FetchCacheAssetIndex();
+            await Fetch(_assetIndex, _token.Token);
 
-            return true;
+            // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
+            //         either way, returns false.
+            return SummarizeStatusAndProgress(
+                _assetIndex,
+                string.Format(Lang._GameRepairPage.Status3, _progressTotalCountFound, SummarizeSizeSimple(_progressTotalSizeFound)),
+                Lang._GameRepairPage.Status4);
         }
 
-        public async Task StartRepairRoutine(bool showInteractivePrompt = false) { }
+        private async Task<bool> RepairRoutine()
+        {
+            // Restart Stopwatch
+            RestartStopwatch();
+
+            // Assign repair task
+            Task<bool> repairTask = Repair(_assetIndex, _token.Token);
+
+            // Run repair process
+            bool repairTaskSuccess = await TryRunExamineThrow(repairTask);
+
+            // Reset status and progress
+            ResetStatusAndProgress();
+
+            // Set as completed
+            _status.IsCompleted = true;
+            _status.IsCanceled = false;
+            _status.ActivityStatus = Lang._GameRepairPage.Status7;
+
+            // Update status and progress
+            UpdateAll();
+
+            return repairTaskSuccess;
+        }
+
         public void CancelRoutine()
         {
             // Trigger token cancellation
             _token.Cancel();
         }
+
         public void Dispose()
         {
+            CancelRoutine();
         }
-
-        private void ResetStatusAndProgress()
-        {
-            // Reset cancellation token
-            _token = new CancellationTokenSource();
-
-            // Reset all total activity status
-            _status.ActivityStatus = Lang._GameRepairPage.StatusNone;
-            _status.ActivityTotal = Lang._GameRepairPage.StatusNone;
-            _status.IsProgressTotalIndetermined = false;
-
-            // Reset all per-file activity status
-            _status.ActivityPerFile = Lang._GameRepairPage.StatusNone;
-            _status.IsProgressPerFileIndetermined = false;
-
-            // Reset all status indicators
-            _status.IsAssetEntryPanelShow = false;
-            _status.IsCompleted = false;
-            _status.IsCanceled = false;
-
-            // Reset all total activity progress
-            _progress.ProgressPerFilePercentage = 0;
-            _progress.ProgressTotalPercentage = 0;
-            _progress.ProgressTotalEntryCount = 0;
-            _progress.ProgressTotalSpeed = 0;
-
-            // Update the status
-            UpdateStatus();
-        }
-
-        private void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
-        private void UpdateStatus() => StatusChanged?.Invoke(this, _status);
     }
 }

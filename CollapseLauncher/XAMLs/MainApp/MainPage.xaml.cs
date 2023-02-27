@@ -836,18 +836,27 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if (PageStatics._GameVersion.GameType == GameType.Honkai)
+            if ((PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
 
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
-                // NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                // { Content = Lang._CutscenesPage.PageTitle, Icon = new SymbolIcon(Symbol.Video), Tag = "cutscenes" });
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                if (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
+                }
+
+                if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
+                }
+
+                if (PageStatics._GameVersion.GameType == GameType.Honkai)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                }
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
@@ -885,7 +894,7 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (PageStatics._GameVersion.GameType == GameType.Genshin && (string)tag.Tag != "launcher")
+            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) && (string)tag.Tag != "launcher")
             {
                 sourceType = typeof(UnavailablePage);
                 tagStr = "unavailable";
