@@ -1265,7 +1265,7 @@ namespace CollapseLauncher.Pages
             RegionResourceVersion diff;
             try
             {
-                string GameVer = GameDirPath;
+                string GameVer = PageStatics._GameVersion.GetGameExistingVersion().Value.VersionString;
 
                 if (isPredownload)
                     diff = GameAPIProp.data.pre_download_game.diffs
