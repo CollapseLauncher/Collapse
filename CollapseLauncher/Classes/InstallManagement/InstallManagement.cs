@@ -555,7 +555,9 @@ namespace CollapseLauncher
             });
 
             if (!CanDeltaPatch)
+            {
                 await PostInstallVerification(Content);
+            }
         }
 
         private List<PkgVersionProperties> TryGetHDiffList()
@@ -721,7 +723,7 @@ namespace CollapseLauncher
 
         public async Task PostInstallVerification(UIElement Content)
         {
-            if (!(this.SourceProfile.IsGenshin ?? false)) return;
+            if (PageStatics._GameVersion.GameType != GameType.Genshin && !(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)) return;
 
             InstallStatus = new InstallManagementStatus
             {
@@ -730,6 +732,9 @@ namespace CollapseLauncher
                 StatusTitle = Lang._InstallMgmt.IntegrityCheckTitle
             };
             UpdateStatus(InstallStatus);
+
+            // HACK: Register installed voice pack file into audio_lang_14 file
+            BuildPersistentAudioLangList();
 
             await TryUnassignReadOnlyFilesAsync();
 
@@ -774,6 +779,34 @@ namespace CollapseLauncher
             }
 
             await RepairFileIntegrity(Content, BrokenFiles);
+        }
+
+        private void BuildPersistentAudioLangList()
+        {
+            string persistentFolder = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent");
+            string audioLangListPath = Path.Combine(persistentFolder, "audio_lang_14");
+
+            if (!Directory.Exists(persistentFolder))
+            {
+                Directory.CreateDirectory(persistentFolder);
+            }
+
+            TryUnassignDeleteROPersistFile(audioLangListPath);
+
+            using (FileStream fs = new FileStream(audioLangListPath, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (string _Entry in Directory.EnumerateFiles(GameDirPath, "Audio_*_pkg_version"))
+                {
+                    string name = Path.GetFileNameWithoutExtension(_Entry);
+                    string[] names = name.Split('_');
+                    if (names.Length == 4)
+                    {
+                        name = names[1];
+                        sw.WriteLine(name);
+                    }
+                }
+            }
         }
 
         private async Task BuildPrimaryManifest(List<PkgVersionProperties> Entries,
@@ -908,7 +941,6 @@ namespace CollapseLauncher
                 await _httpClient.Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
 
             LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}", LogType.Default, true);
-
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent", "", ParentURL, true, ParentAudioURL);
 
