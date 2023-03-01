@@ -8,7 +8,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim;DebugILTrim</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.0.69.3</Version>
+		<Version>1.0.69.4</Version>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
