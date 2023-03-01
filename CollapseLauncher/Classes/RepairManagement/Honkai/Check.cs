@@ -229,7 +229,7 @@ namespace CollapseLauncher
                 // Add asset for unmatched CRC
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {localCRC}", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
 

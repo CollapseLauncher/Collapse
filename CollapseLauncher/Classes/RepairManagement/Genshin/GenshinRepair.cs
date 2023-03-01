@@ -1,16 +1,11 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.Interfaces;
-using Hi3Helper.Data;
-using Hi3Helper.EncTool.KianaManifest;
+﻿using CollapseLauncher.Interfaces;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
@@ -27,17 +22,19 @@ namespace CollapseLauncher
     {
         #region ExtensionProperties
         private protected string _execPrefix { get => Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName); }
-        private protected GenshinAudioLanguage _audioLanguage { get => (GenshinAudioLanguage)_gamePreset.GetRegServerNameID(); }
-        private protected int _dispatcherRegionID { get => _gamePreset.GetRegServerNameID(); }
-        private protected string _dispatcherURL { get => _gamePreset.GameDispatchURL ?? "" ; }
-        private protected string _dispatcherKey { get => _gamePreset.DispatcherKey ?? "" ; }
+        private protected int _dispatcherRegionID { get; init; }
+        private protected string _dispatcherURL { get => _gamePreset.GameDispatchURL ?? ""; }
+        private protected string _dispatcherKey { get => _gamePreset.DispatcherKey ?? ""; }
         private protected int _dispatcherKeyLength { get => _gamePreset.DispatcherKeyBitLength ?? 0x100; }
+        private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 
         public GenshinRepair(UIElement parentUI, string gameVersion, string gamePath,
             string gameRepoURL, PresetConfigV2 gamePreset, byte repairThread, byte downloadThread)
             : base(parentUI, gameVersion, gamePath, gameRepoURL, gamePreset, repairThread, downloadThread)
         {
+            _audioLanguage = (GenshinAudioLanguage)_gamePreset.GetVoiceLanguageID();
+            _dispatcherRegionID = _gamePreset.GetRegServerNameID();
         }
 
         ~GenshinRepair() => Dispose();
@@ -59,8 +56,14 @@ namespace CollapseLauncher
             // Reset status and progress
             ResetStatusAndProgress();
 
-            // Step 1: Fetch asset indexes
+            // Step 1: Fetch asset index
             await Fetch(_assetIndex, _token.Token);
+
+            // Step 2: Calculate all the size and count in total
+            CountAssetIndex(_assetIndex);
+
+            // Step 3: Check for the asset indexes integrity
+            await Check(_assetIndex, _token.Token);
 
             // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.

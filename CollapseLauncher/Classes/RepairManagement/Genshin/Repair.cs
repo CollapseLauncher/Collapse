@@ -1,13 +1,10 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -39,19 +36,10 @@ namespace CollapseLauncher
                 // Assign downloader event
                 _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
 
-                // Iterate repair asset and check it using different method for each type
+                // Iterate repair asset
                 foreach (PkgVersionProperties asset in repairAssetIndex)
                 {
-                    // Assign a task depends on the asset type
-                    // ConfiguredTaskAwaitable assetTask = (asset.FT switch
-                    // {
-                        // FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient, token),
-                        // FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient, token),
-                        // _ => RepairAssetTypeGeneric(asset, _httpClient, token)
-                    // }).ConfigureAwait(false);
-
-                    // Await the task
-                    // await assetTask;
+                    await RepairAssetTypeGeneric(asset, _httpClient, token).ConfigureAwait(false);
                 }
 
                 return true;
@@ -67,6 +55,28 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
             }
         }
+
+        #region GenericRepair
+        private async Task RepairAssetTypeGeneric(PkgVersionProperties asset, Http _httpClient, CancellationToken token)
+        {
+            // Increment total count current
+            _progressTotalCountCurrent++;
+            // Set repair activity status
+            UpdateRepairStatus(
+                string.Format(Lang._GameRepairPage.Status8, asset.remoteName),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount),
+                true);
+
+            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+
+            // Start asset download task
+            await RunDownloadTask(asset.fileSize, assetPath, asset.remoteURL, _httpClient, token);
+            LogWriteLine($"File [T: {RepairAssetType.General}] {asset.remoteName} has been downloaded!", LogType.Default, true);
+
+            // Pop repair asset display entry
+            PopRepairAssetEntry();
+        }
+        #endregion
 
         #region Tools
         private void PopRepairAssetEntry() => Dispatch(() =>

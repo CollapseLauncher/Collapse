@@ -2,7 +2,6 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,9 +16,9 @@ namespace CollapseLauncher
 {
     internal partial class GenshinRepair
     {
-        private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task Check(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
-            List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
+            List<PkgVersionProperties> brokenAssetIndex = new List<PkgVersionProperties>();
 
             // Set Indetermined status as false
             _status.IsProgressTotalIndetermined = false;
@@ -31,35 +30,16 @@ namespace CollapseLauncher
             // Reset stopwatch
             RestartStopwatch();
 
-            /*
-
-            // Find unused assets
-            CheckUnusedAsset(assetIndex, brokenAssetIndex);
-
             // Await the task for parallel processing
             await Task.Run(() =>
             {
                 try
                 {
-                    // Check for skippable assets to skip the check
-                    RemoveSkippableAssets(assetIndex);
-
-                    // Iterate assetIndex and check it using different method for each type and run it in parallel
+                    // Await the task for parallel processing
+                    // and iterate assetIndex and check it using different method for each type and run it in parallel
                     Parallel.ForEach(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (asset) =>
                     {
-                        // Assign a task depends on the asset type
-                        switch (asset.FT)
-                        {
-                            case FileType.Blocks:
-                                CheckAssetTypeBlocks(asset, brokenAssetIndex, token);
-                                break;
-                            case FileType.Audio:
-                                CheckAssetTypeAudio(asset, brokenAssetIndex, token);
-                                break;
-                            default:
-                                CheckAssetTypeGeneric(asset, brokenAssetIndex, token);
-                                break;
-                        }
+                        CheckAssetAllType(asset, brokenAssetIndex, token);
                     });
                 }
                 catch (AggregateException ex)
@@ -71,7 +51,77 @@ namespace CollapseLauncher
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
             assetIndex.AddRange(brokenAssetIndex);
-            */
+        }
+
+        private void CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
+        {
+            // Update activity status
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
+
+            // Increment current total count
+            _progressTotalCountCurrent++;
+
+            // Reset per file size counter
+            _progressPerFileSize = asset.fileSize;
+            _progressPerFileSizeCurrent = 0;
+
+            // Get file path
+            string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+            FileInfo file = new FileInfo(filePath);
+
+            // If file doesn't exist or the file size doesn't match, then skip and update the progress
+            if (!file.Exists || (file.Exists && file.Length != asset.fileSize))
+            {
+                _progressTotalSizeCurrent += asset.fileSize;
+                _progressTotalSizeFound += asset.fileSize;
+                _progressTotalCountFound++;
+
+                _progressPerFileSizeCurrent = asset.fileSize;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.remoteName),
+                        RepairAssetType.General,
+                        Path.GetDirectoryName(asset.remoteName),
+                        asset.fileSize,
+                        null,
+                        HexTool.HexToBytesUnsafe(asset.md5)
+                    )
+                ));
+
+                // Add asset for missing/unmatched size file
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {RepairAssetType.General}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
+                return;
+            }
+
+            // If pass the check above, then do CRC calculation
+            byte[] localCRC = CheckMD5(file.OpenRead(), token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
+            if (!IsArrayMatch(localCRC, remoteCRC))
+            {
+                _progressTotalSizeFound += asset.fileSize;
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.remoteName),
+                        RepairAssetType.General,
+                        Path.GetDirectoryName(asset.remoteName),
+                        asset.fileSize,
+                        localCRC,
+                        remoteCRC
+                    )
+                ));
+
+                // Add asset for unmatched CRC
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {RepairAssetType.General}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+            }
         }
 
 

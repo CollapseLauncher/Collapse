@@ -1,15 +1,12 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
-using Hi3Helper.EncTool.KianaManifest;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region.Honkai;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -20,7 +17,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -118,6 +114,9 @@ namespace CollapseLauncher
             await ParseAndDownloadPersistentManifest(_httpClient, token, assetIndex, hashtableManifest, basePersistentPath, persistentFolder,
                 "release_res_versions_external", queryProperty.ClientGameResURL,
                 queryProperty.ClientAudioAssetsURL, false, true);
+
+            // Save persistent manifest numbers
+            SavePersistentRevision(queryProperty);
         }
 
         private async Task ParseAndDownloadPersistentManifest(Http _httpClient, CancellationToken token, List<PkgVersionProperties> assetIndex,
@@ -157,6 +156,28 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed parsing persistent manifest: {manifestName} (isSilence: {isSilence} | isResVersion: {isResVersion}). Skipped!\r\n{ex}", LogType.Warning, true);
             }
+        }
+
+        private void SavePersistentRevision(QueryProperty dispatchQuery)
+        {
+            string PersistentPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent");
+
+            // Get base_res_version_hash content
+            string FilePath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming");
+            string Hash = ConverterTool.CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
+            File.WriteAllText(PersistentPath + "\\base_res_version_hash", Hash);
+            // Get data_revision content
+            File.WriteAllText(PersistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
+            // Get res_revision content
+            File.WriteAllText(PersistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}");
+            // Get silence_revision content
+            File.WriteAllText(PersistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}");
+            // Get audio_revision content
+            File.WriteAllText(PersistentPath + "\\audio_revision", $"{dispatchQuery.AudioRevisionNum}");
+            // Get ChannelName content
+            File.WriteAllText(PersistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}");
+            // Get ScriptVersion content
+            File.WriteAllText(PersistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}");
         }
         #endregion
 
@@ -233,6 +254,12 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
+        private void CountAssetIndex(List<PkgVersionProperties> assetIndex)
+        {
+            _progressTotalSize = assetIndex.Sum(x => x.fileSize);
+            _progressTotalCount = assetIndex.Count;
+        }
+
         private void TryDeleteReadOnlyFile(string path)
         {
             try
