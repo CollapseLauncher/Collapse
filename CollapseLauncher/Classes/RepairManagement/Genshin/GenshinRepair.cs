@@ -55,17 +55,21 @@ namespace CollapseLauncher
         {
             // Reset status and progress
             ResetStatusAndProgress();
+            _assetIndex.Clear();
 
-            // Step 1: Fetch asset index
+            // Step 1: Ensure that every files are not read-only
+            TryUnassignReadOnlyFiles();
+
+            // Step 2: Fetch asset index
             await Fetch(_assetIndex, _token.Token);
 
-            // Step 2: Calculate all the size and count in total
+            // Step 3: Calculate all the size and count in total
             CountAssetIndex(_assetIndex);
 
-            // Step 3: Check for the asset indexes integrity
+            // Step 4: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);
 
-            // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
+            // Step 5: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 _assetIndex,

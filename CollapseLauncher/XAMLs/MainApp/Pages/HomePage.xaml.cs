@@ -353,9 +353,9 @@ namespace CollapseLauncher.Pages
 
         private void GetCurrentGameState()
         {
-            Visibility RepairGameButtonVisible = (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) || (PageStatics._GameVersion.GamePreset.IsGenshin ?? false) ? Visibility.Visible : Visibility.Collapsed;
+            Visibility RepairGameButtonVisible = (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
-            if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GamePreset.IsGenshin ?? false))
+            if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GameType != GameType.Honkai))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             if (PageStatics._GameVersion.GameType == GameType.Genshin)
@@ -700,7 +700,9 @@ namespace CollapseLauncher.Pages
             PageStatics._GameVersion.UpdateGameVersionToLatest();
             PageStatics._GameVersion.UpdateGamePath(destinationFolder);
             if (IsGameHasVoicePack && (PageStatics._GameVersion.GameType == GameType.Genshin))
+            {
                 PageStatics._GameVersion.GamePreset.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
+            }
         }
 
         private async Task<bool> DownloadGameClient(string destinationFolder)
@@ -1179,66 +1181,7 @@ namespace CollapseLauncher.Pages
 
         private async void RepairGameButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (PageStatics._GameVersion.GamePreset.IsGenshin ?? false)
-                {
-                    if (PageStatics._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                        HideImageCarousel(true);
-
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        progressRing.Value = 0;
-                        progressRing.IsIndeterminate = false;
-                        ProgressStatusGrid.Visibility = Visibility.Visible;
-                        InstallGameBtn.Visibility = Visibility.Collapsed;
-                        StartGameBtn.Visibility = Visibility.Collapsed;
-                        CancelDownloadBtn.Visibility = Visibility.Visible;
-                        ProgressTimeLeft.Visibility = Visibility.Visible;
-                    });
-
-                    InstallerDownloadTokenSource = new CancellationTokenSource();
-                    CancellationToken token = InstallerDownloadTokenSource.Token;
-
-                    using (InstallTool = new InstallManagement(Content,
-                                        DownloadType.FirstInstall,
-                                        PageStatics._GameVersion.GamePreset,
-                                        GameDirPath,
-                                        appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                        AppCurrentThread,
-                                        token,
-                                        PageStatics._GameVersion.GamePreset.IsGenshin ?? false ?
-                                            GameAPIProp.data.game.latest.decompressed_path :
-                                            null,
-                                        GameAPIProp.data.game.latest.version,
-                                        PageStatics._GameVersion.GamePreset.ProtoDispatchKey,
-                                        PageStatics._GameVersion.GamePreset.GameDispatchURL,
-                                        PageStatics._GameVersion.GamePreset.GetRegServerNameID(),
-                                        Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)))
-                    {
-                        InstallTool.InstallProgressChanged += InstallToolProgress;
-                        InstallTool.InstallStatusChanged += InstallToolStatus;
-                        await InstallTool.PostInstallVerification(Content);
-                        InstallTool.InstallProgressChanged -= InstallToolProgress;
-                        InstallTool.InstallStatusChanged -= InstallToolStatus;
-
-                        await Dialog_RepairCompleted(Content, InstallTool.GetBrokenFilesCount());
-                    }
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                }
-                else
-                {
-                    MainFrameChanger.ChangeMainFrame(typeof(RepairPage));
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                LogWriteLine($"Repair process has been cancelled!", Hi3Helper.LogType.Warning, true);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Repair process has been cancelled due an error!\r\n{ex}", Hi3Helper.LogType.Error, true);
-            }
+            MainFrameChanger.ChangeMainFrame(typeof(RepairPage));
         }
 
         private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)

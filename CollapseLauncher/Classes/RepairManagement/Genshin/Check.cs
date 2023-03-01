@@ -1,7 +1,6 @@
-﻿using Force.Crc32;
-using Hi3Helper;
-using Hi3Helper.Data;
+﻿using Hi3Helper;
 using Hi3Helper.Preset;
+using Hi3Helper.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +28,9 @@ namespace CollapseLauncher
 
             // Reset stopwatch
             RestartStopwatch();
+
+            // Check for any redundant files
+            CheckRedundantFiles(brokenAssetIndex);
 
             // Await the task for parallel processing
             await Task.Run(() =>
@@ -78,6 +80,8 @@ namespace CollapseLauncher
 
                 _progressPerFileSizeCurrent = asset.fileSize;
 
+                asset.type = RepairAssetType.General.ToString();
+
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.remoteName),
@@ -92,7 +96,7 @@ namespace CollapseLauncher
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {RepairAssetType.General}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
                 return;
             }
 
@@ -105,6 +109,8 @@ namespace CollapseLauncher
             {
                 _progressTotalSizeFound += asset.fileSize;
                 _progressTotalCountFound++;
+
+                asset.type = RepairAssetType.General.ToString();
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
@@ -120,77 +126,109 @@ namespace CollapseLauncher
                 // Add asset for unmatched CRC
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {RepairAssetType.General}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
 
-
-        #region Tools
-        private bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
-
-        private byte[] TryCheckCRCFromStackalloc(Stream fs, int bufferSize)
+        #region UnusedFiles
+        private void CheckRedundantFiles(List<PkgVersionProperties> targetAssetIndex)
         {
-            // Initialize buffer and put the chunk into the buffer using stack
-            Span<byte> bufferStackalloc = stackalloc byte[bufferSize];
+            // Initialize FilePath and FileInfo
+            string FilePath;
+            FileInfo fInfo;
 
-            // Read from filesystem
-            fs.Read(bufferStackalloc);
-
-            // Check the CRC of the chunk buffer
-            return CheckCRCThreadChild(bufferStackalloc);
-        }
-
-        private byte[] CheckCRCThreadChild(ReadOnlySpan<byte> buffer)
-        {
-            lock (this)
+            // Iterate the available deletefiles files
+            foreach (string listFile in Directory.EnumerateFiles(_gamePath, "*deletefiles*", SearchOption.TopDirectoryOnly))
             {
-                // Increment total size counter
-                _progressTotalSizeCurrent += buffer.Length;
-                // Increment per file size counter
-                _progressPerFileSizeCurrent += buffer.Length;
-            }
+                LogWriteLine($"deletefiles file list path: {listFile}", LogType.Default, true);
 
-            // Update status and progress for CRC calculation
-            UpdateProgressCRC();
-
-            // Return computed hash byte
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            lock (_crcInstance)
-            {
-                return _crcInstance.ComputeHashByte(buffer);
-            }
-        }
-
-        private byte[] CheckCRC(Stream stream, CancellationToken token)
-        {
-            // Reset CRC instance and assign buffer
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            Span<byte> buffer = stackalloc byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) > 0)
+                // Use deletefiles files to get the list of the redundant file
+                using (Stream fs = new FileStream(listFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
+                using (StreamReader listReader = new StreamReader(fs))
                 {
-                    token.ThrowIfCancellationRequested();
-                    _crcInstance.Append(buffer.Slice(0, read));
-
-                    lock (this)
+                    while (!listReader.EndOfStream)
                     {
-                        // Increment total size counter
-                        _progressTotalSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
+                        // Get the File name and FileInfo
+                        FilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(listReader.ReadLine()));
+                        fInfo = new FileInfo(FilePath);
 
-                    // Update status and progress for CRC calculation
-                    UpdateProgressCRC();
+                        // If the file exist, then add to targetAssetIndex
+                        if (fInfo.Exists)
+                        {
+                            // Update total found progress
+                            _progressTotalCountFound++;
+
+                            // Get the stripped relative name
+                            string strippedName = fInfo.FullName.AsSpan().Slice(_gamePath.Length + 1).ToString();
+
+                            // Assign the asset before adding to targetAssetIndex
+                            PkgVersionProperties asset = new PkgVersionProperties
+                            {
+                                localName = strippedName,
+                                fileSize = fInfo.Length,
+                                type = RepairAssetType.Unused.ToString()
+                            };
+                            Dispatch(() => AssetEntry.Add(
+                                new AssetProperty<RepairAssetType>(
+                                    Path.GetFileName(asset.localName),
+                                    RepairAssetType.Unused,
+                                    Path.GetDirectoryName(asset.localName),
+                                    asset.fileSize,
+                                    null,
+                                    null
+                                )
+                            ));
+
+                            // Add the asset into targetAssetIndex
+                            targetAssetIndex.Add(asset);
+                            LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
+                        }
+                    }
                 }
             }
 
-            // Return computed hash byte
-            return _crcInstance.Hash;
+            // Iterate redundant diff and temporary files
+            foreach (string _Entry in Directory.EnumerateFiles(_gamePath, "*.*", SearchOption.AllDirectories)
+                                               .Where(x => x.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
+                                                        || x.EndsWith("_tmp", StringComparison.OrdinalIgnoreCase)
+                                                        || x.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase)))
+            {
+                // Assign the FileInfo
+                fInfo = new FileInfo(_Entry);
+
+                // Update total found progress
+                _progressTotalCountFound++;
+
+                // Get the stripped relative name
+                string strippedName = fInfo.FullName.AsSpan().Slice(_gamePath.Length + 1).ToString();
+
+                // Assign the asset before adding to targetAssetIndex
+                PkgVersionProperties asset = new PkgVersionProperties
+                {
+                    localName = strippedName,
+                    fileSize = fInfo.Length,
+                    type = RepairAssetType.Unused.ToString()
+                };
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.localName),
+                        RepairAssetType.Unused,
+                        Path.GetDirectoryName(asset.localName),
+                        asset.fileSize,
+                        null,
+                        null
+                    )
+                ));
+
+                // Add the asset into targetAssetIndex
+                targetAssetIndex.Add(asset);
+                LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
+            }
         }
+        #endregion
+
+        #region Tools
+        private bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
 
         private byte[] CheckMD5(Stream stream, CancellationToken token)
         {
@@ -225,6 +263,17 @@ namespace CollapseLauncher
 
             // Return computed hash byte
             return md5Instance.Hash;
+        }
+
+        private void TryUnassignReadOnlyFiles()
+        {
+            // Iterate every files and set the read-only flag to false
+            foreach (string file in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.IsReadOnly)
+                    fileInfo.IsReadOnly = false;
+            }
         }
 
         private async void UpdateProgressCRC()

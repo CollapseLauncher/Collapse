@@ -20,5 +20,6 @@
         public string md5 { get; set; }
         public long fileSize { get; set; }
         public bool isPatch { get; set; } = false;
+        public string type { get; set; }
     }
 }

@@ -75,6 +75,9 @@ namespace CollapseLauncher
             // Parse basic package version.
             ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL);
 
+            // Build installed voice pack list into audio_lang_14
+            BuildPersistentAudioLangList();
+
             // Build local audio entry.
             EnumerateManifestToAssetIndex("", "Audio_*_pkg_version", assetIndex, hashtableManifest, "", "", _gameRepoURL);
 
@@ -89,6 +92,39 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
+        private void BuildPersistentAudioLangList()
+        {
+            // Get the path for persistent folder and audio list path
+            string persistentFolder = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent");
+            string audioLangListPath = Path.Combine(persistentFolder, "audio_lang_14");
+
+            // Check and create the persistent folder if it doesn't exist
+            if (!Directory.Exists(persistentFolder))
+            {
+                Directory.CreateDirectory(persistentFolder);
+            }
+
+            // Use and create audio list file
+            using (FileStream fs = new FileStream(audioLangListPath, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                // Iterate every available audio package version file into an entry
+                foreach (string entry in Directory.EnumerateFiles(_gamePath, "Audio_*_pkg_version"))
+                {
+                    // Get the name of the package file
+                    string name = Path.GetFileNameWithoutExtension(entry);
+                    // Split the name into pieces
+                    string[] names = name.Split('_');
+                    // Check if the name has 4 pieces
+                    if (names.Length == 4)
+                    {
+                        // Get the language name (index 1) and append the line into audio list file
+                        name = names[1];
+                        sw.WriteLine(name);
+                    }
+                }
+            }
+        }
         private async Task BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             // Get the Dispatcher Query

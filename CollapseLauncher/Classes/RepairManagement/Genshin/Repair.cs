@@ -67,11 +67,22 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount),
                 true);
 
-            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+            // If file is unused, then delete
+            if (asset.type == "Unused")
+            {
+                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.localName));
 
-            // Start asset download task
-            await RunDownloadTask(asset.fileSize, assetPath, asset.remoteURL, _httpClient, token);
-            LogWriteLine($"File [T: {RepairAssetType.General}] {asset.remoteName} has been downloaded!", LogType.Default, true);
+                // Delete the file
+                File.Delete(assetPath);
+            }
+            else
+            {
+                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+
+                // or start asset download task
+                await RunDownloadTask(asset.fileSize, assetPath, asset.remoteURL, _httpClient, token);
+                LogWriteLine($"File [T: {RepairAssetType.General}] {asset.remoteName} has been downloaded!", LogType.Default, true);
+            }
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
