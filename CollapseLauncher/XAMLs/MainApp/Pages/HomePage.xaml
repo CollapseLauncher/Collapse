@@ -127,15 +127,15 @@
                         Grid.Column="0" Grid.ColumnSpan="2"
                         Grid.Row="3"
                         HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                        <!--<InfoBar.Transitions>
+                        <InfoBar.Transitions>
                             <PopupThemeTransition/>
-                        </InfoBar.Transitions>-->
+                        </InfoBar.Transitions>
                         <InfoBar.Content>
                             <StackPanel Orientation="Vertical" Margin="0,0,38,0">
                                 <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
-                                    <!--<Grid.ChildrenTransitions>
+                                    <Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>-->
+                                    </Grid.ChildrenTransitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="32"/>
@@ -191,9 +191,9 @@
                                     </Grid>
                                 </Grid>
                                 <Grid x:Name="ProgressPreButtonGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed" Margin="0,0,0,16">
-                                    <!--<Grid.ChildrenTransitions>
+                                    <Grid.ChildrenTransitions>
                                         <PopupThemeTransition/>
-                                    </Grid.ChildrenTransitions>-->
+                                    </Grid.ChildrenTransitions>
                                     <Button x:Name="PauseDownloadPreBtn" Click="CancelInstallationProcedure" VerticalAlignment="Stretch"
                                                     Style="{ThemeResource AccentButtonStyle}" Visibility="Visible" HorizontalAlignment="Right"
                                                     CornerRadius="16">
@@ -242,14 +242,14 @@
                         <StackPanel.Resources>
                             <localPage:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
                         </StackPanel.Resources>
-                        <!--<StackPanel.Transitions>
+                        <StackPanel.Transitions>
                             <PopupThemeTransition/>
-                        </StackPanel.Transitions>-->
+                        </StackPanel.Transitions>
                         <ScrollViewer x:Name="SocMedPanelScrollView" MaxHeight="336" VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{x:Bind MenuPanels.sideMenuPanel}">
-                                <!--<ItemsControl.Transitions>
+                                <ItemsControl.Transitions>
                                     <PopupThemeTransition/>
-                                </ItemsControl.Transitions>-->
+                                </ItemsControl.Transitions>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{ThemeResource EllipsisButtonRevealStyle}"
@@ -465,13 +465,13 @@
                         </StackPanel>
                     </Grid>
                     <Grid x:Name="ProgressStatusGrid" Grid.Column="1" Grid.Row="1" Margin="0,0,0,48" VerticalAlignment="Bottom" Height="250" Visibility="Collapsed" Shadow="{ThemeResource SharedShadow}">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition/>
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid Width="250" Height="250">
-                            <!--<Grid.ChildrenTransitions>
+                            <Grid.ChildrenTransitions>
                                 <PopupThemeTransition/>
-                            </Grid.ChildrenTransitions>-->
+                            </Grid.ChildrenTransitions>
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
