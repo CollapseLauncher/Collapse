@@ -16,7 +16,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition/>
-                <RowDefinition Height="110"/>
+                <RowDefinition Height="124"/>
             </Grid.RowDefinitions>
             <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Grid.Row="0" Style="{ThemeResource TitleLargeTextBlockStyle}"/>
             <Grid x:Name="CachesDataTableGrid" Grid.Row="1" VerticalAlignment="Stretch" Visibility="Collapsed">
