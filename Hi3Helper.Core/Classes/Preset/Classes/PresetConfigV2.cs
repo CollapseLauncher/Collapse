@@ -264,8 +264,8 @@ namespace Hi3Helper.Preset
             public double uiPaperWhite { get; set; } = 0.0f;
             public double scenePaperWhite { get; set; } = 0.0f;
             public double gammaValue { get; set; } = 2.200000047683716;
-            public List<object> _overrideControllerMapKeyList { get; set; } = new List<object>();
-            public List<object> _overrideControllerMapValueList { get; set; } = new List<object>();
+            public List<string> _overrideControllerMapKeyList { get; set; } = new List<string>();
+            public List<string> _overrideControllerMapValueList { get; set; } = new List<string>();
             public bool rewiredDisableKeyboard { get; set; } = false;
             public bool rewiredEnableKeyboard { get; set; } = false;
             public bool rewiredEnableEDS { get; set; } = false;
@@ -284,10 +284,10 @@ namespace Hi3Helper.Preset
             public int mtrAutoTraceInterval { get; set; } = 3600;
             public int mtrTraceCDEachReason { get; set; } = 600;
             public int mtrTimeInterval { get; set; } = 1000;
-            public List<object> mtrBanReasons { get; set; } = new List<object>();
-            public List<object> _customDataKeyList { get; set; } = new List<object>();
-            public List<object> _customDataValueList { get; set; } = new List<object>();
-            public List<object> _serializedCodeSwitches { get; set; } = new List<object>();
+            public List<string> mtrBanReasons { get; set; } = new List<string>();
+            public List<string> _customDataKeyList { get; set; } = new List<string>();
+            public List<string> _customDataValueList { get; set; } = new List<string>();
+            public List<int> _serializedCodeSwitches { get; set; } = new List<int>();
             public bool urlCheckCached { get; set; } = false;
             public bool urlCheckIsOpen { get; set; } = false;
             public bool urlCheckAllIP { get; set; } = false;
@@ -297,7 +297,7 @@ namespace Hi3Helper.Preset
             public int urlCheckAbortTimeOutCount { get; set; } = 3;
             public int urlCheckTimeInterval { get; set; } = 1000;
             public int urlCheckCDEachReason { get; set; } = 600;
-            public List<object> urlCheckBanReasons { get; set; } = new List<object>();
+            public List<string> urlCheckBanReasons { get; set; } = new List<string>();
             public bool mtrUseOldWinVersion { get; set; } = false;
         }
 
