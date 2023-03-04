@@ -64,6 +64,9 @@ namespace CollapseLauncher
 
         private async Task<bool> CheckRoutine()
         {
+            // Always clear the asset index list
+            _assetIndex.Clear();
+
             // Reset status and progress
             ResetStatusAndProgress();
 
