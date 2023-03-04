@@ -26,8 +26,12 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = new List<CacheAsset>();
 
             // Use HttpClient instance on fetching
-            using (Http _httpClient = new Http(true, 5, 1000, _userAgent))
+            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            try
             {
+                // Subscribe the event listener
+                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
+
                 // Build _gameRepoURL from loading Dispatcher and Gateway
                 await BuildGameRepoURL(_httpClient, token);
 
@@ -56,6 +60,13 @@ namespace CollapseLauncher
                     _progressTotalCount += count.Item1;
                     _progressTotalSize += count.Item2;
                 }
+            }
+            catch { throw; }
+            finally
+            {
+                // Unsubscribe the event listener and dispose Http client
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+                _httpClient.Dispose();
             }
 
             // Return asset index
@@ -113,7 +124,6 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the dispatcher
-                _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
                 await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
@@ -128,8 +138,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                // Unsubscribe progress and dispose stream
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetIndexProgress;
+                // Dispose the stream
                 stream.Dispose();
             }
         }
@@ -148,7 +157,6 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the gateway
-                _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
                 await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
@@ -163,8 +171,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                // Unsubscribe progress and dispose stream
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetIndexProgress;
+                // Dispose the stream
                 stream.Dispose();
             }
         }
@@ -214,7 +221,6 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the asset index
-                _httpClient.DownloadProgress += _httpClient_FetchAssetIndexProgress;
                 await _httpClient.Download(assetIndexURL, stream, null, null, token);
 
                 // Build the asset index and return the count and size of each type
@@ -226,8 +232,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                // Unsubscribe progress and dispose streams
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetIndexProgress;
+                // Dispose the streams
                 stream.Dispose();
                 xorStream.Dispose();
             }
@@ -308,19 +313,6 @@ namespace CollapseLauncher
 
             // If none, then pass it as true (non-regional string)
             return true;
-        }
-
-        private void _httpClient_FetchAssetIndexProgress(object sender, DownloadEvent e)
-        {
-            // Update fetch status
-            _status.IsProgressTotalIndetermined = false;
-            _status.ActivityTotal = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.Speed));
-
-            // Update fetch progress
-            _progress.ProgressTotalPercentage = e.ProgressPercentage;
-
-            // Push status and progress update
-            UpdateAll();
         }
     }
 }

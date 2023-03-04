@@ -185,24 +185,19 @@ namespace CollapseLauncher
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
         {
             DisposeAllPageStatics();
-            string GamePath;
 
             switch (preset.GameType)
             {
                 case GameType.Honkai:
                     PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new HonkaiSettings(preset);
-
-                    GamePath = PageStatics._GameVersion.GameDirPath;
-                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.version, GamePath, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset, (byte)AppCurrentThread, (byte)AppCurrentDownloadThread);
-                    PageStatics._GameCache = new HonkaiCache(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.version, preset, (byte)AppCurrentThread, (byte)AppCurrentDownloadThread);
+                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
+                    PageStatics._GameCache = new HonkaiCache(this, preset);
                     break;
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new GenshinSettings(preset);
-
-                    GamePath = PageStatics._GameVersion.GameDirPath;
-                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.version, GamePath, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset, (byte)AppCurrentThread, (byte)AppCurrentDownloadThread);
+                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
                     PageStatics._GameCache = null;
                     break;
                 case GameType.StarRail:

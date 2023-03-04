@@ -21,6 +21,7 @@ namespace CollapseLauncher
         private string _assetBaseURL { get; set; }
         private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
+        private readonly string[] _audioPersistentAssets = new string[] { "AUDIO_Ex_Dorm_CN", "AUDIO_Ex_Event_CN", "AUDIO_Ex_Rogue_CN" };
         #endregion
 
         #region ExtensionProperties
@@ -31,9 +32,8 @@ namespace CollapseLauncher
         private protected string _audioPatchBaseRemotePath { get => _audioBaseRemotePath + "Patch/"; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, string gameVersion, string gamePath,
-            string gameRepoURL, PresetConfigV2 gamePreset, byte repairThread, byte downloadThread)
-            : base(parentUI, gameVersion, gamePath, gameRepoURL, gamePreset, repairThread, downloadThread)
+        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
+            : base(parentUI, null, gameRepoURL, gamePreset)
         {
             // Initialize audio asset language
             string audioLanguage = (Statics.PageStatics._GameSettings as HonkaiSettings).SettingsAudio.CVLanguage;

@@ -20,15 +20,12 @@ namespace CollapseLauncher
         private List<CacheAsset> _updateAssetIndex { get; set; }
         #endregion
 
-        public HonkaiCache(UIElement parentUI, string gameVersion, PresetConfigV2 presetConfigV2, byte thread, byte downloadThread)
+        public HonkaiCache(UIElement parentUI, PresetConfigV2 presetConfigV2)
             : base(
                   parentUI,
-                  gameVersion,
                   Path.Combine(GameAppDataFolder, presetConfigV2.InternalGameNameInConfig),
                   null,
-                  presetConfigV2,
-                  thread,
-                  downloadThread)
+                  presetConfigV2)
         {
             _gameLang = presetConfigV2.GetGameLanguage() ?? "en";
         }

@@ -402,19 +402,24 @@ namespace CollapseLauncher
         #region UnusedAssetCheck
         private void CheckUnusedAsset(List<FilePropertiesRemote> assetIndex, List<FilePropertiesRemote> targetAssetIndex)
         {
+            // Build the list of existing files inside of the game folder
+            // for comparison with asset index into catalog list
             List<string> catalog = new List<string>();
             BuildAssetIndexCatalog(catalog, assetIndex);
-            BuildVideoIndexCatalog(catalog);
-            BuildAudioIndexCatalog(catalog);
 
+            // Compare the catalog list with asset index and add it to target asset index
             GetUnusedAssetIndexList(catalog, targetAssetIndex);
         }
 
         private void BuildAssetIndexCatalog(List<string> catalog, List<FilePropertiesRemote> assetIndex)
         {
+            // Iterate the asset index
             foreach (FilePropertiesRemote asset in assetIndex)
             {
+                // Get the asset path
                 string path = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+
+                // Determine the type of the asset
                 switch (asset.FT)
                 {
                     case FileType.Blocks:
@@ -434,48 +439,36 @@ namespace CollapseLauncher
             }
         }
 
-        private void BuildVideoIndexCatalog(List<string> catalog)
-        {
-            foreach (string video in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Video"), "*", SearchOption.AllDirectories))
-            {
-                bool isUSM = video.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
-                bool isVersion = video.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
-                bool isIncluded = catalog.Contains(video);
-                if (isUSM || isVersion || isIncluded)
-                {
-                    catalog.Add(video);
-                }
-            }
-        }
-
-        private void BuildAudioIndexCatalog(List<string> catalog)
-        {
-            foreach (string audio in Directory.EnumerateFiles(Path.Combine(_gamePath, @"BH3_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows"), "*", SearchOption.AllDirectories))
-            {
-                if ((audio.EndsWith(".pck", StringComparison.OrdinalIgnoreCase)
-                  || audio.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase))
-                  && !catalog.Contains(audio))
-                {
-                    catalog.Add(audio);
-                }
-            }
-        }
-
         private void GetUnusedAssetIndexList(List<string> catalog, List<FilePropertiesRemote> targetAssetIndex)
         {
             int pathOffset = _gamePath.Length + 1;
             foreach (string asset in Directory.EnumerateFiles(Path.Combine(_gamePath), "*", SearchOption.AllDirectories))
             {
+                // Universal
                 bool isIncluded = catalog.Contains(asset);
-                bool isini = asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase);
-                bool isXMFBlocks = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
-                bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
-                bool isVersion = asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
                 bool isScreenshot = asset.Contains("ScreenShot", StringComparison.OrdinalIgnoreCase);
+                bool isLog = asset.EndsWith(".log", StringComparison.OrdinalIgnoreCase);
+
+                // Configuration related
                 bool isWebcaches = asset.Contains("webCaches", StringComparison.OrdinalIgnoreCase);
                 bool isSDKcaches = asset.Contains("SDKCaches", StringComparison.OrdinalIgnoreCase);
+                bool isVersion = asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
+                bool isIni = asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase);
 
-                if (!isIncluded && !isini && !isXMFBlocks && !isXMFMeta && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches)
+                // Audio related
+                bool isAudioManifest = asset.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase);
+                bool isWwiseHeader = asset.EndsWith("Wwise_IDs.h", StringComparison.OrdinalIgnoreCase);
+
+                // Video related
+                bool isUSM = asset.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
+
+                // Blocks related
+                bool isXMFBlocks = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
+
+                if (!isIncluded && !isIni && !isXMFBlocks && !isXMFMeta && !isVersion
+                    && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
+                    && !isUSM && !isWwiseHeader && !isAudioManifest)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);
@@ -496,144 +489,10 @@ namespace CollapseLauncher
                             )
                         ));
 
-                    _progressTotalSizeFound += f.Length;
                     _progressTotalCountFound++;
 
                     LogWriteLine($"Unused file has been found: {n}", LogType.Warning, true);
                 }
-            }
-        }
-        #endregion
-
-        #region Tools
-        private bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
-
-        private byte[] TryCheckCRCFromStackalloc(Stream fs, int bufferSize)
-        {
-            // Initialize buffer and put the chunk into the buffer using stack
-            Span<byte> bufferStackalloc = stackalloc byte[bufferSize];
-
-            // Read from filesystem
-            fs.Read(bufferStackalloc);
-
-            // Check the CRC of the chunk buffer
-            return CheckCRCThreadChild(bufferStackalloc);
-        }
-
-        private byte[] CheckCRCThreadChild(ReadOnlySpan<byte> buffer)
-        {
-            lock (this)
-            {
-                // Increment total size counter
-                _progressTotalSizeCurrent += buffer.Length;
-                // Increment per file size counter
-                _progressPerFileSizeCurrent += buffer.Length;
-            }
-
-            // Update status and progress for CRC calculation
-            UpdateProgressCRC();
-
-            // Return computed hash byte
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            lock (_crcInstance)
-            {
-                return _crcInstance.ComputeHashByte(buffer);
-            }
-        }
-
-        private byte[] CheckCRC(Stream stream, CancellationToken token)
-        {
-            // Reset CRC instance and assign buffer
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            Span<byte> buffer = stackalloc byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) > 0)
-                {
-                    token.ThrowIfCancellationRequested();
-                    _crcInstance.Append(buffer.Slice(0, read));
-
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        _progressTotalSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
-
-                    // Update status and progress for CRC calculation
-                    UpdateProgressCRC();
-                }
-            }
-
-            // Return computed hash byte
-            return _crcInstance.Hash;
-        }
-
-        private byte[] CheckMD5(Stream stream, CancellationToken token)
-        {
-            // Initialize MD5 instance and assign buffer
-            MD5 md5Instance = MD5.Create();
-            byte[] buffer = new byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) >= _bufferBigLength)
-                {
-                    token.ThrowIfCancellationRequested();
-                    // Append buffer into hash block
-                    md5Instance.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
-
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        _progressTotalSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
-
-                    // Update status and progress for MD5 calculation
-                    UpdateProgressCRC();
-                }
-
-                // Finalize the hash calculation
-                md5Instance.TransformFinalBlock(buffer, 0, read);
-            }
-
-            // Return computed hash byte
-            return md5Instance.Hash;
-        }
-
-        private async void UpdateProgressCRC()
-        {
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                // Update current progress percentages
-                _progress.ProgressPerFilePercentage = _progressPerFileSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressPerFileSizeCurrent, _progressPerFileSize) :
-                    0;
-                _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
-                    0;
-
-                // Calculate speed
-                long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-
-                // Calculate current speed and update the status and progress speed
-                _progress.ProgressTotalSpeed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-                _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
-
-                // Set time estimation string
-                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
-
-                // Update current activity status
-                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount) + $" | {timeLeftString}";
-
-                // Trigger update
-                UpdateAll();
             }
         }
         #endregion

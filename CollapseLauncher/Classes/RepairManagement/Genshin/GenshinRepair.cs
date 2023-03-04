@@ -29,9 +29,8 @@ namespace CollapseLauncher
         private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 
-        public GenshinRepair(UIElement parentUI, string gameVersion, string gamePath,
-            string gameRepoURL, PresetConfigV2 gamePreset, byte repairThread, byte downloadThread)
-            : base(parentUI, gameVersion, gamePath, gameRepoURL, gamePreset, repairThread, downloadThread)
+        public GenshinRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
+            : base(parentUI, null, gameRepoURL, gamePreset)
         {
             _audioLanguage = (GenshinAudioLanguage)_gamePreset.GetVoiceLanguageID();
             _dispatcherRegionID = _gamePreset.GetRegServerNameID();

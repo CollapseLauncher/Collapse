@@ -31,8 +31,12 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Use HttpClient instance on fetching
-            using (Http _httpClient = new Http(true, 5, 1000, _userAgent))
+            Http _httpClient = new Http(true, 5, 1000, _userAgent);
+            try
             {
+                // Subscribe the fetching progress
+                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
+
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
                 Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient, token);
@@ -55,10 +59,16 @@ namespace CollapseLauncher
                 // Try check audio manifest.m file and fetch it if it doesn't exist
                 await FetchAudioIndex(_httpClient, assetIndex, token);
             }
+            catch { throw; }
+            finally
+            {
+                // Unsubscribe the fetching progress and dispose it
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+                _httpClient.Dispose();
+            }
         }
 
         #region AudioIndex
-
         private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Assign Base Asset URL
@@ -69,31 +79,23 @@ namespace CollapseLauncher
             string manifestRemotePath = string.Format(_audioBaseRemotePath + "manifest.m", $"{_gameVersion.Major}_{_gameVersion.Minor}");
             Manifest manifest;
 
-            // Try to get the audio manifest and deserialize it
             try
             {
+                // Try to get the audio manifest and deserialize it
                 manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
+
+                // Deserialize manifest and build Audio Index
+                await BuildAudioIndex(_httpClient, manifest, assetIndex, token);
+
+                // Build audio version file
+                BuildAudioVersioningFile(manifest);
             }
             // If a throw was thrown, then try to redownload the manifest.m file and try deserialize it again
             catch (Exception ex)
             {
-                LogWriteLine($"Exception was thrown while reading manifest.m locally. Trying to redownload the file!\r\n{ex}", LogType.Warning, true);
-
-                FileInfo fileManifest = new FileInfo(manifestLocalPath);
-                fileManifest.IsReadOnly = false;
-                if (fileManifest.Exists)
-                {
-                    fileManifest.Delete();
-                }
-
-                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
+                LogWriteLine($"Exception was thrown while reading audio manifest file!\r\n{ex}", LogType.Warning, true);
+                return;
             }
-
-            // Deserialize manifest and build Audio Index
-            BuildAudioIndex(manifest, assetIndex);
-
-            // Build audio version file
-            BuildAudioVersioningFile(manifest);
         }
 
         private void BuildAudioVersioningFile(Manifest audioManifest)
@@ -116,30 +118,58 @@ namespace CollapseLauncher
             _progressTotalSize += assets.Sum(x => x.S);
         }
 
-        private void BuildAudioIndex(Manifest audioManifest, List<FilePropertiesRemote> audioIndex)
+        private async Task BuildAudioIndex(Http _httpClient, Manifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
         {
             // Iterate the audioAsset to be added in audioIndex
             foreach (ManifestAssetInfo audioInfo in audioManifest.AudioAssets)
             {
                 // Only add common and language specific audio file
-                // if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage)
-                if (true)
+                bool isAudioFilePersistent = IsAudioFilePersistent(audioInfo);
+                if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage || isAudioFilePersistent)
                 {
-                    // Assign based on each values
-                    FilePropertiesRemote audioAsset = new FilePropertiesRemote
-                    {
-                        RN = audioInfo.Path,
-                        N = _audioBaseLocalPath + audioInfo.Name + ".pck",
-                        S = audioInfo.Size,
-                        FT = FileType.Audio,
-                        CRC = audioInfo.HashString,
-                        AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
-                    };
+                    Console.WriteLine($"{audioInfo.Name} -> {isAudioFilePersistent}");
 
-                    // Add audioAsset to audioIndex
-                    audioIndex.Add(audioAsset);
+                    // Try get the availability of the audio asset
+                    if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
+                    {
+                        // Assign based on each values
+                        FilePropertiesRemote audioAsset = new FilePropertiesRemote
+                        {
+                            RN = audioInfo.Path,
+                            N = _audioBaseLocalPath + audioInfo.Name + ".pck",
+                            S = audioInfo.Size,
+                            FT = FileType.Audio,
+                            CRC = audioInfo.HashString,
+                            AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
+                        };
+
+                        // Add audioAsset to audioIndex
+                        audioIndex.Add(audioAsset);
+                    }
                 }
             }
+        }
+
+        private bool IsAudioFilePersistent(ManifestAssetInfo audioInfo) => _audioPersistentAssets.Any(audioInfo.Name.Contains);
+
+        private async ValueTask<bool> IsAudioFileAvailable(Http _httpClient, ManifestAssetInfo audioInfo, CancellationToken token)
+        {
+            // If the file is static (NeedMap == true), then pass
+            if (audioInfo.NeedMap) return true;
+
+            // Update the status
+            _status.ActivityStatus = string.Format("Trying to determine audio asset availability: {0}", audioInfo.Path);
+            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
+            UpdateStatus();
+
+            // Set the URL and try get the status
+            string audioURL = string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + audioInfo.Path;
+            (int, bool) urlStatus = await _httpClient.GetURLStatus(audioURL, token);
+
+            LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
+
+            return urlStatus.Item2;
         }
 
         private string GetXmlConfigKey()
@@ -203,19 +233,15 @@ namespace CollapseLauncher
 
         private async Task<Manifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote, CancellationToken token)
         {
-            // Check if the file exist. if not, then download it
-            if (!File.Exists(manifestLocal))
+            // Always check if the folder is exist
+            string manifestFolder = Path.GetDirectoryName(manifestLocal);
+            if (!Directory.Exists(manifestFolder))
             {
-                if (!Directory.Exists(Path.GetDirectoryName(manifestLocal)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(manifestLocal));
-                }
-
-                // Start downloading manifest.m
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
-                await _httpClient.Download(manifestRemote, manifestLocal, true, null, null, token);
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
+                Directory.CreateDirectory(manifestFolder);
             }
+
+            // Start downloading manifest.m
+            await _httpClient.Download(manifestRemote, manifestLocal, true, null, null, token);
 
             // Get the XML key and deserialize the manifest
             string xmlKey = GetXmlConfigKey();
@@ -230,7 +256,6 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the dispatcher
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
                 await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
@@ -245,8 +270,7 @@ namespace CollapseLauncher
             }
             finally
             {
-                // Unsubscribe progress and dispose stream
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
+                // Dispose the stream
                 stream.Dispose();
             }
         }
@@ -259,7 +283,7 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the gateway
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
+                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
@@ -275,7 +299,7 @@ namespace CollapseLauncher
             finally
             {
                 // Unsubscribe progress and dispose stream
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 stream.Dispose();
             }
         }
@@ -293,11 +317,9 @@ namespace CollapseLauncher
             long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
             return string.Format($"{baseGatewayURL}{_gamePreset.GameGatewayURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
-
         #endregion
 
         #region XMFAndAssetIndex
-
         private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
         {
             // Fetch metadata dictionary
@@ -307,9 +329,9 @@ namespace CollapseLauncher
                 string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gamePreset.ProfileName);
 
                 // Start downloading metadata
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
+                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 await _httpClient.Download(urlMetadata, mfs, null, null, token);
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
+                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
 
                 // Deserialize metadata
                 mfs.Position = 0;
@@ -326,9 +348,7 @@ namespace CollapseLauncher
                 string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString);
 
                 // Start downloading asset index
-                _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
                 await _httpClient.Download(urlIndex, mfs, null, null, token);
-                _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
 
                 // Deserialize asset index and return
                 mfs.Position = 0;
@@ -346,9 +366,7 @@ namespace CollapseLauncher
             string urlXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
 
             // Start downloading XMF
-            _httpClient.DownloadProgress += _httpClient_FetchManifestAssetProgress;
             await _httpClient.Download(urlXMF, xmfPath, true, null, null, token);
-            _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
         }
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
@@ -363,21 +381,6 @@ namespace CollapseLauncher
             // Sum total count by adding AssetIndex.Count + Counts from assets with "Blocks" type.
             _progressTotalCount = assetIndex.Count + assetIndex.Where(x => x.BlkC != null && x.FT != FileType.Audio).Sum(y => y.BlkC.Sum(z => z.BlockContent.Count));
         }
-
         #endregion
-
-        private void _httpClient_FetchManifestAssetProgress(object sender, DownloadEvent e)
-        {
-            // Update fetch status
-            _status.IsProgressPerFileIndetermined = false;
-            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(e.Speed));
-
-            // Update fetch progress
-            _progress.ProgressPerFilePercentage = e.ProgressPercentage;
-
-            // Push status and progress update
-            UpdateStatus();
-            UpdateProgress();
-        }
     }
 }
