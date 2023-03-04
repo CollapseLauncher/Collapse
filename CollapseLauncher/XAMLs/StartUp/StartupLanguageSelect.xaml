@@ -9,18 +9,32 @@
     Background="{ThemeResource PagesSolidAcrylicBrush}"
     mc:Ignorable="d">
     <Grid x:Name="MainPageGrid" Margin="16,32,16,16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="56"/>
-            <RowDefinition/>
-            <RowDefinition Height="48"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Please select your language to start this launcher for the first time!"
-                   Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
-                   TextWrapping="Wrap"/>
-        <ComboBox PlaceholderText="Select your language" Grid.Row="1"
-                  HorizontalAlignment="Center" VerticalAlignment="Center"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Width="340" Margin="0,0,16,0">
+            <TextBlock Text="Please select your language to start this launcher for the first time!"
+                   TextAlignment="Right"
+                   HorizontalAlignment="Right"
+                   TextWrapping="Wrap" Width="250"/>
+            <ComboBox PlaceholderText="Select your language"
+                  Margin="0,16"
+                  HorizontalAlignment="Right" VerticalAlignment="Center"
                   SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
-        <Button x:Name="NextBtn" Content="Next" Grid.Row="2" HorizontalAlignment="Stretch" IsEnabled="False"
+            <Button x:Name="NextBtn" Content="Next" HorizontalAlignment="Right" IsEnabled="False" Width="128"
                 VerticalAlignment="Bottom" Style="{ThemeResource AccentButtonStyle}" Click="NextBtn_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="340" Margin="16,0,0,0">
+            <TextBlock Text="Select your preferred window size"
+                   TextAlignment="Left"
+                   HorizontalAlignment="Left"
+                   TextWrapping="Wrap" Width="250"/>
+            <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" 
+                  Margin="0,16">
+                <ComboBoxItem Content="Normal"/>
+                <ComboBoxItem Content="Small"/>
+            </ComboBox>
+        </StackPanel>
     </Grid>
 </Page>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -40,5 +41,21 @@ namespace CollapseLauncher
         }
 
         private void NextBtn_Click(object sender, RoutedEventArgs e) => (m_window as MainWindow).StartSetupPage();
+
+        private int SelectedWindowSizeProfile
+        {
+            get
+            {
+                string val = CurrentWindowSizeName;
+                List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+
+                return WindowSizeProfilesKey.IndexOf(val);
+            }
+            set
+            {
+                List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+                CurrentWindowSizeName = WindowSizeProfilesKey[value];
+            }
+        }
     }
 }

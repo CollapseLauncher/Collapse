@@ -113,7 +113,8 @@ namespace Hi3Helper.Shared.Region
             { "ShowEventsPanel", new IniValue(true) },
             { "CustomBGPath", new IniValue() },
             { "GameCategory", new IniValue("Honkai Impact 3rd") },
-            { "GameRegion", new IniValue("Southeast Asia") }
+            { "GameRegion", new IniValue("Southeast Asia") },
+            { "WindowSizeProfile", new IniValue("Normal") }
         };
 
         public static void LoadGamePreset()

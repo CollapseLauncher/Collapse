@@ -41,7 +41,7 @@ namespace CollapseLauncher
                 if (IsFirstInstall)
                 {
                     ExtendsContentIntoTitleBar = false;
-                    SetWindowSize(m_windowHandle, 360, 280);
+                    SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     SetLegacyTitleBarColor();
                     m_presenter.IsResizable = false;
                     m_presenter.IsMaximizable = false;
@@ -59,13 +59,13 @@ namespace CollapseLauncher
 
         public void StartSetupPage()
         {
-            SetWindowSize(m_windowHandle);
+            SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             rootFrame.Navigate(typeof(Pages.StartupPage), null, new DrillInNavigationTransitionInfo());
         }
 
         public void StartMainPage()
         {
-            SetWindowSize(m_windowHandle);
+            SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
@@ -117,7 +117,7 @@ namespace CollapseLauncher
             InitializeAppWindowAndIntPtr();
             LoadWindowIcon();
 
-            SetWindowSize(m_windowHandle);
+            SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
 
             // Check to see if customization is supported.
             m_windowSupportCustomTitle = AppWindowTitleBar.IsCustomizationSupported();
@@ -127,7 +127,7 @@ namespace CollapseLauncher
                 SetInitialDragArea();
                 m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
-                m_presenter.IsResizable = false;
+                m_presenter.IsResizable = true;
                 m_presenter.IsMaximizable = false;
 
                 switch (GetAppTheme())
@@ -191,7 +191,7 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        public void SetWindowSize(IntPtr hwnd, int width = 1196, int height = 726, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width = 1028, int height = 634, int x = 0, int y = 0)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 

@@ -12,73 +12,71 @@
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
 
     <Grid>
-        <StackPanel Margin="32,80,32,32" x:Name="PageContent">
-            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,24"/>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="422"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid x:Name="CachesDataTableGrid" Grid.Row="0" Visibility="Collapsed">
-                    <Grid.ChildrenTransitions>
-                        <TransitionCollection>
-                            <PopupThemeTransition/>
-                        </TransitionCollection>
-                    </Grid.ChildrenTransitions>
-                    <control:DataGrid
+        <Grid Margin="32,80,32,18" x:Name="PageContent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition/>
+                <RowDefinition Height="110"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.PageTitle}" Grid.Row="0" Style="{ThemeResource TitleLargeTextBlockStyle}"/>
+            <Grid x:Name="CachesDataTableGrid" Grid.Row="1" VerticalAlignment="Stretch" Visibility="Collapsed">
+                <Grid.ChildrenTransitions>
+                    <TransitionCollection>
+                        <PopupThemeTransition/>
+                    </TransitionCollection>
+                </Grid.ChildrenTransitions>
+                <control:DataGrid
                     x:Name="CachesDataGrid"
-                    VerticalAlignment="Stretch"
+                    VerticalAlignment="Top"
                     HorizontalAlignment="Stretch"
                     CanUserReorderColumns="False"    
                     IsReadOnly="True"
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
-                    ItemsSource="{x:Bind statics:PageStatics._GameCache.AssetEntry}"
-                    Margin="0,0,0,16">
-                        <control:DataGrid.Columns>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding Name}" Tag="CacheName" Width="296" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding AssetType}" Tag="CacheType" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" Binding="{Binding SizeStr}" Tag="CacheSize" Width="128" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CacheLastDate" Width="92" FontSize="13"/>
-                            <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="CacheStatus" Width="92" FontSize="13"/>
-                        </control:DataGrid.Columns>
-                    </control:DataGrid>
-                </Grid>
-                <StackPanel Grid.Row="1">
-                    <TextBlock x:Name="CachesStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="240"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,32,0">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
-                            <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
-                                <TextBlock x:Name="CachesTotalStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}" control:DockPanel.Dock="Left" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="{Binding Value, ElementName=CachesTotalProgressBar}" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                            </control:DockPanel>
-                            <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                            <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
-                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
-                            </Button>
-                            <Button x:Name="CheckUpdateBtn" CornerRadius="16" 
-                                    Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" FontWeight="Medium" Margin="8,0"/>
-                            </Button>
-                            <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False"
-                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                    ItemsSource="{x:Bind statics:PageStatics._GameCache.AssetEntry}">
+                    <control:DataGrid.Columns>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding Name}" Tag="CacheName" Width="296" FontSize="13"/>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding AssetType}" Tag="CacheType" FontSize="13"/>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" Binding="{Binding SizeStr}" Tag="CacheSize" Width="128" FontSize="13"/>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CacheLastDate" Width="92" FontSize="13"/>
+                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="CacheStatus" Width="92" FontSize="13"/>
+                    </control:DataGrid.Columns>
+                </control:DataGrid>
             </Grid>
-        </StackPanel>
+            <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
+                <TextBlock x:Name="CachesStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="240"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,32,0">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <control:DockPanel HorizontalAlignment="Stretch" LastChildFill="False">
+                            <TextBlock x:Name="CachesTotalStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.CachesTotalStatusNone}" control:DockPanel.Dock="Left" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="%" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock Text="{Binding Value, ElementName=CachesTotalProgressBar}" control:DockPanel.Dock="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                        </control:DockPanel>
+                        <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                        <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
+                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
+                        </Button>
+                        <Button x:Name="CheckUpdateBtn" CornerRadius="16" 
+                                    Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" FontWeight="Medium" Margin="8,0"/>
+                        </Button>
+                        <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False"
+                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
         <Grid x:Name="Overlay" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
                 <ProgressRing x:Name="Ring" IsActive="True" IsIndeterminate="false" Width="48" Height="48" Margin="32" Value="100" Maximum="100"/>
