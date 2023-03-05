@@ -771,7 +771,7 @@ namespace CollapseLauncher
                     CornerRadius = new CornerRadius(16)
                 };
 
-                UpdateMetadatabtn.Click += async (a, b) =>
+                UpdateMetadatabtn.Loaded += async (a, b) =>
                 {
                     TextBlock Text = new TextBlock
                     {
@@ -785,13 +785,26 @@ namespace CollapseLauncher
                         VerticalAlignment = VerticalAlignment.Center,
                         Margin = new Thickness(0, 0, 8, 0),
                         Width = 16,
-                        Height = 16
+                        Height = 16,
+                        Visibility = Visibility.Collapsed
                     };
                     StackPanel StackPane = new StackPanel() { Orientation = Orientation.Horizontal };
                     StackPane.Children.Add(LoadBar);
                     StackPane.Children.Add(Text);
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
+                    
+                    // Put 5 seconds delay before updating
+                    int i = 5;
+                    while (i != 0)
+                    {
+                        Text.Text = string.Format(Lang._AppNotification.NotifMetadataUpdateBtnCountdown, i);
+                        await Task.Delay(1000);
+                        i--;
+                    }
+
+                    LoadBar.Visibility = Visibility.Visible;
+                    Text.Text = Lang._AppNotification.NotifMetadataUpdateBtnUpdating;
 
                     try
                     {
@@ -819,6 +832,11 @@ namespace CollapseLauncher
                     true
                     );
             }
+        }
+
+        private void ClickButton(Button button)
+        {
+
         }
 
         private void InitializeNavigationItems()

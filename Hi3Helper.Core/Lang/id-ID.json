@@ -617,8 +617,9 @@
 
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "Pembaruan Metadata Launcher Tersedia!",
-    "NotifMetadataUpdateSubtitle": "Metadata baru untuk launcher telah tersedia! Kamu direkomendasikan untuk memperbarui metadata agar launcher tetap dapat terhubung dengan server miHoYo/HoYoverse. Klik \"Perbarui Metadata\" untuk memperbarui.",
+    "NotifMetadataUpdateSubtitle": "Metadata baru untuk launcher telah tersedia! Pembaruan dilakukan agar launcher tetap dapat terhubung dengan server miHoYo/HoYoverse. Pembaruan akan dimulai sesaat lagi!",
     "NotifMetadataUpdateBtn": "Perbarui Metadata",
+    "NotifMetadataUpdateBtnCountdown": "Memperbarui metadata dalam: {0}",
     "NotifMetadataUpdateBtnUpdating": "Memperbarui Metadata...",
 
     "NotifFirstWelcomeTitle": "Selamat datang di Collapse!",

@@ -16,6 +16,7 @@ namespace Hi3Helper
                 public string NotifMetadataUpdateSubtitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateSubtitle;
                 public string NotifMetadataUpdateBtn { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateBtn;
                 public string NotifMetadataUpdateBtnUpdating { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateBtnUpdating;
+                public string NotifMetadataUpdateBtnCountdown { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateBtnCountdown;
 
                 public string NotifFirstWelcomeTitle { get; set; } = LangFallback?._AppNotification.NotifFirstWelcomeTitle;
                 public string NotifFirstWelcomeSubtitle { get; set; } = LangFallback?._AppNotification.NotifFirstWelcomeSubtitle;

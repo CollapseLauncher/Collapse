@@ -617,8 +617,9 @@
 
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "Launcher Metadata Update is Available!",
-    "NotifMetadataUpdateSubtitle": "New metadata for the launcher is available! We recommend you to proceed with installing the update in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. Click on \"Update Metadata\" to update.",
+    "NotifMetadataUpdateSubtitle": "New metadata for the launcher is available! The launcher will update the launcher in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. The update will began shortly!",
     "NotifMetadataUpdateBtn": "Update Metadata",
+    "NotifMetadataUpdateBtnCountdown": "Updating metadata in: {0}",
     "NotifMetadataUpdateBtnUpdating": "Updating Metadata, please wait...",
 
     "NotifFirstWelcomeTitle": "Welcome to Collapse!",

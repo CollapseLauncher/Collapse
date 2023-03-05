@@ -391,7 +391,6 @@ namespace CollapseLauncher.Pages
 
             if (PageStatics._GameVersion.GameType == GameType.Genshin)
             {
-                OpenScreenshotFolderButton.Visibility = Visibility.Visible;
                 OpenCacheFolderButton.Visibility = Visibility.Collapsed;
             }
 

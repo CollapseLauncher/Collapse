@@ -539,7 +539,7 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>
-                                    <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Visibility="Collapsed" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
+                                    <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
                                         <Button.Content>
                                             <StackPanel Orientation="Horizontal" Margin="4,0">
                                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
