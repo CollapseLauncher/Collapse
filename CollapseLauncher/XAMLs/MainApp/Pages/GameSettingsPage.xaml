@@ -155,7 +155,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FX}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,16,0,8"/>
-                                <Expander Margin="0,8,0,8" Width="514" HorizontalContentAlignment="Stretch" CornerRadius="8"
+                                <Expander Margin="0,8,0,8" MaxWidth="514" HorizontalContentAlignment="Stretch" CornerRadius="8"
                                    x:Name="GameFXPostProcExpander" IsExpanded="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
@@ -176,23 +176,23 @@
                                     <Expander.Content>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition MinWidth="100"/>
+                                                <ColumnDefinition MinWidth="100"/>
+                                                <ColumnDefinition MinWidth="100"/>
+                                                <ColumnDefinition MinWidth="100"/>
                                             </Grid.ColumnDefinitions>
                                             <CheckBox x:Name="GameFXHDRCheckBox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXHDR}"
                                                       IsChecked="{x:Bind IsGraphicsFXHDREnabled, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="0" MinWidth="0"/>
+                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="0" MinWidth="0" Margin="8,0,0,0"/>
                                             <CheckBox x:Name="GameFXHighQualityCheckBox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXHQ}"
                                                       IsChecked="{x:Bind IsGraphicsFXHighQualityEnabled, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="1" MinWidth="0"/>
+                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="1" MinWidth="0" Margin="8,0,0,0"/>
                                             <CheckBox x:Name="GameFXFXAACheckBox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXAA}"
                                                       IsChecked="{x:Bind IsGraphicsFXFXAAEnabled, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" MinWidth="0"/>
+                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="2" HorizontalAlignment="Center" MinWidth="0" Margin="8,0,0,0"/>
                                             <CheckBox x:Name="GameFXDistortionCheckBox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXDistort}"
                                                       IsChecked="{x:Bind IsGraphicsFXDistortionEnabled, Mode=TwoWay}"
-                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="3" HorizontalAlignment="Right" MinWidth="0"/>
+                                                      IsEnabled="{x:Bind IsGraphicsPostFXEnabled, Mode=OneWay}" Grid.Column="3" HorizontalAlignment="Right" MinWidth="0" Margin="8,0,0,0"/>
                                         </Grid>
                                     </Expander.Content>
                                 </Expander>
