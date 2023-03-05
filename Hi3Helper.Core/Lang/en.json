@@ -340,7 +340,9 @@
     "Disclaimer3": "and completely open-sourced. Any contribution is welcomed.",
 
     "DiscordBtn1": "Join our Armada Discord",
-    "DiscordBtn2": "Visit Honkai Impact 3rd Discord"
+    "DiscordBtn2": "Visit Honkai Impact 3rd Discord",
+
+    "AppChangeReleaseChannel": "Change to {0} Release Channel"
   },
 
   "_Misc": {
@@ -491,7 +493,11 @@
     "CookbookLocateSubtitle6": "Note:\r\n",
     "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n",
     "PrivilegeMustRunTitle": "Collapse requires privilege elevation!",
-    "PrivilegeMustRunSubtitle": "Collapse requires an elevation to run under administrator privilege. Would you like to restart Collapse and run it as administrator?"
+    "PrivilegeMustRunSubtitle": "Collapse requires an elevation to run under administrator privilege. Would you like to restart Collapse and run it as administrator?",
+    "ReleaseChannelChangeTitle": "Change Release Channel",
+    "ReleaseChannelChangeSubtitle1": "You're about to change your release channel to:",
+    "ReleaseChannelChangeSubtitle2": "Note:",
+    "ReleaseChannelChangeSubtitle3": "This action might cause a irreversible changes or incompatibilities."
   },
 
   "_InstallMgmt": {

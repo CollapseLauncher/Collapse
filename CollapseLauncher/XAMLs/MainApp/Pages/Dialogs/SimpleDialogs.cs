@@ -171,6 +171,25 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_ChangeReleaseChannel(string ChannelName, UIElement Content)
+        {
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle1 });
+            texts.Inlines.Add(new Run { Text = $" {ChannelName}", FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = "\r\n\r\n" });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle2 + "\r\n", FontSize = 18, FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle3 });
+            return await SpawnDialog(
+                    Lang._Dialogs.ReleaseChannelChangeTitle,
+                    texts,
+                    Content,
+                    Lang._Misc.Cancel,
+                    Lang._Misc.OkayHappy,
+                    null,
+                    ContentDialogButton.Primary
+                );
+        }
+
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,

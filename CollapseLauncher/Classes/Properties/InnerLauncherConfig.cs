@@ -20,6 +20,17 @@ namespace CollapseLauncher
 {
     public static class InnerLauncherConfig
     {
+        public enum AppReleaseChannel
+        {
+#if PORTABLE
+            StablePortable,
+            PreviewPortable
+#else
+            Stable,
+            Preview
+#endif
+        }
+
         public enum BackdropType
         {
             Mica,
@@ -37,14 +48,6 @@ namespace CollapseLauncher
             InvokerTakeOwnership,
             InvokerMoveSteam,
             Hi3CacheUpdater
-        }
-
-        public enum AppReleaseChannel
-        {
-            Stable,
-            Preview,
-            StablePortable,
-            PreviewPortable
         }
 
         public static AppMode m_appMode;

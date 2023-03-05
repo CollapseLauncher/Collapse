@@ -157,6 +157,12 @@
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
+                            <Button x:Name="ChangeReleaseBtn" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="ChangeRelease" Style="{ThemeResource AccentButtonStyle}">
+                                <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ec;" FontSize="22"/>
+                                    <TextBlock x:Name="ChangeReleaseBtnText" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">

@@ -61,6 +61,7 @@
                 public string Disclaimer3 { get; set; } = LangFallback?._SettingsPage.Disclaimer3;
                 public string DiscordBtn1 { get; set; } = LangFallback?._SettingsPage.DiscordBtn1;
                 public string DiscordBtn2 { get; set; } = LangFallback?._SettingsPage.DiscordBtn2;
+                public string AppChangeReleaseChannel { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
             }
         }
         #endregion

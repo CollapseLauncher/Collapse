@@ -340,7 +340,9 @@
     "Disclaimer3": "dan sepenuhnya \"Open-Source\". Kontribusi apapun dipersilahkan.",
 
     "DiscordBtn1": "Gabung Discord Armada Kami",
-    "DiscordBtn2": "Kunjungi Discord Honkai Impact 3rd"
+    "DiscordBtn2": "Kunjungi Discord Honkai Impact 3rd",
+
+    "AppChangeReleaseChannel": "Ubah Kanal Rilis ke {0}"
   },
 
   "_Misc": {
@@ -491,7 +493,11 @@
     "CookbookLocateSubtitle6": "Catatan:\r\n",
     "CookbookLocateSubtitle7": "Berikut adalah nama file Cookbook yang perlu kamu unduh:\r\n",
     "PrivilegeMustRunTitle": "Collapse membutuhkan elevasi hak akses!",
-    "PrivilegeMustRunSubtitle": "Collapse membutuhkan hak akses sebagai administrator untuk berjalan. Apakah kamu ingin restart Collapse and jalankan sebagai adminisrator?"
+    "PrivilegeMustRunSubtitle": "Collapse membutuhkan hak akses sebagai administrator untuk berjalan. Apakah kamu ingin restart Collapse and jalankan sebagai adminisrator?",
+    "ReleaseChannelChangeTitle": "Ubah Kanal Rilis",
+    "ReleaseChannelChangeSubtitle1": "Kamu akan mengubah kanal rilismu ke:",
+    "ReleaseChannelChangeSubtitle2": "Catatan:",
+    "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas."
   },
 
   "_InstallMgmt": {

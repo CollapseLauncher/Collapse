@@ -1,6 +1,5 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -16,7 +15,6 @@ using Windows.UI.ViewManagement;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -45,7 +43,7 @@ namespace CollapseLauncher
                 InitAppPreset();
                 string logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);
-                
+
                 LogWriteLine(string.Format("You're running v{0} {3} under {1} as {2}",
                     AppCurrentVersion,
                     GetVersionString(),

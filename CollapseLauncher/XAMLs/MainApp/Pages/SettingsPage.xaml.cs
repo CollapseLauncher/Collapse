@@ -40,6 +40,9 @@ namespace CollapseLauncher.Pages
 
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
+
+            string SwitchToVer = IsPreview ? "Stable" : "Preview";
+            ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -99,6 +102,22 @@ namespace CollapseLauncher.Pages
         private void ForceUpdate(object sender, RoutedEventArgs e)
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
+            LaunchUpdater(ChannelName);
+        }
+
+        private async void ChangeRelease(object sender, RoutedEventArgs e)
+        {
+            string ChannelName = IsPreview ? "Stable" : "Preview";
+            switch (await Dialogs.SimpleDialogs.Dialog_ChangeReleaseChannel(ChannelName, this))
+            {
+                case ContentDialogResult.Primary:
+                    LaunchUpdater(ChannelName);
+                    break;
+            }
+        }
+
+        private void LaunchUpdater(string ChannelName)
+        {
             if (IsPortable)
                 ChannelName += "Portable";
 

@@ -78,6 +78,10 @@
                 public string CookbookLocateSubtitle7 { get; set; } = LangFallback?._Dialogs.CookbookLocateSubtitle7;
                 public string PrivilegeMustRunTitle { get; set; } = LangFallback?._Dialogs.PrivilegeMustRunTitle;
                 public string PrivilegeMustRunSubtitle { get; set; } = LangFallback?._Dialogs.PrivilegeMustRunSubtitle;
+                public string ReleaseChannelChangeTitle { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeTitle;
+                public string ReleaseChannelChangeSubtitle1 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle1;
+                public string ReleaseChannelChangeSubtitle2 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle2;
+                public string ReleaseChannelChangeSubtitle3 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle3;
             }
         }
         #endregion
