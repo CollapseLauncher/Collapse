@@ -14,6 +14,9 @@ namespace CollapseLauncher
 {
     public sealed partial class StartupLanguageSelect : Page
     {
+
+        private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+
         public StartupLanguageSelect()
         {
             try
@@ -47,13 +50,10 @@ namespace CollapseLauncher
             get
             {
                 string val = CurrentWindowSizeName;
-                List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
-
                 return WindowSizeProfilesKey.IndexOf(val);
             }
             set
             {
-                List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
             }
         }

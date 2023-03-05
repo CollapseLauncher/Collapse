@@ -290,6 +290,10 @@
     "AppThemes_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan tema ini.",
     "AppLang_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan bahasa ini.",
 
+    "AppWindowSize": "Ukuran Window",
+    "AppWindowSize_Normal": "Biasa",
+    "AppWindowSize_Small": "Kecil",
+
     "AppBG": "Latar Belakang",
     "AppBG_Checkbox": "Gunakan Latar Belakang Lainnya",
     "AppBG_Note": "Catatan: Gambar harus berformat .png, .jpg, .tiff atau .bmp dan berukuran kurang dari 4096x4096",

@@ -290,6 +290,10 @@
     "AppThemes_Dark": "Dark",
     "AppThemes_ApplyNeedRestart": "*You need to restart the app for theme changes to take effect.",
 
+    "AppWindowSize": "Window Size",
+    "AppWindowSize_Normal": "Normal",
+    "AppWindowSize_Small": "Small",
+
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
     "AppBG_Note": "Note: Image must be in .png, .jpg, .tiff or .bmp format and the resolution must be less than 4096x4096",

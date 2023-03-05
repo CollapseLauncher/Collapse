@@ -200,8 +200,9 @@ namespace CollapseLauncher
             await ApplyAccentColor(this, PaletteBitmap);
         }
 
-        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
+            await Task.Delay(250);
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:

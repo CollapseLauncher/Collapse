@@ -1,18 +1,20 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
+using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -210,7 +212,7 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        public bool IsBGCustom
+        private bool IsBGCustom
         {
             get
             {
@@ -257,7 +259,8 @@ namespace CollapseLauncher.Pages
                 BGSelector.IsEnabled = value;
             }
         }
-        public bool IsConsoleEnabled
+
+        private bool IsConsoleEnabled
         {
             get => GetAppConfigValue("EnableConsole").ToBool();
             set
@@ -271,12 +274,14 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("EnableConsole", value);
             }
         }
-        public bool IsMultipleInstanceEnabled
+
+        private bool IsMultipleInstanceEnabled
         {
             get => LauncherConfig.IsMultipleInstanceEnabled;
             set => LauncherConfig.IsMultipleInstanceEnabled = value;
         }
-        public int CurrentThemeSelection
+
+        private int CurrentThemeSelection
         {
             get
             {
@@ -294,17 +299,20 @@ namespace CollapseLauncher.Pages
                 IsAppThemeNeedRestart = true;
             }
         }
-        public int CurrentAppThreadDownloadValue
+
+        private int CurrentAppThreadDownloadValue
         {
             get => GetAppConfigValue("DownloadThread").ToInt();
             set => SetAndSaveConfigValue("DownloadThread", value);
         }
-        public int CurrentAppThreadExtractValue
+
+        private int CurrentAppThreadExtractValue
         {
             get => GetAppConfigValue("ExtractionThread").ToInt();
             set => SetAndSaveConfigValue("ExtractionThread", value);
         }
-        public List<string> LanguageList
+
+        private List<string> LanguageList
         {
             get
             {
@@ -317,7 +325,8 @@ namespace CollapseLauncher.Pages
                 return _out;
             }
         }
-        public int LanguageSelectedIndex
+
+        private int LanguageSelectedIndex
         {
             get
             {
@@ -333,6 +342,22 @@ namespace CollapseLauncher.Pages
                 string key = LanguageIDIndex[value];
 
                 SetAndSaveConfigValue("AppLanguage", key);
+            }
+        }
+
+        private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
+        private int SelectedWindowSizeProfile
+        {
+            get
+            {
+                string val = CurrentWindowSizeName;
+                return WindowSizeProfilesKey.IndexOf(val);
+            }
+            set
+            {
+                if (value < 0) return;
+                CurrentWindowSizeName = WindowSizeProfilesKey[value];
+                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
             }
         }
     }

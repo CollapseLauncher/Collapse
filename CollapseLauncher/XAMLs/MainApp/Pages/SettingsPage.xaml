@@ -34,6 +34,19 @@
                             </RadioButtons>
                             <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <StackPanel Margin="0,-8,0,16">
+                            <RadioButtons x:Name="WindowSizeSelection" SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" MaxColumns="2">
+                                <StackPanel Orientation="Horizontal" Margin="0,-1,0,0">
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf065;" FontSize="22"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,-1,0,0">
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf066;" FontSize="22"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </RadioButtons>
+                        </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,0,0,16" HorizontalAlignment="Left">
                             <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
