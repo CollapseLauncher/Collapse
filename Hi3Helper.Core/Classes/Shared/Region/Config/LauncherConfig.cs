@@ -54,18 +54,25 @@ namespace Hi3Helper.Shared.Region
         public static AppIniStruct appIni = new AppIniStruct();
 
         public static string AppCurrentVersion;
+#if PORTABLE
         public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public static string AppConfigFolder = Path.Combine(AppFolder, "Config");
+#else
+        public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+#endif
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        public static string AppGameFolder {
+        public static string AppGameFolder
+        {
             get => GetAppConfigValue("GameFolder").ToString();
             set => SetAppConfigValue("GameFolder", value);
         }
         public static string[] AppCurrentArgument;
-        public static string AppExecutablePath {
-            get {
+        public static string AppExecutablePath
+        {
+            get
+            {
                 string execName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
                 string dirPath = AppFolder;
                 return Path.Combine(dirPath, execName + ".exe");
@@ -73,9 +80,14 @@ namespace Hi3Helper.Shared.Region
         }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
+#if PORTABLE
         public static string AppConfigFile = Path.Combine(AppConfigFolder, "config.ini");
         public static string AppConfigFileOld = Path.Combine(AppDataFolder, "config.ini");
         public static string AppNotifIgnoreFile = Path.Combine(AppConfigFolder, "ignore_notif_ids.json");
+#else
+        public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
+        public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+#endif
         public static string GamePathOnSteam;
 
         public static string AppNotifURLPrefix => GetCurrentCDN().URLPrefix + "/notification_{0}.json";
@@ -159,7 +171,9 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitAppPreset()
         {
+#if PORTABLE
             TryCopyOldConfig();
+#endif
 
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
@@ -209,6 +223,7 @@ namespace Hi3Helper.Shared.Region
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
         }
 
+#if PORTABLE
         private static void TryCopyOldConfig()
         {
             try
@@ -220,11 +235,12 @@ namespace Hi3Helper.Shared.Region
                         Directory.CreateDirectory(AppConfigFolder);
                     }
 
-                    File.Move(AppConfigFileOld, AppConfigFile);
+                    File.Copy(AppConfigFileOld, AppConfigFile);
                 }
             }
             catch { }
         }
+#endif
 
         private static bool IsDriveExist(string path)
         {
