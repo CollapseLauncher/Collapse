@@ -1,9 +1,11 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.Statics.PageStatics;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -42,6 +44,11 @@ namespace CollapseLauncher.Pages
             {
                 ResetStatusAndButtonState();
             }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while checking asset!\r\n{ex}", LogType.Error, true);
+            }
             finally
             {
                 RemoveEvent();
@@ -73,6 +80,11 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 ResetStatusAndButtonState();
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while repairing asset!\r\n{ex}", LogType.Error, true);
             }
             finally
             {

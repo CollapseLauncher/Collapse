@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Statics.PageStatics;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
@@ -45,7 +47,8 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                ErrorSender.SendException(ex, ErrorType.GameError);
+                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while updating cache!\r\n{ex}", LogType.Error, true);
             }
             finally
             {
@@ -78,6 +81,11 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 ResetStatusAndButtonState();
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while checking cache!\r\n{ex}", LogType.Error, true);
             }
             finally
             {
