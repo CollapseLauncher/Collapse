@@ -369,6 +369,7 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
                 SetAppConfigValue("CurrentCDN", value);
+                SaveAppConfig();
             }
         }
     }
