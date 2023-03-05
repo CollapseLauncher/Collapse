@@ -57,5 +57,15 @@ namespace CollapseLauncher
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
             }
         }
+
+        private int SelectedCDN
+        {
+            get => GetAppConfigValue("CurrentCDN").ToInt();
+            set
+            {
+                if (value < 0) return;
+                SetAppConfigValue("CurrentCDN", value);
+            }
+        }
     }
 }

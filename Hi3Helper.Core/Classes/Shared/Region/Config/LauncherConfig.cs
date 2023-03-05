@@ -7,10 +7,38 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using static Hi3Helper.Locale;
 
 namespace Hi3Helper.Shared.Region
 {
-    public static class LauncherConfig {
+    public struct CDNURLProperty
+    {
+        public string URLPrefix { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+    }
+
+    public static class LauncherConfig
+    {
+        public static List<CDNURLProperty> CDNList => new List<CDNURLProperty>
+        {
+            new CDNURLProperty
+            {
+                Name = "GitHub",
+                URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main",
+                Description = Lang._Misc.CDNDescription_Github
+            },
+            new CDNURLProperty
+            {
+                Name = "Statically",
+                URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
+                Description = Lang._Misc.CDNDescription_Statically
+            }
+        };
+
+        public static CDNURLProperty GetCurrentCDN() => CDNList[GetAppConfigValue("CurrentCDN").ToInt()];
+        public static void SetCurrentCDN(int index) => SetAppConfigValue("CurrentCDN", index);
+
         public static Vector3 Shadow16 = new Vector3(0, 0, 16);
         public static Vector3 Shadow32 = new Vector3(0, 0, 32);
         public static Vector3 Shadow48 = new Vector3(0, 0, 48);
@@ -48,11 +76,10 @@ namespace Hi3Helper.Shared.Region
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
         public static string GamePathOnSteam;
 
-        public const string AppNotifURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/notification_{0}.json";
-        public const string AppGameConfigURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadata_{0}.json";
-        public const string AppGameConfigV2URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/metadatav2_{0}.json";
-        public const string AppGameRepairIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/{1}/index";
-        public const string AppGameRepoIndexURLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/metadata/repair_indexes/{0}/repo";
+        public static string AppNotifURLPrefix => GetCurrentCDN().URLPrefix + "/notification_{0}.json";
+        public static string AppGameConfigV2URLPrefix => GetCurrentCDN().URLPrefix + "/metadata/metadatav2_{0}.json";
+        public static string AppGameRepairIndexURLPrefix => GetCurrentCDN().URLPrefix + "/metadata/repair_indexes/{0}/{1}/index";
+        public static string AppGameRepoIndexURLPrefix => GetCurrentCDN().URLPrefix + "/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
         public static int AppCurrentThread
@@ -67,8 +94,6 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
-        public static string AppGameConfigStampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stamp.json"); }
-        public static string AppGameConfigMetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadata.json"); }
 
         public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
 
@@ -115,7 +140,8 @@ namespace Hi3Helper.Shared.Region
             { "CustomBGPath", new IniValue() },
             { "GameCategory", new IniValue("Honkai Impact 3rd") },
             { "GameRegion", new IniValue("Southeast Asia") },
-            { "WindowSizeProfile", new IniValue("Normal") }
+            { "WindowSizeProfile", new IniValue("Normal") },
+            { "CurrentCDN", new IniValue(0) },
         };
 
         public static void LoadGamePreset()

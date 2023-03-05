@@ -74,6 +74,8 @@
                 public string Enabled { get; set; } = LangFallback?._Misc.Enabled;
                 public string BuildChannelPreview { get; set; } = LangFallback?._Misc.BuildChannelPreview;
                 public string BuildChannelStable { get; set; } = LangFallback?._Misc.BuildChannelStable;
+                public string CDNDescription_Github { get; set; } = LangFallback?._Misc.CDNDescription_Github;
+                public string CDNDescription_Statically { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
             }
         }
         #endregion

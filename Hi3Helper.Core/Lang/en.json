@@ -295,6 +295,8 @@
     "AppWindowSize_Normal": "Normal",
     "AppWindowSize_Small": "Small",
 
+    "AppCDNRepository": "Repository CDN",
+
     "AppBG": "App Background",
     "AppBG_Checkbox": "Use Custom Background",
     "AppBG_Note": "Note: Image must be in .png, .jpg, .tiff or .bmp format and the resolution must be less than 4096x4096",
@@ -413,7 +415,10 @@
     "Enabled": "Enabled",
 
     "BuildChannelPreview": "Preview",
-    "BuildChannelStable": "Stable"
+    "BuildChannelStable": "Stable",
+
+    "CDNDescription_Github": "The official (main) repository for the launcher",
+    "CDNDescription_Statically": "A mirror of the official (main) repository provided by Statically. Use this if you're living in a place where GitHub is inaccessible"
   },
 
   "_Dialogs": {

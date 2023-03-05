@@ -18,6 +18,7 @@
                 public string AppThemes_Default { get; set; } = LangFallback?._SettingsPage.AppThemes_Default;
                 public string AppThemes_Light { get; set; } = LangFallback?._SettingsPage.AppThemes_Light;
                 public string AppThemes_Dark { get; set; } = LangFallback?._SettingsPage.AppThemes_Dark;
+                public string AppCDNRepository { get; set; } = LangFallback?._SettingsPage.AppCDNRepository;
                 public string AppThemes_ApplyNeedRestart { get; set; } = LangFallback?._SettingsPage.AppThemes_ApplyNeedRestart;
                 public string AppWindowSize { get; set; } = LangFallback?._SettingsPage.AppWindowSize;
                 public string AppWindowSize_Normal { get; set; } = LangFallback?._SettingsPage.AppWindowSize_Normal;

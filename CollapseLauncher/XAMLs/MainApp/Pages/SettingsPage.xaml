@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
     xmlns:helper="using:Hi3Helper"
+    xmlns:innerConfig="using:Hi3Helper.Shared.Region"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -45,6 +46,21 @@
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf066;" FontSize="22"/>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                                 </StackPanel>
+                            </RadioButtons>
+                        </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <StackPanel Margin="0,-8,0,16">
+                            <RadioButtons x:Name="AppCDNSelection" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" MaxColumns="2"  ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
+                                <RadioButtons.ItemTemplate>
+                                    <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                        <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{x:Bind Name}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf05a;" FontSize="18" Margin="8,0,0,0" Opacity="0.25"/>
+                                            </StackPanel>
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </RadioButtons.ItemTemplate>
                             </RadioButtons>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
