@@ -22,13 +22,10 @@ namespace CollapseLauncher
     {
         public enum AppReleaseChannel
         {
-#if PORTABLE
             StablePortable,
-            PreviewPortable
-#else
+            PreviewPortable,
             Stable,
             Preview
-#endif
         }
 
         public enum BackdropType
