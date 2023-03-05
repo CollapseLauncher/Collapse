@@ -47,7 +47,7 @@ namespace CollapseLauncher
             File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"),
                 JsonSerializer.Serialize(Prop, typeof(Prop), PropContext.Default));
 
-            if (!Directory.Exists(ConfigPath))
+            if (Directory.Exists(ConfigPath))
             {
                 Directory.Delete(ConfigPath, true);
             }
