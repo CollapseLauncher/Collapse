@@ -27,23 +27,30 @@ namespace CollapseLauncher
 
         public void RunReindex()
         {
+            string ConfigPath = Path.Combine(filePath, "Config");
+
             int baseLength = filePath.Length + 1;
             string nameRoot, fileCrc;
             Prop Prop = new Prop() { ver = this.clientVer, time = this.reindexTime, f = new List<fileProp>() };
             FileStream fileStream;
-            foreach (string file in Directory.GetFiles(filePath, "*", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(filePath, "*", SearchOption.AllDirectories))
             {
-                if (Path.GetFileName(file) != "CollapseLauncher.Updater.exe")
-                {
-                    nameRoot = file.Substring(baseLength).Replace('\\', '/');
-                    fileCrc = CreateMD5Shared(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-                    Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
-                    LogWriteLine($"{nameRoot} -> {fileCrc}");
-                }
+                if (file.Contains(ConfigPath)) continue;
+                if (Path.GetFileName(file) == "CollapseLauncher.Updater.exe") continue;
+
+                nameRoot = file.Substring(baseLength).Replace('\\', '/');
+                fileCrc = CreateMD5Shared(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+                Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
+                LogWriteLine($"{nameRoot} -> {fileCrc}");
             }
 
             File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"),
                 JsonSerializer.Serialize(Prop, typeof(Prop), PropContext.Default));
+
+            if (!Directory.Exists(ConfigPath))
+            {
+                Directory.Delete(ConfigPath, true);
+            }
         }
     }
 }
