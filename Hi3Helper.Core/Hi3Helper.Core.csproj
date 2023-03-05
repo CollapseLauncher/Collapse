@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Configurations>Debug;Release;Publish;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
+		<Configurations>Debug;Release;Release-Portable;Publish;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
 		<WarningLevel>6</WarningLevel>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -13,7 +13,17 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Portable|x64'">
+		<DefineConstants>PORTABLE</DefineConstants>
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish-Portable|x64'">
+		<DefineConstants>PORTABLE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
