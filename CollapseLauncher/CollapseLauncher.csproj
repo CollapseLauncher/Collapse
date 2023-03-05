@@ -52,11 +52,6 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;PORTABLE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="XAMLs\MainApp\Pages\NotInstalledPage.xaml" />
-	  <None Remove="XAMLs\MainApp\Pages\StartupPage_SelectGameBG.xaml" />
-	  <None Remove="XAMLs\MainApp\Pages\WebView2Frame.xaml" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
@@ -132,22 +127,4 @@
 			</ManagedAssemblyToLink>
 		</ItemGroup>
 	</Target>
-
-	<ItemGroup>
-		<Page Update="XAMLs\MainApp\Pages\WebView2Frame.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="XAMLs\MainApp\Pages\StartupPage_SelectGameBG.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="XAMLs\MainApp\Pages\StartupPage_SelectGame.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="XAMLs\MainApp\Pages\NotInstalledPage.xaml">
-		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-		<Page Update="XAMLs\StartUp\StartupLanguageSelect.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-		</Page>
-	</ItemGroup>
 </Project>
