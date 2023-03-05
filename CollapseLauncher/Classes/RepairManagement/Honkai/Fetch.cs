@@ -281,7 +281,6 @@ namespace CollapseLauncher
             try
             {
                 // Start downloading the gateway
-                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 await _httpClient.Download(baseURL, stream, null, null, token);
                 stream.Position = 0;
 
@@ -297,7 +296,6 @@ namespace CollapseLauncher
             finally
             {
                 // Unsubscribe progress and dispose stream
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
                 stream.Dispose();
             }
         }
@@ -327,9 +325,7 @@ namespace CollapseLauncher
                 string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gamePreset.ProfileName);
 
                 // Start downloading metadata
-                _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
                 await _httpClient.Download(urlMetadata, mfs, null, null, token);
-                _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
 
                 // Deserialize metadata
                 mfs.Position = 0;
