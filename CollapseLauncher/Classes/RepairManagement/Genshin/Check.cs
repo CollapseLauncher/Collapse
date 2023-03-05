@@ -228,43 +228,6 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
-        private bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
-
-        private byte[] CheckMD5(Stream stream, CancellationToken token)
-        {
-            // Initialize MD5 instance and assign buffer
-            MD5 md5Instance = MD5.Create();
-            byte[] buffer = new byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) >= _bufferBigLength)
-                {
-                    token.ThrowIfCancellationRequested();
-                    // Append buffer into hash block
-                    md5Instance.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
-
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        _progressTotalSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
-
-                    // Update status and progress for MD5 calculation
-                    UpdateProgressCRC();
-                }
-
-                // Finalize the hash calculation
-                md5Instance.TransformFinalBlock(buffer, 0, read);
-            }
-
-            // Return computed hash byte
-            return md5Instance.Hash;
-        }
-
         private void TryUnassignReadOnlyFiles()
         {
             // Iterate every files and set the read-only flag to false
@@ -273,36 +236,6 @@ namespace CollapseLauncher
                 FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.IsReadOnly)
                     fileInfo.IsReadOnly = false;
-            }
-        }
-
-        private async void UpdateProgressCRC()
-        {
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                // Update current progress percentages
-                _progress.ProgressPerFilePercentage = _progressPerFileSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressPerFileSizeCurrent, _progressPerFileSize) :
-                    0;
-                _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
-                    0;
-
-                // Calculate speed
-                long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-
-                // Calculate current speed and update the status and progress speed
-                _progress.ProgressTotalSpeed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-                _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
-
-                // Set time estimation string
-                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
-
-                // Update current activity status
-                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressTotalCountCurrent, _progressTotalCount) + $" | {timeLeftString}";
-
-                // Trigger update
-                UpdateAll();
             }
         }
         #endregion
