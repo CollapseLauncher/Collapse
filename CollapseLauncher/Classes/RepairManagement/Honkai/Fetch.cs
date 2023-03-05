@@ -127,8 +127,6 @@ namespace CollapseLauncher
                 bool isAudioFilePersistent = IsAudioFilePersistent(audioInfo);
                 if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage || isAudioFilePersistent)
                 {
-                    Console.WriteLine($"{audioInfo.Name} -> {isAudioFilePersistent}");
-
                     // Try get the availability of the audio asset
                     if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
                     {
