@@ -153,6 +153,8 @@ namespace CollapseLauncher
                     Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
                 });
             }
+
+            regionNewsProp.sideMenuPanel = regionNewsProp.sideMenuPanel.OrderBy(x => x.URL).ToList();
         }
 
         private void GetLauncherCarouselInfo(CancellationToken Token)
