@@ -54,7 +54,8 @@ namespace Hi3Helper.Shared.Region
         public static AppIniStruct appIni = new AppIniStruct();
 
         public static string AppCurrentVersion;
-        public static string AppFolder = AppDomain.CurrentDomain.BaseDirectory;
+        public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public static string AppConfigFolder = Path.Combine(AppFolder, "Config");
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
@@ -72,8 +73,9 @@ namespace Hi3Helper.Shared.Region
         }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
-        public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
-        public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+        public static string AppConfigFile = Path.Combine(AppConfigFolder, "config.ini");
+        public static string AppConfigFileOld = Path.Combine(AppDataFolder, "config.ini");
+        public static string AppNotifIgnoreFile = Path.Combine(AppConfigFolder, "ignore_notif_ids.json");
         public static string GamePathOnSteam;
 
         public static string AppNotifURLPrefix => GetCurrentCDN().URLPrefix + "/notification_{0}.json";
@@ -157,6 +159,8 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitAppPreset()
         {
+            TryCopyOldConfig();
+
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
             appIni.ProfilePath = AppConfigFile;
@@ -203,6 +207,23 @@ namespace Hi3Helper.Shared.Region
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
+        }
+
+        private static void TryCopyOldConfig()
+        {
+            try
+            {
+                if (File.Exists(AppConfigFileOld))
+                {
+                    if (!Directory.Exists(AppConfigFolder))
+                    {
+                        Directory.CreateDirectory(AppConfigFolder);
+                    }
+
+                    File.Move(AppConfigFileOld, AppConfigFile);
+                }
+            }
+            catch { }
         }
 
         private static bool IsDriveExist(string path)
