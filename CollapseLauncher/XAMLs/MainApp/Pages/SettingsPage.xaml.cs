@@ -358,6 +358,7 @@ namespace CollapseLauncher.Pages
                 if (value < 0) return;
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                SaveAppConfig();
             }
         }
     }
