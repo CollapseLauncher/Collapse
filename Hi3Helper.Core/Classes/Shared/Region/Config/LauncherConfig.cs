@@ -111,6 +111,7 @@ namespace Hi3Helper.Shared.Region
             { "AppLanguage", new IniValue("en-us") },
             { "UseCustomBG", new IniValue(false) },
             { "ShowEventsPanel", new IniValue(true) },
+            { "ShowSocialMediaPanel", new IniValue(true) },
             { "CustomBGPath", new IniValue() },
             { "GameCategory", new IniValue("Honkai Impact 3rd") },
             { "GameRegion", new IniValue("Southeast Asia") },

@@ -64,6 +64,12 @@ namespace CollapseLauncher.Pages
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                     ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
 
+                if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
+                {
+                    SocMedPanel.Visibility = Visibility.Collapsed;
+                    ImageEventImgGrid.Visibility = Visibility.Collapsed;
+                }
+
                 TryLoadEventPanelImage();
 
                 SocMedPanel.Translation += Shadow48;
@@ -182,9 +188,34 @@ namespace CollapseLauncher.Pages
             ImageCarouselAndPostPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
         }
 
+        private async void HideSocialMediaPanel(bool hide)
+        {
+            HideImageEventImg(hide);
+            if (!hide)
+            {
+                SocMedPanel.Visibility = Visibility.Visible;
+            }
+
+            Storyboard storyboard = new Storyboard();
+            DoubleAnimation OpacityAnimation = new DoubleAnimation();
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
+            OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
+
+            Storyboard.SetTarget(OpacityAnimation, SocMedPanel);
+            Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+            storyboard.Children.Add(OpacityAnimation);
+
+            storyboard.Begin();
+
+            await Task.Delay(100);
+
+            SocMedPanel.Visibility = hide ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         private async void HideImageEventImg(bool hide)
         {
-            if (ImageEventImgGrid.Visibility == Visibility.Collapsed && NeedShowEventIcon) return;
+            if (!NeedShowEventIcon) return;
 
             if (!hide)
                 ImageEventImgGrid.Visibility = Visibility.Visible;
@@ -1533,7 +1564,7 @@ namespace CollapseLauncher.Pages
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Pre-Download paused!", Hi3Helper.LogType.Warning);
+                LogWriteLine($"Pre-Download paused!", LogType.Warning);
             }
             finally
             {

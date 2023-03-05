@@ -579,6 +579,7 @@
                                     <StackPanel x:Name="MiscPanel">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                         <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
+                                        <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Flyout>

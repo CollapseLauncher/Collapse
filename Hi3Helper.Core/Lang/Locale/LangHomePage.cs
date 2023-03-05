@@ -44,6 +44,7 @@
                 public string GameSettings_Panel3 { get; set; } = LangFallback?._HomePage.GameSettings_Panel3;
                 public string GameSettings_Panel4 { get; set; } = LangFallback?._HomePage.GameSettings_Panel4;
                 public string GameSettings_Panel4ShowEventsPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowEventsPanel;
+                public string GameSettings_Panel4ShowSocialMediaPanel { get; set; } = LangFallback?._HomePage.GameSettings_Panel4ShowSocialMediaPanel;
                 public string PostPanel_Events { get; set; } = LangFallback?._HomePage.PostPanel_Events;
                 public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
                 public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;

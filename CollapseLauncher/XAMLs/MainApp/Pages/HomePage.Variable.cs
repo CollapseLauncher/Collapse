@@ -51,7 +51,22 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsSocMedPanelShow
+        {
+            get
+            {
+                bool ret = GetAppConfigValue("ShowSocialMediaPanel").ToBoolNullable() ?? true;
+                return ret;
+            }
+            set
+            {
+                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
+                ToggleSocmedPanelPanel(value);
+            }
+        }
+
         public void ToggleEventsPanel(bool hide) => HideImageCarousel(!hide);
+        public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
     }
 
     public class NullVisibilityConverter : IValueConverter
