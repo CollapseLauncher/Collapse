@@ -733,6 +733,7 @@ namespace CollapseLauncher.Pages
             {
                 PageStatics._GameVersion.GamePreset.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
             }
+            PageStatics._GameVersion.Reinitialize();
         }
 
         private async Task<bool> DownloadGameClient(string destinationFolder)
