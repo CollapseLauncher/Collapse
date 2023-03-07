@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -150,17 +149,11 @@ namespace CollapseLauncher.GameVersioning
             FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, $"{GamePreset.GameExecutableName}.exe"));
             if (execFileInfo.Exists) return execFileInfo.Length > 2 << 20;
 
-            // Check if the identifier file exist. If not, then return as false.
-            FileInfo identityFile = new FileInfo(Path.Combine(GameDirPath, string.Format(@"{0}_Data\app.info", Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName))));
-            if (!identityFile.Exists) return false;
+            // Check if the vendor type exist. If not, then return false
+            if (VendorTypeProp.GameName == null || !VendorTypeProp.VendorType.HasValue) return false;
 
-            // Read the lines and check if one of the identifier matches.
-            // Once it matches, then return as true.
-            string[] infoLines = File.ReadAllLines(identityFile.FullName);
-            foreach (string line in infoLines)
-            {
-                if (line == GamePreset.InternalGameNameInConfig) return true;
-            }
+            // Check if the game name from the vendor type is matching. If yes, then return true
+            if (VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig) return true;
 
             // If none of above matches, then return as false.
             return false;
