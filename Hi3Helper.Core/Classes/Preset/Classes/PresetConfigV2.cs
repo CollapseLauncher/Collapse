@@ -41,6 +41,13 @@ namespace Hi3Helper.Preset
         Zenless = 3
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum GameVendorType
+    {
+        miHoYo,
+        Cognosphere
+    }
+
     public class Stamp
     {
         public long LastUpdated { get; set; }
@@ -414,6 +421,7 @@ namespace Hi3Helper.Preset
         public bool IsHideSocMedDesc { get; set; } = true;
         public List<string>? ConvertibleTo { get; set; }
         public GameType GameType { get; set; }
+        public GameVendorType VendorType { get; set; } = GameVendorType.miHoYo;
         public string? ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
         public bool LauncherSpriteURLMultiLang { get; set; }

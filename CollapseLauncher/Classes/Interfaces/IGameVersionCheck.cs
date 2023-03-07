@@ -19,6 +19,11 @@ namespace CollapseLauncher.Interfaces
         string GameDirPath { get; set; }
 
         /// <summary>
+        /// Returns the app data path of the game
+        /// </summary>
+        string GameDirAppDataPath { get; }
+
+        /// <summary>
         /// Returns or sets the game preset
         /// </summary>
         PresetConfigV2 GamePreset { get; set; }
@@ -32,6 +37,11 @@ namespace CollapseLauncher.Interfaces
         /// Returns the type of the game
         /// </summary>
         GameType GameType { get; }
+
+        /// <summary>
+        /// Returns the name of the engine output log file
+        /// </summary>
+        string GameOutputLogName { get; }
 
         /// <summary>
         /// Returns the game vendor type property and the game name based on <c>app.info</c> file

@@ -1,11 +1,7 @@
-﻿namespace CollapseLauncher
-{
-    internal enum GameVendorType
-    {
-        miHoYo,
-        Cognosphere
-    }
+﻿using System.Text.Json.Serialization;
 
+namespace CollapseLauncher
+{
     internal enum RepairAssetType
     {
         General,

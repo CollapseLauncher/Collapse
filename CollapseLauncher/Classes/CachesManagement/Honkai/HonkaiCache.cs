@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
@@ -23,7 +24,7 @@ namespace CollapseLauncher
         public HonkaiCache(UIElement parentUI, PresetConfigV2 presetConfigV2)
             : base(
                   parentUI,
-                  Path.Combine(GameAppDataFolder, presetConfigV2.InternalGameNameInConfig),
+                  PageStatics._GameVersion.GameDirAppDataPath,
                   null,
                   presetConfigV2)
         {

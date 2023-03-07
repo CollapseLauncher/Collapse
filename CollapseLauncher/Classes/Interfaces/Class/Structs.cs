@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using System;
 using System.IO;
 
@@ -34,8 +35,11 @@ namespace CollapseLauncher
     internal struct GameVendorProp
     {
         #nullable enable
-        public GameVendorProp(string gamePath, string execName)
+        public GameVendorProp(string gamePath, string execName, GameVendorType fallbackVendorType)
         {
+            // Set the fallback value of the Vendor Type first (in case the game isn't yet installed)
+            VendorType = fallbackVendorType;
+
             // Concat the vendor app info file and return if it doesn't exist
             string infoVendorPath = Path.Combine(gamePath, $"{execName}_Data\\app.info");
             if (!File.Exists(infoVendorPath)) return;

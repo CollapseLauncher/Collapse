@@ -17,7 +17,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         public GenshinSettings(PresetConfigV2 gameConfig)
         {
             // Init Root Registry Key
-            RegistryRootPath = Path.GetDirectoryName(gameConfig.ConfigRegistryLocation);
             RegistryPath = Path.Combine(RegistryRootPath, gameConfig.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 

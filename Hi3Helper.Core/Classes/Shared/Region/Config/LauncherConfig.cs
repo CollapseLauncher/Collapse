@@ -110,8 +110,6 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
 
-        public static string GameAppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "miHoYo");
-
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled = false;
         public static bool IsPreview = false;

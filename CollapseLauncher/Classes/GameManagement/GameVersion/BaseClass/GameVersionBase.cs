@@ -4,6 +4,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -65,6 +66,14 @@ namespace CollapseLauncher.GameVersioning
         {
             get => Path.GetDirectoryName(GameIniVersionPath);
             set => UpdateGamePath(value, false);
+        }
+        public string GameDirAppDataPath
+        {
+            get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", $"{VendorTypeProp.VendorType}", GamePreset.InternalGameNameInConfig);
+        }
+        public string GameOutputLogName
+        {
+            get => VendorTypeProp.VendorType == GameVendorType.miHoYo ? "output_log.txt" : "Player.log";
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
@@ -218,7 +227,7 @@ namespace CollapseLauncher.GameVersioning
             InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
 
             // Initialize the GameVendorType
-            VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName));
+            VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName), GamePreset.VendorType);
         }
 
         private string TryFindGamePathFromExecutableAndConfig(string path)

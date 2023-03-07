@@ -1101,7 +1101,7 @@ namespace CollapseLauncher.Pages
                 try
                 {
                     m_presenter.Minimize();
-                    string logPath = $"{GameAppDataFolder}\\{Path.GetFileName(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation)}\\output_log.txt";
+                    string logPath = Path.Combine(PageStatics._GameVersion.GameDirAppDataPath, PageStatics._GameVersion.GameOutputLogName);
 
                     if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(logPath));
@@ -1178,7 +1178,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = Path.Combine(GameAppDataFolder, Path.GetFileName(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation));
+            string GameFolder = PageStatics._GameVersion.GameDirAppDataPath;
             LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
             new Process()
             {
