@@ -63,25 +63,35 @@ namespace CollapseLauncher
             string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
             string URL = "";
 
-            using (MemoryStream buffer = new MemoryStream())
+            try
             {
-                URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
-                ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                this._http.DownloadProgress += FetchIngredientsAPI_Progress;
-                await this._http.Download(URL, buffer, null, null, Token);
-                this._http.DownloadProgress -= FetchIngredientsAPI_Progress;
-                buffer.Position = 0;
-                SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                FallbackCDNUtil.DownloadProgress += FetchIngredientsAPI_Progress;
+
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    URL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, this.GameVersion);
+                    ConvertDetail = Lang._InstallConvert.Step2Subtitle;
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
+                    buffer.Position = 0;
+                    SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                }
+
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
+                    ConvertDetail = Lang._InstallConvert.Step2Subtitle;
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
+                    buffer.Position = 0;
+                    TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                }
             }
-            using (MemoryStream buffer = new MemoryStream())
+            catch (Exception)
             {
-                URL = string.Format(AppGameRepairIndexURLPrefix, TargetProfile.ProfileName, this.GameVersion);
-                ConvertDetail = Lang._InstallConvert.Step2Subtitle;
-                this._http.DownloadProgress += FetchIngredientsAPI_Progress;
-                await this._http.Download(URL, buffer, null, null, Token);
-                this._http.DownloadProgress -= FetchIngredientsAPI_Progress;
-                buffer.Position = 0;
-                TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                throw;
+            }
+            finally
+            {
+                FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;
             }
 
             SourceFileManifest = BuildManifest(SourceFileRemote);

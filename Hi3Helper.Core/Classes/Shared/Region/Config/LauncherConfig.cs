@@ -11,11 +11,12 @@ using static Hi3Helper.Locale;
 
 namespace Hi3Helper.Shared.Region
 {
-    public struct CDNURLProperty
+    public struct CDNURLProperty : IEquatable<CDNURLProperty>
     {
         public string URLPrefix { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool Equals(CDNURLProperty other) => URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
     }
 
     public static class LauncherConfig
@@ -90,10 +91,10 @@ namespace Hi3Helper.Shared.Region
 #endif
         public static string GamePathOnSteam;
 
-        public static string AppNotifURLPrefix => GetCurrentCDN().URLPrefix + "/notification_{0}.json";
-        public static string AppGameConfigV2URLPrefix => GetCurrentCDN().URLPrefix + "/metadata/metadatav2_{0}.json";
-        public static string AppGameRepairIndexURLPrefix => GetCurrentCDN().URLPrefix + "/metadata/repair_indexes/{0}/{1}/index";
-        public static string AppGameRepoIndexURLPrefix => GetCurrentCDN().URLPrefix + "/metadata/repair_indexes/{0}/repo";
+        public const string AppNotifURLPrefix = "/notification_{0}.json";
+        public const string AppGameConfigV2URLPrefix = "/metadata/metadatav2_{0}.json";
+        public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
+        public const string AppGameRepoIndexURLPrefix = "/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
         public static int AppCurrentThread

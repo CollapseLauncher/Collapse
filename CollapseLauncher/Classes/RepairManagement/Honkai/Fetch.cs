@@ -325,7 +325,7 @@ namespace CollapseLauncher
                 string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gamePreset.ProfileName);
 
                 // Start downloading metadata
-                await _httpClient.Download(urlMetadata, mfs, null, null, token);
+                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
 
                 // Deserialize metadata
                 mfs.Position = 0;
@@ -335,18 +335,29 @@ namespace CollapseLauncher
 
         private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            // Fetch asset index
-            using (MemoryStream mfs = new MemoryStream())
+            try
             {
-                // Set asset index URL
-                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString);
+                // Use FallbackCDNUtil for fetching progress
+                FallbackCDNUtil.DownloadProgress += _httpClient_FetchAssetProgress;
+                // Fetch asset index
+                using (MemoryStream mfs = new MemoryStream())
+                {
+                    // Set asset index URL
+                    string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString);
 
-                // Start downloading asset index
-                await _httpClient.Download(urlIndex, mfs, null, null, token);
+                    // Start downloading asset index using FallbackCDNUtil
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlIndex, token);
 
-                // Deserialize asset index and return
-                mfs.Position = 0;
-                assetIndex.AddRange((List<FilePropertiesRemote>)JsonSerializer.Deserialize(mfs, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default));
+                    // Deserialize asset index and return
+                    mfs.Position = 0;
+                    assetIndex.AddRange((List<FilePropertiesRemote>)JsonSerializer.Deserialize(mfs, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default));
+                }
+            }
+            catch { throw; }
+            finally
+            {
+                // Unsubscribe FallbackCDNUtil progress
+                FallbackCDNUtil.DownloadProgress += _httpClient_FetchAssetProgress;
             }
         }
 

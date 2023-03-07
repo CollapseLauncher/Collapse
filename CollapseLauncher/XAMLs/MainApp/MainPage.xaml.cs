@@ -324,13 +324,11 @@ namespace CollapseLauncher
                 RunTimeoutCancel(TokenSource);
                 using (Http _http = new Http(true, 5, 1000, null))
                 {
-                    using (Stream s = (await _http.DownloadFromSessionStreamAsync(
-                        string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"),
-                        0,
-                        null,
-                        TokenSource.Token)).Item1)
+                    using (Stream fs = new MemoryStream())
                     {
-                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(s, typeof(NotificationPush), NotificationPushContext.Default);
+                        await FallbackCDNUtil.DownloadCDNFallbackContent(_http, fs, string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+                        fs.Position = 0;
+                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), NotificationPushContext.Default);
                         IsLoadNotifComplete = true;
                     }
                 }
@@ -832,11 +830,6 @@ namespace CollapseLauncher
                     true
                     );
             }
-        }
-
-        private void ClickButton(Button button)
-        {
-
         }
 
         private void InitializeNavigationItems()

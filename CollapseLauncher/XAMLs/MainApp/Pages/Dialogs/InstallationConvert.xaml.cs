@@ -149,14 +149,21 @@ namespace CollapseLauncher.Dialogs
             Http _Http = new Http();
             Dictionary<string, string> _RepoList;
 
-            using (MemoryStream s = new MemoryStream())
+            try
             {
-                _Http.DownloadProgress += Step2ProgressEvents;
-                string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
-                await _Http.Download(repoListURL, s, null, null, tokenSource.Token);
-                s.Position = 0;
-                _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
-                _Http.DownloadProgress -= Step2ProgressEvents;
+                FallbackCDNUtil.DownloadProgress += Step2ProgressEvents;
+                using (MemoryStream s = new MemoryStream())
+                {
+                    string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_Http, s, repoListURL, tokenSource.Token);
+                    s.Position = 0;
+                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
+                }
+            }
+            catch { throw; }
+            finally
+            {
+                FallbackCDNUtil.DownloadProgress -= Step2ProgressEvents;
             }
 
             RegionResourceProp _Entry;

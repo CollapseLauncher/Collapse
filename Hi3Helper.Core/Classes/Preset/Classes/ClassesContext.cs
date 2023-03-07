@@ -24,7 +24,7 @@ namespace Hi3Helper
     internal partial class MetadataContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(Stamp))]
-    internal partial class StampContext : JsonSerializerContext { }
+    public partial class StampContext : JsonSerializerContext { }
 
     [JsonSerializable(typeof(BHI3LInfo))]
     public partial class BHI3LInfoContext : JsonSerializerContext { }

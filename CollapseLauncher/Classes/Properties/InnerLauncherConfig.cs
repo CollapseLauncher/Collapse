@@ -1,6 +1,7 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper;
+using Hi3Helper.Http;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using ICSharpCode.SharpZipLib.Core;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
@@ -12,9 +13,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
@@ -146,20 +150,20 @@ namespace CollapseLauncher
                 AppPushIgnoreMsgIds = NotificationData.AppPushIgnoreMsgIds,
                 RegionPushIgnoreMsgIds = NotificationData.RegionPushIgnoreMsgIds
             };
-            File.WriteAllText(LauncherConfig.AppNotifIgnoreFile,
+            File.WriteAllText(AppNotifIgnoreFile,
                 JsonSerializer.Serialize(LocalNotificationData, typeof(NotificationPush), NotificationPushContext.Default));
         }
 
         public static void LoadLocalNotificationData()
         {
-            if (!File.Exists(LauncherConfig.AppNotifIgnoreFile))
-                File.WriteAllText(LauncherConfig.AppNotifIgnoreFile,
+            if (!File.Exists(AppNotifIgnoreFile))
+                File.WriteAllText(AppNotifIgnoreFile,
                     JsonSerializer.Serialize(new NotificationPush
                     { AppPushIgnoreMsgIds = new List<int>(), RegionPushIgnoreMsgIds = new List<int>() },
                     typeof(NotificationPush),
                     NotificationPushContext.Default));
 
-            string Data = File.ReadAllText(LauncherConfig.AppNotifIgnoreFile);
+            string Data = File.ReadAllText(AppNotifIgnoreFile);
             NotificationPush LocalNotificationData = (NotificationPush)JsonSerializer.Deserialize(Data, typeof(NotificationPush), NotificationPushContext.Default);
             if (NotificationData != null)
             {
@@ -167,6 +171,51 @@ namespace CollapseLauncher
                 NotificationData.RegionPushIgnoreMsgIds = LocalNotificationData.RegionPushIgnoreMsgIds;
             }
             NotificationData.EliminatePushList();
+        }
+
+        public static async Task<bool> CheckForNewConfigV2()
+        {
+            Stamp ConfigStamp = null;
+
+            try
+            {
+                using (Http _http = new Http())
+                using (Stream s = new MemoryStream())
+                {
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
+                    s.Position = 0;
+                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), StampContext.Default);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while checking for new metadata!\r\n{ex}", LogType.Error, true);
+                return false;
+            }
+
+            return ConfigV2LastUpdate != ConfigStamp?.LastUpdated;
+        }
+
+        public static async Task DownloadConfigV2Files(bool Stamp, bool Content)
+        {
+            using (Http _httpClient = new Http())
+            {
+                if (!Directory.Exists(AppGameConfigMetadataFolder))
+                    Directory.CreateDirectory(AppGameConfigMetadataFolder);
+
+                if (Stamp) await GetConfigV2Content(_httpClient, "stamp", AppGameConfigV2StampPath);
+                if (Content) await GetConfigV2Content(_httpClient, "config", AppGameConfigV2MetadataPath);
+            }
+        }
+
+        private static async Task GetConfigV2Content(Http _httpClient, string prefix, string output)
+        {
+            string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + prefix);
+
+            using (FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write))
+            {
+                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, URL, default).ConfigureAwait(false);
+            }
         }
     }
 }

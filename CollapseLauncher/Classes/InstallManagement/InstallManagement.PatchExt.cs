@@ -46,25 +46,39 @@ namespace CollapseLauncher
 
             string RepoListURL = string.Format(AppGameRepoIndexURLPrefix, SourceProfile.ProfileName);
 
-            using (MemoryStream buffer = new MemoryStream())
+            try
             {
-                _httpClient.DownloadProgress += FetchIngredientsAPI_Progress;
-                await _httpClient.Download(RepoListURL, buffer, null, null, Token);
-                _httpClient.DownloadProgress -= FetchIngredientsAPI_Progress;
-                buffer.Position = 0;
-                RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
+                FallbackCDNUtil.DownloadProgress += FetchIngredientsAPI_Progress;
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, buffer, RepoListURL, Token);
+                    buffer.Position = 0;
+                    RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
+                }
+            }
+            catch { throw; }
+            finally
+            {
+                FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;
             }
 
             RepoRemoteURL = RepoList[GameVersionString] + '/';
             IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, PatchProp.SourceVer);
 
-            using (MemoryStream buffer = new MemoryStream())
+            try
             {
-                _httpClient.DownloadProgress += FetchIngredientsAPI_Progress;
-                await _httpClient.Download(IndexRemoteURL, buffer, null, null, Token);
-                _httpClient.DownloadProgress -= FetchIngredientsAPI_Progress;
-                buffer.Position = 0;
-                SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                FallbackCDNUtil.DownloadProgress += FetchIngredientsAPI_Progress;
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, buffer, IndexRemoteURL, Token);
+                    buffer.Position = 0;
+                    SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                }
+            }
+            catch { throw; }
+            finally
+            {
+                FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;
             }
 
             SourceFileManifest = BuildManifest(SourceFileRemote);

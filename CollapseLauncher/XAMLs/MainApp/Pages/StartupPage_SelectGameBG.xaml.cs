@@ -103,6 +103,8 @@ namespace CollapseLauncher.Pages
 
                 _gameHomepageLink = config.ZoneURL;
                 _gameDescription = config.ZoneDescription;
+
+                // TODO: Use FallbackCDNUtil to get the sprites
                 _gamePosterPath = await GetCachedSprites(config.ZonePosterURL);
                 _gameLogoPath = await GetCachedSprites(config.ZoneLogoURL);
 

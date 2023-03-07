@@ -95,10 +95,11 @@ namespace CollapseLauncher.Dialogs
             using (Http _client = new Http())
             using (MemoryStream s = new MemoryStream())
             {
-                await _client.Download(repoListURL, s, null, null, tokenSource.Token);
+                await FallbackCDNUtil.DownloadCDNFallbackContent(_client, s, repoListURL, tokenSource.Token);
+                s.Position = 0;
                 Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
                 repoURL = repoList[GameAPIProp.data.game.latest.version] + '/';
-                repoIndexURL = string.Format(AppGameRepairIndexURLPrefix, GamePreset.ProfileName, GameAPIProp.data.game.latest.version);
+                repoIndexURL = GetCurrentCDN().URLPrefix + string.Format(AppGameRepairIndexURLPrefix, GamePreset.ProfileName, GameAPIProp.data.game.latest.version);
             }
         }
 
