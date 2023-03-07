@@ -1,5 +1,11 @@
 ﻿namespace CollapseLauncher
 {
+    internal enum GameVendorType
+    {
+        miHoYo,
+        Cognosphere
+    }
+
     internal enum RepairAssetType
     {
         General,

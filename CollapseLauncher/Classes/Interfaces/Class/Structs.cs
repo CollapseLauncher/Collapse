@@ -1,5 +1,6 @@
 ﻿using Hi3Helper.Data;
 using System;
+using System.IO;
 
 namespace CollapseLauncher
 {
@@ -28,6 +29,32 @@ namespace CollapseLauncher
         public bool IsRunning;
 
         public bool IsIncludePerFileIndicator;
+    }
+
+    internal struct GameVendorProp
+    {
+        #nullable enable
+        public GameVendorProp(string gamePath, string execName)
+        {
+            // Concat the vendor app info file and return if it doesn't exist
+            string infoVendorPath = Path.Combine(gamePath, $"{execName}_Data\\app.info");
+            if (!File.Exists(infoVendorPath)) return;
+
+            // If does, then process the file
+            string[] infoEntries = File.ReadAllLines(infoVendorPath);
+            if (infoEntries.Length < 2) return;
+
+            // Try parse the first line. If parsing fail, then return
+            if (!Enum.TryParse(infoEntries[0], out GameVendorType _VendorType)) return;
+            
+            // Assign the values
+            VendorType = _VendorType;
+            GameName = infoEntries[1];
+        }
+
+        public GameVendorType? VendorType { get; set; }
+        public string? GameName { get; set; }
+        #nullable disable
     }
 
     public struct GameVersion

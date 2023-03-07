@@ -61,6 +61,7 @@ namespace CollapseLauncher.GameVersioning
         public PresetConfigV2 GamePreset { get; set; }
         public RegionResourceProp GameAPIProp { get; set; }
         public GameType GameType => GamePreset.GameType;
+        public GameVendorProp VendorTypeProp { get; private set; }
         public string GameDirPath
         {
             get => Path.GetDirectoryName(GameIniVersionPath);
@@ -222,6 +223,9 @@ namespace CollapseLauncher.GameVersioning
             // Initialize INIs
             InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
             InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
+
+            // Initialize the GameVendorType
+            VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName));
         }
 
         private string TryFindGamePathFromExecutableAndConfig(string path)

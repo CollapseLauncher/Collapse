@@ -34,6 +34,11 @@ namespace CollapseLauncher.Interfaces
         GameType GameType { get; }
 
         /// <summary>
+        /// Returns the game vendor type property and the game name based on <c>app.info</c> file
+        /// </summary>
+        GameVendorProp VendorTypeProp { get; }
+
+        /// <summary>
         /// Returns the current version of the game as provided by miHoYo's API.
         /// </summary>
         /// <returns>The current version of the game</returns>
