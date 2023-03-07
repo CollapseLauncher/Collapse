@@ -1228,6 +1228,7 @@ namespace CollapseLauncher.Pages
                     }
                     catch { }
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                    PageStatics._GameVersion.Reinitialize();
                     break;
                 default:
                     break;
