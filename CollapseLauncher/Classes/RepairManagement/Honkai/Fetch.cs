@@ -1,15 +1,17 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.CacheParser;
 using Hi3Helper.EncTool.KianaManifest;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region.Honkai;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,8 +36,16 @@ namespace CollapseLauncher
             Http _httpClient = new Http(true, 5, 1000, _userAgent);
             try
             {
-                // Subscribe the fetching progress
+                // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
                 _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
+                _cacheUtil.ProgressChanged += _innerObject_ProgressAdapter;
+                _cacheUtil.StatusChanged += _innerObject_StatusAdapter;
+
+                // Region: VideoIndex via External -> _cacheUtil: Data Fetch
+                // Fetch video index and also fetch the gateway URL
+                (string, string) gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
+                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
+                Console.WriteLine(_gameRepoURL);
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
@@ -62,18 +72,87 @@ namespace CollapseLauncher
             catch { throw; }
             finally
             {
-                // Unsubscribe the fetching progress and dispose it
+                // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
                 _httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+                _cacheUtil.ProgressChanged -= _innerObject_ProgressAdapter;
+                _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 _httpClient.Dispose();
             }
         }
 
+        #region VideoIndex via External -> _cacheUtil: Data Fetch
+        private async Task<(string, string)> FetchVideoAndGateway(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        {
+            // Fetch data cache file only and get the gateway
+            (List<CacheAsset>, string, string) cacheProperty = await _cacheUtil.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
+
+            // Find the cache asset. If null, then return
+            CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
+
+            // Deserialize and build video index into asset index
+            await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, token);
+
+            // Return the gateway URL including asset bundle and asset cache
+            return (cacheProperty.Item2, cacheProperty.Item3);
+        }
+
+        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        {
+            // Get the remote stream and use CacheStream
+            using (Stream memoryStream = new MemoryStream())
+            {
+                // Download the cache and store it to MemoryStream
+                await _httpClient.Download(cacheAsset.ConcatURL, memoryStream, null, null, token);
+                memoryStream.Position = 0;
+
+                // Use CacheStream to decrypt and read it as Stream
+                using (CacheStream cacheStream = new CacheStream(memoryStream))
+                {
+                    // Enumerate and iterate the metadata to asset index
+                    BuildAndEnumerateVideoVersioningFile(CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, assetBundleURL);
+                }
+            }
+        }
+
+        private void BuildAndEnumerateVideoVersioningFile(IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, string assetBundleURL)
+        {
+            // Get the base URL
+            string baseURL = "http://" + assetBundleURL + "/Video/";
+
+            // Build video versioning file
+            using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_videoBaseLocalPath), "Version.txt"), false))
+            {
+                // Iterate the metadata to be converted into asset index
+                foreach (CGMetadata metadata in enumEntry)
+                {
+                    if (metadata.CgPath.Contains("5.9_Birthday_Pardofelis_9503119860BF9407"))
+                    {
+                        Console.WriteLine();
+                    }
+
+                    // Only add videos with size
+                    if (metadata.FileSize != 0)
+                    {
+                        string name = metadata.CgPath + ".usm";
+                        assetIndex.Add(new FilePropertiesRemote
+                        {
+                            N = Path.Combine(_videoBaseLocalPath, name),
+                            RN = baseURL + name,
+                            S = metadata.FileSize,
+                            FT = FileType.Video
+                        });
+
+                        // Append the versioning list
+                        sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region AudioIndex
         private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            // Assign Base Asset URL
-            _assetBaseURL = await GetAssetBaseURL(_httpClient, token);
-
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
             string manifestRemotePath = string.Format(_audioBaseRemotePath + "manifest.m", $"{_gameVersion.Major}_{_gameVersion.Minor}");
@@ -180,55 +259,6 @@ namespace CollapseLauncher
             return keyTool.GetMasterKey();
         }
 
-        private string GetPreferredGatewayURL(Dispatcher dispatcher, string preferredGateway)
-        {
-            // If preferredGateway == null, then return the first dispatch_url
-            if (preferredGateway == null)
-            {
-                return BuildGatewayURL(dispatcher.region_list[0].dispatch_url);
-            }
-
-            // Find the preferred region_list and return the dispatcher_url if found or null if doesn't
-            return BuildGatewayURL(dispatcher.region_list.Where(x => x.name == preferredGateway).FirstOrDefault().dispatch_url);
-        }
-
-        private async Task<string> GetAssetBaseURL(Http _httpClient, CancellationToken token)
-        {
-            // Fetch dispatcher
-            Dispatcher dispatcher = null;
-            Exception lastException = null;
-
-            // Try fetch disppatcher by iterating the base URL
-            foreach (string baseURL in _gamePreset.GameDispatchArrayURL)
-            {
-                try
-                {
-                    // Try assign dispatcher
-                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL), token);
-                }
-                catch (Exception ex)
-                {
-                    lastException = ex;
-                }
-
-                // If no exception being thrown, then break
-                if (lastException == null)
-                {
-                    break;
-                }
-            }
-
-            // If last exception wasn't null, then throw
-            if (lastException != null) throw lastException;
-
-            // Get gatewayURl and fetch the gateway
-            string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
-            Gateway gateway = await FetchGateway(_httpClient, gatewayURL, token);
-
-            // Return the first external resource list URL
-            return $"http://{gateway.ex_resource_url_list[0]}/";
-        }
-
         private async Task<Manifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote, CancellationToken token)
         {
             // Always check if the folder is exist
@@ -244,74 +274,6 @@ namespace CollapseLauncher
             // Get the XML key and deserialize the manifest
             string xmlKey = GetXmlConfigKey();
             return new Manifest(manifestLocal, xmlKey, _gameVersion.VersionArrayAudioManifest);
-        }
-
-        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL, CancellationToken token)
-        {
-            // Get the dispatcher properties
-            MemoryStream stream = new MemoryStream();
-
-            try
-            {
-                // Start downloading the dispatcher
-                await _httpClient.Download(baseURL, stream, null, null, token);
-                stream.Position = 0;
-
-                LogWriteLine($"Cache Update connected to dispatcher endpoint: {baseURL}", LogType.Default, true);
-
-                // Try deserialize dispatcher
-                return (Dispatcher)JsonSerializer.Deserialize(stream, typeof(Dispatcher), DispatcherContext.Default);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                // Dispose the stream
-                stream.Dispose();
-            }
-        }
-
-        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL, CancellationToken token)
-        {
-            // Get the gateway properties
-            MemoryStream stream = new MemoryStream();
-
-            try
-            {
-                // Start downloading the gateway
-                await _httpClient.Download(baseURL, stream, null, null, token);
-                stream.Position = 0;
-
-                LogWriteLine($"Cache Update connected to gateway endpoint: {baseURL}", LogType.Default, true);
-
-                // Try deserialize gateway
-                return (Gateway)JsonSerializer.Deserialize(stream, typeof(Gateway), GatewayContext.Default);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                // Unsubscribe progress and dispose stream
-                stream.Dispose();
-            }
-        }
-
-        private string BuildDispatcherURL(string baseDispatcherURL)
-        {
-            // Format the Dispatcher URL based on template
-            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
-            return string.Format($"{baseDispatcherURL}{_gamePreset.GameDispatchURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
-        }
-
-        private string BuildGatewayURL(string baseGatewayURL)
-        {
-            // Format the Gateway URL based on template
-            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
-            return string.Format($"{baseGatewayURL}{_gamePreset.GameGatewayURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
         #endregion
 

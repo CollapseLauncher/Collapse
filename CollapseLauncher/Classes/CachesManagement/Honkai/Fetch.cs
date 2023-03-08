@@ -104,10 +104,10 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
-            Gateway gateway = await FetchGateway(_httpClient, gatewayURL, token);
+            _gameGateway = await FetchGateway(_httpClient, gatewayURL, token);
 
             // Set the Game Repo URL
-            _gameRepoURL = BuildAssetBundleURL(gateway);
+            _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
         private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL, CancellationToken token)
@@ -313,6 +313,21 @@ namespace CollapseLauncher
 
             // If none, then pass it as true (non-regional string)
             return true;
+        }
+
+        public async Task<(List<CacheAsset>, string, string)> GetCacheAssetList(Http _httpClient, CacheAssetType type, CancellationToken token)
+        {
+            // Initialize asset index for the return
+            List<CacheAsset> returnAsset = new List<CacheAsset>();
+
+            // Build _gameRepoURL from loading Dispatcher and Gateway
+            await BuildGameRepoURL(_httpClient, token);
+
+            // Fetch the progress
+            _ = await FetchByType(type, _httpClient, returnAsset, token);
+
+            // Return the list and base asset bundle repo URL
+            return (returnAsset, _gameGateway.ex_resource_url_list.FirstOrDefault(), BuildAssetBundleURL(_gameGateway));
         }
     }
 }

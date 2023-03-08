@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.KianaManifest;
 using Hi3Helper.Preset;
@@ -17,6 +18,7 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
+        private HonkaiCache _cacheUtil = (PageStatics._GameCache as ICacheBase<HonkaiCache>).AsBaseType();
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private string _assetBaseURL { get; set; }
         private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
@@ -30,13 +32,14 @@ namespace CollapseLauncher
         private protected string _audioBaseRemotePath { get => _assetBaseURL + "Audio/{0}/Windows/"; }
         private protected string _audioPatchBaseLocalPath { get => _audioBaseLocalPath + "Patch/"; }
         private protected string _audioPatchBaseRemotePath { get => _audioBaseRemotePath + "Patch/"; }
+        private protected string _videoBaseLocalPath { get => _assetBasePath + "Video/"; }
         #endregion
 
         public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
             : base(parentUI, null, gameRepoURL, gamePreset)
         {
             // Initialize audio asset language
-            string audioLanguage = (Statics.PageStatics._GameSettings as HonkaiSettings).SettingsAudio.CVLanguage;
+            string audioLanguage = (PageStatics._GameSettings as HonkaiSettings).SettingsAudio.CVLanguage;
             switch (audioLanguage)
             {
                 case "Chinese(PRC)":

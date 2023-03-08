@@ -43,6 +43,9 @@ namespace CollapseLauncher.Interfaces
         protected long _progressPerFileSize;
 
         #region ProgressEventHandlers - Fetch
+        protected void _innerObject_ProgressAdapter(object sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
+        protected void _innerObject_StatusAdapter(object sender, TotalPerfileStatus e) => StatusChanged?.Invoke(sender, e);
+
         protected virtual void _httpClient_FetchAssetProgress(object sender, DownloadEvent e)
         {
             // Update fetch status

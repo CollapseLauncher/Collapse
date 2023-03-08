@@ -47,6 +47,7 @@ namespace CollapseLauncher
                     {
                         FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient, token),
                         FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient, token),
+                        FileType.Video => RepairAssetTypeVideo(asset, _httpClient, token),
                         _ => RepairAssetTypeGeneric(asset, _httpClient, token)
                     }).ConfigureAwait(false);
 
@@ -67,6 +68,10 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
             }
         }
+
+        #region VideoRepair
+        private async Task RepairAssetTypeVideo(FilePropertiesRemote asset, Http _httpClient, CancellationToken token) => await RepairAssetTypeGeneric(asset, _httpClient, token, asset.RN);
+        #endregion
 
         #region AudioRepairOrPatch
         private async Task RepairOrPatchTypeAudio(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)

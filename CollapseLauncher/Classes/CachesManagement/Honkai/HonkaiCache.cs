@@ -2,22 +2,22 @@
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.Region.Honkai;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    internal partial class HonkaiCache : ProgressBase<CacheAssetType, CacheAsset>, ICache
+    internal partial class HonkaiCache : ProgressBase<CacheAssetType, CacheAsset>, ICache, ICacheBase<HonkaiCache>
     {
         #region Properties
         private string _cacheRegionalCheckName = "sprite";
         private string _gameLang { get; set; }
-        private byte[] _gameSalt;
+        private byte[] _gameSalt { get; set; }
+        private Gateway _gameGateway { get; set; }
         private List<CacheAsset> _updateAssetIndex { get; set; }
         #endregion
 
@@ -94,6 +94,8 @@ namespace CollapseLauncher
 
             return updateTaskSuccess;
         }
+
+        public HonkaiCache AsBaseType() => this;
 
         public void CancelRoutine()
         {

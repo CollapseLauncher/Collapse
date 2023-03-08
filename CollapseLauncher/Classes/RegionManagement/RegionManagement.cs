@@ -191,20 +191,20 @@ namespace CollapseLauncher
                 case GameType.Honkai:
                     PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new HonkaiSettings(preset);
-                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
                     PageStatics._GameCache = new HonkaiCache(this, preset);
+                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
                     break;
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new GenshinSettings(preset);
-                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
                     PageStatics._GameCache = null;
+                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
                     break;
                 case GameType.StarRail:
                     PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new StarRailSettings(preset);
-                    PageStatics._GameRepair = null;
                     PageStatics._GameCache = null;
+                    PageStatics._GameRepair = null;
                     break;
             }
         }

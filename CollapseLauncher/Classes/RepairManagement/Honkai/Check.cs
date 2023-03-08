@@ -1,5 +1,4 @@
-﻿using Force.Crc32;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -7,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -54,6 +52,9 @@ namespace CollapseLauncher
                             case FileType.Audio:
                                 CheckAssetTypeAudio(asset, brokenAssetIndex, token);
                                 break;
+                            case FileType.Video:
+                                CheckAssetTypeVideo(asset, brokenAssetIndex, token);
+                                break;
                             default:
                                 CheckAssetTypeGeneric(asset, brokenAssetIndex, token);
                                 break;
@@ -70,6 +71,45 @@ namespace CollapseLauncher
             assetIndex.Clear();
             assetIndex.AddRange(brokenAssetIndex);
         }
+
+        #region VideoCheck
+        private void CheckAssetTypeVideo(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        {
+            // Increment current total count
+            _progressTotalCountCurrent++;
+
+            // Increment current Total Size
+            _progressTotalSizeCurrent += asset.S;
+
+            // Get file path
+            string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            FileInfo file = new FileInfo(filePath);
+
+            // If file doesn't exist
+            if (!file.Exists)
+            {
+                // Increment progress count and size
+                _progressTotalSizeFound += asset.S;
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.N),
+                        RepairAssetType.Video,
+                        Path.GetDirectoryName(asset.N),
+                        asset.S,
+                        null,
+                        asset.CRCArray
+                    )
+                ));
+
+                // Add asset for missing/unmatched size file
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
+            }
+        }
+        #endregion
 
         #region AudioCheck
         private void CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
