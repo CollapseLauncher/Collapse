@@ -4,7 +4,7 @@
   "Author": "despenser08",
 
   "_StartupPage": {
-    "PageTitle": "첫 번째 시작 페이지",
+    "PageTitle": "첫 시작 페이지",
     "Title1": "Collapse Launcher",
     "Title2": "에 오신 것을 환영해요",
     "Subtitle1": "안녕하세요!",
@@ -71,7 +71,7 @@
     "RegionLoadingTitle": "서버 로딩 중",
     "RegionLoadingAPITitle1": "로딩 중",
     "RegionLoadingAPITitle2": "런처 API",
-    "RegionLoadingSubtitleTimeOut": "{0} 로딩 시간이 초과되었어요 (> {1}초). 다시 시도하는 중...",
+    "RegionLoadingSubtitleTimeOut": "{0} 서버 로딩 시간이 초과되었어요 (> {1}초). 다시 시도하는 중...",
     "RegionLoadingSubtitleTooLong": "다시 시도하는 데 예상보다 시간이 더 걸리고 있어요. 연결 상태가 안정적인지 확인해 주세요!",
     "NavCtrlTitleSettings": "앱 설정",
     "NotifNeverAsk": "다시 표시하지 않기"
@@ -130,7 +130,7 @@
     "ListCol6": "R.CRC",
     "Status1": "게임 파일 무결성을 검사하려면 \"파일 확인\"을 클릭해 주세요.",
     "Status2": "인덱스를 로드하는 중...",
-    "Status3": "{0}개의 파일이 손상되었을 수 있어요 (총 {1}개). '게임 복구'을 클릭하여 복구 작업을 시작해 주세요.",
+    "Status3": "{0}개의 파일이 손상되었을 수 있어요 (총 {1}개). '게임 복구'를 클릭하여 복구 작업을 시작해 주세요.",
     "Status4": "손상된 파일이 검색되지 않았어요!",
     "Status5": "Blk 확인 중: {0}",
     "Status6": "확인 중: {0}",
@@ -145,8 +145,8 @@
     "PerProgressSubtitle1": "기다리는 중...",
     "PerProgressSubtitle2": "진행률: {0}/{1}",
     "PerProgressSubtitle3": "불러오는 중: {0}/초",
-    "PerProgressSubtitle4": "패치 적용: {0}/{1}",
-    "PerProgressSubtitle5": "패치 적용: {0}/초",
+    "PerProgressSubtitle4": "패치 가져오는 중: {0}/{1}",
+    "PerProgressSubtitle5": "패치 적용 중: {0}/초",
     "TotalProgressTitle1": "총 진행률",
     "RepairBtn1": "파일 복구",
     "RepairBtn2": "파일 확인",
@@ -192,7 +192,7 @@
     "Graphics_Title": "그래픽 설정",
     "Graphics_ResolutionPanel": "게임 해상도",
     "Graphics_Fullscreen": "전체 화면",
-    "Graphics_ExclusiveFullscreen": "전용 전체 화면 사용",
+    "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
     "Graphics_ResSelectPlaceholder": "선택",
     "Graphics_ResCustom": "사용자 지정 해상도 사용",
     "Graphics_ResCustomW": "너비",
@@ -221,7 +221,7 @@
 
     "Graphics_APHO2Panel": "붕괴후서 제2장 & 새로운 챕터 그래픽 설정",
     "Graphics_APHO2GI": "글로벌 일루미네이션",
-    "Graphics_APHO2VL": "체적 조명",
+    "Graphics_APHO2VL": "볼륨 조명",
     "Graphics_APHO2AO": "앰비언트 오클루전",
     "Graphics_APHO2LOD": "세부 수준",
 
@@ -230,11 +230,11 @@
     "SpecMedium": "중간",
     "SpecHigh": "높음",
     "SpecVeryHigh": "매우 높음",
-    "SpecMaximum": "최고",
+    "SpecMaximum": "최상",
 
     "Audio_Title": "오디오 설정",
     "Audio_Master": "마스터 볼륨",
-    "Audio_BGM": "BGM 볼륨",
+    "Audio_BGM": "음악 볼륨",
     "Audio_SFX": "효과음 볼륨",
     "Audio_VOLang": "음성 언어",
     "Audio_VOLang1": "중국어",
@@ -270,8 +270,8 @@
     "CustomArgs_Title": "사용자 지정 시작 인수 (고급)",
     "CustomArgs_Subtitle": "시작 인수",
     "CustomArgs_Footer1": "시작 인수에 대한 자세한 내용은",
-    "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를 참조해",
-    "CustomArgs_Footer3": "더 많은 인수를 확인하세요."
+    "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를",
+    "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요."
   },
 
   "_SettingsPage": {
@@ -425,7 +425,7 @@
 
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "경고: 델타 패치 업데이트가 감지되었어요!",
-    "DeltaPatchDetectedSubtitle": "게임을 {0}에서 {1}(으)로 업데이트하는 데 델타 패치가 사용돼요.\r\n게임 내 일부 파일은 평소와 같이 다운로드해야 할 수도 있어요.\r\n\r\n계속하시겠어요?",
+    "DeltaPatchDetectedSubtitle": "게임을 {0}에서 {1}(으)로 업데이트하는 데 델타 패치가 사용돼요.\r\n일부 파일은 게임 내에서 같이 다운로드해야 할 수도 있어요.\r\n\r\n계속하시겠어요?",
     "DeltaPatchPrevFailedTitle": "이전 델타 패치가 실패/완료되지 않았어요!",
     "DeltaPatchPrevFailedSubtitle": "이전 델타 패치를 적용하지 못했어요. 다시 다운로드하지 않도록 게임을 복원하시겠어요?",
     "GameConversionPrevFailedTitle": "이전 게임 변환이 실패/완료되지 않았어요!",
@@ -435,7 +435,7 @@
     "LocateInstallTitle": "설치 폴더 지정",
     "LocateInstallSubtitle": "게임을 설치하기 전에 게임 위치를 지정하시겠어요?",
     "UnauthorizedDirTitle": "권한이 없는 위치가 선택됨",
-    "UnauthorizedDirSubtitle": "권한이 없는 위치를 선택했어요:\n\n{0}\n\n다른 위치를 선택해 주세요!",
+    "UnauthorizedDirSubtitle": "쓰기 권한이 없는 위치를 선택했어요:\n\n{0}\n\n다른 위치를 선택해 주세요!",
     "ChooseAudioLangSelectPlaceholder": "오디오 언어 선택",
     "ChooseAudioLangTitle": "오디오 언어 선택",
     "ChooseAudioLangSubtitle": "게임을 설치하기 전에 사용할 오디오 언어를 선택해 주세요 (기본값: 일본어):",
@@ -447,13 +447,13 @@
     "RepairCompletedSubtitle": "{0}개의 파일이 복구되었어요.",
     "RepairCompletedSubtitleNoBroken": "손상된 파일을 찾을 수 없어요.",
     "ExtremeGraphicsSettingsWarnTitle": "매우 높은 설정 프리셋이 선택되었어요!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "설정 프리셋을 매우 높음으로 설정할려고 해요!\r\n매우 높음 설정 프리셋은 기본적으로 MSAA가 활성화되면 렌더 스케일이 2배가 되며 전혀 최적화되지 않았습니다! (NASA의 슈퍼컴퓨터를 가지고 있지 않다면 말이죠).\r\n\r\n이 설정을 사용하시겠어요?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "설정 프리셋을 매우 높음으로 설정할려고 해요!\r\n매우 높음 설정 프리셋은 기본적으로 MSAA가 활성화되면 렌더 스케일이 2배가 되며 전혀 최적화되어있지 않아요! (NASA의 슈퍼컴퓨터를 가지고 있지 않다면 말이죠).\r\n\r\n이 설정을 사용하시겠어요?",
     "ExistingInstallTitle": "기존 설치가 감지되었어요!",
     "ExistingInstallSubtitle": "게임이 다음 위치에 이미 설치되어 있어요:\r\n\r\n{0}\r\n\r\n게임을 Collapse Launcher로 이동하는 것을 추천드려요.\r\n게임을 이동하더라도 공식 런처를 사용하여 게임을 시작할 수 있어요.\r\n\r\n계속하시겠어요?",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcher의 기존 설치가 감지되었어요!",
     "ExistingInstallBHI3LSubtitle": "게임이 다음 위치에 이미 설치되어 있어요:\r\n\r\n{0}\r\n\r\n게임을 Collapse Launcher로 이동하는 것을 추천드려요.\r\n게임을 이동하더라도 BetterHi3Launcher를 사용하여 게임을 시작할 수 있어요.\r\n\r\n계속하시겠어요?",
     "ExistingInstallSteamTitle": "Steam의 기존 설치가 감지되었어요!",
-    "ExistingInstallSteamSubtitle": "게임이 다음 위치에 이미 스팀에 설치되어 있어요:\r\n\r\n{0}\r\n\r\n이 버전을 Non-Steam Global 버전으로 변환하시겠어요?\n참고: 변환을 시작하면 스팀 계정으로 더 이상 로그인할 수 없어요. miHoYo/HoYoverse 계정 로그인만 사용할 수 있어요.\r\n\r\n계속하시겠어요?",
+    "ExistingInstallSteamSubtitle": "게임이 이미 스팀의 다음 위치에 설치되어 있어요:\r\n\r\n{0}\r\n\r\n이 버전을 Non-Steam Global 버전으로 변환하시겠어요?\n참고: 변환을 시작하면 스팀 계정으로 더 이상 로그인할 수 없어요. miHoYo/HoYoverse 계정 로그인만 사용할 수 있어요.\r\n\r\n계속하시겠어요?",
     "SteamConvertNeedMigrateTitle": "폴더 이동 필요",
     "SteamConvertNeedMigrateSubtitle": "Collapse가 해당 디렉터리에 쓸 수 있는 권한이 없어 게임 설치 폴더를 다른 위치로 이동해야 해요.\nCollapseLauncher 게임 폴더로 위치를 이동하는 것을 추천드리지만 직접 위치를 선택할 수도 있어요.\n\nCollapseLauncher 게임 폴더로 이동하시겠어요?",
     "SteamConvertIntegrityDoneTitle": "무결성 검사 완료!",
@@ -539,7 +539,7 @@
     "CancelBtn": "변환 취소",
     "CancelMsgTitle": "변환을 취소하는 중...",
     "CancelMsgSubtitle1": "변환 작업를 취소하려고 해요. 모든 변환 진행률이 중단돼요.\r\n\r\n정말로 취소하시겠어요?",
-    "CancelMsgSubtitle2": "변환 작업를 취소하려고 하지만 게임이 {0}(으)로 변환되었어요. \"변환 후 무결성 검사\" 단계를 건너뛰어요.\r\n\r\n정말로 건너뛸까요?"
+    "CancelMsgSubtitle2": "변환 작업를 취소하려고 하지만 이미 게임이 {0}(으)로 변환되었어요. \"변환 후 무결성 검사\" 단계를 건너뛰어요.\r\n\r\n정말로 건너뛸까요?"
   },
 
   "_InstallMigrateSteam": {
@@ -547,7 +547,7 @@
     "Step1Title": "폴더 권한 확인",
     "Step1Subtitle": "폴더 사용 권한을 확인하는 중",
     "Step2Title": "게임 위치 이동",
-    "Step2Subtitle1": "이동 작업이 5초 후에 실행돼요. 이동 작업을 시작하려면 UAC 프롬프트를 수락해 주세요.",
+    "Step2Subtitle1": "이동 작업이 5초 후에 실행돼요. 이동 작업을 시작하려면 관리자 권한을 허용해 주세요.",
     "Step2Subtitle2": "실행 중...",
     "Step3Title": "변환을 위한 게임 데이터 무결성 비교",
     "Step3Subtitle": "참조 API를 불러오는 중...",
@@ -576,7 +576,7 @@
 
   "_InstallMigrate": {
     "PageTitle": "게임 이동",
-    "Step1Title": "작업이 5초 후에 실행돼요. 이동 작업을 시작하려면 UAC 프롬프트를 수락해 주세요.",
+    "Step1Title": "작업이 5초 후에 실행돼요. 이동 작업을 시작하려면 관리자 권한을 허용해 주세요.",
     "Step2Title": "이동이 진행 중이에요. 콘솔 창이 나타날 수 있어요. 작업이 완료될 때까지 기다려 주세요.",
     "Step3Title": "이동 작업이 완료되었어요! 잠시만 기다려주세요...",
     "StepCancelledTitle": "이동이 취소되었습니다! 잠시만 기다려주세요...",
