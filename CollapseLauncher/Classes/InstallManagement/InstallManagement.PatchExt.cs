@@ -56,7 +56,6 @@ namespace CollapseLauncher
                     RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(buffer, typeof(Dictionary<string, string>), D_StringString.Default);
                 }
             }
-            catch { throw; }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;
@@ -75,7 +74,6 @@ namespace CollapseLauncher
                     SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
                 }
             }
-            catch { throw; }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;

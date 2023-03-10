@@ -61,7 +61,6 @@ namespace CollapseLauncher
                     _progressTotalSize += count.Item2;
                 }
             }
-            catch { throw; }
             finally
             {
                 // Unsubscribe the event listener and dispose Http client
@@ -132,10 +131,6 @@ namespace CollapseLauncher
                 // Try deserialize dispatcher
                 return (Dispatcher)JsonSerializer.Deserialize(stream, typeof(Dispatcher), DispatcherContext.Default);
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 // Dispose the stream
@@ -164,10 +159,6 @@ namespace CollapseLauncher
 
                 // Try deserialize gateway
                 return (Gateway)JsonSerializer.Deserialize(stream, typeof(Gateway), GatewayContext.Default);
-            }
-            catch (Exception)
-            {
-                throw;
             }
             finally
             {
@@ -225,10 +216,6 @@ namespace CollapseLauncher
 
                 // Build the asset index and return the count and size of each type
                 return BuildAssetIndex(type, baseURL, xorStream, assetIndex);
-            }
-            catch (Exception)
-            {
-                throw;
             }
             finally
             {

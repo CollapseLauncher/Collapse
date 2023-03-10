@@ -69,7 +69,6 @@ namespace CollapseLauncher
                 // Try check audio manifest.m file and fetch it if it doesn't exist
                 await FetchAudioIndex(_httpClient, assetIndex, token);
             }
-            catch { throw; }
             finally
             {
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
@@ -315,7 +314,6 @@ namespace CollapseLauncher
                     assetIndex.AddRange((List<FilePropertiesRemote>)JsonSerializer.Deserialize(mfs, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default));
                 }
             }
-            catch { throw; }
             finally
             {
                 // Unsubscribe FallbackCDNUtil progress
@@ -327,7 +325,7 @@ namespace CollapseLauncher
         {
             // Set XMF Path and check if the XMF state is valid
             string xmfPath = Path.Combine(_gamePath, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
-            if (XMFUtility.CheckIfXMFVersionMatches(xmfPath, _gameVersion.VersionArrayXMF)) return;
+            // if (XMFUtility.CheckIfXMFVersionMatches(xmfPath, _gameVersion.VersionArrayXMF)) return;
 
             // Set XMF URL
             string urlXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";

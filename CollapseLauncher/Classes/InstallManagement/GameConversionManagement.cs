@@ -85,10 +85,6 @@ namespace CollapseLauncher
                     TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
                 }
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;

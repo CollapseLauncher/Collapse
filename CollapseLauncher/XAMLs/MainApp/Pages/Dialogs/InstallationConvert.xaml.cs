@@ -160,7 +160,6 @@ namespace CollapseLauncher.Dialogs
                     _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
                 }
             }
-            catch { throw; }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= Step2ProgressEvents;

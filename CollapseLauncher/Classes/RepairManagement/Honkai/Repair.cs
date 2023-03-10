@@ -57,7 +57,6 @@ namespace CollapseLauncher
 
                 return true;
             }
-            catch { throw; }
             finally
             {
                 // Dispose _httpClient
@@ -121,10 +120,6 @@ namespace CollapseLauncher
                 File.Move(outputFilePath, inputFilePath);
 
                 LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
-            }
-            catch (Exception)
-            {
-                throw;
             }
             finally
             {

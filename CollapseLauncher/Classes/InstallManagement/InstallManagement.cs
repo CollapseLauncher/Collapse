@@ -203,10 +203,6 @@ namespace CollapseLauncher
                     }
                 }
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 _httpClient.DownloadProgress -= DownloadStatusAdapter;

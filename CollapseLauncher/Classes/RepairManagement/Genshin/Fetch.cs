@@ -47,11 +47,6 @@ namespace CollapseLauncher
                 // Build persistent manifest
                 await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
             }
-            catch
-            {
-                // Rethrow the throw if this happen
-                throw;
-            }
             finally
             {
                 // Unsubscribe and dispose the _httpClient

@@ -43,7 +43,6 @@ namespace CollapseLauncher
 
                 return true;
             }
-            catch { throw; }
             finally
             {
                 // Dispose _httpClient
