@@ -54,9 +54,9 @@
 
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Unhandled Error",
-    "UnhandledSubtitle1": "An Unhandled Error has occured with an Exception Throw below:",
+    "UnhandledSubtitle1": "An Unhandled Error has occurred with an Exception Throw below:",
     "UnhandledTitle2": "Connection Issue",
-    "UnhandledSubtitle2": "Oops, seems like you've been disconnected from the internet~ Or is it something else?",
+    "UnhandledSubtitle2": "Oops, it seems like you've been disconnected from the Internet~ Or is it something else?",
     "UnhandledTitle3": "Game Crashed",
     "UnhandledSubtitle3": "The game has crashed with error details below:",
     "CopyClipboardBtn1": "Copy All to Clipboard",
@@ -66,7 +66,7 @@
 
   "_MainPage": {
     "PageTitle": "Root Page",
-    "RegionChangeConfirm": "Game region will be changed. Do you want to continue?",
+    "RegionChangeConfirm": "Game region will be changed. Do you wish to proceed?",
     "RegionChangeConfirmBtn": "Yes, change it!",
     "RegionChangeWarnTitle": "Warning:",
     "RegionChangeWarnExper1": "The game is currently in {0}.\r\nUse at your own risk!",
@@ -74,7 +74,7 @@
     "RegionLoadingAPITitle1": "Loading",
     "RegionLoadingAPITitle2": "Launcher API",
     "RegionLoadingSubtitleTimeOut": "Loading Region {0} has timed-out (> {1} seconds). Retrying...",
-    "RegionLoadingSubtitleTooLong": "Retry is taking a bit longer than expected. Please ensure that your connection is stable!",
+    "RegionLoadingSubtitleTooLong": "Retry is taking a bit longer than expected. Please ensure that your Internet connection is stable!",
     "NavCtrlTitleSettings": "App Settings",
     "NotifNeverAsk": "Never show again"
   },
@@ -152,7 +152,7 @@
     "TotalProgressTitle1": "Total Progress",
     "RepairBtn1": "Repair Files",
     "RepairBtn2": "Check Files",
-    "OverlayNotInstalledTitle": "You can't use this feature since the region isn't yet installed or needs to be updated!",
+    "OverlayNotInstalledTitle": "You can't use this feature since the selected region isn't installed yet or needs to be updated!",
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
     "OverlayGameRunningTitle": "Game is Currently Running!",
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!"
@@ -169,7 +169,7 @@
     "ListCol7": "Status",
     "Status1": "Click \"Check Update\" to check Caches for updates",
     "CachesStatusHeader1": "Total Progress",
-    "CachesStatusCancelled": "Operation has been cancelled!",
+    "CachesStatusCancelled": "Operation has been canceled!",
     "CachesStatusFetchingType": "Fetching Caches Type: {0}",
     "CachesStatusNeedUpdate": "{0} cache file(s) ({1} in size) can be updated. Click \"Update Caches\" to start updating them.",
     "CachesStatusUpToDate": "Caches are up-to-date!",
@@ -207,7 +207,7 @@
     "Graphics_APIPanel": "Graphics API",
     "Graphics_APIHelp1": "There are few API modes which are available for this game, including:",
     "Graphics_APIHelp2": "Note:",
-    "Graphics_APIHelp3": "Using DirectX 12 may cause crashes in some stages since the game wasn't natively compiled with DirectX 12 API",
+    "Graphics_APIHelp3": "Using DirectX 12 may cause crashes in some stages as the game wasn't natively compiled with DirectX 12 API",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "Graphics_Render": "Rendering Accuracy",
@@ -253,8 +253,8 @@
     "SettingsRegExportTitle": "Save Collapse Registry file to...",
     "SettingsRegImported": "Registry has been imported! (Please restart the launcher to take effect)",
     "SettingsRegImportTitle": "Choose Collapse Registry file...",
-    "SettingsRegErr1": "Path hasn't been choosen!",
-    "SettingsRegErr2": "The header of Collapse Registry is not valid!",
+    "SettingsRegErr1": "Path has not been choosen.",
+    "SettingsRegErr2": "The header of the Collapse Registry file is invalid!",
 
     "RegImportExport": "Registry Import/Export",
     "RegExportTitle": "Export",
@@ -262,7 +262,7 @@
     "RegImportTitle": "Import",
     "RegImportTooltip": "Import registry keys from a Collapse Registry file",
 
-    "OverlayNotInstalledTitle": "You can't use this feature since the region isn't yet installed or need to be updated!",
+    "OverlayNotInstalledTitle": "You cannot use this feature since the region isn't yet installed or need to be updated!",
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
     "OverlayGameRunningTitle": "Game is Currently Running!",
     "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
@@ -281,7 +281,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Show Console",
-    "Debug_MultipleInstance": "Allow running in Multiple Instance",
+    "Debug_MultipleInstance": "Allow running in Multiple Instance Mode",
 
     "Language": "App Language",
     "LanguageEntry": "{0} by {1}",
@@ -341,8 +341,8 @@
     "Disclaimer2": "by any means",
     "Disclaimer3": "and completely open-sourced. Any contribution is welcomed.",
 
-    "DiscordBtn1": "Join our Armada Discord",
-    "DiscordBtn2": "Visit Honkai Impact 3rd Discord",
+    "DiscordBtn1": "Join our Armada Discord!",
+    "DiscordBtn2": "Honkai Impact 3rd Discord",
 
     "AppChangeReleaseChannel": "Change to {0} Release Channel"
   },
@@ -402,7 +402,7 @@
     "Merging": "Merging",
     "Idle": "Idle",
     "Change": "Change",
-    "Cancelled": "Cancelled",
+    "Cancelled": "Canceled",
     "Extracting": "Extracting",
     "Converting": "Converting",
     "Patching": "Patching",
@@ -421,8 +421,8 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
 
-    "CDNDescription_Github": "The official (main) repository for the launcher",
-    "CDNDescription_Statically": "A mirror of the official (main) repository provided by Statically. Use this if you're living in a place where GitHub is inaccessible"
+    "CDNDescription_Github": "The official (main) repository for the launcher.",
+    "CDNDescription_Statically": "A mirror of the official (main) repository, provided by Statically. Use this if you're living in a place where GitHub is inaccessible."
   },
 
   "_Dialogs": {
@@ -444,7 +444,7 @@
     "AddtDownloadNeededTitle": "Additional Download is Needed",
     "AddtDownloadNeededSubtitle": "You must download at least {0} of additional/persistent files. You can also skip this process and download it in-game instead.\nWould you like to download it now?",
     "AddtDownloadCompletedTitle": "Additional Download Completed!",
-    "AddtDownloadCompletedSubtitle": "Additonal/Persistent Download has been completed! \nHappy gaming!",
+    "AddtDownloadCompletedSubtitle": "Additional/Persistent Download has been completed! \nHappy gaming!",
     "RepairCompletedTitle": "Repair Process Completed!",
     "RepairCompletedSubtitle": "{0} file(s) have been repaired.",
     "RepairCompletedSubtitleNoBroken": "No broken files found.",
@@ -495,11 +495,11 @@
     "CookbookLocateSubtitle6": "Note:\r\n",
     "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n",
     "PrivilegeMustRunTitle": "Collapse requires privilege elevation!",
-    "PrivilegeMustRunSubtitle": "Collapse requires an elevation to run under administrator privilege. Would you like to restart Collapse and run it as administrator?",
+    "PrivilegeMustRunSubtitle": "Collapse administrative privileges to function properly. Would you like to restart Collapse and run it as administrator?",
     "ReleaseChannelChangeTitle": "Change Release Channel",
-    "ReleaseChannelChangeSubtitle1": "You're about to change your release channel to:",
+    "ReleaseChannelChangeSubtitle1": "You are about to change your release channel to:",
     "ReleaseChannelChangeSubtitle2": "Note:",
-    "ReleaseChannelChangeSubtitle3": "This action might cause a irreversible changes or incompatibilities."
+    "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup."
   },
 
   "_InstallMgmt": {
@@ -570,7 +570,7 @@
     "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
     "InnerCheckFile": "Checking {0} File [{1}/{2}]: {3}",
     "InnerCheckBlock1": "Checking {0}: {1}",
-    "InnerCheckBlock2": "Checking {0]: {1} -> (0x{2} | S: 0x{3})",
+    "InnerCheckBlock2": "Checking {0}: {1} -> (0x{2} | S: 0x{3})",
     "InnerConvertFile1": "Converting {0} File [{1}/{2}]: {3}",
     "InnerConvertFile2": "Downloading {0} [{1}/{2}]: {3}",
     "InnerConvertFile3": "Downloading {0} [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
@@ -581,7 +581,7 @@
     "Step1Title": "Process will start in 5 seconds. Please accept the UAC dialog to start Migration process",
     "Step2Title": "Migration is in progress. You may see a console window pop up. Please wait until the process is completed",
     "Step3Title": "Migration process is done! Returning in a moment...",
-    "StepCancelledTitle": "Migration cancelled! Returning in a moment...",
+    "StepCancelledTitle": "Migration canceled! Returning in a moment...",
     "PageFooter1": "Please",
     "PageFooter2": "DO NOT",
     "PageFooter3": "switch to another page or close the launcher while the process is running"
@@ -619,7 +619,7 @@
 
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "Launcher Metadata Update is Available!",
-    "NotifMetadataUpdateSubtitle": "New metadata for the launcher is available! The launcher will update the launcher in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. The update will began shortly!",
+    "NotifMetadataUpdateSubtitle": "New metadata for the launcher is available! The launcher will update the launcher in order to ensure that the launcher can communicate with the miHoYo/HoYoverse servers. The update will begin shortly!",
     "NotifMetadataUpdateBtn": "Update Metadata",
     "NotifMetadataUpdateBtnCountdown": "Updating metadata in: {0}",
     "NotifMetadataUpdateBtnUpdating": "Updating Metadata, please wait...",
@@ -629,7 +629,7 @@
     "NotifFirstWelcomeBtn": "Visit GitHub Wiki",
 
     "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "You are currently using a PREVIEW build which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
+    "NotifPreviewBuildUsedSubtitle": "You are currently using a [PREVIEW] build, which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
     "NotifPreviewBuildUsedBtn": "Submit an Issue"
   }
 }
