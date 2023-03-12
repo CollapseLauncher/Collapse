@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;

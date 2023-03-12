@@ -791,7 +791,7 @@ namespace CollapseLauncher
                     StackPane.Children.Add(Text);
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
-                    
+
                     // Put 5 seconds delay before updating
                     int i = 5;
                     while (i != 0)

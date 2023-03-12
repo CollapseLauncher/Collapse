@@ -71,7 +71,8 @@ namespace CollapseLauncher
                 using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                 {
                     WindowsPrincipal principal = new WindowsPrincipal(identity);
-                    if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator)) {
+                    if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator))
+                    {
                         // Ideally this would be localized
                         LogWriteLine("You are not running as Administrator. The application will now attempt to restart as an Administrator to continue updating.", Hi3Helper.LogType.Warning, false);
                         // NOTE: Lines 79-81 are not required but have been left for debugging purposes, which could be enabled if there is

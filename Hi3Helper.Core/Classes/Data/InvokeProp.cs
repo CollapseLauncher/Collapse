@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using static Hi3Helper.Logger;
 
 namespace Hi3Helper
 {

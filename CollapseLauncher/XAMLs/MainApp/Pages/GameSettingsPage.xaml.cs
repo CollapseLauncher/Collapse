@@ -24,7 +24,7 @@ namespace CollapseLauncher.Pages
                 ApplyButton.Translation = Shadow32;
                 RegistryExport.Translation = Shadow32;
                 RegistryImport.Translation = Shadow32;
-                GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0,0,64);
+                GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
 
                 InheritApplyTextColor = ApplyText.Foreground;
             }

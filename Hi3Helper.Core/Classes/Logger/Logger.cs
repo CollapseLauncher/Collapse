@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Hi3Helper
+﻿namespace Hi3Helper
 {
 #nullable enable
     public static class Logger

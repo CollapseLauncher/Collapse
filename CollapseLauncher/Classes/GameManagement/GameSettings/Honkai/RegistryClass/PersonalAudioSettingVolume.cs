@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using System.Text.Json;
 using static CollapseLauncher.GameSettings.Statics;
-using static Hi3Helper.Data.ConverterTool;
 
 namespace CollapseLauncher.GameSettings.Honkai
 {

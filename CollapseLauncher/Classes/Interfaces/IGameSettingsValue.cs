@@ -1,7 +1,4 @@
-﻿using System;
-using Windows.Gaming.Input;
-
-namespace CollapseLauncher.Interfaces
+﻿namespace CollapseLauncher.Interfaces
 {
     internal interface IGameSettingsValue<T>
     {

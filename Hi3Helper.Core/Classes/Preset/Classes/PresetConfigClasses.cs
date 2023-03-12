@@ -1,5 +1,4 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
-using System;
 
 namespace Hi3Helper.Preset
 {

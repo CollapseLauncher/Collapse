@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace CollapseLauncher
+﻿namespace CollapseLauncher
 {
     internal enum RepairAssetType
     {

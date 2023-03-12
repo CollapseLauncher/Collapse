@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
-// Load YSDispatch from this namespace
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;

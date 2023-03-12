@@ -5,8 +5,8 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.Statics.PageStatics;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages

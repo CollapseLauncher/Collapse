@@ -1,11 +1,10 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Preset;
 using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;

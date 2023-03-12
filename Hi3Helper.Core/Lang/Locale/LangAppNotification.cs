@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Hi3Helper
+﻿namespace Hi3Helper
 {
     public partial class Locale
     {
@@ -21,7 +19,7 @@ namespace Hi3Helper
                 public string NotifFirstWelcomeTitle { get; set; } = LangFallback?._AppNotification.NotifFirstWelcomeTitle;
                 public string NotifFirstWelcomeSubtitle { get; set; } = LangFallback?._AppNotification.NotifFirstWelcomeSubtitle;
                 public string NotifFirstWelcomeBtn { get; set; } = LangFallback?._AppNotification.NotifFirstWelcomeBtn;
-                
+
                 public string NotifPreviewBuildUsedTitle { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedTitle;
                 public string NotifPreviewBuildUsedSubtitle { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedSubtitle;
                 public string NotifPreviewBuildUsedBtn { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedBtn;
