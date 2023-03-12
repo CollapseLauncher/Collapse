@@ -6,6 +6,7 @@ namespace CollapseLauncher
     {
         General,
         Block,
+        BlockUpdate,
         Audio,
         AudioUpdate,
         Video,

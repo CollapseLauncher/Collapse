@@ -2,15 +2,13 @@
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool.KianaManifest;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
@@ -18,9 +16,15 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
+        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private HonkaiCache _cacheUtil = (PageStatics._GameCache as ICacheBase<HonkaiCache>).AsBaseType();
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private string _assetBaseURL { get; set; }
+        private string _blockBaseURL { get => _assetBaseURL + $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"; }
+        private string _blockAsbBaseURL { get => _blockBaseURL + $"/asb"; }
+        private string _blockPatchBaseURL { get => _blockBaseURL + $"/patch"; }
+        private string _blockPatchDiffBaseURL { get => _blockPatchBaseURL + $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"; }
+        private string _blockPatchDiffPath { get => _assetBasePath + "Asb/pc/Patch"; }
         private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
         private readonly string[] _audioPersistentAssets = new string[] { "AUDIO_Ex_Dorm_CN", "AUDIO_Ex_Event_CN", "AUDIO_Ex_Rogue_CN" };
@@ -76,24 +80,8 @@ namespace CollapseLauncher
             // Step 1: Fetch asset indexes
             await Fetch(_assetIndex, _token.Token);
 
-            LogWriteLine($"Before adding generic files: {_progressTotalCount} assets {SummarizeSizeSimple(_progressTotalSize)} ({_progressTotalSize} bytes)");
-            long beforeCount = _progressTotalCount;
-            long beforeSize = _progressTotalSize;
-
             // Step 2: Calculate the total size and count of the files
             CountAssetIndex(_assetIndex);
-
-            long afterCount = _progressTotalCount - beforeCount;
-            long afterSize = _progressTotalSize - beforeSize;
-            LogWriteLine($"After adding generic files: {_progressTotalCount} assets {SummarizeSizeSimple(_progressTotalSize)} ({_progressTotalSize} bytes)");
-            LogWriteLine($"Adding size: {afterCount} assets {SummarizeSizeSimple(afterSize)} ({afterSize} bytes)");
-
-            CountAudioIndex(_assetIndex);
-
-            afterCount = _progressTotalCount - afterCount;
-            afterSize = _progressTotalSize - afterSize;
-            LogWriteLine($"After adding audio files: {_progressTotalCount} assets {SummarizeSizeSimple(_progressTotalSize)} ({_progressTotalSize} bytes)");
-            LogWriteLine($"Adding size: {afterCount} assets {SummarizeSizeSimple(afterSize)} ({afterSize} bytes)");
 
             // Step 3: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);

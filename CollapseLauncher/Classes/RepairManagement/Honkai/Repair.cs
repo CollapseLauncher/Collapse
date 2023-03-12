@@ -1,8 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool;
 using Hi3Helper.Http;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -111,7 +109,7 @@ namespace CollapseLauncher
             try
             {
                 // Subscribe patching progress and start applying patch
-                patchUtil.ProgressChanged += RepairTypeAudioActionPatching_ProgressChanged;
+                patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
                 await Task.Run(patchUtil.Apply).ConfigureAwait(false);
 
@@ -130,14 +128,14 @@ namespace CollapseLauncher
                     fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
                 }
-                patchUtil.ProgressChanged -= RepairTypeAudioActionPatching_ProgressChanged;
+                patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
             }
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
         }
 
-        private async void RepairTypeAudioActionPatching_ProgressChanged(object sender, BinaryPatchProgress e)
+        private async void RepairTypeActionPatching_ProgressChanged(object sender, BinaryPatchProgress e)
         {
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
             _progress.ProgressTotalSpeed = e.Speed;
@@ -173,7 +171,7 @@ namespace CollapseLauncher
                 true);
 
             // Set URL of the asset
-            string assetURL = customURL != null ? customURL : _gameRepoURL + '/' + asset.N;
+            string assetURL = customURL != null ? customURL : asset.RN;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
             if (asset.FT == FileType.Unused)
@@ -215,80 +213,103 @@ namespace CollapseLauncher
         #region BlocksRepair
         private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
-            // Iterate broken block and process the repair
-            foreach (XMFBlockList block in asset.BlkC)
-            {
-                // Initialize paths and URL of the block
-                string assetBasePath = _blockBasePath + block.BlockHash + ".wmv";
-                string assetURL = _gameRepoURL + '/' + assetBasePath;
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(assetBasePath));
-
-                // Run block repair task
-                if (block.BlockMissing)
-                {
-                    await RepairSingleBlock(assetPath, assetURL, block, _httpClient, token);
-                }
-                else
-                {
-                    await RepairChunkBlock(assetPath, assetURL, block, _httpClient, token);
-                }
-            }
-        }
-
-        private async Task RepairSingleBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient, CancellationToken token)
-        {
             // Increment total count current and update the status
             _progressTotalCountCurrent++;
-            // Set repair activity status
-            UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status9, block.BlockHash),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
-                true);
 
-            // Start asset download task
-            await RunDownloadTask(block.BlockSize, blockPath, blockURL, _httpClient, token);
+            // If file isn't patchable
+            if (!asset.IsPatchApplicable)
+            {
+                // Set repair activity status
+                UpdateRepairStatus(
+                    string.Format(Lang._GameRepairPage.Status9, asset.CRC),
+                    string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
+                    true);
+
+                // Initialize paths and URL of the block
+                string assetBasePath = asset.IsUseAlterName ? asset.AlterN : asset.N;
+                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(assetBasePath));
+                string assetURL = asset.IsUseAlterName ? asset.AlterRN : asset.N;
+
+                // Start asset download task
+                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
+            }
+            // If yes, then run patch routine
+            else
+            {
+                await RepairTypeBlocksActionPatching(asset, _httpClient, token);
+            }
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
         }
 
-        private async Task RepairChunkBlock(string blockPath, string blockURL, XMFBlockList block, Http _httpClient, CancellationToken token)
+        private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
-            // Initialize block file into FileStream
-            using (FileStream fs = new FileStream(blockPath, FileMode.Open, FileAccess.Write))
+            // Declare variables for patch file and URL and new file path
+            string patchURL = _blockPatchDiffBaseURL + "/" + asset.BlockPatchInfo.Value.PatchName + ".wmv";
+            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchName + ".wmv");
+            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AlterN));
+
+            // Set downloading patch status
+            UpdateRepairStatus(
+                string.Format(Lang._GameRepairPage.Status13, asset.N),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, _progressTotalCountCurrent, _progressTotalCount),
+                true);
+
+            // Get info about patch file
+            FileInfo patchInfo = new FileInfo(patchPath);
+
+            // If file doesn't exist, then download the patch first
+            if (!patchInfo.Exists || patchInfo.Length != asset.BlockPatchInfo.Value.PatchSize)
             {
-                // Iterate chunks from block
-                foreach (XMFFileProperty chunk in block.BlockContent)
+                // Download patch File first
+                await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
+            }
+
+            while (true)
+            {
+                // Verify the patch file and if it doesn't match, then redownload it
+                byte[] patchCRC = await Task.Run(() => CheckMD5(patchInfo.OpenRead(), token, false)).ConfigureAwait(false);
+                if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
                 {
-                    // Increment total count current and update the status
-                    _progressTotalCountCurrent++;
-                    // Set repair activity status
-                    UpdateRepairStatus(
-                        string.Format(Lang._GameRepairPage.Status9, $"*{chunk._startoffset:x8} -> {chunk._startoffset + chunk._filesize:x8}"),
-                        string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
-                        true);
-
-                    // Start chunk repair task
-                    await TryRepairChunk(fs, blockURL, chunk, _httpClient, token);
-
-                    // Pop repair asset display entry
-                    PopRepairAssetEntry();
+                    // Redownload the patch file
+                    await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
+                    continue;
                 }
+
+                // else, break and quit from loop
+                break;
             }
-        }
 
-        private async Task TryRepairChunk(FileStream blockFs, string blockURL, XMFFileProperty chunk, Http _httpClient, CancellationToken token)
-        {
-            // Initialize offsets of the chunk
-            long oStart = chunk._startoffset;
-            long oEnd = chunk._startoffset + chunk._filesize;
-
-            // Initialize block to chunk as ChunkStream
-            using (ChunkStream chunkFs = new ChunkStream(blockFs, oStart, oEnd, false))
+            // Start patching process
+            BinaryPatchUtility patchUtil = new BinaryPatchUtility();
+            try
             {
-                // Start downloading task for the chunk
-                await _httpClient.Download(blockURL, chunkFs, oStart, oEnd, token, true);
+                // Subscribe patching progress and start applying patch
+                patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
+                patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
+                await Task.Run(patchUtil.Apply).ConfigureAwait(false);
+
+                // Delete old file
+                File.Delete(inputFilePath);
+
+                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated with new name {asset.AlterN}!", LogType.Default, true);
             }
+            finally
+            {
+                // Delete the patch file and unsubscribe the patching progress
+                FileInfo fileInfo = new FileInfo(patchPath);
+                if (fileInfo.Exists)
+                {
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                }
+                patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
+            }
+
+            // Pop repair asset display entry
+            PopRepairAssetEntry();
         }
         #endregion
     }

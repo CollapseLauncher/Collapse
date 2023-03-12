@@ -1,6 +1,6 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.EncTool;
-using Hi3Helper.EncTool.KianaManifest;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;

@@ -354,7 +354,7 @@ namespace CollapseLauncher.Interfaces
             return _crcInstance.Hash;
         }
 
-        protected virtual byte[] CheckMD5(Stream stream, CancellationToken token)
+        protected virtual byte[] CheckMD5(Stream stream, CancellationToken token, bool updateTotalProgress = true)
         {
             // Initialize MD5 instance and assign buffer
             MD5 md5Instance = MD5.Create();
@@ -372,7 +372,7 @@ namespace CollapseLauncher.Interfaces
                     lock (this)
                     {
                         // Increment total size counter
-                        _progressTotalSizeCurrent += read;
+                        if (updateTotalProgress) { _progressTotalSizeCurrent += read; }
                         // Increment per file size counter
                         _progressPerFileSizeCurrent += read;
                     }

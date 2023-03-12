@@ -1,4 +1,4 @@
-﻿using Hi3Helper.EncTool;
+﻿using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;

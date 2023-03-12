@@ -1,6 +1,5 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -247,7 +246,7 @@ namespace CollapseLauncher
             }
 
             // If pass the check above, then do CRC calculation
-            byte[] localCRC = CheckCRC(file.OpenRead(), token);
+            byte[] localCRC = CheckMD5(file.OpenRead(), token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -299,144 +298,164 @@ namespace CollapseLauncher
         #region BlocksCheck
         private void CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
-            // Increment current total and size for the XMF
-            _progressTotalSizeCurrent += asset.S;
-
-            // Initialize blocks for return into target asset index
-            FilePropertiesRemote blocks = new FilePropertiesRemote()
-            {
-                S = asset.S,
-                N = asset.N,
-                CRC = asset.CRC,
-                FT = asset.FT,
-                M = asset.M,
-                RN = asset.RN,
-                BlkC = new List<XMFBlockList>()
-            };
-
-            // Iterate blocks and check it
-            try
-            {
-                Parallel.ForEach(asset.BlkC, new ParallelOptions { MaxDegreeOfParallelism = _threadCount }, (block) =>
-                {
-                    CheckBlockCRC(block, blocks.BlkC, token);
-                });
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.Flatten().InnerExceptions.First();
-            }
-
-            // If the block content is not blank, then add it to target asset index
-            if (blocks.BlkC.Count != 0) targetAssetIndex.Add(blocks);
-        }
-
-        private void CheckBlockCRC(XMFBlockList sourceBlock, List<XMFBlockList> targetBlockList, CancellationToken token)
-        {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, sourceBlock.BlockHash);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
 
-            // Get block file path
-            string blockDirPath = "BH3_Data\\StreamingAssets\\Asb\\pc";
-            string blockPath = Path.Combine(_gamePath, blockDirPath, sourceBlock.BlockHash + ".wmv");
-            FileInfo file = new FileInfo(blockPath);
+            // Increment current total count
+            _progressTotalCountCurrent++;
 
-            // If file doesn't exist or the length is invalid, then register it.
-            if (!file.Exists || file.Length != sourceBlock.BlockSize)
+            // Reset per file size counter
+            _progressPerFileSize = asset.S;
+            _progressPerFileSizeCurrent = 0;
+
+            bool isAlterAvailable = asset.AlterN != null;
+
+            // Get original and alternative path
+            string filePath = Path.Combine(_gamePath, asset.N);
+            FileInfo file = new FileInfo(filePath);
+            string filePathAlter = isAlterAvailable ? Path.Combine(_gamePath, asset.AlterN) : null;
+            FileInfo fileAlter = isAlterAvailable ? new FileInfo(filePathAlter) : null;
+
+            bool isFileNotExistOrHasInproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
+
+            // If file doesn't exist or the file size doesn't match, then skip and update the progress
+            if (isFileNotExistOrHasInproperSize && !isAlterAvailable)
             {
-                _progressTotalSizeFound += sourceBlock.BlockSize;
+                _progressTotalSizeCurrent += asset.S;
+                _progressTotalSizeFound += asset.S;
                 _progressTotalCountFound++;
 
-                _progressTotalCountCurrent += sourceBlock.BlockContent.Count;
-                sourceBlock.BlockMissing = true;
-                targetBlockList.Add(sourceBlock);
+                _progressPerFileSizeCurrent = asset.S;
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
-                        sourceBlock.BlockHash + ".wmv",
-                        RepairAssetType.Block,
-                        blockDirPath,
-                        sourceBlock.BlockSize,
+                        Path.GetFileName(asset.N),
+                        RepairAssetType.General,
+                        Path.GetDirectoryName(asset.N),
+                        asset.S,
                         null,
-                        null
+                        asset.CRCArray
                     )
                 ));
 
-                LogWriteLine($"Block [T: {RepairAssetType.Block}]: {sourceBlock.BlockHash} is not found or has unmatched size", LogType.Warning, true);
+                // Add asset for missing/unmatched size file
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+
                 return;
             }
 
-            _progressPerFileSizeCurrent = 0;
-            _progressPerFileSize = sourceBlock.BlockSize;
-
-            using (Stream fs = file.OpenRead())
+            // Check if the alter is available and exist, then do checksum
+            if (isAlterAvailable)
             {
-                // Initialize new block for assigning temporary list
-                XMFBlockList block = new XMFBlockList()
+                // If the alter block exist, then proceed
+                if (fileAlter?.Exists ?? false)
                 {
-                    BlockHash = sourceBlock.BlockHash,
-                    BlockExistingSize = sourceBlock.BlockExistingSize,
-                    BlockSize = sourceBlock.BlockSize,
-                    BlockMissing = false,
-                    BlockUnused = false,
-                    BlockContent = new List<XMFFileProperty>()
-                };
+                    // Assign the PerFileSize progress from existing fileAlter size
+                    _progressPerFileSizeCurrent = fileAlter.Length;
 
-                foreach (var chunk in sourceBlock.BlockContent)
-                {
-                    // Increment the count
-                    _progressTotalCountCurrent++;
+                    // Alter block phase
+                    // If pass the check above, then do CRC calculation
+                    // Additional: the total file size progress is disabled and will be incremented after this
+                    byte[] alterCRC = CheckMD5(fileAlter.OpenRead(), token, false);
 
-                    // Throw if cancellation was given
-                    token.ThrowIfCancellationRequested();
-
-                    byte[] localCRC;
-
-                    if (chunk._filesize < _bufferBigLength)
+                    // If local and alter asset CRC doesn't match, then add the alter asset
+                    if (!IsArrayMatch(alterCRC, asset.BlockPatchInfo.Value.NewHash))
                     {
-                        // Check the CRC of the chunk buffer using stack
-                        localCRC = TryCheckCRCFromStackalloc(fs, (int)chunk._filesize);
-                    }
-                    else
-                    {
-                        // Initialize buffer and put the chunk into the buffer
-                        Span<byte> buffer = new byte[(int)chunk._filesize];
-
-                        // Read from filesystem
-                        fs.Read(buffer);
-
-                        // Check the CRC of the chunk buffer
-                        localCRC = CheckCRCThreadChild(buffer);
-                    }
-
-                    // If the chunk is unmatch, then add the chunk into temporary block list
-                    if (!IsArrayMatch(localCRC, chunk._filecrc32array))
-                    {
-                        _progressTotalSizeFound += chunk._filesize;
+                        // Update the progress
+                        _progressTotalSizeCurrent += asset.S;
+                        _progressTotalSizeFound += asset.S;
                         _progressTotalCountFound++;
-
-                        block.BlockContent.Add(chunk);
 
                         Dispatch(() => AssetEntry.Add(
                             new AssetProperty<RepairAssetType>(
-                                $"*{chunk._startoffset:x8} -> {chunk._startoffset + chunk._filesize:x8}",
-                                RepairAssetType.Chunk,
-                                sourceBlock.BlockHash,
-                                chunk._filesize,
-                                localCRC,
-                                chunk._filecrc32array
-                                )
-                            ));
+                                Path.GetFileName(asset.AlterN),
+                                RepairAssetType.Block,
+                                Path.GetDirectoryName(asset.AlterN),
+                                asset.S,
+                                alterCRC,
+                                asset.BlockPatchInfo.Value.NewHash
+                            )
+                        ));
 
-                        LogWriteLine($"Chunk [T: {RepairAssetType.Chunk}]: *{chunk._startoffset:x8} -> {chunk._startoffset + chunk._filesize:x8} is broken! Index CRC: {chunk._filecrc32} <--> File CRC: {localCRC}", LogType.Warning, true);
+                        // Mark asset to use alter name
+                        asset.IsUseAlterName = true;
+
+                        // Add asset for unmatched CRC
+                        targetAssetIndex.Add(asset);
+
+                        LogWriteLine($"File [T: {asset.FT}]: {asset.AlterN} is broken! Index CRC: {asset.BlockPatchInfo.Value.NewHash} <--> File CRC: {HexTool.BytesToHexUnsafe(alterCRC)}", LogType.Warning, true);
                     }
+
+                    // Increment the total current progress
+                    _progressTotalSizeCurrent += asset.S;
+                    return;
                 }
-
-                // If the broken chunk was not 0, then add the temporary block to target block list.
-                if (block.BlockContent.Count != 0) targetBlockList.Add(block);
             }
-        }
 
+            // Main block phase
+            // If pass the check above, then do CRC calculation
+            // Additional: the total file size progress is disabled and will be incremented after this
+            byte[] localCRC = CheckMD5(file.OpenRead(), token, false);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
+            {
+                _progressTotalSizeFound += asset.S;
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.N),
+                        RepairAssetType.Block,
+                        Path.GetDirectoryName(asset.N),
+                        asset.S,
+                        localCRC,
+                        asset.CRCArray
+                    )
+                ));
+
+                // Add asset for unmatched CRC
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+
+                // Increment the total current progress
+                _progressTotalSizeCurrent += asset.S;
+                return;
+            }
+
+            // Alter block phase
+            // Add the asset index as the block is marked to be patchable
+            if (isAlterAvailable)
+            {
+                _progressTotalSizeFound += asset.BlockPatchInfo.Value.PatchSize;
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.N),
+                        RepairAssetType.BlockUpdate,
+                        Path.GetDirectoryName(asset.N),
+                        asset.BlockPatchInfo.Value.PatchSize,
+                        asset.CRCArray,
+                        asset.BlockPatchInfo.Value.NewHash
+                    )
+                ));
+
+                // Mark asset to be patchable
+                asset.IsPatchApplicable = true;
+
+                // Add asset for unmatched CRC
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} has an update! Orig CRC: {asset.CRC} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.BlockPatchInfo.Value.NewHash)}", LogType.Warning, true);
+            }
+
+            // Increment the total current progress
+            _progressTotalSizeCurrent += asset.S;
+        }
         #endregion
 
         #region UnusedAssetCheck
@@ -463,11 +482,10 @@ namespace CollapseLauncher
                 switch (asset.FT)
                 {
                     case FileType.Blocks:
-                        catalog.Add(Path.Combine(path, "blockVerifiedVersion.txt"));
-                        foreach (XMFBlockList block in asset.BlkC)
+                        catalog.Add(path);
+                        if (asset.AlterN != null)
                         {
-                            string blockPath = Path.Combine(path, block.BlockHash + ".wmv");
-                            catalog.Add(blockPath);
+                            catalog.Add(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AlterN)));
                         }
                         break;
                     case FileType.Audio:
@@ -503,12 +521,14 @@ namespace CollapseLauncher
                 bool isUSM = asset.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
 
                 // Blocks related
-                bool isXMFBlocks = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isXMFBlocks = asset.EndsWith($"Blocks.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isXMFBlocksVer = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);
 
-                if (!isIncluded && !isIni && !isXMFBlocks && !isXMFMeta && !isVersion
-                    && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
-                    && !isUSM && !isWwiseHeader && !isAudioManifest)
+                if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
+                    && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
+                    && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);

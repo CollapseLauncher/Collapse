@@ -1,4 +1,7 @@
-﻿namespace Hi3Helper.Preset
+﻿using Hi3Helper.Shared.ClassStruct;
+using System;
+
+namespace Hi3Helper.Preset
 {
     public class BHI3LInfo
     {
@@ -21,5 +24,13 @@
         public long fileSize { get; set; }
         public bool isPatch { get; set; } = false;
         public string type { get; set; }
+
+        public FilePropertiesRemote AsFilePropertiesRemote() => new FilePropertiesRemote
+        {
+            N = remoteName,
+            CRC = md5,
+            S = fileSize,
+            FT = FileType.Generic
+        };
     }
 }

@@ -34,7 +34,7 @@ namespace CollapseLauncher
 
     internal struct GameVendorProp
     {
-        #nullable enable
+#nullable enable
         public GameVendorProp(string gamePath, string execName, GameVendorType fallbackVendorType)
         {
             // Set the fallback value of the Vendor Type first (in case the game isn't yet installed)
@@ -50,7 +50,7 @@ namespace CollapseLauncher
 
             // Try parse the first line. If parsing fail, then return
             if (!Enum.TryParse(infoEntries[0], out GameVendorType _VendorType)) return;
-            
+
             // Assign the values
             VendorType = _VendorType;
             GameName = infoEntries[1];
@@ -58,7 +58,7 @@ namespace CollapseLauncher
 
         public GameVendorType? VendorType { get; set; }
         public string? GameName { get; set; }
-        #nullable disable
+#nullable disable
     }
 
     public struct GameVersion
@@ -99,7 +99,7 @@ namespace CollapseLauncher
 
         public string VersionString { get => string.Join('.', VersionArray); }
         public int[] VersionArrayXMF { get => new int[4] { 0, Major, Minor, Revision }; }
-        public int[] VersionArrayAudioManifest { get => new int[4] { Major, Minor, Revision, 0 }; }
+        public int[] VersionArrayManifest { get => new int[4] { Major, Minor, Revision, 0 }; }
         public int[] VersionArray { get => new int[3] { Major, Minor, Revision }; }
         public readonly int Major;
         public readonly int Minor;

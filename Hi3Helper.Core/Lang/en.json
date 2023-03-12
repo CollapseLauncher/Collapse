@@ -142,6 +142,7 @@
     "Status10": "Repairing Blk: {0} | Offset: 0x{1} - Size: 0x{2}",
     "Status11": "Waiting for repair process to start...",
     "Status12": "Updating Audio: {0}",
+    "Status13": "Updating Block: {0}",
     "StatusNone": "None",
     "PerProgressTitle1": "Per File Progress",
     "PerProgressSubtitle1": "Waiting...",

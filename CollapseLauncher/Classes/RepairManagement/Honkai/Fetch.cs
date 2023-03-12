@@ -1,14 +1,17 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool;
-using Hi3Helper.EncTool.CacheParser;
-using Hi3Helper.EncTool.KianaManifest;
+using Hi3Helper.EncTool.Parser;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -63,7 +66,7 @@ namespace CollapseLauncher
 
                 // Region: XMFAndAssetIndex
                 // Try check XMF file and fetch it if it doesn't exist
-                await FetchXMFFile(_httpClient, manifestDict[_gameVersion.VersionString], token);
+                await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
 
                 // Region: AudioIndex
                 // Try check audio manifest.m file and fetch it if it doesn't exist
@@ -124,11 +127,6 @@ namespace CollapseLauncher
                 // Iterate the metadata to be converted into asset index
                 foreach (CGMetadata metadata in enumEntry)
                 {
-                    if (metadata.CgPath.Contains("5.9_Birthday_Pardofelis_9503119860BF9407"))
-                    {
-                        Console.WriteLine();
-                    }
-
                     // Only add videos with size
                     if (metadata.FileSize != 0)
                     {
@@ -155,7 +153,7 @@ namespace CollapseLauncher
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
             string manifestRemotePath = string.Format(_audioBaseRemotePath + "manifest.m", $"{_gameVersion.Major}_{_gameVersion.Minor}");
-            Manifest manifest;
+            KianaAudioManifest manifest;
 
             try
             {
@@ -176,7 +174,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void BuildAudioVersioningFile(Manifest audioManifest)
+        private void BuildAudioVersioningFile(KianaAudioManifest audioManifest)
         {
             // Build audio versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "Version.txt"), false))
@@ -188,15 +186,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void CountAudioIndex(List<FilePropertiesRemote> audioIndex)
-        {
-            // Increment the total count and total size
-            List<FilePropertiesRemote> assets = audioIndex.Where(x => x.FT == FileType.Audio).ToList();
-            _progressTotalCount += assets.Count;
-            _progressTotalSize += assets.Sum(x => x.S);
-        }
-
-        private async Task BuildAudioIndex(Http _httpClient, Manifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
+        private async Task BuildAudioIndex(Http _httpClient, KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
         {
             // Iterate the audioAsset to be added in audioIndex
             foreach (ManifestAssetInfo audioInfo in audioManifest.AudioAssets)
@@ -258,7 +248,7 @@ namespace CollapseLauncher
             return keyTool.GetMasterKey();
         }
 
-        private async Task<Manifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote, CancellationToken token)
+        private async Task<KianaAudioManifest> TryGetAudioManifest(Http _httpClient, string manifestLocal, string manifestRemote, CancellationToken token)
         {
             // Always check if the folder is exist
             string manifestFolder = Path.GetDirectoryName(manifestLocal);
@@ -272,7 +262,7 @@ namespace CollapseLauncher
 
             // Get the XML key and deserialize the manifest
             string xmlKey = GetXmlConfigKey();
-            return new Manifest(manifestLocal, xmlKey, _gameVersion.VersionArrayAudioManifest);
+            return new KianaAudioManifest(manifestLocal, xmlKey, _gameVersion.VersionArrayManifest);
         }
         #endregion
 
@@ -285,7 +275,7 @@ namespace CollapseLauncher
                 // Set metadata URL
                 string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gamePreset.ProfileName);
 
-                // Start downloading metadata
+                // Start downloading metadata using FallbackCDNUtil
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
 
                 // Deserialize metadata
@@ -296,32 +286,76 @@ namespace CollapseLauncher
 
         private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            try
+            // Initialize MemoryStream
+            using (MemoryStream mfs = new MemoryStream())
             {
-                // Use FallbackCDNUtil for fetching progress
-                FallbackCDNUtil.DownloadProgress += _httpClient_FetchAssetProgress;
-                // Fetch asset index
-                using (MemoryStream mfs = new MemoryStream())
-                {
-                    // Set asset index URL
-                    string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString);
+                // Set asset index URL
+                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
 
-                    // Start downloading asset index using FallbackCDNUtil
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlIndex, token);
+                // Start downloading asset index using FallbackCDNUtil
+                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlIndex, token);
 
-                    // Deserialize asset index and return
-                    mfs.Position = 0;
-                    assetIndex.AddRange((List<FilePropertiesRemote>)JsonSerializer.Deserialize(mfs, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default));
-                }
-            }
-            finally
-            {
-                // Unsubscribe FallbackCDNUtil progress
-                FallbackCDNUtil.DownloadProgress += _httpClient_FetchAssetProgress;
+                // Deserialize asset index and return
+                mfs.Position = 0;
+                DeserializeAssetIndex(mfs, assetIndex);
             }
         }
 
-        private async Task FetchXMFFile(Http _httpClient, string _repoURL, CancellationToken token)
+        private void DeserializeAssetIndex(Stream stream, List<FilePropertiesRemote> assetIndex)
+        {
+            using (BinaryReader bRaw = new BinaryReader(stream))
+            {
+                // Read the signature and do check
+                ulong signature = bRaw.ReadUInt64();
+                if (signature != _assetIndexSignature)
+                {
+                    throw new FormatException($"The asset index manifest is invalid! Reading: {signature} but expecting: {_assetIndexSignature}");
+                }
+
+                // Get the version and do serialization based on its own version implementation
+                byte version = bRaw.ReadByte();
+                switch (version)
+                {
+                    // Read version 1
+                    case 1:
+                        using (BrotliStream brStream = new BrotliStream(stream, CompressionMode.Decompress))
+                        {
+                            ParseAssetIndexChunkV1(brStream, assetIndex);
+                        }
+                        break;
+                    // If format is not valid, then throw
+                    default:
+                        throw new FormatException($"Version of the asset index format is unsupported! Reading: {version}");
+                }
+            }
+        }
+
+        private void ParseAssetIndexChunkV1(Stream stream, List<FilePropertiesRemote> assetIndex)
+        {
+            // Assign stream into the reader
+            using (BinaryReader reader = new BinaryReader(stream))
+            {
+                // Read the asset count
+                int assetCount = reader.ReadInt32();
+
+                // Do loop to read all the information
+                for (int i = 0; i < assetCount; i++)
+                {
+                    // Read the binary information into asset info
+                    FilePropertiesRemote assetInfo = new FilePropertiesRemote();
+                    assetInfo.FT = (FileType)reader.ReadByte();
+                    assetInfo.N = reader.ReadString();
+                    assetInfo.S = reader.ReadInt64();
+                    assetInfo.CRC = HexTool.BytesToHexUnsafe(reader.ReadBytes(16));
+                    assetInfo.RN = _gameRepoURL + '/' + assetInfo.N;
+
+                    // Add assetInfo
+                    assetIndex.Add(assetInfo);
+                }
+            }
+        }
+
+        private async Task FetchXMFFile(Http _httpClient, List<FilePropertiesRemote> assetIndex, string _repoURL, CancellationToken token)
         {
             // Set XMF Path and check if the XMF state is valid
             string xmfPath = Path.Combine(_gamePath, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
@@ -330,21 +364,96 @@ namespace CollapseLauncher
             // Set XMF URL
             string urlXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
 
-            // Start downloading XMF
-            await _httpClient.Download(urlXMF, xmfPath, true, null, null, token);
+            // Initialize patch config info variable
+            BlockPatchManifest patchConfigInfo;
+
+            // Start downloading XMF and load it to MemoryStream first
+            using (MemoryStream mfs = new MemoryStream())
+            using (FileStream fs = new FileStream(xmfPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                // Download the XMF into MemoryStream
+                await _httpClient.Download(urlXMF, mfs, null, null, token);
+
+                // If completed, then copy it to local FileStream. This to avoid corruption in local XMF file
+                await mfs.CopyToAsync(fs);
+                fs.Position = 0;
+
+                // Fetch for PatchConfig.xmf file (Block patch metadata)
+                patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, assetIndex, token);
+            }
+
+            // After all completed, then Deserialize the XMF to build the asset index
+            BuildBlockIndex(assetIndex, patchConfigInfo, xmfPath);
+        }
+
+        private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        {
+            // Set PatchConfig URL
+            string urlPatchXMF = _blockPatchBaseURL + "/PatchConfig.xmf";
+
+            // Start downloading XMF and load it to MemoryStream first
+            using (MemoryStream mfs = new MemoryStream())
+            {
+                // Check the status of the patch file
+                // If doesn't exist, then return an empty list
+                (int, bool) status = await _httpClient.GetURLStatus(urlPatchXMF, token);
+                if (!status.Item2)
+                {
+                    return null;
+                }
+
+                // Download the XMF into MemoryStream
+                await _httpClient.Download(urlPatchXMF, mfs, null, null, token);
+
+                // Reset the MemoryStream position
+                mfs.Position = 0;
+
+                // Initialize and parse the manifest, then return the Patch Asset
+                return new BlockPatchManifest(mfs, _gameVersion.VersionArrayManifest);
+            }
+        }
+
+        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest patchInfo, string xmfPath)
+        {
+            // Initialize and parse the XMF file
+            XMFParser xmfParser = new XMFParser(xmfPath);
+
+            // Do loop and assign the block asset to asset index
+            for (int i = 0; i < xmfParser.BlockCount; i++)
+            {
+                // Check if the patch info exist for current block, then assign blockPatchInfo
+                BlockPatchInfo? blockPatchInfo = null;
+                if (patchInfo.OldBlockCatalog.ContainsKey(xmfParser.BlockEntry[i].HashString))
+                {
+                    int blockPatchInfoIndex = patchInfo.OldBlockCatalog[xmfParser.BlockEntry[i].HashString];
+                    blockPatchInfo = patchInfo.PatchAsset[blockPatchInfoIndex];
+                }
+
+                // Assign as FilePropertiesRemote
+                FilePropertiesRemote assetInfo = new FilePropertiesRemote
+                {
+                    N = _blockBasePath + xmfParser.BlockEntry[i].HashString + ".wmv",
+                    AlterN = blockPatchInfo != null ? _blockBasePath + blockPatchInfo.Value.NewBlockName + ".wmv" : null,
+                    RN = _blockAsbBaseURL + '/' + xmfParser.BlockEntry[i].HashString + ".wmv",
+                    AlterRN = blockPatchInfo != null ? _blockAsbBaseURL + '/' + blockPatchInfo.Value.NewBlockName + ".wmv" : null,
+                    S = xmfParser.BlockEntry[i].Size,
+                    CRC = xmfParser.BlockEntry[i].HashString,
+                    FT = FileType.Blocks,
+                    BlockPatchInfo = blockPatchInfo
+                };
+
+                // Add the asset info
+                assetIndex.Add(assetInfo);
+            }
         }
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            // Sum total size
-            long blockSize = assetIndex
-                .Where(x => x.BlkC != null)
-                .Sum(x => x.BlkC
-                    .Sum(y => y.BlockSize));
-            _progressTotalSize = assetIndex.Where(x => x.FT != FileType.Audio).Sum(x => x.S) + blockSize;
+            // Sum the assetIndex size and assign to _progressTotalSize
+            _progressTotalSize = assetIndex.Sum(x => x.S);
 
-            // Sum total count by adding AssetIndex.Count + Counts from assets with "Blocks" type.
-            _progressTotalCount = assetIndex.Count + assetIndex.Where(x => x.BlkC != null && x.FT != FileType.Audio).Sum(y => y.BlkC.Sum(z => z.BlockContent.Count));
+            // Assign the assetIndex count to _progressTotalCount
+            _progressTotalCount = assetIndex.Count;
         }
         #endregion
     }
