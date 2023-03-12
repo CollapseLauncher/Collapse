@@ -39,12 +39,14 @@
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_1}" FontWeight="Normal"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_2}" Foreground="{ThemeResource SystemAccentColor}" FontWeight="Bold"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle1_3}" FontWeight="Normal"/>
                 </TextBlock>
                 <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,24">
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_1}" FontWeight="Normal"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_2}" Foreground="{ThemeResource SystemAccentColor}"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_3}" FontWeight="Normal"/>
                     <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_4}" Foreground="{ThemeResource SystemAccentColor}" FontWeight="Bold"/>
+                    <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Pg2Subtitle2_5}" FontWeight="Normal"/>
                 </TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox x:Name="GameCategorySelect" CornerRadius="16" PlaceholderText="{x:Bind helper:Locale.Lang._StartupPage.Pg2ComboBox}" Width="192" SelectionChanged="GameCategorySelect_SelectionChanged"/>

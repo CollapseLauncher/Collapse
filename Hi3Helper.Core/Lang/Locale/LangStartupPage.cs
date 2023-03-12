@@ -36,10 +36,12 @@
                 public string Pg2Title { get; set; } = LangFallback?._StartupPage.Pg2Title;
                 public string Pg2Subtitle1_1 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_1;
                 public string Pg2Subtitle1_2 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_2;
+                public string Pg2Subtitle1_3 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle1_3;
                 public string Pg2Subtitle2_1 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_1;
                 public string Pg2Subtitle2_2 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_2;
                 public string Pg2Subtitle2_3 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_3;
                 public string Pg2Subtitle2_4 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_4;
+                public string Pg2Subtitle2_5 { get; set; } = LangFallback?._StartupPage.Pg2Subtitle2_5;
                 public string Pg2ComboBox { get; set; } = LangFallback?._StartupPage.Pg2ComboBox;
                 public string Pg2ComboBoxRegion { get; set; } = LangFallback?._StartupPage.Pg2ComboBoxRegion;
             }
