@@ -9,58 +9,69 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource PagesSolidAcrylicBrush}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ThemeShadow x:Key="SharedShadow"/>
+    </Page.Resources>
     <Grid x:Name="MainPageGrid" Margin="16,32,16,16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image Grid.Column="0" Source="ms-appx:///Assets/BG/PaimonSleep.png" VerticalAlignment="Center" Width="350" Margin="0,0,64,0" HorizontalAlignment="Right" Opacity="0.5"/>
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Width="340">
-                <TextBlock Text="Select your language"
+        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/BG/StartUpBG.png" Stretch="UniformToFill" VerticalAlignment="Center" Margin="-16,-32,-16,-16"/>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" >
+            <StackPanel x:Name="MenuPanel" CornerRadius="16"
+                    Margin="0,32,64,32" Padding="32" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource DialogAcrylicBrush}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <TextBlock Text="Select your language"
                    TextAlignment="Left"
                    HorizontalAlignment="Left" Margin="0,0,0,8"
                    TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
-                <TextBlock Text="Please select your language to start this launcher for the first time!"
+                    <TextBlock Text="Please select your language to start this launcher for the first time!"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap"/>
-                <ComboBox PlaceholderText="Select your language"
+                    <ComboBox PlaceholderText="Select your language"
                   Margin="0,16"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
-            </StackPanel>
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Width="340">
-                <TextBlock Text="Select your preferred window size"
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <TextBlock Text="Select your preferred window size"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
-                <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" 
-                  Margin="0,16">
-                    <ComboBoxItem Content="Normal"/>
-                    <ComboBoxItem Content="Small"/>
-                </ComboBox>
-            </StackPanel>
-            <StackPanel Grid.Column="1" HorizontalAlignment="Left">
-                <TextBlock Text="Select your preferred CDN"
+                    <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" 
+                     Margin="0,16">
+                        <ComboBoxItem Content="Normal"/>
+                        <ComboBoxItem Content="Small"/>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Left">
+                    <TextBlock Text="Select your preferred CDN"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
-                <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
-                    <RadioButtons.ItemTemplate>
-                        <DataTemplate x:DataType="innerConfig:CDNURLProperty">
-                            <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{x:Bind Name}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf05a;" FontSize="18" Margin="8,0,0,0" Opacity="0.25"/>
-                                </StackPanel>
-                            </RadioButton>
-                        </DataTemplate>
-                    </RadioButtons.ItemTemplate>
-                </RadioButtons>
-            </StackPanel>
-            <Button x:Name="NextBtn" Content="Next" HorizontalAlignment="Left" IsEnabled="False" Width="128" Margin="0,16,0,0"
+                    <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="2">
+                        <RadioButtons.ItemTemplate>
+                            <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{x:Bind Name}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf05a;" FontSize="18" Margin="8,0,0,0" Opacity="0.25"/>
+                                    </StackPanel>
+                                </RadioButton>
+                            </DataTemplate>
+                        </RadioButtons.ItemTemplate>
+                    </RadioButtons>
+                </StackPanel>
+                <Button x:Name="NextBtn" Content="Next" HorizontalAlignment="Left" IsEnabled="False" Width="128" Margin="0,16,0,0"
                 VerticalAlignment="Bottom" Style="{ThemeResource AccentButtonStyle}" Click="NextBtn_Click"/>
+            </StackPanel>
         </StackPanel>
+        <TextBlock Grid.Column="1" Margin="8" VerticalAlignment="Bottom" TextAlignment="Right"
+                   HorizontalAlignment="Right" Opacity="0.50" Foreground="{ThemeResource DefaultFGColorAccent}">
+            <Run Text="The splash art is a property of"/><LineBreak/>
+            <Run Text="miHoYo / HoYoverse" FontSize="18" FontWeight="Medium"/>
+        </TextBlock>
     </Grid>
 </Page>

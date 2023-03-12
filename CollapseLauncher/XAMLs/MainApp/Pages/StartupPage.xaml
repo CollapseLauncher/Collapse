@@ -9,6 +9,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}">
     <Grid>
+        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/BG/StartUpBG2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="Bg" Margin="32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -27,7 +28,7 @@
                     <EntranceThemeTransition/>
                 </StackPanel.Transitions>
                 <Image Source="ms-appx:///Assets/CollapseLauncherLogo.png" Width="256" Height="256" HorizontalAlignment="Left"/>
-                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{ThemeResource DisplayTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title1}" Style="{ThemeResource DisplayTextBlockStyle}" FontSize="56"/>
                 <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.Title2}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Normal"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" x:Name="RightPanel">
@@ -45,14 +46,15 @@
                 <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_2}" Foreground="{ThemeResource SystemAccentColor}"/>
                 <Run Text="{x:Bind helper:Locale.Lang._StartupPage.Subtitle4_3}" FontWeight="Normal"/>
                 </TextBlock>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="0,0,0,16" x:Name="ErrMsg" Text="" TextWrapping="Wrap"
+                    TextTrimming="Clip" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{ThemeResource TextFillColorPrimary}"/>
                     <Button Style="{ThemeResource AccentButtonStyle}" Click="ChooseFolder" CornerRadius="16">
                         <StackPanel Orientation="Horizontal" Margin="8,0">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" Margin="0,0,8,0" FontWeight="Medium"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.ChooseFolderBtn}" Margin="0,0,8,0" FontWeight="Medium" TextWrapping="Wrap"/>
                             <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf07b;" FontSize="14"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock Margin="8,0,0,0" x:Name="ErrMsg" Text="" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimary}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

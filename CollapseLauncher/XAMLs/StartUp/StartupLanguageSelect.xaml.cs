@@ -22,6 +22,7 @@ namespace CollapseLauncher
             try
             {
                 this.InitializeComponent();
+                MenuPanel.Translation += Shadow32;
             }
             catch (Exception ex)
             {

@@ -103,6 +103,12 @@
 		<Content Update="Assets\BG\PaimonWhat.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Update="Assets\BG\StartUpBG.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\BG\StartUpBG2.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Update="Assets\CollapseLauncherLogo.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
