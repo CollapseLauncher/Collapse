@@ -495,7 +495,7 @@
     "CookbookLocateSubtitle6": "Note:\r\n",
     "CookbookLocateSubtitle7": "Here's the name of the Cookbook file you need to download:\r\n",
     "PrivilegeMustRunTitle": "Collapse requires privilege elevation!",
-    "PrivilegeMustRunSubtitle": "Collapse administrative privileges to function properly. Would you like to restart Collapse and run it as administrator?",
+    "PrivilegeMustRunSubtitle": "Collapse requires administrative privileges to function properly. Would you like to restart Collapse and run it as administrator?",
     "ReleaseChannelChangeTitle": "Change Release Channel",
     "ReleaseChannelChangeSubtitle1": "You are about to change your release channel to:",
     "ReleaseChannelChangeSubtitle2": "Note:",
