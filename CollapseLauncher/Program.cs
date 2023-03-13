@@ -44,7 +44,7 @@ namespace CollapseLauncher
                 string logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);
 
-                LogWriteLine(string.Format("You're running v{0} {3} under {1} as {2}",
+                LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                     AppCurrentVersion,
                     GetVersionString(),
                     Environment.UserName,
