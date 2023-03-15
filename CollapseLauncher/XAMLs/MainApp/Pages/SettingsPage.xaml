@@ -83,9 +83,9 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <Button Margin="16,0" CornerRadius="16">
+                            <Button Margin="16,0">
                                 <Button.Content>
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE11B;" FontSize="12"/>
+                                    <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#x3f;" FontSize="12"/>
                                 </Button.Content>
                                 <Button.Flyout>
                                     <Flyout>
