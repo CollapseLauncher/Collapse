@@ -46,9 +46,13 @@ namespace CollapseLauncher
 
                 // Region: VideoIndex via External -> _cacheUtil: Data Fetch
                 // Fetch video index and also fetch the gateway URL
-                (string, string) gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
-                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
-                Console.WriteLine(_gameRepoURL);
+                (string, string) gatewayURL;
+                if (!_isOnlyRecoverMain)
+                {
+                    gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
+                    _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
+                    Console.WriteLine(_gameRepoURL);
+                }
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
@@ -70,7 +74,10 @@ namespace CollapseLauncher
 
                 // Region: AudioIndex
                 // Try check audio manifest.m file and fetch it if it doesn't exist
-                await FetchAudioIndex(_httpClient, assetIndex, token);
+                if (!_isOnlyRecoverMain)
+                {
+                    await FetchAudioIndex(_httpClient, assetIndex, token);
+                }
             }
             finally
             {
@@ -179,8 +186,9 @@ namespace CollapseLauncher
             // Build audio versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "Version.txt"), false))
             {
-                foreach (ManifestAssetInfo audioAsset in audioManifest.AudioAssets.Where(x => x.Language == _audioLanguage || x.Language == AssetLanguage.Common))
+                foreach (ManifestAssetInfo audioAsset in audioManifest.AudioAssets)
                 {
+                    // Only add common and language specific audio file
                     sw.WriteLine($"{audioAsset.Name}.pck\t{audioAsset.HashString}");
                 }
             }
@@ -191,32 +199,25 @@ namespace CollapseLauncher
             // Iterate the audioAsset to be added in audioIndex
             foreach (ManifestAssetInfo audioInfo in audioManifest.AudioAssets)
             {
-                // Only add common and language specific audio file
-                bool isAudioFilePersistent = IsAudioFilePersistent(audioInfo);
-                if (audioInfo.Language == AssetLanguage.Common || audioInfo.Language == _audioLanguage || isAudioFilePersistent)
+                // Try get the availability of the audio asset
+                if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
                 {
-                    // Try get the availability of the audio asset
-                    if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
+                    // Assign based on each values
+                    FilePropertiesRemote audioAsset = new FilePropertiesRemote
                     {
-                        // Assign based on each values
-                        FilePropertiesRemote audioAsset = new FilePropertiesRemote
-                        {
-                            RN = audioInfo.Path,
-                            N = _audioBaseLocalPath + audioInfo.Name + ".pck",
-                            S = audioInfo.Size,
-                            FT = FileType.Audio,
-                            CRC = audioInfo.HashString,
-                            AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
-                        };
+                        RN = audioInfo.Path,
+                        N = _audioBaseLocalPath + audioInfo.Name + ".pck",
+                        S = audioInfo.Size,
+                        FT = FileType.Audio,
+                        CRC = audioInfo.HashString,
+                        AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
+                    };
 
-                        // Add audioAsset to audioIndex
-                        audioIndex.Add(audioAsset);
-                    }
+                    // Add audioAsset to audioIndex
+                    audioIndex.Add(audioAsset);
                 }
             }
         }
-
-        private bool IsAudioFilePersistent(ManifestAssetInfo audioInfo) => _audioPersistentAssets.Any(audioInfo.Name.Contains);
 
         private async ValueTask<bool> IsAudioFileAvailable(Http _httpClient, ManifestAssetInfo audioInfo, CancellationToken token)
         {
@@ -357,36 +358,54 @@ namespace CollapseLauncher
 
         private async Task FetchXMFFile(Http _httpClient, List<FilePropertiesRemote> assetIndex, string _repoURL, CancellationToken token)
         {
-            // Set XMF Path and check if the XMF state is valid
-            string xmfPath = Path.Combine(_gamePath, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
-            // if (XMFUtility.CheckIfXMFVersionMatches(xmfPath, _gameVersion.VersionArrayXMF)) return;
+            // Set Primary XMF Path
+            string xmfPriPath = Path.Combine(_gamePath, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
+            // Set Secondary XMF Path
+            string xmfSecPath = Path.Combine(_gamePath, $"BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
 
-            // Set XMF URL
-            string urlXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
+            // Set Primary XMF URL
+            string urlPriXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
+            // Set Secondary XMF URL
+            string urlSecXMF = _blockAsbBaseURL + $"/Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf";
 
+#nullable enable
             // Initialize patch config info variable
-            BlockPatchManifest patchConfigInfo;
+            BlockPatchManifest? patchConfigInfo = null;
 
-            // Start downloading XMF and load it to MemoryStream first
-            using (MemoryStream mfs = new MemoryStream())
-            using (FileStream fs = new FileStream(xmfPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            // Start downloading XMFs and load it to MemoryStream first
+            using (MemoryStream mfs1 = new MemoryStream())
+            using (FileStream fs1 = new FileStream(xmfPriPath, FileMode.Create, FileAccess.Write))
             {
-                // Download the XMF into MemoryStream
-                await _httpClient.Download(urlXMF, mfs, null, null, token);
+                // Download the primary XMF into MemoryStream
+                await _httpClient.Download(urlPriXMF, mfs1, null, null, token);
 
                 // If completed, then copy it to local FileStream. This to avoid corruption in local XMF file
-                await mfs.CopyToAsync(fs);
-                fs.Position = 0;
+                await mfs1.CopyToAsync(fs1);
+            }
 
-                // Fetch for PatchConfig.xmf file (Block patch metadata)
-                patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, assetIndex, token);
+            // Fetch only RecoverMain is disabled
+            if (!_isOnlyRecoverMain)
+            {
+                using (MemoryStream mfs2 = new MemoryStream())
+                using (FileStream fs2 = new FileStream(xmfSecPath, FileMode.Create, FileAccess.Write))
+                {
+                    // Download the secondary XMF into MemoryStream
+                    await _httpClient.Download(urlSecXMF, mfs2, null, null, token);
+
+                    // If completed, then copy it to local FileStream. This to avoid corruption in local XMF file
+                    await mfs2.CopyToAsync(fs2);
+
+                    // Fetch for PatchConfig.xmf file (Block patch metadata)
+                    patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, token);
+                }
             }
 
             // After all completed, then Deserialize the XMF to build the asset index
-            BuildBlockIndex(assetIndex, patchConfigInfo, xmfPath);
+            BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
+#nullable disable
         }
 
-        private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Http _httpClient, CancellationToken token)
         {
             // Set PatchConfig URL
             string urlPatchXMF = _blockPatchBaseURL + "/PatchConfig.xmf";
@@ -413,7 +432,8 @@ namespace CollapseLauncher
             }
         }
 
-        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest patchInfo, string xmfPath)
+#nullable enable
+        private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath)
         {
             // Initialize and parse the XMF file
             XMFParser xmfParser = new XMFParser(xmfPath);
@@ -423,7 +443,8 @@ namespace CollapseLauncher
             {
                 // Check if the patch info exist for current block, then assign blockPatchInfo
                 BlockPatchInfo? blockPatchInfo = null;
-                if (patchInfo.OldBlockCatalog.ContainsKey(xmfParser.BlockEntry[i].HashString))
+
+                if (patchInfo != null && patchInfo.OldBlockCatalog.ContainsKey(xmfParser.BlockEntry[i].HashString))
                 {
                     int blockPatchInfoIndex = patchInfo.OldBlockCatalog[xmfParser.BlockEntry[i].HashString];
                     blockPatchInfo = patchInfo.PatchAsset[blockPatchInfoIndex];
@@ -445,15 +466,22 @@ namespace CollapseLauncher
                 // Add the asset info
                 assetIndex.Add(assetInfo);
             }
+
+            // Write the blockVerifiedVersion based on secondary XMF
+            File.WriteAllText(Path.Combine(_gamePath, NormalizePath(_blockBasePath), "blockVerifiedVersion.txt"), string.Join('_', xmfParser.Version));
         }
+#nullable disable
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
+            // Filter out video assets
+            List<FilePropertiesRemote> assetIndexFiltered = assetIndex.Where(x => x.FT != FileType.Video).ToList();
+
             // Sum the assetIndex size and assign to _progressTotalSize
-            _progressTotalSize = assetIndex.Sum(x => x.S);
+            _progressTotalSize = assetIndexFiltered.Sum(x => x.S);
 
             // Assign the assetIndex count to _progressTotalCount
-            _progressTotalCount = assetIndex.Count;
+            _progressTotalCount = assetIndexFiltered.Count;
         }
         #endregion
     }

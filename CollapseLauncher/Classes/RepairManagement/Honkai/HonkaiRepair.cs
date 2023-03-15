@@ -16,9 +16,11 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
-        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private HonkaiCache _cacheUtil = (PageStatics._GameCache as ICacheBase<HonkaiCache>).AsBaseType();
+
+        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
+        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
         private string _assetBaseURL { get; set; }
         private string _blockBaseURL { get => _assetBaseURL + $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"; }
         private string _blockAsbBaseURL { get => _blockBaseURL + $"/asb"; }
@@ -26,12 +28,11 @@ namespace CollapseLauncher
         private string _blockPatchDiffBaseURL { get => _blockPatchBaseURL + $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"; }
         private string _blockPatchDiffPath { get => _assetBasePath + "Asb/pc/Patch"; }
         private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
-        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
-        private readonly string[] _audioPersistentAssets = new string[] { "AUDIO_Ex_Dorm_CN", "AUDIO_Ex_Event_CN", "AUDIO_Ex_Rogue_CN" };
+        private bool _isOnlyRecoverMain { get; set; }
         #endregion
 
         #region ExtensionProperties
-        private protected AssetLanguage _audioLanguage { get; set; }
+        private protected AudioLanguageType _audioLanguage { get; set; }
         private protected string _audioBaseLocalPath { get => _assetBasePath + "Audio/GeneratedSoundBanks/Windows/"; }
         private protected string _audioBaseRemotePath { get => _assetBaseURL + "Audio/{0}/Windows/"; }
         private protected string _audioPatchBaseLocalPath { get => _audioBaseLocalPath + "Patch/"; }
@@ -39,15 +40,18 @@ namespace CollapseLauncher
         private protected string _videoBaseLocalPath { get => _assetBasePath + "Video/"; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
+        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset, bool onlyRecoverMainAsset = false)
             : base(parentUI, null, gameRepoURL, gamePreset)
         {
+            // Get flag to only recover main assets
+            _isOnlyRecoverMain = onlyRecoverMainAsset;
+
             // Initialize audio asset language
-            string audioLanguage = (PageStatics._GameSettings as HonkaiSettings).SettingsAudio.CVLanguage;
+            string audioLanguage = (PageStatics._GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
             switch (audioLanguage)
             {
                 case "Chinese(PRC)":
-                    _audioLanguage = AssetLanguage.Chinese;
+                    _audioLanguage = AudioLanguageType.Chinese;
                     break;
                 default:
                     _audioLanguage = gamePreset.GameDefaultCVLanguage;

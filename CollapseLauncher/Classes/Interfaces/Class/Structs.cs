@@ -98,7 +98,6 @@ namespace CollapseLauncher
         public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Revision == versionToCompare.Revision;
 
         public string VersionString { get => string.Join('.', VersionArray); }
-        public int[] VersionArrayXMF { get => new int[4] { 0, Major, Minor, Revision }; }
         public int[] VersionArrayManifest { get => new int[4] { Major, Minor, Revision, 0 }; }
         public int[] VersionArray { get => new int[3] { Major, Minor, Revision }; }
         public readonly int Major;

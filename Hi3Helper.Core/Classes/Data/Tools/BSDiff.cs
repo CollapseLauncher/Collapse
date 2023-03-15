@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 
 namespace Hi3Helper.Data
 {
@@ -161,7 +162,7 @@ namespace Hi3Helper.Data
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        public void Apply()
+        public void Apply(CancellationToken token = default)
         {
             // check if the apply can be proceed
             if (!_canContinueApply)
@@ -221,6 +222,9 @@ namespace Hi3Helper.Data
                         int bytesToCopy = (int)control[0];
                         while (bytesToCopy > 0)
                         {
+                            // Throw if cancelation is called
+                            token.ThrowIfCancellationRequested();
+
                             int actualBytesToCopy = Math.Min(bytesToCopy, c_bufferSize);
 
                             // read diff string
@@ -254,6 +258,9 @@ namespace Hi3Helper.Data
                         bytesToCopy = (int)control[1];
                         while (bytesToCopy > 0)
                         {
+                            // Throw if cancelation is called
+                            token.ThrowIfCancellationRequested();
+
                             int actualBytesToCopy = Math.Min(bytesToCopy, c_bufferSize);
 
                             extraStream.ReadExactly(newData.Slice(0, actualBytesToCopy));

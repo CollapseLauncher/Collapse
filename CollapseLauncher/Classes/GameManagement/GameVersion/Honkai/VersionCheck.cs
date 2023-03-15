@@ -32,7 +32,7 @@ namespace CollapseLauncher.GameVersioning
             // In this override, the check will be done twice.
             // Check the version in INI file first, then check the version based on XMF file.
             bool IsBaseGameVersionMatch = base.IsGameVersionMatch();
-            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayXMF);
+            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayManifest);
 
             // Choose either one of them in which one is matches.
             return IsBaseGameVersionMatch || IsXMFVersionMatches;
@@ -45,7 +45,7 @@ namespace CollapseLauncher.GameVersioning
             // Check if the GameVersionInstalled == null (version config doesn't exist)
             // and if the XMF file version matches the version from GameVersionAPI, then reinitialize the version config
             // and save the version config by assigning GameVersionInstalled.
-            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayXMF);
+            bool IsXMFVersionMatches = XMFUtility.CheckIfXMFVersionMatches(GameXMFPath, GameVersionAPI.VersionArrayManifest);
             if (GameVersionInstalled == null && IsXMFVersionMatches)
             {
                 GameVersionInstalled = GameVersionAPI;

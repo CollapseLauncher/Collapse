@@ -111,7 +111,7 @@ namespace CollapseLauncher
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
-                await Task.Run(patchUtil.Apply).ConfigureAwait(false);
+                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
 
                 // Delete old file and rename the new file
                 File.Delete(inputFilePath);
@@ -213,12 +213,12 @@ namespace CollapseLauncher
         #region BlocksRepair
         private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
-            // Increment total count current and update the status
-            _progressTotalCountCurrent++;
-
-            // If file isn't patchable
-            if (!asset.IsPatchApplicable)
+            // Redownload the block if marked as need to be repaired
+            if (asset.IsBlockNeedRepair)
             {
+                // Increment total count current and update the status
+                _progressTotalCountCurrent++;
+
                 // Set repair activity status
                 UpdateRepairStatus(
                     string.Format(Lang._GameRepairPage.Status9, asset.CRC),
@@ -228,19 +228,27 @@ namespace CollapseLauncher
                 // Initialize paths and URL of the block
                 string assetBasePath = asset.IsUseAlterName ? asset.AlterN : asset.N;
                 string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(assetBasePath));
-                string assetURL = asset.IsUseAlterName ? asset.AlterRN : asset.N;
+                string assetURL = asset.IsUseAlterName ? asset.AlterRN : asset.RN;
 
                 // Start asset download task
                 await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
-            }
-            // If yes, then run patch routine
-            else
-            {
-                await RepairTypeBlocksActionPatching(asset, _httpClient, token);
+
+                // Pop repair asset display entry
+                PopRepairAssetEntry();
             }
 
-            // Pop repair asset display entry
-            PopRepairAssetEntry();
+            // If patching is applicable, do patching
+            if (asset.IsPatchApplicable)
+            {
+                // Increment total count current and update the status
+                _progressTotalCountCurrent++;
+
+                // Do patching
+                await RepairTypeBlocksActionPatching(asset, _httpClient, token);
+
+                // Pop repair asset display entry
+                PopRepairAssetEntry();
+            }
         }
 
         private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
@@ -289,10 +297,7 @@ namespace CollapseLauncher
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
-                await Task.Run(patchUtil.Apply).ConfigureAwait(false);
-
-                // Delete old file
-                File.Delete(inputFilePath);
+                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
 
                 LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated with new name {asset.AlterN}!", LogType.Default, true);
             }
@@ -307,9 +312,6 @@ namespace CollapseLauncher
                 }
                 patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
             }
-
-            // Pop repair asset display entry
-            PopRepairAssetEntry();
         }
         #endregion
     }

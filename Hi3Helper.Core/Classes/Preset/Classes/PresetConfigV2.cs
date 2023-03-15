@@ -411,7 +411,7 @@ namespace Hi3Helper.Preset
         public string? GameGatewayURLTemplate { get; set; }
         public string? GameGatewayDefault { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public AssetLanguage GameDefaultCVLanguage { get; set; }
+        public AudioLanguageType GameDefaultCVLanguage { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public string? CachesListAPIURL { get; set; }
         public byte? CachesListGameVerID { get; set; }

@@ -135,6 +135,7 @@ Global
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.PublishILTrim|x64.ActiveCfg = Release|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Publish-Portable|x64.ActiveCfg = Release|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release|x64.ActiveCfg = Release|x64
+		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release|x64.Build.0 = Release|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.ReleaseILTrim|x64.ActiveCfg = Release|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release-Portable|x64.ActiveCfg = Release|x64
 	EndGlobalSection

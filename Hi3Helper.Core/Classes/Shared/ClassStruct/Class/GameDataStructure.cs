@@ -26,6 +26,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public long S { get; set; }
         public bool IsPatchApplicable { get; set; }
         public bool IsUseAlterName { get; set; }
+        public bool IsBlockNeedRepair { get; set; }
     }
 
     public class FileProperties
