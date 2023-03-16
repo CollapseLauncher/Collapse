@@ -5,6 +5,7 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:helper="using:Hi3Helper"
     xmlns:conv="using:CollapseLauncher.Pages"
+    xmlns:settype="using:CollapseLauncher.GameSettings"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -90,7 +91,7 @@
                                 </ComboBox>
                                 <Button Margin="16,0">
                                     <Button.Content>
-                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE11B;" FontSize="12"/>
+                                        <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#x3f;" FontSize="12"/>
                                     </Button.Content>
                                     <Button.Flyout>
                                         <Flyout>
@@ -117,6 +118,9 @@
                         <StackPanel x:Name="GameGraphicsPanel" Margin="0,16" Grid.Column="1">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
+                                <TextBlock Text="Graphics Preset" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                <ComboBox x:Name="GameGraphicsPresetSelector" Margin="0,8,0,16" CornerRadius="14"
+                                          ItemsSource="{x:Bind PresetRenderingNames}" SelectedIndex="{x:Bind PresetRenderingIndex, Mode=TwoWay}"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
@@ -272,17 +276,6 @@
                                             <Slider x:Name="AudioMasterVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioMasterVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -297,17 +290,6 @@
                                             <Slider x:Name="AudioBGMVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioBGMVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -322,17 +304,6 @@
                                             <Slider x:Name="AudioSFXVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioSFXVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -373,17 +344,6 @@
                                             <Slider x:Name="AudioCVVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioVoiceVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -398,17 +358,6 @@
                                             <Slider x:Name="AudioElfCVVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioElfVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -423,17 +372,6 @@
                                             <Slider x:Name="AudioCutscenesVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="100" TickPlacement="Outside"
                                                 Value="{x:Bind AudioCutsceneVolume, Mode=TwoWay}"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" Grid.Column="1" HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" Grid.Column="1" HorizontalAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMaximum}" Grid.Column="2" HorizontalAlignment="Right"/>
-                                        </Grid>-->
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

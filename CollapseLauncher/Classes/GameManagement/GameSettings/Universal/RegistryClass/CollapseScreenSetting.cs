@@ -81,6 +81,16 @@ namespace CollapseLauncher.GameSettings.Universal
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
+
+        public bool Equals(CollapseScreenSetting? comparedTo)
+        {
+            if (ReferenceEquals(this, comparedTo)) return true;
+            if (comparedTo == null) return false;
+
+            return comparedTo.UseCustomResolution == this.UseCustomResolution &&
+                comparedTo.UseExclusiveFullscreen == this.UseExclusiveFullscreen &&
+                comparedTo.GameGraphicsAPI == this.GameGraphicsAPI;
+        }
 #nullable disable
         #endregion
     }

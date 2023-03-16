@@ -93,9 +93,9 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// <summary>
         /// This defines "<c>Volumetric Light</c>" combobox In-game settings -> Video.<br/><br/>
         /// <inheritdoc cref="SelectVolumetricLight"/><br/>
-        /// Default: Middle
+        /// Default: Medium
         /// </summary>
-        public SelectVolumetricLight VolumetricLight { get; set; } = SelectVolumetricLight.Middle;
+        public SelectVolumetricLight VolumetricLight { get; set; } = SelectVolumetricLight.Medium;
 
         /// <summary>
         /// This defines "<c>Post Processing</c>" checkbox In-game settings -> Video.<br/><br/>
@@ -184,6 +184,28 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
             }
+        }
+
+        public bool Equals(PersonalGraphicsSettingV2? comparedTo)
+        {
+            if (ReferenceEquals(this, comparedTo)) return true;
+            if (comparedTo == null) return false;
+
+            return comparedTo.UseHDR == this.UseHDR &&
+                comparedTo.UseFXAA == this.UseFXAA &&
+                comparedTo.UsePostFX == this.UsePostFX &&
+                comparedTo.ResolutionQuality == this.ResolutionQuality &&
+                comparedTo.ReflectionQuality == this.ReflectionQuality &&
+                comparedTo.ShadowLevel == this.ShadowLevel &&
+                comparedTo.AmbientOcclusion == this.AmbientOcclusion &&
+                comparedTo.GlobalIllumination == this.GlobalIllumination &&
+                comparedTo.LodGrade == this.LodGrade &&
+                comparedTo.PostFXGrade == this.PostFXGrade &&
+                comparedTo.TargetFrameRateForInLevel == this.TargetFrameRateForInLevel &&
+                comparedTo.TargetFrameRateForOthers == this.TargetFrameRateForOthers &&
+                comparedTo.UseDistortion == this.UseDistortion &&
+                comparedTo.UseDynamicBone == this.UseDynamicBone &&
+                comparedTo.VolumetricLight == this.VolumetricLight;
         }
 #nullable disable
         #endregion

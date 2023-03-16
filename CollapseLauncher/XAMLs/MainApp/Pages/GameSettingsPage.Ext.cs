@@ -1,8 +1,13 @@
-﻿using CollapseLauncher.GameSettings.Honkai.Enums;
+﻿using CollapseLauncher.GameSettings;
+using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameSettings.Honkai.Enums;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
@@ -22,10 +27,80 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public sealed partial class GameSettingsPage : Page
+    public sealed partial class GameSettingsPage : Page, INotifyPropertyChanged
     {
+        #region Fields
         private int prevGraphSelect;
+        #endregion
+        #region Methods
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
 
+        #region Presets
+        public ICollection<string> PresetRenderingNames
+        {
+            get => Settings.Preset_SettingsGraphics.PresetKeys;
+        }
+
+        public int PresetRenderingIndex
+        {
+            get
+            {
+                string name = Settings.Preset_SettingsGraphics.GetPresetKey();
+                int index = Settings.Preset_SettingsGraphics.PresetKeys.IndexOf(name);
+                PersonalGraphicsSettingV2 presetValue = Settings.Preset_SettingsGraphics.GetPresetFromKey(name);
+
+                if (presetValue != null)
+                {
+                    Settings.SettingsGraphics = presetValue;
+                }
+
+                ToggleRenderingSettings(name == PresetConst.DefaultPresetName);
+                return index;
+            }
+            set
+            {
+                if (value < 0) return;
+
+                string name = Settings.Preset_SettingsGraphics.PresetKeys[value];
+                PersonalGraphicsSettingV2 presetValue = Settings.Preset_SettingsGraphics.GetPresetFromKey(name);
+
+                if (presetValue != null)
+                {
+                    Settings.SettingsGraphics = presetValue;
+                }
+                Settings.Preset_SettingsGraphics.SetPresetKey(presetValue);
+
+                ToggleRenderingSettings(name == PresetConst.DefaultPresetName);
+                UpdatePresetRenderingSettings();
+            }
+        }
+
+        private void ToggleRenderingSettings(bool isEnable = true)
+        {
+            RenderingAccuracySelector.IsEnabled = isEnable;
+            ShadowQualitySelector.IsEnabled = isEnable;
+            ReflectionQualitySelector.IsEnabled = isEnable;
+            GameFXPostProcExpander.IsEnabled = isEnable;
+            GlobalIlluminationSelector.IsEnabled = isEnable;
+            AmbientOcclusionSelector.IsEnabled = isEnable;
+            LevelOfDetailSelector.IsEnabled = isEnable;
+            GameVolumetricLightSelector.IsEnabled = isEnable;
+            GameMaxFPSInCombatValue.IsEnabled = isEnable;
+            GameMaxFPSInMainMenuValue.IsEnabled = isEnable;
+        }
+
+        private void UpdatePresetRenderingSettings()
+        {
+            UpdatePresetFPS();
+            UpdatePresetRendering();
+        }
+        #endregion
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -135,6 +210,11 @@ namespace CollapseLauncher.Pages
         }
         #endregion
         #region FPS
+        private void UpdatePresetFPS()
+        {
+            OnPropertyChanged("FPSInCombat");
+            OnPropertyChanged("FPSInMainMenu");
+        }
         public short FPSInCombat
         {
             get => Settings.SettingsGraphics.TargetFrameRateForInLevel;
@@ -148,6 +228,23 @@ namespace CollapseLauncher.Pages
         }
         #endregion
         #region Rendering
+        private void UpdatePresetRendering()
+        {
+            OnPropertyChanged("GraphicsRenderingAccuracy");
+            OnPropertyChanged("GraphicsShadowQuality");
+            OnPropertyChanged("GraphicsReflectionQuality");
+            OnPropertyChanged("IsGraphicsPostFXEnabled");
+            OnPropertyChanged("IsGraphicsPhysicsEnabled");
+            OnPropertyChanged("IsGraphicsFXHDREnabled");
+            OnPropertyChanged("IsGraphicsFXHighQualityEnabled");
+            OnPropertyChanged("IsGraphicsFXFXAAEnabled");
+            OnPropertyChanged("IsGraphicsFXDistortionEnabled");
+            OnPropertyChanged("GraphicsGlobalIllumination");
+            OnPropertyChanged("GraphicsAmbientOcclusion");
+            OnPropertyChanged("GraphicsLevelOfDetail");
+            OnPropertyChanged("GraphicsVolumetricLight");
+        }
+
         public int GraphicsRenderingAccuracy
         {
             get => prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
@@ -255,8 +352,17 @@ namespace CollapseLauncher.Pages
 
         public int GraphicsLevelOfDetail
         {
-            get => (int)Settings.SettingsGraphics.LodGrade;
-            set => Settings.SettingsGraphics.LodGrade = (SelectLodGrade)value;
+            get
+            {
+                int val = (int)Settings.SettingsGraphics.LodGrade;
+                return val > 2 ? 2 : val;
+            }
+            set
+            {
+                int val = value;
+                if (val == 2) val = 3;
+                Settings.SettingsGraphics.LodGrade = (SelectLodGrade)val;
+            }
         }
 
         public int GraphicsVolumetricLight

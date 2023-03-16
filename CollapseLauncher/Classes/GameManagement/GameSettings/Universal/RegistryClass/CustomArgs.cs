@@ -59,6 +59,14 @@ namespace CollapseLauncher.GameSettings.Universal
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
+
+        public bool Equals(CustomArgs? comparedTo)
+        {
+            if (ReferenceEquals(this, comparedTo)) return true;
+            if (comparedTo == null) return false;
+
+            return comparedTo.CustomArgumentValue == this.CustomArgumentValue;
+        }
 #nullable disable
         #endregion
     }

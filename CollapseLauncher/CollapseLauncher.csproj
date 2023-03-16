@@ -52,13 +52,16 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;PORTABLE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Classes\GameManagement\GameSettings\Honkai\GraphicsPreset.json" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230217.4" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230313.1" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<PackageReference Include="System.Text.Json" Version="7.0.2" />
@@ -120,6 +123,9 @@
 		</Content>
 		<Content Update="Assets\Fonts\FontAwesomeSolid6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 

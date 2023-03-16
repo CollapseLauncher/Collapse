@@ -18,7 +18,10 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/BG/StartUpBG.png" Stretch="UniformToFill" VerticalAlignment="Center" Margin="-16,-32,-16,-16"/>
-        <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" >
+        <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <StackPanel.Transitions>
+                <EntranceThemeTransition/>
+            </StackPanel.Transitions>
             <StackPanel x:Name="MenuPanel" CornerRadius="16"
                     Margin="0,32,64,32" Padding="32" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource DialogAcrylicBrush}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -47,17 +50,43 @@
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Left">
-                    <TextBlock Text="Select your preferred CDN"
-                   TextAlignment="Left"
-                   HorizontalAlignment="Left"
-                   TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Select your preferred CDN"
+                           TextAlignment="Left"
+                           HorizontalAlignment="Left"
+                           TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
+                        <Button Margin="8,0">
+                            <Button.Content>
+                                <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#x3f;" FontSize="12"/>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel>
+                                        <TextBlock Text="What is CDN?" Style="{ThemeResource TitleTextBlockStyle}" FontSize="24"/>
+                                        <TextBlock TextWrapping="Wrap" MaxWidth="360">
+                                            <Run Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."/>
+                                        </TextBlock>
+                                        <ItemsControl ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxWidth="360" Margin="0,8,0,-8">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="innerConfig:CDNURLProperty">
+                                                    <StackPanel Margin="0,8">
+                                                        <TextBlock Text="{x:Bind Name}" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16"/>
+                                                        <TextBlock Text="{x:Bind Description}" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
                     <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="2">
                         <RadioButtons.ItemTemplate>
                             <DataTemplate x:DataType="innerConfig:CDNURLProperty">
-                                <RadioButton ToolTipService.ToolTip="{x:Bind Description}">
+                                <RadioButton>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{x:Bind Name}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf05a;" FontSize="18" Margin="8,0,0,0" Opacity="0.25"/>
                                     </StackPanel>
                                 </RadioButton>
                             </DataTemplate>

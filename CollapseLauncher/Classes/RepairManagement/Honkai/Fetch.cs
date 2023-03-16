@@ -373,27 +373,19 @@ namespace CollapseLauncher
             BlockPatchManifest? patchConfigInfo = null;
 
             // Start downloading XMFs and load it to MemoryStream first
-            using (MemoryStream mfs1 = new MemoryStream())
             using (FileStream fs1 = new FileStream(xmfPriPath, FileMode.Create, FileAccess.Write))
             {
                 // Download the primary XMF into MemoryStream
-                await _httpClient.Download(urlPriXMF, mfs1, null, null, token);
-
-                // If completed, then copy it to local FileStream. This to avoid corruption in local XMF file
-                await mfs1.CopyToAsync(fs1);
+                await _httpClient.Download(urlPriXMF, fs1, null, null, token);
             }
 
             // Fetch only RecoverMain is disabled
             if (!_isOnlyRecoverMain)
             {
-                using (MemoryStream mfs2 = new MemoryStream())
                 using (FileStream fs2 = new FileStream(xmfSecPath, FileMode.Create, FileAccess.Write))
                 {
                     // Download the secondary XMF into MemoryStream
-                    await _httpClient.Download(urlSecXMF, mfs2, null, null, token);
-
-                    // If completed, then copy it to local FileStream. This to avoid corruption in local XMF file
-                    await mfs2.CopyToAsync(fs2);
+                    await _httpClient.Download(urlSecXMF, fs2, null, null, token);
 
                     // Fetch for PatchConfig.xmf file (Block patch metadata)
                     patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, token);

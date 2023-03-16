@@ -32,9 +32,9 @@ namespace CollapseLauncher.GameSettings.Base
 
                     Logger.LogWriteLine($"Importing registry {RegistryPath}...");
 
-                    using (XORStream xorS = new XORStream(fs, xorKey))
-                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Decompress))
-                    using (EndianBinaryReader reader = new EndianBinaryReader(comp, Hi3Helper.UABT.EndianType.BigEndian))
+                    using (XORStream xorS = new XORStream(fs, xorKey, true))
+                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Decompress, true))
+                    using (EndianBinaryReader reader = new EndianBinaryReader(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
                     {
                         short count = reader.ReadInt16();
                         Logger.LogWriteLine($"File has {count} values.");
@@ -81,9 +81,10 @@ namespace CollapseLauncher.GameSettings.Base
                 using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
                     fs.Write(Encoding.UTF8.GetBytes("clReg\0"));
-                    using (XORStream xorS = new XORStream(fs, xorKey))
-                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Compress))
-                    using (EndianBinaryWriter writer = new EndianBinaryWriter(comp, Hi3Helper.UABT.EndianType.BigEndian))
+
+                    using (XORStream xorS = new XORStream(fs, xorKey, true))
+                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Compress, true))
+                    using (EndianBinaryWriter writer = new EndianBinaryWriter(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
                     {
                         string[] names = RegistryRoot.GetValueNames();
                         writer.Write((short)names.Length);
@@ -130,7 +131,7 @@ namespace CollapseLauncher.GameSettings.Base
         }
 
         private void WriteValueName(EndianBinaryWriter writer, string name) => writer.Write(name);
-        private string ReadValueName(EndianBinaryReader reader) => reader.ReadString();
+        private string ReadValueName(EndianBinaryReader reader) => reader.ReadString8BitLength();
 
         private void WriteDWord(EndianBinaryWriter writer, object obj)
         {
@@ -164,7 +165,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         private void ReadString(EndianBinaryReader reader, string valueName)
         {
-            string val = reader.ReadString();
+            string val = reader.ReadString8BitLength();
             RegistryRoot.SetValue(valueName, val, RegistryValueKind.String);
         }
 
