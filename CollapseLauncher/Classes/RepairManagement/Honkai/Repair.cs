@@ -235,6 +235,9 @@ namespace CollapseLauncher
 
                 // Pop repair asset display entry
                 PopRepairAssetEntry();
+
+                // Increase the total current size
+                _progressTotalSizeCurrent += asset.S;
             }
 
             // If patching is applicable, do patching
@@ -248,6 +251,9 @@ namespace CollapseLauncher
 
                 // Pop repair asset display entry
                 PopRepairAssetEntry();
+
+                // Increase the total current size
+                _progressTotalSizeCurrent += asset.BlockPatchInfo.Value.PatchSize;
             }
         }
 
