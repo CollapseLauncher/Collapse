@@ -393,7 +393,7 @@ namespace CollapseLauncher
             }
 
             // After all completed, then Deserialize the XMF to build the asset index
-            BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
+            BuildBlockIndex(assetIndex, patchConfigInfo, xmfPriPath);
 #nullable disable
         }
 
