@@ -372,20 +372,20 @@ namespace CollapseLauncher
             // Initialize patch config info variable
             BlockPatchManifest? patchConfigInfo = null;
 
-            // Start downloading XMFs and load it to MemoryStream first
-            using (FileStream fs1 = new FileStream(xmfPriPath, FileMode.Create, FileAccess.Write))
-            {
-                // Download the primary XMF into MemoryStream
-                await _httpClient.Download(urlPriXMF, fs1, null, null, token);
-            }
-
             // Fetch only RecoverMain is disabled
-            if (!_isOnlyRecoverMain)
+            using (FileStream fs1 = new FileStream(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath, FileMode.Create, FileAccess.ReadWrite))
             {
-                using (FileStream fs2 = new FileStream(xmfSecPath, FileMode.Create, FileAccess.Write))
+                // Download the secondary XMF into MemoryStream
+                await _httpClient.Download(_isOnlyRecoverMain ? urlPriXMF : urlSecXMF, fs1, null, null, token);
+
+                // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
+                if (!_isOnlyRecoverMain)
                 {
-                    // Download the secondary XMF into MemoryStream
-                    await _httpClient.Download(urlSecXMF, fs2, null, null, token);
+                    using (FileStream fs2 = new FileStream(xmfPriPath, FileMode.Create, FileAccess.Write))
+                    {
+                        fs1.Position = 0;
+                        fs1.CopyTo(fs2);
+                    }
 
                     // Fetch for PatchConfig.xmf file (Block patch metadata)
                     patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, token);
@@ -393,7 +393,7 @@ namespace CollapseLauncher
             }
 
             // After all completed, then Deserialize the XMF to build the asset index
-            BuildBlockIndex(assetIndex, patchConfigInfo, xmfPriPath);
+            BuildBlockIndex(assetIndex, patchConfigInfo, _isOnlyRecoverMain ? xmfPriPath : xmfSecPath);
 #nullable disable
         }
 
@@ -436,9 +436,9 @@ namespace CollapseLauncher
                 // Check if the patch info exist for current block, then assign blockPatchInfo
                 BlockPatchInfo? blockPatchInfo = null;
 
-                if (patchInfo != null && patchInfo.OldBlockCatalog.ContainsKey(xmfParser.BlockEntry[i].HashString))
+                if (patchInfo != null && patchInfo.NewBlockCatalog.ContainsKey(xmfParser.BlockEntry[i].HashString))
                 {
-                    int blockPatchInfoIndex = patchInfo.OldBlockCatalog[xmfParser.BlockEntry[i].HashString];
+                    int blockPatchInfoIndex = patchInfo.NewBlockCatalog[xmfParser.BlockEntry[i].HashString];
                     blockPatchInfo = patchInfo.PatchAsset[blockPatchInfoIndex];
                 }
 
@@ -446,9 +446,7 @@ namespace CollapseLauncher
                 FilePropertiesRemote assetInfo = new FilePropertiesRemote
                 {
                     N = _blockBasePath + xmfParser.BlockEntry[i].HashString + ".wmv",
-                    AlterN = blockPatchInfo != null ? _blockBasePath + blockPatchInfo.Value.NewBlockName + ".wmv" : null,
                     RN = _blockAsbBaseURL + '/' + xmfParser.BlockEntry[i].HashString + ".wmv",
-                    AlterRN = blockPatchInfo != null ? _blockAsbBaseURL + '/' + blockPatchInfo.Value.NewBlockName + ".wmv" : null,
                     S = xmfParser.BlockEntry[i].Size,
                     CRC = xmfParser.BlockEntry[i].HashString,
                     FT = FileType.Blocks,

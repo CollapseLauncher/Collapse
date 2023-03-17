@@ -13,9 +13,7 @@ namespace Hi3Helper.Shared.ClassStruct
     {
         // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
-        public string AlterN { get; set; }
         public string RN { get; set; }
-        public string AlterRN { get; set; }
         public string CRC { get; set; }
         public byte[] CRCArray { get => HexTool.HexToBytesUnsafe(CRC); }
         public string M { get; set; }
@@ -25,7 +23,6 @@ namespace Hi3Helper.Shared.ClassStruct
         public BlockPatchInfo? BlockPatchInfo { get; set; }
         public long S { get; set; }
         public bool IsPatchApplicable { get; set; }
-        public bool IsUseAlterName { get; set; }
         public bool IsBlockNeedRepair { get; set; }
     }
 

@@ -308,18 +308,57 @@ namespace CollapseLauncher
             _progressPerFileSize = asset.S;
             _progressPerFileSizeCurrent = 0;
 
-            bool isAlterAvailable = asset.AlterN != null;
-
-            // Get original and alternative path
+            // Get original and old path (for patching)
             string filePath = Path.Combine(_gamePath, asset.N);
             FileInfo file = new FileInfo(filePath);
-            string filePathAlter = isAlterAvailable ? Path.Combine(_gamePath, asset.AlterN) : null;
-            FileInfo fileAlter = isAlterAvailable ? new FileInfo(filePathAlter) : null;
+            string filePathOld = asset.BlockPatchInfo.HasValue ? Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.OldBlockName + ".wmv") : null;
+            FileInfo fileOld = asset.BlockPatchInfo.HasValue ? new FileInfo(filePathOld) : null;
 
+            // If old block exist but current block doesn't, check if the hash of the old block matches and patchable
+            if (fileOld?.Exists ?? false && !file.Exists)
+            {
+                // If pass the check above, then do CRC calculation
+                byte[] localOldCRC = CheckMD5(fileOld.OpenRead(), token, false);
+
+                // If the hash matches, then add the patch
+                if (IsArrayMatch(localOldCRC, asset.BlockPatchInfo?.OldHash))
+                {
+                    // Update the total progress and found counter
+                    _progressTotalSizeFound += asset.BlockPatchInfo.Value.PatchSize;
+                    _progressTotalCountFound++;
+
+                    // Set the per size progress
+                    _progressPerFileSizeCurrent = asset.S;
+
+                    // Increment the total current progress
+                    _progressTotalSizeCurrent += asset.S;
+
+                    Dispatch(() => AssetEntry.Add(
+                        new AssetProperty<RepairAssetType>(
+                            Path.GetFileName(asset.N),
+                            RepairAssetType.BlockUpdate,
+                            Path.GetDirectoryName(asset.N),
+                            asset.BlockPatchInfo.Value.PatchSize,
+                            localOldCRC,
+                            asset.CRCArray
+                        )
+                    ));
+
+                    // Mark the block to be patchable
+                    asset.IsPatchApplicable = true;
+
+                    // Add asset for missing/unmatched size file
+                    targetAssetIndex.Add(asset);
+
+                    LogWriteLine($"File [T: {asset.FT}]: {localOldCRC} has an update! Orig CRC: {HexTool.BytesToHexUnsafe(localOldCRC)} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.CRCArray)}", LogType.Warning, true);
+
+                    return;
+                }
+            }
+
+            // Check if the file exist or doesn't have proper size, then mark it.
             bool isFileNotExistOrHasInproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
 
-            // Main block phase
-            // If file doesn't exist or the file size doesn't match, then skip and update the progress
             if (isFileNotExistOrHasInproperSize)
             {
                 // Update the total progress and found counter
@@ -329,6 +368,9 @@ namespace CollapseLauncher
                 // Set the per size progress
                 _progressPerFileSizeCurrent = asset.S;
 
+                // Increment the total current progress
+                _progressTotalSizeCurrent += asset.S;
+
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
@@ -336,6 +378,35 @@ namespace CollapseLauncher
                         Path.GetDirectoryName(asset.N),
                         asset.S,
                         null,
+                        null
+                    )
+                ));
+
+                // Add asset for missing/unmatched size file
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+
+                return;
+            }
+
+            // If pass the check above, then do CRC calculation
+            // Additional: the total file size progress is disabled and will be incremented after this
+            byte[] localCRC = CheckMD5(file.OpenRead(), token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
+            {
+                _progressTotalSizeFound += asset.S;
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.N),
+                        RepairAssetType.Block,
+                        Path.GetDirectoryName(asset.N),
+                        asset.S,
+                        localCRC,
                         asset.CRCArray
                     )
                 ));
@@ -343,126 +414,11 @@ namespace CollapseLauncher
                 // Mark the main block as "need to be repaired"
                 asset.IsBlockNeedRepair = true;
 
-                // Add asset for missing/unmatched size file
-                targetAssetIndex.Add(asset);
-
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
-            }
-
-            // Main block phase
-            // If the main block does have proper size and exist, then do check
-            if (!isFileNotExistOrHasInproperSize)
-            {
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = CheckMD5(file.OpenRead(), token, false);
-
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
-
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            RepairAssetType.Block,
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
-
-                    // Mark the main block as "need to be repaired"
-                    asset.IsBlockNeedRepair = true;
-
-                    // Add asset for unmatched CRC
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
-                }
-            }
-
-            // If the block doesn't have alter, then skip it
-            if (!isAlterAvailable)
-            {
-                // Increment the total current progress
-                _progressTotalSizeCurrent += asset.S;
-                return;
-            }
-
-            // Alter block phase
-            // If the alter block exist, then proceed
-            if (fileAlter?.Exists ?? false)
-            {
-                // Assign the PerFileSize progress from existing fileAlter size
-                _progressPerFileSizeCurrent = fileAlter.Length;
-
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] alterCRC = CheckMD5(fileAlter.OpenRead(), token, false);
-
-                // If local and alter asset CRC doesn't match, then add the alter asset
-                if (!IsArrayMatch(alterCRC, asset.BlockPatchInfo.Value.NewHash))
-                {
-                    // Update the progress
-                    _progressTotalSizeFound += asset.S;
-                    _progressTotalCountFound++;
-
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.AlterN),
-                            RepairAssetType.Block,
-                            Path.GetDirectoryName(asset.AlterN),
-                            asset.S,
-                            alterCRC,
-                            asset.BlockPatchInfo.Value.NewHash
-                        )
-                    ));
-
-                    // Mark asset to use alter name
-                    asset.IsUseAlterName = true;
-
-                    // Mark the alter block as "need to be repaired"
-                    asset.IsBlockNeedRepair = true;
-
-                    // Add asset for unmatched CRC
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.AlterN} is broken! Index CRC: {asset.BlockPatchInfo.Value.NewHash} <--> File CRC: {HexTool.BytesToHexUnsafe(alterCRC)}", LogType.Warning, true);
-                }
-            }
-            // Alter block phase
-            // Else, add the asset index as the block is marked to be patchable
-            else
-            {
-                // Update the total progress and found counter
-                _progressTotalSizeFound += asset.BlockPatchInfo.Value.PatchSize;
-                _progressTotalCountFound++;
-
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(asset.N),
-                        RepairAssetType.BlockUpdate,
-                        Path.GetDirectoryName(asset.N),
-                        asset.BlockPatchInfo.Value.PatchSize,
-                        asset.CRCArray,
-                        asset.BlockPatchInfo.Value.NewHash
-                    )
-                ));
-
-                // Mark asset to be patchable
-                asset.IsPatchApplicable = true;
-
                 // Add asset for unmatched CRC
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} has an update! Orig CRC: {asset.CRC} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.BlockPatchInfo.Value.NewHash)}", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
-
-            // Increment the total current progress
-            _progressTotalSizeCurrent += asset.S;
         }
         #endregion
 
@@ -491,9 +447,10 @@ namespace CollapseLauncher
                 {
                     case FileType.Blocks:
                         catalog.Add(path);
-                        if (asset.AlterN != null)
+                        if (asset.BlockPatchInfo.HasValue)
                         {
-                            catalog.Add(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AlterN)));
+                            string oldBlockPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.OldBlockName + ".wmv");
+                            catalog.Add(oldBlockPath);
                         }
                         break;
                     case FileType.Audio:

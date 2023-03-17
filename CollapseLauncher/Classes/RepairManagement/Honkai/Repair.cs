@@ -98,7 +98,7 @@ namespace CollapseLauncher
             // Set downloading patch status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status12, asset.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, _progressTotalCountCurrent, _progressTotalCount),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
             // Download patch File first
@@ -213,33 +213,6 @@ namespace CollapseLauncher
         #region BlocksRepair
         private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
-            // Redownload the block if marked as need to be repaired
-            if (asset.IsBlockNeedRepair)
-            {
-                // Increment total count current and update the status
-                _progressTotalCountCurrent++;
-
-                // Set repair activity status
-                UpdateRepairStatus(
-                    string.Format(Lang._GameRepairPage.Status9, asset.CRC),
-                    string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
-                    true);
-
-                // Initialize paths and URL of the block
-                string assetBasePath = asset.IsUseAlterName ? asset.AlterN : asset.N;
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(assetBasePath));
-                string assetURL = asset.IsUseAlterName ? asset.AlterRN : asset.RN;
-
-                // Start asset download task
-                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
-
-                // Pop repair asset display entry
-                PopRepairAssetEntry();
-
-                // Increase the total current size
-                _progressTotalSizeCurrent += asset.S;
-            }
-
             // If patching is applicable, do patching
             if (asset.IsPatchApplicable)
             {
@@ -254,7 +227,28 @@ namespace CollapseLauncher
 
                 // Increase the total current size
                 _progressTotalSizeCurrent += asset.BlockPatchInfo.Value.PatchSize;
+
+                return;
             }
+
+            // Increment total count current and update the status
+            _progressTotalCountCurrent++;
+
+            // Set repair activity status
+            UpdateRepairStatus(
+                string.Format(Lang._GameRepairPage.Status9, asset.CRC),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
+                true);
+
+            // Initialize paths and URL of the block
+            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            string assetURL = asset.RN;
+
+            // Start asset download task
+            await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
+
+            // Pop repair asset display entry
+            PopRepairAssetEntry();
         }
 
         private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
@@ -262,13 +256,13 @@ namespace CollapseLauncher
             // Declare variables for patch file and URL and new file path
             string patchURL = _blockPatchDiffBaseURL + "/" + asset.BlockPatchInfo.Value.PatchName + ".wmv";
             string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchName + ".wmv");
-            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
-            string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AlterN));
+            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo.Value.OldBlockName + ".wmv");
+            string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
             // Set downloading patch status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status13, asset.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, _progressTotalCountCurrent, _progressTotalCount),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
             // Get info about patch file
@@ -300,12 +294,19 @@ namespace CollapseLauncher
             BinaryPatchUtility patchUtil = new BinaryPatchUtility();
             try
             {
+                // Set current per file size
+                _progressPerFileSize = asset.S;
+                _progressPerFileSizeCurrent = 0;
+
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
                 patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
                 await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
 
-                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated with new name {asset.AlterN}!", LogType.Default, true);
+                // Delete old block
+                File.Delete(inputFilePath);
+
+                LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.OldBlockName} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
             }
             finally
             {
