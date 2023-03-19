@@ -207,6 +207,9 @@ namespace CollapseLauncher
                     PageStatics._GameRepair = null;
                     break;
             }
+
+            // Spawn Region Notification
+            SpawnRegionNotification(PageStatics._GameVersion.GamePreset.ProfileName);
         }
 
         private void DisposeAllPageStatics()
@@ -215,27 +218,53 @@ namespace CollapseLauncher
             PageStatics._GameCache?.Dispose();
         }
 
-        private void SpawnRegionNotification(string RegionProfileName)
+        private async void SpawnRegionNotification(string RegionProfileName)
         {
+            // Wait until the notification is ready
+            while (!IsLoadNotifComplete)
+            {
+                await Task.Delay(250);
+            }
+
             if (NotificationData.RegionPush == null) return;
 
             NotificationData.EliminatePushList();
             foreach (NotificationProp Entry in NotificationData.RegionPush)
             {
-                if (Entry.RegionProfile == RegionProfileName && (Entry.ValidForVerBelow == null
+                NotificationInvokerProp toEntry = new NotificationInvokerProp
+                {
+                    CloseAction = null,
+                    IsAppNotif = false,
+                    Notification = Entry,
+                    OtherContent = null
+                };
+
+                if (Entry.ActionProperty != null)
+                {
+                    toEntry.OtherContent = Entry.ActionProperty.GetUIElement();
+                }
+
+                if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
                         || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
                         && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
                         || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)))
                 {
-                    NotificationSender.SendNotification(new NotificationInvokerProp
-                    {
-                        CloseAction = null,
-                        IsAppNotif = false,
-                        Notification = Entry,
-                        OtherContent = null
-                    });
+                    NotificationSender.SendNotification(toEntry);
                 }
+                await Task.Delay(250);
             }
+        }
+
+        private bool IsNotificationTimestampValid(NotificationProp Entry)
+        {
+            long nowDateTime = DateTime.Now.ToLocalTime().ToFileTime();
+            long? beginDateTime = Entry.TimeBegin?.ToLocalTime().ToFileTime() ?? 0;
+            long? endDateTime = Entry.TimeEnd?.ToLocalTime().ToFileTime() ?? 0;
+
+            bool isBeginValid = Entry.TimeBegin.HasValue ? beginDateTime < nowDateTime : true;
+            bool isEndValid = Entry.TimeEnd.HasValue ? endDateTime > nowDateTime : true;
+
+            return isBeginValid && isEndValid;
         }
 
         private async void ChangeRegion(object sender, RoutedEventArgs e)

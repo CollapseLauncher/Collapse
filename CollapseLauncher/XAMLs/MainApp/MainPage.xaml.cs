@@ -294,11 +294,14 @@ namespace CollapseLauncher
 
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
-                // Then Spawn the Notification Feed
-                SpawnPushAppNotification();
+                LoadLocalNotificationData();
 
-                // Spawn Region Notification
-                SpawnRegionNotification(PageStatics._GameVersion.GamePreset.ProfileName);
+                // Generate local notification
+                // For Example: Starter notification
+                GenerateLocalAppNotification();
+
+                // Then Spawn the Notification Feed
+                await SpawnPushAppNotification();
 
                 // Check Metadata Update in Background
                 await CheckMetadataUpdateInBackground();
@@ -322,6 +325,7 @@ namespace CollapseLauncher
                 NotificationData = new NotificationPush();
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
+
                 using (Http _http = new Http(true, 5, 1000, null))
                 {
                     using (Stream fs = new MemoryStream())
@@ -337,8 +341,6 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
-            GenerateLocalAppNotification();
-            LoadLocalNotificationData();
         }
 
         private void GenerateLocalAppNotification()
@@ -377,7 +379,7 @@ namespace CollapseLauncher
 
         private Button GenerateNotificationButtonStartProcess(string IconGlyph, string PathOrURL, string Text, bool IsUseShellExecute = true)
         {
-            return GenerateNotificationButton(IconGlyph, Text, (s, e) =>
+            return NotificationPush.GenerateNotificationButton(IconGlyph, Text, (s, e) =>
             {
                 new Process
                 {
@@ -390,42 +392,6 @@ namespace CollapseLauncher
             });
         }
 
-        private Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null)
-        {
-            StackPanel BtnStack = new StackPanel { Margin = new Thickness(8, 0, 8, 0), Orientation = Orientation.Horizontal };
-            BtnStack.Children.Add(
-                new FontIcon
-                {
-                    Glyph = IconGlyph,
-                    FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                    FontSize = 16
-                });
-
-            BtnStack.Children.Add(
-                new TextBlock
-                {
-                    Text = Text,
-                    FontWeight = FontWeights.Medium,
-                    Margin = new Thickness(8, 0, 0, 0),
-                    VerticalAlignment = VerticalAlignment.Center
-                });
-
-            Button Btn = new Button
-            {
-                Content = BtnStack,
-                Margin = new Thickness(0, 0, 0, 16),
-                Style = (Style)Application.Current.Resources["AccentButtonStyle"],
-                CornerRadius = new CornerRadius(16)
-            };
-
-            if (ButtonAction != null)
-            {
-                Btn.Click += ButtonAction;
-            }
-
-            return Btn;
-        }
-
         private async void RunTimeoutCancel(CancellationTokenSource Token)
         {
             await Task.Delay(10000);
@@ -436,7 +402,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void SpawnPushAppNotification()
+        private async Task SpawnPushAppNotification()
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction = null;
             if (NotificationData.AppPush == null) return;
@@ -458,12 +424,19 @@ namespace CollapseLauncher
                         ClickCloseAction = null;
                         break;
                 }
-                if (Entry.ValidForVerBelow == null
+                if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
                     || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
                         && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
                     || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow))
+                {
+                    if (Entry.ActionProperty != null)
+                    {
+                        Entry.OtherUIElement = Entry.ActionProperty.GetUIElement();
+                    }
+
                     SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
                         Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show);
+                }
                 await Task.Delay(250);
             }
         }
@@ -534,6 +507,9 @@ namespace CollapseLauncher
             bool? Show = false)
         {
             if (!(Show ?? false)) return;
+            if (NotificationData.CurrentShowMsgIds.Contains(MsgId)) return;
+
+            NotificationData.CurrentShowMsgIds.Add(MsgId);
 
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -590,7 +566,16 @@ namespace CollapseLauncher
                 if (Disposable || OtherContent != null)
                     Notification.Content = OtherContentContainer;
 
+                Notification.Tag = MsgId;
                 Notification.CloseButtonClick += CloseClickHandler;
+                Notification.CloseButtonClick += (s, a) =>
+                {
+                    int Msg = (int)Notification.Tag;
+                    if (NotificationData.CurrentShowMsgIds.Contains(Msg))
+                    {
+                        NotificationData.CurrentShowMsgIds.Remove(Msg);
+                    }
+                };
                 Container.Children.Add(Notification);
                 NotificationBar.Children.Add(Container);
             });
