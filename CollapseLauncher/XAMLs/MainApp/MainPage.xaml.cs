@@ -334,6 +334,8 @@ namespace CollapseLauncher
                         fs.Position = 0;
                         NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), NotificationPushContext.Default);
                         IsLoadNotifComplete = true;
+
+                        NotificationData.EliminatePushList();
                     }
                 }
             }

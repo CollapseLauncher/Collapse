@@ -228,7 +228,6 @@ namespace CollapseLauncher
 
             if (NotificationData.RegionPush == null) return;
 
-            NotificationData.EliminatePushList();
             foreach (NotificationProp Entry in NotificationData.RegionPush)
             {
                 NotificationInvokerProp toEntry = new NotificationInvokerProp
