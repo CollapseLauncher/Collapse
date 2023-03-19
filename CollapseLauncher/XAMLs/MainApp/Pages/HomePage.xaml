@@ -337,7 +337,7 @@
                                         </PivotItem.Header>
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostEventPanelVisible}">
-                                                <StackPanel Margin="0,0,16,0">
+                                                <StackPanel Margin="0,0,16,10">
                                                     <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
@@ -380,7 +380,7 @@
                                         </PivotItem.Header>
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostNoticePanelVisible}">
-                                                <StackPanel Margin="0,0,16,0">
+                                                <StackPanel Margin="0,0,16,10">
                                                     <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
@@ -423,7 +423,7 @@
                                         </PivotItem.Header>
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostInfoPanelVisible}">
-                                                <StackPanel Margin="0,0,16,0">
+                                                <StackPanel Margin="0,0,16,10">
                                                     <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
