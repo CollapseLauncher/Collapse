@@ -9,31 +9,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource UpdatePageAcrylicBrush}">
-    <Grid Margin="32,16,32,32">
+    <Grid Margin="32,24,32,24">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="185*"/>
-            <ColumnDefinition Width="423*"/>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image Source="ms-appx:///Assets/BG/AiHappy.png"
                VerticalAlignment="Bottom" Margin="-32"
                HorizontalAlignment="Left" Opacity="0.30"
                Width="480" Grid.ColumnSpan="2"/>
         <StackPanel Grid.Column="0">
-            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" FontWeight="Light" FontSize="96"/>
-            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" FontWeight="ExtraBold" FontSize="44" Margin="0,-22,0,0"/>
-            <StackPanel Orientation="Horizontal" Margin="0,48,0,0">
+            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle1}" FontWeight="Light" FontSize="78"/>
+            <TextBlock Style="{ThemeResource DisplayTextBlockStyle}" Text="{x:Bind helper:Locale.Lang._UpdatePage.PageTitle2}" FontWeight="ExtraBold" FontSize="32" Margin="0,-22,0,0"/>
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                 <TextBlock FontSize="16">
                     <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerCurLabel}"/>
                     <Run x:Name="CurrentVersionLabel" Text="1.0.10.0" FontWeight="Bold"/>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,-4,0,0">
-                <TextBlock FontSize="32">
+                <TextBlock FontSize="28">
                     <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerNewLabel}" FontWeight="Medium"/>
                     <Run x:Name="NewVersionLabel" Text="1.0.12.0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                 </TextBlock>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                 <TextBlock>
                     <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.VerChannelLabel}" FontWeight="Medium"/>
                     <Run x:Name="UpdateChannelLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
@@ -51,9 +51,9 @@
                 <RowDefinition/>
                 <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition/>
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid Grid.Row="0">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" FontWeight="Bold"/>
@@ -109,9 +109,6 @@
                         </control:MarkdownTextBlock>
                     </ScrollViewer>
                 </Grid>
-                <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,16,0,0"
-                          Checked="AskUpdateToggle"
-                          Unchecked="AskUpdateToggle"/>
             </Grid>
             <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
                 <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
@@ -120,5 +117,8 @@
                 </Button>
             </StackPanel>
         </Grid>
+        <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"
+                      VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.ColumnSpan="2"
+                      Checked="AskUpdateToggle" Unchecked="AskUpdateToggle"/>
     </Grid>
 </Page>
