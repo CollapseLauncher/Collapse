@@ -157,7 +157,7 @@ namespace CollapseLauncher
             // Assign manifest path and append the parent URL based on the isResVersion boolean
             string manifestPath = Path.Combine(persistentPath, (isSilence ? "silence_" : "") + manifestName + "_persist");
             string appendURLPath = isResVersion ? "/StandaloneWindows64" : "/AssetBundles";
-            parentURL = CombineURLFromString(appendURLPath, appendURLPath);
+            parentURL = CombineURLFromString(parentURL, appendURLPath);
 
             // Check if the parent audio URL isn't empty, then append based on the isResVersion boolean
             if (!string.IsNullOrEmpty(parentAudioURL))
