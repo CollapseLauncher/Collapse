@@ -810,7 +810,7 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(GameDirPath, "pkg_version");
             if (!File.Exists(ManifestPath))
-                await _httpClient.Download(RepoRemoteURL + "/pkg_version", ManifestPath, true, null, null, Token);
+                await _httpClient.Download(ConverterTool.CombineURLFromString(RepoRemoteURL, "/pkg_version"), ManifestPath, true, null, null, Token);
             BuildManifestList(ManifestPath, Entries, ref HashtableManifest, "", "", RepoRemoteURL);
 
             // Build local audio entry.
@@ -902,15 +902,15 @@ namespace CollapseLauncher
 
             // Build data_versions (silence)
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\silence_data_versions");
-            ParentURL = $"{QueryProperty.ClientDesignDataSilURL}/AssetBundles";
+            ParentURL = ConverterTool.CombineURLFromString(QueryProperty.ClientDesignDataSilURL, "AssetBundles");
             // Remove read-only and system attribute from silence_data_version that was set by game.
             try
             {
                 if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
                 using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                    await _httpClient.Download(ParentURL + "/data_versions", fs, null, null, Token);
+                    await _httpClient.Download(ConverterTool.CombineURLFromString(ParentURL, "/data_versions"), fs, null, null, Token);
 
-                LogWriteLine($"data_versions (silence) path: {ParentURL + "/data_versions"}", LogType.Default, true);
+                LogWriteLine($"data_versions (silence) path: {ConverterTool.CombineURLFromString(ParentURL, "/data_versions")}", LogType.Default, true);
 
                 BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
             }
@@ -918,24 +918,24 @@ namespace CollapseLauncher
 
             // Build data_versions
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\data_versions");
-            ParentURL = $"{QueryProperty.ClientDesignDataURL}/AssetBundles";
+            ParentURL = ConverterTool.CombineURLFromString(QueryProperty.ClientDesignDataURL, "AssetBundles");
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await _httpClient.Download(ParentURL + "/data_versions", fs, null, null, Token);
+                await _httpClient.Download(ConverterTool.CombineURLFromString(ParentURL, "/data_versions"), fs, null, null, Token);
 
-            LogWriteLine($"data_versions path: {ParentURL + "/data_versions"}", LogType.Default, true);
+            LogWriteLine($"data_versions path: {ConverterTool.CombineURLFromString(ParentURL, "/data_versions")}", LogType.Default, true);
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent\\AssetBundles", "", ParentURL);
 
             // Build release_res_versions_external
             ManifestPath = Path.Combine(GameDirPath, $"{ExecutablePrefix}_Data\\Persistent\\res_versions");
-            ParentURL = $"{QueryProperty.ClientGameResURL}/StandaloneWindows64";
-            ParentAudioURL = $"{QueryProperty.ClientAudioAssetsURL}/StandaloneWindows64";
+            ParentURL = ConverterTool.CombineURLFromString(QueryProperty.ClientGameResURL, "/StandaloneWindows64");
+            ParentAudioURL = ConverterTool.CombineURLFromString(QueryProperty.ClientAudioAssetsURL, "/StandaloneWindows64");
             if (File.Exists(ManifestPath + "_persist")) TryUnassignDeleteROPersistFile(ManifestPath + "_persist");
             using (FileStream fs = new FileStream(ManifestPath + "_persist", FileMode.Create, FileAccess.Write))
-                await _httpClient.Download(ParentURL + "/release_res_versions_external", fs, null, null, Token);
+                await _httpClient.Download(ConverterTool.CombineURLFromString(ParentURL, "/release_res_versions_external"), fs, null, null, Token);
 
-            LogWriteLine($"release_res_versions_external path: {ParentURL + "/release_res_versions_external"}", LogType.Default, true);
+            LogWriteLine($"release_res_versions_external path: {ConverterTool.CombineURLFromString(ParentURL, "/release_res_versions_external")}", LogType.Default, true);
 
             BuildManifestPersistentList(ManifestPath + "_persist", Entries, ref HashtableManifest, $"{ExecutablePrefix}_Data\\Persistent", "", ParentURL, true, ParentAudioURL);
 
@@ -1004,9 +1004,9 @@ namespace CollapseLauncher
                                 if (Entry.remoteName.Contains("English(US)") && GameVoiceLanguageID == 1)
                                 {
                                     if (Entry.isPatch)
-                                        Entry.remoteURL = $"{parentURL}/AudioAssets/{Entry.remoteName}";
+                                        Entry.remoteURL = ConverterTool.CombineURLFromString(parentURL, $"/AudioAssets/{Entry.remoteName}");
                                     else
-                                        Entry.remoteURL = $"{parentAudioURL}/AudioAssets/{Entry.remoteName}";
+                                        Entry.remoteURL = ConverterTool.CombineURLFromString(parentAudioURL, $"/AudioAssets/{Entry.remoteName}");
 
                                     if (parentPath != "")
                                         Entry.remoteName = $"{parentPath.Replace('\\', '/')}/AudioAssets/{Entry.remoteName}";
@@ -1018,7 +1018,7 @@ namespace CollapseLauncher
                             case ".blk":
                                 if (Entry.isPatch)
                                 {
-                                    Entry.remoteURL = $"{parentURL}/AssetBundles/{Entry.remoteName}";
+                                    Entry.remoteURL = ConverterTool.CombineURLFromString(parentURL, $"/AssetBundles/{Entry.remoteName}");
                                     if (parentPath != "")
                                         Entry.remoteName = $"{parentPath.Replace('\\', '/')}/AssetBundles/{Entry.remoteName}";
 
@@ -1037,7 +1037,7 @@ namespace CollapseLauncher
                                     case "svc_catalog":
                                         break;
                                     case "ctable.dat":
-                                        Entry.remoteURL = $"{parentAudioURL}/{Entry.remoteName}";
+                                        Entry.remoteURL = ConverterTool.CombineURLFromString(parentAudioURL, $"/{Entry.remoteName}");
                                         if (parentPath != "")
                                             Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
 
@@ -1045,7 +1045,7 @@ namespace CollapseLauncher
                                         listInput.Add(Entry);
                                         break;
                                     default:
-                                        Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
+                                        Entry.remoteURL = ConverterTool.CombineURLFromString(parentURL, $"/{Entry.remoteName}");
                                         if (parentPath != "")
                                             Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
 
@@ -1058,7 +1058,7 @@ namespace CollapseLauncher
                     }
                     else
                     {
-                        Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
+                        Entry.remoteURL = ConverterTool.CombineURLFromString(parentURL, $"/{Entry.remoteName}");
                         if (parentPath != "")
                             Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
                         hashtable.Add(Entry.remoteName, Entry);
@@ -1081,7 +1081,7 @@ namespace CollapseLauncher
                 Entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
                 if (parentPath != "")
                     Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
-                Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
+                Entry.remoteURL = ConverterTool.CombineURLFromString(parentURL, $"/{Entry.remoteName}");
 
                 IsHashHasValue = hashtable.ContainsKey(Entry.remoteName);
                 if (!IsHashHasValue)

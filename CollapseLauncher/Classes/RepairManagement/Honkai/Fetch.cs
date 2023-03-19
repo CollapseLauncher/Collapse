@@ -51,7 +51,6 @@ namespace CollapseLauncher
                 {
                     gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
                     _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
-                    Console.WriteLine(_gameRepoURL);
                 }
 
                 // Region: XMFAndAssetIndex
@@ -126,7 +125,7 @@ namespace CollapseLauncher
         private void BuildAndEnumerateVideoVersioningFile(IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, string assetBundleURL)
         {
             // Get the base URL
-            string baseURL = "http://" + assetBundleURL + "/Video/";
+            string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
 
             // Build video versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_videoBaseLocalPath), "Version.txt"), false))
@@ -134,14 +133,14 @@ namespace CollapseLauncher
                 // Iterate the metadata to be converted into asset index
                 foreach (CGMetadata metadata in enumEntry)
                 {
-                    // Only add videos with size
-                    if (metadata.FileSize != 0)
+                    // Only add remote available videos (not build-in)
+                    if (!metadata.InStreamingAssets)
                     {
                         string name = metadata.CgPath + ".usm";
                         assetIndex.Add(new FilePropertiesRemote
                         {
-                            N = Path.Combine(_videoBaseLocalPath, name),
-                            RN = baseURL + name,
+                            N = CombineURLFromString(_videoBaseLocalPath, name),
+                            RN = CombineURLFromString(baseURL, name),
                             S = metadata.FileSize,
                             FT = FileType.Video
                         });
@@ -159,7 +158,7 @@ namespace CollapseLauncher
         {
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
-            string manifestRemotePath = string.Format(_audioBaseRemotePath + "manifest.m", $"{_gameVersion.Major}_{_gameVersion.Minor}");
+            string manifestRemotePath = string.Format(CombineURLFromString(_audioBaseRemotePath, "manifest.m"), $"{_gameVersion.Major}_{_gameVersion.Minor}");
             KianaAudioManifest manifest;
 
             try
@@ -206,7 +205,7 @@ namespace CollapseLauncher
                     FilePropertiesRemote audioAsset = new FilePropertiesRemote
                     {
                         RN = audioInfo.Path,
-                        N = _audioBaseLocalPath + audioInfo.Name + ".pck",
+                        N = CombineURLFromString(_audioBaseLocalPath, audioInfo.Name + ".pck"),
                         S = audioInfo.Size,
                         FT = FileType.Audio,
                         CRC = audioInfo.HashString,
@@ -231,7 +230,7 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Set the URL and try get the status
-            string audioURL = string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + audioInfo.Path;
+            string audioURL = string.Format(_audioBaseRemotePath, CombineURLFromString($"{_gameVersion.Major}_{_gameVersion.Minor}", audioInfo.Path));
             (int, bool) urlStatus = await _httpClient.GetURLStatus(audioURL, token);
 
             LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
@@ -348,7 +347,7 @@ namespace CollapseLauncher
                     assetInfo.N = reader.ReadString();
                     assetInfo.S = reader.ReadInt64();
                     assetInfo.CRC = HexTool.BytesToHexUnsafe(reader.ReadBytes(16));
-                    assetInfo.RN = _gameRepoURL + '/' + assetInfo.N;
+                    assetInfo.RN = CombineURLFromString(_gameRepoURL, assetInfo.N);
 
                     // Add assetInfo
                     assetIndex.Add(assetInfo);
@@ -364,9 +363,9 @@ namespace CollapseLauncher
             string xmfSecPath = Path.Combine(_gamePath, $"BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
 
             // Set Primary XMF URL
-            string urlPriXMF = _repoURL + '/' + _blockBasePath + "Blocks.xmf";
+            string urlPriXMF = CombineURLFromString(_repoURL, _blockBasePath, "Blocks.xmf");
             // Set Secondary XMF URL
-            string urlSecXMF = _blockAsbBaseURL + $"/Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf";
+            string urlSecXMF = CombineURLFromString(_blockAsbBaseURL, $"/Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
 
 #nullable enable
             // Initialize patch config info variable
@@ -400,7 +399,7 @@ namespace CollapseLauncher
         private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Http _httpClient, CancellationToken token)
         {
             // Set PatchConfig URL
-            string urlPatchXMF = _blockPatchBaseURL + "/PatchConfig.xmf";
+            string urlPatchXMF = CombineURLFromString(_blockPatchBaseURL, "/PatchConfig.xmf");
 
             // Start downloading XMF and load it to MemoryStream first
             using (MemoryStream mfs = new MemoryStream())
@@ -445,8 +444,8 @@ namespace CollapseLauncher
                 // Assign as FilePropertiesRemote
                 FilePropertiesRemote assetInfo = new FilePropertiesRemote
                 {
-                    N = _blockBasePath + xmfParser.BlockEntry[i].HashString + ".wmv",
-                    RN = _blockAsbBaseURL + '/' + xmfParser.BlockEntry[i].HashString + ".wmv",
+                    N = CombineURLFromString(_blockBasePath, xmfParser.BlockEntry[i].HashString + ".wmv"),
+                    RN = CombineURLFromString(_blockAsbBaseURL, xmfParser.BlockEntry[i].HashString + ".wmv"),
                     S = xmfParser.BlockEntry[i].Size,
                     CRC = xmfParser.BlockEntry[i].HashString,
                     FT = FileType.Blocks,

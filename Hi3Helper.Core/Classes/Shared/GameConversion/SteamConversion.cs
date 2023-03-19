@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -80,9 +81,8 @@ namespace Hi3Helper.Shared.GameConversion
 
             FileInfo = new FileInfo(FilePath);
 
-            FileURL = repoURL +
-                (FileIndex.FT == FileType.Generic ? FileIndex.N :
-                                                    Path.GetDirectoryName(FileIndex.N).Replace('\\', '/') + $"/{FileIndex.RN}");
+            FileURL = CombineURLFromString(repoURL,
+                FileIndex.FT == FileType.Generic ? FileIndex.N : Path.GetDirectoryName(FileIndex.N).Replace('\\', '/'), $"/{FileIndex.RN}");
 
             http.DownloadProgress += HttpAdapter;
 
@@ -109,7 +109,7 @@ namespace Hi3Helper.Shared.GameConversion
             long FileExistingLength;
             foreach (var block in FileIndex.BlkC)
             {
-                FileURL = repoURL + FileIndex.N + $"/{block.BlockHash}.wmv";
+                FileURL = CombineURLFromString(repoURL, FileIndex.N, $"/{block.BlockHash}.wmv");
                 FilePath = Path.Combine(targetPath, BlockBasePath, block.BlockHash + ".wmv");
                 FileInfo = new FileInfo(FilePath);
 

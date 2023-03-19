@@ -350,7 +350,7 @@ namespace CollapseLauncher
                     // Add asset for missing/unmatched size file
                     targetAssetIndex.Add(asset);
 
-                    LogWriteLine($"File [T: {asset.FT}]: {localOldCRC} has an update! Orig CRC: {HexTool.BytesToHexUnsafe(localOldCRC)} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.CRCArray)}", LogType.Warning, true);
+                    LogWriteLine($"File [T: {asset.FT}]: {HexTool.BytesToHexUnsafe(localOldCRC)} has an update! Orig CRC: {HexTool.BytesToHexUnsafe(localOldCRC)} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.CRCArray)}", LogType.Warning, true);
 
                     return;
                 }

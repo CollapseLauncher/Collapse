@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
 using System;
@@ -57,7 +58,7 @@ namespace CollapseLauncher
                 // Subscribe the progress to the adapter
                 httpInstance.DownloadProgress += HttpInstance_DownloadProgressAdapter;
                 // Concat the URL Prefix and Relative URL
-                string absoluteURL = cdnProp.URLPrefix + relativeURL;
+                string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
 
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 

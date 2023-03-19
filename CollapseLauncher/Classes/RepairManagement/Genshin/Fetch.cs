@@ -64,7 +64,7 @@ namespace CollapseLauncher
             // If the basic package version doesn't exist, then download it.
             if (!File.Exists(ManifestPath))
             {
-                await _httpClient.Download(_gameRepoURL + "/pkg_version", ManifestPath, true, null, null, token);
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), ManifestPath, true, null, null, token);
             }
 
             // Parse basic package version.
@@ -157,12 +157,12 @@ namespace CollapseLauncher
             // Assign manifest path and append the parent URL based on the isResVersion boolean
             string manifestPath = Path.Combine(persistentPath, (isSilence ? "silence_" : "") + manifestName + "_persist");
             string appendURLPath = isResVersion ? "/StandaloneWindows64" : "/AssetBundles";
-            parentURL += appendURLPath;
+            parentURL = CombineURLFromString(appendURLPath, appendURLPath);
 
             // Check if the parent audio URL isn't empty, then append based on the isResVersion boolean
             if (!string.IsNullOrEmpty(parentAudioURL))
             {
-                parentAudioURL += appendURLPath;
+                parentAudioURL = CombineURLFromString(parentAudioURL, appendURLPath);
             }
 
             // Make sure the file has been deleted (if exist) before redownloading it
@@ -174,7 +174,7 @@ namespace CollapseLauncher
             try
             {
                 // Download the manifest
-                await _httpClient.Download(parentURL + '/' + manifestName, manifestPath, true, null, null, token);
+                await _httpClient.Download(CombineURLFromString(parentURL, manifestName), manifestPath, true, null, null, token);
                 LogWriteLine($"{manifestName} (isSilence: {isSilence}) URL: {parentURL}", LogType.Default, true);
 
                 // Parse the manifest
@@ -342,7 +342,7 @@ namespace CollapseLauncher
                 }
 
                 // Append remote URL for download later.
-                entry.remoteURL = $"{parentURL}/{entry.remoteName}";
+                entry.remoteURL = CombineURLFromString(parentURL, entry.remoteName);
 
                 // Check if the entry is duplicated. If not, then add to asset index.
                 isHashHasValue = hashtable.ContainsKey(entry.remoteName);
@@ -391,9 +391,9 @@ namespace CollapseLauncher
                                 if (Entry.remoteName.Contains("English(US)") && GameVoiceLanguageID == 1)
                                 {
                                     if (Entry.isPatch)
-                                        Entry.remoteURL = $"{parentURL}/AudioAssets/{Entry.remoteName}";
+                                        Entry.remoteURL = CombineURLFromString(parentURL, $"AudioAssets/{Entry.remoteName}");
                                     else
-                                        Entry.remoteURL = $"{parentAudioURL}/AudioAssets/{Entry.remoteName}";
+                                        Entry.remoteURL = CombineURLFromString(parentAudioURL, $"AudioAssets/{Entry.remoteName}");
 
                                     if (!string.IsNullOrEmpty(parentPath))
                                         Entry.remoteName = $"{parentPathSlash}/AudioAssets/{Entry.remoteName}";
@@ -405,7 +405,7 @@ namespace CollapseLauncher
                             case ".blk":
                                 if (Entry.isPatch)
                                 {
-                                    Entry.remoteURL = $"{parentURL}/AssetBundles/{Entry.remoteName}";
+                                    Entry.remoteURL = CombineURLFromString(parentURL, $"AssetBundles/{Entry.remoteName}");
                                     if (!string.IsNullOrEmpty(parentPath))
                                         Entry.remoteName = $"{parentPathSlash}/AssetBundles/{Entry.remoteName}";
 
@@ -424,7 +424,7 @@ namespace CollapseLauncher
                                     case "svc_catalog":
                                         break;
                                     case "ctable.dat":
-                                        Entry.remoteURL = $"{parentAudioURL}/{Entry.remoteName}";
+                                        Entry.remoteURL = CombineURLFromString(parentAudioURL, Entry.remoteName);
                                         if (!string.IsNullOrEmpty(parentPath))
                                             Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
 
@@ -432,7 +432,7 @@ namespace CollapseLauncher
                                         assetIndex.Add(Entry);
                                         break;
                                     default:
-                                        Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
+                                        Entry.remoteURL = CombineURLFromString(parentURL, Entry.remoteName);
                                         if (!string.IsNullOrEmpty(parentPath))
                                             Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
 
@@ -445,7 +445,7 @@ namespace CollapseLauncher
                     }
                     else
                     {
-                        Entry.remoteURL = $"{parentURL}/{Entry.remoteName}";
+                        Entry.remoteURL = CombineURLFromString(parentURL, Entry.remoteName);
                         if (!string.IsNullOrEmpty(parentPath))
                             Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
                         hashtable.Add(Entry.remoteName, Entry);

@@ -108,7 +108,7 @@ namespace Hi3Helper.Data
         {
             using (MemoryStream response = new MemoryStream())
             {
-                await this._httpClient.Download(ValProp.ClientGameResURL + "/StandaloneWindows64/base_revision", response, null, null, cancelToken).ConfigureAwait(false);
+                await this._httpClient.Download(ConverterTool.CombineURLFromString(ValProp.ClientGameResURL, "/StandaloneWindows64/base_revision"), response, null, null, cancelToken).ConfigureAwait(false);
                 string[] responseData = Encoding.UTF8.GetString(response.ToArray()).Split(' ');
 
                 ValProp.ClientAudioAssetsURL = string.Format("{0}/output_{1}_{2}/client",

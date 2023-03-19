@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.WinUI.UI.Controls;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -48,7 +49,7 @@ namespace CollapseLauncher.Pages
             ReleaseNotesBox.Text = Lang._UpdatePage.LoadingRelease;
 
             MemoryStream ResponseStream = new MemoryStream();
-            string ReleaseNoteURL = string.Format(UpdateRepoChannel + "changelog_{0}.md", IsPreview ? "preview" : "stable");
+            string ReleaseNoteURL = string.Format(CombineURLFromString(UpdateRepoChannel, "changelog_{0}.md"), IsPreview ? "preview" : "stable");
 
             try
             {

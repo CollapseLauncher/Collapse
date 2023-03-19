@@ -79,7 +79,7 @@ namespace CollapseLauncher
             }
             else
             {
-                string audioURL = string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + asset.RN;
+                string audioURL = ConverterTool.CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), asset.RN);
                 await RepairAssetTypeGeneric(asset, _httpClient, token, audioURL);
             }
         }
@@ -90,7 +90,7 @@ namespace CollapseLauncher
             _progressTotalCountCurrent++;
 
             // Declare variables for patch file and URL and new file path
-            string patchURL = string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}") + asset.AudioPatchInfo.Value.PatchFilename;
+            string patchURL = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), asset.AudioPatchInfo.Value.PatchFilename);
             string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_audioPatchBaseLocalPath), asset.AudioPatchInfo.Value.PatchFilename);
             string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
             string outputFilePath = inputFilePath + "_tmp";
@@ -225,9 +225,6 @@ namespace CollapseLauncher
                 // Pop repair asset display entry
                 PopRepairAssetEntry();
 
-                // Increase the total current size
-                _progressTotalSizeCurrent += asset.BlockPatchInfo.Value.PatchSize;
-
                 return;
             }
 
@@ -254,7 +251,7 @@ namespace CollapseLauncher
         private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             // Declare variables for patch file and URL and new file path
-            string patchURL = _blockPatchDiffBaseURL + "/" + asset.BlockPatchInfo.Value.PatchName + ".wmv";
+            string patchURL = ConverterTool.CombineURLFromString(_blockPatchDiffBaseURL, asset.BlockPatchInfo.Value.PatchName + ".wmv");
             string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchName + ".wmv");
             string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo.Value.OldBlockName + ".wmv");
             string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
@@ -281,6 +278,9 @@ namespace CollapseLauncher
                 byte[] patchCRC = await Task.Run(() => CheckMD5(patchInfo.OpenRead(), token, false)).ConfigureAwait(false);
                 if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
                 {
+                    // Revert back the total size
+                    _progressTotalSizeCurrent -= asset.BlockPatchInfo.Value.PatchSize;
+
                     // Redownload the patch file
                     await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
                     continue;

@@ -61,7 +61,7 @@ namespace CollapseLauncher
                 FallbackCDNUtil.DownloadProgress -= FetchIngredientsAPI_Progress;
             }
 
-            RepoRemoteURL = RepoList[GameVersionString] + '/';
+            RepoRemoteURL = RepoList[GameVersionString];
             IndexRemoteURL = string.Format(AppGameRepairIndexURLPrefix, SourceProfile.ProfileName, PatchProp.SourceVer);
 
             try
@@ -345,7 +345,7 @@ namespace CollapseLauncher
             int i = 0;
             int j = BrokenFile.Count;
 
-            RepoRemoteURL = RepoList[PatchProp.SourceVer] + '/';
+            RepoRemoteURL = RepoList[PatchProp.SourceVer];
 
             foreach (FileProperties Entry in BrokenFile)
             {
@@ -356,7 +356,7 @@ namespace CollapseLauncher
 
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = RepoRemoteURL + Entry.FileName;
+                InputURL = ConverterTool.CombineURLFromString(RepoRemoteURL, Entry.FileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));

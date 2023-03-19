@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Http;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,7 +61,7 @@ namespace CollapseLauncher
                 UpdateStatus();
                 UpdateStopwatch = Stopwatch.StartNew();
 
-                await _httpClient.Download(ChannelURL + "fileindex.json", _databuf, null, null, TokenSource.Token);
+                await _httpClient.Download(ConverterTool.CombineURLFromString(ChannelURL, "fileindex.json"), _databuf, null, null, TokenSource.Token);
                 _databuf.Position = 0;
                 FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
             }
@@ -121,7 +122,7 @@ namespace CollapseLauncher
             foreach (fileProp _entry in UpdateFiles)
             {
                 Status.message = _entry.p;
-                URL = ChannelURL + _entry.p;
+                URL = CombineURLFromString(ChannelURL, _entry.p);
                 Output = Path.Combine(TempPath, NormalizePath(_entry.p));
 
                 Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, i, FilesCount);

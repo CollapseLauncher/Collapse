@@ -179,20 +179,20 @@ namespace CollapseLauncher
             return BuildGatewayURL(dispatcher.region_list.Where(x => x.name == preferredGateway).FirstOrDefault().dispatch_url);
         }
 
-        private string BuildAssetBundleURL(Gateway gateway) => gateway.asset_bundle_url_list[0] + "/{0}/editor_compressed/";
+        private string BuildAssetBundleURL(Gateway gateway) => CombineURLFromString(gateway.asset_bundle_url_list[0], "/{0}/editor_compressed/");
 
         private string BuildDispatcherURL(string baseDispatcherURL)
         {
             // Format the Dispatcher URL based on template
-            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
-            return string.Format($"{baseDispatcherURL}{_gamePreset.GameDispatchURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
+            long curTime = GetUnixTimestamp();
+            return string.Format(CombineURLFromString(baseDispatcherURL, _gamePreset.GameDispatchURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 
         private string BuildGatewayURL(string baseGatewayURL)
         {
             // Format the Gateway URL based on template
-            long curTime = (int)Math.Truncate(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
-            return string.Format($"{baseGatewayURL}{_gamePreset.GameGatewayURLTemplate}", _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
+            long curTime = GetUnixTimestamp();
+            return string.Format(CombineURLFromString(baseGatewayURL, _gamePreset.GameGatewayURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex, CancellationToken token)
@@ -205,7 +205,7 @@ namespace CollapseLauncher
 
             // Get the asset index properties
             string baseURL = string.Format(_gameRepoURL, type.ToString().ToLowerInvariant());
-            string assetIndexURL = string.Format(baseURL + "{0}Version.unity3d", type == CacheAssetType.Data ? "Data" : "Resource");
+            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d"), type == CacheAssetType.Data ? "Data" : "Resource");
             MemoryStream stream = new MemoryStream();
             XORStream xorStream = new XORStream(stream);
 

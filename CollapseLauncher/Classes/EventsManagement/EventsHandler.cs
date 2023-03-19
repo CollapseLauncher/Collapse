@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -35,7 +36,7 @@ namespace CollapseLauncher
                 UpdateChannelName = UpdateChannelName + "portable";
             }
 
-            string ChannelURL = string.Format(UpdateRepoChannel + "{0}/", UpdateChannelName);
+            string ChannelURL = string.Format(CombineURLFromString(UpdateRepoChannel, "{0}/"), UpdateChannelName);
 
             while (true)
             {
@@ -46,7 +47,7 @@ namespace CollapseLauncher
                         using (Http http = new Http())
                         using (MemoryStream RemoteData = new MemoryStream())
                         {
-                            await http.Download(ChannelURL + "fileindex.json", RemoteData, null, null, new CancellationToken());
+                            await http.Download(CombineURLFromString(ChannelURL, "fileindex.json"), RemoteData, null, null, new CancellationToken());
                             RemoteData.Position = 0;
                             UpdateProperty = (Prop)JsonSerializer.Deserialize(RemoteData, typeof(Prop), PropContext.Default);
                         }

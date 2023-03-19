@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -95,8 +96,8 @@ namespace CollapseLauncher.Dialogs
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_client, s, repoListURL, tokenSource.Token);
                 s.Position = 0;
                 Dictionary<string, string> repoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
-                repoURL = repoList[GameAPIProp.data.game.latest.version] + '/';
-                repoIndexURL = GetCurrentCDN().URLPrefix + string.Format(AppGameRepairIndexURLPrefix, GamePreset.ProfileName, GameAPIProp.data.game.latest.version);
+                repoURL = repoList[GameAPIProp.data.game.latest.version];
+                repoIndexURL = CombineURLFromString(GetCurrentCDN().URLPrefix, string.Format(AppGameRepairIndexURLPrefix, GamePreset.ProfileName, GameAPIProp.data.game.latest.version));
             }
         }
 

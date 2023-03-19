@@ -259,7 +259,7 @@ namespace CollapseLauncher
             {
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = BaseURL + Entry.FileName;
+                InputURL = CombineURLFromString(BaseURL, Entry.FileName);
 
                 ConvertDetail = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, Entry.FileName, Entry.FileSizeStr));
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))

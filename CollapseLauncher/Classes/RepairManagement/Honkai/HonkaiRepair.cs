@@ -22,22 +22,22 @@ namespace CollapseLauncher
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
         private string _assetBaseURL { get; set; }
-        private string _blockBaseURL { get => _assetBaseURL + $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"; }
-        private string _blockAsbBaseURL { get => _blockBaseURL + $"/asb"; }
-        private string _blockPatchBaseURL { get => _blockBaseURL + $"/patch"; }
-        private string _blockPatchDiffBaseURL { get => _blockPatchBaseURL + $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"; }
-        private string _blockPatchDiffPath { get => _assetBasePath + "Asb/pc/Patch"; }
-        private string _blockBasePath { get => _assetBasePath + "Asb/pc/"; }
+        private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
+        private string _blockAsbBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/asb"); }
+        private string _blockPatchBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/patch"); }
+        private string _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"); }
+        private string _blockPatchDiffPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/Patch"); }
+        private string _blockBasePath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/"); }
         private bool _isOnlyRecoverMain { get; set; }
         #endregion
 
         #region ExtensionProperties
         private protected AudioLanguageType _audioLanguage { get; set; }
-        private protected string _audioBaseLocalPath { get => _assetBasePath + "Audio/GeneratedSoundBanks/Windows/"; }
-        private protected string _audioBaseRemotePath { get => _assetBaseURL + "Audio/{0}/Windows/"; }
-        private protected string _audioPatchBaseLocalPath { get => _audioBaseLocalPath + "Patch/"; }
-        private protected string _audioPatchBaseRemotePath { get => _audioBaseRemotePath + "Patch/"; }
-        private protected string _videoBaseLocalPath { get => _assetBasePath + "Video/"; }
+        private protected string _audioBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Audio/GeneratedSoundBanks/Windows/"); }
+        private protected string _audioBaseRemotePath { get => ConverterTool.CombineURLFromString(_assetBaseURL, "Audio/{0}/Windows/"); }
+        private protected string _audioPatchBaseLocalPath { get => ConverterTool.CombineURLFromString(_audioBaseLocalPath, "Patch/"); }
+        private protected string _audioPatchBaseRemotePath { get => ConverterTool.CombineURLFromString(_audioBaseRemotePath, "Patch/"); }
+        private protected string _videoBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Video/"); }
         #endregion
 
         public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset, bool onlyRecoverMainAsset = false)

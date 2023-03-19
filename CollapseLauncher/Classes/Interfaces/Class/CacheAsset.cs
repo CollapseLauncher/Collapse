@@ -11,7 +11,7 @@ namespace CollapseLauncher.Interfaces
         public string ConcatNRemote => $"{N}_{CRC}";
         public string BaseURL { get; set; }
         public string BasePath { get; set; }
-        public string ConcatURL => $"{BaseURL}{ConcatNRemote}";
+        public string ConcatURL => ConverterTool.CombineURLFromString(BaseURL, ConcatNRemote);
         public string ConcatPath => Path.Combine(BasePath, ConverterTool.NormalizePath(ConcatN));
 
         // Filepath for input.
