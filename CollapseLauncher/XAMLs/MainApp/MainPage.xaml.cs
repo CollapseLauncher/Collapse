@@ -294,11 +294,14 @@ namespace CollapseLauncher
 
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
-                LoadLocalNotificationData();
 
                 // Generate local notification
                 // For Example: Starter notification
                 GenerateLocalAppNotification();
+
+                // Load local settings
+                // For example: Ignore list
+                LoadLocalNotificationData();
 
                 // Then Spawn the Notification Feed
                 await SpawnPushAppNotification();
@@ -570,18 +573,22 @@ namespace CollapseLauncher
 
                 Notification.Tag = MsgId;
                 Notification.CloseButtonClick += CloseClickHandler;
-                Notification.CloseButtonClick += (s, a) =>
+                Notification.Closed += (s, a) =>
                 {
-                    int Msg = (int)Notification.Tag;
-                    if (NotificationData.CurrentShowMsgIds.Contains(Msg))
+                    int msg = (int)(s as InfoBar).Tag;
+
+                    if (NotificationData.CurrentShowMsgIds.Contains(msg))
                     {
-                        NotificationData.CurrentShowMsgIds.Remove(Msg);
+                        NotificationData.CurrentShowMsgIds.Remove(msg);
                     }
                 };
+
                 Container.Children.Add(Notification);
                 NotificationBar.Children.Add(Container);
             });
         }
+
+
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
