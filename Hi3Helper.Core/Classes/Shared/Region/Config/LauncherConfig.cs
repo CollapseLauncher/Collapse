@@ -34,6 +34,12 @@ namespace Hi3Helper.Shared.Region
                 Name = "Statically",
                 URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
                 Description = Lang._Misc.CDNDescription_Statically
+            },
+            new CDNURLProperty
+            {
+                Name = "jsDelivr",
+                URLPrefix = "https://cdn.jsdelivr.net/gh/neon-nyan/CollapseLauncher-ReleaseRepo@latest",
+                Description = Lang._Misc.CDNDescription_jsDelivr
             }
         };
 

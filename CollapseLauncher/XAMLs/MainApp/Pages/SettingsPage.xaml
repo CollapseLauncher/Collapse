@@ -50,7 +50,7 @@
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Margin="0,-8,0,16">
-                            <RadioButtons x:Name="AppCDNSelection" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" MaxColumns="2"  ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
+                            <RadioButtons x:Name="AppCDNSelection" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" MaxColumns="3" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
                                 <RadioButtons.ItemTemplate>
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                         <RadioButton ToolTipService.ToolTip="{x:Bind Description}">

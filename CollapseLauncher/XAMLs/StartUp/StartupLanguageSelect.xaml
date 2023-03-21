@@ -62,11 +62,18 @@
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel>
-                                        <TextBlock Text="What is CDN?" Style="{ThemeResource TitleTextBlockStyle}" FontSize="24"/>
-                                        <TextBlock TextWrapping="Wrap" MaxWidth="360">
-                                            <Run Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."/>
+                                        <TextBlock>
+                                            <Run Text="What is CDN?" FontWeight="Bold" FontSize="20"/>
+                                            <Run Text="short for" FontSize="12"/>
+                                            <Run Text="Content Delivery Network" FontWeight="Bold" FontSize="12"/>
                                         </TextBlock>
-                                        <ItemsControl ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxWidth="360" Margin="0,8,0,-8">
+                                        <TextBlock TextWrapping="Wrap" MaxWidth="380" Margin="0,8,0,0">
+                                            <Run Text="CDN" FontWeight="Bold"/>
+                                            <Run Text="is a system used to make launcher files available to a larger audience, quickly and efficiently." TextDecorations="None"/>
+                                        </TextBlock>
+                                        <TextBlock Text="Collapse selects GitHub as the default provider."/>
+                                        <TextBlock Text="CDNs available:" FontWeight="Bold" FontSize="20" Margin="0,12,0,0"/>
+                                        <ItemsControl ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxWidth="380" Margin="0,0,0,-8">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                                     <StackPanel Margin="0,8">
@@ -81,7 +88,7 @@
                             </Button.Flyout>
                         </Button>
                     </StackPanel>
-                    <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="2">
+                    <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="3">
                         <RadioButtons.ItemTemplate>
                             <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                 <RadioButton>
