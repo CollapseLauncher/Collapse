@@ -25,6 +25,7 @@
                 public string Graphics_APIHelp2 { get; set; } = LangFallback?._GameSettingsPage.Graphics_APIHelp2;
                 public string Graphics_APIHelp3 { get; set; } = LangFallback?._GameSettingsPage.Graphics_APIHelp3;
                 public string Graphics_SpecPanel { get; set; } = LangFallback?._GameSettingsPage.Graphics_SpecPanel;
+                public string Graphics_Preset { get; set; } = LangFallback?._GameSettingsPage.Graphics_Preset;
                 public string Graphics_Render { get; set; } = LangFallback?._GameSettingsPage.Graphics_Render;
                 public string Graphics_Shadow { get; set; } = LangFallback?._GameSettingsPage.Graphics_Shadow;
                 public string Graphics_Reflection { get; set; } = LangFallback?._GameSettingsPage.Graphics_Reflection;

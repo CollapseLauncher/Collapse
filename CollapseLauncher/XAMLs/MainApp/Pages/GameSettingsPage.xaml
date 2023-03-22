@@ -118,7 +118,7 @@
                         <StackPanel x:Name="GameGraphicsPanel" Margin="0,16" Grid.Column="1">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
-                                <TextBlock Text="Graphics Preset" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Preset}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                 <ComboBox x:Name="GameGraphicsPresetSelector" Margin="0,8,0,16" CornerRadius="14"
                                           ItemsSource="{x:Bind PresetRenderingNames}" SelectedIndex="{x:Bind PresetRenderingIndex, Mode=TwoWay}"/>
                                 <Grid>
