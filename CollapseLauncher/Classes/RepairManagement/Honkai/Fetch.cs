@@ -230,7 +230,7 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Set the URL and try get the status
-            string audioURL = string.Format(_audioBaseRemotePath, CombineURLFromString($"{_gameVersion.Major}_{_gameVersion.Minor}", audioInfo.Path));
+            string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), audioInfo.Path);
             (int, bool) urlStatus = await _httpClient.GetURLStatus(audioURL, token);
 
             LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
