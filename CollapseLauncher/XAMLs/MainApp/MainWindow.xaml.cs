@@ -127,7 +127,7 @@ namespace CollapseLauncher
                 SetInitialDragArea();
                 m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
-                m_presenter.IsResizable = true;
+                m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
 
                 switch (GetAppTheme())
