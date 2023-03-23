@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -127,7 +128,7 @@ namespace CollapseLauncher
             using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read))
             {
                 // Calculate the asset CRC (SHA1)
-                byte[] hashArray = CheckSHA1(fs, _gameSalt, token);
+                byte[] hashArray = CheckHash(fs, new HMACSHA1(_gameSalt), token);
 
                 // If the asset CRC doesn't match, then add the file to asset index.
                 if (!IsArrayMatch(asset.CRCArray, hashArray))

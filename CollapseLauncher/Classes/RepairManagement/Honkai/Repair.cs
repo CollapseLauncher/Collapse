@@ -275,7 +275,7 @@ namespace CollapseLauncher
             while (true)
             {
                 // Verify the patch file and if it doesn't match, then redownload it
-                byte[] patchCRC = await Task.Run(() => CheckMD5(patchInfo.OpenRead(), token, false)).ConfigureAwait(false);
+                byte[] patchCRC = await Task.Run(() => CheckHash(patchInfo.OpenRead(), MD5.Create(), token, false)).ConfigureAwait(false);
                 if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
                 {
                     // Revert back the total size

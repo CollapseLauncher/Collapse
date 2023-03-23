@@ -100,7 +100,7 @@ namespace CollapseLauncher
             }
 
             // If pass the check above, then do CRC calculation
-            byte[] localCRC = CheckMD5(file.OpenRead(), token);
+            byte[] localCRC = CheckHash(file.OpenRead(), MD5.Create(), token);
 
             // If local and asset CRC doesn't match, then add the asset
             byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);

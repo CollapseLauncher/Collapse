@@ -318,7 +318,7 @@ namespace CollapseLauncher
             if (fileOld?.Exists ?? false && !file.Exists)
             {
                 // If pass the check above, then do CRC calculation
-                byte[] localOldCRC = CheckMD5(fileOld.OpenRead(), token, false);
+                byte[] localOldCRC = CheckHash(fileOld.OpenRead(), MD5.Create(), token, false);
 
                 // If the hash matches, then add the patch
                 if (IsArrayMatch(localOldCRC, asset.BlockPatchInfo?.OldHash))
@@ -392,7 +392,7 @@ namespace CollapseLauncher
 
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = CheckMD5(file.OpenRead(), token);
+            byte[] localCRC = CheckHash(file.OpenRead(), MD5.Create(), token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))

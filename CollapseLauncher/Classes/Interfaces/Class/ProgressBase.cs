@@ -288,105 +288,38 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected virtual byte[] CheckSHA1(Stream fs, byte[] gameSalt, CancellationToken token)
+        protected virtual byte[] CheckHash(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
-            // Initialize buffer and put the chunk into the buffer using stack
+            // Initialize MD5 instance and assign buffer
             byte[] buffer = new byte[_bufferBigLength];
-            int read;
-
-            // Initialize HMACSHA1 hash
-            HMACSHA1 _hash = new HMACSHA1(gameSalt);
 
             // Do read activity
-            while ((read = fs.Read(buffer)) > 0)
+            int read;
+            while ((read = stream.Read(buffer)) > 0)
             {
                 // Throw Cancellation exception if detected
                 token.ThrowIfCancellationRequested();
 
-                // Calculate the hash block
-                _hash.TransformBlock(buffer, 0, read, buffer, 0);
+                // Append buffer into hash block
+                hashProvider.TransformBlock(buffer, 0, read, buffer, 0);
 
-                // Increment the _progressTotalSize
                 lock (this)
                 {
-                    _progressTotalSizeCurrent += read;
+                    // Increment total size counter
+                    if (updateTotalProgress) { _progressTotalSizeCurrent += read; }
+                    // Increment per file size counter
+                    _progressPerFileSizeCurrent += read;
                 }
 
-                // Update the CRC progress
+                // Update status and progress for MD5 calculation
                 UpdateProgressCRC();
             }
 
-            // Do final transform
-            _hash.TransformFinalBlock(buffer, 0, read);
-
-            // Return as hash array
-            return _hash.Hash;
-        }
-
-        protected virtual byte[] CheckCRC(Stream stream, CancellationToken token)
-        {
-            // Reset CRC instance and assign buffer
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            Span<byte> buffer = stackalloc byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) > 0)
-                {
-                    token.ThrowIfCancellationRequested();
-                    _crcInstance.Append(buffer.Slice(0, read));
-
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        _progressTotalSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
-
-                    // Update status and progress for CRC calculation
-                    UpdateProgressCRC();
-                }
-            }
+            // Finalize the hash calculation
+            hashProvider.TransformFinalBlock(buffer, 0, read);
 
             // Return computed hash byte
-            return _crcInstance.Hash;
-        }
-
-        protected virtual byte[] CheckMD5(Stream stream, CancellationToken token, bool updateTotalProgress = true)
-        {
-            // Initialize MD5 instance and assign buffer
-            MD5 md5Instance = MD5.Create();
-            byte[] buffer = new byte[_bufferBigLength];
-
-            using (stream)
-            {
-                int read;
-                while ((read = stream.Read(buffer)) >= _bufferBigLength)
-                {
-                    token.ThrowIfCancellationRequested();
-                    // Append buffer into hash block
-                    md5Instance.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
-
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        if (updateTotalProgress) { _progressTotalSizeCurrent += read; }
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
-
-                    // Update status and progress for MD5 calculation
-                    UpdateProgressCRC();
-                }
-
-                // Finalize the hash calculation
-                md5Instance.TransformFinalBlock(buffer, 0, read);
-            }
-
-            // Return computed hash byte
-            return md5Instance.Hash;
+            return hashProvider.Hash;
         }
         #endregion
 
