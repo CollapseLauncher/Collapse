@@ -521,67 +521,69 @@
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
-                                <StackPanel Width="224">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf07b;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <Button x:Name="OpenCacheFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf65e;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                    <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ad;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <Button x:Name="UninstallGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <Button x:Name="ConvertVersionButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf363;" FontSize="18"/>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
+                                <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" Margin="-16,-16">
+                                    <StackPanel Width="224" Margin="16,16">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf07b;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button x:Name="OpenCacheFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf65e;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ad;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button x:Name="UninstallGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button x:Name="ConvertVersionButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf363;" FontSize="18"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                            <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
+                                        </StackPanel>
+                                        <StackPanel x:Name="MiscPanel">
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                            <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
+                                            <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
+                                        </StackPanel>
                                     </StackPanel>
-                                    <StackPanel x:Name="MiscPanel">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
-                                        <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
-                                    </StackPanel>
-                                </StackPanel>
+                                </ScrollViewer>
                             </Flyout>
                         </Button.Flyout>
                     </Button>
