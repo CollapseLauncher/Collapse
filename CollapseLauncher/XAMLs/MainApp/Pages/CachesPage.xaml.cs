@@ -2,6 +2,7 @@
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -17,6 +18,60 @@ namespace CollapseLauncher.Pages
         public CachesPage()
         {
             this.InitializeComponent();
+        }
+
+        private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
+        {
+            string tag = (string)sender.Tag;
+            bool isFast = tag == "Fast";
+
+            RunCheckRoutine(isFast);
+        }
+
+        private void StartCachesCheck(object sender, RoutedEventArgs e)
+        {
+            string tag = (string)(sender as ButtonBase).Tag;
+            bool isFast = tag == "Fast";
+
+            RunCheckRoutine(isFast);
+        }
+
+        public async void RunCheckRoutine(bool isFast)
+        {
+            CheckUpdateBtn.Flyout.Hide();
+            CheckUpdateBtn.IsEnabled = false;
+            CancelBtn.IsEnabled = true;
+
+            try
+            {
+                AddEvent();
+
+                bool IsNeedUpdate = await _GameCache.StartCheckRoutine(isFast);
+
+                UpdateCachesBtn.IsEnabled = IsNeedUpdate;
+                CheckUpdateBtn.IsEnabled = !IsNeedUpdate;
+                CancelBtn.IsEnabled = false;
+
+                UpdateCachesBtn.Visibility = IsNeedUpdate ? Visibility.Visible : Visibility.Collapsed;
+                CheckUpdateBtn.Visibility = IsNeedUpdate ? Visibility.Collapsed : Visibility.Visible;
+            }
+            catch (TaskCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            catch (OperationCanceledException)
+            {
+                ResetStatusAndButtonState();
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                LogWriteLine($"An error occured while checking cache!\r\n{ex}", LogType.Error, true);
+            }
+            finally
+            {
+                RemoveEvent();
+            }
         }
 
         public async void StartCachesUpdate(object sender, RoutedEventArgs e)
@@ -49,43 +104,6 @@ namespace CollapseLauncher.Pages
             {
                 ErrorSender.SendException(ex);
                 LogWriteLine($"An error occured while updating cache!\r\n{ex}", LogType.Error, true);
-            }
-            finally
-            {
-                RemoveEvent();
-            }
-        }
-
-        public async void StartCachesCheck(object sender, RoutedEventArgs e)
-        {
-            CheckUpdateBtn.IsEnabled = false;
-            CancelBtn.IsEnabled = true;
-
-            try
-            {
-                AddEvent();
-
-                bool IsNeedUpdate = await _GameCache.StartCheckRoutine();
-
-                UpdateCachesBtn.IsEnabled = IsNeedUpdate;
-                CheckUpdateBtn.IsEnabled = !IsNeedUpdate;
-                CancelBtn.IsEnabled = false;
-
-                UpdateCachesBtn.Visibility = IsNeedUpdate ? Visibility.Visible : Visibility.Collapsed;
-                CheckUpdateBtn.Visibility = IsNeedUpdate ? Visibility.Collapsed : Visibility.Visible;
-            }
-            catch (TaskCanceledException)
-            {
-                ResetStatusAndButtonState();
-            }
-            catch (OperationCanceledException)
-            {
-                ResetStatusAndButtonState();
-            }
-            catch (Exception ex)
-            {
-                ErrorSender.SendException(ex);
-                LogWriteLine($"An error occured while checking cache!\r\n{ex}", LogType.Error, true);
             }
             finally
             {

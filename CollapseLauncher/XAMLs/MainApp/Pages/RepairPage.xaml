@@ -50,7 +50,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="230"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="240"/>
+                        <ColumnDefinition Width="270"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.PerProgressTitle1}" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
@@ -70,19 +70,51 @@
                         </control:DockPanel>
                         <ProgressBar x:Name="RepairTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
-                        <Button x:Name="RepairFilesBtn" CornerRadius="16" Width="128"
-                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartGameRepair">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" FontWeight="Medium" Margin="8,0"/>
+                    <Grid Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="RepairFilesBtn" CornerRadius="16" HorizontalAlignment="Stretch" Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartGameRepair">
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf6e3;" FontSize="16"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn1}" FontWeight="Medium" Margin="8,0"/>
+                            </StackPanel>
                         </Button>
-                        <Button x:Name="CheckFilesBtn" CornerRadius="16" Width="128"
-                                    Style="{ThemeResource AccentButtonStyle}" Click="StartGameCheck">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2}" FontWeight="Medium" Margin="8,0"/>
-                        </Button>
-                        <Button x:Name="CancelBtn" IsEnabled="False" CornerRadius="16" 
-                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
+                        <SplitButton x:Name="CheckFilesBtn" HorizontalAlignment="Stretch" CornerRadius="16"
+                                     Click="StartGameCheckSplitButton" Tag="Fast" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf002;" FontSize="16"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" FontWeight="Medium" Margin="8,0"/>
+                            </StackPanel>
+                            <SplitButton.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <StackPanel Margin="-8">
+                                        <Button x:Name="CheckFilesQuickBtn" HorizontalAlignment="Stretch"
+                                                Click="StartGameCheck" Margin="0,0,0,8" Tag="Fast"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2QuickDesc}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf101;" FontSize="16"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Quick}" FontWeight="Medium" Margin="8,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="CheckFilesFullBtn" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
+                                                Click="StartGameCheck" Tag="Full"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2FullDesc}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="16"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GameRepairPage.RepairBtn2Full}" FontWeight="Medium" Margin="8,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
+                        <Button Grid.Column="1" x:Name="CancelBtn" HorizontalAlignment="Stretch" IsEnabled="False" CornerRadius="16" Margin="16,0,0,0" Click="CancelOperation">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
                         </Button>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
                     </StackPanel>
                 </Grid>
             </StackPanel>

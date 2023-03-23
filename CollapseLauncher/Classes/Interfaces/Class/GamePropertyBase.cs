@@ -42,6 +42,7 @@ namespace CollapseLauncher.Interfaces
         protected PresetConfigV2 _gamePreset { get; set; }
         protected GameVersion _gameVersion { get => PageStatics._GameVersion.GetGameExistingVersion().Value; }
         protected List<T2> _assetIndex { get; set; }
+        protected bool _useFastMethod { get; set; }
 
         public ObservableCollection<AssetProperty<T1>> AssetEntry { get; set; }
     }

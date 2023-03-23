@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -96,6 +97,12 @@ namespace CollapseLauncher
                 targetAssetIndex.Add(asset);
 
                 LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
+                return;
+            }
+
+            // Skip CRC check if fast method is used
+            if (_useFastMethod)
+            {
                 return;
             }
 

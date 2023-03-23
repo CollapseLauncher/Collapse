@@ -124,6 +124,12 @@ namespace CollapseLauncher
                 return;
             }
 
+            // Skip CRC check if fast method is used
+            if (_useFastMethod)
+            {
+                return;
+            }
+
             // If above passes, then run the CRC check
             using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read))
             {

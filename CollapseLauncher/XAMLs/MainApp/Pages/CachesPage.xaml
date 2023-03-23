@@ -49,7 +49,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="240"/>
+                        <ColumnDefinition Width="270"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,32,0">
                         <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
@@ -60,19 +60,53 @@
                         </control:DockPanel>
                         <ProgressBar x:Name="CachesTotalProgressBar" Maximum="100" Value="0" Height="25"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                    <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
                         <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
                                     Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf019;" FontSize="16"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>
+                            </StackPanel>
                         </Button>
-                        <Button x:Name="CheckUpdateBtn" CornerRadius="16" 
-                                    Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesCheck">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2}" FontWeight="Medium" Margin="8,0"/>
-                        </Button>
-                        <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False"
-                                    Width="96" Margin="16,0,0,0" Click="CancelOperation">
+                        <SplitButton x:Name="CheckUpdateBtn" HorizontalAlignment="Stretch" CornerRadius="16"
+                                     Tag="Fast" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}"
+                                     Click="StartCachesCheckSplitButton">
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf002;" FontSize="16"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" FontWeight="Medium" Margin="8,0"/>
+                            </StackPanel>
+                            <SplitButton.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <StackPanel Margin="-8">
+                                        <Button x:Name="CheckUpdateQuickBtn" HorizontalAlignment="Stretch"
+                                                Click="StartCachesCheck" Margin="0,0,0,8" Tag="Fast"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2QuickDesc}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf101;" FontSize="16"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Quick}" FontWeight="Medium" Margin="8,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="CheckUpdateFullBtn" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
+                                                Click="StartCachesCheck" Tag="Full"
+                                                ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2FullDesc}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="16"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn2Full}" FontWeight="Medium" Margin="8,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
+                        <Button x:Name="CancelBtn" CornerRadius="16" IsEnabled="False" Grid.Column="1" Margin="16,0,0,0" HorizontalAlignment="Stretch" Click="CancelOperation">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="8,0"/>
                         </Button>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10">
                     </StackPanel>
                 </Grid>
             </StackPanel>

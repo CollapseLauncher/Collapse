@@ -2,6 +2,7 @@
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.Statics.PageStatics;
@@ -18,8 +19,25 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
         }
 
-        private async void StartGameCheck(object sender, RoutedEventArgs e)
+        private void StartGameCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
         {
+            string tag = (string)sender.Tag;
+            bool isFast = tag == "Fast";
+
+            RunCheckRoutine(isFast);
+        }
+
+        private void StartGameCheck(object sender, RoutedEventArgs e)
+        {
+            string tag = (string)(sender as ButtonBase).Tag;
+            bool isFast = tag == "Fast";
+
+            RunCheckRoutine(isFast);
+        }
+
+        private async void RunCheckRoutine(bool isFast)
+        {
+            CheckFilesBtn.Flyout.Hide();
             CheckFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
 
@@ -27,7 +45,7 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                bool IsGameBroken = await _GameRepair.StartCheckRoutine();
+                bool IsGameBroken = await _GameRepair.StartCheckRoutine(isFast);
 
                 RepairFilesBtn.IsEnabled = IsGameBroken;
                 CheckFilesBtn.IsEnabled = !IsGameBroken;

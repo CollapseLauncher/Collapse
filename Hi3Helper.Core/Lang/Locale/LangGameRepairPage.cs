@@ -38,7 +38,9 @@
                 public string RepairBtn1 { get; set; } = LangFallback?._GameRepairPage.RepairBtn1;
                 public string RepairBtn2 { get; set; } = LangFallback?._GameRepairPage.RepairBtn2;
                 public string RepairBtn2Full { get; set; } = LangFallback?._GameRepairPage.RepairBtn2Full;
+                public string RepairBtn2FullDesc { get; set; } = LangFallback?._GameRepairPage.RepairBtn2FullDesc;
                 public string RepairBtn2Quick { get; set; } = LangFallback?._GameRepairPage.RepairBtn2Quick;
+                public string RepairBtn2QuickDesc { get; set; } = LangFallback?._GameRepairPage.RepairBtn2QuickDesc;
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._GameRepairPage.OverlayNotInstalledTitle;
                 public string OverlayNotInstalledSubtitle { get; set; } = LangFallback?._GameRepairPage.OverlayNotInstalledSubtitle;
                 public string OverlayGameRunningTitle { get; set; } = LangFallback?._GameRepairPage.OverlayGameRunningTitle;

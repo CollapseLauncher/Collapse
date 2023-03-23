@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -159,8 +160,21 @@ namespace CollapseLauncher
                 return;
             }
 
+            // If fast method is used, check the patch appliance based on its length
+            if (_useFastMethod)
+            {
+                // If the patch info has a value and the length is similar, then flag it as patch applicable
+                if (asset.AudioPatchInfo.HasValue && file.Length == asset.S)
+                {
+                    asset.IsPatchApplicable = true;
+                }
+
+                // Skip CRC check
+                return;
+            }
+
             // If pass the check above, then do MD5 Hash calculation
-            localCRC = CheckMD5(file.OpenRead(), token);
+            localCRC = CheckHash(file.OpenRead(), MD5.Create(), token);
 
             // Get size difference for summarize the _progressTotalSizeCurrent
             long sizeDifference = asset.S - file.Length;
@@ -245,8 +259,14 @@ namespace CollapseLauncher
                 return;
             }
 
+            // Skip CRC check if fast method is used
+            if (_useFastMethod)
+            {
+                return;
+            }
+
             // If pass the check above, then do CRC calculation
-            byte[] localCRC = CheckMD5(file.OpenRead(), token);
+            byte[] localCRC = CheckHash(file.OpenRead(), MD5.Create(), token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -387,6 +407,12 @@ namespace CollapseLauncher
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
 
+                return;
+            }
+
+            // Skip CRC check if fast method is used
+            if (_useFastMethod)
+            {
                 return;
             }
 

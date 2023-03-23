@@ -38,8 +38,9 @@ namespace CollapseLauncher
 
         ~GenshinRepair() => Dispose();
 
-        public async Task<bool> StartCheckRoutine()
+        public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
+            _useFastMethod = useFastCheck;
             return await TryRunExamineThrow(CheckRoutine());
         }
 

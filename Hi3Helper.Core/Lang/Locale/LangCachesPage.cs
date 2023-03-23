@@ -27,6 +27,10 @@
                 public string CachesTotalStatusChecking { get; set; } = LangFallback?._CachesPage.CachesTotalStatusChecking;
                 public string CachesBtn1 { get; set; } = LangFallback?._CachesPage.CachesBtn1;
                 public string CachesBtn2 { get; set; } = LangFallback?._CachesPage.CachesBtn2;
+                public string CachesBtn2Full { get; set; } = LangFallback?._CachesPage.CachesBtn2Full;
+                public string CachesBtn2FullDesc { get; set; } = LangFallback?._CachesPage.CachesBtn2FullDesc;
+                public string CachesBtn2Quick { get; set; } = LangFallback?._CachesPage.CachesBtn2Quick;
+                public string CachesBtn2QuickDesc { get; set; } = LangFallback?._CachesPage.CachesBtn2QuickDesc;
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._CachesPage.OverlayNotInstalledTitle;
                 public string OverlayNotInstalledSubtitle { get; set; } = LangFallback?._CachesPage.OverlayNotInstalledSubtitle;
                 public string OverlayGameRunningTitle { get; set; } = LangFallback?._CachesPage.OverlayGameRunningTitle;

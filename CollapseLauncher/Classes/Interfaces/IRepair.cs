@@ -9,7 +9,7 @@ namespace CollapseLauncher.Interfaces
         ObservableCollection<AssetProperty<RepairAssetType>> AssetEntry { get; set; }
         event EventHandler<TotalPerfileProgress> ProgressChanged;
         event EventHandler<TotalPerfileStatus> StatusChanged;
-        Task<bool> StartCheckRoutine();
+        Task<bool> StartCheckRoutine(bool useFastCheck = false);
         Task StartRepairRoutine(bool showInteractivePrompt = false);
         void CancelRoutine();
     }
