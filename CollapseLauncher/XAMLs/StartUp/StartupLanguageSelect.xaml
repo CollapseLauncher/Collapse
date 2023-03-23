@@ -63,7 +63,7 @@
                                 <Flyout>
                                     <StackPanel>
                                         <TextBlock>
-                                            <Run Text="What is CDN?" FontWeight="Bold" FontSize="20"/>
+                                            <Run Text="What is a CDN?" FontWeight="Bold" FontSize="20"/>
                                             <Run Text="short for" FontSize="12"/>
                                             <Run Text="Content Delivery Network" FontWeight="Bold" FontSize="12"/>
                                         </TextBlock>
