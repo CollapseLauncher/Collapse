@@ -85,6 +85,7 @@ namespace Hi3Helper
 
             InvokeProp.AllocConsole();
             InvokeProp.m_consoleHandle = InvokeProp.GetStdHandle(-11);
+            Console.OutputEncoding = Encoding.UTF8;
 
             if (!InvokeProp.GetConsoleMode(InvokeProp.m_consoleHandle, out uint mode))
             {
