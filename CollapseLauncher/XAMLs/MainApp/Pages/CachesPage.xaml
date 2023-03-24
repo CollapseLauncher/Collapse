@@ -10,7 +10,6 @@
     xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
-
     <Grid>
         <Grid Margin="32,80,32,18" x:Name="PageContent">
             <Grid.RowDefinitions>
@@ -65,8 +64,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="UpdateCachesBtn" CornerRadius="16" 
-                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Width="128" Click="StartCachesUpdate">
+                        <Button x:Name="UpdateCachesBtn" HorizontalAlignment="Stretch" CornerRadius="16"
+                                    Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartCachesUpdate">
                             <StackPanel Orientation="Horizontal">
                                 <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf019;" FontSize="16"/>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesBtn1}" FontWeight="Medium" Margin="8,0"/>

@@ -25,7 +25,7 @@ namespace CollapseLauncher.Pages
             string tag = (string)sender.Tag;
             bool isFast = tag == "Fast";
 
-            RunCheckRoutine(isFast);
+            RunCheckRoutine(sender, isFast, true);
         }
 
         private void StartCachesCheck(object sender, RoutedEventArgs e)
@@ -33,14 +33,19 @@ namespace CollapseLauncher.Pages
             string tag = (string)(sender as ButtonBase).Tag;
             bool isFast = tag == "Fast";
 
-            RunCheckRoutine(isFast);
+            RunCheckRoutine(sender, isFast, false);
         }
 
-        public async void RunCheckRoutine(bool isFast)
+        public async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
             CheckUpdateBtn.Flyout.Hide();
             CheckUpdateBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
+
+            if (!isMainButton)
+            {
+                SetMainCheckUpdateBtnProperty(sender);
+            }
 
             try
             {
@@ -109,6 +114,17 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
             }
+        }
+
+        private void SetMainCheckUpdateBtnProperty(object sender)
+        {
+            string btnText = ((TextBlock)((StackPanel)((Button)sender).Content).Children[1]).Text;
+            string btnTag = (string)((Button)sender).Tag;
+            string btnToolTip = (string)ToolTipService.GetToolTip((Button)sender);
+
+            ((TextBlock)((StackPanel)CheckUpdateBtn.Content).Children[1]).Text = btnText;
+            CheckUpdateBtn.Tag = btnTag;
+            ToolTipService.SetToolTip(CheckUpdateBtn, btnToolTip);
         }
 
         private void AddEvent()

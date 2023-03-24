@@ -24,7 +24,7 @@ namespace CollapseLauncher.Pages
             string tag = (string)sender.Tag;
             bool isFast = tag == "Fast";
 
-            RunCheckRoutine(isFast);
+            RunCheckRoutine(sender, isFast, true);
         }
 
         private void StartGameCheck(object sender, RoutedEventArgs e)
@@ -32,14 +32,19 @@ namespace CollapseLauncher.Pages
             string tag = (string)(sender as ButtonBase).Tag;
             bool isFast = tag == "Fast";
 
-            RunCheckRoutine(isFast);
+            RunCheckRoutine(sender, isFast, false);
         }
 
-        private async void RunCheckRoutine(bool isFast)
+        private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
             CheckFilesBtn.Flyout.Hide();
             CheckFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
+
+            if (!isMainButton)
+            {
+                SetMainCheckFilesBtnProperty(sender);
+            }
 
             try
             {
@@ -108,6 +113,17 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
             }
+        }
+
+        private void SetMainCheckFilesBtnProperty(object sender)
+        {
+            string btnText = ((TextBlock)((StackPanel)((Button)sender).Content).Children[1]).Text;
+            string btnTag = (string)((Button)sender).Tag;
+            string btnToolTip = (string)ToolTipService.GetToolTip((Button)sender);
+
+            ((TextBlock)((StackPanel)CheckFilesBtn.Content).Children[1]).Text = btnText;
+            CheckFilesBtn.Tag = btnTag;
+            ToolTipService.SetToolTip(CheckFilesBtn, btnToolTip);
         }
 
         private void AddEvent()
