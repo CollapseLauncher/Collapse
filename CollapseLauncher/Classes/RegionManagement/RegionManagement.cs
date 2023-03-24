@@ -271,15 +271,16 @@ namespace CollapseLauncher
             // Disable ChangeRegionBtn and hide flyout
             ToggleChangeRegionBtn(in sender, true);
 
+            string GameCategory = (string)ComboBoxGameCategory.SelectedValue;
             string GameRegion = GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue);
 
             // Set and Save CurrentRegion in AppConfig
-            SetAndSaveConfigValue("GameCategory", (string)ComboBoxGameCategory.SelectedValue);
-            SetAndSaveConfigValue("GameRegion", GameRegion);
+            SetAndSaveConfigValue("GameCategory", GameCategory);
+            SetPreviousGameRegion(GameCategory, GameRegion);
 
             // Load Game ConfigV2 List before loading the region
             IsLoadRegionComplete = false;
-            PresetConfigV2 Preset = LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GameRegion);
+            PresetConfigV2 Preset = LoadCurrentConfigV2(GameCategory, GameRegion);
 
             // Start region loading
             DelayedLoadingRegionPageTask();

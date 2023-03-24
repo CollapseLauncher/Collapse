@@ -84,6 +84,42 @@ namespace Hi3Helper.Preset
             return true;
         }
 
+        public static int GetPreviousGameRegion(string GameCategoryName)
+        {
+            string iniKeyName = $"LastRegion_{GameCategoryName.Replace(" ", string.Empty)}";
+            string regionName;
+
+            if (!IsConfigKeyExist(iniKeyName))
+            {
+                regionName = ConfigV2GameRegions.FirstOrDefault();
+                SetAndSaveConfigValue(iniKeyName, regionName);
+                return ConfigV2GameRegions.IndexOf(regionName);
+            }
+
+            regionName = GetAppConfigValue(iniKeyName).ToString();
+            if (ConfigV2GameRegions.Contains(regionName))
+            {
+                return ConfigV2GameRegions.IndexOf(regionName);
+            }
+
+            regionName = ConfigV2GameRegions.FirstOrDefault();
+            return ConfigV2GameRegions.IndexOf(regionName);
+        }
+
+        public static void SetPreviousGameRegion(string GameCategoryName, string RegionName, bool isSave = true)
+        {
+            string iniKeyName = $"LastRegion_{GameCategoryName.Replace(" ", string.Empty)}";
+
+            if (isSave)
+            {
+                SetAndSaveConfigValue(iniKeyName, RegionName);
+            }
+            else
+            {
+                SetAppConfigValue(iniKeyName, RegionName);
+            }
+        }
+
         public static bool IsConfigV2StampExist() => CheckConfigV2StampContent(AppGameConfigV2StampPath);
         public static bool IsConfigV2ContentExist() => CheckConfigV2StampContent(AppGameConfigV2MetadataPath);
 

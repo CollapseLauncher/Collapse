@@ -476,7 +476,8 @@ namespace CollapseLauncher.Dialogs
             PageStatics._GameVersion.GamePreset = TargetProfile;
             PageStatics._GameVersion.UpdateGamePath(Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation));
 
-            SetAndSaveConfigValue("GameRegion", TargetProfile.ZoneName);
+            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+            SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
             LoadAppConfig();
         }
 

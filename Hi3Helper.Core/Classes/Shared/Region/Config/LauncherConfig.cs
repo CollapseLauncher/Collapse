@@ -139,7 +139,6 @@ namespace Hi3Helper.Shared.Region
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
-            { "CurrentRegion", new IniValue(0) },
             { "CurrentBackground", new IniValue("ms-appx:///Assets/BG/default.png") },
             { "DownloadThread", new IniValue(4) },
             { "ExtractionThread", new IniValue(0) },
@@ -158,7 +157,6 @@ namespace Hi3Helper.Shared.Region
             { "ShowSocialMediaPanel", new IniValue(true) },
             { "CustomBGPath", new IniValue() },
             { "GameCategory", new IniValue("Honkai Impact 3rd") },
-            { "GameRegion", new IniValue("Southeast Asia") },
             { "WindowSizeProfile", new IniValue("Normal") },
             { "CurrentCDN", new IniValue(0) },
         };
@@ -258,6 +256,7 @@ namespace Hi3Helper.Shared.Region
             GetScreenResolutionString();
         }
 
+        public static bool IsConfigKeyExist(string key) => appIni.Profile[SectionName].ContainsKey(key);
         public static IniValue GetAppConfigValue(string key) => appIni.Profile[SectionName][key];
         public static void SetAndSaveConfigValue(string key, IniValue value)
         {

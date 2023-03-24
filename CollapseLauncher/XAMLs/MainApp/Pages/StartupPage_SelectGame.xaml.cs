@@ -27,7 +27,7 @@ namespace CollapseLauncher.Pages
         {
             // Set and Save CurrentRegion in AppConfig
             SetAppConfigValue("GameCategory", (string)GameCategorySelect.SelectedValue);
-            SetAppConfigValue("GameRegion", GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue));
+            SetPreviousGameRegion((string)GameCategorySelect.SelectedValue, GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue), false);
             SaveAppConfig();
 
             (m_window as MainWindow).rootFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });

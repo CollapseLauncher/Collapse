@@ -588,8 +588,6 @@ namespace CollapseLauncher
             });
         }
 
-
-
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
         {
             string[] Data = (sender as CheckBox).Tag.ToString().Split(',');
@@ -697,7 +695,6 @@ namespace CollapseLauncher
             ComboBoxGameCategory.ItemsSource = ConfigV2GameCategory;
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
-            string GameRegion = GetAppConfigValue("GameRegion").ToString();
 
             if (!GetConfigV2Regions(GameCategory))
                 GameCategory = ConfigV2GameCategory.FirstOrDefault();
@@ -707,8 +704,7 @@ namespace CollapseLauncher
             int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
             if (IndexCategory < 0) IndexCategory = 0;
 
-            int IndexRegion = ConfigV2GameRegions.IndexOf(GameRegion);
-            if (IndexRegion < 0) IndexRegion = 0;
+            int IndexRegion = GetPreviousGameRegion(GameCategory);
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
@@ -717,18 +713,18 @@ namespace CollapseLauncher
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)
         {
-            string PreviousRegionString = GetComboBoxGameRegionValue(((List<StackPanel>)ComboBoxGameRegion.ItemsSource)[ComboBoxGameRegion.SelectedIndex == -1 ? 0 : ComboBoxGameRegion.SelectedIndex]);
             string SelectedCategoryString = (string)((ComboBox)sender).SelectedItem;
             GetConfigV2Regions(SelectedCategoryString);
 
             List<StackPanel> CurRegionList = BuildGameRegionListUI(SelectedCategoryString);
             ComboBoxGameRegion.ItemsSource = CurRegionList;
-            ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(PreviousRegionString, CurRegionList);
+            ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(SelectedCategoryString);
         }
 
-        private int GetIndexOfRegionStringOrDefault(string name, List<StackPanel> CurRegionList)
+        private int GetIndexOfRegionStringOrDefault(string category)
         {
-            int? index = CurRegionList.FindIndex(x => ((TextBlock)x.Children.FirstOrDefault()).Text == name);
+            int? index = GetPreviousGameRegion(category);
+
             return index == -1 || index == null ? 0 : index ?? 0;
         }
 
