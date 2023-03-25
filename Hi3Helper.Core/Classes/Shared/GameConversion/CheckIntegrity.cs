@@ -117,7 +117,8 @@ namespace Hi3Helper.Shared.GameConversion
                 return;
             }
 
-            if ((FileCRC = GenerateCRC(stream = FileInfo.OpenRead())) != FileIndex.CRC)
+            using (stream = FileInfo.OpenRead())
+            if ((FileCRC = GenerateCRC(stream)) != FileIndex.CRC)
                 BrokenFileIndexesProperty.Add(FileIndex);
         }
 

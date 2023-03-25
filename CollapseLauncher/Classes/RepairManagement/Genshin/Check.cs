@@ -106,33 +106,37 @@ namespace CollapseLauncher
                 return;
             }
 
-            // If pass the check above, then do CRC calculation
-            byte[] localCRC = CheckHash(file.OpenRead(), MD5.Create(), token);
-
-            // If local and asset CRC doesn't match, then add the asset
-            byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
-            if (!IsArrayMatch(localCRC, remoteCRC))
+            // Open and read fileInfo as FileStream 
+            using (FileStream filefs = file.OpenRead())
             {
-                _progressTotalSizeFound += asset.fileSize;
-                _progressTotalCountFound++;
+                // If pass the check above, then do CRC calculation
+                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
 
-                asset.type = RepairAssetType.General.ToString();
+                // If local and asset CRC doesn't match, then add the asset
+                byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
+                if (!IsArrayMatch(localCRC, remoteCRC))
+                {
+                    _progressTotalSizeFound += asset.fileSize;
+                    _progressTotalCountFound++;
 
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(asset.remoteName),
-                        RepairAssetType.General,
-                        Path.GetDirectoryName(asset.remoteName),
-                        asset.fileSize,
-                        localCRC,
-                        remoteCRC
-                    )
-                ));
+                    asset.type = RepairAssetType.General.ToString();
 
-                // Add asset for unmatched CRC
-                targetAssetIndex.Add(asset);
+                    Dispatch(() => AssetEntry.Add(
+                        new AssetProperty<RepairAssetType>(
+                            Path.GetFileName(asset.remoteName),
+                            RepairAssetType.General,
+                            Path.GetDirectoryName(asset.remoteName),
+                            asset.fileSize,
+                            localCRC,
+                            remoteCRC
+                        )
+                    ));
 
-                LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                    // Add asset for unmatched CRC
+                    targetAssetIndex.Add(asset);
+
+                    LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                }
             }
         }
 

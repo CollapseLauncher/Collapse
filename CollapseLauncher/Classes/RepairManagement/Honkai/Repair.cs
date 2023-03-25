@@ -275,16 +275,19 @@ namespace CollapseLauncher
 
             while (true)
             {
-                // Verify the patch file and if it doesn't match, then redownload it
-                byte[] patchCRC = await Task.Run(() => CheckHash(patchInfo.OpenRead(), MD5.Create(), token, false)).ConfigureAwait(false);
-                if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
+                using (FileStream patchfs = patchInfo.OpenRead())
                 {
-                    // Revert back the total size
-                    _progressTotalSizeCurrent -= asset.BlockPatchInfo.Value.PatchSize;
+                    // Verify the patch file and if it doesn't match, then redownload it
+                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false)).ConfigureAwait(false);
+                    if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
+                    {
+                        // Revert back the total size
+                        _progressTotalSizeCurrent -= asset.BlockPatchInfo.Value.PatchSize;
 
-                    // Redownload the patch file
-                    await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
-                    continue;
+                        // Redownload the patch file
+                        await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
+                        continue;
+                    }
                 }
 
                 // else, break and quit from loop
