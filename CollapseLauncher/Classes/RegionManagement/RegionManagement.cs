@@ -38,7 +38,7 @@ namespace CollapseLauncher
         private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
 
         private uint MaxRetry = 5; // Max 5 times of retry attempt
-        private uint LoadTimeout = 1; // 10 seconds of initial Load Timeout
+        private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
         private string RegionToChangeName;
