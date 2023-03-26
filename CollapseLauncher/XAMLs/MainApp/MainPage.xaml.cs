@@ -161,7 +161,7 @@ namespace CollapseLauncher
 
                 LauncherUpdateWatcher.StartCheckUpdate();
 
-                InitializeStartup();
+                await InitializeStartup();
             }
             catch (Exception ex)
             {
@@ -640,7 +640,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async void InitializeStartup()
+        private async Task InitializeStartup()
         {
             bool IsLoadSuccess;
 
@@ -673,21 +673,16 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            IsLoadSuccess = await LoadRegionFromCurrentConfigV2(Preset);
-
-            // If explicit cancel was triggered, then return
-            if (IsExplicitCancel)
+            if (await LoadRegionFromCurrentConfigV2(Preset))
             {
-                return;
+                MainFrameChanger.ChangeMainFrame(Page);
+                HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                CheckRunningGameInstance();
+                RunBackgroundCheck();
             }
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
-
-            if (IsLoadSuccess) MainFrameChanger.ChangeMainFrame(Page);
-            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            CheckRunningGameInstance();
-            RunBackgroundCheck();
         }
 
         private PresetConfigV2 LoadSavedGameSelection()
