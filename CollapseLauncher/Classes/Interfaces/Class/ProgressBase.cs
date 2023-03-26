@@ -1,5 +1,4 @@
-﻿using Force.Crc32;
-using Hi3Helper.Data;
+﻿using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Microsoft.UI.Dispatching;
@@ -91,6 +90,31 @@ namespace CollapseLauncher.Interfaces
 
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
                 _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)) + $" | {timeLeftString}";
+
+                // Trigger update
+                UpdateAll();
+            }
+        }
+        #endregion
+
+        #region ProgressEventHandlers - Patch
+        protected virtual async void RepairTypeActionPatching_ProgressChanged(object sender, BinaryPatchProgress e)
+        {
+            _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressTotalSpeed = e.Speed;
+
+            // Update current progress percentages
+            _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
+                ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
+                0;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Update current activity status
+                _status.IsProgressTotalIndetermined = false;
+                _status.IsProgressPerFileIndetermined = false;
+                _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle5, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
+                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize));
 
                 // Trigger update
                 UpdateAll();
@@ -255,39 +279,6 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual byte[] TryCheckCRCFromStackalloc(Stream fs, int bufferSize)
-        {
-            // Initialize buffer and put the chunk into the buffer using stack
-            Span<byte> bufferStackalloc = stackalloc byte[bufferSize];
-
-            // Read from filesystem
-            fs.Read(bufferStackalloc);
-
-            // Check the CRC of the chunk buffer
-            return CheckCRCThreadChild(bufferStackalloc);
-        }
-
-        protected virtual byte[] CheckCRCThreadChild(ReadOnlySpan<byte> buffer)
-        {
-            lock (this)
-            {
-                // Increment total size counter
-                _progressTotalSizeCurrent += buffer.Length;
-                // Increment per file size counter
-                _progressPerFileSizeCurrent += buffer.Length;
-            }
-
-            // Update status and progress for CRC calculation
-            UpdateProgressCRC();
-
-            // Return computed hash byte
-            Crc32Algorithm _crcInstance = new Crc32Algorithm();
-            lock (_crcInstance)
-            {
-                return _crcInstance.ComputeHashByte(buffer);
-            }
-        }
-
         protected virtual byte[] CheckHash(Stream stream, HashAlgorithm hashProvider, CancellationToken token, bool updateTotalProgress = true)
         {
             // Initialize MD5 instance and assign buffer
@@ -320,6 +311,68 @@ namespace CollapseLauncher.Interfaces
 
             // Return computed hash byte
             return hashProvider.Hash;
+        }
+        #endregion
+
+        #region PatchTools
+        protected virtual async ValueTask RunPatchTask(Http _httpClient, CancellationToken token, long patchSize, Memory<byte> patchHash,
+            string patchURL, string patchOutputFile, string inputFile, string outputFile)
+        {
+            // Get info about patch file
+            FileInfo patchInfo = new FileInfo(patchOutputFile);
+
+            // If file doesn't exist, then download the patch first
+            if (!patchInfo.Exists || patchInfo.Length != patchSize)
+            {
+                // Download patch File first
+                await RunDownloadTask(patchSize, patchOutputFile, patchURL, _httpClient, token);
+            }
+
+            // Always do loop if patch doesn't get downloaded properly
+            while (true)
+            {
+                using (FileStream patchfs = patchInfo.OpenRead())
+                {
+                    // Verify the patch file and if it doesn't match, then redownload it
+                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false)).ConfigureAwait(false);
+                    if (!IsArrayMatch(patchCRC, patchHash.Span))
+                    {
+                        // Revert back the total size
+                        _progressTotalSizeCurrent -= patchSize;
+
+                        // Redownload the patch file
+                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, _httpClient, token);
+                        continue;
+                    }
+                }
+
+                // else, break and quit from loop
+                break;
+            }
+
+            // Start patching process
+            BinaryPatchUtility patchUtil = new BinaryPatchUtility();
+            try
+            {
+                // Subscribe patching progress and start applying patch
+                patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
+                patchUtil.Initialize(inputFile, patchOutputFile, outputFile);
+                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
+
+                // Delete old block
+                File.Delete(inputFile);
+            }
+            finally
+            {
+                // Delete the patch file and unsubscribe the patching progress
+                FileInfo fileInfo = new FileInfo(patchOutputFile);
+                if (fileInfo.Exists)
+                {
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                }
+                patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
+            }
         }
         #endregion
 

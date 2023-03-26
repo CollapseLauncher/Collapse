@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -102,61 +101,14 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
-            // Download patch File first
-            await RunDownloadTask(asset.AudioPatchInfo.Value.PatchFileSize, patchPath, patchURL, _httpClient, token);
+            // Run patching task
+            await RunPatchTask(_httpClient, token, asset.AudioPatchInfo.Value.PatchFileSize, asset.AudioPatchInfo.Value.PatchMD5Array,
+                patchURL, patchPath, inputFilePath, outputFilePath);
 
-            // Start patching process
-            BinaryPatchUtility patchUtil = new BinaryPatchUtility();
-            try
-            {
-                // Subscribe patching progress and start applying patch
-                patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
-                patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
-                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
-
-                // Delete old file and rename the new file
-                File.Delete(inputFilePath);
-                File.Move(outputFilePath, inputFilePath);
-
-                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
-            }
-            finally
-            {
-                // Delete the patch file and unsubscribe the patching progress
-                FileInfo fileInfo = new FileInfo(patchPath);
-                if (fileInfo.Exists)
-                {
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.Delete();
-                }
-                patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
-            }
+            LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
 
             // Pop repair asset display entry
             PopRepairAssetEntry();
-        }
-
-        private async void RepairTypeActionPatching_ProgressChanged(object sender, BinaryPatchProgress e)
-        {
-            _progress.ProgressPerFilePercentage = e.ProgressPercentage;
-            _progress.ProgressTotalSpeed = e.Speed;
-
-            // Update current progress percentages
-            _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
-                ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
-                0;
-
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                // Update current activity status
-                _status.IsProgressTotalIndetermined = false;
-                _status.IsProgressPerFileIndetermined = false;
-                _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle5, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
-                _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize));
-
-                // Trigger update
-                UpdateAll();
-            }
         }
         #endregion
 
@@ -167,7 +119,7 @@ namespace CollapseLauncher
             _progressTotalCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status8, asset.N),
+                string.Format(asset.FT == FileType.Blocks ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.FT == FileType.Blocks ? asset.CRC : asset.N),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
@@ -185,7 +137,7 @@ namespace CollapseLauncher
             {
                 // Start asset download task
                 await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
-                LogWriteLine($"File [T: {asset.FT}] {asset.N} has been downloaded!", LogType.Default, true);
+                LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
@@ -223,30 +175,12 @@ namespace CollapseLauncher
                 // Do patching
                 await RepairTypeBlocksActionPatching(asset, _httpClient, token);
 
-                // Pop repair asset display entry
-                PopRepairAssetEntry();
-
                 return;
             }
 
-            // Increment total count current and update the status
-            _progressTotalCountCurrent++;
-
-            // Set repair activity status
-            UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status9, asset.CRC),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
-                true);
-
-            // Initialize paths and URL of the block
-            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
-            string assetURL = asset.RN;
-
-            // Start asset download task
-            await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
-
-            // Pop repair asset display entry
-            PopRepairAssetEntry();
+            // Initialize URL of the block, then run repair generic task
+            string blockURL = asset.RN;
+            await RepairAssetTypeGeneric(asset, _httpClient, token, blockURL);
         }
 
         private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
@@ -259,70 +193,18 @@ namespace CollapseLauncher
 
             // Set downloading patch status
             UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status13, asset.N),
+                string.Format(Lang._GameRepairPage.Status13, asset.CRC),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
-            // Get info about patch file
-            FileInfo patchInfo = new FileInfo(patchPath);
+            // Run patching task
+            await RunPatchTask(_httpClient, token, asset.BlockPatchInfo.Value.PatchSize, asset.BlockPatchInfo.Value.PatchHash,
+                patchURL, patchPath, inputFilePath, outputFilePath);
 
-            // If file doesn't exist, then download the patch first
-            if (!patchInfo.Exists || patchInfo.Length != asset.BlockPatchInfo.Value.PatchSize)
-            {
-                // Download patch File first
-                await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
-            }
+            LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.OldBlockName} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
 
-            while (true)
-            {
-                using (FileStream patchfs = patchInfo.OpenRead())
-                {
-                    // Verify the patch file and if it doesn't match, then redownload it
-                    byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false)).ConfigureAwait(false);
-                    if (!IsArrayMatch(patchCRC, asset.BlockPatchInfo.Value.PatchHash))
-                    {
-                        // Revert back the total size
-                        _progressTotalSizeCurrent -= asset.BlockPatchInfo.Value.PatchSize;
-
-                        // Redownload the patch file
-                        await RunDownloadTask(asset.BlockPatchInfo.Value.PatchSize, patchPath, patchURL, _httpClient, token);
-                        continue;
-                    }
-                }
-
-                // else, break and quit from loop
-                break;
-            }
-
-            // Start patching process
-            BinaryPatchUtility patchUtil = new BinaryPatchUtility();
-            try
-            {
-                // Set current per file size
-                _progressPerFileSize = asset.S;
-                _progressPerFileSizeCurrent = 0;
-
-                // Subscribe patching progress and start applying patch
-                patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
-                patchUtil.Initialize(inputFilePath, patchPath, outputFilePath);
-                await Task.Run(() => patchUtil.Apply(token)).ConfigureAwait(false);
-
-                // Delete old block
-                File.Delete(inputFilePath);
-
-                LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.OldBlockName} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
-            }
-            finally
-            {
-                // Delete the patch file and unsubscribe the patching progress
-                FileInfo fileInfo = new FileInfo(patchPath);
-                if (fileInfo.Exists)
-                {
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.Delete();
-                }
-                patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
-            }
+            // Pop repair asset display entry
+            PopRepairAssetEntry();
         }
         #endregion
     }
