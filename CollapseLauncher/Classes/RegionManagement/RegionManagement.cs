@@ -32,7 +32,6 @@ namespace CollapseLauncher
 
         private Http _httpClient;
         private bool IsLoadRegionComplete;
-        private bool IsInnerTaskSuccess;
         private bool IsExplicitCancel;
         private string PreviousTag = string.Empty;
         private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
@@ -189,7 +188,7 @@ namespace CollapseLauncher
             if (TokenSource.IsCancellationRequested) return;
 
             // If InnerTask still not loaded successfully, then cancel it
-            if (!IsInnerTaskSuccess || !IsLoadRegionComplete)
+            if (!IsLoadRegionComplete)
             {
                 TokenSource.Cancel();
             }
