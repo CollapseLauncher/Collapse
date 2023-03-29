@@ -94,12 +94,16 @@
 	<ItemGroup>
 	  <None Remove="Lang\en.json" />
 	  <None Remove="Lang\id-ID.json" />
+	  <None Remove="Lang\ko-KR.json" />
 	  <None Remove="Lang\zh-cn.json" />
 	  <None Remove="Lang\pt-pt.json" />
 	  <None Remove="Lang\vi-vn.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="Lang\ko-KR.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Lang\en.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
