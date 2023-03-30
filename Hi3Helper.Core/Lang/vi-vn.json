@@ -92,9 +92,9 @@
     "PageTitle": "Trình khởi chạy",
     "PreloadTitle": "Tải về trước đã sẵn sàng",
     "PreloadNotifTitle": "Tải trước phiên bản v{0} đã sẵn sàng!",
-    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng Delta-Patch của phiên bản v{0} đã được xác định!",
+    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng bản vá tạm thời của phiên bản v{0} đã được xác định!",
     "PreloadNotifSubtitle": "Ấn \"Tải trò chơi\" để bắt đầu tải trong nền.",
-    "PreloadNotifDeltaDetectSubtitle": "Bạn đã thành công tải gói tài nguyên tải trước ở định dạng Delta-Patch. Gói tải trước này sẽ được dùng để cập nhật trò chơi của bạn sau này.",
+    "PreloadNotifDeltaDetectSubtitle": "Bạn đã thành công tải gói tài nguyên tải trước ở định dạng là bản vá tạm thời. Gói tải trước này sẽ được dùng để cập nhật trò chơi của bạn sau này.",
     "PreloadNotifCompleteTitle": "Gói tải trước đã tải xong!",
     "PreloadNotifCompleteSubtitle": "Bạn vừa thành công tải gói tải trước để cập nhật cho bản v{0}!",
     "PreloadNotifIntegrityCheckBtn": "Đang các minh tính toàn vẹn của gói",
@@ -123,11 +123,11 @@
     "GameSettings_Panel2ConvertVersion": "Chuyển đổi phiên bản trò chơi",
     "GameSettings_Panel3": "Tuỳ chọn khởi động cho trò chơi",
     "GameSettings_Panel4": "Cài đặt khác",
-    "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng điều khiển sự kiện",
+    "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
-    "PostPanel_NoNews": "Hả?\nKhông có bản tin mới trong ngày hôm nay?"
+    "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?"
   },
 
   "_GameRepairPage": {
@@ -245,7 +245,7 @@
     "Audio_VOLang": "Ngôn ngữ lồng tiếng",
     "Audio_VOLang1": "CN (PRC)",
     "Audio_VOLang2": "JP",
-    "Audio_VODefault": " [Default]",
+    "Audio_VODefault": " [Mặc định]",
     "Audio_VO": "Âm thanh lồng tiếng nhân vật",
     "Audio_Elf": "Âm thanh lồng tiếng ELF",
     "Audio_Cutscenes": "Âm thanh cutscenes",
@@ -275,7 +275,7 @@
     "Debug_Console": "Hiển thị console (cmd)",
 
     "Language": "Ngôn ngữ",
-    "LanguageEntry": "{0} do {1} tạo",
+    "LanguageEntry": "{0} bởi {1}",
     "CDN": "Tải về Server (CDN)",
     "AppLang_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi ngôn ngữ.",
 
@@ -407,10 +407,10 @@
   },
 
   "_Dialogs": {
-    "DeltaPatchDetectedTitle": "Cảnh báo: Có bản cập nhật Delta Patch!",
-    "DeltaPatchDetectedSubtitle": "Delta patch sẽ được dùng để cập nhật trò chơi của bạn từ {0} tới {1}.\r\nNên nhớ, bạn vẫn nên cần tải về một vài tệp trong trò chơi như thường lệ.\r\n\r\nBạn có muốn tiếp tục?",
-    "DeltaPatchPrevFailedTitle": "Bản Delta Patch trước đó đã thất bại/không hoàn thành!",
-    "DeltaPatchPrevFailedSubtitle": "Không thể áp dụng bản Delta Patch trước đó. Bạn có muốn khôi phục lại trò chơi để tránh để tải lại không?",
+    "DeltaPatchDetectedTitle": "Cảnh báo: Có bản cập nhật bản vá tạm thời!",
+    "DeltaPatchDetectedSubtitle": "Bản vá tạm thời sẽ được dùng để cập nhật trò chơi của bạn từ {0} tới {1}.\r\nNên nhớ, bạn vẫn nên cần tải về một vài tệp trong trò chơi như thường lệ.\r\n\r\nBạn có muốn tiếp tục?",
+    "DeltaPatchPrevFailedTitle": "Bản vá tạm thời trước đó đã thất bại/không hoàn thành!",
+    "DeltaPatchPrevFailedSubtitle": "Không thể áp dụng bản vá tạm thời trước đó. Bạn có muốn khôi phục lại trò chơi để tránh để tải lại không?",
     "GameConversionPrevFailedTitle": "Chuyển đổi bản trò chơi trước đó đã thất bại/không hoàn thành!",
     "GameConversionPrevFailedSubtitle": "Chuyển đổi bản trò chơi trước đó đã thất bại. Bạn có muốn khôi phục lại trò chơi để tránh để tải lại không?",
     "PreloadVerifiedTitle": "Gói tải trước đã được xác minh!",
