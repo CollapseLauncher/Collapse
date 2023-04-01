@@ -7,6 +7,7 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.DiscordPresence;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -94,7 +95,7 @@ namespace CollapseLauncher.Pages
 
                 await CheckFailedDeltaPatchState();
                 await CheckFailedGameConversion();
-                CheckRunningGameInstance();
+                CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(PageToken.Token);
             }
             catch (ArgumentNullException ex)
@@ -513,7 +514,7 @@ namespace CollapseLauncher.Pages
             return IsPrimaryDataExist && IsSecondaryDataExist;
         }
 
-        private async void CheckRunningGameInstance()
+        private async void CheckRunningGameInstance(CancellationToken Token)
         {
             FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
             VerticalAlignment TVAlign = VerticalAlignment.Center;
@@ -533,7 +534,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                while (true)
+                while (!Token.IsCancellationRequested)
                 {
                     while (App.IsGameRunning)
                     {
@@ -544,7 +545,8 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.Content = BtnRunningGame;
                         GameStartupSetting.IsEnabled = false;
 
-                        await Task.Delay(100);
+                        await Task.Delay(100, Token);
+                        AppDiscordPresence.SetActivity(ActivityType.Play, 0);
                     }
 
                     if (!StartGameBtn.IsEnabled)
@@ -554,7 +556,8 @@ namespace CollapseLauncher.Pages
                     StartGameBtn.Content = BtnStartGame;
                     GameStartupSetting.IsEnabled = true;
 
-                    await Task.Delay(100);
+                    await Task.Delay(100, Token);
+                    AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
                 }
             }
             catch { return; }

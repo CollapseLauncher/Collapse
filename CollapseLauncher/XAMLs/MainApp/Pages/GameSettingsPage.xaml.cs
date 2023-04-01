@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -89,6 +90,8 @@ namespace CollapseLauncher.Pages
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
+
+                    return;
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled
                       || GameInstallationState == GameInstallStateEnum.NeedsUpdate
@@ -98,7 +101,11 @@ namespace CollapseLauncher.Pages
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
+
+                    return;
                 }
+
+                AppDiscordPresence.SetActivity(ActivityType.GameSettings);
             }
             catch (Exception ex)
             {

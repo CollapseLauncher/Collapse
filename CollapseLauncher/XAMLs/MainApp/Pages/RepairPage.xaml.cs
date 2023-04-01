@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -17,6 +18,7 @@ namespace CollapseLauncher.Pages
         public RepairPage()
         {
             this.InitializeComponent();
+            AppDiscordPresence.SetActivity(ActivityType.Repair);
         }
 
         private void StartGameCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)

@@ -184,14 +184,14 @@ namespace CollapseLauncher
         private string BuildDispatcherURL(string baseDispatcherURL)
         {
             // Format the Dispatcher URL based on template
-            long curTime = GetUnixTimestamp();
+            long curTime = GetUnixTimestamp(true);
             return string.Format(CombineURLFromString(baseDispatcherURL, _gamePreset.GameDispatchURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 
         private string BuildGatewayURL(string baseGatewayURL)
         {
             // Format the Gateway URL based on template
-            long curTime = GetUnixTimestamp();
+            long curTime = GetUnixTimestamp(true);
             return string.Format(CombineURLFromString(baseGatewayURL, _gamePreset.GameGatewayURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
         }
 

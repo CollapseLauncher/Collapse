@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -96,6 +97,7 @@ namespace Hi3Helper.Shared.Region
 #endif
         public static string GamePathOnSteam;
 
+        public const long AppDiscordApplicationID = 1089467141096484955;
         public const string AppNotifURLPrefix = "/notification_{0}.json";
         public const string AppGameConfigV2URLPrefix = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
@@ -114,6 +116,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder, "_metadata"); }
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
+
+        public static DiscordPresenceManager AppDiscordPresence;
 
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled = false;

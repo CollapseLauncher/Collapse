@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,6 +19,7 @@ namespace CollapseLauncher.Pages
         public CachesPage()
         {
             this.InitializeComponent();
+            AppDiscordPresence.SetActivity(ActivityType.Cache);
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
