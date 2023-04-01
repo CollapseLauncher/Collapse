@@ -270,10 +270,13 @@ namespace CollapseLauncher
                     toEntry.OtherContent = Entry.ActionProperty.GetUIElement();
                 }
 
+                GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
+                GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+
                 if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
-                        || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
-                        && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
-                        || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)))
+                        || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow)
+                        && LauncherUpdateWatcher.CompareVersion(ValidForVerAbove, AppCurrentVersion))
+                        || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow)))
                 {
                     NotificationSender.SendNotification(toEntry);
                 }

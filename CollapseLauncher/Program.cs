@@ -3,6 +3,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Squirrel;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -29,6 +30,8 @@ namespace CollapseLauncher
         [STAThreadAttribute]
         public static void Main(params string[] args)
         {
+            StartSquirrelHook();
+
             AppCurrentArgument = args;
 #if PREVIEW
             IsPreview = true;
@@ -36,7 +39,7 @@ namespace CollapseLauncher
 #if PORTABLE
             IsPortable = true;
 #endif
-            AppCurrentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
 
             try
             {
@@ -45,7 +48,7 @@ namespace CollapseLauncher
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
-                    AppCurrentVersion,
+                    AppCurrentVersion.VersionString,
                     GetVersionString(),
                     Environment.UserName,
                     (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : "")), LogType.Scheme, true);
@@ -116,6 +119,45 @@ namespace CollapseLauncher
                 Console.ReadLine();
                 return;
             }
+        }
+
+        private static void StartSquirrelHook()
+        {
+            // Add Squirrel Hooks
+            SquirrelAwareApp.HandleEvents(
+                /// Add shortcut and uninstaller entry on first start-up
+                onInitialInstall: (_, sqr) =>
+                {
+#if PORTABLE
+                    // Add generic shortcut
+                    sqr.CreateShortcutForThisExe(ShortcutLocation.StartMenu | ShortcutLocation.Desktop);
+                    // Create uninstaller entry
+                    sqr.CreateUninstallerRegistryEntry();
+#endif
+                    Console.WriteLine("Please do not close this console window while Collapse is preparing the installation via Squirrel...");
+                },
+                onAppUpdate: (_, sqr) =>
+                {
+#if PORTABLE
+                    // Add generic shortcut
+                    sqr.CreateShortcutForThisExe(ShortcutLocation.StartMenu | ShortcutLocation.Desktop);
+                    // Update uninstaller entry
+                    sqr.CreateUninstallerRegistryEntry();
+#endif
+                    Console.WriteLine("Please do not close this console window while Collapse is updating via Squirrel...");
+                },
+                onAppUninstall: (_, sqr) =>
+                {
+#if PORTABLE
+                    // Remove generic shortcut
+                    sqr.RemoveShortcutForThisExe();
+                    // Remove uninstaller entry
+                    sqr.RemoveUninstallerRegistryEntry();
+#endif
+                    Console.WriteLine("Uninstalling Collapse via Squirrel...\r\nPlease do not close this console window while action is being performed!");
+                },
+                onEveryRun: (_, _, _) => { }
+            );
         }
 
         private static bool DecideRedirection()

@@ -1,20 +1,14 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Data;
-using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using Squirrel;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -25,18 +19,12 @@ namespace CollapseLauncher
     internal static class LauncherUpdateWatcher
     {
         public static string UpdateChannelName;
-        public static Prop UpdateProperty;
+        public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
         public static async void StartCheckUpdate()
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
-            if (IsPortable)
-            {
-                UpdateChannelName = UpdateChannelName + "portable";
-            }
-
-            string ChannelURL = string.Format(CombineURLFromString(UpdateRepoChannel, "{0}/"), UpdateChannelName);
 
             while (true)
             {
@@ -44,18 +32,18 @@ namespace CollapseLauncher
                 {
                     try
                     {
-                        using (Http http = new Http())
-                        using (MemoryStream RemoteData = new MemoryStream())
+                        using (Updater updater = new Updater(IsPreview ? "preview" : "stable"))
                         {
-                            await http.Download(CombineURLFromString(ChannelURL, "fileindex.json"), RemoteData, null, null, new CancellationToken());
-                            RemoteData.Position = 0;
-                            UpdateProperty = (Prop)JsonSerializer.Deserialize(RemoteData, typeof(Prop), PropContext.Default);
-                        }
+                            UpdateInfo info = await updater.StartCheck();
+                            GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
-                        if (CompareVersion(AppCurrentVersion, UpdateProperty.ver))
-                            GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = UpdateProperty.ver });
-                        else
-                            GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = UpdateProperty.ver });
+                            UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString };
+
+                            if (CompareVersion(AppCurrentVersion, RemoteVersion))
+                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
+                            else
+                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                        }
 
                         ForceInvokeUpdate = false;
                     }
@@ -69,38 +57,21 @@ namespace CollapseLauncher
             }
         }
 
-        public static bool CompareVersion(string CurrentVer, string ComparedVer)
+        public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
         {
             if (CurrentVer == null || ComparedVer == null) return false;
-
-            uint concatLocalVer = 0, concatRemoteVer = 0;
-
-            byte[] LocalVersion = CurrentVer.Split('.')
-                .Select(byte.Parse)
-                .ToArray();
-
-            byte[] RemoteVersion = ComparedVer.Split('.')
-                .Select(byte.Parse)
-                .ToArray();
-
-            for (int i = 0; i < LocalVersion.Length; i++)
-            {
-                concatLocalVer = ConcatUint(concatLocalVer, LocalVersion[i]);
-                concatRemoteVer = ConcatUint(concatRemoteVer, RemoteVersion[i]);
-            }
-
-            return concatRemoteVer > concatLocalVer;
+            return CurrentVer.Value.ToVersion() < ComparedVer.Value.ToVersion();
         }
     }
 
-    public class Prop
+    public class AppUpdateVersionProp
     {
         public string ver { get; set; }
         public long time { get; set; }
-        public List<fileProp> f { get; set; }
+        public List<AppUpdateVersionFileProp> f { get; set; }
     }
 
-    public class fileProp
+    public class AppUpdateVersionFileProp
     {
         public string p { get; set; }
         public string crc { get; set; }
@@ -116,7 +87,7 @@ namespace CollapseLauncher
     internal class LauncherUpdateProperty
     {
         public bool IsUpdateAvailable { get; set; }
-        public string NewVersionName { get; set; }
+        public GameVersion NewVersionName { get; set; }
         public bool QuitFromUpdateMenu { get; set; } = false;
     }
     #endregion

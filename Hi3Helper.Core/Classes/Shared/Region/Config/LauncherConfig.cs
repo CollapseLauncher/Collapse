@@ -60,7 +60,6 @@ namespace Hi3Helper.Shared.Region
 
         public static AppIniStruct appIni = new AppIniStruct();
 
-        public static string AppCurrentVersion;
 #if PORTABLE
         public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public static string AppConfigFolder = Path.Combine(AppFolder, "Config");

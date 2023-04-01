@@ -1,30 +1,25 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Http;
+﻿using Squirrel;
+using Squirrel.Sources;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static CollapseLauncher.UpdaterWindow;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class Updater
+    public class Updater : IDisposable
     {
         private string ChannelURL;
-        private string TargetPath;
-        private string TempPath;
-        private string RepoURL = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/{0}/";
-        private Prop FileProp = new Prop();
-        private List<fileProp> UpdateFiles = new List<fileProp>();
-        private CancellationTokenSource TokenSource = new CancellationTokenSource();
         private Stopwatch UpdateStopwatch;
-        private Http _httpClient;
+        private UpdateManager UpdateManager;
+        private IFileDownloader UpdateDownloader;
+        private GameVersion NewVersionTag;
 
         public event EventHandler<UpdaterStatus> UpdaterStatusChanged;
         public event EventHandler<UpdaterProgress> UpdaterProgressChanged;
@@ -32,140 +27,100 @@ namespace CollapseLauncher
         private UpdaterStatus Status;
         private UpdaterProgress Progress;
 
-        private long Read = 0,
-                     TotalSize = 0;
-
-        private byte DownloadThread;
-
-        public Updater(string TargetFolder, string ChannelName, byte DownloadThread)
+        public Updater(string ChannelName)
         {
-            this._httpClient = new Http();
-            this.ChannelURL = string.Format(RepoURL, ChannelName);
-            this.TargetPath = NormalizePath(TargetFolder);
-            this.TempPath = Path.Combine(TargetPath, "_Temp");
-            this.DownloadThread = DownloadThread;
+            this.ChannelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix, "squirrel", ChannelName);
+            this.UpdateDownloader = new UpdateManagerHttpAdapter();
+            this.UpdateManager = new UpdateManager(ChannelURL, null, null, this.UpdateDownloader);
+            this.UpdateStopwatch = Stopwatch.StartNew();
+            this.Status = new UpdaterStatus();
+            this.Progress = new UpdaterProgress(UpdateStopwatch, 0, 100);
         }
 
-        ~Updater() => _httpClient.Dispose();
+        ~Updater() => Dispose();
 
-        public async Task StartFetch()
+        public void Dispose()
         {
-            using (MemoryStream _databuf = new MemoryStream())
+            UpdateManager?.Dispose();
+            (UpdateDownloader as IDisposable)?.Dispose();
+        }
+
+        public async Task<UpdateInfo> StartCheck() => await UpdateManager.CheckForUpdate();
+        public bool IsUpdateAvailable(UpdateInfo info)
+        {
+            if (!info.ReleasesToApply.Any())
             {
-
-                Status = new UpdaterStatus
-                {
-                    status = Lang._UpdatePage.UpdateStatus1,
-                    message = Lang._UpdatePage.UpdateMessage1
-                };
-                UpdateStatus();
-                UpdateStopwatch = Stopwatch.StartNew();
-
-                await _httpClient.Download(ConverterTool.CombineURLFromString(ChannelURL, "fileindex.json"), _databuf, null, null, TokenSource.Token);
-                _databuf.Position = 0;
-                FileProp = (Prop)JsonSerializer.Deserialize(_databuf, typeof(Prop), PropContext.Default);
+                NewVersionTag = new GameVersion(info.FutureReleaseEntry.Version.Version);
+                return DoesLatestVersionExist(NewVersionTag.VersionString);
             }
+
+            return true;
         }
 
-        public async Task StartCheck()
+        public async Task<bool> StartUpdate(UpdateInfo UpdateInfo, CancellationToken token = default)
         {
-            if (Directory.Exists(TempPath))
-                Directory.Delete(TempPath, true);
-
-            Directory.CreateDirectory(TempPath);
-
-            Status.status = Lang._UpdatePage.UpdateStatus2;
-            Status.newver = FileProp.ver;
-            TotalSize = FileProp.f.Sum(x => x.s);
-            Progress = new UpdaterProgress(Read, TotalSize, 0, UpdateStopwatch.Elapsed);
-            string LocalHash, RemoteHash, FilePath;
-
-            foreach (fileProp _entry in FileProp.f)
+            if (token.IsCancellationRequested)
             {
-                Status.message = _entry.p;
+                return false;
+            }
+
+            Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+            UpdateStatus();
+            UpdateProgress();
+            UpdateStopwatch = Stopwatch.StartNew();
+            if (!UpdateInfo.ReleasesToApply.Any())
+            {
+                NewVersionTag = new GameVersion(UpdateInfo.FutureReleaseEntry.Version.Version);
+                if (DoesLatestVersionExist(NewVersionTag.VersionString))
+                {
+                    Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
+                    return true;
+                }
+
+                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, AppCurrentVersion.VersionString);
+                Status.message = Lang._UpdatePage.UpdateMessage4;
                 UpdateStatus();
 
-                FilePath = Path.Combine(TargetPath, NormalizePath(_entry.p));
-                RemoteHash = _entry.crc.ToUpper();
+                await Task.Delay(3000);
+                return false;
+            }
 
-                if (File.Exists(FilePath))
-                {
-                    using (FileStream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read))
-                    {
-                        LocalHash = (await CreateMD5Async(fs)).ToUpper();
-                        if (LocalHash != RemoteHash)
-                            UpdateFiles.Add(_entry);
-                    }
-                }
-                else
-                    UpdateFiles.Add(_entry);
+            NewVersionTag = new GameVersion(UpdateInfo.ReleasesToApply.FirstOrDefault().Version.Version);
 
-                Read += _entry.s;
-                Progress = new UpdaterProgress(Read, TotalSize, (int)_entry.s, UpdateStopwatch.Elapsed);
+            await UpdateManager.DownloadReleases(UpdateInfo.ReleasesToApply, (progress) =>
+            {
+                Progress = new UpdaterProgress(UpdateStopwatch, progress / 2, 100);
                 UpdateProgress();
-            }
+            });
+
+            await UpdateManager.ApplyReleases(UpdateInfo, (progress) =>
+            {
+                Progress = new UpdaterProgress(UpdateStopwatch, progress / 2 + 50, 100);
+                UpdateProgress();
+            });
+
+            return true;
         }
 
-        public async Task StartUpdate()
+        private bool DoesLatestVersionExist(string versionString)
         {
-            if (UpdateFiles.Count == 0) return;
-            Read = 0;
-            TotalSize = UpdateFiles.Sum(x => x.s);
+            string filePath = Path.Combine(AppFolder, $"..\\app-{versionString}\\{Path.GetFileName(AppExecutablePath)}");
 
-            string URL;
-            string Output;
-            int FilesCount = UpdateFiles.Count;
-
-            _httpClient.DownloadProgress += Updater_DownloadProgressAdapter;
-
-            int i = 1;
-            foreach (fileProp _entry in UpdateFiles)
-            {
-                Status.message = _entry.p;
-                URL = CombineURLFromString(ChannelURL, _entry.p);
-                Output = Path.Combine(TempPath, NormalizePath(_entry.p));
-
-                Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, i, FilesCount);
-                UpdateStatus();
-
-                if (!Directory.Exists(Path.GetDirectoryName(Output)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(Output));
-
-                if (_entry.s >= (20 << 20))
-                {
-                    await _httpClient.Download(URL, Output, DownloadThread, true, TokenSource.Token);
-                    await _httpClient.Merge();
-                }
-                else
-                    await _httpClient.Download(URL, Output, true, null, null, TokenSource.Token);
-
-                i++;
-            }
-
-            _httpClient.DownloadProgress -= Updater_DownloadProgressAdapter;
+            return File.Exists(filePath);
         }
 
         public async Task FinishUpdate(bool NoSuicide = false)
         {
-            if (UpdateFiles.Count == 0)
-            {
-                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, FileProp.ver);
-                Status.message = Lang._UpdatePage.UpdateMessage4;
-                Console.WriteLine(UpdateFiles.Count);
-                UpdateStatus();
-                await Suicide();
-                return;
-            }
-
             string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
 
-            Status.status = string.Format(Lang._UpdatePage.UpdateStatus5, FileProp.ver);
-            Status.message = Lang._UpdatePage.UpdateMessage5;
+            Status.status = string.Format(Lang._UpdatePage.UpdateStatus5 + $" {Lang._UpdatePage.UpdateMessage5}", NewVersionTag.VersionString);
             UpdateStatus();
 
-            Progress = new UpdaterProgress(TotalSize, TotalSize, 0, UpdateStopwatch.Elapsed);
+            Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
             UpdateProgress();
-            File.WriteAllText(newVerTagPath, FileProp.ver);
+
+            File.WriteAllText(newVerTagPath, NewVersionTag.VersionString);
+
             if (!NoSuicide)
                 await Suicide();
         }
@@ -173,38 +128,7 @@ namespace CollapseLauncher
         private async Task Suicide()
         {
             await Task.Delay(3000);
-
-            string prefix = Path.GetFileNameWithoutExtension(applyPath);
-
-            try
-            {
-                foreach (string file in Directory.EnumerateFiles(TempPath, "*", SearchOption.TopDirectoryOnly))
-                    if (file.Contains(prefix, StringComparison.OrdinalIgnoreCase))
-                        File.Move(file, Path.Combine(TargetPath, Path.GetFileName(file)), true);
-            }
-            catch { }
-
-            new Process()
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = applyPath,
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    Arguments = $"\"{TargetPath}\"",
-                    WorkingDirectory = workingDir
-                }
-            }.Start();
-            Environment.Exit(0);
-        }
-
-        private void Updater_DownloadProgressAdapter(object sender, DownloadEvent e)
-        {
-            if (e.State != DownloadState.Merging)
-                Read += e.Read;
-
-            Progress = new UpdaterProgress(Read, TotalSize, e.Read, UpdateStopwatch.Elapsed);
-            UpdateProgress();
+            UpdateManager.RestartApp();
         }
 
         public void UpdateStatus() => UpdaterStatusChanged?.Invoke(this, Status);
@@ -219,21 +143,25 @@ namespace CollapseLauncher
 
         public class UpdaterProgress
         {
-            public UpdaterProgress(long DownloadedSize, long TotalSizeToDownload, long CurrentRead, TimeSpan TimeSpan)
+            public UpdaterProgress(Stopwatch currentStopwatch, int counter, int counterGoal)
             {
-                this.DownloadedSize = DownloadedSize;
-                this.TotalSizeToDownload = TotalSizeToDownload;
-                this._TotalSecond = TimeSpan.TotalSeconds;
-                this.CurrentRead = CurrentRead;
-            }
-            private double _TotalSecond = 0;
+                if (counter == 0)
+                {
+                    TimeLeft = TimeSpan.Zero;
+                }
 
+                float elapsedMin = ((float)currentStopwatch.ElapsedMilliseconds / 1000) / 60;
+                float minLeft = (elapsedMin / counter) * (counterGoal - counter);
+                TimeLeft = TimeSpan.FromMinutes(float.IsInfinity(minLeft) || float.IsNaN(minLeft) ? 0 : minLeft);
+
+                ProgressPercentage = counter;
+            }
             public long DownloadedSize { get; private set; }
             public long TotalSizeToDownload { get; private set; }
-            public double ProgressPercentage => Math.Round((DownloadedSize / (double)TotalSizeToDownload) * 100, 2);
+            public double ProgressPercentage { get; private set; }
             public long CurrentRead { get; private set; }
-            public long CurrentSpeed => (long)(DownloadedSize / _TotalSecond);
-            public TimeSpan TimeLeft => checked(TimeSpan.FromSeconds((TotalSizeToDownload - DownloadedSize) / CurrentSpeed));
+            public long CurrentSpeed => 0;
+            public TimeSpan TimeLeft { get; private set; }
         }
     }
 }

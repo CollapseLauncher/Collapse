@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
@@ -26,7 +27,7 @@ namespace CollapseLauncher.Pages
             LoadAppConfig();
             this.DataContext = this;
 
-            string Version = $" {AppCurrentVersion}";
+            string Version = $" {AppCurrentVersion.VersionString}";
             if (IsPreview)
                 Version = Version + " Preview";
             else
@@ -169,7 +170,7 @@ namespace CollapseLauncher.Pages
                 UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableStatus.Visibility = Visibility.Visible;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
-                UpdateAvailableLabel.Text = e.NewVersionName + (ChannelName);
+                UpdateAvailableLabel.Text = e.NewVersionName.VersionString + (ChannelName);
                 LauncherUpdateInvoker.UpdateEvent -= LauncherUpdateInvoker_UpdateEvent;
                 return;
             }

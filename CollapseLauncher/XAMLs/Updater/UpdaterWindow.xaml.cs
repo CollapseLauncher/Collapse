@@ -2,6 +2,7 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using Squirrel;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -41,7 +42,7 @@ namespace CollapseLauncher
             this.Title += "[PORTABLE]";
 #endif
             UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-            CurrentVersionLabel.Text = AppCurrentVersion;
+            CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
 
             StartAsyncRoutine();
         }
@@ -50,13 +51,16 @@ namespace CollapseLauncher
         {
             try
             {
-                Updater updater = new Updater(m_arguments.Updater.AppPath, m_arguments.Updater.UpdateChannel.ToString().ToLower(), 4);
+                Updater updater = new Updater(m_arguments.Updater.UpdateChannel.ToString().ToLower());
+
+                UpdateInfo updateInfo = await updater.StartCheck();
+                await updater.StartUpdate(updateInfo);
+
+                GameVersion latestUpdateVer = new GameVersion(updateInfo.FutureReleaseEntry.Version.Version);
+                NewVersionLabel.Text = latestUpdateVer.VersionString;
+
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-
-                await updater.StartFetch();
-                await updater.StartCheck();
-                await updater.StartUpdate();
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     SpeedStatus.Visibility = Visibility.Collapsed;
@@ -104,7 +108,6 @@ namespace CollapseLauncher
             {
                 Status.Text = e.status;
                 ActivityStatus.Text = e.message;
-                NewVersionLabel.Text = e.newver;
             });
         }
 
@@ -114,7 +117,6 @@ namespace CollapseLauncher
             {
                 progressBar.Value = e.ProgressPercentage;
                 ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.DownloadedSize)} / {SummarizeSizeSimple(e.TotalSizeToDownload)}";
-                SpeedStatus.Text = $"{SummarizeSizeSimple(e.CurrentSpeed)}/s";
                 TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
             });
         }

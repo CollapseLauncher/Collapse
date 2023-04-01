@@ -2,6 +2,7 @@
 using Hi3Helper.Preset;
 using System;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
 
 namespace CollapseLauncher
 {
@@ -63,45 +64,65 @@ namespace CollapseLauncher
 
     public struct GameVersion
     {
-        public GameVersion(int major, int minor, int rev)
+        public GameVersion(int major, int minor, int build, int revision = 0)
         {
             Major = major;
             Minor = minor;
-            Revision = rev;
+            Build = build;
+            Revision = revision;
         }
 
-        public GameVersion(int[] version)
+        public GameVersion(int[] ver)
         {
-            if (version.Length != 3)
+            if (!(ver.Length == 3 || ver.Length == 4))
             {
-                throw new ArgumentException($"Version array entered should have length of 3!");
+                throw new ArgumentException($"Version array entered should have length of 3 or 4!");
             }
 
-            Major = version[0];
-            Minor = version[1];
-            Revision = version[2];
+            Major = ver[0];
+            Minor = ver[1];
+            Build = ver[2];
+            if (ver.Length == 4)
+            {
+                Revision = ver[3];
+            }
+        }
+
+        public GameVersion(Version version)
+        {
+            Major = version.Major;
+            Minor = version.Minor;
+            Build = version.Build;
         }
 
         public GameVersion(string version)
         {
             string[] ver = version.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            if (ver.Length != 3)
+            if (!(ver.Length == 3 || ver.Length == 4))
             {
-                throw new ArgumentException($"Version in the config.ini should be in \"x.x.x\" format! (current value: \"{version}\")");
+                throw new ArgumentException($"Version in the config.ini should be in \"x.x.x\" or \"x.x.x.x\" format! (current value: \"{version}\")");
             }
 
             if (!int.TryParse(ver[0], out Major)) throw new ArgumentException($"Major version is not a number! (current value: {ver[0]}");
             if (!int.TryParse(ver[1], out Minor)) throw new ArgumentException($"Minor version is not a number! (current value: {ver[1]}");
-            if (!int.TryParse(ver[2], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[2]}");
+            if (!int.TryParse(ver[2], out Build)) throw new ArgumentException($"Build version is not a number! (current value: {ver[2]}");
+            if (ver.Length == 4)
+            {
+                if (!int.TryParse(ver[3], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[3]}");
+            }
         }
 
-        public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Revision == versionToCompare.Revision;
+        public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Build == versionToCompare.Build && Revision == versionToCompare.Revision;
 
+        public Version ToVersion() => new Version(Major, Minor, Build, Revision);
+
+        public string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
         public string VersionString { get => string.Join('.', VersionArray); }
-        public int[] VersionArrayManifest { get => new int[4] { Major, Minor, Revision, 0 }; }
-        public int[] VersionArray { get => new int[3] { Major, Minor, Revision }; }
+        public int[] VersionArrayManifest { get => new int[4] { Major, Minor, Build, Revision }; }
+        public int[] VersionArray { get => new int[3] { Major, Minor, Build }; }
         public readonly int Major;
         public readonly int Minor;
+        public readonly int Build;
         public readonly int Revision;
     }
 

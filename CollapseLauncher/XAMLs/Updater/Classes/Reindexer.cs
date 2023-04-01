@@ -14,7 +14,7 @@ namespace CollapseLauncher
         long reindexTime;
         byte downloadThread;
 
-        public Reindexer(string filePath, string clientVer, byte downloadThread) : base(filePath, "", downloadThread)
+        public Reindexer(string filePath, string clientVer, byte downloadThread) : base("")
         {
             this.filePath = NormalizePath(filePath);
             this.reindexTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -31,7 +31,7 @@ namespace CollapseLauncher
 
             int baseLength = filePath.Length + 1;
             string nameRoot, fileCrc;
-            Prop Prop = new Prop() { ver = this.clientVer, time = this.reindexTime, f = new List<fileProp>() };
+            AppUpdateVersionProp Prop = new AppUpdateVersionProp() { ver = this.clientVer, time = this.reindexTime, f = new List<AppUpdateVersionFileProp>() };
             FileStream fileStream;
             foreach (string file in Directory.EnumerateFiles(filePath, "*", SearchOption.AllDirectories))
             {
@@ -40,12 +40,12 @@ namespace CollapseLauncher
 
                 nameRoot = file.Substring(baseLength).Replace('\\', '/');
                 fileCrc = CreateMD5Shared(fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-                Prop.f.Add(new fileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
+                Prop.f.Add(new AppUpdateVersionFileProp { p = nameRoot, crc = fileCrc, s = fileStream.Length });
                 LogWriteLine($"{nameRoot} -> {fileCrc}");
             }
 
             File.WriteAllText(Path.Combine(this.filePath, "fileindex.json"),
-                JsonSerializer.Serialize(Prop, typeof(Prop), PropContext.Default));
+                JsonSerializer.Serialize(Prop, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default));
 
             if (Directory.Exists(ConfigPath))
             {

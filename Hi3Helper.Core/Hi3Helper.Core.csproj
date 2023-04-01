@@ -7,6 +7,9 @@
 		<WarningLevel>6</WarningLevel>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<IsTrimmable>false</IsTrimmable>
+		<PublishTrimmed>false</PublishTrimmed>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -33,17 +36,14 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
 		<Optimize>False</Optimize>
-		<DefineConstants>DISABLE_COM</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
 		<Optimize>True</Optimize>
-		<DefineConstants>DISABLE_COM</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
 		<Optimize>True</Optimize>
-		<DefineConstants>DISABLE_COM</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -92,32 +92,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Lang\en.json" />
-	  <None Remove="Lang\id-ID.json" />
-	  <None Remove="Lang\ko-KR.json" />
-	  <None Remove="Lang\zh-cn.json" />
-	  <None Remove="Lang\pt-pt.json" />
-	  <None Remove="Lang\vi-vn.json" />
+		<None Remove="Lang\en.json" />
+		<None Remove="Lang\id-ID.json" />
+		<None Remove="Lang\zh-cn.json" />
+		<None Remove="Lang\pt-pt.json" />
+		<None Remove="Lang\vi-vn.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Lang\ko-KR.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Include="Lang\en.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\id-ID.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\zh-cn.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\pt-pt.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\vi-vn.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

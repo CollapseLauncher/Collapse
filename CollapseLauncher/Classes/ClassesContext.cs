@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 namespace CollapseLauncher
 {
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
-    [JsonSerializable(typeof(Prop))]
-    internal partial class PropContext : JsonSerializerContext { }
+    [JsonSerializable(typeof(AppUpdateVersionProp))]
+    internal partial class AppUpdateVersionPropContext : JsonSerializerContext { }
 
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
     [JsonSerializable(typeof(NotificationPush))]

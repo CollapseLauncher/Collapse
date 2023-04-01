@@ -63,7 +63,7 @@ namespace CollapseLauncher
         {
             try
             {
-                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
+                LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion.VersionString} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
                 LoadingPopupPill.Translation += Shadow32;
@@ -289,15 +289,15 @@ namespace CollapseLauncher
         {
             try
             {
-                // Spawn Updated App Notification if Applicable
-                SpawnAppUpdatedNotification();
-
                 // Fetch the Notification Feed in CollapseLauncher-Repo
                 await FetchNotificationFeed();
 
                 // Generate local notification
                 // For Example: Starter notification
                 GenerateLocalAppNotification();
+
+                // Spawn Updated App Notification if Applicable
+                SpawnAppUpdatedNotification();
 
                 // Load local settings
                 // For example: Ignore list
@@ -429,10 +429,14 @@ namespace CollapseLauncher
                         ClickCloseAction = null;
                         break;
                 }
+
+                GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
+                GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+
                 if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
-                    || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow)
-                        && LauncherUpdateWatcher.CompareVersion(Entry.ValidForVerAbove, AppCurrentVersion))
-                    || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, Entry.ValidForVerBelow))
+                    || (LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow)
+                        && LauncherUpdateWatcher.CompareVersion(ValidForVerAbove, AppCurrentVersion))
+                    || LauncherUpdateWatcher.CompareVersion(AppCurrentVersion, ValidForVerBelow))
                 {
                     if (Entry.ActionProperty != null)
                     {

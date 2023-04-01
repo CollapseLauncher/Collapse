@@ -51,40 +51,22 @@
                 <RowDefinition/>
                 <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition/>
-            </Grid.ChildrenTransitions>-->
-            <Grid Grid.Row="0">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" FontWeight="Bold"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <TextBlock Text="{Binding Value, ElementName=progressBar}" TextAlignment="Left"/>
-                        <TextBlock Text="%" TextAlignment="Left"/>
-                    </StackPanel>
-                    <TextBlock x:Name="Status" Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}" FontWeight="Bold"/>
-                    <TextBlock x:Name="ActivityStatus" Text="-" TextAlignment="Left"/>
+            </Grid.ChildrenTransitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Value, ElementName=progressBar}" TextAlignment="Left"/>
+                    <TextBlock Text="%" TextAlignment="Left"/>
                 </StackPanel>
-                <Grid Width="440" HorizontalAlignment="Right">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="192"/>
-                        <ColumnDefinition Width="96"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}" TextAlignment="Right" FontWeight="Bold"/>
-                        <TextBlock x:Name="TimeEstimation" Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" TextAlignment="Right"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader3}" TextAlignment="Right" FontWeight="Bold"/>
-                        <TextBlock x:Name="ActivitySubStatus" Text="{x:Bind helper:Locale.Lang._Misc.PerFromToPlaceholder}" TextAlignment="Right"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader4}" TextAlignment="Right" FontWeight="Bold"/>
-                        <TextBlock x:Name="SpeedStatus" Text="-" TextAlignment="Right"/>
-                    </StackPanel>
-                </Grid>
-            </Grid>
-            <ProgressBar x:Name="progressBar" Value="50" Maximum="100"  VerticalAlignment="Bottom" Grid.Row="1" IsIndeterminate="True"/>
+            </StackPanel>
+            <TextBlock x:Name="Status" Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader5PlaceHolder}" TextAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader2}" TextAlignment="Right" FontWeight="Bold"/>
+                <TextBlock x:Name="TimeEstimation" Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" TextAlignment="Right"/>
+            </StackPanel>
+            <ProgressBar x:Name="progressBar" Value="0" Maximum="100"  VerticalAlignment="Bottom" Grid.Row="1" IsIndeterminate="True"/>
         </Grid>
         <Grid Grid.Column="1" Margin="32,24,0,0">
             <Grid.RowDefinitions>
@@ -111,12 +93,20 @@
                 </Grid>
             </Grid>
             <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-                <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
-                <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" FontWeight="Medium" Margin="16,0"/>
+                <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="RemindMeClick" CornerRadius="14">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="16,0"/>
                 </Button>
             </StackPanel>
         </Grid>
+        <StackPanel x:Name="UpdateCountdownPanel" Orientation="Vertical" HorizontalAlignment="Center"
+                    Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Visibility="Collapsed">
+            <TextBlock HorizontalAlignment="Center" x:Name="UpdateCountdownText" Text="" Style="{ThemeResource TitleLargeTextBlockStyle}" FontSize="20"/>
+            <TextBlock HorizontalAlignment="Center">
+                <Run Text="(Click"/>
+                <Run Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                <Run Text="to abort the update)"/>
+            </TextBlock>
+        </StackPanel>
         <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"
                       VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.ColumnSpan="2"
                       Checked="AskUpdateToggle" Unchecked="AskUpdateToggle"/>

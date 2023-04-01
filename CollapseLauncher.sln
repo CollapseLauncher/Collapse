@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CollapseLauncher", "Collaps
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Core", "Hi3Helper.Core\Hi3Helper.Core.csproj", "{102DC1D2-B1A9-46AF-B56C-A124013747B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplyUpdate", "ApplyUpdate\ApplyUpdate.csproj", "{5F932364-CDA4-4104-919B-C6DD247849C9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool", "Hi3Helper.EncTool\Hi3Helper.EncTool.csproj", "{32413993-E384-46CA-84A4-F7975D78543C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Http", "Hi3Helper.Http\Hi3Helper.Http.csproj", "{0B70C677-C309-46B5-B58E-437728042B65}"
@@ -63,22 +61,6 @@ Global
 		{102DC1D2-B1A9-46AF-B56C-A124013747B6}.ReleaseILTrim|x64.Build.0 = ReleaseILTrim|x64
 		{102DC1D2-B1A9-46AF-B56C-A124013747B6}.Release-Portable|x64.ActiveCfg = Release-Portable|x64
 		{102DC1D2-B1A9-46AF-B56C-A124013747B6}.Release-Portable|x64.Build.0 = Release-Portable|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Debug|x64.ActiveCfg = Debug|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Debug|x64.Build.0 = Debug|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.DebugILTrim|x64.ActiveCfg = Debug|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.DebugILTrim|x64.Build.0 = Debug|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Publish|x64.ActiveCfg = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Publish|x64.Build.0 = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.PublishILTrim|x64.ActiveCfg = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.PublishILTrim|x64.Build.0 = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Publish-Portable|x64.ActiveCfg = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Publish-Portable|x64.Build.0 = Publish|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Release|x64.ActiveCfg = Release|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Release|x64.Build.0 = Release|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.ReleaseILTrim|x64.ActiveCfg = Release|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.ReleaseILTrim|x64.Build.0 = Release|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Release-Portable|x64.ActiveCfg = Release|x64
-		{5F932364-CDA4-4104-919B-C6DD247849C9}.Release-Portable|x64.Build.0 = Release|x64
 		{32413993-E384-46CA-84A4-F7975D78543C}.Debug|x64.ActiveCfg = Debug|x64
 		{32413993-E384-46CA-84A4-F7975D78543C}.Debug|x64.Build.0 = Debug|x64
 		{32413993-E384-46CA-84A4-F7975D78543C}.DebugILTrim|x64.ActiveCfg = Debug|x64

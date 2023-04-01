@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ApplyUpdate": {
-      "commandName": "Project",
-      "workingDirectory": "C:\\Program Files\\Collapse Launcher"
-    }
-  }
-}

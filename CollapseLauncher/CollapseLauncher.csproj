@@ -8,18 +8,20 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim;DebugILTrim</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.0.69.6</Version>
+		<Version>1.69.6</Version>
+		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLE_COM</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>False</Optimize>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>partial</TrimMode>
@@ -29,7 +31,7 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLE_COM</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>partial</TrimMode>
@@ -43,7 +45,7 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLE_COM</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>partial</TrimMode>
@@ -53,10 +55,11 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="Classes\GameManagement\GameSettings\Honkai\GraphicsPreset.json" />
+		<None Remove="Classes\GameManagement\GameSettings\Honkai\GraphicsPreset.json" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
@@ -75,12 +78,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="ApplyUpdate.exe">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="ApplyUpdate.exe.config">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
@@ -107,13 +104,13 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\BG\StartUpBG.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\BG\StartUpBG2.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\CollapseLauncherLogo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -125,16 +122,13 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
 			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WindowsAppSDK'">
-				<IsTrimmable>true</IsTrimmable>
-			</ManagedAssemblyToLink>
-			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Hi3Helper.Core'">
 				<IsTrimmable>true</IsTrimmable>
 			</ManagedAssemblyToLink>
 		</ItemGroup>

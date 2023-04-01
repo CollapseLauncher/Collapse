@@ -44,14 +44,12 @@ namespace CollapseLauncher
                 this.Title = title += "[DEBUG]";
 #endif
 
-                Updater updater = new Updater(m_arguments.Updater.AppPath,
-                    m_arguments.Updater.UpdateChannel.ToString().ToLower(),
-                    (byte)AppCurrentDownloadThread);
+                Updater updater = new Updater(m_arguments.Updater.UpdateChannel.ToString().ToLower());
                 updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
                 updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
 
                 UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
-                CurrentVersionLabel.Text = AppCurrentVersion;
+                CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
             }
             catch (Exception ex)
             {
@@ -85,14 +83,15 @@ namespace CollapseLauncher
         {
             Status.Text = e.status;
             ActivityStatus.Text = e.message;
-            NewVersionLabel.Text = e.newver;
+            GameVersion Version = new GameVersion(e.newver);
+            NewVersionLabel.Text = Version.VersionString;
         }
 
         private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
         {
             progressBar.Value = e.ProgressPercentage;
             ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.DownloadedSize)} / {SummarizeSizeSimple(e.TotalSizeToDownload)}";
-            SpeedStatus.Text = $"{SummarizeSizeSimple(e.CurrentSpeed)}/s";
+            // SpeedStatus.Text = $"{SummarizeSizeSimple(e.CurrentSpeed)}/s";
             TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
         }
 
