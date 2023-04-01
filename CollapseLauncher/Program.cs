@@ -95,6 +95,8 @@ namespace CollapseLauncher
                         return;
                 }
 
+                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
                 if (!DecideRedirection())
                 {
                     XamlCheckProcessRequirements();
@@ -119,6 +121,11 @@ namespace CollapseLauncher
                 Console.ReadLine();
                 return;
             }
+        }
+
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            AppDiscordPresence.Dispose();
         }
 
         private static void StartSquirrelHook()
