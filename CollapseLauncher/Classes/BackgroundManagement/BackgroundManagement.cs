@@ -281,7 +281,7 @@ namespace CollapseLauncher
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
 
-            QuantizedColor Single = null;
+            QuantizedColor? Single = null;
             ColorThief cT = new ColorThief();
             IEnumerable<QuantizedColor> Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
 
@@ -295,7 +295,7 @@ namespace CollapseLauncher
                 if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
             }
 
-            for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single);
+            for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single ?? new QuantizedColor());
 
             cT = null;
 
