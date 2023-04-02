@@ -48,6 +48,9 @@ namespace CollapseLauncher.Pages
                                         .ToLocalTime().ToString("f");
 
             await GetReleaseNote();
+
+            // Wait for countdown
+            await WaitForCountdown();
             await StartUpdateRoutine();
         }
 
@@ -55,12 +58,10 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                // Wait for countdown
-                await WaitForCountdown();
-
                 // Hide/Show progress
                 UpdateCountdownPanel.Visibility = Visibility.Collapsed;
-                UpdateBtnBox.Visibility = Visibility.Collapsed;
+                UpdateBox.Visibility = Visibility.Collapsed;
+                CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
                 AskUpdateCheckbox.Visibility = Visibility.Collapsed;
                 UpdateProgressBox.Visibility = Visibility.Visible;
 
@@ -80,7 +81,7 @@ namespace CollapseLauncher.Pages
 
         private async Task GetSquirrelUpdate()
         {
-            string ChannelName = (IsPreview ? "Preview" : "Stable");
+            string ChannelName = IsPreview ? "Preview" : "Stable";
             if (IsPortable) ChannelName += "Portable";
 
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
@@ -101,10 +102,10 @@ namespace CollapseLauncher.Pages
         private async Task WaitForCountdown()
         {
             UpdateCountdownPanel.Visibility = Visibility.Visible;
-            int maxCount = 5;
+            int maxCount = 10;
             while (maxCount > 0)
             {
-                UpdateCountdownText.Text = string.Format("Your launcher will be updated in {0}...", maxCount);
+                UpdateCountdownText.Text = string.Format(Lang._UpdatePage.UpdateCountdownMessage1, maxCount);
                 await Task.Delay(1000, _tokenSource.Token);
                 maxCount--;
             }
@@ -136,6 +137,19 @@ namespace CollapseLauncher.Pages
         {
             bool AskForUpdateLater = (sender as CheckBox).IsChecked ?? false;
             SetAndSaveConfigValue("DontAskUpdate", AskForUpdateLater);
+        }
+
+        private async void DoUpdateClick(object sender, RoutedEventArgs e)
+        {
+            await StartUpdateRoutine();
+        }
+
+        private void CancelCountdownClick(object sender, RoutedEventArgs e)
+        {
+            _tokenSource.Cancel();
+            (sender as Button).Visibility = Visibility.Collapsed;
+            UpdateCountdownPanel.Visibility = Visibility.Collapsed;
+            UpdateBox.Visibility = Visibility.Visible;
         }
 
         private void RemindMeClick(object sender, RoutedEventArgs e)

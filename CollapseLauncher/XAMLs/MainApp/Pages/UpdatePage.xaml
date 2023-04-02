@@ -92,9 +92,18 @@
                     </ScrollViewer>
                 </Grid>
             </Grid>
-            <StackPanel x:Name="UpdateBtnBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-                <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="RemindMeClick" CornerRadius="14">
+            <StackPanel x:Name="CancelUpdateCountdownBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+                <Button x:Name="CancelUpdateCountdownBtn" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="CancelCountdownClick" CornerRadius="14">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Medium" Margin="16,0"/>
+                </Button>
+            </StackPanel>
+            <StackPanel x:Name="UpdateBox" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Visibility="Collapsed">
+                <StackPanel.ChildrenTransitions>
+                    <PopupThemeTransition/>
+                </StackPanel.ChildrenTransitions>
+                <HyperlinkButton Content="{x:Bind helper:Locale.Lang._UpdatePage.RemindLaterBtn}" HorizontalAlignment="Right" Margin="0,0,8,0" Click="RemindMeClick"/>
+                <Button Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Right" Click="DoUpdateClick" CornerRadius="14">
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateNowBtn}" FontWeight="Medium" Margin="16,0"/>
                 </Button>
             </StackPanel>
         </Grid>
@@ -102,9 +111,9 @@
                     Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Visibility="Collapsed">
             <TextBlock HorizontalAlignment="Center" x:Name="UpdateCountdownText" Text="" Style="{ThemeResource TitleLargeTextBlockStyle}" FontSize="20"/>
             <TextBlock HorizontalAlignment="Center">
-                <Run Text="(Click"/>
+                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage2}"/>
                 <Run Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
-                <Run Text="to abort the update)"/>
+                <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateCountdownMessage3}"/>
             </TextBlock>
         </StackPanel>
         <CheckBox x:Name="AskUpdateCheckbox" Content="{x:Bind helper:Locale.Lang._UpdatePage.NeverShowNotification}"

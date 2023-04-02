@@ -34,6 +34,9 @@
                 public string UpdateMessage4 { get; set; } = LangFallback?._UpdatePage.UpdateMessage4;
                 public string UpdateStatus5 { get; set; } = LangFallback?._UpdatePage.UpdateStatus5;
                 public string UpdateMessage5 { get; set; } = LangFallback?._UpdatePage.UpdateMessage5;
+                public string UpdateCountdownMessage1 { get; set; } = LangFallback?._UpdatePage.UpdateCountdownMessage1;
+                public string UpdateCountdownMessage2 { get; set; } = LangFallback?._UpdatePage.UpdateCountdownMessage2;
+                public string UpdateCountdownMessage3 { get; set; } = LangFallback?._UpdatePage.UpdateCountdownMessage3;
             }
         }
         #endregion

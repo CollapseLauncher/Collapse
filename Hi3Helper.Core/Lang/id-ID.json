@@ -606,7 +606,7 @@
     "VerChannelLabel": "Kanal Pembaruan:",
     "VerDateLabel": "Dikompilasi Pada:",
     "ReleaseNote": "Catatan Rilis",
-    "NeverShowNotification": "Jangan pernah perlihatkan notifikasi pembaruan ini lagi",
+    "NeverShowNotification": "Jangan perlihatkan lagi",
     "RemindLaterBtn": "Ingatkan Nanti",
     "UpdateNowBtn": "Perbarui Sekarang",
     "LoadingRelease": "Memuat Catatan Rilis...",
@@ -625,7 +625,11 @@
     "UpdateStatus4": "Kamu sedang menggunakan versi terbaru sekarang! ({0})",
     "UpdateMessage4": "Kembali ke launcher sebentar lagi...",
     "UpdateStatus5": "Versi launcher telah diperbarui ke {0}!",
-    "UpdateMessage5": "Kita akan kembali ke launcher sebentar lagi..."
+    "UpdateMessage5": "Kita akan kembali ke launcher sebentar lagi...",
+
+    "UpdateCountdownMessage1": "Launcher akan diperbaruhi dalam {0}...",
+    "UpdateCountdownMessage2": "(Klik",
+    "UpdateCountdownMessage3": "untuk membatalkan hitungan mundur)"
   },
 
   "_AppNotification": {
