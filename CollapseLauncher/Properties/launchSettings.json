@@ -2,7 +2,7 @@
   "profiles": {
     "Updater": {
       "commandName": "Project",
-      "commandLineArgs": "update --input \"C:\\Program Files\\Collapse Launcher\" --channel Stable",
+      "commandLineArgs": "update --input \"C:\\Program Files\\Collapse Launcher\" --channel Preview",
       "nativeDebugging": false
     },
     "Elevate Updater": {

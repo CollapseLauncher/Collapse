@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFrameworks>net7.0;net8.0</TargetFrameworks>
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release;Release-Portable;Publish;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
 		<WarningLevel>6</WarningLevel>
@@ -10,6 +10,7 @@
 		<IsTrimmable>false</IsTrimmable>
 		<PublishTrimmed>false</PublishTrimmed>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<DebugType>portable</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
