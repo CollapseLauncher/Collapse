@@ -1,4 +1,5 @@
-﻿using Microsoft.UI;
+﻿using Hi3Helper.Http;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -13,7 +14,11 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
@@ -23,7 +28,7 @@ namespace CollapseLauncher
         public static string workingDir = Path.GetDirectoryName(execPath);
         public static string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath));
         public static string applyPath = Path.Combine(workingDir, $"ApplyUpdate.exe");
-        public static string applyElevatedPath = Path.Combine(workingDir, "_Temp", $"ApplyUpdate.exe");
+        public static string applyElevatedPath = Path.Combine(workingDir, "..\\", $"ApplyUpdate.exe");
         public static string elevatedPath = Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
         public static string launcherPath = Path.Combine(workingDir, "CollapseLauncher.exe");
 
@@ -51,74 +56,62 @@ namespace CollapseLauncher
         {
             try
             {
-                Updater updater = new Updater(m_arguments.Updater.UpdateChannel.ToString().ToLower());
+                string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
+                progressBar.IsIndeterminate = true;
+                UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
+                ActivityStatus.Text = Lang._UpdatePage.UpdateMessage1;
 
-                UpdateInfo updateInfo = await updater.StartCheck();
+                AppUpdateVersionProp updateInfo = new AppUpdateVersionProp();
 
-                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
-                await updater.StartUpdate(updateInfo);
-
-                GameVersion latestUpdateVer = new GameVersion(updateInfo.FutureReleaseEntry.Version.Version);
-                NewVersionLabel.Text = latestUpdateVer.VersionString;
-                DispatcherQueue.TryEnqueue(() =>
+                using (Http _httpClient = new Http(true))
                 {
-                    SpeedStatus.Visibility = Visibility.Collapsed;
-                    TimeEstimation.Visibility = Visibility.Collapsed;
-                    ActivitySubStatus.Visibility = Visibility.Collapsed;
-                    ProgressStatus.Visibility = Visibility.Collapsed;
-                });
-                await updater.FinishUpdate();
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
+                        ms.Position = 0;
+                        updateInfo = (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default);
+                        NewVersionLabel.Text = updateInfo.ver;
+                    }
+
+                    FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath, Environment.ProcessorCount > 8 ? 8 : Environment.ProcessorCount, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/ApplyUpdate.exe", default);
+                    FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
+                }
+
+                File.WriteAllText(Path.Combine(workingDir, "..\\", "release"), m_arguments.Updater.UpdateChannel.ToString().ToLower());
+                Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, updateInfo.ver);
+                ActivityStatus.Text = Lang._UpdatePage.UpdateMessage5;
+
+                File.WriteAllText(newVerTagPath, updateInfo.ver);
+
+                await Task.Delay(5000);
+                Process applyUpdate = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = applyElevatedPath,
+                        UseShellExecute = true
+                    }
+                };
+                applyUpdate.Start();
+
+                App.Current.Exit();
             }
             catch (Exception ex)
             {
-                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-                {
-                    WindowsPrincipal principal = new WindowsPrincipal(identity);
-                    if (principal != null && !principal.IsInRole(WindowsBuiltInRole.Administrator))
-                    {
-                        // Ideally this would be localized
-                        LogWriteLine("You are not running as Administrator. The application will now attempt to restart as an Administrator to continue updating.", Hi3Helper.LogType.Warning, false);
-                        // NOTE: Lines 79-81 are not required but have been left for debugging purposes, which could be enabled if there is
-                        // a way to check if the user has Console enabled.
-                        // LogWriteLine("Press any key to continue...", Hi3Helper.LogType.Warning, false);
-                        // LogWriteLine($"\r{ex}", Hi3Helper.LogType.Error, false);
-                        // Console.ReadLine();
-                        this.Close();
-                        new Process()
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                UseShellExecute = true,
-                                Verb = "runas",
-                                FileName = launcherPath,
-                                WorkingDirectory = workingDir
-                            }
-                        }.Start();
-                    }
-                }
-                // LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
-                // Console.ReadLine();
+                LogWriteLine($"FATAL CRASH!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
             }
         }
 
-        private void Updater_UpdaterStatusChanged(object sender, Updater.UpdaterStatus e)
+        private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                Status.Text = e.status;
-                ActivityStatus.Text = e.message;
-            });
-        }
+            progressBar.IsIndeterminate = false;
+            progressBar.Value = e.ProgressPercentage;
+            ActivityStatus.Text = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+            ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.SizeDownloaded)} / {SummarizeSizeSimple(e.SizeToBeDownloaded)}";
 
-        private void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressBar.Value = e.ProgressPercentage;
-                ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.DownloadedSize)} / {SummarizeSizeSimple(e.TotalSizeToDownload)}";
-                TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
-            });
+            SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed));
+            TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
         }
 
         private void InitializeAppWindowAndIntPtr()

@@ -47,8 +47,8 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.ColumnSpan="3">
                             <TextBlock x:Name="Status" Text="Status:" Margin="0,0,0,4"/>
-                            <TextBlock x:Name="ActivityStatus" Text="Idle" Margin="0,0,0,4"/>
-                            <TextBlock x:Name="ActivitySubStatus" Text="- B / - B" FontWeight="Bold" Visibility="Collapsed"/>
+                            <TextBlock x:Name="ActivityStatus" Text="Idle" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="ActivitySubStatus" Text="- B / - B" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel x:Name="ProgressStatus" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">
                             <TextBlock Text="{Binding Value, ElementName=progressBar}" FontWeight="Bold"/>
