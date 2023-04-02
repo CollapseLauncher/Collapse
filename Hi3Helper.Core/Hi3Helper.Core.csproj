@@ -97,6 +97,7 @@
 		<None Remove="Lang\zh-cn.json" />
 		<None Remove="Lang\pt-pt.json" />
 		<None Remove="Lang\vi-vn.json" />
+		<None Remove="Lib\discord_game_sdk.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -130,6 +131,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Lib\discord_game_sdk.dll">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>

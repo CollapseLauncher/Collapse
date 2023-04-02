@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.DiscordPresence;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -196,6 +197,8 @@ namespace CollapseLauncher
 
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+
+            AppDiscordPresence = new DiscordPresenceManager();
         }
 
         public static void RunElevateUpdate()
