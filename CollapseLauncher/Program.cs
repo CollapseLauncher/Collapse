@@ -53,6 +53,7 @@ namespace CollapseLauncher
                     GetVersionString(),
                     Environment.UserName,
                     (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : "")), LogType.Scheme, true);
+                LogWriteLine(string.Format("Runtime: {0}", RuntimeInformation.FrameworkDescription), LogType.Scheme, true);
 
                 InitializeAppSettings();
                 ParseArguments(args);
