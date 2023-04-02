@@ -3,22 +3,19 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Squirrel;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Principal;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Windows.Graphics;
 using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.InvokeProp;
-using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
