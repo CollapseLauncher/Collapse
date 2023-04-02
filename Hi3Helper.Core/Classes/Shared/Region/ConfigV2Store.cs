@@ -47,7 +47,6 @@ namespace Hi3Helper.Preset
             }
 
             ConfigV2.MetadataV2 = res;
-            ConfigV2.DecryptStrings();
             ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
         }
 
