@@ -54,13 +54,13 @@ namespace CollapseLauncher
                 Updater updater = new Updater(m_arguments.Updater.UpdateChannel.ToString().ToLower());
 
                 UpdateInfo updateInfo = await updater.StartCheck();
+
+                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
                 await updater.StartUpdate(updateInfo);
 
                 GameVersion latestUpdateVer = new GameVersion(updateInfo.FutureReleaseEntry.Version.Version);
                 NewVersionLabel.Text = latestUpdateVer.VersionString;
-
-                updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
-                updater.UpdaterStatusChanged += Updater_UpdaterStatusChanged;
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     SpeedStatus.Visibility = Visibility.Collapsed;
