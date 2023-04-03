@@ -174,7 +174,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = file.OpenRead())
+            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // If pass the check above, then do MD5 Hash calculation
                 localCRC = CheckHash(filefs, MD5.Create(), token);
@@ -270,7 +270,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = file.OpenRead())
+            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
@@ -346,7 +346,7 @@ namespace CollapseLauncher
             if (fileOld?.Exists ?? false && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
-                using (FileStream fileOldfs = fileOld.OpenRead())
+                using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // If pass the check above, then do CRC calculation
                     byte[] localOldCRC = CheckHash(fileOldfs, MD5.Create(), token, false);
@@ -429,7 +429,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = file.OpenRead())
+            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 // Additional: the total file size progress is disabled and will be incremented after this

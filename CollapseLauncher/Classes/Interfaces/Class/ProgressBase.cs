@@ -331,7 +331,7 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                using (FileStream patchfs = patchInfo.OpenRead())
+                using (FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
                 {
                     // Verify the patch file and if it doesn't match, then redownload it
                     byte[] patchCRC = await Task.Run(() => CheckHash(patchfs, MD5.Create(), token, false)).ConfigureAwait(false);

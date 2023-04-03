@@ -131,7 +131,7 @@ namespace CollapseLauncher
             }
 
             // If above passes, then run the CRC check
-            using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(asset.ConcatPath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // Calculate the asset CRC (SHA1)
                 byte[] hashArray = CheckHash(fs, new HMACSHA1(_gameSalt), token);

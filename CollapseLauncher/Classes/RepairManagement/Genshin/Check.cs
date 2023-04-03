@@ -107,7 +107,7 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = file.OpenRead())
+            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
                 byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
