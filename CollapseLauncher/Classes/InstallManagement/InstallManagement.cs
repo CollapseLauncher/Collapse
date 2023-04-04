@@ -241,7 +241,7 @@ namespace CollapseLauncher
 
         public async Task<bool> StartVerificationAsync(UIElement Content)
         {
-            if (CanDeltaPatch && PageStatics._GameVersion.GameType == GameType.Honkai) return false;
+            if (CanDeltaPatch && SourceProfile.GameType == GameType.Honkai) return false;
             DownloadAddressProperty VerificationResult = await Task.Run(StartVerification);
 
             if (VerificationResult != null)
@@ -539,19 +539,21 @@ namespace CollapseLauncher
         public async Task FinalizeInstallation(UIElement Content)
         {
             InstallStatus.IsPerFile = false;
-            await Task.Run(() =>
-            {
-                UpdateStatus(InstallStatus);
-                ApplyHdiffPatch();
-                CleanUpUnusedAssets();
+            UpdateStatus(InstallStatus);
 
-                // This part is only for Honkai Block files Cleanup.
-                StashOldBlock();
-            });
-
-            if (!CanDeltaPatch)
+            switch (SourceProfile.GameType)
             {
-                await PostInstallVerification(Content);
+                case GameType.Genshin:
+                    await Task.Run(() =>
+                    {
+                        ApplyHdiffPatch();
+                        CleanUpUnusedAssets();
+                    });
+                    await PostInstallVerification(Content);
+                    break;
+                case GameType.Honkai:
+                    StashOldBlock();
+                    break;
             }
         }
 
@@ -718,8 +720,6 @@ namespace CollapseLauncher
 
         public async Task PostInstallVerification(UIElement Content)
         {
-            if (PageStatics._GameVersion.GameType != GameType.Genshin && !(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)) return;
-
             InstallStatus = new InstallManagementStatus
             {
                 IsPerFile = false,
