@@ -1,6 +1,8 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+#if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
+#endif
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -45,8 +47,9 @@ namespace CollapseLauncher.Pages
 
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
-
+#if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+#endif
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)

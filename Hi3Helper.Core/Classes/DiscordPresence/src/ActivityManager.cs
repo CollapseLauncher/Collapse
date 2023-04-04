@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !DISABLEDISCORD
+using System;
 
 namespace Discord
 {
@@ -10,3 +11,4 @@ namespace Discord
         }
     }
 }
+#endif

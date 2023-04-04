@@ -1,3 +1,4 @@
+#if !DISABLEDISCORD
 using System;
 using System.Runtime.InteropServices;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -51,3 +52,4 @@ namespace Discord
 #endif
     }
 }
+#endif

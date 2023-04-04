@@ -1,7 +1,9 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
+#if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
+#endif
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -104,8 +106,9 @@ namespace CollapseLauncher.Pages
 
                     return;
                 }
-
+#if !DISABLEDISCORD
                 AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+#endif
             }
             catch (Exception ex)
             {

@@ -1,5 +1,7 @@
 ﻿using Hi3Helper.Data;
+#if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
+#endif
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
@@ -117,7 +119,9 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameConfigV2StampPath { get => Path.Combine(AppGameConfigMetadataFolder, "stampv2.json"); }
         public static string AppGameConfigV2MetadataPath { get => Path.Combine(AppGameConfigMetadataFolder, "metadatav2.json"); }
 
+#if !DISABLEDISCORD
         public static DiscordPresenceManager AppDiscordPresence;
+#endif
 
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled = false;

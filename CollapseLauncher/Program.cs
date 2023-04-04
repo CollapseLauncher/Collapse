@@ -1,5 +1,7 @@
 ﻿using Hi3Helper;
+#if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
+#endif
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -127,7 +129,9 @@ namespace CollapseLauncher
 
         private static void OnProcessExit(object sender, EventArgs e)
         {
+#if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
+#endif
         }
 
         private static void StartSquirrelHook()
@@ -198,8 +202,9 @@ namespace CollapseLauncher
 
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
-
+#if !DISABLEDISCORD
             AppDiscordPresence = new DiscordPresenceManager();
+#endif
         }
 
         public static void RunElevateUpdate()

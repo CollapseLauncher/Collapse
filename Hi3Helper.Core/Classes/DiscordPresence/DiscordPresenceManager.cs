@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿#if !DISABLEDISCORD
+using Discord;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
@@ -219,3 +220,4 @@ namespace Hi3Helper.DiscordPresence
         }
     }
 }
+#endif

@@ -7,7 +7,9 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
+#if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
+#endif
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -546,7 +548,9 @@ namespace CollapseLauncher.Pages
                         GameStartupSetting.IsEnabled = false;
 
                         await Task.Delay(100, Token);
+#if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play, 0);
+#endif
                     }
 
                     if (!StartGameBtn.IsEnabled)
@@ -557,7 +561,9 @@ namespace CollapseLauncher.Pages
                     GameStartupSetting.IsEnabled = true;
 
                     await Task.Delay(100, Token);
+#if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
+#endif
                 }
             }
             catch { return; }

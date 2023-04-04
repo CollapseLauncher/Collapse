@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !DISABLEDISCORD
+using System;
 
 namespace Discord
 {
@@ -7,3 +8,4 @@ namespace Discord
         public const string DllName = "Lib\\discord_game_sdk";
     }
 }
+#endif

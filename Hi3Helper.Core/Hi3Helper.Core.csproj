@@ -14,36 +14,42 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Portable|x64'">
-		<DefineConstants>PORTABLE</DefineConstants>
+		<DefineConstants>PORTABLE;DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish-Portable|x64'">
-		<DefineConstants>PORTABLE</DefineConstants>
+		<DefineConstants>PORTABLE;DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
+		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
@@ -93,12 +99,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Lang\en.json" />
-		<None Remove="Lang\id-ID.json" />
-		<None Remove="Lang\zh-cn.json" />
-		<None Remove="Lang\pt-pt.json" />
-		<None Remove="Lang\vi-vn.json" />
 		<None Remove="Lib\discord_game_sdk.dll" />
+		<!-- Remove this comment and line above to enable Discord RPC
+		<Content Include="Lib\discord_game_sdk.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		-->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -132,12 +138,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="Lib\discord_game_sdk.dll">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	</ItemGroup>
 
 </Project>
