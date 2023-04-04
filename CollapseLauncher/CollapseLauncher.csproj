@@ -6,7 +6,7 @@
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release;Publish;Release-Portable;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim;DebugILTrim</Configurations>
+		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<Version>1.69.5</Version>
 		<DebugType>portable</DebugType>
@@ -20,43 +20,14 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
-		<Optimize>False</Optimize>
-		<PublishTrimmed>true</PublishTrimmed>
-		<TrimMode>partial</TrimMode>
-	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-		<PublishTrimmed>true</PublishTrimmed>
-		<TrimMode>partial</TrimMode>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Portable|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;PORTABLE;DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-		<PublishTrimmed>true</PublishTrimmed>
-		<TrimMode>partial</TrimMode>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish-Portable|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;PORTABLE;DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Remove="Classes\GameManagement\GameSettings\Honkai\GraphicsPreset.json" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />

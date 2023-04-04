@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net7.0;net8.0</TargetFrameworks>
 		<Platforms>x64</Platforms>
-		<Configurations>Debug;Release;Release-Portable;Publish;Publish-Portable;DebugILTrim;PublishILTrim;ReleaseILTrim</Configurations>
+		<Configurations>Debug;Release;Publish</Configurations>
 		<WarningLevel>6</WarningLevel>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,39 +18,14 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Portable|x64'">
-		<DefineConstants>PORTABLE;DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish-Portable|x64'">
-		<DefineConstants>PORTABLE;DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugILTrim|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
-		<Optimize>False</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PublishILTrim|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseILTrim|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
-		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
