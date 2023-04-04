@@ -2,6 +2,7 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Parser;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -708,14 +709,18 @@ namespace CollapseLauncher
 
             if (!File.Exists(XmfPath)) return;
 
-            BlockData Util = new BlockData();
+            XMFParser xmfParser = new XMFParser(XmfPath);
+            IEnumerable<string> blockHashes = xmfParser.EnumerateBlockHashString();
+            IEnumerable<string> XmfDirEnumerate = Directory.EnumerateFiles(XmfDir, "*.*", SearchOption.AllDirectories)
+                .Where(x => !blockHashes.Contains(Path.GetFileNameWithoutExtension(x)) && !(x.EndsWith("Blocks.xmf") || x.EndsWith("BlockMeta.xmf")));
 
-            Util.Init(new FileStream(XmfPath, FileMode.Open, FileAccess.Read, FileShare.Read), XMFFileFormat.XMF);
-            Util.CheckForUnusedBlocks(XmfDir);
-            List<string> UnusedFiles = Util.GetListOfBrokenBlocks(XmfDir);
-            UnusedFiles.AddRange(Directory.GetFiles(XmfDir, "Blocks_*.xmf"));
-
-            foreach (string _Entry in UnusedFiles) File.Delete(_Entry);
+            foreach (string blockFiles in XmfDirEnumerate)
+            {
+                FileInfo fileInfo = new FileInfo(blockFiles);
+                fileInfo.IsReadOnly = false;
+                fileInfo.Delete();
+                LogWriteLine($"Deleting unused block file: {Path.GetFileName(blockFiles)}");
+            }
         }
 
         public async Task PostInstallVerification(UIElement Content)
