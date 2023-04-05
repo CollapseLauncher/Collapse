@@ -497,6 +497,7 @@ namespace CollapseLauncher
                         break;
                     case FileType.Audio:
                     case FileType.Generic:
+                    case FileType.Video:
                         catalog.Add(path);
                         break;
 
