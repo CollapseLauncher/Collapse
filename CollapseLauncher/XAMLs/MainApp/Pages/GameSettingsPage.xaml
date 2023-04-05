@@ -170,7 +170,7 @@
                                                 </CheckBox.Content>
                                             </CheckBox>
                                             <CheckBox x:Name="GameFXPhysicsCheckBox"
-                                                      IsChecked="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}">
+                                                      IsChecked="{x:Bind IsGraphicsPhysicsEnabled, Mode=TwoWay}" Margin="12, 0, 0, 0">
                                                 <CheckBox.Content>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FXPhysics}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                                 </CheckBox.Content>
