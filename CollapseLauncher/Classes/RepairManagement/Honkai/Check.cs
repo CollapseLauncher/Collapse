@@ -533,9 +533,12 @@ namespace CollapseLauncher
                 bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);
 
+                // Delta-patch related
+                bool isDeltaPatch = Path.GetFileName(asset).StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
+
                 if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
-                    && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch)
+                    && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch && !isDeltaPatch)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);
