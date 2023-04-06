@@ -26,7 +26,8 @@ namespace CollapseLauncher
                   parentUI,
                   PageStatics._GameVersion.GameDirAppDataPath,
                   null,
-                  presetConfigV2)
+                  presetConfigV2,
+                  null)
         {
             _gameLang = presetConfigV2.GetGameLanguage() ?? "en";
         }

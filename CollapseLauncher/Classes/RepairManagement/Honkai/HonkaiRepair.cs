@@ -40,8 +40,8 @@ namespace CollapseLauncher
         private protected string _videoBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Video/"); }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset, bool onlyRecoverMainAsset = false)
-            : base(parentUI, null, gameRepoURL, gamePreset)
+        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, null, gameRepoURL, gamePreset, versionOverride)
         {
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;

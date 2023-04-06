@@ -2,7 +2,6 @@
 using Hi3Helper.Preset;
 using System;
 using System.IO;
-using System.Runtime.ConstrainedExecution;
 
 namespace CollapseLauncher
 {

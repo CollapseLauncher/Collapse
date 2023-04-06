@@ -17,8 +17,8 @@ namespace CollapseLauncher.Interfaces
     internal class ProgressBase<T1, T2> :
         GamePropertyBase<T1, T2> where T1 : Enum
     {
-        public ProgressBase(UIElement parentUI, string gamePath, string gameRepoURL, PresetConfigV2 gamePreset)
-            : base(parentUI, gamePath, gameRepoURL, gamePreset)
+        public ProgressBase(UIElement parentUI, string gamePath, string gameRepoURL, PresetConfigV2 gamePreset, string versionOverride)
+            : base(parentUI, gamePath, gameRepoURL, gamePreset, versionOverride)
         {
             _status = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
             _progress = new TotalPerfileProgress();

@@ -30,7 +30,7 @@ namespace CollapseLauncher
         #endregion
 
         public GenshinRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
-            : base(parentUI, null, gameRepoURL, gamePreset)
+            : base(parentUI, null, gameRepoURL, gamePreset, null)
         {
             _audioLanguage = (GenshinAudioLanguage)_gamePreset.GetVoiceLanguageID();
             _dispatcherRegionID = _gamePreset.GetRegServerNameID();
