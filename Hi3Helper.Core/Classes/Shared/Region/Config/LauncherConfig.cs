@@ -279,8 +279,10 @@ namespace Hi3Helper.Shared.Region
         {
             foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate)
             {
-                if (string.IsNullOrEmpty(GetAppConfigValue(Entry.Key).Value))
+                if (!appIni.Profile[SectionName].ContainsKey(Entry.Key) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key].Value))
+                {
                     SetAppConfigValue(Entry.Key, Entry.Value);
+                }
             }
             if (GetAppConfigValue("DownloadThread").ToInt() > 8)
                 SetAppConfigValue("DownloadThread", 8);
