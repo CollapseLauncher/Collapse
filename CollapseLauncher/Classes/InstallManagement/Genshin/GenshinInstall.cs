@@ -68,7 +68,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             List<GameInstallPackage> voicePackList = new List<GameInstallPackage>();
 
             // Add another voice pack that already been installed
-            TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList);
+            TryAddOtherInstalledVoicePacks(resource.FirstOrDefault().voice_packs, voicePackList, resource.FirstOrDefault().version);
 
             // Get the secondary file check
             bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
@@ -266,7 +266,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
 
             // Also try add another voice pack that already been installed
-            TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList);
+            TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
         }
         #endregion
         #region Private Methods - GetInstallationPath
@@ -297,7 +297,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
         };
 
-        private void TryAddOtherInstalledVoicePacks(List<RegionResourceVersion> packs, List<GameInstallPackage> packageList)
+        private void TryAddOtherInstalledVoicePacks(List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
         {
             // If not found (null), then return
             if (_gameAudioLangListPath == null) return;
@@ -321,19 +321,19 @@ namespace CollapseLauncher.InstallManager.Genshin
                     };
 
                     // Add the voice language to the list
-                    TryAddOtherVoicePacksDictionary(langKey.Key, packs[langKey.Value], langKey.Value, packageList);
+                    TryAddOtherVoicePacksDictionary(langKey.Key, packs[langKey.Value], langKey.Value, packageList, assetVersion);
                 }
             }
         }
 
-        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, List<GameInstallPackage> packageList)
+        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, List<GameInstallPackage> packageList, string assetVersion)
         {
             // Try check if the package list matches the key
             if (!packageList.Any(x => x.LanguageName == key))
             {
                 // Then add to the package list
                 value.languageID = langID;
-                GameInstallPackage package = new GameInstallPackage(value, _gamePath) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
+                GameInstallPackage package = new GameInstallPackage(value, _gamePath, assetVersion) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
 
                 LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);

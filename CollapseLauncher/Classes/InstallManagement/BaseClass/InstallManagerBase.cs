@@ -825,6 +825,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (await base.CheckIfNeedRefreshStopwatch())
             {
+                _progress.DownloadEvent = e;
+
                 if (e.State != DownloadState.Merging)
                 {
                     // Assign local sizes to progress

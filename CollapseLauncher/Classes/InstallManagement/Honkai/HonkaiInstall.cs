@@ -149,8 +149,8 @@ namespace CollapseLauncher.InstallManager.Honkai
                 }
                 finally
                 {
+                    _deltaPatchWatcher.Created -= DeltaPatchWatcherProgress;
                     _deltaPatchWatcher?.Dispose();
-                    _deltaPatchWatcher?.Created -= DeltaPatchWatcherProgress;
                 }
             }
 

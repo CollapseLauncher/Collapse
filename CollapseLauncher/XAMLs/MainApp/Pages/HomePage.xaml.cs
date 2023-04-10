@@ -369,7 +369,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", Hi3Helper.LogType.Error, true);
             }
 
-            if (!IsPreDownloadCompleted())
+            if (!PageStatics._GameInstall.IsPreloadCompleted())
             {
                 PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, ver);
             }
@@ -405,19 +405,6 @@ namespace CollapseLauncher.Pages
         {
             sender.Translation -= Shadow48;
             HideImageEventImg(false);
-        }
-
-        private bool IsPreDownloadCompleted()
-        {
-            bool IsPrimaryDataExist = File.Exists(
-                                        Path.Combine(GameDirPath,
-                                        Path.GetFileName(GetUpdateDiffs(true).path)));
-
-            VoicePacks = TryAddVoicePack(GetUpdateDiffs(true));
-
-            bool IsSecondaryDataExist = IsGameHasVoicePack ? VoicePacks.All(x => File.Exists(Path.Combine(GameDirPath, Path.GetFileName(x.Value.path)))) : true;
-
-            return IsPrimaryDataExist && IsSecondaryDataExist;
         }
 
         private async void CheckRunningGameInstance(CancellationToken Token)
@@ -592,32 +579,6 @@ namespace CollapseLauncher.Pages
                 ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
                 progressPreBar.IsIndeterminate = false;
-            });
-        }
-
-        private void InstallerDownloadPreStatusChanged(object sender, InstallManagementStatus e)
-        {
-            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.StatusTitle);
-        }
-
-        private void InstallerDownloadPreProgressChanged(object sender, InstallManagementProgress e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressSpeed);
-                InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressDownloadedSize);
-                InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressDownloadedPerFileSize);
-                DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-                DownloadPerSizeString = SummarizeSizeSimple(e.ProgressTotalSizePerFileToDownload);
-
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                progressPrePerFileBar.Value = Math.Round(e.ProgressPercentagePerFile, 2);
-                progressPreBar.IsIndeterminate = false;
-                progressPrePerFileBar.IsIndeterminate = false;
             });
         }
 
@@ -1109,79 +1070,39 @@ namespace CollapseLauncher.Pages
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
 
-            RegionResourceVersion diffVer = GetUpdateDiffs(true);
-
-            InstallTool = new InstallManagement(Content,
-                                DownloadType.PreDownload,
-                                PageStatics._GameVersion.GamePreset,
-                                GameDirPath,
-                                appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                AppCurrentThread,
-                                default,
-                                PageStatics._GameVersion.GamePreset.IsGenshin ?? false ?
-                                    GameAPIProp.data.game.latest.decompressed_path :
-                                    null,
-                                GameAPIProp.data.game.latest.version,
-                                PageStatics._GameVersion.GamePreset.ProtoDispatchKey,
-                                PageStatics._GameVersion.GamePreset.GameDispatchURL,
-                                PageStatics._GameVersion.GamePreset.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName));
-
-            GameZipUrl = diffVer.path;
-            GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
-            GameZipRemoteHash = diffVer.md5.ToLower();
-            GameZipRequiredSize = diffVer.size;
-
-            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
-
-            VoicePacks = TryAddVoicePack(diffVer);
-
-            if (IsGameHasVoicePack)
-            {
-                foreach (KeyValuePair<string, RegionResourceVersion> a in VoicePacks)
-                {
-                    GameZipVoiceUrl = a.Value.path;
-                    GameZipVoiceRemoteHash = a.Value.md5;
-                    GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                    GameZipVoiceRequiredSize = a.Value.size;
-                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
-                }
-            }
-
-            bool RetryRoutine = true;
-
-            await InstallTool.CheckDriveFreeSpace(Content);
-            await InstallTool.CheckExistingDownloadAsync(Content);
-
             try
             {
-                if (PageStatics._GameVersion.GamePreset.UseRightSideProgress ?? false)
-                    HideImageCarousel(true);
+                DownloadPreBtn.Visibility = Visibility.Collapsed;
+                ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                ProgressPreButtonGrid.Visibility = Visibility.Visible;
+                PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
 
-                InstallTool.InstallStatusChanged += InstallerDownloadPreStatusChanged;
-                InstallTool.InstallProgressChanged += InstallerDownloadPreProgressChanged;
+                PageStatics._GameInstall.ProgressChanged += PreloadDownloadProgress;
+                PageStatics._GameInstall.StatusChanged += PreloadDownloadStatus;
 
-                while (RetryRoutine)
+                int verifResult = 0;
+                while (verifResult != 1)
                 {
-                    DownloadPreBtn.Visibility = Visibility.Collapsed;
-                    ProgressPreStatusGrid.Visibility = Visibility.Visible;
-                    ProgressPreButtonGrid.Visibility = Visibility.Visible;
-                    PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
-                    PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
-                    await InstallTool.StartDownloadAsync();
+                    await PageStatics._GameInstall.StartPackageDownload(true);
 
                     PauseDownloadPreBtn.IsEnabled = false;
                     PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
 
-                    RetryRoutine = await InstallTool.StartVerificationAsync(Content);
+                    verifResult = await PageStatics._GameInstall.StartPackageVerification();
+
+                    if (verifResult == -1)
+                    {
+                        ReturnToHomePage();
+                        return;
+                    }
+                    if (verifResult == 1)
+                    {
+                        await Dialog_PreDownloadPackageVerified(this);
+                        ReturnToHomePage();
+                        return;
+                    }
                 }
-
-                InstallTool.InstallProgressChanged -= InstallerDownloadPreProgressChanged;
-                InstallTool.InstallStatusChanged -= InstallerDownloadPreStatusChanged;
-
-                await Dialog_PreDownloadPackageVerified(Content);
-
-                OverlapFrame.Navigate(typeof(HomePage), null, new DrillInNavigationTransitionInfo());
             }
             catch (OperationCanceledException)
             {
@@ -1189,8 +1110,33 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
-                InstallTool.Dispose();
+                PageStatics._GameInstall.ProgressChanged -= PreloadDownloadProgress;
+                PageStatics._GameInstall.StatusChanged -= PreloadDownloadStatus;
+                PageStatics._GameInstall.Flush();
             }
+        }
+
+        private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
+        {
+            ProgressPrePerFileStatusFooter.Text = e.ActivityStatus;
+        }
+
+        private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
+        {
+            InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
+            InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
+            InstallDownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeDownloaded);
+            DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+            DownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeToBeDownloaded);
+
+            ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+            ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+            ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+            ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
+            progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
+            progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
+            progressPreBar.IsIndeterminate = false;
+            progressPrePerFileBar.IsIndeterminate = false;
         }
 
         private async void GameLogWatcher()

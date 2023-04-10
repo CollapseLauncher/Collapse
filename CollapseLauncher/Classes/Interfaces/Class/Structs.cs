@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using System;
 using System.IO;
@@ -16,6 +17,7 @@ namespace CollapseLauncher
         public long ProgressTotalDownload;
         public long ProgressTotalSizeToDownload;
         public TimeSpan ProgressTotalTimeLeft;
+        public DownloadEvent DownloadEvent;
     }
 
     internal struct TotalPerfileStatus
