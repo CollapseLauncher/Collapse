@@ -321,9 +321,26 @@ namespace CollapseLauncher.InstallManager.Base
 
         }
 
-        public void UninstallGame()
+        public async Task<bool> UninstallGame()
         {
+            string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
+            switch (await Dialog_UninstallGame(_parentUI, GameFolder, _gamePreset.ZoneFullname))
+            {
+                case ContentDialogResult.Primary:
+                    try
+                    {
+                        Directory.Delete(GameFolder, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed while deleting the game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
+                    }
+                    PageStatics._GameVersion.Reinitialize();
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public void CancelRoutine()

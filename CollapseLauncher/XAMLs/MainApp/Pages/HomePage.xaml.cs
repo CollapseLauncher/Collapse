@@ -905,56 +905,17 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-        private async void RepairGameButton_Click(object sender, RoutedEventArgs e)
+        private void RepairGameButton_Click(object sender, RoutedEventArgs e)
         {
             MainFrameChanger.ChangeMainFrame(typeof(RepairPage));
         }
 
         private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = NormalizePath(GameDirPath);
-
-            switch (await Dialog_UninstallGame(Content, GameFolder, PageStatics._GameVersion.GamePreset.ZoneFullname))
+            if (await PageStatics._GameInstall.UninstallGame())
             {
-                case ContentDialogResult.Primary:
-                    try
-                    {
-                        Directory.Delete(GameFolder, true);
-                    }
-                    catch { }
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                    PageStatics._GameVersion.Reinitialize();
-                    break;
-                default:
-                    break;
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
-        }
-
-        public RegionResourceVersion GetUpdateDiffs(bool isPredownload = false)
-        {
-            RegionResourceVersion diff;
-            try
-            {
-                string GameVer = PageStatics._GameVersion.GetGameExistingVersion().Value.VersionString;
-
-                if (isPredownload)
-                    diff = GameAPIProp.data.pre_download_game.diffs
-                            .Where(x => x.version == GameVer)
-                            .First();
-                else
-                    diff = GameAPIProp.data.game.diffs
-                            .Where(x => x.version == GameVer)
-                            .First();
-            }
-            catch
-            {
-                if (isPredownload)
-                    diff = GameAPIProp.data.pre_download_game.latest;
-                else
-                    diff = GameAPIProp.data.game.latest;
-            }
-
-            return diff;
         }
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
