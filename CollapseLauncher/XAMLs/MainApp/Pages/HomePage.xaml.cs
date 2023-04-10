@@ -102,13 +102,9 @@ namespace CollapseLauncher.Pages
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
-                // TODO: Switch to IGameInstallManager implementation
-                //       to try showing Honkai broken state
                 if (await PageStatics._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await PageStatics._GameInstall.TryShowFailedGameConversionState()) return;
 
-                // await CheckFailedDeltaPatchState();
-                // await CheckFailedGameConversion();
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(PageToken.Token);
             }
@@ -975,46 +971,6 @@ namespace CollapseLauncher.Pages
                 PageStatics._GameInstall.StatusChanged -= GameInstall_StatusChanged;
                 PageStatics._GameInstall.Flush();
                 ReturnToHomePage();
-            }
-        }
-
-        private Dictionary<string, RegionResourceVersion> TryAddVoicePack(RegionResourceVersion diffVer)
-        {
-            int langID = PageStatics._GameVersion.GamePreset.GetVoiceLanguageID();
-            if (diffVer.voice_packs != null
-                && diffVer.voice_packs.Count > 0)
-            {
-                Dictionary<string, RegionResourceVersion> VoicePacks = new Dictionary<string, RegionResourceVersion>();
-                IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[langID];
-                VoicePackFile.languageID = langID;
-                VoicePacks.Add(VoicePackFile.language, VoicePackFile);
-                TryAddOtherInstalledVoicePacks(ref VoicePacks, diffVer.voice_packs);
-                return VoicePacks;
-            }
-            LogWriteLine($"This {PageStatics._GameVersion.GamePreset.ZoneFullname} game doesn't have Voice Pack");
-            IsGameHasVoicePack = false;
-            return null;
-        }
-
-        private void TryAddOtherInstalledVoicePacks(ref Dictionary<string, RegionResourceVersion> VoicePacksOut, List<RegionResourceVersion> Packs)
-        {
-            if (File.Exists(Path.Combine(GameDirPath, "Audio_Chinese_pkg_version")))
-                TryAddOtherVoicePacksDictionary(Packs[0].language, Packs[0], 0, ref VoicePacksOut);
-            if (File.Exists(Path.Combine(GameDirPath, "Audio_English(US)_pkg_version")))
-                TryAddOtherVoicePacksDictionary(Packs[1].language, Packs[1], 1, ref VoicePacksOut);
-            if (File.Exists(Path.Combine(GameDirPath, "Audio_Japanese_pkg_version")))
-                TryAddOtherVoicePacksDictionary(Packs[2].language, Packs[2], 2, ref VoicePacksOut);
-            if (File.Exists(Path.Combine(GameDirPath, "Audio_Korean_pkg_version")))
-                TryAddOtherVoicePacksDictionary(Packs[3].language, Packs[3], 3, ref VoicePacksOut);
-        }
-
-        private void TryAddOtherVoicePacksDictionary(string key, RegionResourceVersion value, int langID, ref Dictionary<string, RegionResourceVersion> VoicePacksOut)
-        {
-            if (!VoicePacksOut.ContainsKey(key))
-            {
-                value.languageID = langID;
-                VoicePacksOut.Add(key, value);
             }
         }
 
