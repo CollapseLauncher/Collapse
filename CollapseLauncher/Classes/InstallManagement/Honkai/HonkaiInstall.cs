@@ -102,13 +102,23 @@ namespace CollapseLauncher.InstallManager.Honkai
         {
             if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
             {
+                DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
+
+                string previousPath = _gamePath;
+                string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
+
+                // Initialize the filesystem watcher to check file changes on event
+                _deltaPatchWatcher = new FileSystemWatcher()
+                {
+                    Path = previousPath,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
+                             | NotifyFilters.Size,
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = true
+                };
+
                 try
                 {
-                    DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
-
-                    string previousPath = _gamePath;
-                    string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
-
                     List<FilePropertiesRemote> localAssetIndex = (_gameRepairTool as HonkaiRepair).GetAssetIndex();
                     MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath);
 
@@ -121,16 +131,6 @@ namespace CollapseLauncher.InstallManager.Honkai
                     _status.ActivityStatus = Lang._Misc.ApplyingPatch;
                     UpdateStatus();
                     RestartStopwatch();
-
-                    // Initialize the filesystem watcher to check file changes on event
-                    _deltaPatchWatcher = new FileSystemWatcher()
-                    {
-                        Path = previousPath,
-                        NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
-                                 | NotifyFilters.Size,
-                        IncludeSubdirectories = true,
-                        EnableRaisingEvents = true
-                    };
 
                     // Start the patching process
                     _deltaPatchWatcher.Created += DeltaPatchWatcherProgress;
@@ -146,6 +146,11 @@ namespace CollapseLauncher.InstallManager.Honkai
 
                     // Then return
                     return;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
+                    throw;
                 }
                 finally
                 {

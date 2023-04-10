@@ -302,6 +302,9 @@ namespace CollapseLauncher
 
         private void RemoveSkippableAssets(List<FilePropertiesRemote> assetIndex)
         {
+            // Skip if _isOnlyRecoverMain set to true
+            if (_isOnlyRecoverMain) return;
+
             List<FilePropertiesRemote> removableAssets = new List<FilePropertiesRemote>();
 
             // Iterate the skippable asset and do LINQ check
