@@ -1,10 +1,12 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using System.IO;
 using System.Text.Json.Serialization;
+using Windows.Management.Deployment;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal class CacheAsset
+    internal class CacheAsset : IAssetIndexSummary
     {
         // Concatenate N and CRC to get the filepath.
         public string ConcatN => IsUseLocalPath ? $"{N}" : $"{N}_{CRC}.unity3d";
@@ -31,5 +33,8 @@ namespace CollapseLauncher.Interfaces
         public CacheAssetType DataType { get; set; }
         public CacheAssetStatus Status { get; set; }
         public bool IsUseLocalPath { get; set; } = false;
+
+        public string PrintSummary() => $"File [T: {DataType}]: {N}\t{ConverterTool.SummarizeSizeSimple(CS)} ({CS} bytes)";
+        public long GetAssetSize() => Status == CacheAssetStatus.Unused ? 0 : CS;
     }
 }

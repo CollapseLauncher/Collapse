@@ -200,10 +200,10 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.NoKeepInstallIt
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content, string gamePath) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallBHI3LTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path),
+                    string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, gamePath),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,

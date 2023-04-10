@@ -17,12 +17,11 @@ namespace CollapseLauncher.Interfaces
         private GameVersion _gameVersionOverride { get; init; }
         private bool _isVersionOverride { get; init; }
 
-        public GamePropertyBase(UIElement parentUI, string gamePath, string gameRepoURL, PresetConfigV2 gamePreset, string versionOverride)
+        public GamePropertyBase(UIElement parentUI, string gamePath, string gameRepoURL, string versionOverride)
         {
             _parentUI = parentUI;
             _gamePathField = gamePath;
             _gameRepoURL = gameRepoURL;
-            _gamePreset = gamePreset;
             _token = new CancellationTokenSource();
             AssetEntry = new ObservableCollection<AssetProperty<T1>>();
 
@@ -33,7 +32,6 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected const int _refreshInterval = 33;
         protected const int _bufferLength = 4 << 10;
         protected const int _bufferBigLength = 1 << 20;
         protected const int _sizeForMultiDownload = 10 << 20;
@@ -47,7 +45,7 @@ namespace CollapseLauncher.Interfaces
         protected Stopwatch _refreshStopwatch { get; set; }
         protected string _gamePath { get => string.IsNullOrEmpty(_gamePathField) ? PageStatics._GameVersion.GameDirPath : _gamePathField; }
         protected string _gameRepoURL { get; set; }
-        protected PresetConfigV2 _gamePreset { get; set; }
+        protected PresetConfigV2 _gamePreset { get => PageStatics._GameVersion.GamePreset; }
         protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : PageStatics._GameVersion.GetGameExistingVersion().Value; }
         protected List<T2> _assetIndex { get; set; }
         protected bool _useFastMethod { get; set; }

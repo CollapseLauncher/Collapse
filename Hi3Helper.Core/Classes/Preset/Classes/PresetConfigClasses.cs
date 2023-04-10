@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
 
 namespace Hi3Helper.Preset
 {
@@ -14,7 +15,7 @@ namespace Hi3Helper.Preset
         public bool installed { get; set; }
     }
 
-    public class PkgVersionProperties
+    public class PkgVersionProperties : IAssetIndexSummary
     {
         public string localName { get; set; }
         public string remoteURL { get; set; }
@@ -31,5 +32,8 @@ namespace Hi3Helper.Preset
             S = fileSize,
             FT = FileType.Generic
         };
+
+        public string PrintSummary() => $"File [T: {type}]: {remoteName}\t{ConverterTool.SummarizeSizeSimple(fileSize)} ({fileSize} bytes)";
+        public long GetAssetSize() => fileSize;
     }
 }

@@ -149,6 +149,8 @@ namespace Hi3Helper.Data
             var steamPath = GetSteamPath();
             var libraries = new List<string>() { steamPath };
 
+            if (steamPath == null) return null;
+
             var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
             var lines = File.ReadAllLines(listFile);
             foreach (var line in lines)

@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Http;
+using System.IO.Compression;
 
 namespace Hi3Helper.EncTool.Test
 {
@@ -6,6 +7,19 @@ namespace Hi3Helper.EncTool.Test
     {
         static async Task Main(string[] args)
         {
+            string pata = @"C:\myGit\CollapseLauncher-ReleaseRepo\metadata\repair_indexes\Hi3Global\6.5.0\index.bin";
+            using (FileStream fs = new FileStream(pata, FileMode.Open))
+            {
+                fs.Position = 9;
+                using (BrotliStream br = new BrotliStream(fs, CompressionMode.Decompress))
+                using (FileStream fsa = new FileStream(pata + ".dec", FileMode.Create))
+                {
+                    br.CopyTo(fsa);
+                }
+            }
+
+            return;
+
             string path = @"C:\Program Files\Honkai Impact 3 sea\Games\BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
             string pathTarget = @"G:\Data\CollapseLauncher\Hi3SEA\pc\";
 

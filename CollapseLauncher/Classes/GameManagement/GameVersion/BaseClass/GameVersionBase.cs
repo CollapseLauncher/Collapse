@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -77,6 +78,31 @@ namespace CollapseLauncher.GameVersioning
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
+        protected GameVersion? GameVersionAPIPreload
+        {
+            get
+            {
+                GameVersion? currentInstalled = GameVersionInstalled;
+
+                // Check if the pre_download_game property has value. If not, then return null
+                if (GameAPIProp.data.pre_download_game == null) return null;
+                // If no installation installed, then return null
+                if (currentInstalled == null) return null;
+
+                // If has it, then check if the pre_download_game has diff.
+                // If null or no data, then return the latest one.
+                if (GameAPIProp.data.pre_download_game.diffs == null
+                 || GameAPIProp.data.pre_download_game.diffs.Count == 0) return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
+
+                // Try get the diff version
+                RegionResourceVersion diffVersion = GameAPIProp.data.pre_download_game.diffs.Where(x => x.version == currentInstalled?.VersionString).FirstOrDefault();
+                // If diff is not found for current version, then return the latest one
+                if (diffVersion == null) return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
+
+                // If all passes, then return diff version
+                return new GameVersion(diffVersion.version);
+            }
+        }
         protected GameVersion? GameVersionInstalled
         {
             get
@@ -109,6 +135,7 @@ namespace CollapseLauncher.GameVersioning
         public GameVersion? GetGameExistingVersion() => GameVersionInstalled;
 
         public GameVersion GetGameVersionAPI() => GameVersionAPI;
+        public GameVersion? GetGameVersionAPIPreload() => GameVersionAPIPreload;
 
         public GameInstallStateEnum GetGameState()
         {
@@ -128,7 +155,7 @@ namespace CollapseLauncher.GameVersioning
             return GameInstallStateEnum.NotInstalled;
         }
 
-        public virtual List<RegionResourceVersion> GetGameLatestZip() => new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+        public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState) => new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
 
         public virtual List<RegionResourceVersion> GetGamePreloadZip() => GameAPIProp.data.pre_download_game == null ? null : new List<RegionResourceVersion> { GameAPIProp.data.pre_download_game.latest };
 
@@ -155,17 +182,14 @@ namespace CollapseLauncher.GameVersioning
             if (!GameVersionInstalled.HasValue) return false;
 
             // Check if the executable file exist and has the size at least > 2 MiB. If not, then return as false.
-            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, $"{GamePreset.GameExecutableName}.exe"));
-            if (execFileInfo.Exists) return execFileInfo.Length > 2 << 20;
+            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, GamePreset.GameExecutableName));
+            if (execFileInfo.Exists) return execFileInfo.Length > 1 << 16;
 
             // Check if the vendor type exist. If not, then return false
             if (VendorTypeProp.GameName == null || !VendorTypeProp.VendorType.HasValue) return false;
 
-            // Check if the game name from the vendor type is matching. If yes, then return true
-            if (VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig) return true;
-
-            // If none of above matches, then return as false.
-            return false;
+            // Check all the pattern and return based on the condition
+            return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo.Exists && execFileInfo.Length > 1 << 16;
         }
 
 #nullable enable
@@ -189,7 +213,7 @@ namespace CollapseLauncher.GameVersioning
         }
 #nullable disable
 
-        public void Reinitialize() => InitializeIniProp();
+        public virtual void Reinitialize() => InitializeIniProp();
 
         public void UpdateGamePath(string path, bool saveValue = true)
         {
@@ -235,12 +259,14 @@ namespace CollapseLauncher.GameVersioning
             // Phase 1: Check on the root directory
             string targetPath = Path.Combine(path, GamePreset.GameExecutableName);
             string configPath = Path.Combine(path, "config.ini");
-            if (File.Exists(targetPath) && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
+            FileInfo targetInfo = new FileInfo(targetPath);
+            if (targetInfo.Exists && targetInfo.Length > 1 << 16 && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
 
             // Phase 2: Check on the launcher directory + GamePreset.GameDirectoryName
             targetPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", GamePreset.GameExecutableName);
             configPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", "config.ini");
-            if (File.Exists(targetPath) && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
+            targetInfo = new FileInfo(targetPath);
+            if (targetInfo.Exists && targetInfo.Length > 1 << 16 && File.Exists(configPath)) return Path.GetDirectoryName(targetPath);
 
             // If none of them passes, then return null.
             return null;
@@ -263,6 +289,12 @@ namespace CollapseLauncher.GameVersioning
             return false;
         }
 
+        private bool IsDiskPartitionExist(string path)
+        {
+            DriveInfo info = new DriveInfo(Path.GetPathRoot(path));
+            return info.IsReady;
+        }
+
         private void SaveGameIni(string filePath, in IniFile INI)
         {
             // Check if the disk partition exist. If it's exist, then save the INI.
@@ -270,12 +302,6 @@ namespace CollapseLauncher.GameVersioning
             {
                 INI.Save(filePath);
             }
-        }
-
-        private bool IsDiskPartitionExist(string path)
-        {
-            DriveInfo info = new DriveInfo(Path.GetPathRoot(path));
-            return info.IsReady;
         }
 
         private void InitializeIniProp(string iniFilePath, in IniFile ini, IniSection defaults, string section)

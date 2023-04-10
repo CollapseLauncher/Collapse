@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -81,6 +82,11 @@ namespace CollapseLauncher
 
             SourceFileManifest = BuildManifest(SourceFileRemote);
             PrepareIngredients(SourceFileManifest);
+        }
+
+        private void RepairTool_ProgressChanged(object sender, TotalPerfileProgress e)
+        {
+            throw new NotImplementedException();
         }
 
         long MakeIngredientsRead = 0;
@@ -356,7 +362,7 @@ namespace CollapseLauncher
 
                 Token.ThrowIfCancellationRequested();
                 OutputPath = Path.Combine(GamePath, Entry.FileName);
-                InputURL = ConverterTool.CombineURLFromString(RepoRemoteURL, Entry.FileName);
+                InputURL = CombineURLFromString(RepoRemoteURL, Entry.FileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));

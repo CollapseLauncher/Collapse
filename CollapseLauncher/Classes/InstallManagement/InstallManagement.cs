@@ -38,7 +38,7 @@ namespace CollapseLauncher
 
         private InstallManagementStatus InstallStatus;
         private InstallManagementProgress InstallProgress;
-        private DeltaPatchProperty PatchProp;
+        private DeltaPatchProperty PatchProp { get; set; }
         private PresetConfigV2 SourceProfile;
         private UIElement Content;
         private Http _httpClient;
@@ -153,6 +153,7 @@ namespace CollapseLauncher
 
         public async Task CheckDriveFreeSpace(UIElement Content)
         {
+            // TODO
             DriveInfo _DriveInfo = new DriveInfo(GameDirPath);
             long RequiredSpace = DownloadProperty.Sum(x =>
             {

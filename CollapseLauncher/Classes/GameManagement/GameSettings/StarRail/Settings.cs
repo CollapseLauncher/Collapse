@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
@@ -14,10 +15,10 @@ namespace CollapseLauncher.GameSettings.StarRail
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
 
-        public StarRailSettings(PresetConfigV2 gameConfig)
+        public StarRailSettings()
         {
             // Init Root Registry Key
-            RegistryPath = Path.Combine(RegistryRootPath, gameConfig.InternalGameNameInConfig);
+            RegistryPath = Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
             // If the Root Registry Key is null (not exist), then create a new one.

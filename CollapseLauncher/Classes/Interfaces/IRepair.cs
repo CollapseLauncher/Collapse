@@ -10,7 +10,7 @@ namespace CollapseLauncher.Interfaces
         event EventHandler<TotalPerfileProgress> ProgressChanged;
         event EventHandler<TotalPerfileStatus> StatusChanged;
         Task<bool> StartCheckRoutine(bool useFastCheck = false);
-        Task StartRepairRoutine(bool showInteractivePrompt = false);
+        Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null);
         void CancelRoutine();
     }
 }

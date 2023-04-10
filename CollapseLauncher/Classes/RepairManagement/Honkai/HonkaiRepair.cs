@@ -3,10 +3,14 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 
@@ -38,10 +42,11 @@ namespace CollapseLauncher
         private protected string _audioPatchBaseLocalPath { get => ConverterTool.CombineURLFromString(_audioBaseLocalPath, "Patch/"); }
         private protected string _audioPatchBaseRemotePath { get => ConverterTool.CombineURLFromString(_audioBaseRemotePath, "Patch/"); }
         private protected string _videoBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Video/"); }
+        private protected List<FilePropertiesRemote> _originAssetIndex { get; set; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, null, gameRepoURL, gamePreset, versionOverride)
+        public HonkaiRepair(UIElement parentUI, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, null, "", versionOverride)
         {
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
@@ -54,12 +59,14 @@ namespace CollapseLauncher
                     _audioLanguage = AudioLanguageType.Chinese;
                     break;
                 default:
-                    _audioLanguage = gamePreset.GameDefaultCVLanguage;
+                    _audioLanguage = _gamePreset.GameDefaultCVLanguage;
                     break;
             }
         }
 
         ~HonkaiRepair() => Dispose();
+
+        public List<FilePropertiesRemote> GetAssetIndex() => _originAssetIndex;
 
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
@@ -67,9 +74,14 @@ namespace CollapseLauncher
             return await TryRunExamineThrow(CheckRoutine());
         }
 
-        public async Task StartRepairRoutine(bool showInteractivePrompt = false)
+        public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
         {
             if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
+
+            if (showInteractivePrompt)
+            {
+                await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
+            }
 
             _ = await TryRunExamineThrow(RepairRoutine());
         }
@@ -87,6 +99,9 @@ namespace CollapseLauncher
 
             // Step 2: Calculate the total size and count of the files
             CountAssetIndex(_assetIndex);
+
+            // Copy list to _originAssetIndex
+            _originAssetIndex = new List<FilePropertiesRemote>(_assetIndex);
 
             // Step 3: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);

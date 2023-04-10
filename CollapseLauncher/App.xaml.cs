@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using System;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -15,6 +16,7 @@ namespace CollapseLauncher
         {
             try
             {
+                HttpLogInvoker.DownloadLog += HttpClientLogWatcher;
                 this.InitializeComponent();
                 RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
 
@@ -38,6 +40,22 @@ namespace CollapseLauncher
                 LogWriteLine("\r\nIf this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to exit...");
                 Console.ReadLine();
             }
+            finally
+            {
+                HttpLogInvoker.DownloadLog -= HttpClientLogWatcher;
+            }
+        }
+
+        private void HttpClientLogWatcher(object sender, DownloadLogEvent e)
+        {
+            LogType severity = e.Severity switch
+            {
+                DownloadLogSeverity.Warning => LogType.Warning,
+                DownloadLogSeverity.Error => LogType.Error,
+                _ => LogType.Default
+            };
+
+            LogWriteLine(e.Message, severity, true);
         }
     }
 }

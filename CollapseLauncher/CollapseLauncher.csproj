@@ -6,6 +6,7 @@
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<Version>1.69.5</Version>

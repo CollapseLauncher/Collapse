@@ -47,11 +47,8 @@ namespace CollapseLauncher
                 // Region: VideoIndex via External -> _cacheUtil: Data Fetch
                 // Fetch video index and also fetch the gateway URL
                 (string, string) gatewayURL;
-                if (!_isOnlyRecoverMain)
-                {
-                    gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
-                    _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
-                }
+                gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
+                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
@@ -62,6 +59,9 @@ namespace CollapseLauncher
                 {
                     throw new VersionNotFoundException($"Manifest for {_gamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
+
+                // Assign the URL based on the version
+                _gameRepoURL = manifestDict[_gameVersion.VersionString];
 
                 // Region: XMFAndAssetIndex
                 // Fetch asset index
@@ -94,11 +94,14 @@ namespace CollapseLauncher
             // Fetch data cache file only and get the gateway
             (List<CacheAsset>, string, string) cacheProperty = await _cacheUtil.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
 
-            // Find the cache asset. If null, then return
-            CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
+            if (!_isOnlyRecoverMain)
+            {
+                // Find the cache asset. If null, then return
+                CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
 
-            // Deserialize and build video index into asset index
-            await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, token);
+                // Deserialize and build video index into asset index
+                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, token);
+            }
 
             // Return the gateway URL including asset bundle and asset cache
             return (cacheProperty.Item2, cacheProperty.Item3);
@@ -348,6 +351,10 @@ namespace CollapseLauncher
                     assetInfo.S = reader.ReadInt64();
                     assetInfo.CRC = HexTool.BytesToHexUnsafe(reader.ReadBytes(16));
                     assetInfo.RN = CombineURLFromString(_gameRepoURL, assetInfo.N);
+
+#if DEBUG
+                    LogWriteLine($"{assetInfo.PrintSummary()} found in manifest");
+#endif
 
                     // Add assetInfo
                     assetIndex.Add(assetInfo);

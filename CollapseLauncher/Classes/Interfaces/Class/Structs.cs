@@ -11,6 +11,11 @@ namespace CollapseLauncher
         public double ProgressTotalPercentage;
         public double ProgressTotalEntryCount;
         public double ProgressTotalSpeed;
+
+        // Extension for IGameInstallManager
+        public long ProgressTotalDownload;
+        public long ProgressTotalSizeToDownload;
+        public TimeSpan ProgressTotalTimeLeft;
     }
 
     internal struct TotalPerfileStatus
@@ -109,6 +114,12 @@ namespace CollapseLauncher
             {
                 if (!int.TryParse(ver[3], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[3]}");
             }
+        }
+
+        public bool IsMatch(string versionToCompare)
+        {
+            GameVersion parsed = new GameVersion(versionToCompare);
+            return IsMatch(parsed);
         }
 
         public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Build == versionToCompare.Build && Revision == versionToCompare.Revision;

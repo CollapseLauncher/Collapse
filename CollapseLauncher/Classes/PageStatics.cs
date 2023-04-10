@@ -8,5 +8,6 @@ namespace CollapseLauncher.Statics
         internal static IRepair _GameRepair { get; set; }
         internal static ICache _GameCache { get; set; }
         internal static IGameVersionCheck _GameVersion { get; set; }
+        internal static IGameInstallManager _GameInstall { get; set; }
     }
 }

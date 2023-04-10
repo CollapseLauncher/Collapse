@@ -55,6 +55,12 @@ namespace CollapseLauncher.Interfaces
         GameVersion GetGameVersionAPI();
 
         /// <summary>
+        /// Returns the preload version of the game as provided by miHoYo's API.
+        /// </summary>
+        /// <returns>The preload version of the game</returns>
+        GameVersion? GetGameVersionAPIPreload();
+
+        /// <summary>
         /// Returns the version of the game installed.<br/>
         /// It will return a <c>null</c> if the game doesn't installed.
         /// </summary>
@@ -94,9 +100,10 @@ namespace CollapseLauncher.Interfaces
         DeltaPatchProperty GetDeltaPatchInfo();
 
         /// <summary>
-        /// Returns the <c>List</c> of the Resource Version for the Latest Zip.
+        /// Returns the <c>List</c> of the Resource Version for the Latest Zip based on the game state
         /// </summary>
-        List<RegionResourceVersion> GetGameLatestZip();
+        /// <param name="gameState">The state of the game</param>
+        List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState);
 
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.

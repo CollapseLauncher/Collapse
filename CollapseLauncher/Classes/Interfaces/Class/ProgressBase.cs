@@ -1,12 +1,15 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +19,10 @@ namespace CollapseLauncher.Interfaces
 {
     internal class ProgressBase<T1, T2> :
         GamePropertyBase<T1, T2> where T1 : Enum
+                                 where T2 : IAssetIndexSummary
     {
-        public ProgressBase(UIElement parentUI, string gamePath, string gameRepoURL, PresetConfigV2 gamePreset, string versionOverride)
-            : base(parentUI, gamePath, gameRepoURL, gamePreset, versionOverride)
+        public ProgressBase(UIElement parentUI, string gamePath, string gameRepoURL, string versionOverride)
+            : base(parentUI, gamePath, gameRepoURL, versionOverride)
         {
             _status = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
             _progress = new TotalPerfileProgress();
@@ -40,6 +44,11 @@ namespace CollapseLauncher.Interfaces
         protected long _progressTotalSize;
         protected long _progressPerFileSizeCurrent;
         protected long _progressPerFileSize;
+
+        // Extension for IGameInstallManager
+        protected double _progressTotalReadCurrent;
+
+        protected const int _refreshInterval = 100;
 
         #region ProgressEventHandlers - Fetch
         protected void _innerObject_ProgressAdapter(object sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
@@ -64,7 +73,13 @@ namespace CollapseLauncher.Interfaces
         protected virtual async void _httpClient_RepairAssetProgress(object sender, DownloadEvent e)
         {
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
-            _progress.ProgressTotalSpeed = e.Speed;
+            _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
+            _progress.ProgressTotalSizeToDownload = _progressTotalSize;
+
+            // Calculate speed
+            long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+            _progress.ProgressTotalSpeed = speed;
+            _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed));
 
             // Update current progress percentages
             _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
@@ -76,9 +91,6 @@ namespace CollapseLauncher.Interfaces
                 _progressTotalSizeCurrent += e.Read;
             }
 
-            // Calculate speed
-            long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
-
             if (await CheckIfNeedRefreshStopwatch())
             {
                 // Update current activity status
@@ -86,7 +98,7 @@ namespace CollapseLauncher.Interfaces
                 _status.IsProgressPerFileIndetermined = false;
 
                 // Set time estimation string
-                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, _progress.ProgressTotalTimeLeft);
 
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
                 _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)) + $" | {timeLeftString}";
@@ -376,6 +388,87 @@ namespace CollapseLauncher.Interfaces
         }
         #endregion
 
+        #region DialogTools
+        protected async Task SpawnRepairDialog(List<T2> assetIndex, Action actionIfInteractiveCancel)
+        {
+            long totalSize = assetIndex.Sum(x => x.GetAssetSize());
+            StackPanel Content = new StackPanel();
+            Button ShowBrokenFilesButton = new Button()
+            {
+                Content = Lang._InstallMgmt.RepairFilesRequiredShowFilesBtn,
+                Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            ShowBrokenFilesButton.Click += (async (a, b) =>
+            {
+                string tempPath = Path.GetTempFileName() + ".log";
+
+                using (FileStream fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
+                {
+                    using (StreamWriter sw = new StreamWriter(fs))
+                    {
+                        sw.WriteLine($"Original Path: {_gamePath}");
+                        sw.WriteLine($"Total size to download: {ConverterTool.SummarizeSizeSimple(totalSize)} ({totalSize} bytes)");
+                        sw.WriteLine();
+
+                        foreach (T2 fileList in assetIndex)
+                        {
+                            sw.WriteLine(fileList.PrintSummary());
+                        }
+                    }
+                }
+
+                Process proc = new Process()
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = tempPath,
+                        UseShellExecute = true
+                    }
+                };
+                proc.Start();
+                await proc.WaitForExitAsync();
+
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                catch { }
+            });
+
+            Content.Children.Add(new TextBlock()
+            {
+                Text = string.Format(Lang._InstallMgmt.RepairFilesRequiredSubtitle, assetIndex.Count, ConverterTool.SummarizeSizeSimple(totalSize)),
+                Margin = new Thickness(0, 0, 0, 16),
+                TextWrapping = TextWrapping.Wrap
+            });
+            Content.Children.Add(ShowBrokenFilesButton);
+
+            ContentDialog dialog1 = new ContentDialog
+            {
+                Title = string.Format(Lang._InstallMgmt.RepairFilesRequiredTitle, assetIndex.Count),
+                Content = Content,
+                CloseButtonText = Lang._Misc.Cancel,
+                PrimaryButtonText = Lang._Misc.YesResume,
+                SecondaryButtonText = null,
+                DefaultButton = ContentDialogButton.Primary,
+                Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                XamlRoot = _parentUI.XamlRoot
+            };
+
+            if (totalSize == 0) return;
+
+            if (await dialog1.ShowAsync() == ContentDialogResult.None)
+            {
+                if (actionIfInteractiveCancel != null)
+                {
+                    actionIfInteractiveCancel();
+                }
+                throw new OperationCanceledException();
+            }
+        }
+        #endregion
+
         #region HandlerUpdaters
         protected virtual void PopRepairAssetEntry() => Dispatch(() =>
         {
@@ -398,15 +491,19 @@ namespace CollapseLauncher.Interfaces
                     ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
                     0;
 
-                // Calculate speed
-                long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+                // Update the progress of total size
+                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
+                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
 
                 // Calculate current speed and update the status and progress speed
-                _progress.ProgressTotalSpeed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(_progress.ProgressTotalSpeed));
 
+                // Calculate the timelapse
+                _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
+
                 // Set time estimation string
-                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, _progress.ProgressTotalTimeLeft);
 
                 // Update current activity status
                 _status.ActivityTotal = string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)) + $" | {timeLeftString}";
@@ -436,17 +533,17 @@ namespace CollapseLauncher.Interfaces
                 return true;
             }
 
-            await Task.Delay(33);
+            await Task.Delay(_refreshInterval);
             return false;
         }
-        protected void RestartStopwatch() => _stopwatch.Restart();
         protected void UpdateAll()
         {
             UpdateStatus();
             UpdateProgress();
         }
-        protected void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
-        protected void UpdateStatus() => StatusChanged?.Invoke(this, _status);
+        protected virtual void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
+        protected virtual void UpdateStatus() => StatusChanged?.Invoke(this, _status);
+        protected virtual void RestartStopwatch() => _stopwatch.Restart();
         #endregion
     }
 }

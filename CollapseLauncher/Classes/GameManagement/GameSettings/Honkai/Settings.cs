@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
@@ -23,10 +24,10 @@ namespace CollapseLauncher.GameSettings.Honkai
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
         #endregion
 
-        public HonkaiSettings(PresetConfigV2 gameConfig)
+        public HonkaiSettings()
         {
             // Init Root Registry Key
-            RegistryPath = Path.Combine(RegistryRootPath, gameConfig.InternalGameNameInConfig);
+            RegistryPath = Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
             // If the Root Registry Key is null (not exist), then create a new one.

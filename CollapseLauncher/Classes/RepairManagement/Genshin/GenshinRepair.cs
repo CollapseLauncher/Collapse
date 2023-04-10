@@ -29,8 +29,8 @@ namespace CollapseLauncher
         private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 
-        public GenshinRepair(UIElement parentUI, string gameRepoURL, PresetConfigV2 gamePreset)
-            : base(parentUI, null, gameRepoURL, gamePreset, null)
+        public GenshinRepair(UIElement parentUI, string gameRepoURL)
+            : base(parentUI, null, gameRepoURL, null)
         {
             _audioLanguage = (GenshinAudioLanguage)_gamePreset.GetVoiceLanguageID();
             _dispatcherRegionID = _gamePreset.GetRegServerNameID();
@@ -44,9 +44,14 @@ namespace CollapseLauncher
             return await TryRunExamineThrow(CheckRoutine());
         }
 
-        public async Task StartRepairRoutine(bool showInteractivePrompt = false)
+        public async Task StartRepairRoutine(bool showInteractivePrompt = false, Action actionIfInteractiveCancel = null)
         {
             if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
+
+            if (showInteractivePrompt)
+            {
+                await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
+            }
 
             _ = await TryRunExamineThrow(RepairRoutine());
         }

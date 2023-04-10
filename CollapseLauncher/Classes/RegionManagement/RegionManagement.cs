@@ -2,6 +2,8 @@
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.InstallManager.Genshin;
+using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper.Http;
@@ -217,21 +219,24 @@ namespace CollapseLauncher
             {
                 case GameType.Honkai:
                     PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new HonkaiSettings(preset);
-                    PageStatics._GameCache = new HonkaiCache(this, preset);
-                    PageStatics._GameRepair = new HonkaiRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
+                    PageStatics._GameSettings = new HonkaiSettings();
+                    PageStatics._GameCache = new HonkaiCache(this);
+                    PageStatics._GameRepair = new HonkaiRepair(this);
+                    PageStatics._GameInstall = new HonkaiInstall(this);
                     break;
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new GenshinSettings(preset);
+                    PageStatics._GameSettings = new GenshinSettings();
                     PageStatics._GameCache = null;
-                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path, preset);
+                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path);
+                    PageStatics._GameInstall = new GenshinInstall(this);
                     break;
                 case GameType.StarRail:
                     PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new StarRailSettings(preset);
+                    PageStatics._GameSettings = new StarRailSettings();
                     PageStatics._GameCache = null;
                     PageStatics._GameRepair = null;
+                    PageStatics._GameInstall = new HonkaiInstall(this);
                     break;
             }
 

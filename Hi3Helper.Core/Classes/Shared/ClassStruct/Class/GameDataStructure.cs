@@ -9,7 +9,7 @@ namespace Hi3Helper.Shared.ClassStruct
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum FileType : byte { Generic, Blocks, Audio, Video, Unused }
-    public class FilePropertiesRemote
+    public class FilePropertiesRemote : IAssetIndexSummary
     {
         // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
@@ -24,6 +24,9 @@ namespace Hi3Helper.Shared.ClassStruct
         public long S { get; set; }
         public bool IsPatchApplicable { get; set; }
         public bool IsBlockNeedRepair { get; set; }
+
+        public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";
+        public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
     }
 
     public class FileProperties

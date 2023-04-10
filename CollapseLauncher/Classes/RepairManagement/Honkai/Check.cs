@@ -510,6 +510,8 @@ namespace CollapseLauncher
             int pathOffset = _gamePath.Length + 1;
             foreach (string asset in Directory.EnumerateFiles(Path.Combine(_gamePath), "*", SearchOption.AllDirectories))
             {
+                string filename = Path.GetFileName(asset);
+
                 // Universal
                 bool isIncluded = catalog.Contains(asset);
                 bool isScreenshot = asset.Contains("ScreenShot", StringComparison.OrdinalIgnoreCase);
@@ -534,12 +536,19 @@ namespace CollapseLauncher
                 bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);
 
+                // Flags related
+                bool isFlags = filename.StartsWith('@');
+
+                // Archive file related
+                bool isZip = filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || filename.EndsWith(".7z", StringComparison.OrdinalIgnoreCase);
+
                 // Delta-patch related
-                bool isDeltaPatch = Path.GetFileName(asset).StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
+                bool isDeltaPatch = filename.StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
 
                 if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
-                    && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch && !isDeltaPatch)
+                    && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch
+                    && !isDeltaPatch && !isFlags && !isZip)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);

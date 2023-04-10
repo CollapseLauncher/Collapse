@@ -28,4 +28,11 @@
         Obsolete,
         Unused
     }
+
+    internal enum GameInstallPackageType
+    {
+        General,
+        Audio,
+        Utilities
+    }
 }

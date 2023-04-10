@@ -30,7 +30,6 @@ using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -48,7 +47,6 @@ namespace CollapseLauncher.Pages
         public RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
         public HomeMenuPanel MenuPanels => regionNewsProp;
         CancellationTokenSource PageToken = new CancellationTokenSource();
-        CancellationTokenSource InstallerDownloadTokenSource = new CancellationTokenSource();
         public HomePage()
         {
             this.InitializeComponent();
@@ -56,7 +54,16 @@ namespace CollapseLauncher.Pages
             this.Loaded += StartLoadedRoutine;
         }
 
+        private bool IsPageUnload = false;
         private bool NeedShowEventIcon = true;
+
+        private void ReturnToHomePage()
+        {
+            if (!IsPageUnload)
+            {
+                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
+        }
 
         private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
         {
@@ -95,8 +102,13 @@ namespace CollapseLauncher.Pages
                 MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
-                await CheckFailedDeltaPatchState();
-                await CheckFailedGameConversion();
+                // TODO: Switch to IGameInstallManager implementation
+                //       to try showing Honkai broken state
+                if (await PageStatics._GameInstall.TryShowFailedDeltaPatchState()) return;
+                if (await PageStatics._GameInstall.TryShowFailedGameConversionState()) return;
+
+                // await CheckFailedDeltaPatchState();
+                // await CheckFailedGameConversion();
                 CheckRunningGameInstance(PageToken.Token);
                 StartCarouselAutoScroll(PageToken.Token);
             }
@@ -275,114 +287,6 @@ namespace CollapseLauncher.Pages
                 GameStartupSetting.SetValue(Grid.ColumnProperty, 1);
                 GameStartupSetting.HorizontalAlignment = HorizontalAlignment.Right;
             }
-        }
-
-        private async Task CheckFailedDeltaPatchState()
-        {
-            string GamePath = PageStatics._GameVersion.GameDirPath;
-            string GamePathIngredients = GamePath + "_Ingredients";
-            if (!Directory.Exists(GamePathIngredients)) return;
-            LogWriteLine($"Previous failed delta patch has been detected on Game {PageStatics._GameVersion.GamePreset.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
-            try
-            {
-                switch (await Dialog_PreviousDeltaPatchInstallFailed(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        RollbackFileContent(GamePath, GamePathIngredients);
-                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                        break;
-                }
-            }
-            catch
-            {
-                RollbackFileContent(GamePath, GamePathIngredients);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            }
-        }
-
-        private async Task CheckFailedGameConversion()
-        {
-            string GamePath = PageStatics._GameVersion.GameDirPath;
-            string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
-            if (GamePathIngredients is null) return;
-            if (!Directory.Exists(GamePathIngredients)) return;
-
-            long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
-            if (FileSize < 1 << 20) return;
-
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {PageStatics._GameVersion.GamePreset.ZoneFullname} ({GamePathIngredients})", Hi3Helper.LogType.Warning, true);
-
-            try
-            {
-                switch (await Dialog_PreviousGameConversionFailed(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        RollbackFileContent(GamePath, GamePathIngredients);
-                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                        break;
-                }
-            }
-            catch
-            {
-                RollbackFileContent(GamePath, GamePathIngredients);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            }
-        }
-
-        private string GetFailedGameConversionFolder(string basepath)
-        {
-            try
-            {
-                string ParentPath = Path.GetDirectoryName(basepath);
-                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{PageStatics._GameVersion.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
-                    .FirstOrDefault();
-                if (IngredientPath is not null) return IngredientPath;
-            }
-#if DEBUG
-            catch (DirectoryNotFoundException)
-            {
-            }
-            catch (Exception ex)
-            {
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
-#else
-            catch
-            {
-#endif
-            }
-            return null;
-        }
-
-        private void RollbackFileContent(string OrigPath, string IngrPath)
-        {
-            int DirLength = IngrPath.Length + 1;
-            string destFilePath;
-            string destFolderPath;
-            bool ErrorOccured = false;
-
-            foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
-            {
-                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
-                destFilePath = Path.Combine(OrigPath, relativePath.ToString());
-                destFolderPath = Path.GetDirectoryName(destFilePath);
-
-                if (!Directory.Exists(destFolderPath))
-                    Directory.CreateDirectory(destFolderPath);
-
-                try
-                {
-                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
-                    File.Move(filePath, destFilePath, true);
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
-                    ErrorOccured = true;
-                }
-            }
-
-            if (!ErrorOccured)
-                Directory.Delete(IngrPath, true);
         }
 
         private void GetCurrentGameState()
@@ -585,86 +489,36 @@ namespace CollapseLauncher.Pages
                 CancelDownloadBtn.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
 
-                if ((GamePathOnSteam = await Task.Run(PageStatics._GameVersion.GamePreset.GetSteamInstallationPath)) != null)
+                PageStatics._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                PageStatics._GameInstall.StatusChanged += GameInstall_StatusChanged;
+
+                int dialogResult = await PageStatics._GameInstall.GetInstallationPath();
+                if (dialogResult < 0)
                 {
-                    switch (await Dialog_ExistingInstallationSteam(Content))
-                    {
-                        case ContentDialogResult.Primary:
-#if DISABLEMOVEMIGRATE
-                            ApplyGameConfig(GamePathOnSteam);
-#else
-                            MigrationWatcher.IsMigrationRunning = true;
-                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrateSteam));
-#endif
-                            return;
-                        case ContentDialogResult.Secondary:
-                            await StartInstallationProcedure(await InstallGameDialogScratch());
-                            break;
-                        case ContentDialogResult.None:
-                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                            return;
-                    }
+                    return;
                 }
-                else if (await Task.Run(PageStatics._GameVersion.GamePreset.CheckExistingGameBetterLauncher))
+                if (dialogResult == 0)
                 {
-                    switch (await Dialog_ExistingInstallationBetterLauncher(Content))
-                    {
-                        case ContentDialogResult.Primary:
-#if DISABLEMOVEMIGRATE
-                            PageStatics._GameVersion.UpdateGamePath(
-                                PageStatics._GameVersion.GamePreset.BetterHi3LauncherConfig.game_info.install_path.Replace('\\', '/')
-                            );
-                            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
-                            MainPage.IsChangeDragArea = false;
-#else
-                            MigrationWatcher.IsMigrationRunning = true;
-                            CurrentRegion.MigrateFromBetterHi3Launcher = true;
-                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
-#endif
-                            return;
-                        case ContentDialogResult.Secondary:
-                            await StartInstallationProcedure(await InstallGameDialogScratch());
-                            break;
-                        case ContentDialogResult.None:
-                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                            return;
-                    }
+                    PageStatics._GameInstall.ApplyGameConfig();
+                    return;
                 }
-                else if (PageStatics._GameVersion.GamePreset.CheckExistingGame())
+
+                int verifResult;
+                bool skipDialog = false;
+                while ((verifResult = await PageStatics._GameInstall.StartPackageVerification()) == 0)
                 {
-                    switch (await Dialog_ExistingInstallation(Content))
-                    {
-                        case ContentDialogResult.Primary:
-#if DISABLEMOVEMIGRATE
-                            PageStatics._GameVersion.UpdateGamePath(
-                                PageStatics._GameVersion.GamePreset.ActualGameDataLocation.Replace('\\', '/')
-                            );
-                            MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
-                            MainPage.IsChangeDragArea = false;
-#else
-                            MigrationWatcher.IsMigrationRunning = true;
-                            MainFrameChanger.ChangeWindowFrame(typeof(InstallationMigrate));
-#endif
-                            return;
-                        case ContentDialogResult.Secondary:
-                            await StartInstallationProcedure(await InstallGameDialogScratch());
-                            break;
-                        case ContentDialogResult.None:
-                            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                            return;
-                    }
+                    await PageStatics._GameInstall.StartPackageDownload(skipDialog);
+                    skipDialog = true;
                 }
-                else
+                if (verifResult == -1)
                 {
-                    LogWriteLine($"Existing Installation Not Found {PageStatics._GameVersion.GamePreset.ZoneFullname}");
-                    await StartInstallationProcedure(await InstallGameDialogScratch());
+                    PageStatics._GameInstall.ApplyGameConfig(true);
+                    return;
                 }
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            }
-            catch (IOException ex)
-            {
-                LogWriteLine($"Installation cancelled for game {PageStatics._GameVersion.GamePreset.ZoneFullname} because of IO Error!\r\n{ex}", Hi3Helper.LogType.Warning, true);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+
+                await PageStatics._GameInstall.StartPackageInstallation();
+                await PageStatics._GameInstall.StartPostInstallVerification();
+                PageStatics._GameInstall.ApplyGameConfig(true);
             }
             catch (TaskCanceledException)
             {
@@ -676,137 +530,48 @@ namespace CollapseLauncher.Pages
             }
             catch (NullReferenceException ex)
             {
+                IsPageUnload = true;
                 LogWriteLine($"Error while installing game {PageStatics._GameVersion.GamePreset.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
+                IsPageUnload = true;
                 LogWriteLine($"Error while installing game {PageStatics._GameVersion.GamePreset.ZoneName}.\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ErrorSender.SendException(ex, ErrorType.Unhandled);
             }
+            finally
+            {
+                PageStatics._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
+                PageStatics._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                PageStatics._GameInstall.Flush();
+                ReturnToHomePage();
+            }
         }
 
-        private async Task StartInstallationProcedure(string destinationFolder)
+        private void GameInstall_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            if (CheckExistingGame(destinationFolder))
+            DispatcherQueue.TryEnqueue(() =>
             {
-                CancelInstallationDownload();
-                return;
-            }
+                ProgressStatusTitle.Text = e.ActivityStatus;
+                progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
 
-            if (!Directory.Exists(GameDirPath))
-                Directory.CreateDirectory(GameDirPath);
-
-            if (string.IsNullOrEmpty(GameDirPath))
-                throw new OperationCanceledException();
-
-            await TrySetVoicePack(GetUpdateDiffs());
-
-            if (IsGameHasVoicePack)
-            {
-                GameZipVoiceUrl = VoicePackFile.path;
-                GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                GameZipVoiceRemoteHash = VoicePackFile.md5.ToLower();
-                GameZipVoiceRequiredSize = VoicePackFile.size;
-            }
-
-            while (!await DownloadGameClient(GameDirPath))
-            {
-                // Always loop if something wrong happen
-            }
-
-            CancelInstallationDownload();
+                progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
+                progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+            });
         }
 
-        private bool CheckExistingGame(string destinationFolder)
+        private void GameInstall_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            if (destinationFolder == null) return false;
-
-            string path = PageStatics._GameVersion.FindGameInstallationPath(destinationFolder);
-            if (path != null)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                PageStatics._GameVersion.UpdateGamePath(path);
-                PageStatics._GameVersion.Reinitialize();
-                return true;
-            }
-
-            return false;
-        }
-
-        private void ApplyGameConfig(string destinationFolder)
-        {
-            PageStatics._GameVersion.UpdateGameVersionToLatest();
-            PageStatics._GameVersion.UpdateGamePath(destinationFolder);
-            if (IsGameHasVoicePack && (PageStatics._GameVersion.GameType == GameType.Genshin))
-            {
-                PageStatics._GameVersion.GamePreset.SetVoiceLanguageID(VoicePackFile.languageID ?? 2);
-            }
-            PageStatics._GameVersion.Reinitialize();
-        }
-
-        private async Task<bool> DownloadGameClient(string destinationFolder)
-        {
-            bool returnVal = true;
-            GameZipUrl = GameAPIProp.data.game.latest.path;
-            GameZipRemoteHash = GameAPIProp.data.game.latest.md5.ToLower();
-            GameZipPath = Path.Combine(destinationFolder, Path.GetFileName(GameZipUrl));
-            GameZipRequiredSize = GameAPIProp.data.game.latest.size;
-
-            progressRing.Value = 0;
-            progressRing.IsIndeterminate = false;
-            ProgressStatusGrid.Visibility = Visibility.Visible;
-            InstallGameBtn.Visibility = Visibility.Collapsed;
-            CancelDownloadBtn.Visibility = Visibility.Visible;
-            ProgressTimeLeft.Visibility = Visibility.Visible;
-
-            InstallerDownloadTokenSource = new CancellationTokenSource();
-            CancellationToken token = InstallerDownloadTokenSource.Token;
-
-            using (InstallTool = new InstallManagement(Content,
-                                DownloadType.FirstInstall,
-                                PageStatics._GameVersion.GamePreset,
-                                destinationFolder,
-                                appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                AppCurrentThread,
-                                token,
-                                PageStatics._GameVersion.GameType == GameType.Genshin ?
-                                    GameAPIProp.data.game.latest.decompressed_path :
-                                    null,
-                                GameAPIProp.data.game.latest.version,
-                                PageStatics._GameVersion.GamePreset.ProtoDispatchKey,
-                                PageStatics._GameVersion.GamePreset.GameDispatchURL,
-                                PageStatics._GameVersion.GamePreset.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)))
-            {
-                InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
-                if (IsGameHasVoicePack)
-                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
-
-                ProgressStatusGrid.Visibility = Visibility.Visible;
-                UpdateGameBtn.Visibility = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility = Visibility.Visible;
-
-                InstallTool.InstallStatusChanged += InstallToolStatus;
-                InstallTool.InstallProgressChanged += InstallToolProgress;
-                bool RetryRoutine = true;
-
-                await InstallTool.CheckDriveFreeSpace(Content);
-                await InstallTool.CheckExistingDownloadAsync(Content);
-
-                while (RetryRoutine)
-                {
-                    await InstallTool.StartDownloadAsync();
-                    RetryRoutine = await InstallTool.StartVerificationAsync(Content);
-                }
-
-                await Task.Run(InstallTool.StartInstall);
-
-                ApplyGameConfig(GameDirPath);
-                await InstallTool.FinalizeInstallationAsync(Content);
-            }
-
-            return returnVal;
+                progressRing.Value = e.ProgressTotalPercentage;
+                progressRingPerFile.Value = e.ProgressPerFilePercentage;
+                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
+                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
+            });
         }
 
         string InstallDownloadSpeedString;
@@ -878,7 +643,7 @@ namespace CollapseLauncher.Pages
         {
             HttpTool.DownloadProgress -= InstallerDownloadPreStatusChanged;
 
-            InstallerDownloadTokenSource.Cancel();
+            PageStatics._GameInstall.CancelRoutine();
 
             PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
             ResumeDownloadPreBtn.Visibility = Visibility.Visible;
@@ -887,61 +652,20 @@ namespace CollapseLauncher.Pages
 
         private void CancelUpdateDownload()
         {
-            InstallerDownloadTokenSource.Cancel();
+            PageStatics._GameInstall.CancelRoutine();
 
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             UpdateGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
-
-            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
 
         private void CancelInstallationDownload()
         {
-            InstallerDownloadTokenSource.Cancel();
+            PageStatics._GameInstall.CancelRoutine();
 
             ProgressStatusGrid.Visibility = Visibility.Collapsed;
             InstallGameBtn.Visibility = Visibility.Visible;
             CancelDownloadBtn.Visibility = Visibility.Collapsed;
-
-            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-        }
-
-        private async Task<string> InstallGameDialogScratch()
-        {
-            string folder = "";
-
-            bool isChoosen = false;
-            while (!isChoosen)
-            {
-                switch (await Dialog_InstallationLocation(Content))
-                {
-                    case ContentDialogResult.Primary:
-                        folder = Path.Combine(AppGameFolder, PageStatics._GameVersion.GamePreset.ProfileName, PageStatics._GameVersion.GamePreset.GameDirectoryName);
-                        isChoosen = true;
-                        break;
-                    case ContentDialogResult.Secondary:
-#if DISABLE_COM
-                        folder = GetFolderPicker();
-#else
-                        folder = await GetFolderPicker();
-#endif
-
-                        if (folder != null)
-                            if (IsUserHasPermission(folder))
-                                isChoosen = true;
-                            else
-                                await Dialog_InsufficientWritePermission(Content, folder);
-                        else
-                            isChoosen = false;
-                        break;
-                    case ContentDialogResult.None:
-                        MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-                        throw new OperationCanceledException();
-                }
-            }
-
-            return folder;
         }
 
         CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
@@ -1165,8 +889,9 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            IsPageUnload = true;
             PageToken.Cancel();
-            InstallerDownloadTokenSource.Cancel();
+            PageStatics._GameInstall.CancelRoutine();
             GC.Collect();
         }
 
@@ -1271,73 +996,13 @@ namespace CollapseLauncher.Pages
             return diff;
         }
 
-        private void InstallToolStatus(object sender, InstallManagementStatus e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusTitle.Text = e.StatusTitle;
-                progressPerFile.Visibility = e.IsPerFile ? Visibility.Visible : Visibility.Collapsed;
-
-                progressRing.IsIndeterminate = e.IsIndetermined;
-                progressRingPerFile.IsIndeterminate = e.IsIndetermined;
-            });
-        }
-
-        private void InstallToolProgress(object sender, InstallManagementProgress e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressRing.Value = e.ProgressPercentage;
-                progressRingPerFile.Value = e.ProgressPercentagePerFile;
-                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressDownloadedSize), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressSpeed));
-                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-            });
-        }
-
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
-            InstallerDownloadTokenSource = new CancellationTokenSource();
-            CancellationToken token = InstallerDownloadTokenSource.Token;
+            PageStatics._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+            PageStatics._GameInstall.StatusChanged += GameInstall_StatusChanged;
 
             if (PageStatics._GameVersion.GamePreset.UseRightSideProgress ?? false)
                 HideImageCarousel(true);
-
-            RegionResourceVersion diff = GetUpdateDiffs();
-            InstallTool = new InstallManagement(Content,
-                                DownloadType.Update,
-                                PageStatics._GameVersion.GamePreset,
-                                GameDirPath,
-                                appIni.Profile["app"]["DownloadThread"].ToInt(),
-                                AppCurrentThread,
-                                token,
-                                GameAPIProp.data.game.latest.decompressed_path,
-                                GameAPIProp.data.game.latest.version,
-                                PageStatics._GameVersion.GamePreset.ProtoDispatchKey,
-                                PageStatics._GameVersion.GamePreset.GameDispatchURL,
-                                PageStatics._GameVersion.GamePreset.GetRegServerNameID(),
-                                Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName));
-
-            GameZipUrl = diff.path;
-            GameZipRemoteHash = diff.md5.ToLower();
-            GameZipPath = Path.Combine(GameDirPath, Path.GetFileName(GameZipUrl));
-            GameZipRequiredSize = diff.size;
-
-            InstallTool.AddDownloadProperty(GameZipUrl, GameZipPath, GameDirPath, GameZipRemoteHash, GameZipRequiredSize);
-
-            VoicePacks = TryAddVoicePack(GetUpdateDiffs(false));
-
-            if (IsGameHasVoicePack)
-            {
-                foreach (KeyValuePair<string, RegionResourceVersion> a in VoicePacks)
-                {
-                    GameZipVoiceUrl = a.Value.path;
-                    GameZipVoiceRemoteHash = a.Value.md5;
-                    GameZipVoicePath = Path.Combine(GameDirPath, Path.GetFileName(GameZipVoiceUrl));
-                    GameZipVoiceRequiredSize = a.Value.size;
-                    InstallTool.AddDownloadProperty(GameZipVoiceUrl, GameZipVoicePath, GameDirPath, GameZipVoiceRemoteHash, GameZipVoiceRequiredSize);
-                }
-            }
 
             try
             {
@@ -1345,39 +1010,25 @@ namespace CollapseLauncher.Pages
                 UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
 
-                InstallTool.InstallStatusChanged += InstallToolStatus;
-                InstallTool.InstallProgressChanged += InstallToolProgress;
-                bool RetryRoutine = true;
-
-                await InstallTool.CheckDriveFreeSpace(Content);
-
-                if (await InstallTool.StartIfDeltaPatchAvailable())
+                int verifResult;
+                bool skipDialog = false;
+                while ((verifResult = await PageStatics._GameInstall.StartPackageVerification()) == 0)
                 {
-                    await InstallTool.CheckExistingDownloadAsync(Content);
-
-                    while (RetryRoutine)
-                    {
-                        await InstallTool.StartDownloadAsync();
-                        RetryRoutine = await InstallTool.StartVerificationAsync(Content);
-                    }
-
-                    await Task.Run(InstallTool.StartInstall);
+                    await PageStatics._GameInstall.StartPackageDownload(skipDialog);
+                    skipDialog = true;
+                }
+                if (verifResult == -1)
+                {
+                    return;
                 }
 
-                ApplyGameConfig(GameDirPath);
-                await InstallTool.FinalizeInstallationAsync(Content);
-
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
-            }
-            catch (IOException ex)
-            {
-                LogWriteLine($"Update cancelled because of IO Error!\r\n{ex}", LogType.Warning);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                await PageStatics._GameInstall.StartPackageInstallation();
+                await PageStatics._GameInstall.StartPostInstallVerification();
+                PageStatics._GameInstall.ApplyGameConfig(true);
             }
             catch (TaskCanceledException)
             {
                 LogWriteLine($"Update cancelled!", LogType.Warning);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
             catch (OperationCanceledException)
             {
@@ -1385,18 +1036,23 @@ namespace CollapseLauncher.Pages
             }
             catch (NullReferenceException ex)
             {
+                IsPageUnload = true;
                 LogWriteLine($"Update error on {PageStatics._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
             {
+                IsPageUnload = true;
                 LogWriteLine($"Update error on {PageStatics._GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
             finally
             {
-                InstallTool.Dispose();
+                PageStatics._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
+                PageStatics._GameInstall.StatusChanged -= GameInstall_StatusChanged;
+                PageStatics._GameInstall.Flush();
+                ReturnToHomePage();
             }
         }
 
@@ -1440,51 +1096,9 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task TrySetVoicePack(RegionResourceVersion diffVer)
-        {
-            if (diffVer.voice_packs != null
-                && diffVer.voice_packs.Count > 0)
-            {
-                int langID = await Dialog_ChooseAudioLanguage(Content, EnumerateAudioLanguageString(diffVer));
-                IsGameHasVoicePack = true;
-                VoicePackFile = diffVer.voice_packs[langID];
-                VoicePackFile.languageID = langID;
-                return;
-            }
-            LogWriteLine($"This {PageStatics._GameVersion.GamePreset.ZoneFullname} region doesn't have Voice Pack");
-            IsGameHasVoicePack = false;
-        }
-
         private void ConvertVersionButton_Click(object sender, RoutedEventArgs e)
         {
             MainFrameChanger.ChangeWindowFrame(typeof(InstallationConvert));
-        }
-
-        private List<string> EnumerateAudioLanguageString(RegionResourceVersion diffVer)
-        {
-            List<string> value = new List<string>();
-            foreach (RegionResourceVersion Entry in diffVer.voice_packs)
-            {
-                switch (Entry.language)
-                {
-                    case "en-us":
-                        value.Add(Lang._Misc.LangNameENUS);
-                        break;
-                    case "ja-jp":
-                        value.Add(Lang._Misc.LangNameJP);
-                        break;
-                    case "zh-cn":
-                        value.Add(Lang._Misc.LangNameCN);
-                        break;
-                    case "ko-kr":
-                        value.Add(Lang._Misc.LangNameKR);
-                        break;
-                    default:
-                        value.Add(Entry.language);
-                        break;
-                }
-            }
-            return value;
         }
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)
@@ -1495,9 +1109,6 @@ namespace CollapseLauncher.Pages
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
 
-            InstallerDownloadTokenSource = new CancellationTokenSource();
-            CancellationToken token = InstallerDownloadTokenSource.Token;
-
             RegionResourceVersion diffVer = GetUpdateDiffs(true);
 
             InstallTool = new InstallManagement(Content,
@@ -1506,7 +1117,7 @@ namespace CollapseLauncher.Pages
                                 GameDirPath,
                                 appIni.Profile["app"]["DownloadThread"].ToInt(),
                                 AppCurrentThread,
-                                token,
+                                default,
                                 PageStatics._GameVersion.GamePreset.IsGenshin ?? false ?
                                     GameAPIProp.data.game.latest.decompressed_path :
                                     null,
