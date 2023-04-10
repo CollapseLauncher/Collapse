@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>net7.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net7.0-windows10.0.19041.0;net7.0-windows10.0.22000.0</TargetFrameworks>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
@@ -9,7 +9,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.69.5</Version>
+		<Version>1.69.6</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
