@@ -518,6 +518,8 @@ namespace CollapseLauncher
             if (!(Show ?? false)) return;
             if (NotificationData.CurrentShowMsgIds.Contains(MsgId)) return;
 
+            if (NotificationData.IsMsgIdIgnored(MsgId)) return;
+
             NotificationData.CurrentShowMsgIds.Add(MsgId);
 
             DispatcherQueue.TryEnqueue(() =>
@@ -579,7 +581,7 @@ namespace CollapseLauncher
                 Notification.CloseButtonClick += CloseClickHandler;
                 Notification.Closed += (s, a) =>
                 {
-                    int msg = (int)(s as InfoBar).Tag;
+                    int msg = (int)s.Tag;
 
                     if (NotificationData.CurrentShowMsgIds.Contains(msg))
                     {

@@ -254,6 +254,8 @@ namespace Hi3Helper.Shared.ClassStruct
             }
         }
 
+        public bool IsMsgIdIgnored(int MsgId) => AppPushIgnoreMsgIds.Contains(MsgId) || RegionPushIgnoreMsgIds.Contains(MsgId);
+
         public void EliminatePushList()
         {
             if (AppPush != null || RegionPush != null)
