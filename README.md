@@ -92,4 +92,4 @@ Supporting is never an obligation but is always appreciated and motivates us to 
 - **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
-Made by all captains around the world with ❤️. May all beauty be blessed!
+Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
