@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Http;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
@@ -59,6 +60,8 @@ namespace CollapseLauncher
 
                 InitializeAppSettings();
                 ParseArguments(args);
+
+                HttpLogInvoker.DownloadLog += HttpClientLogWatcher;
 
                 switch (m_appMode)
                 {
@@ -124,6 +127,25 @@ namespace CollapseLauncher
                 Console.WriteLine("\r\nif you sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to quit...");
                 Console.ReadLine();
                 return;
+            }
+            finally
+            {
+                HttpLogInvoker.DownloadLog -= HttpClientLogWatcher;
+            }
+        }
+
+        private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
+        {
+            LogType severity = e.Severity switch
+            {
+                DownloadLogSeverity.Warning => LogType.Warning,
+                DownloadLogSeverity.Error => LogType.Error,
+                _ => LogType.Default
+            };
+
+            if (severity != LogType.Default)
+            {
+                LogWriteLine(e.Message, severity, true);
             }
         }
 
