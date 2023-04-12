@@ -29,6 +29,8 @@ namespace CollapseLauncher.InstallManager.Genshin
         private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
         private string _gameAudioLangListPath { get => Directory.EnumerateFiles(_gameDataPersistentPath, "audio_lang_*", SearchOption.TopDirectoryOnly).FirstOrDefault(); }
         private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
+        private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
+        private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
         #endregion
 
         public GenshinInstall(UIElement parentUI)
@@ -40,12 +42,47 @@ namespace CollapseLauncher.InstallManager.Genshin
         #region Public Methods
         public override async Task StartPackageInstallation()
         {
+            // Starting from 3.6 update, the Audio files have been moved to "AudioAssets" folder
+            EnsureMoveOldToNewAudioDirectory();
+
             // Run the base installation process
             await base.StartPackageInstallation();
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
             ApplyDeleteFileAction();
+        }
+
+        private void EnsureMoveOldToNewAudioDirectory()
+        {
+            int offset = _gameAudioOldPath.Length + 1;
+            foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
+            {
+                string basePath = oldPath.AsSpan().Slice(offset).ToString();
+                string newPath = Path.Combine(_gameAudioNewPath, basePath);
+                string newFolder = Path.GetDirectoryName(newPath);
+
+                if (!Directory.Exists(newFolder))
+                {
+                    Directory.CreateDirectory(newFolder);
+                }
+
+                FileInfo oldFileInfo = new FileInfo(oldPath);
+                oldFileInfo.IsReadOnly = false;
+                oldFileInfo.MoveTo(newPath, true);
+            }
+
+            try
+            {
+                if (Directory.Exists(_gameAudioOldPath))
+                {
+                    Directory.CreateDirectory(_gameAudioOldPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while deleting old audio folder: {_gameAudioOldPath}\r\n{ex}", LogType.Error, true);
+            }
         }
 
         public override bool IsPreloadCompleted()
