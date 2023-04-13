@@ -578,7 +578,7 @@
     "SelectDialogSubtitle": "Nota: Esta conversão irá eliminar a integração com o Launcher oficial se instalaste o jogo por migração.\r\n\r\nPor favor escolhe a tua fonte e o alvo para a conversão:",
     "SelectDialogSubtitleNotInstalled": "Jogo fonte não instalado! Por favor escolhe outro jogo.",
     "ConvertSuccessTitle": "Conversão com sucesso",
-    "ConvertSuccessSubtitle": "Game Conversion from {0} to {1} has been successfully completed!",
+    "ConvertSuccessSubtitle": "A conversão de jogo da região {0} para {1} foi terminada com sucesso!",
     "InnerCheckFile": "A verificar ficheiros de {0} [{1}/{2}]: {3}",
     "InnerCheckBlock1": "A verificar {0}: {1}",
     "InnerCheckBlock2": "A verificar {0]: {1} -> (0x{2} | S: 0x{3})",
