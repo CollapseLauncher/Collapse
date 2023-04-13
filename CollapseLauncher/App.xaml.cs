@@ -1,5 +1,4 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Http;
 using Microsoft.UI.Xaml;
 using System;
 using static CollapseLauncher.InnerLauncherConfig;

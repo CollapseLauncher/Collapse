@@ -815,7 +815,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateProgress();
             }
         }
-    
+
         private long GetLastSize(long input)
         {
             if (_totalLastSizeCurrent > input)

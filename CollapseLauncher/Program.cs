@@ -75,9 +75,6 @@ namespace CollapseLauncher
                     case AppMode.ElevateUpdater:
                         RunElevateUpdate();
                         return;
-                    case AppMode.Reindex:
-                        new Reindexer(m_arguments.Reindexer.AppPath, m_arguments.Reindexer.Version, 4).RunReindex();
-                        return;
                     case AppMode.InvokerTakeOwnership:
                         new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
                         return;

@@ -19,17 +19,6 @@ namespace Hi3Helper.Shared.ClassStruct
         public string HashSalt { get; set; }
     }
 
-    public class DataPropertiesUI
-    {
-        public string FileName { get; set; }
-        public CachesType DataType { get; set; }
-        public string FileSource { get; set; }
-        public string FileSizeStr { get; set; }
-        public string FileLastModified { get; set; }
-        public string FileNewModified { get; set; }
-        public CachesDataStatus CacheStatus { get; set; }
-    }
-
     public class DataPropertiesContent
     {
         // Concatenate N and CRC to get the filepath.

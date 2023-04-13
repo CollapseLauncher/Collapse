@@ -26,17 +26,8 @@ namespace CollapseLauncher
     {
         public enum AppReleaseChannel
         {
-            StablePortable,
-            PreviewPortable,
             Stable,
             Preview
-        }
-
-        public enum BackdropType
-        {
-            Mica,
-            DesktopAcrylic,
-            DefaultColor,
         }
 
         public enum AppMode
@@ -44,7 +35,6 @@ namespace CollapseLauncher
             Launcher,
             Updater,
             ElevateUpdater,
-            Reindex,
             InvokerMigrate,
             InvokerTakeOwnership,
             InvokerMoveSteam,

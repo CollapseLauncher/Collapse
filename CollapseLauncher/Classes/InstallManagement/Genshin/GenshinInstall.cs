@@ -212,7 +212,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 try
                 {
                     using (StreamReader listReader = new StreamReader(listFile,
-                        new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read, Options = FileOptions.DeleteOnClose}))
+                        new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read, Options = FileOptions.DeleteOnClose }))
                     {
                         while (!listReader.EndOfStream)
                         {
@@ -264,7 +264,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
         }
 
-        
+
         #endregion
 
         #region Override Methods - GetInstallationPath

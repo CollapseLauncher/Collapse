@@ -10,6 +10,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public RegionResourceGame data { get; set; }
         public string imgLocalPath { get; set; } = string.Empty;
     }
+
     public class RegionResourceGame
     {
         public RegionResourceLatest game { get; set; }

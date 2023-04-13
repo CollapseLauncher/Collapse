@@ -48,7 +48,7 @@ namespace CollapseLauncher.GameVersioning
 
             // Then try Reinitialize game version provided by XMF
             TryReinitializeGameVersion();
-            
+
             // Try check and assign for the Game Delta-Patch properties (if any).
             // If there's no Delta-Patch, then set it to null.
             GameDeltaPatchProp = CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI);

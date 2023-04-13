@@ -170,6 +170,19 @@ namespace CollapseLauncher
             }
         }
 
+        public void SetThemeParameters()
+        {
+            if (!m_windowSupportCustomTitle)
+            {
+                GridBG_RegionMargin.Width = new GridLength(0, GridUnitType.Pixel);
+                GridBG_RegionGrid.HorizontalAlignment = HorizontalAlignment.Left;
+                GridBG_RegionInner.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+
+            Background.Visibility = Visibility.Visible;
+            BackgroundAcrylicMask.Visibility = Visibility.Visible;
+        }
+
         private void SubscribeEvents()
         {
             ErrorSenderInvoker.ExceptionEvent += ErrorSenderInvoker_ExceptionEvent;
@@ -996,7 +1009,11 @@ namespace CollapseLauncher
                     break;
                 case "RepairPage":
                     PreviousTag = "repair";
-                    NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[2];
+                    IList<object> menuItems = NavigationViewControl.MenuItems;
+                    if (menuItems != null && menuItems.Count > 2)
+                    {
+                        NavigationViewControl.SelectedItem = (NavigationViewItem)menuItems[2];
+                    }
                     HideBackgroundImage();
                     LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
                     break;

@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region.Honkai;
 using Microsoft.UI.Xaml;
 using System;

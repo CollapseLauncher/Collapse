@@ -47,7 +47,6 @@ namespace Hi3Helper.Shared.Region
         };
 
         public static CDNURLProperty GetCurrentCDN() => CDNList[GetAppConfigValue("CurrentCDN").ToInt()];
-        public static void SetCurrentCDN(int index) => SetAppConfigValue("CurrentCDN", index);
 
         public static Vector3 Shadow16 = new Vector3(0, 0, 16);
         public static Vector3 Shadow32 = new Vector3(0, 0, 32);
@@ -141,7 +140,6 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("EnableMultipleInstance", value);
         }
         public static bool ForceInvokeUpdate = false;
-        public static string UpdateRepoChannel = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main/";
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
@@ -232,25 +230,6 @@ namespace Hi3Helper.Shared.Region
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
         }
-
-#if PORTABLE
-        private static void TryCopyOldConfig()
-        {
-            try
-            {
-                if (File.Exists(AppConfigFileOld))
-                {
-                    if (!Directory.Exists(AppConfigFolder))
-                    {
-                        Directory.CreateDirectory(AppConfigFolder);
-                    }
-
-                    File.Copy(AppConfigFileOld, AppConfigFile);
-                }
-            }
-            catch { }
-        }
-#endif
 
         private static bool IsDriveExist(string path)
         {

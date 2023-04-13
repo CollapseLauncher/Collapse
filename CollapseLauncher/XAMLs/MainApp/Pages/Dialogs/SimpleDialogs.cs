@@ -104,36 +104,6 @@ namespace CollapseLauncher.Dialogs
             return index;
         }
 
-        public static async Task<ContentDialogResult> Dialog_AdditionalDownloadNeeded(UIElement Content, long fileSize) =>
-            await SpawnDialog(
-                    Lang._Dialogs.AddtDownloadNeededTitle,
-                    string.Format(Lang._Dialogs.AddtDownloadNeededSubtitle, SummarizeSizeSimple(fileSize)),
-                    Content,
-                    Lang._Misc.Skip,
-                    Lang._Misc.Yes,
-                    null
-                );
-
-        public static async Task<ContentDialogResult> Dialog_AdditionalDownloadCompleted(UIElement Content) =>
-            await SpawnDialog(
-                    Lang._Dialogs.AddtDownloadCompletedTitle,
-                    Lang._Dialogs.AddtDownloadCompletedSubtitle,
-                    Content,
-                    null,
-                    Lang._Misc.OkayHappy,
-                    null
-                );
-
-        public static async Task<ContentDialogResult> Dialog_RepairCompleted(UIElement Content, int Count) =>
-            await SpawnDialog(
-                    Lang._Dialogs.RepairCompletedTitle,
-                    Count > 0 ? string.Format(Lang._Dialogs.RepairCompletedSubtitle, Count) : Lang._Dialogs.RepairCompletedSubtitleNoBroken,
-                    Content,
-                    null,
-                    Lang._Misc.Okay,
-                    null
-                );
-
         public static async Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExtremeGraphicsSettingsWarnTitle,
@@ -280,18 +250,6 @@ namespace CollapseLauncher.Dialogs
                     null,
                     Lang._Misc.YesResume,
                     Lang._Misc.NoStartFromBeginning
-                );
-
-        public static async Task<ContentDialogResult> Dialog_GameConfigBroken(UIElement Content, string GameConfigPath) =>
-            await SpawnDialog(
-                    Lang._Dialogs.GameConfigBrokenTitle1,
-                    string.Format(Lang._Dialogs.GameConfigBrokenSubtitle1
-                  + Lang._Dialogs.GameConfigBrokenSubtitle2
-                  + Lang._Dialogs.GameConfigBrokenSubtitle3, GameConfigPath),
-                    Content,
-                    null,
-                    Lang._Misc.LocateDir,
-                    null
                 );
 
         public static async Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement Content, long DriveFreeSpace, long RequiredSpace, string DriveLetter) =>

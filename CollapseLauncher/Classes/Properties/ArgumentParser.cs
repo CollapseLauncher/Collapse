@@ -30,10 +30,6 @@ namespace CollapseLauncher
                     m_appMode = AppMode.ElevateUpdater;
                     ParseElevateUpdaterArguments(args);
                     break;
-                case "reindex":
-                    m_appMode = AppMode.Reindex;
-                    ParseReindexerArguments(args);
-                    break;
                 case "takeownership":
                     m_appMode = AppMode.InvokerTakeOwnership;
                     ParseTakeOwnershipArguments(args);
@@ -94,22 +90,6 @@ namespace CollapseLauncher
                     UpdateChannel = ReleaseChannel
                 };
             }, o_Input, o_Channel);
-        }
-
-        public static void ParseReindexerArguments(params string[] args)
-        {
-            Option o_Input, o_Ver;
-            rootCommand.AddArgument(new Argument<string>("reindex", "Reindex the update files") { HelpName = null });
-            rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true });
-            rootCommand.AddOption(o_Ver = new Option<string>(new string[] { "--upver", "-u" }, "Update version of the app") { IsRequired = true });
-            rootCommand.SetHandler((string Input, string Version) =>
-            {
-                m_arguments.Reindexer = new ArgumentReindexer
-                {
-                    AppPath = Input,
-                    Version = Version
-                };
-            }, o_Input, o_Ver);
         }
 
         public static void ParseTakeOwnershipArguments(params string[] args)

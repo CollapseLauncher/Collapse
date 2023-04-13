@@ -18,7 +18,6 @@ namespace Hi3Helper.Shared.GameConversion
     public class CheckIntegrity
     {
         private string targetPath;
-        private string repoURL;
         private string repoIndexURL;
         private Http.Http http;
         private Stream stream;
@@ -44,7 +43,6 @@ namespace Hi3Helper.Shared.GameConversion
         {
             this.sw = Stopwatch.StartNew();
             this.targetPath = targetPath;
-            this.repoURL = repoURL;
             this.repoIndexURL = repoIndexURL;
             this.tokenSource = tokenSource;
             this.http = new Http.Http();

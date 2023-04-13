@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
@@ -10,7 +9,7 @@ namespace CollapseLauncher.Interfaces
         event EventHandler<TotalPerfileStatus> StatusChanged;
 
         ValueTask<int> GetInstallationPath();
-        Task StartPackageDownload( bool skipDialog = false);
+        Task StartPackageDownload(bool skipDialog = false);
         ValueTask<int> StartPackageVerification();
         Task StartPackageInstallation();
         Task StartPostInstallVerification();

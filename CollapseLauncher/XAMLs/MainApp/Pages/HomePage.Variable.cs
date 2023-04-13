@@ -1,10 +1,8 @@
 ﻿using CollapseLauncher.Statics;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-using System.Collections.Generic;
 
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -13,22 +11,6 @@ namespace CollapseLauncher.Pages
     public sealed partial class HomePage : Page
     {
         string GameDirPath { get => PageStatics._GameVersion.GameDirPath; }
-
-        string GameZipUrl;
-        string GameZipPath;
-        string GameZipRemoteHash;
-        long GameZipRequiredSize;
-
-        string GameZipVoiceUrl;
-        string GameZipVoicePath;
-        string GameZipVoiceRemoteHash;
-        long GameZipVoiceRequiredSize;
-
-        RegionResourceVersion VoicePackFile = new RegionResourceVersion();
-        Dictionary<string, RegionResourceVersion> VoicePacks = new Dictionary<string, RegionResourceVersion>();
-        InstallManagement InstallTool;
-
-        bool IsGameHasVoicePack;
 
         public Visibility IsPostEventPanelVisible => regionNewsProp.articlePanel?.Events.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostEventPanelEmpty => regionNewsProp.articlePanel?.Events.Count != 0 ? Visibility.Collapsed : Visibility.Visible;

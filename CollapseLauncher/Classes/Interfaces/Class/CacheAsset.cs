@@ -2,7 +2,6 @@
 using Hi3Helper.Preset;
 using System.IO;
 using System.Text.Json.Serialization;
-using Windows.Management.Deployment;
 
 namespace CollapseLauncher.Interfaces
 {

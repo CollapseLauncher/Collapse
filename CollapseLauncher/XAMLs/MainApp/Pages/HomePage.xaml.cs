@@ -19,10 +19,8 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -344,25 +342,21 @@ namespace CollapseLauncher.Pages
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
             PreloadDialogBox.IsOpen = true;
 
-            string ver = GameAPIProp.data.pre_download_game.latest.version;
+            string ver = PageStatics._GameVersion.GetGameVersionAPIPreload()?.VersionString;
 
             try
             {
-                if (!(PageStatics._GameVersion.GamePreset.IsGenshin ?? false))
+                if (PageStatics._GameVersion.IsGameHasDeltaPatch())
                 {
-                    DeltaPatchProperty prop = InstallManagement.CheckDeltaPatchUpdate(GameDirPath, PageStatics._GameVersion.GamePreset.ProfileName, ver, DownloadType.PreDownload);
-                    if (prop != null)
-                    {
-                        PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
-                        PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
-                        DownloadPreBtn.Visibility = Visibility.Collapsed;
-                        return;
-                    }
+                    PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
+                    PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
+                    DownloadPreBtn.Visibility = Visibility.Collapsed;
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
 
             if (!PageStatics._GameInstall.IsPreloadCompleted())

@@ -2,7 +2,6 @@
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
-using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
 using static CollapseLauncher.GameSettings.Statics;

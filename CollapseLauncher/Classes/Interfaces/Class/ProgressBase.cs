@@ -1,7 +1,6 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

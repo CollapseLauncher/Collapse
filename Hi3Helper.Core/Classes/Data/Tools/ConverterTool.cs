@@ -16,32 +16,14 @@ namespace Hi3Helper.Data
         private static readonly Crc32Algorithm CRCEncoder = new Crc32Algorithm();
         private static readonly string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
         public static string BytesToCRC32Simple(Stream buffer) => HexTool.BytesToHexUnsafe(CRCEncoder.ComputeHash(buffer));
-        public static async Task<string> BytesToCRC32SimpleAsync(Stream buffer) => HexTool.BytesToHexUnsafe(await Task.Run(() => CRCEncoder.ComputeHash(buffer)).ConfigureAwait(false));
         public static string CreateMD5Shared(Stream fs)
         {
             MD5Hash.Initialize();
             ReadOnlySpan<byte> res = MD5Hash.ComputeHash(fs);
             return HexTool.BytesToHexUnsafe(res);
         }
-        public static string CreateMD5(Stream fs)
-        {
-            ReadOnlySpan<byte> res = MD5.Create().ComputeHash(fs);
-            return HexTool.BytesToHexUnsafe(res);
-        }
-        public static async Task<string> CreateMD5Async(Stream fs)
-        {
-            MD5Hash.Initialize();
-            Memory<byte> res = await MD5Hash.ComputeHashAsync(fs).ConfigureAwait(false);
-            return HexTool.BytesToHexUnsafe(res.Span);
-        }
 
         public static double Unzeroed(double i) => Math.Max(i, 1);
-
-        public static uint BytesToUInt32Big(byte[] buffer) =>
-            (BitConverter.ToUInt32(buffer, 0) & 0x000000FFU) << 24 | (BitConverter.ToUInt32(buffer, 0) & 0x0000FF00U) << 8 |
-            (BitConverter.ToUInt32(buffer, 0) & 0x00FF0000U) >> 8 | (BitConverter.ToUInt32(buffer, 0) & 0xFF000000U) >> 24;
-
-        public static ushort BytesToUInt16Big(byte[] buffer) => (ushort)((BitConverter.ToUInt16(buffer, 0) & 0xFFU) << 8 | (BitConverter.ToUInt16(buffer, 0) & 0xFF00U) >> 8);
 
         public static double GetPercentageNumber(double cur, double max, int round = 2) => Math.Round((100 * cur) / max, round);
 
