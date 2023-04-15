@@ -232,7 +232,7 @@ namespace CollapseLauncher
 
         public static void SetDragArea(RectInt32[] area)
         {
-            if (m_windowSupportCustomTitle && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
+            if (m_appWindow.TitleBar != null && m_windowSupportCustomTitle && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
                 m_appWindow.TitleBar.SetDragRectangles(area);
             }
