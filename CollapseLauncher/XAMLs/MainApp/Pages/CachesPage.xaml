@@ -48,7 +48,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="270"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,32,0">
                         <TextBlock Text="{x:Bind helper:Locale.Lang._CachesPage.CachesStatusHeader1}"  FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
