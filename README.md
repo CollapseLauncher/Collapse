@@ -45,11 +45,11 @@ This launcher also supports other game client, including:
 > Some features such as Game Data Repair and Preloading are available for Genshin Impact, but others such as Game Settings modification and Caches Download are not available and presently unsupported.
 
 # Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.55.6-stable/CL-1.0.55.6_Installer.exe)
-> **Note**: The version for this build is `1.0.55.6` (Released on: January 19th, 2023)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.7/CL-1.69.7_Installer.exe)
+> **Note**: The version for this build is `1.69.7` (Released on: April 16th, 2023)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.0.69.1-pre/CL-1.0.69.1-preview_Installer.exe)
-> **Note**: The version for this build is `1.0.69.1` (Released on: February 15th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.7-pre/CL-1.69.7-preview_Installer.exe)
+> **Note**: The version for this build is `1.69.7` (Released on: April 16th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -63,23 +63,26 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 # Prerequisites for Building Locally/Development
 *Collapse* is presently powered by .NET 7 and as such, the packages listed below are required to create a local and development build of the launcher. Furthermore, *Collapse* uses many submodules and packages outside of this, which will automatically be loaded when the user sets up a local environment of the application.
 - .NET: [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-- WinUI 3: [**WinUI 3 (WindowsAppSDK 1.2 Stable Runtime)**](https://aka.ms/windowsappsdk/1.2/latest/windowsappruntimeinstall-x64.exe)
-- WindowsAppSDK 1.2 Stable C# Extension: [**Visual Studio 2022 C# Extension**](https://aka.ms/windowsappsdk/1.2/latest/WindowsAppSDK.Cs.Extension.Dev17.Standalone.vsix)
+- WinUI 3: [**WinUI 3 (WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
 - **Windows 10 SDK (10.0.19043.0 or later)** via Visual Studio Installer
+- **Visual Studio 2022 (Any Edition - 17.4 or later)**
 
 > **Note**:
 > 
-> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.2 Stable`.
+> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.3 Stable`.
 > 
 > Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, minimal support will be provided for this method. **This is not recommended for beginner users.**
 
 # Third-party repositories and libraries used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
+- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft
 - [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
-- [**Color Thief .NET**](https://github.com/KSemenenko/ColorThief) by KSemenenko
+- [**Color Thief .NET**](https://github.com/neon-nyan/ColorThief) by KSemenenko
 - [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
-- [**Newtonsoft.Json**](https://github.com/JamesNK/Newtonsoft.Json) by JamesNK
-- [**Hi3HelperCore.Http**](https://github.com/neon-nyan/Hi3HelperCore.Http) by neon-nyan
+- [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) by neon-nyan
+- [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) by neon-nyan
+- [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) by force-net
+- [**UABT**](https://github.com/neon-nyan/UABT) by _unknown_
 
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
 
