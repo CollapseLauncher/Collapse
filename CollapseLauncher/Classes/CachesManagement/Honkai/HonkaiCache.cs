@@ -25,7 +25,7 @@ namespace CollapseLauncher
                   parentUI,
                   PageStatics._GameVersion.GameDirAppDataPath,
                   null,
-                  null)
+                  PageStatics._GameVersion.GetGameVersionAPI().VersionString)
         {
             _gameLang = _gamePreset.GetGameLanguage() ?? "en";
         }
