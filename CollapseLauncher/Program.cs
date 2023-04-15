@@ -56,7 +56,9 @@ namespace CollapseLauncher
                     GetVersionString(),
                     Environment.UserName,
                     (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : "")), LogType.Scheme, true);
-                LogWriteLine(string.Format("Runtime: {0}", RuntimeInformation.FrameworkDescription), LogType.Scheme, true);
+
+                FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
+                LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
 
                 InitializeAppSettings();
                 ParseArguments(args);
