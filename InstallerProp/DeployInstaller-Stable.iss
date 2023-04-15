@@ -2,17 +2,19 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
+#define AppVersion StringChange(GetFileVersion("..\..\CollapseLauncher-ReleaseRepo\stable-build\CollapseLauncher.exe"), ".0", "")
+
 AppName=Collapse
-AppVersion=1.0.55.4
-AppCopyright=2022 - neon-nyan
+AppVersion={#AppVersion}
+AppCopyright=2023 - neon-nyan
 AppPublisher=neon-nyan
-VersionInfoVersion=1.0.55.4
+VersionInfoVersion={#AppVersion}
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
-VersionInfoCopyright=2022 - neon-nyan
+VersionInfoCopyright=2023 - neon-nyan
 VersionInfoProductName=Collapse
-VersionInfoProductVersion=1.0.55.4
-VersionInfoProductTextVersion=1.0.55.4
+VersionInfoProductVersion={#AppVersion}
+VersionInfoProductTextVersion={#AppVersion}-preview
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -20,7 +22,7 @@ MinVersion=0,10.0.17763
 DefaultDirName={autopf64}\Collapse Launcher\
 DefaultGroupName=Collapse
 UninstallDisplayName=Collapse
-UninstallDisplayIcon={app}\CollapseLauncher.exe
+UninstallDisplayIcon={app}\app-{#AppVersion}\CollapseLauncher.exe
 WizardStyle=modern
 WizardImageFile=..\InstallerProp\WizardBannerDesign.bmp
 WizardSmallImageFile=..\InstallerProp\WizardBannerDesignSmall.bmp
@@ -35,12 +37,14 @@ LZMANumFastBytes=128
 PrivilegesRequired=admin
 
 [Icons]
-Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.Hi3CacheUpdater.cmd"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\app-{#AppVersion}\CollapseLauncher.Hi3CacheUpdater.cmd"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\CollapseLauncher-ReleaseRepo\stable-build\*"; DestDir: "{app}\app-{#AppVersion}"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\CollapseLauncher-ReleaseRepo\Update.exe"; DestDir: "{app}"
+Source: "..\..\CollapseLauncher-ReleaseRepo\CollapseLauncher.exe"; DestDir: "{app}"      
 
 [Tasks]
 Name: StartAfterInstall; Description: Run application after install
