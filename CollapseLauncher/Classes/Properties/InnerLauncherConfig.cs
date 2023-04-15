@@ -2,7 +2,6 @@
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using ICSharpCode.SharpZipLib.Core;
 using Microsoft.UI.Text;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -131,7 +130,7 @@ namespace CollapseLauncher
         {
             GameChannel.Beta => "BETA",
             GameChannel.DevRelease => "DEV",
-            _ => throw new InvalidNameException("Only Beta and DevRelease is accepted!")
+            _ => throw new InvalidProgramException("Only Beta and DevRelease is accepted!")
         };
 
         public static void SaveLocalNotificationData()
