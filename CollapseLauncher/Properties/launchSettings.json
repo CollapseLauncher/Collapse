@@ -1,5 +1,9 @@
 {
   "profiles": {
+    "Collapse Launcher": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    },
     "Updater": {
       "commandName": "Project",
       "commandLineArgs": "update --input \"C:\\Program Files\\Collapse Launcher\" --channel Preview",
@@ -13,10 +17,6 @@
     "Reindexer": {
       "commandName": "Project",
       "commandLineArgs": "reindex --input \"\\myGit\\CollapseLauncher-ReleaseRepo\\preview\" --upver 1.0.40.5",
-      "nativeDebugging": false
-    },
-    "Collapse Launcher": {
-      "commandName": "Project",
       "nativeDebugging": false
     },
     "Take Ownership": {
