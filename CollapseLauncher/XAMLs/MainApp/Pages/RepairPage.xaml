@@ -72,8 +72,8 @@
                     </StackPanel>
                     <Grid Grid.Row="1" Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="RepairFilesBtn" HorizontalAlignment="Stretch" CornerRadius="16"
                                 Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartGameRepair">

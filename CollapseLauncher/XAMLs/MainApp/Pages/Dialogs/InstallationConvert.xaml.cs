@@ -484,13 +484,11 @@ namespace CollapseLauncher.Dialogs
         private void OperationCancelled()
         {
             RevertConversion();
-            MigrationWatcher.IsMigrationRunning = false;
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            MigrationWatcher.IsMigrationRunning = true;
             StartConversionProcess();
         }
 

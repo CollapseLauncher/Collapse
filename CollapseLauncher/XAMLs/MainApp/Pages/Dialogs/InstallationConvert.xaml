@@ -9,21 +9,21 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}"
     x:FieldModifier="public" Loaded="Page_Loaded">
-    <StackPanel Margin="32">
+    <Grid Margin="32" VerticalAlignment="Stretch">
         <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.PageTitle}"
-                   Style="{ThemeResource TitleLargeTextBlockStyle}"
-                   Margin="0,0,0,24"/>
-        <Grid HorizontalAlignment="Stretch" Height="550">
+                   Style="{ThemeResource TitleLargeTextBlockStyle}"/>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   Margin="0,48,0,32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32*"/>
                 <ColumnDefinition Width="681*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="135*"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <Slider x:Name="ProgressSlider"
                     Orientation="Vertical"
@@ -39,8 +39,7 @@
                     <CompositeTransform Rotation="180"/>
                 </Slider.RenderTransform>
             </Slider>
-            <Rectangle Fill="Transparent" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="5">
-            </Rectangle>
+            <Rectangle Fill="Transparent" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="5"/>
             <StackPanel x:Name="Step1" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Opacity="1">
                 <ProgressRing x:Name="Step1ProgressRing" Width="32" Height="32" Value="100" IsIndeterminate="True" Margin="0,0,16,0"/>
                 <StackPanel Orientation="Vertical">
@@ -76,17 +75,15 @@
                     <TextBlock x:Name="Step5ProgressStatus" Text="{x:Bind helper:Locale.Lang._InstallConvert.StepNotRunning}" VerticalAlignment="Center"  Style="{ThemeResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="CancelBtn"  Style="{ThemeResource AccentButtonStyle}" Margin="0,0,0,-26" CornerRadius="16"
-                    Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" VerticalAlignment="Bottom"
-                    Click="CancelConversion">
-                <StackPanel Orientation="Horizontal" Margin="8,0">
+        </Grid>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+            <Button x:Name="CancelBtn" Style="{ThemeResource AccentButtonStyle}" CornerRadius="16" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="CancelConversion">
+                <StackPanel Orientation="Horizontal">
                     <FontIcon Glyph="&#xf00d;" FontFamily="{ThemeResource FontAwesomeSolid}" FontSize="16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}" FontWeight="Medium" Margin="8,0,0,0"/>
                 </StackPanel>
             </Button>
-            <TextBlock x:Name="MigrationSubtextStatus" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"
-                   Style="{ThemeResource BodyTextBlockStyle}" Margin="0,0,0,-26"
-                   HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <TextBlock x:Name="MigrationSubtextStatus" Style="{ThemeResource BodyTextBlockStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Span>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter1}"/>
                     <Run Text="{x:Bind helper:Locale.Lang._InstallConvert.PageFooter2}" FontWeight="Black"/>
@@ -94,5 +91,5 @@
                 </Span>
             </TextBlock>
         </Grid>
-    </StackPanel>
+    </Grid>
 </Page>

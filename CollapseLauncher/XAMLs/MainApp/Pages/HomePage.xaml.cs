@@ -97,7 +97,6 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                MigrationWatcher.IsMigrationRunning = false;
                 HomePageProp.Current = this;
 
                 if (await PageStatics._GameInstall.TryShowFailedDeltaPatchState()) return;

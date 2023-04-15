@@ -377,8 +377,6 @@ namespace CollapseLauncher.Dialogs
 
         private void OperationCancelled(bool noException = false)
         {
-            MigrationWatcher.IsMigrationRunning = false;
-
             if (!noException)
                 throw new OperationCanceledException();
         }

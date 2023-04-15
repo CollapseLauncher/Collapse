@@ -62,7 +62,7 @@
                     <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="UpdateCachesBtn" HorizontalAlignment="Stretch" CornerRadius="16"
                                     Visibility="Collapsed" Style="{ThemeResource AccentButtonStyle}" Click="StartCachesUpdate">
