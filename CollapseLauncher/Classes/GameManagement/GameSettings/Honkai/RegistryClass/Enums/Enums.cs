@@ -45,7 +45,7 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     internal enum SelectPostFXGrade : int { Low, High }
 
     /// <summary>
-    /// This selection has 3 name types: Low (3), Medium (1), High (0)<br/>
+    /// This selection has 3 name types: Low (2), Medium (1), High (0)<br/>
     /// </summary>
-    internal enum SelectLodGrade : int { Low = 3, Medium = 1, High = 0 }
+    internal enum SelectLodGrade : int { Low = 2, Medium = 1, High = 0 }
 }
