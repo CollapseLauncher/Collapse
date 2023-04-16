@@ -28,33 +28,19 @@ namespace CollapseLauncher.GameSettings.Base
                     byte[] head = new byte[6];
                     fs.Read(head, 0, head.Length);
 
-                    if (Encoding.UTF8.GetString(head) != "clReg\0") throw new FormatException(Lang._GameSettingsPage.SettingsRegErr2);
-
                     Logger.LogWriteLine($"Importing registry {RegistryPath}...");
 
-                    using (XORStream xorS = new XORStream(fs, xorKey, true))
-                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Decompress, true))
-                    using (EndianBinaryReader reader = new EndianBinaryReader(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
+                    string header = Encoding.UTF8.GetString(head);
+                    switch (header)
                     {
-                        short count = reader.ReadInt16();
-                        Logger.LogWriteLine($"File has {count} values.");
-                        while (count-- > 0)
-                        {
-                            string valueName = ReadValueName(reader);
-                            byte type = reader.ReadByte();
-                            switch (type)
-                            {
-                                case 0:
-                                    ReadDWord(reader, valueName); break;
-                                case 1:
-                                    ReadQWord(reader, valueName); break;
-                                case 2:
-                                    ReadString(reader, valueName); break;
-                                case 3:
-                                    ReadBinary(reader, valueName); break;
-                            }
-                            Logger.LogWriteLine($"Value {valueName} imported!");
-                        }
+                        case "clReg\0":
+                            ReadValues(fs);
+                            break;
+                        case "ColReg":
+                            ReadNewVersionValues(fs);
+                            break;
+                        default:
+                            throw new FormatException(Lang._GameSettingsPage.SettingsRegErr2);
                     }
                 }
             }
@@ -64,6 +50,50 @@ namespace CollapseLauncher.GameSettings.Base
             }
 
             return null;
+        }
+
+        private void ReadNewVersionValues(Stream fs)
+        {
+            byte version = (byte)fs.ReadByte();
+
+            switch (version)
+            {
+                case 1:
+                    using (XORStream xorS = new XORStream(fs, xorKey, true))
+                    using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
+                    {
+                        ReadValues(comp);
+                    }
+                    break;
+                default:
+                    throw new FormatException($"Registry version is not supported! Read: {version}");
+            }
+        }
+
+        private void ReadValues(Stream fs)
+        {
+            using (EndianBinaryReader reader = new EndianBinaryReader(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
+            {
+                short count = reader.ReadInt16();
+                Logger.LogWriteLine($"File has {count} values.");
+                while (count-- > 0)
+                {
+                    string valueName = ReadValueName(reader);
+                    byte type = reader.ReadByte();
+                    switch (type)
+                    {
+                        case 0:
+                            ReadDWord(reader, valueName); break;
+                        case 1:
+                            ReadQWord(reader, valueName); break;
+                        case 2:
+                            ReadString(reader, valueName); break;
+                        case 3:
+                            ReadBinary(reader, valueName); break;
+                    }
+                    Logger.LogWriteLine($"Value {valueName} imported!");
+                }
+            }
         }
 
         public Exception ExportSettings()
@@ -80,11 +110,12 @@ namespace CollapseLauncher.GameSettings.Base
 
                 using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
-                    fs.Write(Encoding.UTF8.GetBytes("clReg\0"));
+                    fs.Write(Encoding.UTF8.GetBytes("ColReg"));
+                    fs.Write(new byte[] {1}, 0, 1);
 
                     using (XORStream xorS = new XORStream(fs, xorKey, true))
-                    using (BrotliStream comp = new BrotliStream(fs, CompressionMode.Compress, true))
-                    using (EndianBinaryWriter writer = new EndianBinaryWriter(fs, Hi3Helper.UABT.EndianType.BigEndian, true))
+                    using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Compress, true))
+                    using (EndianBinaryWriter writer = new EndianBinaryWriter(comp, Hi3Helper.UABT.EndianType.BigEndian, true))
                     {
                         string[] names = RegistryRoot.GetValueNames();
                         writer.Write((short)names.Length);
