@@ -261,7 +261,9 @@ namespace CollapseLauncher.InstallManager.Base
                             // If the _canDeleteZip flag is true, then delete the zip
                             if (_canDeleteZip)
                             {
-                                File.Delete(_gamePath);
+                                FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                fileInfo.IsReadOnly = false;
+                                fileInfo.Delete();
                             }
 
                             // Get the information about diff and delete list file
