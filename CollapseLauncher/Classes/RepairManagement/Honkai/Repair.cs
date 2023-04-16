@@ -127,7 +127,7 @@ namespace CollapseLauncher
             string assetURL = customURL != null ? customURL : asset.RN;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
-            if (asset.FT == FileType.Unused)
+            if (asset.FT == FileType.Unused && !_isOnlyRecoverMain)
             {
                 // Remove unused asset
                 RemoveUnusedAssetTypeGeneric(assetPath);

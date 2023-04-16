@@ -476,7 +476,11 @@ namespace CollapseLauncher
             BuildAssetIndexCatalog(catalog, assetIndex);
 
             // Compare the catalog list with asset index and add it to target asset index
-            GetUnusedAssetIndexList(catalog, targetAssetIndex);
+            // As per update on April 16th 2023, the method below won't be executed while _isOnlyRecoverMain was set to true.
+            if (!_isOnlyRecoverMain)
+            {
+                GetUnusedAssetIndexList(catalog, targetAssetIndex);
+            }
         }
 
         private void BuildAssetIndexCatalog(List<string> catalog, List<FilePropertiesRemote> assetIndex)
