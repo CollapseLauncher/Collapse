@@ -1,4 +1,6 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -6,6 +8,8 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Squirrel;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -37,7 +41,8 @@ namespace CollapseLauncher
                             UpdateInfo info = await updater.StartCheck();
                             GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
-                            UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString };
+                            AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
+                            UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
 
                             if (CompareVersion(AppCurrentVersion, RemoteVersion))
                                 GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
@@ -54,6 +59,20 @@ namespace CollapseLauncher
                 }
                 // Delay for 1 hour
                 await Task.Delay(3600 * 1000);
+            }
+        }
+
+        private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
+        {
+            string relativePath = ConverterTool.CombineURLFromString(IsPreview ? "preview" : "stable", "fileindex.json");
+
+            using (Http client = new Http(true))
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await FallbackCDNUtil.DownloadCDNFallbackContent(client, ms, relativePath, default);
+                ms.Position = 0;
+
+                return (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default);
             }
         }
 
