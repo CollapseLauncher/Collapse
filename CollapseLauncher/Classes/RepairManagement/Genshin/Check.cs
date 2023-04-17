@@ -1,11 +1,13 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -28,6 +30,9 @@ namespace CollapseLauncher
 
             // Reset stopwatch
             RestartStopwatch();
+
+            // Try move persistent files to StreamingAssets
+            TryMovePersistentToStreamingAssets();
 
             // Check for any redundant files
             CheckRedundantFiles(brokenAssetIndex);
@@ -53,6 +58,43 @@ namespace CollapseLauncher
             // Re-add the asset index with a broken asset index
             assetIndex.Clear();
             assetIndex.AddRange(brokenAssetIndex);
+        }
+
+        private void TryMovePersistentToStreamingAssets()
+        {
+            if (!Directory.Exists(_gamePersistentPath)) return;
+            TryMoveAudioPersistent();
+            TryMoveVideoPersistent();
+        }
+
+        private void TryMoveAudioPersistent()
+        {
+            string audioAsbPath = Path.Combine(_gameStreamingAssetsPath, "AudioAssets");
+            string audioPersistentPath = Path.Combine(_gamePersistentPath, "AudioAssets");
+            if (!Directory.Exists(audioPersistentPath)) return;
+            if (!Directory.Exists(audioAsbPath)) Directory.CreateDirectory(audioAsbPath);
+
+            List<string> audioLangList = ((GameTypeGenshinVersion)PageStatics._GameVersion)._audioVoiceLanguageList;
+            foreach (string path in Directory.EnumerateDirectories(audioPersistentPath, "*", SearchOption.TopDirectoryOnly))
+            {
+                string langName = Path.GetFileName(path);
+                if (audioLangList.Contains(langName))
+                {
+                    string oldPath = path;
+                    string newPath = Path.Combine(audioAsbPath, langName);
+
+                    MoveFolderContent(oldPath, newPath);
+                }
+            }
+        }
+
+        private void TryMoveVideoPersistent()
+        {
+            string videoAsbPath = Path.Combine(_gameStreamingAssetsPath, "VideoAssets");
+            string videoPersistentPath = Path.Combine(_gamePersistentPath, "VideoAssets");
+            if (!Directory.Exists(videoPersistentPath)) return;
+            if (!Directory.Exists(videoAsbPath)) Directory.CreateDirectory(videoAsbPath);
+            MoveFolderContent(videoPersistentPath, videoAsbPath);
         }
 
         private void CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)

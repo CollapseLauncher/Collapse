@@ -26,6 +26,8 @@ namespace CollapseLauncher
         private protected string _dispatcherURL { get => _gamePreset.GameDispatchURL ?? ""; }
         private protected string _dispatcherKey { get => _gamePreset.DispatcherKey ?? ""; }
         private protected int _dispatcherKeyLength { get => _gamePreset.DispatcherKeyBitLength ?? 0x100; }
+        private protected string _gamePersistentPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data", "Persistent"); }
+        private protected string _gameStreamingAssetsPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 

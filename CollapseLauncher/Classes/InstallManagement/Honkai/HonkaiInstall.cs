@@ -327,50 +327,6 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Private Methods - Utilities
-        private void MoveFolderContent(string SourcePath, string DestPath)
-        {
-            // Get the source folder path length + 1
-            int DirLength = SourcePath.Length + 1;
-
-            // Initializw paths and error status
-            string destFilePath;
-            string destFolderPath;
-            bool ErrorOccured = false;
-
-            // Enumerate files inside of source path
-            foreach (string filePath in Directory.EnumerateFiles(SourcePath, "*", SearchOption.AllDirectories))
-            {
-                // Get the relative path of the file from source path
-                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
-                // Get the absolute path for destination
-                destFilePath = Path.Combine(DestPath, relativePath.ToString());
-                // Get folder path for destination
-                destFolderPath = Path.GetDirectoryName(destFilePath);
-
-                // Create the destination folder if not exist
-                if (!Directory.Exists(destFolderPath))
-                    Directory.CreateDirectory(destFolderPath);
-
-                try
-                {
-                    // Try moving the file
-                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
-                    FileInfo filePathInfo = new FileInfo(filePath);
-                    filePathInfo.MoveTo(destFilePath, true);
-                }
-                catch (Exception ex)
-                {
-                    // If failed, flag ErrorOccured as true and skip to the next file 
-                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
-                    ErrorOccured = true;
-                }
-            }
-
-            // If no error occurred, then delete the source folder
-            if (!ErrorOccured)
-                Directory.Delete(SourcePath, true);
-        }
-
         private string GetFailedGameConversionFolder(string basepath)
         {
             try
