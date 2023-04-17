@@ -66,7 +66,7 @@ namespace CollapseLauncher
             TryUnassignReadOnlyFiles();
 
             // Step 2: Fetch asset index
-            await Fetch(_assetIndex, _token.Token);
+            _assetIndex = await Fetch(_assetIndex, _token.Token);
 
             // Step 3: Calculate all the size and count in total
             CountAssetIndex(_assetIndex);

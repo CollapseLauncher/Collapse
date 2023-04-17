@@ -55,6 +55,10 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         private void EnsureMoveOldToNewAudioDirectory()
         {
+            // Return if the old path doesn't exist
+            if (!Directory.Exists(_gameAudioOldPath)) return;
+
+            // If exist, then enumerate the content of it and do move operation
             int offset = _gameAudioOldPath.Length + 1;
             foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
             {
@@ -74,6 +78,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             try
             {
+                // Then if all the files are already moved, delete the old path
                 if (Directory.Exists(_gameAudioOldPath))
                 {
                     Directory.CreateDirectory(_gameAudioOldPath);
