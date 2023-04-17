@@ -36,7 +36,7 @@ namespace CollapseLauncher
                 {
                     try
                     {
-                        using (Updater updater = new Updater(IsPreview ? "preview" : "stable"))
+                        using (Updater updater = new Updater(UpdateChannelName))
                         {
                             UpdateInfo info = await updater.StartCheck();
                             GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
@@ -65,7 +65,7 @@ namespace CollapseLauncher
 
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
         {
-            string relativePath = ConverterTool.CombineURLFromString(IsPreview ? "preview" : "stable", "fileindex.json");
+            string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
 
             using (Http client = new Http(true))
             using (MemoryStream ms = new MemoryStream())
