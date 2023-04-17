@@ -59,10 +59,15 @@ namespace CollapseLauncher.Interfaces
         {
             // Update fetch status
             _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressTotalIndetermined = false;
             _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(e.Speed));
 
             // Update fetch progress
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressTotalDownload = e.SizeDownloaded;
+            _progress.ProgressTotalSizeToDownload = e.SizeToBeDownloaded;
+            _progress.ProgressTotalSpeed = e.Speed;
+            _progress.ProgressTotalTimeLeft = e.TimeLeft;
 
             // Push status and progress update
             UpdateStatus();
