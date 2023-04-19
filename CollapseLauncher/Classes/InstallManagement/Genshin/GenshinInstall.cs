@@ -27,7 +27,22 @@ namespace CollapseLauncher.InstallManager.Genshin
         #region Private Properties
         private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data"); }
         private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
-        private string _gameAudioLangListPath { get => Directory.EnumerateFiles(_gameDataPersistentPath, "audio_lang_*", SearchOption.TopDirectoryOnly).FirstOrDefault(); }
+        private string _gameAudioLangListPath
+        {
+            get
+            {
+                // Try get the file list
+                string[] audioPath = Directory.GetFiles(_gameDataPersistentPath, "audio_lang_*", SearchOption.TopDirectoryOnly);
+                // If the path is null or has no length, then return null
+                if (audioPath == null || audioPath.Length == 0)
+                {
+                    return null;
+                }
+
+                // If not, then return the first path
+                return audioPath[0];
+            }
+        }
         private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
         private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
