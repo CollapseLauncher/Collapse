@@ -67,7 +67,7 @@ namespace CollapseLauncher
                         await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
                         ms.Position = 0;
                         updateInfo = (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default);
-                        NewVersionLabel.Text = updateInfo.ver;
+                        NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
                     }
 
                     FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
