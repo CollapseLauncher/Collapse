@@ -14,52 +14,56 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class UpdateManagerHttpAdapter : IFileDownloader, IDisposable
+    public class UpdateManagerHttpAdapter : IFileDownloader
     {
-        private Http _httpClient { get; init; }
-        public UpdateManagerHttpAdapter()
-        {
-            _httpClient = new Http(true);
-        }
-
-        ~UpdateManagerHttpAdapter() => Dispose();
-
-        public void Dispose() => _httpClient?.Dispose();
-
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
         {
+            Http _httpClient = new Http(true);
+            EventHandler<DownloadEvent> progressEvent = (_, b) => progress((int)b.ProgressPercentage);
             try
             {
-                FallbackCDNUtil.DownloadProgress += (_, b) =>
-                {
-                    progress((int)b.ProgressPercentage);
-                };
+                FallbackCDNUtil.DownloadProgress += progressEvent;
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url), default);
             }
+            catch { throw; }
             finally
             {
-                FallbackCDNUtil.DownloadProgress -= (_, b) =>
-                {
-                    progress((int)b.ProgressPercentage);
-                };
+                FallbackCDNUtil.DownloadProgress -= progressEvent;
+                _httpClient?.Dispose();
             }
         }
 
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
         {
-            using (MemoryStream fs = new MemoryStream())
+            Http _httpClient = new Http(true);
+            MemoryStream fs = new MemoryStream();
+            try
             {
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, GetRelativePathOnly(url), default);
                 return fs.ToArray();
+            }
+            catch { throw; }
+            finally
+            {
+                fs?.Dispose();
+                _httpClient?.Dispose();
             }
         }
 
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
         {
-            using (MemoryStream fs = new MemoryStream())
+            Http _httpClient = new Http(true);
+            MemoryStream fs = new MemoryStream();
+            try
             {
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, GetRelativePathOnly(url), default);
                 return Encoding.UTF8.GetString(fs.ToArray());
+            }
+            catch { throw; }
+            finally
+            {
+                fs?.Dispose();
+                _httpClient?.Dispose();
             }
         }
 

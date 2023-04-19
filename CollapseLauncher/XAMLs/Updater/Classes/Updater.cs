@@ -42,7 +42,6 @@ namespace CollapseLauncher
         public void Dispose()
         {
             UpdateManager?.Dispose();
-            (UpdateDownloader as IDisposable)?.Dispose();
         }
 
         public async Task<UpdateInfo> StartCheck() => await UpdateManager.CheckForUpdate();
