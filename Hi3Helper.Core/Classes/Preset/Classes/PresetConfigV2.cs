@@ -105,20 +105,6 @@ namespace Hi3Helper.Preset
         private const string PrefixRegGameConfig = "Software\\miHoYo\\{0}";
         private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
 
-        public string? GetSteamInstallationPath()
-        {
-            try
-            {
-                List<SteamTool.AppInfo> AppList = SteamTool.GetSteamApps(SteamTool.GetSteamLibs());
-                string? ret = AppList.Where(x => x.Id == SteamGameID).Select(y => y.GameRoot).FirstOrDefault();
-                return ret == null ? null : ConverterTool.NormalizePath(ret);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public string? GetGameLanguage()
         {
             ReadOnlySpan<char> value;
@@ -308,34 +294,6 @@ namespace Hi3Helper.Preset
             public bool mtrUseOldWinVersion { get; set; } = false;
         }
 
-        public bool CheckExistingGameBetterLauncher()
-        {
-            if (BetterHi3LauncherVerInfoReg == null) return false;
-            RegistryKey? Key = Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher");
-            byte[]? Value = (byte[]?)Key?.GetValue(BetterHi3LauncherVerInfoReg);
-
-            if (Value is null) return false;
-
-            string? Result = Encoding.UTF8.GetString(Value);
-            string? GamwePath;
-
-            try
-            {
-                BetterHi3LauncherConfig = (BHI3LInfo?)JsonSerializer.Deserialize(Result, typeof(BHI3LInfo), BHI3LInfoContext.Default);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Registry Value {BetterHi3LauncherVerInfoReg}:\r\n{Result}\r\n\r\nException:\r\n{ex}", LogType.Error, true);
-                return false;
-            };
-
-            if (Key is null || Value.Length is 0 || BetterHi3LauncherConfig is null) return false;
-
-            GamwePath = ConverterTool.NormalizePath(BetterHi3LauncherConfig.game_info.install_path);
-
-            return File.Exists(Path.Combine(GamwePath, GameExecutableName)) && File.Exists(Path.Combine(GamwePath, "config.ini")) && BetterHi3LauncherConfig.game_info.installed;
-        }
-
         public bool CheckExistingGame()
         {
             try
@@ -372,7 +330,7 @@ namespace Hi3Helper.Preset
 
             ActualGameDataLocation = ConverterTool.NormalizePath(path1);
 
-            return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) || File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
+            return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
 
         private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
@@ -391,10 +349,7 @@ namespace Hi3Helper.Preset
         public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, InternalGameNameInConfig); }
 #nullable enable
         public string? BetterHi3LauncherVerInfoReg { get; set; }
-        public BHI3LInfo? BetterHi3LauncherConfig { get; private set; }
-        public string? ActualGameLocation { get; set; }
         public string? ActualGameDataLocation { get; set; }
-        public bool MigrateFromBetterHi3Launcher { get; set; } = false;
         public string? FallbackLanguage { get; set; }
         public string? SteamInstallRegistryLocation { get; set; }
         public int? SteamGameID { get; set; }
@@ -402,7 +357,6 @@ namespace Hi3Helper.Preset
 #nullable disable
         public string GameExecutableName { get; set; }
 #nullable enable
-        public string? ZipFileURL { get; set; }
         public string? GameDispatchURL { get; set; }
         public string[]? GameSupportedLanguages { get; set; }
         public string[]? GameDispatchArrayURL { get; set; }
@@ -413,16 +367,12 @@ namespace Hi3Helper.Preset
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AudioLanguageType GameDefaultCVLanguage { get; set; }
         public string? ProtoDispatchKey { get; set; }
-        public string? CachesListAPIURL { get; set; }
-        public byte? CachesListGameVerID { get; set; }
-        public string? CachesEndpointURL { get; set; }
         public bool? IsGenshin { get; set; }
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
         public List<string>? ConvertibleTo { get; set; }
         public GameType GameType { get; set; }
         public GameVendorType VendorType { get; set; } = GameVendorType.miHoYo;
-        public string? ConvertibleCookbookURL { get; set; }
         public bool? UseRightSideProgress { get; set; }
         public bool LauncherSpriteURLMultiLang { get; set; }
         public string? LauncherSpriteURLMultiLangFallback { get; set; }
