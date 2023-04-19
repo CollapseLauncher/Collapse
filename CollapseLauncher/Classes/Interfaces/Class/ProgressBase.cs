@@ -424,7 +424,10 @@ namespace CollapseLauncher.Interfaces
 
                 // Delete old block
                 File.Delete(inputFile);
+                // Rename to the original filename
+                File.Move(outputFile, inputFile, true);
             }
+            catch { throw; }
             finally
             {
                 // Delete the patch file and unsubscribe the patching progress
