@@ -6,7 +6,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -142,7 +141,7 @@ namespace CollapseLauncher
                 FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath, Environment.ProcessorCount > 8 ? 8 : Environment.ProcessorCount, $"{this.ChannelName.ToLower()}/ApplyUpdate.exe", default);
                 FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
-                
+
                 File.WriteAllText(Path.Combine(workingDir, "..\\", "release"), this.ChannelName.ToLower());
             }
         }
