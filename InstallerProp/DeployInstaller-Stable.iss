@@ -14,7 +14,7 @@ VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
 VersionInfoCopyright=2023 - neon-nyan
 VersionInfoProductName=Collapse
 VersionInfoProductVersion={#AppVersion}
-VersionInfoProductTextVersion={#AppVersion}-preview
+VersionInfoProductTextVersion={#AppVersion}
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
@@ -35,6 +35,8 @@ LZMADictionarySize=1048576
 LZMAMatchFinder=BT
 LZMANumFastBytes=128
 PrivilegesRequired=admin
+OutputDir=..\build\build-stable
+OutputBaseFilename=CL-{#AppVersion}_Installer
 
 [Icons]
 Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
@@ -50,4 +52,4 @@ Source: "..\..\CollapseLauncher-ReleaseRepo\CollapseLauncher.exe"; DestDir: "{ap
 Name: StartAfterInstall; Description: Run application after install
 
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "Collapse Launcher Installer"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser
+Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser
