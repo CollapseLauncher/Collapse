@@ -14,17 +14,14 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 
@@ -74,12 +71,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Lib\discord_game_sdk.dll" />
-		<!-- Remove this comment and line above to enable Discord RPC
 		<Content Include="Lib\discord_game_sdk.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		-->
 	</ItemGroup>
 
 	<ItemGroup>
