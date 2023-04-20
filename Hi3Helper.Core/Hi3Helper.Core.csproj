@@ -98,6 +98,9 @@
 		<Content Include="Lang\vi-vn.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Lang\ko-kr.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Lib\7z.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
