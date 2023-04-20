@@ -661,7 +661,7 @@ namespace CollapseLauncher
 
         private async Task InitializeStartup()
         {
-            bool IsLoadSuccess;
+            RunBackgroundCheck();
 
             Type Page;
 
@@ -697,7 +697,6 @@ namespace CollapseLauncher
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 CheckRunningGameInstance();
-                RunBackgroundCheck();
             }
 
             // Unlock ChangeBtn for first start
