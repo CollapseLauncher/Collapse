@@ -9,3 +9,4 @@ CollapseLauncher/Deps/*
 CollapseLauncher/Invoker/*
 *.psd
 InstallerProp/Output/*
+InstallerProp/temp/**
