@@ -144,26 +144,27 @@ namespace Hi3Helper.Shared.Region
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
-            { "CurrentBackground", new IniValue("ms-appx:///Assets/BG/default.png") },
-            { "DownloadThread", new IniValue(4) },
-            { "ExtractionThread", new IniValue(0) },
-            { "GameFolder", new IniValue(Path.Combine(AppDataFolder, "GameFolder")) },
+            { "CurrentBackground", "ms-appx:///Assets/BG/default.png" },
+            { "DownloadThread", 4 },
+            { "ExtractionThread", 0 },
+            { "GameFolder", Path.Combine(AppDataFolder, "GameFolder") },
 #if DEBUG
-            { "EnableConsole", new IniValue(true) },
+            { "EnableConsole", true },
 #else
-            { "EnableConsole", new IniValue(false) },
+            { "EnableConsole", false },
 #endif
-            { "EnableMultipleInstance", new IniValue(false) },
-            { "DontAskUpdate", new IniValue(false) },
-            { "ThemeMode", new IniValue(AppThemeMode.Dark) },
-            { "AppLanguage", new IniValue("en-us") },
-            { "UseCustomBG", new IniValue(false) },
-            { "ShowEventsPanel", new IniValue(true) },
-            { "ShowSocialMediaPanel", new IniValue(true) },
-            { "CustomBGPath", new IniValue() },
-            { "GameCategory", new IniValue("Honkai Impact 3rd") },
-            { "WindowSizeProfile", new IniValue("Normal") },
-            { "CurrentCDN", new IniValue(0) },
+            { "EnableMultipleInstance", false },
+            { "DontAskUpdate", false },
+            { "ThemeMode", new IniValue(AppThemeMode.Dark },
+            { "AppLanguage", "en-us" },
+            { "UseCustomBG", false },
+            { "ShowEventsPanel", true },
+            { "ShowSocialMediaPanel", true },
+            { "CustomBGPath", "" },
+            { "GameCategory", "Honkai Impact 3rd" },
+            { "WindowSizeProfile", "Normal" },
+            { "CurrentCDN", 0 },
+            { "EnableDiscordRPC", false }
         };
 
         public static void LoadGamePreset()
