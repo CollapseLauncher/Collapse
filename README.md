@@ -45,11 +45,11 @@ This launcher also supports other game client, including:
 > Some features such as Game Data Repair and Preloading are available for Genshin Impact, but others such as Game Settings modification and Caches Download are not available and presently unsupported.
 
 # Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.11/CL-1.69.11_Installer.exe)
-> **Note**: The version for this build is `1.69.11` (Released on: April 19th, 2023)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.12/CL-1.69.12_Installer.exe)
+> **Note**: The version for this build is `1.69.12` (Released on: April 20th, 2023)
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.11-pre/CL-1.69.11-preview_Installer.exe)
-> **Note**: The version for this build is `1.69.11` (Released on: April 19th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.12-pre/CL-1.69.12-preview_Installer.exe)
+> **Note**: The version for this build is `1.69.12` (Released on: April 20th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
