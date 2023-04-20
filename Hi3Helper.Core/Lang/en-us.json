@@ -293,6 +293,8 @@
     "Debug_Console": "Show Console",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
+    "DiscordRPC_Toggle": "Show Discord Presence",
+
     "Language": "App Language",
     "LanguageEntry": "{0} by {1}",
     "AppLang_ApplyNeedRestart": "*You need to restart the app for language changes to take effect.",

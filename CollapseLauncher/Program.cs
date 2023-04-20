@@ -224,7 +224,8 @@ namespace CollapseLauncher
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
             CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
 #if !DISABLEDISCORD
-            AppDiscordPresence = new DiscordPresenceManager();
+            bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
+            AppDiscordPresence = new DiscordPresenceManager(isInitialStart);
 #endif
         }
 

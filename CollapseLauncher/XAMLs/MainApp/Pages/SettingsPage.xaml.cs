@@ -307,6 +307,20 @@ namespace CollapseLauncher.Pages
             set => LauncherConfig.IsMultipleInstanceEnabled = value;
         }
 
+        private bool IsDiscordRPCEnabled
+        {
+            get => GetAppConfigValue("EnableDiscordRPC").ToBool();
+            set
+            {
+                if (value)
+                    AppDiscordPresence.EnablePresence();
+                else
+                    AppDiscordPresence.DisablePresence();
+
+                SetAndSaveConfigValue("EnableDiscordRPC", value);
+            }
+        }
+
         private int CurrentThemeSelection
         {
             get

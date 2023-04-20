@@ -155,7 +155,7 @@ namespace Hi3Helper.Shared.Region
 #endif
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
-            { "ThemeMode", new IniValue(AppThemeMode.Dark },
+            { "ThemeMode", new IniValue(AppThemeMode.Dark) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
             { "ShowEventsPanel", true },
