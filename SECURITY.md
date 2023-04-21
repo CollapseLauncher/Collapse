@@ -1,8 +1,9 @@
 # Security Policy
 
 ## Supported Versions
-Due to frequent breaking changes from the HoYoverse/Cognosphere regarding game repair indexes, cache files, update zip files, etc. we can only support any latest Collapse version, be it either from Stable or Preview branch.
-Additionally, due to major changes that happened on the Collapse, we cannot support any version below 1.69.0 and should be updated ASAP to latest version, either with in-build updater, or by reinstalling Collapse Launcher manually (if the built-in launcher fails to update from such old version of Collapse).
+Due to frequent breaking changes from the HoYoverse/Cognosphere regarding update functionality (game repair indexes, cache files, compressed update packages, etc.), we can only guarantee support the latest Stable & Preview versions of Collapse.
+Additionally, due to major rework in Collapse update infrastructure, any versions of Collapse prior to 1.69.0 **is not supported** and should be updated ASAP to the latest version. This could be done by either using the new built-in updater or by doing a clean install of Collapse.
+
 | Version   | Supported          |
 | -------   | ------------------ |
 | >=1.69.0  | :white_check_mark: |
@@ -10,5 +11,11 @@ Additionally, due to major changes that happened on the Collapse, we cannot supp
 
 
 ## Reporting a Vulnerability
-Report any vulnerability regarding Collapse Launcher here on Issues with the tag `[VULNERABILITY]` in the title. If its servere enough to not be safe to report it using GitHub issues, please contact @neon-nyan directly via Discord at `DreadCode#9025`.
-We will process the report and depends on IRL situation then report back to you ASAP about the report.
+Please report any vulnerability regarding Collapse Launcher here on Issues with the tag **[VULNERABILITY]** in the issue title. If you believe that the issue is severe enough to warrant anonymity, please directly contact any of the maintainer(s) over at Discord.
+### List of Active Maintainers
+    and their respective Discord tags.
+ - @neon-nyan(`DreadCode#9025`) 
+ - @Cryotechnic(`Cry0#0002`)
+ - @bagusnl(`bagusnl#2938`)
+
+Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time in such that its bound to any IRL situations we face.

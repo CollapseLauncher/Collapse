@@ -1,26 +1,39 @@
 ### Before you Start
-- Unless stated in README.md. Make sure you are pulling the source code from main branch with recursive variable to pull all submodules Collapse need to run.
+- Unless otherwise stated in this project README. Make sure to clone the source code from the `main` branch using `--recurse` parameter to pull all the submodules Collapse need to run.
 
-    ```git pull https://github.com/neon-nyan/Collapse --recursive```
+    ```git pull https://github.com/neon-nyan/Collapse --recurse```
     
 - Make sure you use the supported IDE/SDKs listed below.
-- Make sure to read the Feature(s) restriction below.
-- When its time to do a Pull Request, do a pull request to the same branch when you first pulled.
-- We don't require a fully descriptive PR description, but please be clear on what added/removed and what it does.
+- Make sure to read the "Restriction for New Feature(s)" section below.
+- When submitting a Pull Request, make sure that it is done to the same branch from which you first pulled, unless otherwise stated in the project's README, or if specifically instructed by maintainers of this project.
+- We don't require a fully descriptive PR, but please be clear on what added/removed and what the code does.
 
-### Software Needed
-Below is the software needed to develop and contributing to this project. Also, Collapse uses many submodule inside its repository, so don't forget to use recursive variable when pulling this repository to your local computer.
+### Tools Needed
+Below is the tools needed to contribute to this project.
 1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
 2. .NET: [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 3. WinUI 3: [**WinUI 3 (WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
 4. **Windows 10 SDK (10.0.19043.0 or later)** via Visual Studio Installer
 
 ### Restriction for New Feature(s)
-While this software is fully open source and not affiliated with HoYoverse/Cognosphere in any way, we still need to some extent follow their Terms of Service and Code of Conduct when developing Collapse. With that in mind, there are some features we can not implement and we will reject as it comes up in a commit/PR, these features for example:
-- Anything that touches their SDK/Account auth/Payment endpoints, such as [account switcher](https://github.com/neon-nyan/Collapse/issues/88).
-- Anything that read/write directly to game process or any of its subprocess, such as [FPS Unlocker for Genshin Impact](https://github.com/neon-nyan/Collapse/issues/104).
-- Anything that modify the game files/resources directly to provide unfair advantage in-game.
+While this software is fully open source and not affiliated with HoYoverse, Cognosphere, or any of its related entities in any way, we are nonetheless bound to their Terms of Service and Code of Conduct when developing Collapse. This means that there are some features that we will **not** implement. We will close any issue or PR that is made to add such functionality to Collapse. Such features include, but not limited to:
+- Anything that, in any way, interacts with miHoYo SDK, including its Authentication and Payment Processing endpoints.
+- Anything that directly injects into the game process (and/or any of its subprocesses) including DLL injection, memory reading, etc.
+- Anything that directly modifies game files and resources to provide an unfair advantage in-game for those using our launcher.
+# Examples for features that we endorse to be implemented:
+- Community resources
+- Officially-endorsed HoYoverse Tools
+  etc.
+  
+# Examples for features that we will probably never implement:
+- Account switcher
+- FPS Unlocker
+- Any type of cheats or exploits.
+  etc.
+
 
 Further reads:
 - [Genshin Impact Terms of Service](https://genshin.hoyoverse.com/en/company/terms)
 - [Honkai Impact 3rd Terms of Service](https://honkaiimpact3.hoyoverse.com/global/en-us/terms)
+- [Honkai: Star Rail Terms of Service](https://hsr.hoyoverse.com/en-us/company/terms)
+- [HoYoLAB Forum Terms of Service](https://www.hoyolab.com/agreement)
