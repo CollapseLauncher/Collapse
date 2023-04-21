@@ -38,7 +38,7 @@ The launcher currently supports the following regions for Honkai Impact 3rd:
 This launcher also supports other game client, including:
 * Genshin Impact (Global Release)
 * 原神 / Yuan Shen (Mainland China's Genshin Impact)
-* ~~Honkai: Star Rail~~ (Waiting for Official Release)
+* ~~Honkai: Star Rail~~ (Starting from April 26th, 2023)
 * ~~Zenless Zone Zero~~ (Waiting for Official Release)
 
 > **Note**:
