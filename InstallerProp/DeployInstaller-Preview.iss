@@ -39,9 +39,9 @@ OutputDir=..\build\build-preview
 OutputBaseFilename=CL-{#AppVersion}-preview_Installer
 
 [Icons]
-Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\app-{#AppVersion}\CollapseLauncher.Hi3CacheUpdater.cmd"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}\app-{#AppVersion}"; IconFilename: "{app}\app-{#AppVersion}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse (Hi3 Cache Updater)"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0; Parameters: "hi3cacheupdate"
+Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
 Source: "..\..\CollapseLauncher-ReleaseRepo\preview-build\*"; DestDir: "{app}\app-{#AppVersion}"; Flags: ignoreversion createallsubdirs recursesubdirs
