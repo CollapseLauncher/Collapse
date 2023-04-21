@@ -13,7 +13,7 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 ## Reporting a Vulnerability
 Please report any vulnerability regarding Collapse Launcher here on Issues with the tag **[VULNERABILITY]** in the issue title. If you believe that the issue is severe enough to warrant anonymity, please directly contact any of the maintainer(s) over at Discord.
 ### List of Active Maintainers
-    and their respective Discord tags.
+
  - @neon-nyan(`DreadCode#9025`) 
  - @Cryotechnic(`Cry0#0002`)
  - @bagusnl(`bagusnl#2938`)
