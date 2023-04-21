@@ -287,7 +287,7 @@ namespace CollapseLauncher
             {
                 string execName = Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(250);
+                await Task.Delay(500);
             }
         }
 
