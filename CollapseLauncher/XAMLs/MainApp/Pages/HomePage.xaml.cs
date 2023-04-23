@@ -427,7 +427,7 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.Content = BtnRunningGame;
                         GameStartupSetting.IsEnabled = false;
 
-                        await Task.Delay(500, Token);
+                        await Task.Delay(100, Token);
 #if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play, 0);
 #endif
@@ -440,7 +440,7 @@ namespace CollapseLauncher.Pages
                     StartGameBtn.Content = BtnStartGame;
                     GameStartupSetting.IsEnabled = true;
 
-                    await Task.Delay(500, Token);
+                    await Task.Delay(100, Token);
 #if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
 #endif
@@ -658,8 +658,6 @@ namespace CollapseLauncher.Pages
             IGameSettingsUniversal _Settings = PageStatics._GameSettings.AsIGameSettingsUniversal();
             if (PageStatics._GameVersion.GameType == GameType.Honkai)
             {
-                // CheckExistingGameSettings();
-
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
                 {
                     parameter.Append("-window-mode exclusive ");

@@ -266,7 +266,6 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                // await RunApplyBackgroundTask();
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}", LogType.Error, true);
             }
 
