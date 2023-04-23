@@ -130,7 +130,7 @@ namespace CollapseLauncher
         {
             GameChannel.Beta => "BETA",
             GameChannel.DevRelease => "DEV",
-            _ => throw new InvalidProgramException("Only Beta and DevRelease is accepted!")
+            _ => "EXPER"
         };
 
         public static void SaveLocalNotificationData()
