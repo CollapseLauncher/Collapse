@@ -654,6 +654,8 @@ namespace CollapseLauncher.InstallManager.Base
                       || packageOutInfo.Length != package.SizeDownloaded)
                     {
                         await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
+                        _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                        UpdateStatus();
                         await _httpClient.Merge();
                     }
 
