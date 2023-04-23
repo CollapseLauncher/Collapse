@@ -771,68 +771,48 @@ namespace CollapseLauncher.Pages
 
         public async void ReadOutputLog()
         {
-            await Task.Run(() =>
+            int consoleWidth = 24;
+            try { consoleWidth = Console.BufferWidth; } catch { }
+
+            string line;
+            int barwidth = ((consoleWidth - 22) / 2) - 1;
+            LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
+            try
             {
-                int consoleWidth = 24;
-                try { consoleWidth = Console.BufferWidth; } catch { }
+                m_presenter.Minimize();
+                string logPath = Path.Combine(PageStatics._GameVersion.GameDirAppDataPath, PageStatics._GameVersion.GameOutputLogName);
 
-                string line;
-                int barwidth = ((consoleWidth - 22) / 2) - 1;
-                LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
-                try
+                if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+
+                using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                using (StreamReader reader = new StreamReader(fs))
                 {
-                    m_presenter.Minimize();
-                    string logPath = Path.Combine(PageStatics._GameVersion.GameDirAppDataPath, PageStatics._GameVersion.GameOutputLogName);
-
-                    if (!Directory.Exists(Path.GetDirectoryName(logPath)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(logPath));
-
-                    if (!File.Exists(logPath))
-                        File.Create(logPath).Close();
-
-                    using (FileStream fs = new FileStream(logPath,
-                            FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    while (true)
                     {
-                        using (StreamReader reader = new StreamReader(fs))
+                        while (!reader.EndOfStream)
                         {
-                            long lastMaxOffset = reader.BaseStream.Length;
-
-                            while (true)
+                            line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                            if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
-                                WatchOutputLog.Token.ThrowIfCancellationRequested();
-                                Thread.Sleep(100);
-
-                                reader.BaseStream.Seek(lastMaxOffset, SeekOrigin.Begin);
-
-                                while ((line = reader.ReadLine()) != null)
-                                {
-                                    if (RequireWindowExclusivePayload)
-                                    {
-                                        if (line == "MoleMole.MonoGameEntry:Awake()"
-                                            && (PageStatics._GameVersion.GamePreset.IsGenshin ?? false))
-                                        {
-                                            StartExclusiveWindowPayload();
-                                            RequireWindowExclusivePayload = false;
-                                        }
-                                    }
-                                    LogWriteLine(line, Hi3Helper.LogType.Game, true);
-                                }
-
-                                lastMaxOffset = reader.BaseStream.Position;
+                                StartExclusiveWindowPayload();
+                                RequireWindowExclusivePayload = false;
                             }
+                            LogWriteLine(line, LogType.Game, true);
                         }
+                        await Task.Delay(100, WatchOutputLog.Token);
                     }
                 }
-                catch (OperationCanceledException)
-                {
-                    LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", Hi3Helper.LogType.Warning, true);
-                    m_presenter.Restore();
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"{ex}", LogType.Error);
-                }
-            });
+            }
+            catch (OperationCanceledException)
+            {
+                LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
+                m_presenter.Restore();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"{ex}", LogType.Error);
+            }
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
