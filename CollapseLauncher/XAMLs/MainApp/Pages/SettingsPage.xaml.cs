@@ -49,6 +49,8 @@ namespace CollapseLauncher.Pages
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
+#else
+            ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
         }
 
@@ -307,6 +309,7 @@ namespace CollapseLauncher.Pages
             set => LauncherConfig.IsMultipleInstanceEnabled = value;
         }
 
+#if !DISABLEDISCORD
         private bool IsDiscordRPCEnabled
         {
             get => GetAppConfigValue("EnableDiscordRPC").ToBool();
@@ -320,6 +323,13 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
             }
         }
+#else
+        private bool IsDiscordRPCEnabled
+        {
+            get => false;
+            set => _ = value;
+        }
+#endif
 
         private int CurrentThemeSelection
         {

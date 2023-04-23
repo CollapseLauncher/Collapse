@@ -21,7 +21,7 @@
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}"/>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
+                        <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                             <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" ItemsSource="{x:Bind LanguageList}" SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"/>

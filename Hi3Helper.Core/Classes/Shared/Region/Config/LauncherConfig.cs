@@ -164,7 +164,9 @@ namespace Hi3Helper.Shared.Region
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
+#if !DISABLEDISCORD
             { "EnableDiscordRPC", false }
+#endif
         };
 
         public static void LoadGamePreset()
