@@ -228,6 +228,8 @@ namespace CollapseLauncher
                         PageStatics._GameCache = null;
                         PageStatics._GameRepair = null;
                         PageStatics._GameInstall = new StarRailInstall(this);
+
+                        preset.GameType = GameType.StarRail;
                     }
                     else
                     {
