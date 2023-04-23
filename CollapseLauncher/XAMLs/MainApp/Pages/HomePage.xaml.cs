@@ -45,6 +45,7 @@ namespace CollapseLauncher.Pages
         public RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
         public HomeMenuPanel MenuPanels => regionNewsProp;
         CancellationTokenSource PageToken = new CancellationTokenSource();
+        CancellationTokenSource CarouselToken = new CancellationTokenSource();
         public HomePage()
         {
             this.InitializeComponent();
@@ -103,7 +104,7 @@ namespace CollapseLauncher.Pages
                 if (await PageStatics._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
-                StartCarouselAutoScroll(PageToken.Token);
+                StartCarouselAutoScroll(CarouselToken.Token);
             }
             catch (ArgumentNullException ex)
             {
@@ -152,12 +153,12 @@ namespace CollapseLauncher.Pages
             catch (Exception) { }
         }
 
-        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e) => PageToken.Cancel();
+        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e) => CarouselToken.Cancel();
 
         private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
         {
-            PageToken = new CancellationTokenSource();
-            StartCarouselAutoScroll(PageToken.Token);
+            CarouselToken = new CancellationTokenSource();
+            StartCarouselAutoScroll(CarouselToken.Token);
         }
 
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
@@ -819,6 +820,7 @@ namespace CollapseLauncher.Pages
         {
             IsPageUnload = true;
             PageToken.Cancel();
+            CarouselToken.Cancel();
             PageStatics._GameInstall.CancelRoutine();
             GC.Collect();
         }
