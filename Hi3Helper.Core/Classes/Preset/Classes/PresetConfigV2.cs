@@ -38,7 +38,8 @@ namespace Hi3Helper.Preset
         Honkai = 0,
         Genshin = 1,
         StarRail = 2,
-        Zenless = 3
+        Zenless = 3,
+        Unknown = int.MinValue
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -371,7 +372,8 @@ namespace Hi3Helper.Preset
         public bool? IsConvertible { get; set; }
         public bool IsHideSocMedDesc { get; set; } = true;
         public List<string>? ConvertibleTo { get; set; }
-        public GameType GameType { get; set; }
+        public GameType GameType { get; set; } = GameType.Unknown;
+        public GameType FallbackGameType { get; set; } = GameType.Unknown;
         public GameVendorType VendorType { get; set; } = GameVendorType.miHoYo;
         public bool? UseRightSideProgress { get; set; }
         public bool LauncherSpriteURLMultiLang { get; set; }
