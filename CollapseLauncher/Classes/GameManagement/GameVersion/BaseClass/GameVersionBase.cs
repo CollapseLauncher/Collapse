@@ -74,7 +74,12 @@ namespace CollapseLauncher.GameVersioning
         }
         public string GameOutputLogName
         {
-            get => VendorTypeProp.VendorType == GameVendorType.miHoYo ? "output_log.txt" : "Player.log";
+            get => GameType switch
+            {
+                GameType.Genshin => "output_log.txt",
+                GameType.Honkai => "output_log.txt",
+                _ => "Player.log"
+            };
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
