@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region.Honkai;
 using Hi3Helper.UABT;
@@ -215,8 +216,30 @@ namespace CollapseLauncher
                 await _httpClient.Download(assetIndexURL, stream, null, null, token);
 
                 // Build the asset index and return the count and size of each type
-                return BuildAssetIndex(type, baseURL, xorStream, assetIndex);
+                (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
+
+                /*
+                // Fetch additional patch for Data type
+                if (type == CacheAssetType.Data)
+                {
+                    // Get the patch config file
+                    assetIndexURL = CombineURLFromString(baseURL, "patch", "patchconfig.xmf");
+
+                    // Reinitialize the memory stream;
+                    stream.Dispose();
+                    stream = new MemoryStream();
+
+                    // Start downloading the patch config
+                    await _httpClient.Download(assetIndexURL, stream, null, null, token);
+
+                    // Build patch config for Data type
+                    BuildDataPatchConfig(stream, assetIndex);
+                }
+                */
+
+                return returnValue;
             }
+            catch { throw; }
             finally
             {
                 // Dispose the streams
@@ -224,6 +247,25 @@ namespace CollapseLauncher
                 xorStream.Dispose();
             }
         }
+
+        /*
+        private void BuildDataPatchConfig(MemoryStream stream, List<CacheAsset> assetIndex)
+        {
+            // Reset position
+            stream.Position = 0;
+
+            // Initialize manifest file
+            CachePatchManifest manifest = new CachePatchManifest(stream, true);
+
+            for (int i = 0; i < assetIndex.Count; i++)
+            {
+                if (assetIndex[i].DataType == CacheAssetType.Data)
+                {
+                    CachePatchInfo info = manifest.PatchAsset.Where(x => IsArrayMatch(x.NewHashSHA1, assetIndex[i].CRCArray)).FirstOrDefault();
+                }
+            }
+        }
+        */
 
         private (int, long) BuildAssetIndex(CacheAssetType type, string baseURL, XORStream stream, List<CacheAsset> assetIndex)
         {

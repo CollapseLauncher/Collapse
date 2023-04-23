@@ -1,4 +1,5 @@
 ﻿using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using System.IO;
 using System.Text.Json.Serialization;
@@ -31,7 +32,9 @@ namespace CollapseLauncher.Interfaces
         public long CS { get; set; }
         public CacheAssetType DataType { get; set; }
         public CacheAssetStatus Status { get; set; }
+        public CachePatchInfo? PatchInfo { get; set; }
         public bool IsUseLocalPath { get; set; } = false;
+        public bool IsHasPatch { get => PatchInfo.HasValue; }
 
         public string PrintSummary() => $"File [T: {DataType}]: {N}\t{ConverterTool.SummarizeSizeSimple(CS)} ({CS} bytes)";
         public long GetAssetSize() => Status == CacheAssetStatus.Unused ? 0 : CS;
