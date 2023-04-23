@@ -20,6 +20,7 @@ namespace Hi3Helper.Preset
         public string localName { get; set; }
         public string remoteURL { get; set; }
         public string remoteName { get; set; }
+        public string remoteNamePersistent { get; set; }
         public string md5 { get; set; }
         public long fileSize { get; set; }
         public bool isPatch { get; set; } = false;

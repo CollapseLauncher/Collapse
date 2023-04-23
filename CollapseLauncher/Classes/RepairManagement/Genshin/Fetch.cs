@@ -1,4 +1,6 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
@@ -22,7 +24,7 @@ namespace CollapseLauncher
 {
     internal partial class GenshinRepair
     {
-        private async Task Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
+        private async ValueTask<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
             _status.ActivityStatus = Lang._GameRepairPage.Status2;
@@ -46,6 +48,12 @@ namespace CollapseLauncher
                 // Region: PersistentManifest
                 // Build persistent manifest
                 await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
+
+                // Clear hashtableManifest
+                hashtableManifest.Clear();
+
+                // Eliminate unnecessary asset indexes
+                return EliminateUnnecessaryAssetIndex(assetIndex);
             }
             finally
             {
@@ -53,6 +61,22 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
                 _httpClient?.Dispose();
             }
+        }
+
+        private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(List<PkgVersionProperties> assetIndex)
+        {
+            // Section: Eliminate unused audio files
+            List<string> audioLangList = (PageStatics._GameVersion as GameTypeGenshinVersion)._audioVoiceLanguageList;
+            string audioLangListPath = Path.Combine(_gamePath, $"{_execPrefix}_Data", "Persistent", "audio_lang_14");
+
+            // Get the list of audio lang list
+            string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : new string[] { };
+
+            // Set the ignored audio lang
+            List<string> ignoredAudioLangList = audioLangList.Where(x => !currentAudioLangList.Contains(x)).ToList();
+
+            // Return only for asset index that doesn't have language included in ignoredAudioLangList
+            return assetIndex.Where(x => !ignoredAudioLangList.Any(y => x.remoteName.Contains(y))).ToList();
         }
 
         #region PrimaryManifest
@@ -70,12 +94,6 @@ namespace CollapseLauncher
             // Parse basic package version.
             ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL);
 
-            // Build installed voice pack list into audio_lang_14
-            BuildPersistentAudioLangList();
-
-            // Build local audio entry.
-            EnumerateManifestToAssetIndex("", "Audio_*_pkg_version", assetIndex, hashtableManifest, "", "", _gameRepoURL);
-
             // Build additional blks entry.
             EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL);
             EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL);
@@ -87,39 +105,6 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        private void BuildPersistentAudioLangList()
-        {
-            // Get the path for persistent folder and audio list path
-            string persistentFolder = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent");
-            string audioLangListPath = Path.Combine(persistentFolder, "audio_lang_14");
-
-            // Check and create the persistent folder if it doesn't exist
-            if (!Directory.Exists(persistentFolder))
-            {
-                Directory.CreateDirectory(persistentFolder);
-            }
-
-            // Use and create audio list file
-            using (FileStream fs = new FileStream(audioLangListPath, FileMode.Create, FileAccess.Write))
-            using (StreamWriter sw = new StreamWriter(fs))
-            {
-                // Iterate every available audio package version file into an entry
-                foreach (string entry in Directory.EnumerateFiles(_gamePath, "Audio_*_pkg_version"))
-                {
-                    // Get the name of the package file
-                    string name = Path.GetFileNameWithoutExtension(entry);
-                    // Split the name into pieces
-                    string[] names = name.Split('_');
-                    // Check if the name has 4 pieces
-                    if (names.Length == 4)
-                    {
-                        // Get the language name (index 1) and append the line into audio list file
-                        name = names[1];
-                        sw.WriteLine(name);
-                    }
-                }
-            }
-        }
         private async Task BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             // Get the Dispatcher Query
@@ -128,64 +113,150 @@ namespace CollapseLauncher
             // Initialize persistent folder path and check for the folder existence
             string basePersistentPath = $"{_execPrefix}_Data\\Persistent";
             string persistentFolder = Path.Combine(_gamePath, basePersistentPath);
+
+            string baseStreamingAssetsPath = $"{_execPrefix}_Data\\StreamingAssets";
+            string streamingAssetsFolder = Path.Combine(_gamePath, baseStreamingAssetsPath);
+
             if (!Directory.Exists(persistentFolder))
             {
                 Directory.CreateDirectory(persistentFolder);
             }
 
-            // Parse data_versions (silence)
-            await ParseAndDownloadPersistentManifest(_httpClient, token, assetIndex, hashtableManifest, basePersistentPath, persistentFolder,
-                "data_versions", queryProperty.ClientDesignDataSilURL, "", true);
+            if (!Directory.Exists(streamingAssetsFolder))
+            {
+                Directory.CreateDirectory(streamingAssetsFolder);
+            }
 
-            // Parse data_versions
-            await ParseAndDownloadPersistentManifest(_httpClient, token, assetIndex, hashtableManifest, basePersistentPath, persistentFolder,
-                "data_versions", queryProperty.ClientDesignDataURL);
+            string primaryParentURL;
+            string secondaryParentURL;
 
             // Parse release_res_versions_external
-            await ParseAndDownloadPersistentManifest(_httpClient, token, assetIndex, hashtableManifest, basePersistentPath, persistentFolder,
-                "release_res_versions_external", queryProperty.ClientGameResURL,
-                queryProperty.ClientAudioAssetsURL, false, true);
+            primaryParentURL = CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
+            secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
+            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "release_res_versions_external",
+                "release_res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+
+            // Parse data_versions
+            primaryParentURL = queryProperty.ClientDesignDataURL;
+            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
+                "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+
+            // Parse data_versions (silence)
+            primaryParentURL = queryProperty.ClientDesignDataSilURL;
+            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
+                "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
             // Save persistent manifest numbers
             SavePersistentRevision(queryProperty);
         }
 
-        private async Task ParseAndDownloadPersistentManifest(Http _httpClient, CancellationToken token, List<PkgVersionProperties> assetIndex,
-            Dictionary<string, PkgVersionProperties> hashtable, string basePersistentPath, string persistentPath, string manifestName, string parentURL,
-            string parentAudioURL = "", bool isSilence = false, bool isResVersion = false)
+        private async ValueTask ParseManifestToAssetIndex(Http _httpClient, string primaryParentURL, string secondaryParentURL,
+            string manifestRemoteName, string manifestLocalName,
+            string persistentPath, string streamingAssetsPath,
+            List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
+            CancellationToken token)
         {
-            // Assign manifest path and append the parent URL based on the isResVersion boolean
-            string manifestPath = Path.Combine(persistentPath, (isSilence ? "silence_" : "") + manifestName + "_persist");
-            string appendURLPath = isResVersion ? "/StandaloneWindows64" : "/AssetBundles";
-            parentURL = CombineURLFromString(parentURL, appendURLPath);
-
-            // Check if the parent audio URL isn't empty, then append based on the isResVersion boolean
-            if (!string.IsNullOrEmpty(parentAudioURL))
-            {
-                parentAudioURL = CombineURLFromString(parentAudioURL, appendURLPath);
-            }
-
-            // Make sure the file has been deleted (if exist) before redownloading it
-            if (File.Exists(manifestPath))
-            {
-                TryDeleteReadOnlyFile(manifestPath);
-            }
-
             try
             {
+                // Get the manifest URL and Path
+                string manifestURL = CombineURLFromString(primaryParentURL, manifestRemoteName);
+                string manifestPath = Path.Combine(_gamePath, persistentPath, manifestLocalName);
+
+                // Make sure the file has been deleted (if exist) before redownloading it
+                if (File.Exists(manifestPath))
+                {
+                    TryDeleteReadOnlyFile(manifestPath);
+                }
+
                 // Download the manifest
-                await _httpClient.Download(CombineURLFromString(parentURL, manifestName), manifestPath, true, null, null, token);
-                LogWriteLine($"{manifestName} (isSilence: {isSilence}) URL: {parentURL}", LogType.Default, true);
+                await _httpClient.Download(manifestURL, manifestPath, true, null, null, token);
+                LogWriteLine($"Manifest: {manifestRemoteName} (localName: {manifestLocalName}) has been fetched", LogType.Default, true);
 
                 // Parse the manifest
-                string parentPath = Path.Combine(basePersistentPath, isResVersion ? "" : "AssetBundles");
-                ParseManifestToAssetIndex(manifestPath, assetIndex, hashtable, parentPath, "", parentURL, isResVersion, parentAudioURL);
+                ParsePersistentManifest(manifestPath,
+                    persistentPath, streamingAssetsPath,
+                    primaryParentURL, secondaryParentURL,
+                    assetIndex, hashtable);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed parsing persistent manifest: {manifestName} (isSilence: {isSilence} | isResVersion: {isResVersion}). Skipped!\r\n{ex}", LogType.Warning, true);
+                LogWriteLine($"Failed parsing persistent manifest: {manifestRemoteName} (localName: {manifestLocalName}). Skipped!\r\n{ex}", LogType.Warning, true);
+            }
+        }
+
+        private void ParsePersistentManifest(string localManifestPath,
+            string persistentPath, string streamingAssetPath,
+            string primaryParentURL, string secondaryParentURL,
+            List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable)
+        {
+            persistentPath = persistentPath.Replace('\\', '/');
+            streamingAssetPath = streamingAssetPath.Replace('\\', '/');
+
+            // Start reading the manifest
+            using (StreamReader reader = new StreamReader(localManifestPath, new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read }))
+            {
+                while (!reader.EndOfStream)
+                {
+                    string manifestLine = reader.ReadLine();
+                    PkgVersionProperties manifestEntry = (PkgVersionProperties)JsonSerializer.Deserialize(manifestLine, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+
+                    // Ignore if the remote name is "svc_catalog" or "ctable.dat"
+                    if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
+                        Path.GetFileName(manifestEntry.remoteName).Equals("ctable.dat", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    // Get relative path based on extension
+                    string relativePath = Path.GetExtension(manifestEntry.remoteName).ToLower() switch
+                    {
+                        ".pck" => "AudioAssets",
+                        ".blk" => "AssetBundles",
+                        ".usm" => "VideoAssets",
+                        ".cuepoint" => "VideoAssets",
+                        _ => ""
+                    };
+
+                    string actualName = string.IsNullOrEmpty(manifestEntry.localName) ? manifestEntry.remoteName : manifestEntry.localName;
+                    string assetPersistentPath = relativePath == "" ? null : CombineURLFromString(persistentPath, relativePath, actualName);
+                    string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
+
+                    // Set the remote URL
+                    string remoteURL;
+                    if (!string.IsNullOrEmpty(secondaryParentURL) && !manifestEntry.isPatch)
+                    {
+                        remoteURL = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
+                    }
+                    else
+                    {
+                        remoteURL = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
+                    }
+
+                    // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
+                    manifestEntry.remoteURL = remoteURL;
+                    manifestEntry.remoteName = manifestEntry.isPatch ? assetPersistentPath : assetStreamingAssetPath;
+                    manifestEntry.remoteNamePersistent = assetPersistentPath;
+
+                    // Check if the hashtable has the value
+                    bool IsHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
+                    if (IsHashHasValue)
+                    {
+                        // If yes, then get the reference and index ID
+                        PkgVersionProperties reference = hashtable[assetStreamingAssetPath];
+                        int indexID = assetIndex.IndexOf(reference);
+
+                        // If the index is found (!= -1), then continue overriding its value
+                        if (indexID == -1) continue;
+
+                        // Start overriding the value
+                        hashtable[assetStreamingAssetPath] = manifestEntry;
+                        assetIndex[indexID] = manifestEntry;
+                    }
+                    else
+                    {
+                        hashtable.Add(manifestEntry.remoteName, manifestEntry);
+                        assetIndex.Add(manifestEntry);
+                    }
+                }
             }
         }
 
@@ -195,7 +266,7 @@ namespace CollapseLauncher
 
             // Get base_res_version_hash content
             string FilePath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming");
-            string Hash = ConverterTool.CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
+            string Hash = CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
             File.WriteAllText(PersistentPath + "\\base_res_version_hash", Hash);
             // Get data_revision content
             File.WriteAllText(PersistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
@@ -350,107 +421,6 @@ namespace CollapseLauncher
                 {
                     hashtable.Add(entry.remoteName, entry);
                     assetIndex.Add(entry);
-                }
-            }
-        }
-
-        /// <summary>
-        /// This one is used to parse Persistent Manifest
-        /// </summary>
-        /// <param name="manifestPath"></param>
-        /// <param name="assetIndex"></param>
-        /// <param name="hashtable"></param>
-        /// <param name="parentPath"></param>
-        /// <param name="onlyAcceptExt"></param>
-        /// <param name="parentURL"></param>
-        /// <param name="IsResVersion"></param>
-        /// <param name="parentAudioURL"></param>
-        private void ParseManifestToAssetIndex(string manifestPath, in List<PkgVersionProperties> assetIndex,
-            Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "",
-            string onlyAcceptExt = "", string parentURL = "", bool IsResVersion = false, string parentAudioURL = "")
-        {
-            PkgVersionProperties Entry;
-            bool IsHashHasValue = false;
-            int GameVoiceLanguageID = (int)_audioLanguage;
-
-            foreach (string data in File.ReadAllLines(manifestPath)
-                .Where(x => x.EndsWith(onlyAcceptExt, StringComparison.OrdinalIgnoreCase)))
-            {
-                Entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
-                string parentPathSlash = parentPath.Replace('\\', '/');
-
-                IsHashHasValue = hashtable.ContainsKey(Entry.remoteName);
-                if (!IsHashHasValue)
-                {
-                    if (IsResVersion)
-                    {
-                        switch (Path.GetExtension(Entry.remoteName).ToLower())
-                        {
-                            case ".pck":
-                                // Only add if GameVoiceLanguageID == 1 (en-us)
-                                if (Entry.remoteName.Contains("English(US)") && GameVoiceLanguageID == 1)
-                                {
-                                    if (Entry.isPatch)
-                                        Entry.remoteURL = CombineURLFromString(parentURL, $"AudioAssets/{Entry.remoteName}");
-                                    else
-                                        Entry.remoteURL = CombineURLFromString(parentAudioURL, $"AudioAssets/{Entry.remoteName}");
-
-                                    if (!string.IsNullOrEmpty(parentPath))
-                                        Entry.remoteName = $"{parentPathSlash}/AudioAssets/{Entry.remoteName}";
-
-                                    hashtable.Add(Entry.remoteName, Entry);
-                                    assetIndex.Add(Entry);
-                                }
-                                break;
-                            case ".blk":
-                                if (Entry.isPatch)
-                                {
-                                    Entry.remoteURL = CombineURLFromString(parentURL, $"AssetBundles/{Entry.remoteName}");
-                                    if (!string.IsNullOrEmpty(parentPath))
-                                        Entry.remoteName = $"{parentPathSlash}/AssetBundles/{Entry.remoteName}";
-
-                                    Entry.remoteName = Entry.localName != null ? $"{parentPathSlash}/AssetBundles/{Entry.localName}" : Entry.remoteName;
-                                    hashtable.Add(Entry.remoteName, Entry);
-                                    assetIndex.Add(Entry);
-                                }
-                                break;
-                            case ".usm":
-                            case ".cuepoint":
-                            case ".json":
-                                break;
-                            default:
-                                switch (Path.GetFileName(Entry.remoteName))
-                                {
-                                    case "svc_catalog":
-                                        break;
-                                    case "ctable.dat":
-                                        Entry.remoteURL = CombineURLFromString(parentAudioURL, Entry.remoteName);
-                                        if (!string.IsNullOrEmpty(parentPath))
-                                            Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
-
-                                        hashtable.Add(Entry.remoteName, Entry);
-                                        assetIndex.Add(Entry);
-                                        break;
-                                    default:
-                                        Entry.remoteURL = CombineURLFromString(parentURL, Entry.remoteName);
-                                        if (!string.IsNullOrEmpty(parentPath))
-                                            Entry.remoteName = $"{parentPathSlash}/{Entry.remoteName}";
-
-                                        hashtable.Add(Entry.remoteName, Entry);
-                                        assetIndex.Add(Entry);
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Entry.remoteURL = CombineURLFromString(parentURL, Entry.remoteName);
-                        if (!string.IsNullOrEmpty(parentPath))
-                            Entry.remoteName = $"{parentPath.Replace('\\', '/')}/{Entry.remoteName}";
-                        hashtable.Add(Entry.remoteName, Entry);
-                        assetIndex.Add(Entry);
-                    }
                 }
             }
         }

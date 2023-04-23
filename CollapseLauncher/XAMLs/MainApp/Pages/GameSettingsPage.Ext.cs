@@ -359,9 +359,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                int val = value;
-                if (val == 2) val = 3;
-                Settings.SettingsGraphics.LodGrade = (SelectLodGrade)val;
+                Settings.SettingsGraphics.LodGrade = (SelectLodGrade)value;
             }
         }
 

@@ -226,23 +226,6 @@ namespace CollapseLauncher
             return _out;
         }
 
-        public string CleanUpPreviousChunkFiles(string CookbookPath)
-        {
-            foreach (string Path in Directory.EnumerateFiles(Path.GetDirectoryName(CookbookPath),
-                string.Format("{0}*", Path.GetFileNameWithoutExtension(Path.GetDirectoryName(CookbookPath)))))
-            {
-                try
-                {
-                    FileInfo a = new FileInfo(Path);
-                    a.IsReadOnly = false;
-                    a.Delete();
-                }
-                catch { }
-            }
-
-            return CookbookPath;
-        }
-
         long RepairRead = 0;
         long RepairTotalSize = 0;
         private async Task RepairIngredients(List<FileProperties> BrokenFile, string GamePath)

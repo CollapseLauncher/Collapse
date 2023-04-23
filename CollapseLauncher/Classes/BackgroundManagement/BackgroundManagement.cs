@@ -95,7 +95,12 @@ namespace CollapseLauncher
         {
             RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token, Preset);
 
-            return ret.data.adv == null || (ret.data.adv.version ?? 5) <= 4 ? await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) : ret;
+            return ret.data.adv == null
+              || ((ret.data.adv.version ?? 5) <= 4
+                && Preset.FallbackGameType == GameType.Unknown // TODO: Remove this line after 1.70.x release
+                && Preset.GameType == GameType.Honkai) ?
+                    await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
+                    ret;
         }
 
         private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)

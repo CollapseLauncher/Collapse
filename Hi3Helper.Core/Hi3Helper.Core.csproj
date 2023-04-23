@@ -14,17 +14,14 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLEDISCORD</DefineConstants>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
 
@@ -74,19 +71,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Lib\discord_game_sdk.dll" />
-		<!-- Remove this comment and line above to enable Discord RPC
 		<Content Include="Lib\discord_game_sdk.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		-->
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Lang\en.json">
+		<Content Include="Lang\en-us.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\id-ID.json">
+		<Content Include="Lang\id-id.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\zh-cn.json">
@@ -96,6 +90,9 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\vi-vn.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Lang\ko-kr.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">

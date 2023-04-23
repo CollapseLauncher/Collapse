@@ -287,7 +287,7 @@ namespace CollapseLauncher
             {
                 string execName = Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(250);
+                await Task.Delay(500);
             }
         }
 
@@ -661,7 +661,7 @@ namespace CollapseLauncher
 
         private async Task InitializeStartup()
         {
-            bool IsLoadSuccess;
+            RunBackgroundCheck();
 
             Type Page;
 
@@ -697,7 +697,6 @@ namespace CollapseLauncher
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 CheckRunningGameInstance();
-                RunBackgroundCheck();
             }
 
             // Unlock ChangeBtn for first start

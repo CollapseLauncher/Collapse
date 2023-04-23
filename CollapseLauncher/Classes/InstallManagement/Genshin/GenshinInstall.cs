@@ -27,7 +27,25 @@ namespace CollapseLauncher.InstallManager.Genshin
         #region Private Properties
         private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data"); }
         private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
-        private string _gameAudioLangListPath { get => Directory.EnumerateFiles(_gameDataPersistentPath, "audio_lang_*", SearchOption.TopDirectoryOnly).FirstOrDefault(); }
+        private string _gameAudioLangListPath
+        {
+            get
+            {
+                // If the persistent folder is not exist, then return null
+                if (!Directory.Exists(_gameDataPersistentPath)) return null;
+
+                // Try get the file list
+                string[] audioPath = Directory.GetFiles(_gameDataPersistentPath, "audio_lang_*", SearchOption.TopDirectoryOnly);
+                // If the path is null or has no length, then return null
+                if (audioPath == null || audioPath.Length == 0)
+                {
+                    return null;
+                }
+
+                // If not, then return the first path
+                return audioPath[0];
+            }
+        }
         private string _gameAudioLangListPathStatic { get => Path.Combine(_gameDataPersistentPath, "audio_lang_14"); }
         private string _gameAudioNewPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "AudioAssets"); }
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
@@ -55,6 +73,10 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         private void EnsureMoveOldToNewAudioDirectory()
         {
+            // Return if the old path doesn't exist
+            if (!Directory.Exists(_gameAudioOldPath)) return;
+
+            // If exist, then enumerate the content of it and do move operation
             int offset = _gameAudioOldPath.Length + 1;
             foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
             {
@@ -74,6 +96,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             try
             {
+                // Then if all the files are already moved, delete the old path
                 if (Directory.Exists(_gameAudioOldPath))
                 {
                     Directory.CreateDirectory(_gameAudioOldPath);
@@ -288,6 +311,9 @@ namespace CollapseLauncher.InstallManager.Genshin
                 langID = _gameVoiceLanguageID;
                 package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
+
+                // Also try add another voice pack that already been installed
+                TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
             }
             // Else, show dialog to choose the language ID to be installed
             else
@@ -298,12 +324,9 @@ namespace CollapseLauncher.InstallManager.Genshin
 
                 // Set the voice language ID to value given
                 _gamePreset.SetVoiceLanguageID(langID);
+
+                LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
-
-            LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
-
-            // Also try add another voice pack that already been installed
-            TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
         }
         #endregion
         #region Private Methods - GetInstallationPath

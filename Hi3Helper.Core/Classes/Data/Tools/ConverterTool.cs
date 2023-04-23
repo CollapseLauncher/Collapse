@@ -112,6 +112,8 @@ namespace Hi3Helper.Data
 
             foreach (ReadOnlySpan<char> a in segments)
             {
+                if (a.Length == 0) continue;
+
                 bool isMacros = a.StartsWith("?");
                 if (!isMacros)
                 {

@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Microsoft.UI.Dispatching;
@@ -13,6 +14,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Interfaces
 {
@@ -57,10 +59,15 @@ namespace CollapseLauncher.Interfaces
         {
             // Update fetch status
             _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressTotalIndetermined = false;
             _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, ConverterTool.SummarizeSizeSimple(e.Speed));
 
             // Update fetch progress
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressTotalDownload = e.SizeDownloaded;
+            _progress.ProgressTotalSizeToDownload = e.SizeToBeDownloaded;
+            _progress.ProgressTotalSpeed = e.Speed;
+            _progress.ProgressTotalTimeLeft = e.TimeLeft;
 
             // Push status and progress update
             UpdateStatus();
@@ -134,6 +141,51 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region BaseTools
+        protected void MoveFolderContent(string SourcePath, string DestPath)
+        {
+            // Get the source folder path length + 1
+            int DirLength = SourcePath.Length + 1;
+
+            // Initializw paths and error status
+            string destFilePath;
+            string destFolderPath;
+            bool ErrorOccured = false;
+
+            // Enumerate files inside of source path
+            foreach (string filePath in Directory.EnumerateFiles(SourcePath, "*", SearchOption.AllDirectories))
+            {
+                // Get the relative path of the file from source path
+                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
+                // Get the absolute path for destination
+                destFilePath = Path.Combine(DestPath, relativePath.ToString());
+                // Get folder path for destination
+                destFolderPath = Path.GetDirectoryName(destFilePath);
+
+                // Create the destination folder if not exist
+                if (!Directory.Exists(destFolderPath))
+                    Directory.CreateDirectory(destFolderPath);
+
+                try
+                {
+                    // Try moving the file
+                    LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
+                    FileInfo filePathInfo = new FileInfo(filePath);
+                    filePathInfo.IsReadOnly = false;
+                    filePathInfo.MoveTo(destFilePath, true);
+                }
+                catch (Exception ex)
+                {
+                    // If failed, flag ErrorOccured as true and skip to the next file 
+                    LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
+                    ErrorOccured = true;
+                }
+            }
+
+            // If no error occurred, then delete the source folder
+            if (!ErrorOccured)
+                Directory.Delete(SourcePath, true);
+        }
+
         protected virtual void ResetStatusAndProgress()
         {
             // Reset the cancellation token
@@ -372,7 +424,10 @@ namespace CollapseLauncher.Interfaces
 
                 // Delete old block
                 File.Delete(inputFile);
+                // Rename to the original filename
+                File.Move(outputFile, inputFile, true);
             }
+            catch { throw; }
             finally
             {
                 // Delete the patch file and unsubscribe the patching progress

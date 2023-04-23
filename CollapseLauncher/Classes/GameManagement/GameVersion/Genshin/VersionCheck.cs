@@ -10,6 +10,7 @@ namespace CollapseLauncher.GameVersioning
     internal class GameTypeGenshinVersion : GameVersionBase, IGameVersionCheck
     {
         #region Properties
+        public readonly List<string> _audioVoiceLanguageList = new List<string> { "Chinese", "English(US)", "Japanese", "Korean" };
         #endregion
 
         public GameTypeGenshinVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)

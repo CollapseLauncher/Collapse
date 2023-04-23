@@ -4,6 +4,7 @@ using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
+using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper.Http;
@@ -218,11 +219,24 @@ namespace CollapseLauncher
             switch (preset.GameType)
             {
                 case GameType.Honkai:
-                    PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new HonkaiSettings();
-                    PageStatics._GameCache = new HonkaiCache(this);
-                    PageStatics._GameRepair = new HonkaiRepair(this);
-                    PageStatics._GameInstall = new HonkaiInstall(this);
+                    // TEMP:
+                    // This is used to handle FallbackGameType
+                    if (preset.FallbackGameType == GameType.StarRail)
+                    {
+                        PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
+                        PageStatics._GameSettings = new StarRailSettings();
+                        PageStatics._GameCache = null;
+                        PageStatics._GameRepair = null;
+                        PageStatics._GameInstall = new StarRailInstall(this);
+                    }
+                    else
+                    {
+                        PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
+                        PageStatics._GameSettings = new HonkaiSettings();
+                        PageStatics._GameCache = new HonkaiCache(this);
+                        PageStatics._GameRepair = new HonkaiRepair(this);
+                        PageStatics._GameInstall = new HonkaiInstall(this);
+                    }
                     break;
                 case GameType.Genshin:
                     PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
@@ -236,7 +250,7 @@ namespace CollapseLauncher
                     PageStatics._GameSettings = new StarRailSettings();
                     PageStatics._GameCache = null;
                     PageStatics._GameRepair = null;
-                    PageStatics._GameInstall = new HonkaiInstall(this);
+                    PageStatics._GameInstall = new StarRailInstall(this);
                     break;
             }
 

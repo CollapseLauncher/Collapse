@@ -56,13 +56,15 @@ namespace Hi3Helper
         public const string FallbackLangID = "en-us";
         public static void InitializeLocale()
         {
+            TrySafeRenameOldEnFallback();
+
             int i = 0;
             foreach (string langPath in Directory.EnumerateFiles(AppLangFolder, "*.json", SearchOption.AllDirectories))
             {
                 LangMetadata Metadata = new LangMetadata(langPath, i);
                 if (Metadata.LangIsLoaded)
                 {
-                    LanguageNames.Add(Metadata.LangID, Metadata);
+                    LanguageNames.Add(Metadata.LangID.ToLower(), Metadata);
                     LanguageIDIndex.Add(Metadata.LangID);
                     i++;
                 }
@@ -72,6 +74,15 @@ namespace Hi3Helper
             {
                 throw new LocalizationNotFoundException($"Fallback locale file with ID: \"{FallbackLangID}\" doesn't exist!");
             }
+        }
+
+        private static void TrySafeRenameOldEnFallback()
+        {
+            string possibleOldPath = Path.Combine(AppLangFolder, "en.json");
+            string possibleNewPath = Path.Combine(AppLangFolder, "en-us.json");
+
+            if (File.Exists(possibleOldPath) && File.Exists(possibleNewPath)) File.Delete(possibleOldPath);
+            if (File.Exists(possibleOldPath) && !File.Exists(possibleNewPath)) File.Move(possibleOldPath, possibleNewPath);
         }
 
         public static void LoadLocale(string langID)
