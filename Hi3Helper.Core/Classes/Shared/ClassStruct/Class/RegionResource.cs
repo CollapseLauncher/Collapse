@@ -97,14 +97,15 @@ namespace Hi3Helper.Shared.ClassStruct
         private string _url;
 
         public string icon_id { get; set; }
+        public string icon_link { get; set; }
         public string img { get; set; }
         public string img_hover { get; set; }
         public string qr_img { get; set; }
         public string qr_desc { get; set; }
         public string url
         {
-            get => _url;
-            set => _url = StripTabsAndNewlines(value);
+            get => StripTabsAndNewlines(string.IsNullOrEmpty(_url) ? icon_link : _url);
+            set => _url = value;
         }
         public string name { get; set; }
         public string title { get; set; }
