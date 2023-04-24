@@ -271,6 +271,8 @@
     "Debug_Console": "Mostrar consola",
     "Debug_MultipleInstance": "Permitir várias instâncias do Collapse",
     "DiscordRPC_Toggle": "Show Discord Presence",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "Idioma",
     "LanguageEntry": "{0} por {1}",
     "AppLang_ApplyNeedRestart": "*Tens de reiniciar a aplicação para a mudança de idioma entrar em efeito.",
