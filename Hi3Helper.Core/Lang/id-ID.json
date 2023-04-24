@@ -271,6 +271,8 @@
     "Debug_Console": "Perlihatkan Konsol",
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
     "DiscordRPC_Toggle": "Perlihatkan Discord Presence",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "Bahasa",
     "LanguageEntry": "{0} oleh {1}",
     "AppLang_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan bahasa ini.",
