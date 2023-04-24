@@ -1,0 +1,3 @@
+files:
+  - source: /Hi3Helper.Core/Lang/*-*.json
+    translation: /Hi3Helper.Core/Lang/%locale%.json
