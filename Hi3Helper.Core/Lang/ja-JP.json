@@ -271,6 +271,8 @@
     "Debug_Console": "コンソールを表示",
     "Debug_MultipleInstance": "Collapse の多重起動を許可する",
     "DiscordRPC_Toggle": "Discordのステータスに表示",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "言語",
     "LanguageEntry": "{0} ({1} 提供)",
     "AppLang_ApplyNeedRestart": "*言語の変更を適用するには、ランチャーを再起動してください。",
