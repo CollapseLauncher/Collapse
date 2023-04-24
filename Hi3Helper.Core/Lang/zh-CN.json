@@ -271,6 +271,8 @@
     "Debug_Console": "显示控制台",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
     "DiscordRPC_Toggle": "Show Discord Presence",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "语言设置",
     "LanguageEntry": "{0} by {1}",
     "AppLang_ApplyNeedRestart": "*你需要重新启动应用程序,以便语言修改生效.",
