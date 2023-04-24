@@ -144,6 +144,9 @@ namespace CollapseLauncher
         {
             try
             {
+                ChangeRegionConfirmBtn.Visibility = !IsShowRegionChangeWarning ? Visibility.Collapsed : Visibility.Visible;
+                ChangeRegionConfirmBtnNoWarning.Visibility = !IsShowRegionChangeWarning ? Visibility.Visible : Visibility.Collapsed;
+
                 if (!await CheckForAdminAccess(this))
                 {
                     Application.Current.Exit();
@@ -294,7 +297,7 @@ namespace CollapseLauncher
         {
             SpawnNotificationPush(e.Notification.Title, e.Notification.Message, e.Notification.Severity,
                 e.Notification.MsgId, e.Notification.IsClosable ?? true, e.Notification.IsDisposable ?? true, e.CloseAction,
-                e.OtherContent, e.IsAppNotif, e.Notification.Show);
+                e.OtherContent, e.IsAppNotif, e.Notification.Show, e.Notification.IsForceShowNotificationPanel);
         }
 
         private async void RunBackgroundCheck()
@@ -392,6 +395,11 @@ namespace CollapseLauncher
                         Lang._AppNotification.NotifPreviewBuildUsedBtn)
                 });
             }
+
+            if (!IsNotificationPanelShow && IsFirstInstall)
+            {
+                ForceShowNotificationPanel();
+            }
         }
 
         private Button GenerateNotificationButtonStartProcess(string IconGlyph, string PathOrURL, string Text, bool IsUseShellExecute = true)
@@ -456,7 +464,7 @@ namespace CollapseLauncher
                     }
 
                     SpawnNotificationPush(Entry.Title, Entry.Message, Entry.Severity, Entry.MsgId, Entry.IsClosable ?? true,
-                        Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show);
+                        Entry.IsDisposable ?? true, ClickCloseAction, (UIElement)Entry.OtherUIElement, true, Entry.Show, Entry.IsForceShowNotificationPanel);
                 }
                 await Task.Delay(250);
             }
@@ -484,6 +492,7 @@ namespace CollapseLauncher
                         false,
                         ClickClose,
                         null,
+                        true,
                         true,
                         true
                         );
@@ -525,7 +534,7 @@ namespace CollapseLauncher
 
         private void SpawnNotificationPush(string Title, string Content, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
             bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, UIElement OtherContent = null, bool IsAppNotif = true,
-            bool? Show = false)
+            bool? Show = false, bool ForceShowNotificationPanel = false)
         {
             if (!(Show ?? false)) return;
             if (NotificationData.CurrentShowMsgIds.Contains(MsgId)) return;
@@ -541,7 +550,7 @@ namespace CollapseLauncher
                 StackPanel OtherContentContainer = new StackPanel
                 {
                     Orientation = Orientation.Vertical,
-                    Margin = new Thickness(0, 0, 0, 8)
+                    Margin = new Thickness(0, -4, 0, 8)
                 };
 
                 InfoBar Notification = new InfoBar
@@ -564,13 +573,6 @@ namespace CollapseLauncher
                 if (Severity == NotifSeverity.Informational)
                     Notification.Background = (Brush)Application.Current.Resources["InfoBarAnnouncementBrush"];
 
-                Notification.Closed += (a, b) =>
-                {
-                    a.Translation -= Shadow32;
-                    a.Height = 0;
-                    a.Margin = new Thickness(0);
-                };
-
                 if (OtherContent != null)
                     OtherContentContainer.Children.Add(OtherContent);
 
@@ -591,18 +593,34 @@ namespace CollapseLauncher
 
                 Notification.Tag = MsgId;
                 Notification.CloseButtonClick += CloseClickHandler;
+                Notification.Loaded += (a, b) =>
+                {
+                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+                    NewNotificationCountBadge.Visibility = Visibility.Visible;
+                    NewNotificationCountBadge.Value++;
+                };
                 Notification.Closed += (s, a) =>
                 {
+                    s.Translation -= Shadow32;
+                    s.Height = 0;
+                    s.Margin = new Thickness(0);
                     int msg = (int)s.Tag;
 
                     if (NotificationData.CurrentShowMsgIds.Contains(msg))
                     {
                         NotificationData.CurrentShowMsgIds.Remove(msg);
                     }
+                    NotificationContainer.Children.Remove(Container);
+                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
                 };
 
                 Container.Children.Add(Notification);
-                NotificationBar.Children.Add(Container);
+                NotificationContainer.Children.Add(Container);
+
+                if (ForceShowNotificationPanel && !IsNotificationPanelShow)
+                {
+                    this.ForceShowNotificationPanel();
+                }
             });
         }
 
@@ -818,7 +836,6 @@ namespace CollapseLauncher
                         ErrorSender.SendException(ex, ErrorType.Unhandled);
                     }
                 };
-
                 SpawnNotificationPush(
                     Lang._AppNotification.NotifMetadataUpdateTitle,
                     Lang._AppNotification.NotifMetadataUpdateSubtitle,
@@ -829,9 +846,21 @@ namespace CollapseLauncher
                     null,
                     UpdateMetadatabtn,
                     true,
+                    true,
                     true
                     );
             }
+        }
+
+        private async void ForceShowNotificationPanel()
+        {
+            ToggleNotificationPanelBtn.IsChecked = true;
+            IsNotificationPanelShow = true;
+            ShowHideNotificationPanel();
+            await Task.Delay(250);
+            double currentVOffset = NotificationContainer.ActualHeight;
+
+            NotificationPanel.ScrollToVerticalOffset(currentVOffset);
         }
 
         private void InitializeNavigationItems()
@@ -976,6 +1005,7 @@ namespace CollapseLauncher
                 ChangeRegionWarning.Visibility = preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             }
             ChangeRegionConfirmBtn.IsEnabled = !LockRegionChangeBtn;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
         }
 
         private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
@@ -1053,6 +1083,20 @@ namespace CollapseLauncher
                 UnsubscribeEvents();
                 MainWindow.SetDragArea(DragAreaMode_Full);
             }
+        }
+
+        private bool IsNotificationPanelShow = false;
+        private void ToggleNotificationPanelBtnClick(object sender, RoutedEventArgs e)
+        {
+            IsNotificationPanelShow = !IsNotificationPanelShow;
+            ShowHideNotificationPanel();
+        }
+
+        private void ShowHideNotificationPanel()
+        {
+            NewNotificationCountBadge.Value = 0;
+            NewNotificationCountBadge.Visibility = Visibility.Collapsed;
+            NotificationPanel.Margin = IsNotificationPanelShow ? new Thickness(0, 47, 0, 0) : new Thickness(0, 47, -700, 0);
         }
     }
 }

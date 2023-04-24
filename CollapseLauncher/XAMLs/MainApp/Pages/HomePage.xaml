@@ -240,7 +240,7 @@
                         Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                         VerticalAlignment="Top" Shadow="{ThemeResource SharedShadow}">
                         <StackPanel.Resources>
-                            <localPage:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+                            <localPage:BooleanVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
                         </StackPanel.Resources>
                         <StackPanel.Transitions>
                             <PopupThemeTransition/>
@@ -257,13 +257,13 @@
                                              Shadow="{ThemeResource SharedShadow}">
                                             <ToolTipService.ToolTip>
                                                 <StackPanel>
-                                                    <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={ThemeResource NullToVisibilityConverter}}">
+                                                    <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={ThemeResource BooleanToVisibilityConverter}}">
                                                         <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                                                         <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"
-                                                               Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource NullToVisibilityConverter}}"/>
+                                                               Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" TextWrapping="Wrap"
-                                                               Visibility="{Binding IsDescriptionExist, Converter={ThemeResource NullToVisibilityConverter}}"/>
+                                                               Visibility="{Binding IsDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
                                                 </StackPanel>
                                             </ToolTipService.ToolTip>
                                             <Button.Resources>

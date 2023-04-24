@@ -30,6 +30,7 @@ namespace Hi3Helper.Shared.ClassStruct
 
         [JsonConverter(typeof(NotificationActionConverter))]
         public NotificationActionBase? ActionProperty { get; set; }
+        public bool IsForceShowNotificationPanel { get; set; }
 #nullable disable
     }
 
@@ -295,7 +296,7 @@ namespace Hi3Helper.Shared.ClassStruct
             Button Btn = new Button
             {
                 Content = BtnStack,
-                Margin = new Thickness(0, 0, 0, 16),
+                Margin = new Thickness(0, 0, 0, 8),
                 Style = (Style)Application.Current.Resources[ButtonStyle],
                 CornerRadius = new CornerRadius(16)
             };

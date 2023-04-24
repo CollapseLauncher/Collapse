@@ -128,6 +128,7 @@ namespace Hi3Helper.Shared.Region
         public static bool IsPortable = false;
         public static bool IsAppThemeNeedRestart = false;
         public static bool IsAppLangNeedRestart = false;
+        public static bool IsChangeRegionWarningNeedRestart = false;
         public static bool IsFirstInstall = false;
         public static bool IsConsoleEnabled
         {
@@ -138,6 +139,11 @@ namespace Hi3Helper.Shared.Region
         {
             get => GetAppConfigValue("EnableMultipleInstance").ToBoolNullable() ?? false;
             set => SetAndSaveConfigValue("EnableMultipleInstance", value);
+        }
+        public static bool IsShowRegionChangeWarning
+        {
+            get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
+            set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
         }
         public static bool ForceInvokeUpdate = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
@@ -164,6 +170,7 @@ namespace Hi3Helper.Shared.Region
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
+            { "ShowRegionChangeWarning", true },
 #if !DISABLEDISCORD
             { "EnableDiscordRPC", false }
 #endif

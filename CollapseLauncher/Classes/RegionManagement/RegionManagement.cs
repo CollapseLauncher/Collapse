@@ -12,6 +12,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -317,11 +318,27 @@ namespace CollapseLauncher
             return isBeginValid && isEndValid;
         }
 
+        private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
+        {
+            (sender as Button).IsEnabled = false;
+            await LoadRegionRootButton();
+            HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+            MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+        }
+
         private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
             // Disable ChangeRegionBtn and hide flyout
-            ToggleChangeRegionBtn(in sender, true);
+            ToggleChangeRegionBtn(sender, true);
+            if (await LoadRegionRootButton())
+            {
+                // Finalize loading
+                ToggleChangeRegionBtn(sender, false);
+            }
+        }
 
+        private async Task<bool> LoadRegionRootButton()
+        {
             string GameCategory = (string)ComboBoxGameCategory.SelectedValue;
             string GameRegion = GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue);
 
@@ -337,10 +354,11 @@ namespace CollapseLauncher
             DelayedLoadingRegionPageTask();
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
-                // Finalize loading
-                ToggleChangeRegionBtn(in sender, false);
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+                return true;
             }
+
+            return false;
         }
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)
@@ -370,6 +388,7 @@ namespace CollapseLauncher
             InnerTokenSource.Cancel();
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled = true;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
             ChangeRegionBtn.IsEnabled = true;
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
 

@@ -53,7 +53,7 @@ namespace CollapseLauncher.Pages
 
     public class NullVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
+        public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 }

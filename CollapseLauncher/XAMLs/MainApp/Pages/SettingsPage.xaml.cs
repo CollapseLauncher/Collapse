@@ -45,6 +45,9 @@ namespace CollapseLauncher.Pages
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
+            if (IsChangeRegionWarningNeedRestart)
+                ChangeRegionToggleWarning.Visibility = Visibility.Visible;
+
             string SwitchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, SwitchToVer);
 #if !DISABLEDISCORD
@@ -59,10 +62,11 @@ namespace CollapseLauncher.Pages
             switch (await Dialogs.SimpleDialogs.Dialog_RelocateFolder(Content))
             {
                 case ContentDialogResult.Primary:
-                    File.Delete(AppConfigFile);
-                    File.Delete(AppNotifIgnoreFile);
+                    IsFirstInstall = true;
                     try
                     {
+                        File.Delete(AppConfigFile);
+                        File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
                     catch { }
@@ -420,6 +424,18 @@ namespace CollapseLauncher.Pages
                 if (value < 0) return;
                 SetAppConfigValue("CurrentCDN", value);
                 SaveAppConfig();
+            }
+        }
+
+        private bool IsShowRegionChangeWarning
+        {
+            get => LauncherConfig.IsShowRegionChangeWarning;
+            set
+            {
+                IsChangeRegionWarningNeedRestart = true;
+                ChangeRegionToggleWarning.Visibility = Visibility.Visible;
+
+                LauncherConfig.IsShowRegionChangeWarning = value;
             }
         }
     }
