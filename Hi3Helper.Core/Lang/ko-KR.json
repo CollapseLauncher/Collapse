@@ -271,6 +271,8 @@
     "Debug_Console": "콘솔 표시",
     "Debug_MultipleInstance": "여러 인스턴스에서 실행 허용",
     "DiscordRPC_Toggle": "Show Discord Presence",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "앱 언어",
     "LanguageEntry": "{0} ({1} 제공)",
     "AppLang_ApplyNeedRestart": "*언어 변경 사항을 적용하려면 앱을 다시 시작해야 해요.",
