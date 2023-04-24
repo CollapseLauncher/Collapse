@@ -271,6 +271,8 @@
     "Debug_Console": "Hiển thị console (cmd)",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
     "DiscordRPC_Toggle": "Show Discord Presence",
+    "ChangeRegionWarning_Toggle": "Show Region Change Warning",
+    "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
     "Language": "Ngôn ngữ",
     "LanguageEntry": "{0} bởi {1}",
     "AppLang_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi ngôn ngữ.",
