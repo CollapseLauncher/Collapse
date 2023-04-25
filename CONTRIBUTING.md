@@ -8,13 +8,16 @@
 - Make sure to read the "Restriction for New Feature(s)" section below.
 - When submitting a Pull Request, make sure that it is done to the same branch from which you first pulled, unless otherwise stated in the project's README, or if specifically instructed by maintainers of this project.
 - We don't require a fully descriptive PR, but please be clear on what added/removed and what the code does.
+## Language/Translation Contribution
+You can help us add or fixes localization on [Collapse on Crowdin!](https://crowdin.com/project/collapse-launcher)
+If you wish to add new language that isn't yet listed in the Crowdin project, make a discussion/issue either in GitHub or in Crowdin itself and we will get back to you at timely manner. 
 
 ## Tools Needed
 Below is the tools needed to contribute to this project.
 1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
-2. .NET: [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-3. WinUI 3: [**WinUI 3 (WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
-4. **Windows 10 SDK (10.0.19043.0) or Windows 11 SDK (10.0.22000.0)** via Visual Studio Installer
+2. **Windows 10 SDK (10.0.19043.0) or Windows 11 SDK (10.0.22000.0)** via Visual Studio Installer
+3. .NET: [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+4. WinUI 3: [**WinUI 3 (WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
 
 ## Restriction for New Feature(s)
 While this software is fully open source and not affiliated with HoYoverse, Cognosphere, or any of its related entities in any way, we are nonetheless bound to their Terms of Service and Code of Conduct when developing Collapse. This means that there are some features that we will **not** implement. We will close any issue or PR that is made to add such functionality to Collapse. Such features include, but not limited to:
@@ -38,3 +41,7 @@ While this software is fully open source and not affiliated with HoYoverse, Cogn
 - [Honkai Impact 3rd Terms of Service](https://honkaiimpact3.hoyoverse.com/global/en-us/terms)
 - [Honkai: Star Rail Terms of Service](https://hsr.hoyoverse.com/en-us/company/terms)
 - [HoYoLAB Forum Terms of Service](https://www.hoyolab.com/agreement)
+
+# A Humble Thank You
+We as contributors always feel grateful for all your contribution to the project, whether its a Language/Localization help, helping us add more features, bug fixes/reports, and even for using this launcher. With all your help we all can make this project alive and well in the hope of making a good launcher that can help brings more Quality of Life improvements over official launcher.
+Thank you ❤️
