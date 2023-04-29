@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
@@ -13,6 +14,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public Model GraphicsSettings { get; set; }
 
         public StarRailSettings()
         {
@@ -34,6 +36,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
+            GraphicsSettings = Model.Load();
         }
 
         public void RevertSettings() => InitializeSettings();
@@ -42,6 +45,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Save Settings
             SettingsCustomArgument.Save();
+            GraphicsSettings.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
