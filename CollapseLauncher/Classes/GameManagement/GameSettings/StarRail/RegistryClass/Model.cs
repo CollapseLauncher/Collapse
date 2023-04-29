@@ -71,6 +71,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         #endregion
 
         #region Methods
+#nullable enable
         public static Model Load()
         {
             try
@@ -81,7 +82,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), Model.Default) ?? new Model();
+                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), ModelContext.Default) ?? new Model();
                 }
             }
             catch (Exception ex)
@@ -98,7 +99,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(Model), Model.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(Model), ModelContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
             }
@@ -119,6 +120,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 comparedTo.BloomQuality == this.BloomQuality &&
                 comparedTo.EnvDetailQuality == this.EnvDetailQuality &&
                 comparedTo.ReflectionQuality == this.ReflectionQuality;
+#nullable disable
         }
         #endregion
     }
