@@ -43,5 +43,5 @@ While this software is fully open source and not affiliated with HoYoverse, Cogn
 - [HoYoLAB Forum Terms of Service](https://www.hoyolab.com/agreement)
 
 # A Humble Thank You
-We as contributors always feel grateful for all your contribution to the project, whether its a Language/Localization help, helping us add more features, bug fixes/reports, and even for using this launcher. With all your help we all can make this project alive and well in the hope of making a good launcher that can help brings more Quality of Life improvements over official launcher.
+As contributors, we always feel grateful for all your contribution to the project, whether it be though helping with localizations, coming up with new features, reporting bugs, and even using this launcher. Through everyone's effort, we can keep this project alive by bringing even more features and quality-of-life (QoL) upgrades over the existing launchers (icluding official) that is out there.
 Thank you ❤️
