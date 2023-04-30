@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace CollapseLauncher
             _progressTotalCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(asset.FT == FileType.Blocks ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.FT == FileType.Blocks ? asset.CRC : asset.N),
+                string.Format(Lang._GameRepairPage.Status8, Path.GetFileName(asset.N)),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
