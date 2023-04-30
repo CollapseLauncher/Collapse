@@ -900,6 +900,11 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
                 }
+                if (PageStatics._GameVersion.GameType == GameType.StarRail)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                }
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];

@@ -701,7 +701,29 @@ namespace CollapseLauncher.Pages
                         break;
                 }
             }
+            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            {
+                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
+                {
+                    parameter.Append("-window-mode exclusive ");
+                    RequireWindowExclusivePayload = true;
+                }
 
+                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+
+                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
             if (!GetAppConfigValue("EnableConsole").ToBool())
                 parameter.Append("-nolog ");
 
