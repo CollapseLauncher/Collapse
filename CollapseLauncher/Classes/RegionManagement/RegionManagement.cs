@@ -12,7 +12,6 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -251,8 +250,8 @@ namespace CollapseLauncher
                 case GameType.StarRail:
                     PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
                     PageStatics._GameSettings = new StarRailSettings();
-                    PageStatics._GameCache = null;
-                    PageStatics._GameRepair = null;
+                    PageStatics._GameCache = new StarRailCache(this);
+                    PageStatics._GameRepair = new StarRailRepair(this);
                     PageStatics._GameInstall = new StarRailInstall(this);
                     break;
             }

@@ -10,8 +10,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal class GamePropertyBase<T1, T2>
-        where T1 : Enum
+    internal class GamePropertyBase<T1, T2> : IAssetEntry<T1> where T1 : Enum
     {
         private string _gamePathField { get; init; }
         private GameVersion _gameVersionOverride { get; init; }

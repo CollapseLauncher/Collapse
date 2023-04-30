@@ -85,6 +85,11 @@ namespace Hi3Helper.Preset
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchChannelName);
                     MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchChannelName = GameDispatchChannelName;
 
+                    // Dec GameDispatchDefaultName
+                    string GameDispatchDefaultName = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchDefaultName ?? null;
+                    Decryptor.DecryptStringWithMasterKey(ref GameDispatchDefaultName);
+                    MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchDefaultName = GameDispatchDefaultName;
+
                     // Dec GameDispatchURLTemplate
                     string GameDispatchURLTemplate = MetadataV2[gameKeys[i]][regionKeys[j]].GameDispatchURLTemplate ?? null;
                     Decryptor.DecryptStringWithMasterKey(ref GameDispatchURLTemplate);
@@ -124,10 +129,88 @@ namespace Hi3Helper.Preset
         }
 
         // WARNING!!!
-        // This feature is only available for Genshin.
+        // This feature is only available for Genshin and Star Rail.
         public int GetVoiceLanguageID()
         {
             string RegPath = Path.GetFileName(ConfigRegistryLocation);
+            switch (GameType)
+            {
+                case GameType.Genshin:
+                    return GetVoiceLanguageID_Genshin(RegPath);
+                case GameType.StarRail:
+                    return GetVoiceLanguageID_StarRail(RegPath);
+                default:
+                    return int.MinValue;
+            }
+        }
+
+        public int GetStarRailVoiceLanguageByName(string name) => name switch
+        {
+            "cn" => 0,
+            "en" => 1,
+            "jp" => 2,
+            "kr" => 3,
+            _ => 2 // Set to JP by default
+        };
+
+        public string GetStarRailVoiceLanguageByID(int id) => id switch
+        {
+            0 => "cn",
+            1 => "en",
+            2 => "jp",
+            3 => "kr",
+            _ => "jp" // Set to JP by default
+        };
+
+        public string GetStarRailVoiceLanguageFullNameByID(int id) => id switch
+        {
+            0 => "Chinese(PRC)",
+            1 => "English",
+            2 => "Japanese",
+            3 => "Korean",
+            _ => "Japanese" // Set to JP by default
+        };
+
+        public string GetStarRailVoiceLanguageFullNameByName(string name) => name switch
+        {
+            "cn" => "Chinese(PRC)",
+            "en" => "English",
+            "jp" => "Japanese",
+            "kr" => "Korean",
+            _ => "Japanese" // Set to JP by default
+        };
+
+        private int GetVoiceLanguageID_StarRail(string RegPath)
+        {
+            try
+            {
+                string regValue;
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
+                byte[]? value = (byte[]?)keys?.GetValue("LanguageSettings_LocalAudioLanguage_h882585060");
+
+                if (keys is null || value is null || value.Length is 0)
+                {
+                    LogWriteLine($"Voice Language ID registry on {RegPath} doesn't exist. Fallback value will be used (2 / ja-jp).", LogType.Warning, true);
+                    return 2;
+                }
+
+                regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0').ToString();
+                return GetStarRailVoiceLanguageByName(regValue);
+            }
+            catch (JsonException ex)
+            {
+                LogWriteLine($"System.Text.Json cannot deserialize language ID registry in this path: {RegPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}", LogType.Warning, true);
+                return 2;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Launcher cannot evaluate an existing language ID registry on {RegPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}", LogType.Warning, true);
+                return 2;
+            }
+        }
+
+        private int GetVoiceLanguageID_Genshin(string RegPath)
+        {
             try
             {
                 ReadOnlySpan<char> regValue;
@@ -157,8 +240,23 @@ namespace Hi3Helper.Preset
         }
 
         // WARNING!!!
-        // This feature is only available for Genshin.
+        // This feature is only available for Genshin and Star Rail.
         public void SetVoiceLanguageID(int LangID)
+        {
+            switch (GameType)
+            {
+                case GameType.Genshin:
+                    SetVoiceLanguageID_Genshin(LangID);
+                    break;
+                case GameType.StarRail:
+                    SetVoiceLanguageID_StarRail(LangID);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void SetVoiceLanguageID_Genshin(int LangID)
         {
             try
             {
@@ -181,6 +279,25 @@ namespace Hi3Helper.Preset
                 keys.SetValue("GENERAL_DATA_h2389025596",
                     Encoding.UTF8.GetBytes(
                         JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Cannot save voice language ID: {LangID} to the registry!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private void SetVoiceLanguageID_StarRail(int LangID)
+        {
+            try
+            {
+                RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true);
+                string initValue = "";
+
+                if (keys is null)
+                    keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+
+                initValue = GetStarRailVoiceLanguageByID(LangID);
+                keys.SetValue("LanguageSettings_LocalAudioLanguage_h882585060", Encoding.UTF8.GetBytes(initValue + '\0'));
             }
             catch (Exception ex)
             {
@@ -362,6 +479,7 @@ namespace Hi3Helper.Preset
         public string[]? GameSupportedLanguages { get; set; }
         public string[]? GameDispatchArrayURL { get; set; }
         public string? GameDispatchChannelName { get; set; }
+        public string? GameDispatchDefaultName { get; set; }
         public string? GameDispatchURLTemplate { get; set; }
         public string? GameGatewayURLTemplate { get; set; }
         public string? GameGatewayDefault { get; set; }
