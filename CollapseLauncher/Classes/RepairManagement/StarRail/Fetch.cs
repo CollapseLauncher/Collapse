@@ -5,6 +5,7 @@ using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -30,11 +31,12 @@ namespace CollapseLauncher
                 _gameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize the metadata tool (including dispatcher and gateway)
-                await _gameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID());
+                await _gameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data\\Persistent"));
 
                 // Read block metadata and convert to FilePropertiesRemote
                 await _gameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
-                ConvertSRMetadataToAssetIndex(_gameVersionManager.StarRailMetadataTool.MetadataAsb, assetIndex);
+                await _gameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
+                ConvertSRMetadataToAssetIndex(_gameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
 
                 // Read Audio metadata and convert to FilePropertiesRemote
                 await _gameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);

@@ -2,6 +2,7 @@
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace CollapseLauncher
                 _status.IsProgressTotalIndetermined = true;
                 _status.IsIncludePerFileIndicator = false;
                 UpdateStatus();
-                await _gameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID());
+                await _gameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data\\Persistent"));
 
                 // Iterate type and do fetch
                 foreach (SRAssetType type in Enum.GetValues(typeof(SRAssetType)))
