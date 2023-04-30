@@ -103,7 +103,7 @@ namespace Hi3Helper.Preset
     public class PresetConfigV2
     {
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
-        private const string PrefixRegGameConfig = "Software\\miHoYo\\{0}";
+        private const string PrefixRegGameConfig = "Software\\{0}\\{1}";
         private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
 
         public string? GetGameLanguage()
@@ -347,7 +347,7 @@ namespace Hi3Helper.Preset
 #nullable disable
         private string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
         public string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
-        public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, InternalGameNameInConfig); }
+        public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, VendorType, InternalGameNameInConfig); }
 #nullable enable
         public string? BetterHi3LauncherVerInfoReg { get; set; }
         public string? ActualGameDataLocation { get; set; }
