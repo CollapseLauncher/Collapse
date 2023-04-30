@@ -1,68 +1,31 @@
-﻿using CollapseLauncher.GameSettings.Honkai;
+﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class HonkaiRepair :
+    internal partial class StarRailRepair :
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
-        private HonkaiCache _cacheUtil = (PageStatics._GameCache as ICacheBase<HonkaiCache>).AsBaseType();
-
-        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
-        private const string _assetBasePath = "BH3_Data/StreamingAssets/";
-        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
-        private string _assetBaseURL { get; set; }
-        private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
-        private string _blockAsbBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/asb"); }
-        private string _blockPatchBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/patch"); }
-        private string _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"); }
-        private string _blockPatchDiffPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/Patch"); }
-        private string _blockBasePath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/"); }
+        private GameTypeStarRailVersion _gameVersionManager { get => PageStatics._GameVersion as GameTypeStarRailVersion; }
         private bool _isOnlyRecoverMain { get; set; }
         #endregion
 
-        #region ExtensionProperties
-        private protected AudioLanguageType _audioLanguage { get; set; }
-        private protected string _audioBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Audio/GeneratedSoundBanks/Windows/"); }
-        private protected string _audioBaseRemotePath { get => ConverterTool.CombineURLFromString(_assetBaseURL, "Audio/{0}/Windows/"); }
-        private protected string _audioPatchBaseLocalPath { get => ConverterTool.CombineURLFromString(_audioBaseLocalPath, "Patch/"); }
-        private protected string _audioPatchBaseRemotePath { get => ConverterTool.CombineURLFromString(_audioBaseRemotePath, "Patch/"); }
-        private protected string _videoBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Video/"); }
-        private protected List<FilePropertiesRemote> _originAssetIndex { get; set; }
-        #endregion
-
-        public HonkaiRepair(UIElement parentUI, bool onlyRecoverMainAsset = false, string versionOverride = null)
+        public StarRailRepair(UIElement parentUI, bool onlyRecoverMainAsset = false, string versionOverride = null)
             : base(parentUI, null, "", versionOverride)
         {
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
-
-            // Initialize audio asset language
-            string audioLanguage = (PageStatics._GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
-            switch (audioLanguage)
-            {
-                case "Chinese(PRC)":
-                    _audioLanguage = AudioLanguageType.Chinese;
-                    break;
-                default:
-                    _audioLanguage = _gamePreset.GameDefaultCVLanguage;
-                    break;
-            }
         }
 
-        ~HonkaiRepair() => Dispose();
-
-        public List<FilePropertiesRemote> GetAssetIndex() => _originAssetIndex;
+        ~StarRailRepair() => Dispose();
 
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
@@ -95,9 +58,6 @@ namespace CollapseLauncher
 
             // Step 2: Calculate the total size and count of the files
             CountAssetIndex(_assetIndex);
-
-            // Copy list to _originAssetIndex
-            _originAssetIndex = new List<FilePropertiesRemote>(_assetIndex);
 
             // Step 3: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);
