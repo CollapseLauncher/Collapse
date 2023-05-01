@@ -650,5 +650,34 @@
     "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "You are currently using a [PREVIEW] build, which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
     "NotifPreviewBuildUsedBtn": "Submit an Issue"
+  },
+
+  "_StarRailGameSettingsPage": {
+    "PageTitle": "Game Settings",
+
+    "Graphics_Title": "Graphics Settings",
+    "Graphics_ResolutionPanel": "Game Resolution",
+    "Graphics_Fullscreen": "Fullscreen",
+    "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ResSelectPlaceholder": "Select",
+    "Graphics_ResCustom": "Use Custom Resolution",
+    "Graphics_ResCustomW": "W",
+    "Graphics_ResCustomH": "H",
+
+    "ApplyBtn": "Apply Settings",
+    "SettingsApplied": "Changes have been saved!",
+
+    "OverlayNotInstalledTitle": "You cannot use this feature as the region isn't installed or needs to be updated!",
+    "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
+    "OverlayGameRunningTitle": "Game is Currently Running!",
+    "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
+    "OverlayFirstTimeTitle": "You have never played this game before!",
+    "OverlayFirstTimeSubtitle": "Please run the game first to generate the necessary files, then come back here to use this feature.",
+
+    "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
+    "CustomArgs_Subtitle": "Start-up Arguments",
+    "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
+    "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
+    "CustomArgs_Footer3": "to see more parameters."
   }
 }

@@ -911,7 +911,7 @@ namespace CollapseLauncher
             if (PageStatics._GameVersion.GameType == GameType.StarRail)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
@@ -989,6 +989,10 @@ namespace CollapseLauncher
 
                         case "gamesettings":
                             Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
+                            break;
+
+                        case "starrailgamesettings":
+                            Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
