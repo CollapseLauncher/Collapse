@@ -287,7 +287,6 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
         }
 
-
         #endregion
 
         #region Override Methods - GetInstallationPath

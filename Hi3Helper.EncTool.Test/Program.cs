@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Http;
+﻿using Hi3Helper.EncTool.Parser.AssetMetadata;
 using System.IO.Compression;
 
 namespace Hi3Helper.EncTool.Test
@@ -7,6 +7,23 @@ namespace Hi3Helper.EncTool.Test
     {
         static async Task Main(string[] args)
         {
+            using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "495e8edf66",
+                "?version={0}{1}&t={2}&language_type=3&platform_type=3&channel_id=1&sub_channel_id=1&is_new_format=1",
+                "?version={0}{1}&t={2}&uid=0&language_type=3&platform_type=3&dispatch_seed={3}&channel_id=1&sub_channel_id=1&is_need_url=1",
+                "OSPRODWin", "1.0.5"))
+            {
+                await srm.Initialize(default, "prod_official_asia", "F:\\CollapseData\\SRGlb\\Games\\StarRail_Data\\Persistent");
+                await srm.ReadAsbMetadataInformation(default);
+                await srm.ReadBlockMetadataInformation(default);
+                await srm.ReadAudioMetadataInformation(default);
+                await srm.ReadVideoMetadataInformation(default);
+                await srm.ReadIFixMetadataInformation(default);
+                await srm.ReadDesignMetadataInformation(default);
+                await srm.ReadLuaMetadataInformation(default);
+            }
+
+            return;
+
             string pata = @"C:\myGit\CollapseLauncher-ReleaseRepo\metadata\repair_indexes\Hi3Global\6.5.0\index.bin";
             using (FileStream fs = new FileStream(pata, FileMode.Open))
             {
@@ -17,8 +34,6 @@ namespace Hi3Helper.EncTool.Test
                     br.CopyTo(fsa);
                 }
             }
-
-            return;
 
             string path = @"C:\Program Files\Honkai Impact 3 sea\Games\BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
             string pathTarget = @"G:\Data\CollapseLauncher\Hi3SEA\pc\";

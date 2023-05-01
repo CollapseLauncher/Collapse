@@ -1,0 +1,115 @@
+﻿using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
+using Hi3Helper.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+
+namespace CollapseLauncher
+{
+    internal partial class StarRailCache
+    {
+        private async Task<bool> Update(List<SRAsset> updateAssetIndex, List<SRAsset> assetIndex, CancellationToken token)
+        {
+            // Assign Http client
+            Http httpClient = new Http(true, 5, 1000, _userAgent);
+            try
+            {
+                // Set IsProgressTotalIndetermined as false and update the status 
+                _status.IsProgressTotalIndetermined = true;
+                UpdateStatus();
+
+                // Subscribe the event listener
+                httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
+                await Task.Run(() =>
+                {
+                    // Iterate the asset index and do update operation
+                    foreach (SRAsset asset in updateAssetIndex)
+                    {
+                        UpdateCacheAsset(asset, httpClient, token);
+                    }
+                });
+
+                return true;
+            }
+            catch (TaskCanceledException) { throw; }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception ex)
+            {
+                LogWriteLine($"An error occured while updating cache file!\r\n{ex}", LogType.Error, true);
+                throw;
+            }
+            finally
+            {
+                // Unsubscribe the event listener and dispose Http client
+                httpClient.DownloadProgress -= _httpClient_UpdateAssetProgress;
+                httpClient.Dispose();
+            }
+        }
+
+        private void UpdateCacheAsset(SRAsset asset, Http httpClient, CancellationToken token)
+        {
+            // Increment total count and update the status
+            _progressTotalCountCurrent++;
+            _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetType, Path.GetFileName(asset.LocalName));
+            UpdateAll();
+
+            // Assign and check the path of the asset directory
+            string assetDir = Path.GetDirectoryName(asset.LocalName);
+            if (!Directory.Exists(assetDir))
+            {
+                Directory.CreateDirectory(assetDir);
+            }
+
+            // Do multi-session download for asset that has applicable size
+            if (asset.Size >= _sizeForMultiDownload)
+            {
+                httpClient.DownloadSync(asset.RemoteURL, asset.LocalName, _downloadThreadCount, true, token);
+                httpClient.MergeSync();
+            }
+            // Do single-session download for others
+            else
+            {
+                httpClient.DownloadSync(asset.RemoteURL, asset.LocalName, true, null, null, token);
+            }
+
+            LogWriteLine($"Downloaded cache [T: {asset.AssetType}]: {Path.GetFileName(asset.LocalName)}", LogType.Default, true);
+
+
+            // Remove Asset Entry display
+            Dispatch(() => AssetEntry.RemoveAt(0));
+        }
+
+        private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)
+        {
+            // Update current progress percentages and speed
+            _progress.ProgressTotalPercentage = _progressTotalSizeCurrent != 0 ?
+                ConverterTool.GetPercentageNumber(_progressTotalSizeCurrent, _progressTotalSize) :
+                0;
+
+            if (e.State != DownloadState.Merging)
+            {
+                _progressTotalSizeCurrent += e.Read;
+            }
+            long speed = (long)(_progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds);
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                // Update current activity status
+                _status.IsProgressTotalIndetermined = false;
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, TimeSpan.FromSeconds((_progressTotalSizeCurrent - _progressTotalSize) / ConverterTool.Unzeroed(speed)));
+                _status.ActivityTotal = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressTotalCountCurrent, _progressTotalCount)
+                                       + string.Format($"({Lang._Misc.SpeedPerSec})", ConverterTool.SummarizeSizeSimple(speed))
+                                       + $" | {timeLeftString}";
+
+                // Trigger update
+                UpdateAll();
+            }
+        }
+    }
+}
