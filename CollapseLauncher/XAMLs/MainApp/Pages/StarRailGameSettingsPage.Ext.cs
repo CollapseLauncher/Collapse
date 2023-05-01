@@ -195,5 +195,30 @@ namespace CollapseLauncher.Pages
             set => Settings.GraphicsSettings.ShadowQuality = (SelectShadowQuality)value;
         }
         #endregion
+        #region Audio
+        public int AudioMasterVolume
+        {
+            get => Settings.AudioSettings_Master.mastervol;
+            set => Settings.AudioSettings_Master.mastervol = value;
+        }
+
+        public int AudioBGMVolume
+        {
+            get => Settings.AudioSettings_BGM.bgmvol;
+            set => Settings.AudioSettings_BGM.bgmvol = value;
+        }
+
+        public int AudioSFXVolume
+        {
+            get => Settings.AudioSettings_SFX.sfxvol;
+            set => Settings.AudioSettings_SFX.sfxvol = value;
+        }
+
+        public int AudioVOVolume
+        {
+            get => Settings.AudioSettings_VO.vovol;
+            set => Settings.AudioSettings_VO.vovol = value;
+        }
+        #endregion
     }
 }
