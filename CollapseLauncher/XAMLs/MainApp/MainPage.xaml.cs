@@ -1097,7 +1097,9 @@ namespace CollapseLauncher
         {
             NewNotificationCountBadge.Value = 0;
             NewNotificationCountBadge.Visibility = Visibility.Collapsed;
-            NotificationPanel.Margin = IsNotificationPanelShow ? new Thickness(0, 47, 0, 0) : new Thickness(0, 47, -700, 0);
+            Thickness lastMargin = NotificationPanel.Margin;
+            lastMargin.Right = IsNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
+            NotificationPanel.Margin = lastMargin;
 
             ShowHideNotificationLostFocusBackground(IsNotificationPanelShow);
         }
