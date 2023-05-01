@@ -174,37 +174,37 @@
                                  Maximum="100" VerticalAlignment="Bottom" Foreground="{ThemeResource DefaultFGColorAccent}"/>
                     </Grid>
                 </Grid>
-                <Grid x:Name="NotificationLostFocusBackground" Background="Black" Opacity="0" Margin="0,-1,0,0"
-                      Visibility="Collapsed" PointerPressed="NotificationContainerBackground_PointerPressed">
-                    <Grid.OpacityTransition>
-                        <ScalarTransition/>
-                    </Grid.OpacityTransition>
-                </Grid>
-                <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
-                              Margin="0,47,-700,0" HorizontalAlignment="Right" Background="{ThemeResource WindowTrayBrush}" Shadow="{ThemeResource SharedShadow}">
-                    <ScrollViewer.Transitions>
-                        <RepositionThemeTransition/>
-                    </ScrollViewer.Transitions>
-                    <Grid MinHeight="200" MinWidth="608">
-                        <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
-                            <StackPanel.OpacityTransition>
-                                <ScalarTransition/>
-                            </StackPanel.OpacityTransition>
-                            <Image Margin="0,0,0,16" Source="ms-appx:///Assets/BG/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-                            <TextBlock Text="You have no notification" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
-                        </StackPanel>
-                        <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
-                            <StackPanel.ChildrenTransitions>
-                                <TransitionCollection>
-                                    <PopupThemeTransition/>
-                                    <RepositionThemeTransition/>
-                                </TransitionCollection>
-                            </StackPanel.ChildrenTransitions>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
             </Grid>
         </NavigationView>
+        <Grid x:Name="NotificationLostFocusBackground" Background="Black" Opacity="0" Margin="0,-1,0,0"
+                      Visibility="Collapsed" PointerPressed="NotificationContainerBackground_PointerPressed">
+            <Grid.OpacityTransition>
+                <ScalarTransition/>
+            </Grid.OpacityTransition>
+        </Grid>
+        <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
+                              Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource WindowTrayBrush}" Shadow="{ThemeResource SharedShadow}">
+            <ScrollViewer.Transitions>
+                <RepositionThemeTransition/>
+            </ScrollViewer.Transitions>
+            <Grid MinHeight="200" MinWidth="608">
+                <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
+                    <StackPanel.OpacityTransition>
+                        <ScalarTransition/>
+                    </StackPanel.OpacityTransition>
+                    <Image Margin="0,0,0,16" Source="ms-appx:///Assets/BG/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBlock Text="You have no notification" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
+                </StackPanel>
+                <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
+                    <StackPanel.ChildrenTransitions>
+                        <TransitionCollection>
+                            <PopupThemeTransition/>
+                            <RepositionThemeTransition/>
+                        </TransitionCollection>
+                    </StackPanel.ChildrenTransitions>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
         <Frame x:Name="WebView2Frame"/>
     </Grid>
 </Page>
