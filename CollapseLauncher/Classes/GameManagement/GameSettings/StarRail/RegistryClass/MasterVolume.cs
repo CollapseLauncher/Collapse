@@ -32,6 +32,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         #endregion
 
         #region Methods
+#nullable enable
         public static MasterVolume Load()
         {
             try
@@ -68,6 +69,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
             return comparedTo.mastervol == this.mastervol;
         }
+#nullable disable
         #endregion
     }
 }

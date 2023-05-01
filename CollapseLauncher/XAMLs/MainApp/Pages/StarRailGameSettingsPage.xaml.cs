@@ -46,8 +46,8 @@ namespace CollapseLauncher.Pages
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
+                    OverlayTitle.Text = Lang._StarRailGameSettingsPage.OverlayGameRunningTitle;
+                    OverlaySubtitle.Text = Lang._StarRailGameSettingsPage.OverlayGameRunningSubtitle;
 
                     return;
                 }
@@ -57,8 +57,8 @@ namespace CollapseLauncher.Pages
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
-                    OverlayTitle.Text = Lang._GameSettingsPage.OverlayNotInstalledTitle;
-                    OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayNotInstalledSubtitle;
+                    OverlayTitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledTitle;
+                    OverlaySubtitle.Text = Lang._StarRailGameSettingsPage.OverlayNotInstalledSubtitle;
 
                     return;
                 }
@@ -78,7 +78,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ApplyText.Foreground = InheritApplyTextColor;
-                ApplyText.Text = Lang._GameSettingsPage.SettingsApplied;
+                ApplyText.Text = Lang._StarRailGameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
                 Settings.SaveSettings();

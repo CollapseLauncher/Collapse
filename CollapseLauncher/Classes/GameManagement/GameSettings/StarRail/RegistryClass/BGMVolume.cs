@@ -35,6 +35,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         #endregion
 
         #region Methods
+#nullable enable
         public static BGMVolume Load()
         {
             try
@@ -71,6 +72,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
             return comparedTo.bgmvol == this.bgmvol;
         }
+#nullable disable
         #endregion
     }
 }
