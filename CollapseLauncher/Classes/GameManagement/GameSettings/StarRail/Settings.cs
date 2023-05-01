@@ -37,6 +37,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
             GraphicsSettings = Model.Load();
+            SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsScreen = PCResolution.Load();
         }
 
         public void RevertSettings() => InitializeSettings();

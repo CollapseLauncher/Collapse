@@ -28,6 +28,8 @@
                 public string CustomArgs_Footer1 { get; set; } = LangFallback?._StarRailGameSettingsPage.CustomArgs_Footer1;
                 public string CustomArgs_Footer2 { get; set; } = LangFallback?._StarRailGameSettingsPage.CustomArgs_Footer2;
                 public string CustomArgs_Footer3 { get; set; } = LangFallback?._StarRailGameSettingsPage.CustomArgs_Footer3;
+                public string ApplyBtn { get; set; } = LangFallback?._StarRailGameSettingsPage.ApplyBtn;
+                public string SettingsApplied { get; set; } = LangFallback?._StarRailGameSettingsPage.SettingsApplied;
             }
         }
         #endregion

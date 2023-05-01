@@ -19,7 +19,7 @@
         <Grid x:Name="PageContent">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="32,80,32,32" Padding="0,0,0,74">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -28,33 +28,33 @@
                         <StackPanel Grid.Column="0">
                             <StackPanel x:Name="GameResolutionPanel" Margin="0,16">
                                 <StackPanel>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResolutionPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                                     <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,8">
-                                        <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Fullscreen}"
+                                        <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
-                                        <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ExclusiveFullscreen}"
+                                        <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                   HorizontalAlignment="Left"  VerticalAlignment="Center"
                                                   IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
                                                   IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                                         <ComboBox CornerRadius="14" x:Name="GameResolutionSelector"
-                                                  PlaceholderText="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResSelectPlaceholder}" Width="128"
+                                                  PlaceholderText="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResSelectPlaceholder}" Width="128"
                                                   IsEnabled="{x:Bind IsCustomResolutionEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   SelectedItem="{x:Bind ResolutionSelected, Mode=TwoWay}"/>
-                                        <CheckBox x:Name="GameCustomResolutionCheckbox" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustom}"
+                                        <CheckBox x:Name="GameCustomResolutionCheckbox" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustom}"
                                                   VerticalAlignment="Center" Margin="16,0,0,0"
                                                   IsEnabled="{x:Bind IsExclusiveFullscreenEnabled, Mode=OneWay, Converter={StaticResource BooleanInverse}}"
                                                   IsChecked="{x:Bind IsCustomResolutionEnabled, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel x:Name="GameCustomResolutionPanel" Orientation="Horizontal">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustomW}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomW}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                                     <NumberBox CornerRadius="8,8,0,0" x:Name="GameCustomResolutionWidth" Value="{x:Bind ResolutionW, Mode=TwoWay}"
                                                IsEnabled="{x:Bind IsCanResolutionWH, Mode=OneWay}"
                                                HorizontalAlignment="Left" Width="100"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ResCustomH}" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResCustomH}" VerticalAlignment="Center" Margin="16,0,8,0"/>
                                     <NumberBox CornerRadius="8,8,0,0" x:Name="GameCustomResolutionHeight" Value="{x:Bind ResolutionH, Mode=TwoWay}"
                                                IsEnabled="{x:Bind IsCanResolutionWH, Mode=OneWay}"
                                                HorizontalAlignment="Left" Width="100"/>
@@ -63,14 +63,14 @@
                         </StackPanel>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,48"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
                              HorizontalAlignment="Stretch" Margin="0,0,0,16"/>
                     <TextBlock>
-                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer1}"/>
-                        <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer2}" FontWeight="Bold"/></Hyperlink>
-                        <Run Text="{x:Bind helper:Locale.Lang._GameSettingsPage.CustomArgs_Footer3}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer1}"/>
+                        <Hyperlink NavigateUri="https://docs.unity3d.com/Manual/PlayerCommandLineArguments.html" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer2}" FontWeight="Bold"/></Hyperlink>
+                        <Run Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Footer3}"/>
                     </TextBlock>
                 </StackPanel>
             </ScrollViewer>
@@ -86,33 +86,10 @@
                             VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{ThemeResource SharedShadow}">
                     <StackPanel Orientation="Horizontal" Margin="8,0">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="14"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
-                <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" Margin="16,-4,16,0" VerticalAlignment="Center" FontWeight="Medium"/>
-                    <Button x:Name="RegistryExport" CornerRadius="16,0,0,16" Height="32"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Click="RegistryExportClick"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTooltip}">
-                        <StackPanel Orientation="Horizontal" Margin="8,0">
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf56e;" FontSize="14"/>
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegExportTitle}" Margin="8,0,0,0" FontWeight="Medium"/>
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="RegistryImport" CornerRadius="0,16,16,0" Height="32"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Click="RegistryImportClick"
-                            ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTooltip}">
-                        <StackPanel Orientation="Horizontal" Margin="8,0">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportTitle}" Margin="0,0,8,0" FontWeight="Medium"/>
-                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf56f;" FontSize="14"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
             </Grid>
             <Grid x:Name="Overlay" Visibility="Collapsed">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,176,0,0">
