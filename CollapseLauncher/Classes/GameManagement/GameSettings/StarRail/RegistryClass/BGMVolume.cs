@@ -19,9 +19,6 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string _ValueName = "AudioSettings_BGMVolume_h240914409";
-        private const string _ValueNameMasterVolume = "AudioSettings_MasterVolume_h1622207037";
-        private const string _ValueNameSFXVolume = "AudioSettings_SFXVolume_h2753520268";
-        private const string _ValueNameVOVolume = "AudioSettings_VOVolume_h805685304";
         #endregion
 
         #region Properties

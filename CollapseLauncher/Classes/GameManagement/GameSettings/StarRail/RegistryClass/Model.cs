@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameSettings.StarRail.Context;
-using CollapseLauncher.GameSettings.StarRail.Enums;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -21,53 +20,82 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         #region Properties
         /// <summary>
-        /// This defines "<c>Anti Aliasing</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectAAMode"/>
-        /// Default: TAA
+        /// This defines "<c>FPS</c>" combobox In-game settings. <br/>
+        /// Options: 30, 60, 120 (EXPERIMENTAL)
+        /// Default: 60
         /// </summary>
-        public SelectAAMode AAMode { get; set; } = SelectAAMode.TAA;
+        public float FPS { get; set; } = 60;
 
         /// <summary>
-        /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectBloomQuality"/>
-        /// Default: Low
+        /// This defines "<c>V-Sync</c>" combobox In-game settings. <br/>
+        /// Options: true, false
+        /// Default: false
         /// </summary>
-        public SelectBloomQuality BloomQuality { get; set; } = SelectBloomQuality.Low;
+        public bool EnableVSync { get; set; } = false;
 
         /// <summary>
-        /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectCharacterQuality"/>
-        /// Default: Low
+        /// This defines "<c>Render Scale</c>" combobox In-game settings. <br/>
+        /// Options: 0.6, 0.8, 1.0, 1.2, 1.4
+        /// Default: 1.0
         /// </summary>
-        public SelectCharacterQuality CharacterQuality { get; set; } = SelectCharacterQuality.Low;
+        public double RenderScale { get; set; } = 1.0;
 
         /// <summary>
-        /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectEnvDetailQuality"/>
-        /// Default: Low
+        /// No idea what this is still...
+        /// Options: 0, 1, 2, 3, 4
+        /// Default: 1.0
         /// </summary>
-        public SelectEnvDetailQuality EnvDetailQuality { get; set; } = SelectEnvDetailQuality.Low;
-
-        /// <summary>
-        /// This defines "<c>Light Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectLightQuality"/>
-        /// Default: Low
-        /// </summary>
-        public SelectLightQuality LightQuality { get; set; } = SelectLightQuality.Low;
-       
-        /// <summary>
-        /// This defines "<c>Reflection Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectReflectionQuality"/>
-        /// Default: Low
-        /// </summary>
-        public SelectReflectionQuality ReflectionQuality { get; set; } = SelectReflectionQuality.Low;
+        public int ResolutionQuality { get; set; } = 1;
 
         /// <summary>
         /// This defines "<c>Shadow Quality</c>" combobox In-game settings. <br/>
-        /// <inheritdoc cref="SelectShadowQuality"/>
+        /// Options: Off(0), Low (2), Medium(3), High(4)
         /// Default: Low
         /// </summary>
-        public SelectShadowQuality ShadowQuality { get; set; } = SelectShadowQuality.Low;
+        public int ShadowQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Light Quality</c>" combobox In-game settings. <br/>
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Default: Low
+        /// </summary>
+        public int LightQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
+        /// Options: Low (2), Medium(3), High(4)
+        /// Default: Low
+        /// </summary>
+        public int CharacterQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Default: Low
+        /// </summary>
+        public int EnvDetailQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Reflection Quality</c>" combobox In-game settings. <br/>>
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Default: Low
+        /// </summary>
+        public int ReflectionQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
+        /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
+        /// Default: Low
+        /// </summary>
+        public int BloomQuality { get; set; } = 2;
+
+        /// <summary>
+        /// This defines "<c>Anti Aliasing</c>" combobox In-game settings. <br/>
+        /// Options: Off (0), TAA (1), FXAA (2)
+        /// Default: TAA
+        /// </summary>
+        public int AAMode { get; set; } = 1;
+
         #endregion
 
         #region Methods
@@ -119,7 +147,11 @@ namespace CollapseLauncher.GameSettings.StarRail
                 comparedTo.CharacterQuality == this.CharacterQuality &&
                 comparedTo.BloomQuality == this.BloomQuality &&
                 comparedTo.EnvDetailQuality == this.EnvDetailQuality &&
-                comparedTo.ReflectionQuality == this.ReflectionQuality;
+                comparedTo.ReflectionQuality == this.ReflectionQuality &&
+                comparedTo.FPS == this.FPS &&
+                comparedTo.EnableVSync == this.EnableVSync &&
+                comparedTo.RenderScale == this.RenderScale &&
+                comparedTo.ResolutionQuality == this.ResolutionQuality;
 #nullable disable
         }
         #endregion

@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.StarRail;
-using CollapseLauncher.GameSettings.StarRail.Enums;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -130,90 +129,124 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
-        //WAITING FOR FPS TO BE IMPLEMENTED ON CLASSES
-        #region FPS
-        private void UpdateFPS()
-        {
-            OnPropertyChanged("FPS");
-        }
- //       public short FPS
- //       {
- //           get => Settings.GraphicsSettings.FPS;
- //       }
-        #endregion
         #region Models(basically graphics settings, well, partially anyway)
         private void UpdateModels()
         {
-            OnPropertyChanged("AAMode");
-            OnPropertyChanged("BloomQuality");
+            OnPropertyChanged("FPS");
+            OnPropertyChanged("EnableVSync");
+            OnPropertyChanged("RenderScale");
+            OnPropertyChanged("ResolutionQuality");
+            OnPropertyChanged("ShadowQuality");
+            OnPropertyChanged("LightQuality");
             OnPropertyChanged("CharacterQuality");
             OnPropertyChanged("EnvDetailQuality");
-            OnPropertyChanged("LightQuality");
             OnPropertyChanged("ReflectionQuality");
-            OnPropertyChanged("ShadowQuality");
+            OnPropertyChanged("BloomQuality");
+            OnPropertyChanged("AAMode");
         }
-        //AAMode
-        public int AAMode
+        //FPS
+        public float FPS
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.AAMode;
-            set => Settings.GraphicsSettings.AAMode = (SelectAAMode)value;
+            get => Settings.GraphicsSettings.FPS;
+            set => Settings.GraphicsSettings.FPS = value;
         }
-        //BloomQuality
-        public int BloomQuality
+        //VSync
+        public bool EnableVSync
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.BloomQuality;
-            set => Settings.GraphicsSettings.BloomQuality = (SelectBloomQuality)value;
+            get => Settings.GraphicsSettings.EnableVSync;
+            set => Settings.GraphicsSettings.EnableVSync = value;
         }
-        //CharacterQuality
-        public int CharacterQuality
+        //RenderScale
+        public double RenderScale
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.CharacterQuality;
-            set => Settings.GraphicsSettings.CharacterQuality = (SelectCharacterQuality)value;
+            get => Settings.GraphicsSettings.RenderScale;
+            set => Settings.GraphicsSettings.RenderScale = value;
         }
-        //EnvDetailQuality
-        public int EnvDetailQuality
+        //ResolutionQuality
+        public int ResolutionQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.EnvDetailQuality;
-            set => Settings.GraphicsSettings.EnvDetailQuality = (SelectEnvDetailQuality)value;
-        }
-        //LightQuality
-        public int LightQuality
-        {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.LightQuality;
-            set => Settings.GraphicsSettings.LightQuality = (SelectLightQuality)value;
-        }
-        //ReflectionQuality
-        public int ReflectionQuality
-        {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.ReflectionQuality;
-            set => Settings.GraphicsSettings.ReflectionQuality = (SelectReflectionQuality)value;
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.ResolutionQuality;
+            set => Settings.GraphicsSettings.ResolutionQuality = value;
         }
         //ShadowQuality
         public int ShadowQuality
         {
             get => prevGraphSelect = (int)Settings.GraphicsSettings.ShadowQuality;
-            set => Settings.GraphicsSettings.ShadowQuality = (SelectShadowQuality)value;
+            set => Settings.GraphicsSettings.ShadowQuality = value;
+        }
+        //LightQuality
+        public int LightQuality
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.LightQuality;
+            set => Settings.GraphicsSettings.LightQuality = value;
+        }
+        //CharacterQuality
+        public int CharacterQuality
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.CharacterQuality;
+            set => Settings.GraphicsSettings.CharacterQuality = value;
+        }
+        //EnvDetailQuality
+        public int EnvDetailQuality
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.EnvDetailQuality;
+            set => Settings.GraphicsSettings.EnvDetailQuality = value;
+        }
+        //ReflectionQuality
+        public int ReflectionQuality
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.ReflectionQuality;
+            set => Settings.GraphicsSettings.ReflectionQuality = value;
+        }
+        //BloomQuality
+        public int BloomQuality
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.BloomQuality;
+            set => Settings.GraphicsSettings.BloomQuality = value;
+        }
+        //AAMode
+        public int AAMode
+        {
+            get => prevGraphSelect = (int)Settings.GraphicsSettings.AAMode;
+            set => Settings.GraphicsSettings.AAMode = value;
         }
         #endregion
+
         #region Audio
+        private void UpdateAudioMasterVolume()
+        {
+            OnPropertyChanged("AudioMasterVolume");
+        }
         public int AudioMasterVolume
         {
             get => Settings.AudioSettings_Master.mastervol;
             set => Settings.AudioSettings_Master.mastervol = value;
         }
 
+        private void UpdateAudioBGMVolume()
+        {
+            OnPropertyChanged("AudioBGMVolume");
+        }
         public int AudioBGMVolume
         {
             get => Settings.AudioSettings_BGM.bgmvol;
             set => Settings.AudioSettings_BGM.bgmvol = value;
         }
 
+        private void UpdateAudioSFXVolume()
+        {
+            OnPropertyChanged("AudioSFXVolume");
+        }
         public int AudioSFXVolume
         {
             get => Settings.AudioSettings_SFX.sfxvol;
             set => Settings.AudioSettings_SFX.sfxvol = value;
         }
 
+        private void UpdateAudioVOVolume()
+        {
+            OnPropertyChanged("AudioVOVolume");
+        }
         public int AudioVOVolume
         {
             get => Settings.AudioSettings_VO.vovol;
