@@ -3,7 +3,7 @@
 namespace CollapseLauncher.GameSettings.StarRail.Enums
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    internal enum SelectShadowQuality : int { Low, Medium, High }
+    internal enum SelectShadowQuality : int { Off, Low = 2, Medium, High }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     internal enum SelectLightQuality : int { VeryLow = 1, Low, Medium, High, VeryHigh }
