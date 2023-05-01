@@ -44,6 +44,10 @@ namespace CollapseLauncher
                         case CacheAssetType.Unused:
                         case CacheAssetType.Dispatcher:
                         case CacheAssetType.Gateway:
+                        case CacheAssetType.General:
+                        case CacheAssetType.IFix:
+                        case CacheAssetType.DesignData:
+                        case CacheAssetType.Lua:
                             continue;
                     }
 
