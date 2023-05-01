@@ -661,7 +661,7 @@ namespace CollapseLauncher.Pages
             {
                 if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
                 {
-                    parameter.Append("-window-mode exclusive ");
+                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                 }
 

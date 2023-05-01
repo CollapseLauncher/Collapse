@@ -949,11 +949,6 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) && (string)tag.Tag != "launcher")
-            {
-                sourceType = typeof(UnavailablePage);
-                tagStr = "unavailable";
-            }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
         }
