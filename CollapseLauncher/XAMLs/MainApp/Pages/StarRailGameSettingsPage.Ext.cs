@@ -217,7 +217,7 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioMasterVolume");
         }
-        public int AudioMasterVolume
+        public float AudioMasterVolume
         {
             get => Settings.AudioSettings_Master.mastervol;
             set => Settings.AudioSettings_Master.mastervol = value;
@@ -227,7 +227,7 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioBGMVolume");
         }
-        public int AudioBGMVolume
+        public float AudioBGMVolume
         {
             get => Settings.AudioSettings_BGM.bgmvol;
             set => Settings.AudioSettings_BGM.bgmvol = value;
@@ -237,7 +237,7 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioSFXVolume");
         }
-        public int AudioSFXVolume
+        public float AudioSFXVolume
         {
             get => Settings.AudioSettings_SFX.sfxvol;
             set => Settings.AudioSettings_SFX.sfxvol = value;
@@ -247,7 +247,7 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioVOVolume");
         }
-        public int AudioVOVolume
+        public float AudioVOVolume
         {
             get => Settings.AudioSettings_VO.vovol;
             set => Settings.AudioSettings_VO.vovol = value;

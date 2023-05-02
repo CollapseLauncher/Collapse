@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
+using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
@@ -27,7 +28,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: 0 - 10
         /// Default: 10
         /// </summary>
-        public int sfxvol { get; set; } = 10;
+        public float sfxvol { get; set; } = 10;
 
         #endregion
 
@@ -38,8 +39,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-
                 object? value = RegistryRoot.GetValue(_ValueName, null);
+                LogWriteLine($"Loaded {_ValueName} with the value of {value}");
             }
             catch (Exception ex)
             {
@@ -54,6 +55,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, sfxvol, RegistryValueKind.DWord);
+                LogWriteLine($"Saved {_ValueName} with {sfxvol}", LogType.Default, true);
             }
             catch (Exception ex)
             {

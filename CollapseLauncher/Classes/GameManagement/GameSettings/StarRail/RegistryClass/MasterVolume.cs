@@ -27,7 +27,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: 0 - 10
         /// Default: 10
         /// </summary>
-        public int mastervol { get; set; } = 10;
+        public float mastervol { get; set; } = 10;
 
         #endregion
 
@@ -40,6 +40,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 object? value = RegistryRoot.GetValue(_ValueName, null);
+                LogWriteLine($"Loaded {_ValueName} with the value of {value}");
             }
             catch (Exception ex)
             {
@@ -54,6 +55,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, mastervol, RegistryValueKind.DWord);
+                LogWriteLine($"Saved {_ValueName} with {mastervol}", LogType.Default, true);
             }
             catch (Exception ex)
             {

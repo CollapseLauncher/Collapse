@@ -96,10 +96,6 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Classes\GameManagement\GameSettings\StarRail\RegistryClass\Enums\" />
-	</ItemGroup>
 	
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
