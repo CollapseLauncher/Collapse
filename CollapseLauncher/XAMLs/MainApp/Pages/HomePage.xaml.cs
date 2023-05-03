@@ -638,9 +638,12 @@ namespace CollapseLauncher.Pages
 
                 WatchOutputLog = new CancellationTokenSource();
 
-                ReadOutputLog();
-                GameLogWatcher();
-
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    ReadOutputLog();
+                    GameLogWatcher();
+                }
+                
                 await proc.WaitForExitAsync();
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -701,9 +704,6 @@ namespace CollapseLauncher.Pages
                         break;
                 }
             }
-
-            if (!GetAppConfigValue("EnableConsole").ToBool())
-                parameter.Append("-nolog ");
 
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
