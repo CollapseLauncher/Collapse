@@ -21,6 +21,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         private const string _ValueName = "GraphicsSettings_PCResolution_h431323223";
         private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
         private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
+        private const string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
         private static Size currentRes = ScreenProp.currentResolution;
         #endregion
 
@@ -133,6 +134,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         private void SaveIndividualRegistry()
         {
+            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
