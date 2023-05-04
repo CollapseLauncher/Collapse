@@ -64,6 +64,22 @@ namespace CollapseLauncher.Pages
                 }
 #if !DISABLEDISCORD
                 AppDiscordPresence.SetActivity(ActivityType.GameSettings);
+                LogWriteLine($"Loaded Volume Master = {AudioMasterVolume}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Volume BGM    = {AudioBGMVolume}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Volume SFX    = {AudioSFXVolume}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Volume VO     = {AudioVOVolume}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics FPS      = {FPS}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics VSync    = {EnableVSync}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics RenScal  = {RenderScale}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics ResQ     = {ResolutionQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics ShadowQ  = {ShadowQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics LightQ   = {LightQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics CharaQ   = {CharacterQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics EnvDetQ  = {EnvDetailQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics ReflQ    = {ReflectionQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics BloomQ   = {BloomQuality}", Hi3Helper.LogType.Default, true);
+                LogWriteLine($"Loaded Graphics AAMode   = {AAMode}", Hi3Helper.LogType.Default, true);
+
 #endif
             }
             catch (Exception ex)
