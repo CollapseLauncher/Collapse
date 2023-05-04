@@ -30,6 +30,18 @@
                 public string CustomArgs_Footer3 { get; set; } = LangFallback?._StarRailGameSettingsPage.CustomArgs_Footer3;
                 public string ApplyBtn { get; set; } = LangFallback?._StarRailGameSettingsPage.ApplyBtn;
                 public string SettingsApplied { get; set; } = LangFallback?._StarRailGameSettingsPage.SettingsApplied;
+                public string Audio_Title { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_Title;
+                public string Audio_Master { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_Master;
+                public string Audio_BGM { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_BGM;
+                public string Audio_SFX { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_SFX;
+                public string Audio_VO { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_VO;
+                public string Audio_Mute { get; set; } =
+                    LangFallback?._StarRailGameSettingsPage.Audio_Mute;
             }
         }
         #endregion

@@ -28,7 +28,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: 0 - 10
         /// Default: 10
         /// </summary>
-        public float sfxvol { get; set; } = 10;
+        public float SFXVol { get; set; } = 10;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(_ValueName);
                 LogWriteLine($"Loaded {_ValueName} with the value of {value}");
             }
             catch (Exception ex)
@@ -54,8 +54,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot?.SetValue(_ValueName, sfxvol, RegistryValueKind.DWord);
-                LogWriteLine($"Saved {_ValueName} with {sfxvol}", LogType.Default, true);
+                RegistryRoot?.SetValue(_ValueName, SFXVol, RegistryValueKind.DWord);
+                LogWriteLine($"Saved {_ValueName} with {SFXVol}", LogType.Default, true);
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             if (ReferenceEquals(this, comparedTo)) return true;
             if (comparedTo == null) return false;
 
-            return comparedTo.sfxvol == this.sfxvol;
+            return comparedTo.SFXVol == this.SFXVol;
         }
 #nullable disable
         #endregion

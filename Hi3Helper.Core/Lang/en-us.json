@@ -678,6 +678,13 @@
     "CustomArgs_Subtitle": "Start-up Arguments",
     "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
-    "CustomArgs_Footer3": "to see more parameters."
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "Audio_Title": "Audio Settings",
+    "Audio_Master": "Master Volume",
+    "Audio_BGM": "BGM Volume",
+    "Audio_SFX": "Sound Effects Volume",
+    "Audio_VO": "Voice Over Volume",
+    "Audio_Mute": "Mute Audio"
   }
 }

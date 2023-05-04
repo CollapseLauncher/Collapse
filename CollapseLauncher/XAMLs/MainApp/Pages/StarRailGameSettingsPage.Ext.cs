@@ -1,10 +1,12 @@
 ﻿using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.StarRail;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Pages
 {
@@ -147,19 +149,19 @@ namespace CollapseLauncher.Pages
         //FPS
         public float FPS
         {
-            get => Settings.GraphicsSettings.FPS;
+            get => (float)Settings.GraphicsSettings.FPS;
             set => Settings.GraphicsSettings.FPS = value;
         }
         //VSync
         public bool EnableVSync
         {
-            get => Settings.GraphicsSettings.EnableVSync;
+            get => (bool)Settings.GraphicsSettings.EnableVSync;
             set => Settings.GraphicsSettings.EnableVSync = value;
         }
         //RenderScale
         public double RenderScale
         {
-            get => Settings.GraphicsSettings.RenderScale;
+            get => (double)Settings.GraphicsSettings.RenderScale;
             set => Settings.GraphicsSettings.RenderScale = value;
         }
         //ResolutionQuality
@@ -219,8 +221,8 @@ namespace CollapseLauncher.Pages
         }
         public float AudioMasterVolume
         {
-            get => Settings.AudioSettings_Master.mastervol;
-            set => Settings.AudioSettings_Master.mastervol = value;
+            get => Settings.AudioSettings_Master.MasterVol = (float)Settings.AudioSettings_Master.MasterVol;
+            set => Settings.AudioSettings_Master.MasterVol = value;
         }
 
         private void UpdateAudioBGMVolume()
@@ -229,8 +231,8 @@ namespace CollapseLauncher.Pages
         }
         public float AudioBGMVolume
         {
-            get => Settings.AudioSettings_BGM.bgmvol;
-            set => Settings.AudioSettings_BGM.bgmvol = value;
+            get => Settings.AudioSettings_BGM.BGMVol = (float)Settings.AudioSettings_BGM.BGMVol;
+            set => Settings.AudioSettings_BGM.BGMVol = value;
         }
 
         private void UpdateAudioSFXVolume()
@@ -239,8 +241,8 @@ namespace CollapseLauncher.Pages
         }
         public float AudioSFXVolume
         {
-            get => Settings.AudioSettings_SFX.sfxvol;
-            set => Settings.AudioSettings_SFX.sfxvol = value;
+            get => Settings.AudioSettings_SFX.SFXVol = (float)Settings.AudioSettings_SFX.SFXVol;
+            set => Settings.AudioSettings_SFX.SFXVol = value;
         }
 
         private void UpdateAudioVOVolume()
@@ -249,8 +251,8 @@ namespace CollapseLauncher.Pages
         }
         public float AudioVOVolume
         {
-            get => Settings.AudioSettings_VO.vovol;
-            set => Settings.AudioSettings_VO.vovol = value;
+            get => Settings.AudioSettings_VO.VOVol = (float)Settings.AudioSettings_VO.VOVol;
+            set => Settings.AudioSettings_VO.VOVol = value;
         }
         #endregion
     }

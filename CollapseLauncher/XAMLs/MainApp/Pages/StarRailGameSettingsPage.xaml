@@ -63,6 +63,68 @@
                         </StackPanel>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,48"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <StackPanel x:Name="AudioSettingsPanelLeft" Margin="0,16,64,16">
+                                <StackPanel>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Master}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                                    <StackPanel Orientation="Vertical" Margin="0,0,32,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40px"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{Binding Value, ElementName=AudioMasterVolumeSlider}"/>
+                                            <Slider x:Name="AudioMasterVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="10" TickPlacement="Outside"
+                                            Value="{x:Bind AudioMasterVolume, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_SFX}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                                    <StackPanel Orientation="Vertical" Margin="0,0,32,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40px"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{Binding Value, ElementName=AudioSFXVolumeSlider}"/>
+                                            <Slider x:Name="AudioSFXVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="10" TickPlacement="Outside"
+                                            Value="{x:Bind AudioSFXVolume, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                                    <StackPanel Orientation="Vertical" Margin="0,0,32,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40px"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{Binding Value, ElementName=AudioBGMVolumeSlider}"/>
+                                            <Slider x:Name="AudioBGMVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="10" TickPlacement="Outside"
+                                            Value="{x:Bind AudioBGMVolume, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_VO}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                                    <StackPanel Orientation="Vertical" Margin="0,0,32,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40px"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" VerticalAlignment="Center" Text="{Binding Value, ElementName=AudioVOVolumeSlider}"/>
+                                            <Slider x:Name="AudioVOVolumeSlider" Grid.Column="1" TickFrequency="1" Maximum="10" TickPlacement="Outside"
+                                            Value="{x:Bind AudioVOVolume, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <MenuFlyoutSeparator Margin="0,48"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
