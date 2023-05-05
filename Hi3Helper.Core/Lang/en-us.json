@@ -677,6 +677,7 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
 
+    "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
     "SpecDisabled": "Disabled",
     "SpecVeryLow": "Very Low",

@@ -68,7 +68,7 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="StarRailGameGraphicsPanel" Margin="0,16" Grid.Column="1">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
