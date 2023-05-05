@@ -131,7 +131,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
-        #region Models(basically graphics settings, well, partially anyway)
+        #region Models
         private void UpdateModels()
         {
             OnPropertyChanged("FPS");
