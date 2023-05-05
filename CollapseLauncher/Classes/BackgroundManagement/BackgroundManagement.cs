@@ -97,7 +97,6 @@ namespace CollapseLauncher
 
             return ret.data.adv == null
               || ((ret.data.adv.version ?? 5) <= 4
-                && Preset.FallbackGameType == GameType.Unknown // TODO: Remove this line after 1.70.x release
                 && Preset.GameType == GameType.Honkai) ?
                     await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
                     ret;
@@ -158,8 +157,6 @@ namespace CollapseLauncher
                     Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
                 });
             }
-
-            regionNewsProp.sideMenuPanel = regionNewsProp.sideMenuPanel.OrderBy(x => x.URL).ToList();
         }
 
         private async ValueTask GetLauncherCarouselInfo(CancellationToken Token)
