@@ -77,7 +77,7 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <!--
-                                    Need to figure out how to select it from 5 float options
+                                    Need to figure out how to select it from 5 double options
                                     Options: 0.6, 0.8, 1.0, 1.2, 1.4
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
