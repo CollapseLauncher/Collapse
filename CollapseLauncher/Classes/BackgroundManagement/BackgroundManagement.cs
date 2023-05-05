@@ -461,6 +461,11 @@ namespace CollapseLauncher
 
             FadeOutFrontBg();
             FadeOutBackBg();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.WaitForFullGCComplete();
+            GC.Collect();
         }
 
         private async void FadeOutFrontBg()
