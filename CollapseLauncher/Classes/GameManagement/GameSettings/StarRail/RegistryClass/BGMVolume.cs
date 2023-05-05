@@ -39,8 +39,13 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName);
+                object? value = RegistryRoot.GetValue(_ValueName, null);
                 LogWriteLine($"Loaded {_ValueName} with the value of {value}");
+                if (value != null)
+                {
+                    int bgmVolume = (int)value;
+                    return new BGMVolume { BGMVol = (float)bgmVolume };
+                }
             }
             catch (Exception ex)
             {
