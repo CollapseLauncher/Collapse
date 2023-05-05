@@ -84,6 +84,8 @@ namespace CollapseLauncher
 
         public static async Task<bool> CheckForAdminAccess(UIElement root)
         {
+            if (!IsPrincipalHasNoAdministratorAccess()) return true;
+
             ContentDialog dialog = new ContentDialog
             {
                 Title = Lang._Dialogs.PrivilegeMustRunTitle,
@@ -93,46 +95,40 @@ namespace CollapseLauncher
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = root.XamlRoot
             };
-
-            if (IsPrincipalHasAdministratorAccess())
+            
+            while (true)
             {
-                bool IsStillLoop = true;
-                while (IsStillLoop)
+                switch (await dialog.ShowAsync())
                 {
-                    switch (await dialog.ShowAsync())
-                    {
-                        case ContentDialogResult.Primary:
-                            try
+                    case ContentDialogResult.Primary:
+                        try
+                        {
+                            Process proc = new Process()
                             {
-                                Process proc = new Process()
+                                StartInfo = new ProcessStartInfo
                                 {
-                                    StartInfo = new ProcessStartInfo
-                                    {
-                                        UseShellExecute = true,
-                                        Verb = "runas",
-                                        FileName = AppExecutablePath,
-                                        WorkingDirectory = AppFolder,
-                                        Arguments = string.Join(' ', AppCurrentArgument)
-                                    }
-                                };
-                                proc.Start();
-                                IsStillLoop = false;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
-                            }
-                            break;
-                        default:
+                                    UseShellExecute = true,
+                                    Verb = "runas",
+                                    FileName = AppExecutablePath,
+                                    WorkingDirectory = AppFolder,
+                                    Arguments = string.Join(' ', AppCurrentArgument)
+                                }
+                            };
+                            proc.Start();
                             return false;
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
+                        }
+                        break;
+                    default:
+                        return false;
                 }
-                return false;
             }
-            return true;
         }
 
-        private static bool IsPrincipalHasAdministratorAccess()
+        private static bool IsPrincipalHasNoAdministratorAccess()
         {
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
@@ -154,6 +150,8 @@ namespace CollapseLauncher
                     return;
                 }
 
+                LauncherUpdateWatcher.StartCheckUpdate();
+
                 LoadGamePreset();
                 SetThemeParameters();
 
@@ -162,8 +160,6 @@ namespace CollapseLauncher
                 SubscribeEvents();
 
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-
-                LauncherUpdateWatcher.StartCheckUpdate();
 
                 await InitializeStartup();
             }
