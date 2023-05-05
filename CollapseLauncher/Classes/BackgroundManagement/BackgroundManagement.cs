@@ -382,7 +382,7 @@ namespace CollapseLauncher
                                                 ColorManagementMode.DoNotColorManage);
 
             if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSizeW, ref ResizedSizeH);
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, outputRandomStream);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(alpMod == BitmapAlphaMode.Straight ? BitmapEncoder.PngEncoderId : decoder.DecoderInformation.CodecId, outputRandomStream);
             byte[] pixelDataBytes = pixelData.DetachPixelData();
             encoder.SetPixelData(pixFmt, alpMod, ResizedSizeW, ResizedSizeH, m_appDPIScale, m_appDPIScale, pixelDataBytes);
 
