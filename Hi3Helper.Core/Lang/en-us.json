@@ -664,6 +664,27 @@
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
+    "Graphics_FPS": "FPS",
+    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use in caution, Do With Your Own Risk (DWYOR).",
+    "Graphics_VSync": "VSync",
+    "Graphics_RenderScale": "Render Scale",
+    "Graphics_ResolutionQuality": "Resolution Quality",
+    "Graphics_ShadowQuality": "Shadow Quality",
+    "Graphics_LightQuality": "Light Quality",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_EnvDetailQuality": "Environment Detail",
+    "Graphics_ReflectionQuality": "Reflection Quality",
+    "Graphics_BloomQuality": "Bloom Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+
+    "SpecEnabled": "Enabled",
+    "SpecDisabled": "Disabled",
+    "SpecVeryLow": "Very Low",
+    "SpecLow": "Low",
+    "SpecMedium": "Medium",
+    "SpecHigh": "High",
+    "SpecVeryHigh": "Very High",
+
     "ApplyBtn": "Apply Settings",
     "SettingsApplied": "Changes have been saved!",
 

@@ -30,18 +30,31 @@
                 public string CustomArgs_Footer3 { get; set; } = LangFallback?._StarRailGameSettingsPage.CustomArgs_Footer3;
                 public string ApplyBtn { get; set; } = LangFallback?._StarRailGameSettingsPage.ApplyBtn;
                 public string SettingsApplied { get; set; } = LangFallback?._StarRailGameSettingsPage.SettingsApplied;
-                public string Audio_Title { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_Title;
-                public string Audio_Master { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_Master;
-                public string Audio_BGM { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_BGM;
-                public string Audio_SFX { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_SFX;
-                public string Audio_VO { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_VO;
-                public string Audio_Mute { get; set; } =
-                    LangFallback?._StarRailGameSettingsPage.Audio_Mute;
+                public string Audio_Title { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_Title;
+                public string Audio_Master { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_Master;
+                public string Audio_BGM { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_BGM;
+                public string Audio_SFX { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_SFX;
+                public string Audio_VO { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_VO;
+                public string Audio_Mute { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_Mute;
+                public string Graphics_FPS { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS;
+                public string Graphics_FPS_Help { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS_Help;
+                public string Graphics_VSync { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_VSync;
+                public string Graphics_RenderScale { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_RenderScale;
+                public string Graphics_ResolutionQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ResolutionQuality;
+                public string Graphics_ShadowQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ShadowQuality;
+                public string Graphics_LightQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_LightQuality;
+                public string Graphics_CharacterQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_CharacterQuality;
+                public string Graphics_EnvDetailQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_EnvDetailQuality;
+                public string Graphics_ReflectionQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ReflectionQuality;
+                public string Graphics_BloomQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_BloomQuality;
+                public string Graphics_AAMode { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_AAMode;
+                public string SpecEnabled { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecEnabled;
+                public string SpecDisabled { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecDisabled;
+                public string SpecVeryLow { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecVeryLow;
+                public string SpecLow { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecLow;
+                public string SpecMedium { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecMedium;
+                public string SpecHigh { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecHigh;
+                public string SpecVeryHigh { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecVeryHigh;
             }
         }
         #endregion
