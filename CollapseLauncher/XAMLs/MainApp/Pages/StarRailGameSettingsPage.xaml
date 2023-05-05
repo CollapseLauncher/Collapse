@@ -86,7 +86,7 @@
 -->
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ShadowQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="ShadowQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">
+                                        <ComboBox x:Name="ShadowQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind ShadowQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -97,7 +97,7 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_LightQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="LightQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind LightQuality, Mode=TwoWay}">
+                                        <ComboBox x:Name="LightQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind LightQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -116,8 +116,8 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_CharacterQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="CharacterQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_CharacterQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="CharacterQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind CharacterQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -127,8 +127,8 @@
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_EnvDetailQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="EnvDetailQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind EnvDetailQuality, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_EnvDetailQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="EnvDetailQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind EnvDetailQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -138,8 +138,8 @@
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ReflectionQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="ReflectionQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind ReflectionQuality, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ReflectionQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="ReflectionQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind ReflectionQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" IsEnabled="False"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -158,8 +158,8 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_BloomQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="BloomQualitySelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind BloomQuality, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_BloomQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="BloomQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind BloomQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
@@ -169,8 +169,8 @@
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_AAMode}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="AAModeSelector" Margin="0,8,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AAMode, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_AAMode}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="AAModeSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AAMode, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="TAA"/>
                                             <ComboBoxItem Content="FXAA"/>
