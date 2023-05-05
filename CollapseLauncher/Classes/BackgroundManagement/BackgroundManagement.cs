@@ -23,6 +23,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Hi3Helper.Preset;
+using Hi3Helper.Data;
 
 namespace CollapseLauncher
 {
@@ -306,66 +307,95 @@ namespace CollapseLauncher
 
         private static Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
         {
-            (uint, uint) OrigSize;
-            (uint, uint) ResizedSize;
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            using (IRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
+            if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder);
+
+            string cachedFileHash = ConverterTool.BytesToCRC32Simple(stream.Name + stream.Length);
+            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+
+            FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
+
+            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 4 << 15;
+            FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create();
+
+            try
             {
-                using (stream)
+                if (!isCachedFileExist)
                 {
-                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-                    BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
-                    BitmapAlphaMode alpMod = decoder.DecoderInformation.CodecId != BitmapDecoder.PngDecoderId ?
-                        BitmapAlphaMode.Ignore :
-                        BitmapAlphaMode.Straight;
-                    ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, OrigSize.Item1 = decoder.PixelWidth, OrigSize.Item2 = decoder.PixelHeight);
-                    BitmapTransform transform = new BitmapTransform()
-                    {
-                        ScaledWidth = ResizedSize.Item1,
-                        ScaledHeight = ResizedSize.Item2,
-                        InterpolationMode = BitmapInterpolationMode.Fant
-                    };
-
-                    PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
-                                                        pixFmt,
-                                                        alpMod,
-                                                        transform,
-                                                        ExifOrientationMode.RespectExifOrientation,
-                                                        ColorManagementMode.DoNotColorManage);
-
-                    if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, BackgroundStream);
-                    byte[] pixelDataBytes = pixelData.DetachPixelData();
-                    encoder.SetPixelData(pixFmt, alpMod, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelDataBytes);
-
-                    await encoder.FlushAsync();
-
-                    if (OrigSize.Item1 > ResizedSize.Item1
-                     && OrigSize.Item2 > ResizedSize.Item2)
-                    {
-                        bitmapRet = await Task.Run(() => Stream2Bitmap(BackgroundStream));
-                    }
-                    else
-                    {
-                        bitmapRet = await Task.Run(() => Stream2Bitmap(stream));
-                    }
-
-                    bitmapImageRet = await Stream2BitmapImage(BackgroundStream);
+                    await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
                 }
+
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+            }
+            catch { throw; }
+            finally
+            {
+                stream?.Dispose();
+                cachedFileStream?.Dispose();
+                GC.Collect();
             }
 
             return (bitmapRet, bitmapImageRet);
         }
 
-        private static void FlipSize(ref (uint, uint) b)
+        private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
         {
-            (uint, uint) _b = b;
-            b.Item1 = _b.Item2;
-            b.Item2 = _b.Item1;
+            uint ResizedSizeW;
+            uint ResizedSizeH;
+
+            IRandomAccessStream inputRandomStream = input.AsRandomAccessStream();
+            IRandomAccessStream outputRandomStream = output.AsRandomAccessStream();
+
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(inputRandomStream);
+            BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
+            BitmapAlphaMode alpMod = decoder.DecoderInformation.CodecId != BitmapDecoder.PngDecoderId ?
+                BitmapAlphaMode.Ignore :
+                BitmapAlphaMode.Straight;
+
+            (ResizedSizeW, ResizedSizeH) = GetPreservedImageRatio(ToWidth, ToHeight, decoder.PixelWidth, decoder.PixelHeight);
+
+            if (decoder.PixelWidth < ResizedSizeW
+             && decoder.PixelHeight < ResizedSizeH)
+            {
+                input.Seek(0, SeekOrigin.Begin);
+                input.CopyTo(output);
+                return;
+            }
+
+            BitmapTransform transform = new BitmapTransform()
+            {
+                ScaledWidth = ResizedSizeW,
+                ScaledHeight = ResizedSizeH,
+                InterpolationMode = BitmapInterpolationMode.Fant
+            };
+
+            PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
+                                                pixFmt,
+                                                alpMod,
+                                                transform,
+                                                ExifOrientationMode.RespectExifOrientation,
+                                                ColorManagementMode.DoNotColorManage);
+
+            if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSizeW, ref ResizedSizeH);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, outputRandomStream);
+            byte[] pixelDataBytes = pixelData.DetachPixelData();
+            encoder.SetPixelData(pixFmt, alpMod, ResizedSizeW, ResizedSizeH, m_appDPIScale, m_appDPIScale, pixelDataBytes);
+
+            await encoder.FlushAsync();
+            outputRandomStream.Seek(0);
+        }
+
+        private static void FlipSize(ref uint w, ref uint h)
+        {
+            uint _w = w;
+            uint _h = h;
+            w = _h;
+            h = _w;
         }
 
         public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
@@ -423,7 +453,7 @@ namespace CollapseLauncher
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            IRandomAccessStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream();
+            FileStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read);
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
