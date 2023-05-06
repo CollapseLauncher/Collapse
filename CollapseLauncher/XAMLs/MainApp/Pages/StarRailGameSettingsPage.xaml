@@ -7,6 +7,7 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:conv="using:CollapseLauncher.Pages"
     xmlns:settype="using:CollapseLauncher.GameSettings"
+    xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -61,14 +62,8 @@
                                                HorizontalAlignment="Left" Width="100"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,8,0"/>
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,4,0,8"/>
-                                <!-- Really need help on this FPS Selector
-                                <ComboBox x:Name="FPSSelector" SelectedValue="{x:Bind FPS, Mode=TwoWay}" SelectedValuePath="{x:Bind FPS, Mode=TwoWay}" Margin="0,8,0,8" Width="128" CornerRadius="14">
-                                    <ComboBoxItem Content="30"/>
-                                    <ComboBoxItem Content="60"/>
-                                    <ComboBoxItem Content="120"/>
-                                </ComboBox>
-                                -->
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
+                                <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:Model.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="StarRailGameGraphicsPanel" Margin="0,16" Grid.Column="1">
@@ -183,7 +178,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,48"/>
+                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -217,6 +212,12 @@
                                             Value="{x:Bind AudioSFXVolume, Mode=TwoWay}"/>
                                         </Grid>
                                     </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <StackPanel x:Name="AudioSettingsPanelRight" Margin="0,16,64,16">
+                                <StackPanel>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                                     <StackPanel Orientation="Vertical" Margin="0,0,32,8">
                                         <Grid>
@@ -245,7 +246,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,48"/>
+                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"

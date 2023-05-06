@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CollapseLauncher.GameSettings.StarRail;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -143,11 +144,22 @@ namespace CollapseLauncher.Pages
             OnPropertyChanged("AAMode");
         }
         //FPS
-        public float FPS
+        public int FPS
         {
-            get => (float)Settings.GraphicsSettings.FPS;
-            set => Settings.GraphicsSettings.FPS = value;
+            get
+            {
+                int fpsValue = NormalizeFPSNumber(Settings.GraphicsSettings.FPS);
+                return Model.FPSIndexDict[fpsValue];
+            }
+            set
+            {
+                Settings.GraphicsSettings.FPS = Model.FPSIndex[value];
+            }
         }
+
+        // Set it to 60 (default) if the value isn't within Model.FPSIndexDict
+        private int NormalizeFPSNumber(int input) => !Model.FPSIndexDict.ContainsKey(input) ? 60 : input;
+
         //VSync
         public bool EnableVSync
         {

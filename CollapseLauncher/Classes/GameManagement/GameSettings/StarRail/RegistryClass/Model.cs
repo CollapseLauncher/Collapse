@@ -3,9 +3,9 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
 
@@ -15,7 +15,17 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string _ValueName = "GraphicsSettings_Model_h2986158309";
-        private short _FPS = 60;
+        public static readonly int[] FPSIndex = new int[] { 30, 60, 120 };
+        public static Dictionary<int, int> FPSIndexDict = GenerateStaticFPSIndexDict();
+        private static Dictionary<int, int> GenerateStaticFPSIndexDict()
+        {
+            Dictionary<int, int> ret = new Dictionary<int, int>();
+            for (int i = 0; i < FPSIndex.Length; i++)
+            {
+                ret.Add(FPSIndex[i], i);
+            }
+            return ret;
+        }
         #endregion
 
         #region Properties
@@ -24,7 +34,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Options: 30, 60, 120 (EXPERIMENTAL)
         /// Default: 60
         /// </summary>
-        public float FPS { get; set; } = 60;
+        public int FPS { get; set; } = 60;
 
         /// <summary>
         /// This defines "<c>V-Sync</c>" combobox In-game settings. <br/>
