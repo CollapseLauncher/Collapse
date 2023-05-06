@@ -62,7 +62,8 @@
                                                HorizontalAlignment="Left" Width="100"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,8,0"/>
-                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,0"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_FPS_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
                                 <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:Model.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
                             </StackPanel>
                         </StackPanel>
