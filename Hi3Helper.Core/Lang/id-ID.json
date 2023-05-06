@@ -664,7 +664,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS merupakan opsi EKSPERIMENTAL. Gunakan dengan resiko sendiri.",
-    "Graphics_FPS_Help2": "Selain itu, Setelan 120 FPS juga merusak Pengaturan Grafis dalam Game./r/nGunakan Collapse untuk mengubah Pengaturan Grafis Game.",
+    "Graphics_FPS_Help2": "Selain itu, Setelan 120 FPS juga merusak Pengaturan Grafis dalam Game.\r\nGunakan Collapse untuk mengubah Pengaturan Grafis Game.",
     "Graphics_VSync": "VSync",
     "Graphics_RenderScale": "Akurasi Rendering",
     "Graphics_ResolutionQuality": "Kualitas Resolusi",
