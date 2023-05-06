@@ -218,7 +218,7 @@
                         <StackPanel Grid.Column="1">
                             <StackPanel x:Name="AudioSettingsPanelRight" Margin="0,16,64,16">
                                 <StackPanel>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_BGM}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                                     <StackPanel Orientation="Vertical" Margin="0,0,32,8">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
