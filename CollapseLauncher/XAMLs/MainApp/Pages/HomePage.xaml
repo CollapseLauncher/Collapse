@@ -587,7 +587,7 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" CornerRadius="20">
+                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
                             <Button.Content>
