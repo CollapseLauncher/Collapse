@@ -75,7 +75,7 @@
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_RenderScale}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                         <TextBlock Text="{Binding Value, ElementName=RenderScaleSlider}" HorizontalAlignment="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                     </Grid>
-                                    <Slider x:Name="RenderScaleSlider" Minimum="0.6" Value="{x:Bind RenderScale, Mode=TwoWay}" Maximum="2.0" StepFrequency="0.2"/>
+                                    <Slider x:Name="RenderScaleSlider" Minimum="0.6" Value="{x:Bind RenderScale, Mode=TwoWay}" Maximum="2.0" StepFrequency="0.2" TickFrequency="0.2" TickPlacement="Outside"/>
                                 </StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
