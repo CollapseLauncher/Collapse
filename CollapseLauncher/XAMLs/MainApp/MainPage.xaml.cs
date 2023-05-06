@@ -480,9 +480,10 @@ namespace CollapseLauncher
                 if (File.Exists(UpdateNotifFile))
                 {
                     string VerString = File.ReadAllLines(UpdateNotifFile)[0];
+                    GameVersion Version = new GameVersion(VerString);
                     SpawnNotificationPush(
                         Lang._Misc.UpdateCompleteTitle,
-                        string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
+                        string.Format(Lang._Misc.UpdateCompleteSubtitle, Version.VersionString, IsPreview ? "Preview" : "Stable"),
                         NotifSeverity.Success,
                         0xAF,
                         true,
