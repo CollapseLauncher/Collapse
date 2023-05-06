@@ -32,7 +32,6 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
                 object? value = RegistryRoot.GetValue(_ValueName, null);
-                LogWriteLine($"Loaded {_ValueName} with the value of {value}");
                 if (value != null)
                 {
                     int voVolume = (int)value;
@@ -52,7 +51,6 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, VOVol, RegistryValueKind.DWord);
-                LogWriteLine($"Saved {_ValueName} with {VOVol}", LogType.Default, true);
             }
             catch (Exception ex)
             {

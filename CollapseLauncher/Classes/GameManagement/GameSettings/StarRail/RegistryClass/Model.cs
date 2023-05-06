@@ -141,17 +141,6 @@ namespace CollapseLauncher.GameSettings.StarRail
                 string data = JsonSerializer.Serialize(this, typeof(Model), ModelContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-                LogWriteLine($"Saved Graphics FPS      = {FPS}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics VSync    = {EnableVSync}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics RenScal  = {RenderScale}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics ResQ     = {ResolutionQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics ShadowQ  = {ShadowQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics LightQ   = {LightQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics CharaQ   = {CharacterQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics EnvDetQ  = {EnvDetailQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics ReflQ    = {ReflectionQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics BloomQ   = {BloomQuality}", LogType.Default, true);
-                LogWriteLine($"Saved Graphics AAMode   = {AAMode}", LogType.Default, true);
             }
             catch (Exception ex)
             {
