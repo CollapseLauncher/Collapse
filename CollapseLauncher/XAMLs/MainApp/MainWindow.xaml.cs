@@ -134,7 +134,8 @@ namespace CollapseLauncher
                 {
                     case ApplicationTheme.Light:
                         m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
-                        m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 96, B = 0, G = 0, R = 0 };
+                        m_appWindow.TitleBar.ButtonInactiveForegroundColor = new Windows.UI.Color { A = 0, B = 160, G = 160, R = 160 };
+                        m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 64, B = 0, G = 0, R = 0 };
                         break;
                     case ApplicationTheme.Dark:
                         m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
@@ -151,6 +152,13 @@ namespace CollapseLauncher
                 m_presenter.IsMaximizable = false;
                 ExtendsContentIntoTitleBar = false;
             }
+
+            // Hide minimize and maximize button
+            int gwl_style = -16;
+            uint minimizeBtn = 0x00020000;
+            uint maximizeBtn = 0x00010000;
+            var currentStyle = GetWindowLong(m_windowHandle, gwl_style);
+            SetWindowLong(m_windowHandle, gwl_style, currentStyle & ~minimizeBtn & ~maximizeBtn);
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
@@ -211,17 +219,6 @@ namespace CollapseLauncher
             m_windowPosSize = this.Bounds;
         }
 
-        [DllImport("Shcore.dll", SetLastError = true)]
-        internal static extern int GetDpiForMonitor(IntPtr hmonitor, Monitor_DPI_Type dpiType, out uint dpiX, out uint dpiY);
-
-        internal enum Monitor_DPI_Type : int
-        {
-            MDT_Effective_DPI = 0,
-            MDT_Angular_DPI = 1,
-            MDT_Raw_DPI = 2,
-            MDT_Default = MDT_Effective_DPI
-        }
-
         public static void SetInitialDragArea()
         {
             double scaleAdjustment = m_appDPIScale;
@@ -237,5 +234,7 @@ namespace CollapseLauncher
                 m_appWindow.TitleBar.SetDragRectangles(area);
             }
         }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e) => m_presenter.Minimize();
     }
 }
