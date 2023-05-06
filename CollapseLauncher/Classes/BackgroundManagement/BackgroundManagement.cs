@@ -353,7 +353,8 @@ namespace CollapseLauncher
 
             BitmapDecoder decoder = await BitmapDecoder.CreateAsync(inputRandomStream);
             BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
-            BitmapAlphaMode alpMod = decoder.DecoderInformation.CodecId != BitmapDecoder.PngDecoderId ?
+            Guid decoderCodecID = decoder.DecoderInformation.CodecId;
+            BitmapAlphaMode alpMod = decoderCodecID != BitmapDecoder.PngDecoderId ?
                 BitmapAlphaMode.Ignore :
                 BitmapAlphaMode.Straight;
 
@@ -382,7 +383,7 @@ namespace CollapseLauncher
                                                 ColorManagementMode.DoNotColorManage);
 
             if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSizeW, ref ResizedSizeH);
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(alpMod == BitmapAlphaMode.Straight ? BitmapEncoder.PngEncoderId : decoder.DecoderInformation.CodecId, outputRandomStream);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(alpMod == BitmapAlphaMode.Straight ? BitmapEncoder.PngEncoderId : BitmapEncoder.BmpEncoderId, outputRandomStream);
             byte[] pixelDataBytes = pixelData.DetachPixelData();
             encoder.SetPixelData(pixFmt, alpMod, ResizedSizeW, ResizedSizeH, m_appDPIScale, m_appDPIScale, pixelDataBytes);
 

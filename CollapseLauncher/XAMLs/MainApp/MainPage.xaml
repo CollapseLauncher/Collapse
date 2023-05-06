@@ -174,14 +174,14 @@
                 </Grid>
             </Grid>
         </NavigationView>
-        <Grid x:Name="NotificationLostFocusBackground" Background="Black" Opacity="0" Margin="0,-1,0,0"
+        <Grid x:Name="NotificationLostFocusBackground" Background="{ThemeResource NotificationLostFocusGradientBG}" Opacity="0" Margin="0,48,0,0"
                       Visibility="Collapsed" PointerPressed="NotificationContainerBackground_PointerPressed">
             <Grid.OpacityTransition>
                 <ScalarTransition/>
             </Grid.OpacityTransition>
         </Grid>
         <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
-                              Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource WindowTrayBrush}" Shadow="{ThemeResource SharedShadow}">
+                              Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">
             <ScrollViewer.Transitions>
                 <RepositionThemeTransition/>
             </ScrollViewer.Transitions>

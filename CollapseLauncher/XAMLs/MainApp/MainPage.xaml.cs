@@ -1105,7 +1105,7 @@ namespace CollapseLauncher
             if (show)
             {
                 NotificationLostFocusBackground.Visibility = Visibility.Visible;
-                NotificationLostFocusBackground.Opacity = 0.25;
+                NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
             }
             else
