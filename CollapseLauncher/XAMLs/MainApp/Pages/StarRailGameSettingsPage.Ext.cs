@@ -158,12 +158,12 @@ namespace CollapseLauncher.Pages
         }
 
         // Set it to 60 (default) if the value isn't within Model.FPSIndexDict
-        private int NormalizeFPSNumber(int input) => !Model.FPSIndexDict.ContainsKey(input) ? 60 : input;
+        private int NormalizeFPSNumber(int input) => !Model.FPSIndexDict.ContainsKey(input) ? Model.FPSIndex[Model.FPSDefaultIndex] : input;
 
         //VSync
         public bool EnableVSync
         {
-            get => (bool)Settings.GraphicsSettings.EnableVSync;
+            get => Settings.GraphicsSettings.EnableVSync;
             set => Settings.GraphicsSettings.EnableVSync = value;
         }
         //RenderScale
@@ -175,49 +175,49 @@ namespace CollapseLauncher.Pages
         //ResolutionQuality
         public int ResolutionQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.ResolutionQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.ResolutionQuality;
             set => Settings.GraphicsSettings.ResolutionQuality = value;
         }
         //ShadowQuality
         public int ShadowQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.ShadowQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.ShadowQuality;
             set => Settings.GraphicsSettings.ShadowQuality = value;
         }
         //LightQuality
         public int LightQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.LightQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.LightQuality;
             set => Settings.GraphicsSettings.LightQuality = value;
         }
         //CharacterQuality
         public int CharacterQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.CharacterQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.CharacterQuality;
             set => Settings.GraphicsSettings.CharacterQuality = value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.EnvDetailQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.EnvDetailQuality;
             set => Settings.GraphicsSettings.EnvDetailQuality = value;
         }
         //ReflectionQuality
         public int ReflectionQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.ReflectionQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.ReflectionQuality;
             set => Settings.GraphicsSettings.ReflectionQuality = value;
         }
         //BloomQuality
         public int BloomQuality
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.BloomQuality;
+            get => prevGraphSelect = Settings.GraphicsSettings.BloomQuality;
             set => Settings.GraphicsSettings.BloomQuality = value;
         }
         //AAMode
         public int AAMode
         {
-            get => prevGraphSelect = (int)Settings.GraphicsSettings.AAMode;
+            get => prevGraphSelect = Settings.GraphicsSettings.AAMode;
             set => Settings.GraphicsSettings.AAMode = value;
         }
         #endregion
@@ -227,9 +227,9 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioMasterVolume");
         }
-        public float AudioMasterVolume
+        public int AudioMasterVolume
         {
-            get => Settings.AudioSettings_Master.MasterVol = (float)Settings.AudioSettings_Master.MasterVol;
+            get => Settings.AudioSettings_Master.MasterVol = Settings.AudioSettings_Master.MasterVol;
             set => Settings.AudioSettings_Master.MasterVol = value;
         }
 
@@ -237,9 +237,9 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioBGMVolume");
         }
-        public float AudioBGMVolume
+        public int AudioBGMVolume
         {
-            get => Settings.AudioSettings_BGM.BGMVol = (float)Settings.AudioSettings_BGM.BGMVol;
+            get => Settings.AudioSettings_BGM.BGMVol = Settings.AudioSettings_BGM.BGMVol;
             set => Settings.AudioSettings_BGM.BGMVol = value;
         }
 
@@ -247,9 +247,9 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioSFXVolume");
         }
-        public float AudioSFXVolume
+        public int AudioSFXVolume
         {
-            get => Settings.AudioSettings_SFX.SFXVol = (float)Settings.AudioSettings_SFX.SFXVol;
+            get => Settings.AudioSettings_SFX.SFXVol = Settings.AudioSettings_SFX.SFXVol;
             set => Settings.AudioSettings_SFX.SFXVol = value;
         }
 
@@ -257,9 +257,9 @@ namespace CollapseLauncher.Pages
         {
             OnPropertyChanged("AudioVOVolume");
         }
-        public float AudioVOVolume
+        public int AudioVOVolume
         {
-            get => Settings.AudioSettings_VO.VOVol = (float)Settings.AudioSettings_VO.VOVol;
+            get => Settings.AudioSettings_VO.VOVol = Settings.AudioSettings_VO.VOVol;
             set => Settings.AudioSettings_VO.VOVol = value;
         }
         #endregion

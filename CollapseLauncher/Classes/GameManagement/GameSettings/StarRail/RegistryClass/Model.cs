@@ -16,6 +16,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         #region Fields
         private const string _ValueName = "GraphicsSettings_Model_h2986158309";
         public static readonly int[] FPSIndex = new int[] { 30, 60, 120 };
+        public const int FPSDefaultIndex = 1; // 60 in FPSIndex[]
         public static Dictionary<int, int> FPSIndexDict = GenerateStaticFPSIndexDict();
         private static Dictionary<int, int> GenerateStaticFPSIndexDict()
         {
@@ -32,9 +33,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// <summary>
         /// This defines "<c>FPS</c>" combobox In-game settings. <br/>
         /// Options: 30, 60, 120 (EXPERIMENTAL)
-        /// Default: 60
+        /// Default: 60 (or depends on FPSDefaultIndex and FPSIndex content)
         /// </summary>
-        public int FPS { get; set; } = 60;
+        public int FPS { get; set; } = FPSIndex[FPSDefaultIndex];
 
         /// <summary>
         /// This defines "<c>V-Sync</c>" combobox In-game settings. <br/>

@@ -1,15 +1,7 @@
-﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.StarRail;
-using CollapseLauncher.GameSettings.StarRail.Context;
-using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
-using System.Drawing;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
 
@@ -27,7 +19,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: 0 - 10
         /// Default: 10
         /// </summary>
-        public float VOVol { get; set; } = 10;
+        public int VOVol { get; set; } = 10;
 
         #endregion
 
@@ -44,7 +36,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     int voVolume = (int)value;
-                    return new VOVolume { VOVol = (float)voVolume };
+                    return new VOVolume { VOVol = voVolume };
                 }
             }
             catch (Exception ex)
