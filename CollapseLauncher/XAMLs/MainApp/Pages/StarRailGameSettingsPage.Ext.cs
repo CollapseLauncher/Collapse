@@ -1,12 +1,8 @@
-﻿using CollapseLauncher.GameSettings;
-using CollapseLauncher.GameSettings.StarRail;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
+﻿using Microsoft.UI.Xaml.Controls;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Pages
 {
@@ -161,8 +157,8 @@ namespace CollapseLauncher.Pages
         //RenderScale
         public double RenderScale
         {
-            get => (double)Settings.GraphicsSettings.RenderScale;
-            set => Settings.GraphicsSettings.RenderScale = value;
+            get => (double)Math.Round(Settings.GraphicsSettings.RenderScale, 1);
+            set => Settings.GraphicsSettings.RenderScale = Math.Round(value, 1); // Round it to x.x (0.1) to fix floating-point rounding issue
         }
         //ResolutionQuality
         public int ResolutionQuality
