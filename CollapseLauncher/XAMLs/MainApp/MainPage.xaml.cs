@@ -68,6 +68,7 @@ namespace CollapseLauncher
                 InitializeComponent();
                 LoadingPopupPill.Translation += Shadow32;
                 LoadingCancelBtn.Translation += Shadow16;
+                WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
                 if (!IsPreview)
                 {
@@ -83,6 +84,8 @@ namespace CollapseLauncher
 
         public static async Task<bool> CheckForAdminAccess(UIElement root)
         {
+            if (!IsPrincipalHasNoAdministratorAccess()) return true;
+
             ContentDialog dialog = new ContentDialog
             {
                 Title = Lang._Dialogs.PrivilegeMustRunTitle,
@@ -92,46 +95,40 @@ namespace CollapseLauncher
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = root.XamlRoot
             };
-
-            if (IsPrincipalHasAdministratorAccess())
+            
+            while (true)
             {
-                bool IsStillLoop = true;
-                while (IsStillLoop)
+                switch (await dialog.ShowAsync())
                 {
-                    switch (await dialog.ShowAsync())
-                    {
-                        case ContentDialogResult.Primary:
-                            try
+                    case ContentDialogResult.Primary:
+                        try
+                        {
+                            Process proc = new Process()
                             {
-                                Process proc = new Process()
+                                StartInfo = new ProcessStartInfo
                                 {
-                                    StartInfo = new ProcessStartInfo
-                                    {
-                                        UseShellExecute = true,
-                                        Verb = "runas",
-                                        FileName = AppExecutablePath,
-                                        WorkingDirectory = AppFolder,
-                                        Arguments = string.Join(' ', AppCurrentArgument)
-                                    }
-                                };
-                                proc.Start();
-                                IsStillLoop = false;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
-                            }
-                            break;
-                        default:
+                                    UseShellExecute = true,
+                                    Verb = "runas",
+                                    FileName = AppExecutablePath,
+                                    WorkingDirectory = AppFolder,
+                                    Arguments = string.Join(' ', AppCurrentArgument)
+                                }
+                            };
+                            proc.Start();
                             return false;
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
+                        }
+                        break;
+                    default:
+                        return false;
                 }
-                return false;
             }
-            return true;
         }
 
-        private static bool IsPrincipalHasAdministratorAccess()
+        private static bool IsPrincipalHasNoAdministratorAccess()
         {
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
@@ -153,6 +150,8 @@ namespace CollapseLauncher
                     return;
                 }
 
+                LauncherUpdateWatcher.StartCheckUpdate();
+
                 LoadGamePreset();
                 SetThemeParameters();
 
@@ -161,8 +160,6 @@ namespace CollapseLauncher
                 SubscribeEvents();
 
                 ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-
-                LauncherUpdateWatcher.StartCheckUpdate();
 
                 await InitializeStartup();
             }
@@ -562,7 +559,7 @@ namespace CollapseLauncher
                     Severity = NotifSeverity2InfoBarSeverity(Severity),
                     IsClosable = IsClosable,
                     IsIconVisible = true,
-                    Width = m_windowSupportCustomTitle ? 640 : double.NaN,
+                    Width = m_windowSupportCustomTitle ? 600 : double.NaN,
                     HorizontalAlignment = m_windowSupportCustomTitle ? HorizontalAlignment.Right : HorizontalAlignment.Stretch,
                     Shadow = SharedShadow,
                     IsOpen = true
@@ -1099,7 +1096,7 @@ namespace CollapseLauncher
         private bool IsNotificationPanelShow = false;
         private void ToggleNotificationPanelBtnClick(object sender, RoutedEventArgs e)
         {
-            IsNotificationPanelShow = !IsNotificationPanelShow;
+            IsNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
             ShowHideNotificationPanel();
         }
 
@@ -1107,7 +1104,35 @@ namespace CollapseLauncher
         {
             NewNotificationCountBadge.Value = 0;
             NewNotificationCountBadge.Visibility = Visibility.Collapsed;
-            NotificationPanel.Margin = IsNotificationPanelShow ? new Thickness(0, 47, 0, 0) : new Thickness(0, 47, -700, 0);
+            Thickness lastMargin = NotificationPanel.Margin;
+            lastMargin.Right = IsNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
+            NotificationPanel.Margin = lastMargin;
+
+            ShowHideNotificationLostFocusBackground(IsNotificationPanelShow);
+        }
+
+        private async void ShowHideNotificationLostFocusBackground(bool show)
+        {
+            if (show)
+            {
+                NotificationLostFocusBackground.Visibility = Visibility.Visible;
+                NotificationLostFocusBackground.Opacity = 0.3;
+                NotificationPanel.Translation += Shadow48;
+            }
+            else
+            {
+                NotificationLostFocusBackground.Opacity = 0;
+                NotificationPanel.Translation -= Shadow48;
+                await Task.Delay(200);
+                NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void NotificationContainerBackground_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            IsNotificationPanelShow = false;
+            ToggleNotificationPanelBtn.IsChecked = false;
+            ShowHideNotificationPanel();
         }
     }
 }

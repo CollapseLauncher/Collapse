@@ -738,17 +738,18 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the total of required size on every package
             long RequiredSpace = packageList.Sum(x => x.SizeRequired);
+            long ExistingPackageSize = packageList.Sum(x => GetExistingPartialDownloadLength(x.PathOutput, x.Size));
 
             // Get the total free space of the disk
             long DiskSpace = _DriveInfo.TotalFreeSpace;
             LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remained free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
 
             // Check if the disk space is insufficient, then show the dialog.
-            if (DiskSpace < (RequiredSpace - packageList.Sum(x => GetExistingPartialDownloadLength(x.PathOutput, x.Size))))
+            if (DiskSpace < (RequiredSpace - ExistingPackageSize))
             {
                 LogWriteLine($"DISK SPACE ON {_DriveInfo.Name} IS INSUFFICIENT!", LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace, _DriveInfo.Name);
-                throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace}, Drive: {_DriveInfo.Name}). Cancelling the task!");
+                await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
+                throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name}). Cancelling the task!");
             }
         }
 
@@ -763,11 +764,17 @@ namespace CollapseLauncher.InstallManager.Base
                 return fileInfo.Length;
 
             // If above not passed, then try enumerate for the chunk
-            string[] partPaths = Directory.GetFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.0*");
+            string[] partPaths = Directory.EnumerateFiles(Path.GetDirectoryName(fileOutput), $"{Path.GetFileName(fileOutput)}.*").Where(x =>
+            {
+                // Get the extension
+                string extension = Path.GetExtension(x).TrimStart('.'); // Removing dot (.)
+
+                // If the extension is a number, then return true. Otherwise, return false.
+                return int.TryParse(extension, out int _);
+            }).ToArray();
 
             // If the chunk file doesn't exist, then return 0
-            if (partPaths.Length == 0)
-                return 0;
+            if (partPaths.Length == 0) return 0;
 
             // If the chunk file might probably exist, then return the sum of the size
             return partPaths.Sum(x => (fileInfo = new FileInfo(x)).Exists ? fileInfo.Length : 0);

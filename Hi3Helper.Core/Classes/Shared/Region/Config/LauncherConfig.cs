@@ -87,6 +87,7 @@ namespace Hi3Helper.Shared.Region
             }
         }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
+        public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
 #if PORTABLE
         public static string AppConfigFile = Path.Combine(AppConfigFolder, "config.ini");

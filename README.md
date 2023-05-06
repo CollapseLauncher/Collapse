@@ -41,15 +41,15 @@ The launcher currently supports the following regions for Honkai Impact 3rd:
 This launcher also supports other game client, including:
 * Genshin Impact (Global Release)
 * 原神 / Yuan Shen (Mainland China's Genshin Impact)
-* ~~Honkai: Star Rail~~ (Preload from April 23rd, 2023, release on April 26th, 2023)
+* Honkai: Star Rail (Global & Mainland China)
 * ~~Zenless Zone Zero~~ (Waiting for Official Release)
 
 > **Note**:
 > Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported.
 
 # Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.14/CL-1.69.14_Installer.exe)
-> **Note**: The version for this build is `1.69.14` (Released on: April 24th, 2023)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.15/CL-1.69.15_Installer.exe)
+> **Note**: The version for this build is `1.69.15` (Released on: May 1st, 2023).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.14-pre/CL-1.69.14-preview_Installer.exe)
 > **Note**: The version for this build is `1.69.14` (Released on: April 24th, 2023).
