@@ -32,7 +32,6 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.Collections.Generic;
-using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace CollapseLauncher.Pages
 {
@@ -406,25 +405,21 @@ namespace CollapseLauncher.Pages
 
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
+            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
             new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
             {
                 (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
-                Flyout flyout = new Flyout();
-                FlyoutBase.SetAttachedFlyout((a as Button), flyout);
-                //new Process
-                //{
-                //    StartInfo = new ProcessStartInfo
-                //    {
-                //        FileName = "msedge.exe",
-                //        UseShellExecute = true
-                //    }
-                //}.Start();
-                // SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
-                // var flyout = FlyoutBase.GetAttachedFlyout((FrameworkElement)a);
-                // flyout.Hide();
-                // CommunityToolsFlyout.Hide();
-                
             }},
             new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
         };
@@ -450,20 +445,10 @@ namespace CollapseLauncher.Pages
 
             if (iconProperty.ClickAction != null)
             {
+                btn.Click += iconProperty.ClickAction;
                 btn.Click += (sender, e) =>
                 {
-                    try
-                    {
-                        (((sender as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
-                        SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
-                        var flyout = FlyoutBase.GetAttachedFlyout((FrameworkElement)sender);
-                        flyout.Hide();
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the exception or display a message to the user
-                        Debug.WriteLine(ex.Message);
-                    }
+                    CommunityToolsBtn.Flyout.Hide();
                 };
             }
         }
