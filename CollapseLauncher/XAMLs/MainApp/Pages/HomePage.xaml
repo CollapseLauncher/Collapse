@@ -587,6 +587,42 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
+                    <Button x:Name="CommunityToolsBtn"
+                            Grid.Column="1" Grid.Row="2" 
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Right"
+                            CornerRadius="20"
+                            PointerEntered="AnimateGameRegSettingIcon_Start"
+                            PointerExited="AnimateGameRegSettingIcon_End"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Margin="0 0 180 0">
+                        <Button.Content>
+                            <Grid>
+                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
+                                <StackPanel Orientation="Horizontal" Margin="8,0">
+                                    <AnimatedIcon x:Name='GameRegionSettingIcon1' Width="20">
+                                        <AnimatedIcon.Source>
+                                            <animatedvisuals:AnimatedSettingsVisualSource/>
+                                        </AnimatedIcon.Source>
+                                        <AnimatedIcon.FallbackIconSource>
+                                            <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
+                                        </AnimatedIcon.FallbackIconSource>
+                                    </AnimatedIcon>
+                                    <TextBlock Text="Community Tools" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel MaxWidth="224" Margin="16,16">
+                                    <TextBlock Text="Official Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                    <StackPanel x:Name="OfficialToolsStackPanel" />
+                                    <TextBlock Text="Community Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                    <StackPanel x:Name="CommunityToolsStackPanel" />
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                     <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">

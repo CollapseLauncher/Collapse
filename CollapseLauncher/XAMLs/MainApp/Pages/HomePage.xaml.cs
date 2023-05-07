@@ -31,6 +31,8 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.Collections.Generic;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace CollapseLauncher.Pages
 {
@@ -84,6 +86,7 @@ namespace CollapseLauncher.Pages
                 SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
+                CommunityToolsBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
                     && MenuPanels.articlePanel != null)
@@ -290,9 +293,31 @@ namespace CollapseLauncher.Pages
             if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GameType != GameType.Honkai))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            // NOTE: For future stuff, we can more easily toggle visibility of certain UI elements through a switch-case
+            switch (PageStatics._GameVersion.GameType)
             {
-                OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+                case GameType.Honkai:
+                    foreach (IconTextProperty iconProperty in IconPropertiesHonkai)
+                    {
+                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
+                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                    }
+                    break;
+                case GameType.Genshin:
+                    foreach (IconTextProperty iconProperty in IconPropertiesGenshin)
+                    {
+                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
+                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                    }
+                    OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+                    break;
+                case GameType.StarRail:
+                    foreach (IconTextProperty iconProperty in IconPropertiesStarRail)
+                    {
+                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
+                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                    }
+                    break;
             }
 
             GameInstallationState = PageStatics._GameVersion.GetGameState();
@@ -334,6 +359,113 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
+        }
+
+        public struct IconTextProperty
+        {
+            public string IconGlyph;
+            public string Text;
+            public RoutedEventHandler ClickAction;
+        }
+
+        private List<IconTextProperty> IconPropertiesHonkai = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
+            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            {
+                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "You've opened Microsoft Edge";
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "msedge.exe",
+                        UseShellExecute = true
+                    }
+                }.Start();
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+        };
+
+        private List<IconTextProperty> IconPropertiesGenshin = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
+            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            {
+                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "You've opened Microsoft Edge";
+                new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "msedge.exe",
+                        UseShellExecute = true
+                    }
+                }.Start();
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+        };
+
+        private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
+            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            {
+                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
+                Flyout flyout = new Flyout();
+                FlyoutBase.SetAttachedFlyout((a as Button), flyout);
+                //new Process
+                //{
+                //    StartInfo = new ProcessStartInfo
+                //    {
+                //        FileName = "msedge.exe",
+                //        UseShellExecute = true
+                //    }
+                //}.Start();
+                // SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
+                // var flyout = FlyoutBase.GetAttachedFlyout((FrameworkElement)a);
+                // flyout.Hide();
+                // CommunityToolsFlyout.Hide();
+                
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+        };
+
+        private void AddStackPanelChildren(IconTextProperty iconProperty, StackPanel panel)
+        {
+            FontFamily iconFont = Application.Current.Resources["FontAwesomeBrand"] as FontFamily;
+            StackPanel childrenPanel = new StackPanel() { Orientation = Orientation.Horizontal };
+            childrenPanel.Children.Add(new FontIcon()
+            {
+                FontFamily = iconFont,
+                Glyph = iconProperty.IconGlyph,
+                Margin = new Thickness(0, 0, 8, 0)
+            });
+            childrenPanel.Children.Add(new TextBlock()
+            {
+                Text = iconProperty.Text,
+            });
+
+            Button btn = new Button() { Content = childrenPanel };
+
+            panel.Children.Add(btn);
+
+            if (iconProperty.ClickAction != null)
+            {
+                btn.Click += (sender, e) =>
+                {
+                    try
+                    {
+                        (((sender as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
+                        SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
+                        var flyout = FlyoutBase.GetAttachedFlyout((FrameworkElement)sender);
+                        flyout.Hide();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception or display a message to the user
+                        Debug.WriteLine(ex.Message);
+                    }
+                };
+            }
         }
 
         private void SpawnPreloadBox()
