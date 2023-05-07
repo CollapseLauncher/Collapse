@@ -857,7 +857,11 @@ namespace CollapseLauncher.Pages
 
         private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), "ScreenShot");
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), PageStatics._GameVersion.GamePreset.GameType switch {
+                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                _ => "ScreenShot"
+            });
+
             LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
 
             if (!Directory.Exists(ScreenshotFolder))
