@@ -95,7 +95,7 @@ namespace CollapseLauncher
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = root.XamlRoot
             };
-            
+
             while (true)
             {
                 switch (await dialog.ShowAsync())
@@ -927,8 +927,15 @@ namespace CollapseLauncher
             }
             else
             {
-                var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
-                NavView_Navigate(item);
+                if (sender.MenuItems.Count != 0)
+                {
+                    var item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+                    NavView_Navigate(item);
+                }
+                else
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage), new DrillInNavigationTransitionInfo());
+                }
             }
         }
 
