@@ -18,6 +18,7 @@ namespace CollapseLauncher.GameSettings.Honkai
 
         #region SettingProperties
         public CustomArgs SettingsCustomArgument { get; set; }
+        public Playtime SettingsPlaytime {get; set;}
         public PersonalGraphicsSettingV2 SettingsGraphics { get; set; }
         public PersonalAudioSetting SettingsAudio { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
@@ -48,6 +49,8 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCustomArgument = CustomArgs.Load();
             SettingsScreen = ScreenSettingData.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsPlaytime = Playtime.Load();
+
 
             // Load Preset
             Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context>.LoadPreset(GameType.Honkai, D_PersonalGraphicsSettingV2Context.Default);
@@ -63,6 +66,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCustomArgument.Save();
             SettingsScreen.Save();
             SettingsCollapseScreen.Save();
+            SettingsPlaytime.Save();
 
             // Save Preset
             Preset_SettingsGraphics.SaveChanges();

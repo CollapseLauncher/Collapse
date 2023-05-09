@@ -13,6 +13,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public Playtime SettingsPlaytime {get; set;}
 
         public GenshinSettings()
         {
@@ -34,6 +35,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
+            SettingsPlaytime = Playtime.Load();
         }
 
         public void RevertSettings() => InitializeSettings();
@@ -42,6 +44,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Save Settings
             SettingsCustomArgument.Save();
+            SettingsPlaytime.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;

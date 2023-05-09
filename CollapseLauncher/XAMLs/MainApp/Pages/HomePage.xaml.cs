@@ -893,8 +893,7 @@ namespace CollapseLauncher.Pages
 
         private void AddPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            string givenPlaytime = PlaytimeTextBox.Text;
-            bool right = System.Text.RegularExpressions.Regex.IsMatch(givenPlaytime, "[0-9]*h:[0-5][0-9]m");
+            
         }
 
         private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -902,7 +901,8 @@ namespace CollapseLauncher.Pages
             string givenPlaytime = PlaytimeTextBox.Text;
             if(System.Text.RegularExpressions.Regex.IsMatch(givenPlaytime, "[0-9]*h:[0-5][0-9]m")){
                 PlaytimeTextBox.Text=givenPlaytime;
-                PlaytimeBtnText.Text=givenPlaytime;
+                CurrentPlaytimeValue=givenPlaytime;
+                PlaytimeMainBtn.Text=givenPlaytime;
             };
             
         }
@@ -910,8 +910,15 @@ namespace CollapseLauncher.Pages
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             PlaytimeTextBox.Text="0h:0m";
-            PlaytimeBtnText.Text="0h:0m";
+            CurrentPlaytimeValue="0h:0m";
+            PlaytimeMainBtn.Text="0h:0m";
             
+        }
+
+        public string CurrentPlaytimeValue
+        {
+            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue;
+            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue = value;
         }
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
