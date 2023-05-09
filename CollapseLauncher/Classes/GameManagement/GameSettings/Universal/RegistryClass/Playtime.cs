@@ -37,7 +37,7 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
-                return new Playtime { PlaytimeValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "" };
+                return new Playtime { PlaytimeValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "0h 00m" };
             }
             catch (Exception ex)
             {

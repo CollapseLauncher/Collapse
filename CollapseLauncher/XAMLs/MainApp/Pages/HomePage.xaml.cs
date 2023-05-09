@@ -641,7 +641,19 @@ namespace CollapseLauncher.Pages
                 ReadOutputLog();
                 GameLogWatcher();
 
+                int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
                 await proc.WaitForExitAsync();
+
+                int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
+                int SessionPlaytimeHours = SessionPlaytime / 60;
+                int SessionPlaytimeMinutes = SessionPlaytime % 60;
+                int StoredPlaytimeHours = int.Parse(CurrentPlaytimeValue.Split("h")[0]);
+                int StoredPlaytimeMinutes = int.Parse(CurrentPlaytimeValue.Split(" ")[1].Split('m')[0]);
+                CurrentPlaytimeValue = SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
+                UpdatePlaytime();
+
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
@@ -901,9 +913,8 @@ namespace CollapseLauncher.Pages
 
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
 
-            if(playtimemins < 60 && playtimehours != null){
+            if(playtimemins < 60 && playtimehours >= 0){
                 CurrentPlaytimeValue=givenPlaytime;
-                PlaytimeMainBtn.Text=givenPlaytime;
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
             }else{
@@ -915,17 +926,31 @@ namespace CollapseLauncher.Pages
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             CurrentPlaytimeValue="0h 00m";
-            PlaytimeMainBtn.Text="0h 00m";
-            HourPlaytimeTextBox.Text = "0";
-            MinutePlaytimeTextBox.Text = "00";
+            UpdatePlaytime();
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
         }
 
         private void SetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
-            MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];     
+            MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
+            }catch(Exception ex)
+            {
+                LogWrite("Could not get a value for the Playtime! [{ex}]");
+                CurrentPlaytimeValue = "0h 00m";
+                UpdatePlaytime();
+            }
+                
+        }
+
+        private void UpdatePlaytime()
+        {
+            HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
+            MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
+            PlaytimeMainBtn.Text = CurrentPlaytimeValue;
         }
         
         public string CurrentPlaytimeValue
