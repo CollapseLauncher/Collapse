@@ -647,10 +647,14 @@ namespace CollapseLauncher.Pages
 
                 int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
-                int SessionPlaytimeHours = SessionPlaytime / 60;
-                int SessionPlaytimeMinutes = SessionPlaytime % 60;
                 int StoredPlaytimeHours = int.Parse(CurrentPlaytimeValue.Split("h")[0]);
                 int StoredPlaytimeMinutes = int.Parse(CurrentPlaytimeValue.Split(" ")[1].Split('m')[0]);
+                int SessionPlaytimeHours = StoredPlaytimeHours + SessionPlaytime / 60;
+                int SessionPlaytimeMinutes = SessionPlaytime % 60 + StoredPlaytimeMinutes;
+                if (StoredPlaytimeMinutes + StoredPlaytimeMinutes > 59){
+                    SessionPlaytimeHours += SessionPlaytimeMinutes / 60;
+                    SessionPlaytimeMinutes = SessionPlaytimeMinutes % 60;
+                }
                 CurrentPlaytimeValue = SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
                 UpdatePlaytime();
 
@@ -917,6 +921,7 @@ namespace CollapseLauncher.Pages
                 CurrentPlaytimeValue=givenPlaytime;
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
+                UpdatePlaytime();
             }else{
                 InvalidTimeBlock.Visibility = Visibility.Visible;
             };
