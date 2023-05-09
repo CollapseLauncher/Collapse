@@ -164,6 +164,12 @@ namespace Hi3Helper
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
 
+        [DllImport("user32.dll")]
+        public extern static uint GetWindowLong(IntPtr hwnd, int index);
+
+        [DllImport("user32.dll")]
+        public extern static uint SetWindowLong(IntPtr hwnd, int index, uint value);
+
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 
         public class InvokePresence

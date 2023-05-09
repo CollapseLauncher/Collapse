@@ -95,7 +95,7 @@ namespace CollapseLauncher
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = root.XamlRoot
             };
-            
+
             while (true)
             {
                 switch (await dialog.ShowAsync())
@@ -158,8 +158,7 @@ namespace CollapseLauncher
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
                 SubscribeEvents();
-
-                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                SetDefaultDragAreaAsync();
 
                 await InitializeStartup();
             }
@@ -168,6 +167,12 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void SetDefaultDragAreaAsync()
+        {
+            await Task.Delay(250);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
 
         public void SetThemeParameters()
@@ -213,9 +218,8 @@ namespace CollapseLauncher
             await ApplyAccentColor(this, PaletteBitmap);
         }
 
-        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            await Task.Delay(250);
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
@@ -480,9 +484,10 @@ namespace CollapseLauncher
                 if (File.Exists(UpdateNotifFile))
                 {
                     string VerString = File.ReadAllLines(UpdateNotifFile)[0];
+                    GameVersion Version = new GameVersion(VerString);
                     SpawnNotificationPush(
                         Lang._Misc.UpdateCompleteTitle,
-                        string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
+                        string.Format(Lang._Misc.UpdateCompleteSubtitle, Version.VersionString, IsPreview ? "Preview" : "Stable"),
                         NotifSeverity.Success,
                         0xAF,
                         true,
@@ -926,8 +931,15 @@ namespace CollapseLauncher
             }
             else
             {
-                var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
-                NavView_Navigate(item);
+                if (sender.MenuItems.Count != 0)
+                {
+                    var item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+                    NavView_Navigate(item);
+                }
+                else
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage), new DrillInNavigationTransitionInfo());
+                }
             }
         }
 

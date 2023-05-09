@@ -23,7 +23,7 @@
                             </LinearGradientBrush>
                             <LinearGradientBrush x:Key="NotificationLostFocusGradientBG" StartPoint="0,0" EndPoint="1,0">
                                 <GradientStop Color="#00000000" Offset="0"/>
-                                <GradientStop Color="#FF000000" Offset="1"/>
+                                <GradientStop Color="#FF000000" Offset="0.6"/>
                             </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
@@ -77,7 +77,7 @@
                             </LinearGradientBrush>
                             <LinearGradientBrush x:Key="NotificationLostFocusGradientBG" StartPoint="0,0" EndPoint="1,0">
                                 <GradientStop Color="#00FFFFFF" Offset="0"/>
-                                <GradientStop Color="#FFFFFFFF" Offset="1"/>
+                                <GradientStop Color="#FFFFFFFF" Offset="0.6"/>
                             </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#FFFFFF" TintOpacity="1" />
