@@ -891,6 +891,29 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private void AddPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            string givenPlaytime = PlaytimeTextBox.Text;
+            bool right = System.Text.RegularExpressions.Regex.IsMatch(givenPlaytime, "[0-9]*h:[0-5][0-9]m");
+        }
+
+        private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            string givenPlaytime = PlaytimeTextBox.Text;
+            if(System.Text.RegularExpressions.Regex.IsMatch(givenPlaytime, "[0-9]*h:[0-5][0-9]m")){
+                PlaytimeTextBox.Text=givenPlaytime;
+                PlaytimeBtnText.Text=givenPlaytime;
+            };
+            
+        }
+
+        private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlaytimeTextBox.Text="0h:0m";
+            PlaytimeBtnText.Text="0h:0m";
+            
+        }
+
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
             PageStatics._GameInstall.ProgressChanged += GameInstall_ProgressChanged;

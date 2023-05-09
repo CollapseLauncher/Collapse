@@ -587,6 +587,61 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
+                    <Button x:Name="PlaytimeBtn"
+                            Grid.Column="2" Grid.Row="2" 
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Left"
+                            CornerRadius="20"
+                            PointerEntered="AnimateGameRegSettingIcon_Start"
+                            PointerExited="AnimateGameRegSettingIcon_End"
+                            Shadow="{ThemeResource SharedShadow}"
+                            Margin="10 0 0 0">
+                        <Button.Content>
+                            <Grid>
+                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
+                                <StackPanel Orientation="Horizontal" Margin="8,0">
+                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf017;" FontSize="18"/>
+                                    <TextBlock x:Name="PlaytimeBtnText" Text="0h:0m" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel MaxWidth="244" Margin="1,1">
+                                    <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Use the format (hh:mm)" FontSize="12" Margin="0,8,0,8"/>
+                                    <TextBox x:Name="PlaytimeTextBox" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,0,8,0" Text=""/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0">
+                                            <Button x:Name="AddPlaytimeButton" Visibility="Collapsed" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="AddPlaytimeButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0"> 
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#x2b;" FontSize="18"/>
+                                                        <TextBlock Text="Add" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="UpdatePlaytimeButton" Margin="5,0,8,0" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UpdatePlaytimeButton_Click">
+                                                <Button.Content> 
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
+                                                        <TextBlock Text="Update" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="ResetPlaytimeButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ResetPlaytimeButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
+                                                        <TextBlock Text="Reset" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                    </StackPanel>
+        
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                     <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
