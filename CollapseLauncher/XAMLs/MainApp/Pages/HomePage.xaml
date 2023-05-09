@@ -613,7 +613,7 @@
                                     <StackPanel Orientation="Horizontal" Margin="0,0">
                                         <TextBox x:Name="HourPlaytimeTextBox" Width="15" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="0,0,8,0" Text=""/>
                                         <TextBlock Text=" " Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <TextBox x:Name="MinutePlaytimeTextBox" Width="10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="2,0,8,0" Text=""/>
+                                        <TextBox x:Name="MinutePlaytimeTextBox" Width="15" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Margin="2,0,8,0" Text=""/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0">
                                         <TextBlock Text="Hours" FontSize="11" Margin="5,1,0,8"/>

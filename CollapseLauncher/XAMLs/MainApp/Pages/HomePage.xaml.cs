@@ -907,7 +907,7 @@ namespace CollapseLauncher.Pages
         {
             
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
-            MinutePlaytimeTextBox.Text = playtimemins < 10 ? "0" + playtimemins.ToString() : playtimemins.ToString();
+            MinutePlaytimeTextBox.Text = playtimemins.ToString(); // playtimemins < 10 ? "0" + playtimemins.ToString() : playtimemins.ToString();
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
             HourPlaytimeTextBox.Text = playtimehours.ToString();
 
@@ -925,7 +925,7 @@ namespace CollapseLauncher.Pages
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlaytimeValue="0h 00m";
+            CurrentPlaytimeValue="0h 0m";
             UpdatePlaytime();
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
@@ -940,7 +940,7 @@ namespace CollapseLauncher.Pages
             }catch(Exception ex)
             {
                 LogWrite("Could not get a value for the Playtime! [{ex}]");
-                CurrentPlaytimeValue = "0h 00m";
+                CurrentPlaytimeValue = "0h 0m";
                 UpdatePlaytime();
             }
                 
