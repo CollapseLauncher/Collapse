@@ -244,15 +244,12 @@ namespace CollapseLauncher
         {
             while (!App.IsAppKilled)
             {
-                if (titleBarDragQueue.Count != 0)
+                while (titleBarDragQueue.Count > 0)
                 {
-                    while (titleBarDragQueue.Count > 0)
-                    {
-                        m_appWindow.TitleBar.SetDragRectangles(titleBarDragQueue[0]);
-                        titleBarDragQueue.RemoveAt(0);
-                    }
-                    titleBarDragQueue.Clear();
+                    m_appWindow.TitleBar.SetDragRectangles(titleBarDragQueue[0]);
+                    titleBarDragQueue.RemoveAt(0);
                 }
+                titleBarDragQueue.Clear();
                 await Task.Delay(250);
             }
         }
