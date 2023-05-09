@@ -11,7 +11,7 @@ namespace CollapseLauncher.GameSettings.Universal
     {
         #region Fields
         private const string _ValueName = "CollapseLauncher_Playtime";
-        private string _PlaytimeValue = "0h:0m";
+        private string _PlaytimeValue = "0h 0m";
         #endregion
 
         #region Properties

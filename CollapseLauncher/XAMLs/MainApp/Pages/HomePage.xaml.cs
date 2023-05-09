@@ -891,35 +891,49 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void AddPlaytimeButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            string givenPlaytime = PlaytimeTextBox.Text;
-            if(System.Text.RegularExpressions.Regex.IsMatch(givenPlaytime, "[0-9]*h:[0-5][0-9]m")){
-                PlaytimeTextBox.Text=givenPlaytime;
+            
+            int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
+            MinutePlaytimeTextBox.Text = playtimemins < 10 ? "0" + playtimemins.ToString() : playtimemins.ToString();
+            int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
+            HourPlaytimeTextBox.Text = playtimehours.ToString();
+
+            string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
+
+            if(playtimemins < 60 && playtimehours != null){
                 CurrentPlaytimeValue=givenPlaytime;
                 PlaytimeMainBtn.Text=givenPlaytime;
+                InvalidTimeBlock.Visibility = Visibility.Collapsed;
+                PlaytimeFlyout.Hide();
+            }else{
+                InvalidTimeBlock.Visibility = Visibility.Visible;
             };
             
         }
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            PlaytimeTextBox.Text="0h:0m";
-            CurrentPlaytimeValue="0h:0m";
-            PlaytimeMainBtn.Text="0h:0m";
-            
+            CurrentPlaytimeValue="0h 00m";
+            PlaytimeMainBtn.Text="0h 00m";
+            HourPlaytimeTextBox.Text = "0";
+            MinutePlaytimeTextBox.Text = "00";
+            InvalidTimeBlock.Visibility = Visibility.Collapsed;
+            PlaytimeFlyout.Hide();
         }
 
+        private void SetPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
+            MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];     
+        }
+        
         public string CurrentPlaytimeValue
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue = value;
         }
+
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
