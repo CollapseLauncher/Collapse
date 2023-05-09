@@ -4,9 +4,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.FileDialogNative;
@@ -73,6 +74,8 @@ namespace CollapseLauncher
         {
             this.InitializeComponent();
             this.Activate();
+            this.Closed += (_, _) => { App.IsAppKilled = true; };
+            RunSetDragAreaQueue();
             // Initialize Window Handlers
             m_windowHandle = GetActiveWindow();
             m_windowID = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
@@ -231,7 +234,26 @@ namespace CollapseLauncher
         {
             if (m_appWindow.TitleBar != null && m_windowSupportCustomTitle && m_appWindow.TitleBar.ExtendsContentIntoTitleBar)
             {
-                m_appWindow.TitleBar.SetDragRectangles(area);
+                titleBarDragQueue.Add(area);
+            }
+        }
+
+        private static List<RectInt32[]> titleBarDragQueue = new List<RectInt32[]>();
+
+        private static async void RunSetDragAreaQueue()
+        {
+            while (!App.IsAppKilled)
+            {
+                if (titleBarDragQueue.Count != 0)
+                {
+                    while (titleBarDragQueue.Count > 0)
+                    {
+                        m_appWindow.TitleBar.SetDragRectangles(titleBarDragQueue[0]);
+                        titleBarDragQueue.RemoveAt(0);
+                    }
+                    titleBarDragQueue.Clear();
+                }
+                await Task.Delay(250);
             }
         }
 

@@ -158,8 +158,7 @@ namespace CollapseLauncher
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
                 SubscribeEvents();
-
-                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                SetDefaultDragAreaAsync();
 
                 await InitializeStartup();
             }
@@ -168,6 +167,12 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void SetDefaultDragAreaAsync()
+        {
+            await Task.Delay(250);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
 
         public void SetThemeParameters()
@@ -213,9 +218,8 @@ namespace CollapseLauncher
             await ApplyAccentColor(this, PaletteBitmap);
         }
 
-        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            await Task.Delay(250);
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
