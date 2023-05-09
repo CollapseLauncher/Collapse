@@ -647,6 +647,9 @@ namespace CollapseLauncher.Pages
 
                 int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
+                
+                LogWriteLine($"Session playtime: {SessionPlaytime}m.", LogType.Default, true);
+
                 int StoredPlaytimeHours = int.Parse(CurrentPlaytimeValue.Split("h")[0]);
                 int StoredPlaytimeMinutes = int.Parse(CurrentPlaytimeValue.Split(" ")[1].Split('m')[0]);
                 int SessionPlaytimeHours = StoredPlaytimeHours + SessionPlaytime / 60;
@@ -656,6 +659,7 @@ namespace CollapseLauncher.Pages
                     SessionPlaytimeMinutes = SessionPlaytimeMinutes % 60;
                 }
                 CurrentPlaytimeValue = SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
+                
                 UpdatePlaytime();
 
             }
@@ -944,7 +948,7 @@ namespace CollapseLauncher.Pages
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
             }catch(Exception ex)
             {
-                LogWrite("Could not get a value for the Playtime! [{ex}]");
+                LogWrite("Could not get a value for the current playtime. The value was redefined to its default.", LogType.Error, true);
                 CurrentPlaytimeValue = "0h 0m";
                 UpdatePlaytime();
             }
