@@ -99,7 +99,6 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                CheckPlaytimeUpdates();
 
                 HomePageProp.Current = this;
 
@@ -645,9 +644,10 @@ namespace CollapseLauncher.Pages
                 GameLogWatcher();
 
                 int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                string OldRegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
                 string OldRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
 
-                StartGameAndSaveGameName(OldRegion, PlaytimerStart, proc);
+                StartGameAndSaveGameName(OldRegionKey, OldRegion, PlaytimerStart, proc);
 
 
             }
@@ -657,76 +657,33 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartGameAndSaveGameName(string OldRegion, int PlaytimerStart, Process proc)
+        private async void StartGameAndSaveGameName(string OldRegionRK, string OldRegion, int PlaytimerStart, Process proc)
         {
             await proc.WaitForExitAsync();
-
             int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             LogWriteLine($"Session playtime: {SessionPlaytime}m.", LogType.Default, true);
-
             if (OldRegion == NewRegion)
             {
-                UpdatePlaytimeAfterClose(SessionPlaytime);
+                CurrentPlaytimeValue = SumPlaytimes(SessionPlaytime, CurrentPlaytimeValue);
+                UpdatePlaytime();
             }
             else
             {
-                LogWriteLine($"As the game region was changed meanwhile, there will be no changes to any playtime counter at this time. ({OldRegion} != {NewRegion})", LogType.Error, true);
-                string playtimeLogPath = AppDataFolder + "/playtime.log";
-                File.AppendAllText(playtimeLogPath, $"{SessionPlaytime} {OldRegion}" + Environment.NewLine);
+                RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
+                //OpenSubKey(OldRegionRK);
+                const string _ValueName = "CollapseLauncher_Playtime";
+                string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
+                OldRegionKey.SetValue(_ValueName, SumPlaytimes(SessionPlaytime, CurrentPlaytime), RegistryValueKind.String);
+                LogWriteLine($"Not in the region \'{OldRegion}\' so playtime was updated directly [{OldRegionRK}]", LogType.Warning, true);
             }
         }
 
-        private void CheckPlaytimeUpdates()
+        private string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
         {
-            string playtimeLogPath = AppDataFolder + "/playtime.log";
-
-            if (!File.Exists(playtimeLogPath))
-            {
-                File.Create(playtimeLogPath).Close();
-            }
-
-            if (new FileInfo(playtimeLogPath).Length > 0)
-            {
-                string CurrentZone = PageStatics._GameVersion.GamePreset.ZoneFullname;
-                using FileStream fs = File.OpenRead(playtimeLogPath);
-                using var sr = new StreamReader(fs);
-                string tempFile = Path.GetTempFileName();
-                using var sw = new StreamWriter(tempFile);
-                string line;
-
-                while ((line = sr.ReadLine()) != null)
-                {
-                    string[] lineContent = line.Split(' ');
-                    if (string.Join(" ", lineContent.Skip(1)) == CurrentZone)
-                    {
-                        try
-                        {
-                            UpdatePlaytimeAfterClose(int.Parse(lineContent[0]));
-                            LogWriteLine($"Found {lineContent[0]} minutes not updated in the playtime log.", LogType.Default, true);
-                        }
-                        catch 
-                        {
-                            LogWriteLine($"Found playtime sessions not updated in the count but the line is not in a correct format ({lineContent[0]})", LogType.Error, true);
-                        }   
-                    }
-                    else
-                    {
-                        sw.WriteLine(line);
-                    }
-                }
-                sr.Close(); fs.Close(); sw.Close();
-                File.Delete(playtimeLogPath);
-                File.Move(tempFile, playtimeLogPath);
-            }
-        }
-
-        private void UpdatePlaytimeAfterClose(int SessionPlaytime)
-        {
-            int StoredPlaytimeHours = int.Parse(CurrentPlaytimeValue.Split("h")[0]);
-            int StoredPlaytimeMinutes = int.Parse(CurrentPlaytimeValue.Split(" ")[1].Split('m')[0]);
-            CurrentPlaytimeValue = CurrentPlaytimeValue.Split("a")[0];
+            int StoredPlaytimeHours = int.Parse(CurrentPlaytime.Split("h")[0]);
+            int StoredPlaytimeMinutes = int.Parse(CurrentPlaytime.Split(" ")[1].Split('m')[0]);
             int SessionPlaytimeHours = StoredPlaytimeHours + SessionPlaytime / 60;
             int SessionPlaytimeMinutes = SessionPlaytime % 60 + StoredPlaytimeMinutes;
             if (StoredPlaytimeMinutes + StoredPlaytimeMinutes > 59)
@@ -734,11 +691,9 @@ namespace CollapseLauncher.Pages
                 SessionPlaytimeHours += SessionPlaytimeMinutes / 60;
                 SessionPlaytimeMinutes = SessionPlaytimeMinutes % 60;
             }
-
-            CurrentPlaytimeValue = SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
-
-            UpdatePlaytime();
+            return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
         }
+
 
         #region LaunchArgumentBuilder
         bool RequireWindowExclusivePayload = false;
