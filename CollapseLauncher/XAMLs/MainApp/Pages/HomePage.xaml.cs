@@ -965,13 +965,13 @@ namespace CollapseLauncher.Pages
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
             int FinalPlaytimeMinutes = playtimemins % 60;
-            int FinalPlaytimeHours =+ playtimemins / 60;
+            int FinalPlaytimeHours = playtimehours + playtimemins / 60;
             MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
             HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
 
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
-            if (FinalPlaytimeMinutes < 60 && FinalPlaytimeHours >= 0) {
+            if (FinalPlaytimeMinutes < 60) {
                 SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
@@ -984,6 +984,7 @@ namespace CollapseLauncher.Pages
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
         {
+            sender.MaxLength = 7;
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
@@ -1003,13 +1004,21 @@ namespace CollapseLauncher.Pages
             PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" /*+ $" [{CurrentPlaytimeValue}]"*/;
         }
 
-        private string ReadPlaytimeFromRegistry(string RegionRegKey)
+        private static string ReadPlaytimeFromRegistry(string RegionRegKey)
         {
             try
             {
                 RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
                 const string _ValueName = "CollapseLauncher_Playtime";
-                return (string)RegionKey.GetValue(_ValueName, null);
+                string PlaytimeValue = (string)RegionKey.GetValue(_ValueName, null);
+                if (PlaytimeValue == null)
+                {
+                    RegionKey.CreateSubKey(_ValueName, true);
+                    PlaytimeValue = "0h 0m 0s";
+                    SavePlaytimetoRegistry(RegionRegKey, PlaytimeValue);
+                    LogWriteLine($"Created SubKey \"CollapseLauncher_Playtime\" for {RegionRegKey.Split('\\')[2]}.", LogType.Default, true);
+                }
+                return PlaytimeValue;
             }
             catch(Exception ex)
             {
@@ -1019,7 +1028,7 @@ namespace CollapseLauncher.Pages
 
         }
 
-        private void SavePlaytimetoRegistry(string RegionRegKey, string value)
+        private static void SavePlaytimetoRegistry(string RegionRegKey, string value)
         {
             try 
             {
