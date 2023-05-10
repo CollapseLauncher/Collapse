@@ -704,7 +704,7 @@ namespace CollapseLauncher.Pages
                         try
                         {
                             UpdatePlaytimeAfterClose(int.Parse(lineContent[0]));
-                            LogWriteLine($"Found {lineContent[0]} minutes not updated in the playtime count.", LogType.Default, true);
+                            LogWriteLine($"Found {lineContent[0]} minutes not updated in the playtime log.", LogType.Default, true);
                         }
                         catch 
                         {
