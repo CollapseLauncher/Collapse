@@ -1000,7 +1000,7 @@ namespace CollapseLauncher.Pages
             string CurrentPlaytimeValue = ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation);
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" + $" [{CurrentPlaytimeValue}]";
+            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" /*+ $" [{CurrentPlaytimeValue}]"*/;
         }
 
         private string ReadPlaytimeFromRegistry(string RegionRegKey)
