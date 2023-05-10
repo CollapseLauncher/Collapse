@@ -124,15 +124,22 @@ namespace CollapseLauncher.Pages
 
         private void AutoUpdateCounter()
         {
-            var timer = new DispatcherTimer
+            string OldRegionRK = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
+            var updatetimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(60)
+                Interval = TimeSpan.FromSeconds(20)
             };
-            timer.Tick += (o, e) =>
+            updatetimer.Tick += (o, e) =>
             {
+                
+                RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
+                const string _ValueName = "CollapseLauncher_Playtime";
+                string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
+                CurrentPlaytimeValue = CurrentPlaytime;
                 UpdatePlaytime();
+                LogWriteLine("Updated the playcount in the current page.");
             };
-            timer.Start();
+            updatetimer.Start();
         }
 
         private void TryLoadEventPanelImage()
@@ -677,11 +684,11 @@ namespace CollapseLauncher.Pages
         private void StartCounter(string OldRegionRK, string OldRegion)
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
-            var timer = new DispatcherTimer
+            var ingametimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(10)
             };
-            timer.Tick += (o, e) =>
+            ingametimer.Tick += (o, e) =>
             {
                 RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
                 const string _ValueName = "CollapseLauncher_Playtime";
@@ -690,7 +697,6 @@ namespace CollapseLauncher.Pages
                     
                 if (OldRegion == NewRegion)
                 {
-                    UpdatePlaytime();
                     LogWriteLine($"Added 10 seconds to the count");
                 }
                 else
@@ -698,7 +704,7 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Added 10 seconds to storage but as the user is not in the right page, it is not added to the count");
                 }
             };
-            timer.Start();
+            ingametimer.Start();
         }
 
         private string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
