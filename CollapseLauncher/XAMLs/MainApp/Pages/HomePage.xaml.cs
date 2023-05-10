@@ -101,6 +101,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 UpdatePlaytime();
+                AutoUpdateCounter();
 
                 HomePageProp.Current = this;
 
@@ -119,6 +120,19 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void AutoUpdateCounter()
+        {
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(60)
+            };
+            timer.Tick += (o, e) =>
+            {
+                UpdatePlaytime();
+            };
+            timer.Start();
         }
 
         private void TryLoadEventPanelImage()
@@ -645,12 +659,13 @@ namespace CollapseLauncher.Pages
                 ReadOutputLog();
                 GameLogWatcher();
 
-                int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                //int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 string OldRegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
                 string OldRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
 
-                StartGameAndSaveGameName(OldRegionKey, OldRegion, PlaytimerStart, proc);
+                StartCounter(OldRegionKey, OldRegion);
 
+                await proc.WaitForExitAsync();
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -659,29 +674,31 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartGameAndSaveGameName(string OldRegionRK, string OldRegion, int PlaytimerStart, Process proc)
+        private void StartCounter(string OldRegionRK, string OldRegion)
         {
-
-            await proc.WaitForExitAsync();
-
-            int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            int SessionPlaytime = (PlaytimerEnd - PlaytimerStart);
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
-            LogWriteLine($"Session playtime: {SessionPlaytime}s.", LogType.Default, true);
-            if (OldRegion == NewRegion)
+            var timer = new DispatcherTimer
             {
-                CurrentPlaytimeValue = SumPlaytimes(SessionPlaytime, CurrentPlaytimeValue);
-                UpdatePlaytime();
-            }
-            else
+                Interval = TimeSpan.FromSeconds(10)
+            };
+            timer.Tick += (o, e) =>
             {
                 RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
-                //OpenSubKey(OldRegionRK);
                 const string _ValueName = "CollapseLauncher_Playtime";
                 string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
-                OldRegionKey.SetValue(_ValueName, SumPlaytimes(SessionPlaytime, CurrentPlaytime), RegistryValueKind.String);
-                LogWriteLine($"Not in the region \'{OldRegion}\' so playtime was updated directly [{OldRegionRK}]", LogType.Warning, true);
-            }
+                OldRegionKey.SetValue(_ValueName, SumPlaytimes(10, CurrentPlaytime), RegistryValueKind.String);
+                    
+                if (OldRegion == NewRegion)
+                {
+                    UpdatePlaytime();
+                    LogWriteLine($"Added 10 seconds to the count");
+                }
+                else
+                {
+                    LogWriteLine($"Added 10 seconds to storage but as the user is not in the right page, it is not added to the count");
+                }
+            };
+            timer.Start();
         }
 
         private string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
