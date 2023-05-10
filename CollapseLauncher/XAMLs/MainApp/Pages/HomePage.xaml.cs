@@ -131,7 +131,6 @@ namespace CollapseLauncher.Pages
             };
             updatetimer.Tick += (o, e) =>
             {
-                
                 RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
                 const string _ValueName = "CollapseLauncher_Playtime";
                 string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
@@ -359,6 +358,7 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
+
         }
 
         private void SpawnPreloadBox()
@@ -670,9 +670,9 @@ namespace CollapseLauncher.Pages
                 string OldRegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
                 string OldRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
 
-                StartCounter(OldRegionKey, OldRegion);
+                StartCounter(OldRegionKey, OldRegion, proc);
 
-                await proc.WaitForExitAsync();
+                
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -681,7 +681,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void StartCounter(string OldRegionRK, string OldRegion)
+        private async void StartCounter(string OldRegionRK, string OldRegion, Process proc)
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             var ingametimer = new DispatcherTimer
@@ -705,6 +705,8 @@ namespace CollapseLauncher.Pages
                 }
             };
             ingametimer.Start();
+            await proc.WaitForExitAsync();
+            ingametimer.Stop();
         }
 
         private string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
