@@ -608,6 +608,7 @@
                         <Button.Flyout>
                             <Flyout x:Name="PlaytimeFlyout">
                                 <StackPanel MaxWidth="224" Margin="0,0">
+                                <StackPanel x:Name="PlaytimeIdleStack" MaxWidth="224" Margin="0,0">
                                     <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,0">
                                         <TextBox x:Name="HourPlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
@@ -634,6 +635,12 @@
                                             </StackPanel>
                                         </Button.Content>
                                     </Button>    
+                                </StackPanel>
+                                    <StackPanel x:Name="PlaytimeRunningStack" Visibility="Collapsed" MaxWidth="250" Margin="0,0">
+                                        <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <TextBlock Text="An instance of this game is currently running, therefore playtime can't be edited." TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Please be aware that if the game was not started using Collapse, this session's playtime will not be counted." TextWrapping="Wrap" Margin="0,0,0,0"/>
+                                     </StackPanel>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>

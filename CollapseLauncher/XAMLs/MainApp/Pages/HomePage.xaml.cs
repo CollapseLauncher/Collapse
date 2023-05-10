@@ -433,6 +433,8 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = BtnRunningGame;
                         GameStartupSetting.IsEnabled = false;
+                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
+                        PlaytimeRunningStack.Visibility = Visibility.Visible;
 
                         await Task.Delay(100, Token);
 #if !DISABLEDISCORD
@@ -446,6 +448,8 @@ namespace CollapseLauncher.Pages
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = BtnStartGame;
                     GameStartupSetting.IsEnabled = true;
+                    PlaytimeIdleStack.Visibility = Visibility.Visible;
+                    PlaytimeRunningStack.Visibility = Visibility.Collapsed;
 
                     await Task.Delay(100, Token);
 #if !DISABLEDISCORD
@@ -667,7 +671,7 @@ namespace CollapseLauncher.Pages
             {
                 string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
                 SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(10, CurrentPlaytime));
-                LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
+                //LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
@@ -1001,17 +1005,33 @@ namespace CollapseLauncher.Pages
 
         private string ReadPlaytimeFromRegistry(string RegionRegKey)
         {
-            RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
-            const string _ValueName = "CollapseLauncher_Playtime";
-            return (string)RegionKey.GetValue(_ValueName, null);
+            try
+            {
+                RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
+                const string _ValueName = "CollapseLauncher_Playtime";
+                return (string)RegionKey.GetValue(_ValueName, null);
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
+                return "0h 0m 0s";
+            }
+
         }
 
         private void SavePlaytimetoRegistry(string RegionRegKey, string value)
         {
-            RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
-            const string _ValueName = "CollapseLauncher_Playtime";
-            RegionKey.SetValue(_ValueName, value, RegistryValueKind.String);
-        }
+            try 
+            {
+                RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
+                const string _ValueName = "CollapseLauncher_Playtime";
+                RegionKey.SetValue(_ValueName, value, RegistryValueKind.String);
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
+            }
+}
 
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
