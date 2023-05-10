@@ -31,6 +31,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.Linq;
 
 namespace CollapseLauncher.Pages
 {
@@ -97,6 +98,8 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Translation += Shadow16;
                     PostPanel.Translation += Shadow48;
                 }
+
+                CheckPlaytimeUpdates();
 
                 HomePageProp.Current = this;
 
@@ -642,24 +645,10 @@ namespace CollapseLauncher.Pages
                 GameLogWatcher();
 
                 int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                GameType OldRegion = PageStatics._GameVersion.GameType;
-                
+                string OldRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
 
-                await proc.WaitForExitAsync();
+                StartGameAndSaveGameName(OldRegion, PlaytimerStart, proc);
 
-                int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
-                GameType NewRegion = PageStatics._GameVersion.GamePreset.GameType;
-                LogWriteLine($"Session playtime: {SessionPlaytime}m. {OldRegion}/{NewRegion}", LogType.Default, true);
-
-                if (OldRegion == NewRegion)
-                {
-                    UpdatePlaytimeAfterClose(SessionPlaytime);
-                }
-                else
-                {
-                    LogWriteLine($"As the game region was changed meanwhile, there will be no changes to any playtime counter at this time.", LogType.Error, true);
-                }
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -667,9 +656,73 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {PageStatics._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
-        
 
-        public void UpdatePlaytimeAfterClose(int SessionPlaytime)
+        private async void StartGameAndSaveGameName(string OldRegion, int PlaytimerStart, Process proc)
+        {
+            await proc.WaitForExitAsync();
+
+            int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
+            string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
+            LogWriteLine($"Session playtime: {SessionPlaytime}m.", LogType.Default, true);
+
+            if (OldRegion == NewRegion)
+            {
+                UpdatePlaytimeAfterClose(SessionPlaytime);
+            }
+            else
+            {
+                LogWriteLine($"As the game region was changed meanwhile, there will be no changes to any playtime counter at this time. ({OldRegion} != {NewRegion})", LogType.Error, true);
+                string playtimeLogPath = AppDataFolder + "/playtime.log";
+                File.AppendAllText(playtimeLogPath, $"{SessionPlaytime} {OldRegion}" + Environment.NewLine);
+            }
+        }
+
+        private void CheckPlaytimeUpdates()
+        {
+            string playtimeLogPath = AppDataFolder + "/playtime.log";
+
+            if (!File.Exists(playtimeLogPath))
+            {
+                File.Create(playtimeLogPath).Close();
+            }
+
+            if (new FileInfo(playtimeLogPath).Length > 0)
+            {
+                string CurrentZone = PageStatics._GameVersion.GamePreset.ZoneFullname;
+                using FileStream fs = File.OpenRead(playtimeLogPath);
+                using var sr = new StreamReader(fs);
+                string tempFile = Path.GetTempFileName();
+                using var sw = new StreamWriter(tempFile);
+                string line;
+
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] lineContent = line.Split(' ');
+                    if (string.Join(" ", lineContent.Skip(1)) == CurrentZone)
+                    {
+                        try
+                        {
+                            UpdatePlaytimeAfterClose(int.Parse(lineContent[0]));
+                            LogWriteLine($"Found {lineContent[0]} minutes not updated in the playtime count.", LogType.Default, true);
+                        }
+                        catch 
+                        {
+                            LogWriteLine($"Found playtime sessions not updated in the count but the line is not in a correct format ({lineContent[0]})", LogType.Error, true);
+                        }   
+                    }
+                    else
+                    {
+                        sw.WriteLine(line);
+                    }
+                }
+                sr.Close(); fs.Close(); sw.Close();
+                File.Delete(playtimeLogPath);
+                File.Move(tempFile, playtimeLogPath);
+            }
+        }
+
+        private void UpdatePlaytimeAfterClose(int SessionPlaytime)
         {
             int StoredPlaytimeHours = int.Parse(CurrentPlaytimeValue.Split("h")[0]);
             int StoredPlaytimeMinutes = int.Parse(CurrentPlaytimeValue.Split(" ")[1].Split('m')[0]);
@@ -930,7 +983,7 @@ namespace CollapseLauncher.Pages
 
         private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
             MinutePlaytimeTextBox.Text = playtimemins.ToString(); // playtimemins < 10 ? "0" + playtimemins.ToString() : playtimemins.ToString();
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
@@ -938,20 +991,20 @@ namespace CollapseLauncher.Pages
 
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
 
-            if(playtimemins < 60 && playtimehours >= 0){
-                CurrentPlaytimeValue=givenPlaytime;
+            if (playtimemins < 60 && playtimehours >= 0) {
+                CurrentPlaytimeValue = givenPlaytime;
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
                 UpdatePlaytime();
-            }else{
+            } else {
                 InvalidTimeBlock.Visibility = Visibility.Visible;
             };
-            
+
         }
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlaytimeValue="0h 0m";
+            CurrentPlaytimeValue = "0h 0m";
             UpdatePlaytime();
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
@@ -961,15 +1014,16 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-            HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
-            MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            }catch(Exception ex)
+                HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
+                MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
+            }
+            catch
             {
                 LogWrite("Could not get a value for the current playtime. The value was redefined to its default.", LogType.Error, true);
                 CurrentPlaytimeValue = "0h 0m";
                 UpdatePlaytime();
             }
-                
+
         }
 
         private void UpdatePlaytime()
@@ -978,13 +1032,12 @@ namespace CollapseLauncher.Pages
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
             PlaytimeMainBtn.Text = CurrentPlaytimeValue;
         }
-        
+
         public string CurrentPlaytimeValue
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue = value;
         }
-
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {
