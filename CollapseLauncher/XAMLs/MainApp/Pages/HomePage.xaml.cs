@@ -122,28 +122,6 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 20000)
-        {
-            string OldRegionRK = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
-            try
-            {
-                while (true)
-                {
-                    if (OldRegionRK != PageStatics._GameVersion.GamePreset.ConfigRegistryLocation) break;
-                    await Task.Delay(delay, token);
-                    RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
-                    const string _ValueName = "CollapseLauncher_Playtime";
-                    string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
-                    CurrentPlaytimeValue = CurrentPlaytime;
-                    UpdatePlaytime();
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
         private void TryLoadEventPanelImage()
         {
             if (regionNewsProp.eventPanel == null) return;
@@ -669,13 +647,7 @@ namespace CollapseLauncher.Pages
                 ReadOutputLog();
                 GameLogWatcher();
 
-                //int PlaytimerStart = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                string OldRegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
-                string OldRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
-
-                StartCounter(OldRegionKey, OldRegion, proc);
-
-                
+                StartCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -684,7 +656,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartCounter(string OldRegionRK, string OldRegion, Process proc)
+        private async void StartCounter(string OldRegionRK, Process proc)
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             var ingametimer = new DispatcherTimer
@@ -693,10 +665,9 @@ namespace CollapseLauncher.Pages
             };
             ingametimer.Tick += (o, e) =>
             {
-                RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
-                const string _ValueName = "CollapseLauncher_Playtime";
-                string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
-                OldRegionKey.SetValue(_ValueName, SumPlaytimes(10, CurrentPlaytime), RegistryValueKind.String);
+                string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
+                SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(10, CurrentPlaytime));
+                LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
@@ -725,6 +696,24 @@ namespace CollapseLauncher.Pages
             return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
+        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 20000)
+        {
+            string OldRegionRK = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
+            try
+            {
+                while (true)
+                {
+                    if (OldRegionRK != PageStatics._GameVersion.GamePreset.ConfigRegistryLocation) break;
+                    await Task.Delay(delay, token);
+                    UpdatePlaytime();
+                    //LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
+                }
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"There was an error while trying to initialize the playtime updater. [{ex}]");
+            }
+        }
 
         #region LaunchArgumentBuilder
         bool RequireWindowExclusivePayload = false;
@@ -979,7 +968,7 @@ namespace CollapseLauncher.Pages
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
             if (FinalPlaytimeMinutes < 60 && FinalPlaytimeHours >= 0) {
-                CurrentPlaytimeValue = givenPlaytime;
+                SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
                 UpdatePlaytime();
@@ -996,41 +985,34 @@ namespace CollapseLauncher.Pages
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlaytimeValue = "0h 0m 0s";
+            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation,"0h 0m 0s");
             UpdatePlaytime();
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
         }
 
-        private void SetPlaytimeButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
-                MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            }
-            catch
-            {
-                LogWrite("Could not get a value for the current playtime. The value was redefined to its default.", LogType.Error, true);
-                CurrentPlaytimeValue = "0h 0m 0s";
-                UpdatePlaytime();
-            }
-
-        }
-
         private void UpdatePlaytime()
         {
+            string CurrentPlaytimeValue = ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation);
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            int tillM = CurrentPlaytimeValue.IndexOf("m");
-            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Substring(0, tillM+1);
+            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" + $" [{CurrentPlaytimeValue}]";
         }
 
-        public string CurrentPlaytimeValue
+        private string ReadPlaytimeFromRegistry(string RegionRegKey)
         {
-            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue;
-            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsPlaytime.PlaytimeValue = value;
+            RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
+            const string _ValueName = "CollapseLauncher_Playtime";
+            return (string)RegionKey.GetValue(_ValueName, null);
         }
+
+        private void SavePlaytimetoRegistry(string RegionRegKey, string value)
+        {
+            RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
+            const string _ValueName = "CollapseLauncher_Playtime";
+            RegionKey.SetValue(_ValueName, value, RegistryValueKind.String);
+        }
+
 
         private async void UpdateGameDialog(object sender, RoutedEventArgs e)
         {

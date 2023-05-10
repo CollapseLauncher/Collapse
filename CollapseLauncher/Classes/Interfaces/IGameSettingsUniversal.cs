@@ -8,6 +8,5 @@ namespace CollapseLauncher.Interfaces
         BaseScreenSettingData SettingsScreen { get; set; }
         CollapseScreenSetting SettingsCollapseScreen { get; set; }
         CustomArgs SettingsCustomArgument { get; set; }
-        Playtime SettingsPlaytime {get; set;}
     }
 }
