@@ -621,7 +621,7 @@
                                     <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
                                     <Button x:Name="UpdatePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UpdatePlaytimeButton_Click">
                                         <Button.Content> 
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                            <StackPanel Orientation="Horizontal" Margin="3,0">
                                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
                                                 <TextBlock x:Name="UpdateTextBlock" Text="Update" Margin="7,0,0,0"/>
                                             </StackPanel>

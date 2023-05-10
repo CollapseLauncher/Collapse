@@ -659,7 +659,9 @@ namespace CollapseLauncher.Pages
 
         private async void StartGameAndSaveGameName(string OldRegionRK, string OldRegion, int PlaytimerStart, Process proc)
         {
+
             await proc.WaitForExitAsync();
+
             int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
