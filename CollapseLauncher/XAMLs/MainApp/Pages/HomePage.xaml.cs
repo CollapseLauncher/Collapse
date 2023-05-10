@@ -129,7 +129,7 @@ namespace CollapseLauncher.Pages
             {
                 while (true)
                 {
-                    if (token.IsCancellationRequested) break;
+                    if (OldRegionRK != PageStatics._GameVersion.GamePreset.ConfigRegistryLocation) break;
                     await Task.Delay(delay, token);
                     RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
                     const string _ValueName = "CollapseLauncher_Playtime";
