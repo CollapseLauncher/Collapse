@@ -136,7 +136,6 @@ namespace CollapseLauncher.Pages
                     string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
                     CurrentPlaytimeValue = CurrentPlaytime;
                     UpdatePlaytime();
-                    LogWriteLine("Updated the playcount in the current page.");
                 }
             }
             catch
@@ -698,15 +697,6 @@ namespace CollapseLauncher.Pages
                 const string _ValueName = "CollapseLauncher_Playtime";
                 string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
                 OldRegionKey.SetValue(_ValueName, SumPlaytimes(10, CurrentPlaytime), RegistryValueKind.String);
-                    
-                if (OldRegion == NewRegion)
-                {
-                    LogWriteLine($"Added 10 seconds to the count");
-                }
-                else
-                {
-                    LogWriteLine($"Added 10 seconds to storage but as the user is not in the right page, it is not added to the count");
-                }
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
