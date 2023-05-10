@@ -31,7 +31,6 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace CollapseLauncher.Pages
@@ -48,6 +47,7 @@ namespace CollapseLauncher.Pages
         public HomeMenuPanel MenuPanels => regionNewsProp;
         CancellationTokenSource PageToken = new CancellationTokenSource();
         CancellationTokenSource CarouselToken = new CancellationTokenSource();
+        CancellationTokenSource PlaytimeToken = new CancellationTokenSource();
         public HomePage()
         {
             this.InitializeComponent();
@@ -122,23 +122,27 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void AutoUpdateCounter()
+        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 20000)
         {
             string OldRegionRK = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
-            var updatetimer = new DispatcherTimer
+            try
             {
-                Interval = TimeSpan.FromSeconds(20)
-            };
-            updatetimer.Tick += (o, e) =>
+                while (true)
+                {
+                    if (token.IsCancellationRequested) break;
+                    await Task.Delay(delay, token);
+                    RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
+                    const string _ValueName = "CollapseLauncher_Playtime";
+                    string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
+                    CurrentPlaytimeValue = CurrentPlaytime;
+                    UpdatePlaytime();
+                    LogWriteLine("Updated the playcount in the current page.");
+                }
+            }
+            catch
             {
-                RegistryKey OldRegionKey = Registry.CurrentUser.OpenSubKey(OldRegionRK, true);
-                const string _ValueName = "CollapseLauncher_Playtime";
-                string CurrentPlaytime = (string)OldRegionKey.GetValue(_ValueName, null);
-                CurrentPlaytimeValue = CurrentPlaytime;
-                UpdatePlaytime();
-                LogWriteLine("Updated the playcount in the current page.");
-            };
-            updatetimer.Start();
+
+            }
         }
 
         private void TryLoadEventPanelImage()
