@@ -602,7 +602,7 @@
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
                                 <StackPanel Orientation="Horizontal" Margin="8,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf017;" FontSize="18"/>
-                                    <TextBlock x:Name="PlaytimeMainBtn" Text="{x:Bind CurrentPlaytimeValue}" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    <TextBlock x:Name="PlaytimeMainBtn" Text="-" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </StackPanel>
                             </Grid>
                         </Button.Content>

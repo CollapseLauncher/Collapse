@@ -11,7 +11,7 @@ namespace CollapseLauncher.GameSettings.Universal
     {
         #region Fields
         private const string _ValueName = "CollapseLauncher_Playtime";
-        private string _PlaytimeValue = "0h 0m";
+        private string _PlaytimeValue = "0h 0m 0s";
         #endregion
 
         #region Properties
@@ -37,7 +37,7 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
-                return new Playtime { PlaytimeValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "0h 0m" };
+                return new Playtime { PlaytimeValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "0h 0m 0s" };
             }
             catch (Exception ex)
             {

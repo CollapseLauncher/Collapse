@@ -100,6 +100,7 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
+                UpdatePlaytime();
 
                 HomePageProp.Current = this;
 
@@ -664,9 +665,9 @@ namespace CollapseLauncher.Pages
             await proc.WaitForExitAsync();
 
             int PlaytimerEnd = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            int SessionPlaytime = (PlaytimerEnd - PlaytimerStart) / 60;
+            int SessionPlaytime = (PlaytimerEnd - PlaytimerStart);
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
-            LogWriteLine($"Session playtime: {SessionPlaytime}m.", LogType.Default, true);
+            LogWriteLine($"Session playtime: {SessionPlaytime}s.", LogType.Default, true);
             if (OldRegion == NewRegion)
             {
                 CurrentPlaytimeValue = SumPlaytimes(SessionPlaytime, CurrentPlaytimeValue);
@@ -687,14 +688,22 @@ namespace CollapseLauncher.Pages
         {
             int StoredPlaytimeHours = int.Parse(CurrentPlaytime.Split("h")[0]);
             int StoredPlaytimeMinutes = int.Parse(CurrentPlaytime.Split(" ")[1].Split('m')[0]);
-            int SessionPlaytimeHours = StoredPlaytimeHours + SessionPlaytime / 60;
-            int SessionPlaytimeMinutes = SessionPlaytime % 60 + StoredPlaytimeMinutes;
-            if (StoredPlaytimeMinutes + StoredPlaytimeMinutes > 59)
+            int StoredPlaytimeSeconds = int.Parse(CurrentPlaytime.Split(" ")[2].Split('s')[0]);
+            int SessionPlaytimeHours = SessionPlaytime / 60 / 60 + StoredPlaytimeHours;
+            int SessionPlaytimeMinutes = (SessionPlaytime / 60) % 60 + StoredPlaytimeMinutes;
+            int SessionPlaytimeSeconds =  SessionPlaytime % 60 + StoredPlaytimeSeconds;
+            if (SessionPlaytimeSeconds > 59)
+            {
+                SessionPlaytimeMinutes += SessionPlaytimeSeconds / 60;
+                SessionPlaytimeSeconds = SessionPlaytimeSeconds % 60;
+            }
+            if (SessionPlaytimeMinutes > 59)
             {
                 SessionPlaytimeHours += SessionPlaytimeMinutes / 60;
                 SessionPlaytimeMinutes = SessionPlaytimeMinutes % 60;
             }
-            return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m";
+
+            return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
 
@@ -948,7 +957,7 @@ namespace CollapseLauncher.Pages
             MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
             HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
 
-            string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
+            string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
             if (FinalPlaytimeMinutes < 60 && FinalPlaytimeHours >= 0) {
                 CurrentPlaytimeValue = givenPlaytime;
@@ -968,7 +977,7 @@ namespace CollapseLauncher.Pages
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            CurrentPlaytimeValue = "0h 0m";
+            CurrentPlaytimeValue = "0h 0m 0s";
             UpdatePlaytime();
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
@@ -984,7 +993,7 @@ namespace CollapseLauncher.Pages
             catch
             {
                 LogWrite("Could not get a value for the current playtime. The value was redefined to its default.", LogType.Error, true);
-                CurrentPlaytimeValue = "0h 0m";
+                CurrentPlaytimeValue = "0h 0m 0s";
                 UpdatePlaytime();
             }
 
@@ -994,7 +1003,8 @@ namespace CollapseLauncher.Pages
         {
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            PlaytimeMainBtn.Text = CurrentPlaytimeValue;
+            int tillM = CurrentPlaytimeValue.IndexOf("m");
+            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Substring(0, tillM+1);
         }
 
         public string CurrentPlaytimeValue
