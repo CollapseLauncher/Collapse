@@ -31,6 +31,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace CollapseLauncher.Pages
@@ -940,15 +941,16 @@ namespace CollapseLauncher.Pages
 
         private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
-            MinutePlaytimeTextBox.Text = playtimemins.ToString(); // playtimemins < 10 ? "0" + playtimemins.ToString() : playtimemins.ToString();
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
-            HourPlaytimeTextBox.Text = playtimehours.ToString();
+            int FinalPlaytimeMinutes = playtimemins % 60;
+            int FinalPlaytimeHours =+ playtimemins / 60;
+            MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
+            HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
 
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m";
 
-            if (playtimemins < 60 && playtimehours >= 0) {
+            if (FinalPlaytimeMinutes < 60 && FinalPlaytimeHours >= 0) {
                 CurrentPlaytimeValue = givenPlaytime;
                 InvalidTimeBlock.Visibility = Visibility.Collapsed;
                 PlaytimeFlyout.Hide();
@@ -957,6 +959,11 @@ namespace CollapseLauncher.Pages
                 InvalidTimeBlock.Visibility = Visibility.Visible;
             };
 
+        }
+
+        private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)

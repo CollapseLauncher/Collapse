@@ -611,11 +611,11 @@
                                 <StackPanel MaxWidth="224" Margin="0,0">
                                     <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,0">
-                                        <TextBox x:Name="HourPlaytimeTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
-                                        <TextBox x:Name="MinutePlaytimeTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
+                                        <TextBox x:Name="HourPlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
+                                        <TextBox x:Name="MinutePlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0">
-                                        <TextBlock Text="Hours" HorizontalAlignment="Center" FontSize="11" Margin="5,1,5,8"/>
+                                        <TextBlock Text="Hours"  HorizontalAlignment="Center" FontSize="11" Margin="5,1,5,8"/>
                                         <TextBlock Text="Minutes" HorizontalAlignment="Center" FontSize="11" Margin="40,1,0,8"/>
                                     </StackPanel>
                                     <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
