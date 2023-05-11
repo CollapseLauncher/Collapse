@@ -32,6 +32,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.Linq;
+using Microsoft.UI;
+using System.ComponentModel.Design;
 
 namespace CollapseLauncher.Pages
 {
@@ -100,7 +102,7 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                AutoUpdateCounter();
+                AutoUpdateCounter(60000, PlaytimeToken.Token);
 
                 HomePageProp.Current = this;
 
@@ -709,16 +711,15 @@ namespace CollapseLauncher.Pages
 
         private async void AutoUpdateCounter(int delay = 60000, CancellationToken token = new CancellationToken())
         {
-            string RegionName = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
             string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
             UpdatePlaytime(false, Oldtime);
             bool first = true;
             bool bootByCollapse = false;
-
+            delay = 10000;
             try
             {
-                while (RegionName == PageStatics._GameVersion.GamePreset.ZoneFullname)
+                while (true)
                 {
 
                     await Task.Delay(delay, token);
@@ -727,7 +728,7 @@ namespace CollapseLauncher.Pages
                         string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                         bootByCollapse = Newtime != Oldtime;
                         first = !bootByCollapse;
-                        //LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
+                        LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
                     }
 
                     if (bootByCollapse)
@@ -749,9 +750,9 @@ namespace CollapseLauncher.Pages
                     }
                 }
             }
-            catch(Exception ex)
+            catch/*(Exception ex)*/
             {
-                LogWriteLine($"There was an error while trying to initialize the playtime updater. [{ex}]");
+                //LogWriteLine($"There was an error while trying to initialize the playtime updater. [{ex}]");
             }
         }
 
@@ -926,6 +927,7 @@ namespace CollapseLauncher.Pages
             IsPageUnload = true;
             PageToken.Cancel();
             CarouselToken.Cancel();
+            PlaytimeToken.Cancel();
             PageStatics._GameInstall.CancelRoutine();
             GC.Collect();
         }
