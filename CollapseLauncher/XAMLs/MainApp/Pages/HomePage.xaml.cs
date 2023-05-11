@@ -716,7 +716,6 @@ namespace CollapseLauncher.Pages
             UpdatePlaytime(false, Oldtime);
             bool first = true;
             bool bootByCollapse = false;
-            delay = 10000;
             try
             {
                 while (true)
