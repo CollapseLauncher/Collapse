@@ -100,7 +100,6 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                UpdatePlaytime();
                 AutoUpdateCounter();
 
                 HomePageProp.Current = this;
@@ -684,7 +683,6 @@ namespace CollapseLauncher.Pages
             await proc.WaitForExitAsync();
             SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(total, CurrentPlaytime));
             LogWriteLine($"Added {total} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
-            UpdatePlaytime();
             ingametimer.Stop();
         }
 
@@ -710,28 +708,45 @@ namespace CollapseLauncher.Pages
             return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
-        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 60000)
+        private async void AutoUpdateCounter(int delay = 60000, CancellationToken token = new CancellationToken())
         {
             string RegionName = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
             string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
+            UpdatePlaytime(false, Oldtime);
             bool first = true;
             bool bootByCollapse = false;
 
             try
             {
-                while (true)
+                while (RegionName == PageStatics._GameVersion.GamePreset.ZoneFullname)
                 {
-                    if (RegionName != PageStatics._GameVersion.GamePreset.ZoneFullname) break;
+
                     await Task.Delay(delay, token);
+
                     if (first){
                         string Newtime = ReadPlaytimeFromRegistry(RegionKey);
-                        first = false;
                         bootByCollapse = Newtime != Oldtime;
+                        first = !bootByCollapse;
+                        LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
                     }
-                    if (App.IsGameRunning && bootByCollapse){
-                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                        LogWriteLine("The playtime for the current page was updated. (If the game is running, +60 seconds are addded)", LogType.Warning, false);
+
+                    if (bootByCollapse)
+                    {
+                        if (App.IsGameRunning)
+                        {
+                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                            LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
+                        }
+                        else
+                        {
+                            LogWriteLine("The app stopped or isn't running.", LogType.Warning, false);
+                            UpdatePlaytime();
+                            string Newtime = ReadPlaytimeFromRegistry(RegionKey);
+                            Oldtime = Newtime;
+                            first = true;
+                            bootByCollapse = false;
+                        }
                     }
                 }
             }
