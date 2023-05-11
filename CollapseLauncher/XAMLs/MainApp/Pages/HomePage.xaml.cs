@@ -663,18 +663,28 @@ namespace CollapseLauncher.Pages
         private async void StartCounter(string OldRegionRK, Process proc)
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
+            string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
+            int seconds = 0, total = 0;
             var ingametimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(10)
+                Interval = TimeSpan.FromSeconds(5)
             };
             ingametimer.Tick += (o, e) =>
             {
-                string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
-                SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(10, CurrentPlaytime));
+                seconds += 5; total += 5;
+
+                if (seconds == 60){
+                    LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
+                    SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
+                    seconds = 0;
+                }
                 //LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
+            SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(total, CurrentPlaytime));
+            LogWriteLine($"Added {total} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
+            UpdatePlaytime();
             ingametimer.Stop();
         }
 
@@ -700,17 +710,29 @@ namespace CollapseLauncher.Pages
             return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
-        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 20000)
+        private async void AutoUpdateCounter(CancellationToken token = new CancellationToken(), int delay = 60000)
         {
-            string OldRegionRK = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
+            string RegionName = PageStatics._GameVersion.GamePreset.ZoneFullname;
+            string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
+            string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
+            bool first = true;
+            bool bootByCollapse = false;
+
             try
             {
                 while (true)
                 {
-                    if (OldRegionRK != PageStatics._GameVersion.GamePreset.ConfigRegistryLocation) break;
+                    if (RegionName != PageStatics._GameVersion.GamePreset.ZoneFullname) break;
                     await Task.Delay(delay, token);
-                    UpdatePlaytime();
-                    //LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
+                    if (first){
+                        string Newtime = ReadPlaytimeFromRegistry(RegionKey);
+                        first = false;
+                        bootByCollapse = Newtime != Oldtime;
+                    }
+                    if (App.IsGameRunning && bootByCollapse){
+                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                        LogWriteLine("The playtime for the current page was updated. (If the game is running, +60 seconds are addded)", LogType.Warning, false);
+                    }
                 }
             }
             catch(Exception ex)
@@ -996,9 +1018,9 @@ namespace CollapseLauncher.Pages
             PlaytimeFlyout.Hide();
         }
 
-        private void UpdatePlaytime()
+        private void UpdatePlaytime(bool reg = true, string CPtV = "")
         {
-            string CurrentPlaytimeValue = ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation);
+            string CurrentPlaytimeValue = reg ? ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation): CPtV;
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
             PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" /*+ $" [{CurrentPlaytimeValue}]"*/;
