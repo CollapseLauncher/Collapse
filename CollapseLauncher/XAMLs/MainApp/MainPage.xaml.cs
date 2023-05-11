@@ -197,7 +197,6 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
-            ChangeThemeInvoker.ThemeEvent += ChangeThemeInvoker_ThemeEvent;
         }
 
         private void UnsubscribeEvents()
@@ -209,13 +208,6 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
-            ChangeThemeInvoker.ThemeEvent -= ChangeThemeInvoker_ThemeEvent;
-        }
-
-        private async void ChangeThemeInvoker_ThemeEvent(object sender, ChangeThemeProperty e)
-        {
-            CurrentAppTheme = e.AppTheme;
-            await ApplyAccentColor(this, PaletteBitmap);
         }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
