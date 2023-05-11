@@ -673,7 +673,7 @@ namespace CollapseLauncher.Pages
                 seconds += 5;
 
                 if (seconds % 60 == 0){
-                    LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
+                    //LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
                     SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
                 }
                 //LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
@@ -727,7 +727,7 @@ namespace CollapseLauncher.Pages
                         string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                         bootByCollapse = Newtime != Oldtime;
                         first = !bootByCollapse;
-                        LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
+                        //LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
                     }
 
                     if (bootByCollapse)
@@ -735,11 +735,11 @@ namespace CollapseLauncher.Pages
                         if (App.IsGameRunning)
                         {
                             UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                            LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
+                            //LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
                         }
                         else
                         {
-                            LogWriteLine("The app stopped running.", LogType.Warning, false);
+                            //LogWriteLine("The app stopped running or the page was changed meanwhile.", LogType.Warning, false);
                             UpdatePlaytime();
                             string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                             Oldtime = Newtime;
