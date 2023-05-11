@@ -349,6 +349,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
+                if (value < 0) return;
                 SetAndSaveConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), value));
                 AppThemeSelectionWarning.Visibility = Visibility.Visible;
                 IsAppThemeNeedRestart = true;
