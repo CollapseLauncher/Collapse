@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.FileDialogNative;
@@ -411,7 +412,12 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
-                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                var delayedDragAreaChange = async () =>
+                {
+                    await Task.Delay(250);
+                    ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                };
+                delayedDragAreaChange();
                 SaveAppConfig();
             }
         }
