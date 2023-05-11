@@ -595,7 +595,8 @@
                             PointerEntered="AnimateGameRegSettingIcon_Start"
                             PointerExited="AnimateGameRegSettingIcon_End"
                             Shadow="{ThemeResource SharedShadow}"
-                            Margin="10 0 0 0">
+                            Margin="10 0 0 0"
+                            Click="ForceUpdatePlaytimeButton_Click">
                         <Button.Content>
                             <Grid>
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>

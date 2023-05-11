@@ -663,26 +663,25 @@ namespace CollapseLauncher.Pages
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
-            int seconds = 0, total = 0;
+            int seconds = 0;
             var ingametimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5)
             };
             ingametimer.Tick += (o, e) =>
             {
-                seconds += 5; total += 5;
+                seconds += 5;
 
-                if (seconds == 60){
+                if (seconds % 60 == 0){
                     LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
                     SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
-                    seconds = 0;
                 }
                 //LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
-            SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(total, CurrentPlaytime));
-            LogWriteLine($"Added {total} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
+            SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
+            LogWriteLine($"Added {seconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
             ingametimer.Stop();
         }
 
@@ -740,7 +739,7 @@ namespace CollapseLauncher.Pages
                         }
                         else
                         {
-                            LogWriteLine("The app stopped or isn't running.", LogType.Warning, false);
+                            LogWriteLine("The app stopped running.", LogType.Warning, false);
                             UpdatePlaytime();
                             string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                             Oldtime = Newtime;
@@ -994,6 +993,14 @@ namespace CollapseLauncher.Pages
             if (await PageStatics._GameInstall.UninstallGame())
             {
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            }
+        }
+
+        private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!App.IsGameRunning)
+            {
+                UpdatePlaytime();
             }
         }
 
