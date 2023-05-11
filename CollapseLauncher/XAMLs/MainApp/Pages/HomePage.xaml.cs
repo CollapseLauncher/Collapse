@@ -102,14 +102,14 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
-                AutoUpdateCounter(60000, PlaytimeToken.Token);
-
                 HomePageProp.Current = this;
 
                 if (await PageStatics._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await PageStatics._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
+                AutoUpdateCounter(false, 60000, PlaytimeToken.Token);
+
                 StartCarouselAutoScroll(CarouselToken.Token);
             }
             catch (ArgumentNullException ex)
@@ -653,6 +653,7 @@ namespace CollapseLauncher.Pages
                 GameLogWatcher();
 
                 StartCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
+                AutoUpdateCounter(true, 60000, PlaytimeToken.Token);
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -687,7 +688,7 @@ namespace CollapseLauncher.Pages
             ingametimer.Stop();
         }
 
-        private string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
+        private static string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
         {
             int StoredPlaytimeHours = int.Parse(CurrentPlaytime.Split("h")[0]);
             int StoredPlaytimeMinutes = int.Parse(CurrentPlaytime.Split(" ")[1].Split('m')[0]);
@@ -698,60 +699,53 @@ namespace CollapseLauncher.Pages
             if (SessionPlaytimeSeconds > 59)
             {
                 SessionPlaytimeMinutes += SessionPlaytimeSeconds / 60;
-                SessionPlaytimeSeconds = SessionPlaytimeSeconds % 60;
+                SessionPlaytimeSeconds %= 60;
             }
             if (SessionPlaytimeMinutes > 59)
             {
                 SessionPlaytimeHours += SessionPlaytimeMinutes / 60;
-                SessionPlaytimeMinutes = SessionPlaytimeMinutes % 60;
+                SessionPlaytimeMinutes %= 60;
             }
 
             return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
-        private async void AutoUpdateCounter(int delay = 60000, CancellationToken token = new CancellationToken())
+        private async void AutoUpdateCounter(bool bootByCollapse = false, int delay = 60000, CancellationToken token = new CancellationToken())
         {
             string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
             string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
             UpdatePlaytime(false, Oldtime);
-            bool first = true;
-            bool bootByCollapse = false;
+
+            await Task.Delay(2000);
+
             try
             {
-                while (true)
+                if (bootByCollapse)
                 {
-
-                    await Task.Delay(delay, token);
-
-                    if (first){
+                    while (App.IsGameRunning)
+                    {
+                        await Task.Delay(delay, token);
+                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                    }
+                }
+                else
+                {
+                    if (App.IsGameRunning)
+                    {
+                        await Task.Delay(delay, token);
                         string Newtime = ReadPlaytimeFromRegistry(RegionKey);
-                        bootByCollapse = Newtime != Oldtime;
-                        first = !bootByCollapse;
-                        LogWriteLine($"Is the Playtime counter running? {bootByCollapse && App.IsGameRunning}");
+                        if (Newtime == Oldtime) return;
                     }
 
-                    if (bootByCollapse)
+                    while (App.IsGameRunning)
                     {
-                        if (App.IsGameRunning)
-                        {
-                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                            //LogWriteLine("The playtime for the current page was updated.", LogType.Warning, false);
-                        }
-                        else
-                        {
-                            //LogWriteLine("The app stopped running or the page was changed meanwhile.", LogType.Warning, false);
-                            UpdatePlaytime();
-                            string Newtime = ReadPlaytimeFromRegistry(RegionKey);
-                            Oldtime = Newtime;
-                            first = true;
-                            bootByCollapse = false;
-                        }
+                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                        await Task.Delay(delay, token);
                     }
                 }
             }
-            catch/*(Exception ex)*/
+            catch
             {
-                //LogWriteLine($"There was an error while trying to initialize the playtime updater. [{ex}]");
             }
         }
 
