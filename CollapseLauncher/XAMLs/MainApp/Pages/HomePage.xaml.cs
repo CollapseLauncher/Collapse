@@ -106,7 +106,7 @@ namespace CollapseLauncher.Pages
                 if (await PageStatics._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
-                AutoUpdateCounter(false, 60000, PlaytimeToken.Token);
+                AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
 
                 StartCarouselAutoScroll(CarouselToken.Token);
             }
@@ -650,8 +650,8 @@ namespace CollapseLauncher.Pages
                 ReadOutputLog();
                 GameLogWatcher();
 
-                StartCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
-                AutoUpdateCounter(true, 60000, PlaytimeToken.Token);
+                StartGameAndPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
+                AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -660,7 +660,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartCounter(string OldRegionRK, Process proc)
+        private async void StartGameAndPlaytimeCounter(string OldRegionRK, Process proc)
         {
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
@@ -673,7 +673,7 @@ namespace CollapseLauncher.Pages
             {
                 seconds += 5;
 
-                if (seconds % 60 == 0){
+                if (seconds % 20 == 0){
                     //LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
                     SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
                 }
@@ -708,7 +708,7 @@ namespace CollapseLauncher.Pages
             return SessionPlaytimeHours.ToString() + "h " + SessionPlaytimeMinutes.ToString() + "m " + SessionPlaytimeSeconds.ToString() + "s";
         }
 
-        private async void AutoUpdateCounter(bool bootByCollapse = false, int delay = 60000, CancellationToken token = new CancellationToken())
+        private async void AutoUpdatePlaytimeCounter(bool bootByCollapse = false, CancellationToken token = new CancellationToken())
         {
             string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
             string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
@@ -722,7 +722,7 @@ namespace CollapseLauncher.Pages
                 {
                     while (App.IsGameRunning)
                     {
-                        await Task.Delay(delay, token);
+                        await Task.Delay(60000, token);
                         UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
                     }
                 }
@@ -730,15 +730,18 @@ namespace CollapseLauncher.Pages
                 {
                     if (App.IsGameRunning)
                     {
-                        await Task.Delay(delay, token);
+                        await Task.Delay(20000, token);
                         string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                         if (Newtime == Oldtime) return;
+                        int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
+                        await Task.Delay(60000 - CurrentSeconds, token);
+
                     }
 
                     while (App.IsGameRunning)
                     {
                         UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                        await Task.Delay(delay, token);
+                        await Task.Delay(60000, token);
                     }
                 }
             }
@@ -1012,7 +1015,7 @@ namespace CollapseLauncher.Pages
 
             SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
             PlaytimeFlyout.Hide();
-            UpdatePlaytime();
+            UpdatePlaytime(false, givenPlaytime);
 
 
         }
@@ -1026,7 +1029,7 @@ namespace CollapseLauncher.Pages
         private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation,"0h 0m 0s");
-            UpdatePlaytime();
+            UpdatePlaytime(false, "0h 0m 0s");
             InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
         }
