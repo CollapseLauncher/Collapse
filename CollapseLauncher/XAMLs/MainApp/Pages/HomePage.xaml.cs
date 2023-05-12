@@ -650,7 +650,7 @@ namespace CollapseLauncher.Pages
                 ReadOutputLog();
                 GameLogWatcher();
 
-                StartGameAndPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
+                StartPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
             }
@@ -660,7 +660,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async static void StartGameAndPlaytimeCounter(string OldRegionRK, Process proc)
+        private async static void StartPlaytimeCounter(string OldRegionRK, Process proc)
         {
             int saveFrequencyinSeconds = 60;
 
@@ -676,10 +676,9 @@ namespace CollapseLauncher.Pages
                 seconds += 5;
 
                 if (seconds % saveFrequencyinSeconds == 0){
-                    //LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
+                    //LogWriteLine($"Added \"fake\" {saveFrequencyinSeconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
                     SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
                 }
-                //LogWriteLine($"Added 10 seconds to {OldRegionRK.Split('\\')[2]} playtime.",LogType.Default,true);
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
