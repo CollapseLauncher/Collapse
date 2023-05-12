@@ -49,7 +49,6 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsScreen = ScreenSettingData.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
 
-
             // Load Preset
             Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context>.LoadPreset(GameType.Honkai, D_PersonalGraphicsSettingV2Context.Default);
         }

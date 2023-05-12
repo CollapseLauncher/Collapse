@@ -609,34 +609,34 @@
                         <Button.Flyout>
                             <Flyout x:Name="PlaytimeFlyout">
                                 <StackPanel MaxWidth="224" Margin="0,0">
-                                <StackPanel x:Name="PlaytimeIdleStack" MaxWidth="224" Margin="0,0">
-                                    <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0">
-                                        <TextBox x:Name="HourPlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
-                                        <TextBox x:Name="MinutePlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
+                                    <StackPanel x:Name="PlaytimeIdleStack" MaxWidth="224" Margin="0,0">
+                                        <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0">
+                                            <TextBox x:Name="HourPlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
+                                            <TextBox x:Name="MinutePlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0">
+                                            <TextBlock x:Name="PlaytimeHours" Text="Hours" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="5,1,0,8"/>
+                                            <TextBlock x:Name="PlaytimeMinutes" Text="Minutes" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
+                                        <Button x:Name="UpdatePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UpdatePlaytimeButton_Click">
+                                            <Button.Content> 
+                                                <StackPanel Orientation="Horizontal" Margin="3,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
+                                                 <TextBlock x:Name="UpdateTextBlock" Text="Update" Margin="7,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button x:Name="ResetPlaytimeButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ResetPlaytimeButton_Click">
+                                            <Button.Content>
+                                                <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
+                                                    <TextBlock Text="Reset" Margin="8,0,0,0"/>
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>    
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0">
-                                        <TextBlock Text="Hours"  HorizontalAlignment="Center" FontSize="11" Margin="5,1,5,8"/>
-                                        <TextBlock Text="Minutes" HorizontalAlignment="Center" FontSize="11" Margin="40,1,0,8"/>
-                                    </StackPanel>
-                                    <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
-                                    <Button x:Name="UpdatePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UpdatePlaytimeButton_Click">
-                                        <Button.Content> 
-                                            <StackPanel Orientation="Horizontal" Margin="3,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
-                                                <TextBlock x:Name="UpdateTextBlock" Text="Update" Margin="7,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                    <Button x:Name="ResetPlaytimeButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ResetPlaytimeButton_Click">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
-                                                <TextBlock Text="Reset" Margin="8,0,0,0"/>
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>    
-                                </StackPanel>
                                     <StackPanel x:Name="PlaytimeRunningStack" Visibility="Collapsed" MaxWidth="250" Margin="0,0">
                                         <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                         <TextBlock Text="An instance of this game is currently running, therefore playtime can't be edited." TextWrapping="Wrap" Margin="0,0,0,8"/>

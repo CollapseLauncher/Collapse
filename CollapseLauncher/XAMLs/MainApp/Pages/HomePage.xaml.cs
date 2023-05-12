@@ -32,8 +32,6 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.Linq;
-using Microsoft.UI;
-using System.ComponentModel.Design;
 
 namespace CollapseLauncher.Pages
 {
@@ -997,6 +995,7 @@ namespace CollapseLauncher.Pages
             {
                 UpdatePlaytime();
             }
+
         }
 
         private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -1005,25 +1004,22 @@ namespace CollapseLauncher.Pages
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
             int FinalPlaytimeMinutes = playtimemins % 60;
             int FinalPlaytimeHours = playtimehours + playtimemins / 60;
+            if (FinalPlaytimeHours > 99999) { FinalPlaytimeHours = 99999; FinalPlaytimeMinutes = 59; }
             MinutePlaytimeTextBox.Text = FinalPlaytimeMinutes.ToString();
             HourPlaytimeTextBox.Text = FinalPlaytimeHours.ToString();
 
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
-            if (FinalPlaytimeMinutes < 60) {
-                SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
-                InvalidTimeBlock.Visibility = Visibility.Collapsed;
-                PlaytimeFlyout.Hide();
-                UpdatePlaytime();
-            } else {
-                InvalidTimeBlock.Visibility = Visibility.Visible;
-            };
+            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
+            PlaytimeFlyout.Hide();
+            UpdatePlaytime();
+
 
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
         {
-            sender.MaxLength = 7;
+            sender.MaxLength = sender == HourPlaytimeTextBox ? 5 : 3;
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
