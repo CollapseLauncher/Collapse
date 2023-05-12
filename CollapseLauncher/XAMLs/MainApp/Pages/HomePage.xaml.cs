@@ -717,10 +717,10 @@ namespace CollapseLauncher.Pages
 
             bool dynamicUpdate = true;
 
+            await Task.Delay(2000);
+
             if (dynamicUpdate)
             {
-                await Task.Delay(2000);
-
                 try
                 {
                     if (bootByCollapse)
@@ -749,10 +749,16 @@ namespace CollapseLauncher.Pages
                             await Task.Delay(60000, token);
                         }
                     }
+                    UpdatePlaytime();
                 }
                 catch
                 {
                 }
+            }
+            else
+            {
+                while (App.IsGameRunning){}
+                UpdatePlaytime();
             }
         }
 
