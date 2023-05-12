@@ -735,11 +735,11 @@ namespace CollapseLauncher.Pages
                     {
                         if (App.IsGameRunning)
                         {
-                            await Task.Delay(20000, token);
+                            await Task.Delay(60000, token);
                             string Newtime = ReadPlaytimeFromRegistry(RegionKey);
                             if (Newtime == Oldtime) return;
-                            int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
-                            await Task.Delay(60000 - CurrentSeconds, token);
+                            //int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
+                            //await Task.Delay(60000 - CurrentSeconds, token);
 
                         }
 
