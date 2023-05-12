@@ -660,8 +660,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StartGameAndPlaytimeCounter(string OldRegionRK, Process proc)
+        private async static void StartGameAndPlaytimeCounter(string OldRegionRK, Process proc)
         {
+            int saveFrequencyinSeconds = 60;
+
             string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
             int seconds = 0;
@@ -673,7 +675,7 @@ namespace CollapseLauncher.Pages
             {
                 seconds += 5;
 
-                if (seconds % 20 == 0){
+                if (seconds % saveFrequencyinSeconds == 0){
                     //LogWriteLine($"Added \"fake\" 60 seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
                     SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
                 }
@@ -714,39 +716,44 @@ namespace CollapseLauncher.Pages
             string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
             UpdatePlaytime(false, Oldtime);
 
-            await Task.Delay(2000);
+            bool dynamicUpdate = true;
 
-            try
+            if (dynamicUpdate)
             {
-                if (bootByCollapse)
+                await Task.Delay(2000);
+
+                try
                 {
-                    while (App.IsGameRunning)
+                    if (bootByCollapse)
                     {
-                        await Task.Delay(60000, token);
-                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                        while (App.IsGameRunning)
+                        {
+                            await Task.Delay(60000, token);
+                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                        }
+                    }
+                    else
+                    {
+                        if (App.IsGameRunning)
+                        {
+                            await Task.Delay(20000, token);
+                            string Newtime = ReadPlaytimeFromRegistry(RegionKey);
+                            if (Newtime == Oldtime) return;
+                            int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
+                            await Task.Delay(60000 - CurrentSeconds, token);
+
+                        }
+
+                        while (App.IsGameRunning)
+                        {
+                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                            await Task.Delay(60000, token);
+                        }
                     }
                 }
-                else
+                catch
                 {
-                    if (App.IsGameRunning)
-                    {
-                        await Task.Delay(20000, token);
-                        string Newtime = ReadPlaytimeFromRegistry(RegionKey);
-                        if (Newtime == Oldtime) return;
-                        int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
-                        await Task.Delay(60000 - CurrentSeconds, token);
-
-                    }
-
-                    while (App.IsGameRunning)
-                    {
-                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                        await Task.Delay(60000, token);
-                    }
                 }
-            }
-            catch
-            {
             }
         }
 

@@ -610,7 +610,7 @@
                             <Flyout x:Name="PlaytimeFlyout">
                                 <StackPanel MaxWidth="224" Margin="0,0">
                                     <StackPanel x:Name="PlaytimeIdleStack" MaxWidth="224" Margin="0,0">
-                                        <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                         <StackPanel Orientation="Horizontal" Margin="0,0">
                                             <TextBox x:Name="HourPlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="0,0,8,0" Text=""/>
                                             <TextBox x:Name="MinutePlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
@@ -624,7 +624,7 @@
                                             <Button.Content> 
                                                 <StackPanel Orientation="Horizontal" Margin="3,0">
                                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
-                                                 <TextBlock x:Name="UpdateTextBlock" Text="Update" Margin="7,0,0,0"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_UpdateBtn}" Margin="7,0,0,0"/>
                                                 </StackPanel>
                                             </Button.Content>
                                         </Button>
@@ -632,15 +632,15 @@
                                             <Button.Content>
                                                 <StackPanel Orientation="Horizontal" Margin="4,0">
                                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
-                                                    <TextBlock Text="Reset" Margin="8,0,0,0"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ResetBtn}" Margin="8,0,0,0"/>
                                                 </StackPanel>
                                             </Button.Content>
                                         </Button>    
                                     </StackPanel>
                                     <StackPanel x:Name="PlaytimeRunningStack" Visibility="Collapsed" MaxWidth="250" Margin="0,0">
-                                        <TextBlock Text="Edit Playtime" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <TextBlock Text="An instance of this game is currently running, therefore playtime can't be edited." TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                        <TextBlock Text="Please be aware that fully closing Collapse will stop playtime tracking (saving what was played till that point) and only sessions started using Collapse will be tracked." TextWrapping="Wrap" Margin="0,0,0,0"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info1}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Running_Info2}" TextWrapping="Wrap" Margin="0,0,0,0"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Flyout>
