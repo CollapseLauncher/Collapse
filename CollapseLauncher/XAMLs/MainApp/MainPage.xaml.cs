@@ -894,6 +894,18 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
                 }
+                // TODO: Uncomment this one HSR receives proper Cache Update and/or Repair support
+                //if (PageStatics._GameVersion.GameType == GameType.StarRail)
+                //{
+                //    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                //    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                //}
+            }
+
+            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
@@ -938,11 +950,6 @@ namespace CollapseLauncher
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) && (string)tag.Tag != "launcher")
-            {
-                sourceType = typeof(UnavailablePage);
-                tagStr = "unavailable";
-            }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
         }
@@ -978,6 +985,10 @@ namespace CollapseLauncher
 
                         case "gamesettings":
                             Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
+                            break;
+
+                        case "starrailgamesettings":
+                            Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);

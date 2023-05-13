@@ -13,6 +13,11 @@ namespace CollapseLauncher.GameSettings.StarRail
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public Model GraphicsSettings { get; set; }
+        public BGMVolume AudioSettings_BGM { get; set; }
+        public MasterVolume AudioSettings_Master { get; set; }
+        public SFXVolume AudioSettings_SFX { get; set; }
+        public VOVolume AudioSettings_VO { get; set; }
 
         public StarRailSettings()
         {
@@ -34,6 +39,13 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
+            GraphicsSettings = Model.Load();
+            SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsScreen = PCResolution.Load();
+            AudioSettings_BGM = BGMVolume.Load();
+            AudioSettings_Master = MasterVolume.Load();
+            AudioSettings_SFX = SFXVolume.Load();
+            AudioSettings_VO = VOVolume.Load();
         }
 
         public void RevertSettings() => InitializeSettings();
@@ -42,6 +54,13 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Save Settings
             SettingsCustomArgument.Save();
+            GraphicsSettings.Save();
+            SettingsCollapseScreen.Save();
+            SettingsScreen.Save();
+            AudioSettings_BGM.Save();
+            AudioSettings_Master.Save();
+            AudioSettings_SFX.Save();
+            AudioSettings_VO.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
