@@ -3,7 +3,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -552,27 +551,6 @@ namespace CollapseLauncher.Pages
             });
         }
 
-        string InstallDownloadSpeedString;
-        string InstallDownloadSizeString;
-        string InstallDownloadPerSizeString;
-        string DownloadSizeString;
-        string DownloadPerSizeString;
-
-        private void InstallerDownloadPreStatusChanged(object sender, DownloadEvent e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
-                InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
-                DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                progressPreBar.IsIndeterminate = false;
-            });
-        }
-
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
         {
             switch (GameInstallationState)
@@ -741,7 +719,7 @@ namespace CollapseLauncher.Pages
 
         public async Task<bool> CheckMediaPackInstalled()
         {
-            if (PageStatics._GameVersion.GamePreset.IsGenshin ?? false) return true;
+            if (PageStatics._GameVersion.GameType != GameType.Honkai) return true;
 
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
             if (reg != null)
@@ -880,7 +858,8 @@ namespace CollapseLauncher.Pages
 
         private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), PageStatics._GameVersion.GamePreset.GameType switch {
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), PageStatics._GameVersion.GamePreset.GameType switch
+            {
                 GameType.StarRail => $"{Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                 _ => "ScreenShot"
             });
@@ -1040,11 +1019,11 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
         {
-            InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
-            InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
-            InstallDownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeDownloaded);
-            DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-            DownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeToBeDownloaded);
+            string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
+            string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
+            string InstallDownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeDownloaded);
+            string DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+            string DownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeToBeDownloaded);
 
             ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
             ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
