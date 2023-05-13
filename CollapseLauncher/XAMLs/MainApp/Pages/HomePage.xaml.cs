@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
@@ -41,13 +41,14 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class HomePage : Page
     {
-        Http HttpTool = new Http();
-        public RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
-        public HomeMenuPanel MenuPanels => regionNewsProp;
-        CancellationTokenSource PageToken = new CancellationTokenSource();
-        CancellationTokenSource CarouselToken = new CancellationTokenSource();
+        private HomeMenuPanel MenuPanels { get => regionNewsProp; }
+        private CancellationTokenSource PageToken { get; init; }
+        private CancellationTokenSource CarouselToken { get; set; }
+
         public HomePage()
         {
+            PageToken = new CancellationTokenSource();
+            CarouselToken = new CancellationTokenSource();
             this.InitializeComponent();
             CheckIfRightSideProgress();
             this.Loaded += StartLoadedRoutine;
@@ -592,8 +593,6 @@ namespace CollapseLauncher.Pages
 
         private void CancelPreDownload()
         {
-            HttpTool.DownloadProgress -= InstallerDownloadPreStatusChanged;
-
             PageStatics._GameInstall.CancelRoutine();
 
             PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
@@ -683,7 +682,6 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
 
-
                 switch (apiID)
                 {
                     case 0:
@@ -704,6 +702,31 @@ namespace CollapseLauncher.Pages
                         break;
                 }
             }
+            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            {
+                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
+                {
+                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
+                    RequireWindowExclusivePayload = true;
+                }
+
+                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+
+                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
+            if (!GetAppConfigValue("EnableConsole").ToBool())
+                parameter.Append("-nolog ");
 
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
@@ -857,7 +880,11 @@ namespace CollapseLauncher.Pages
 
         private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), "ScreenShot");
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), PageStatics._GameVersion.GamePreset.GameType switch {
+                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                _ => "ScreenShot"
+            });
+
             LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
 
             if (!Directory.Exists(ScreenshotFolder))

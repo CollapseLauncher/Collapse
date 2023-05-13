@@ -84,6 +84,8 @@ namespace CollapseLauncher
 
         public static async Task<bool> CheckForAdminAccess(UIElement root)
         {
+            if (!IsPrincipalHasNoAdministratorAccess()) return true;
+
             ContentDialog dialog = new ContentDialog
             {
                 Title = Lang._Dialogs.PrivilegeMustRunTitle,
@@ -94,45 +96,39 @@ namespace CollapseLauncher
                 XamlRoot = root.XamlRoot
             };
 
-            if (IsPrincipalHasAdministratorAccess())
+            while (true)
             {
-                bool IsStillLoop = true;
-                while (IsStillLoop)
+                switch (await dialog.ShowAsync())
                 {
-                    switch (await dialog.ShowAsync())
-                    {
-                        case ContentDialogResult.Primary:
-                            try
+                    case ContentDialogResult.Primary:
+                        try
+                        {
+                            Process proc = new Process()
                             {
-                                Process proc = new Process()
+                                StartInfo = new ProcessStartInfo
                                 {
-                                    StartInfo = new ProcessStartInfo
-                                    {
-                                        UseShellExecute = true,
-                                        Verb = "runas",
-                                        FileName = AppExecutablePath,
-                                        WorkingDirectory = AppFolder,
-                                        Arguments = string.Join(' ', AppCurrentArgument)
-                                    }
-                                };
-                                proc.Start();
-                                IsStillLoop = false;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
-                            }
-                            break;
-                        default:
+                                    UseShellExecute = true,
+                                    Verb = "runas",
+                                    FileName = AppExecutablePath,
+                                    WorkingDirectory = AppFolder,
+                                    Arguments = string.Join(' ', AppCurrentArgument)
+                                }
+                            };
+                            proc.Start();
                             return false;
-                    }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
+                        }
+                        break;
+                    default:
+                        return false;
                 }
-                return false;
             }
-            return true;
         }
 
-        private static bool IsPrincipalHasAdministratorAccess()
+        private static bool IsPrincipalHasNoAdministratorAccess()
         {
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
@@ -154,16 +150,15 @@ namespace CollapseLauncher
                     return;
                 }
 
+                LauncherUpdateWatcher.StartCheckUpdate();
+
                 LoadGamePreset();
                 SetThemeParameters();
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
                 SubscribeEvents();
-
-                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-
-                LauncherUpdateWatcher.StartCheckUpdate();
+                SetDefaultDragAreaAsync();
 
                 await InitializeStartup();
             }
@@ -172,6 +167,12 @@ namespace CollapseLauncher
                 LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private async void SetDefaultDragAreaAsync()
+        {
+            await Task.Delay(250);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
 
         public void SetThemeParameters()
@@ -196,7 +197,6 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
-            ChangeThemeInvoker.ThemeEvent += ChangeThemeInvoker_ThemeEvent;
         }
 
         private void UnsubscribeEvents()
@@ -208,18 +208,10 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
-            ChangeThemeInvoker.ThemeEvent -= ChangeThemeInvoker_ThemeEvent;
         }
 
-        private async void ChangeThemeInvoker_ThemeEvent(object sender, ChangeThemeProperty e)
+        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            CurrentAppTheme = e.AppTheme;
-            await ApplyAccentColor(this, PaletteBitmap);
-        }
-
-        private async void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
-        {
-            await Task.Delay(250);
             switch (e.Template)
             {
                 case DragAreaTemplate.Full:
@@ -484,9 +476,10 @@ namespace CollapseLauncher
                 if (File.Exists(UpdateNotifFile))
                 {
                     string VerString = File.ReadAllLines(UpdateNotifFile)[0];
+                    GameVersion Version = new GameVersion(VerString);
                     SpawnNotificationPush(
                         Lang._Misc.UpdateCompleteTitle,
-                        string.Format(Lang._Misc.UpdateCompleteSubtitle, VerString, IsPreview ? "Preview" : "Stable"),
+                        string.Format(Lang._Misc.UpdateCompleteSubtitle, Version.VersionString, IsPreview ? "Preview" : "Stable"),
                         NotifSeverity.Success,
                         0xAF,
                         true,
@@ -901,6 +894,18 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
                 }
+                // TODO: Uncomment this one HSR receives proper Cache Update and/or Repair support
+                //if (PageStatics._GameVersion.GameType == GameType.StarRail)
+                //{
+                //    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                //    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                //}
+            }
+
+            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
@@ -930,19 +935,21 @@ namespace CollapseLauncher
             }
             else
             {
-                var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
-                NavView_Navigate(item);
+                if (sender.MenuItems.Count != 0)
+                {
+                    var item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+                    NavView_Navigate(item);
+                }
+                else
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage), new DrillInNavigationTransitionInfo());
+                }
             }
         }
 
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
-            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) && (string)tag.Tag != "launcher")
-            {
-                sourceType = typeof(UnavailablePage);
-                tagStr = "unavailable";
-            }
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
         }
@@ -978,6 +985,10 @@ namespace CollapseLauncher
 
                         case "gamesettings":
                             Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
+                            break;
+
+                        case "starrailgamesettings":
+                            Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
@@ -1109,7 +1120,7 @@ namespace CollapseLauncher
             if (show)
             {
                 NotificationLostFocusBackground.Visibility = Visibility.Visible;
-                NotificationLostFocusBackground.Opacity = 0.25;
+                NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
             }
             else

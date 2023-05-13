@@ -650,5 +650,64 @@
     "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "You are currently using a [PREVIEW] build, which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
     "NotifPreviewBuildUsedBtn": "Submit an Issue"
+  },
+
+  "_StarRailGameSettingsPage": {
+    "PageTitle": "Game Settings",
+
+    "Graphics_Title": "Graphics Settings",
+    "Graphics_ResolutionPanel": "Game Resolution",
+    "Graphics_Fullscreen": "Fullscreen",
+    "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ResSelectPlaceholder": "Select",
+    "Graphics_ResCustom": "Use Custom Resolution",
+    "Graphics_ResCustomW": "W",
+    "Graphics_ResCustomH": "H",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use in caution, Do With Your Own Risk (DWYOR).",
+    "Graphics_FPS_Help2": "Additionally, Setting FPS to 120 will break in-game Graphics Settings.\r\nUse Collapse instead to change the Game Graphics Settings.",
+    "Graphics_VSync": "VSync",
+    "Graphics_RenderScale": "Render Scale",
+    "Graphics_ResolutionQuality": "Resolution Quality",
+    "Graphics_ShadowQuality": "Shadow Quality",
+    "Graphics_LightQuality": "Light Quality",
+    "Graphics_CharacterQuality": "Character Quality",
+    "Graphics_EnvDetailQuality": "Environment Detail",
+    "Graphics_ReflectionQuality": "Reflection Quality",
+    "Graphics_BloomQuality": "Bloom Quality",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+
+    "Graphics_SpecPanel": "Global Graphics Settings",
+    "SpecEnabled": "Enabled",
+    "SpecDisabled": "Disabled",
+    "SpecVeryLow": "Very Low",
+    "SpecLow": "Low",
+    "SpecMedium": "Medium",
+    "SpecHigh": "High",
+    "SpecVeryHigh": "Very High",
+
+    "ApplyBtn": "Apply Settings",
+    "SettingsApplied": "Changes have been saved!",
+
+    "OverlayNotInstalledTitle": "You cannot use this feature as the region isn't installed or needs to be updated!",
+    "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
+    "OverlayGameRunningTitle": "Game is Currently Running!",
+    "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
+    "OverlayFirstTimeTitle": "You have never played this game before!",
+    "OverlayFirstTimeSubtitle": "Please run the game first to generate the necessary files, then come back here to use this feature.",
+
+    "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
+    "CustomArgs_Subtitle": "Start-up Arguments",
+    "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
+    "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "Audio_Title": "Audio Settings",
+    "Audio_Master": "Master Volume",
+    "Audio_BGM": "BGM Volume",
+    "Audio_SFX": "Sound Effects Volume",
+    "Audio_VO": "Voice Over Volume",
+    "Audio_Mute": "Mute Audio"
   }
 }

@@ -40,9 +40,6 @@ namespace CollapseLauncher
 #if PREVIEW
             IsPreview = true;
 #endif
-#if PORTABLE
-            IsPortable = true;
-#endif
             AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
 
             try
@@ -55,7 +52,7 @@ namespace CollapseLauncher
                     AppCurrentVersion.VersionString,
                     GetVersionString(),
                     Environment.UserName,
-                    (IsPreview ? "Preview" : "Stable") + (IsPortable ? "-Portable" : "")), LogType.Scheme, true);
+                    IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
                 LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
@@ -150,6 +147,8 @@ namespace CollapseLauncher
 
         private static void OnProcessExit(object sender, EventArgs e)
         {
+            App.IsAppKilled = true;
+
 #if !DISABLEDISCORD
             AppDiscordPresence.Dispose();
 #endif
@@ -162,32 +161,14 @@ namespace CollapseLauncher
                 /// Add shortcut and uninstaller entry on first start-up
                 onInitialInstall: (_, sqr) =>
                 {
-#if PORTABLE
-                    // Add generic shortcut
-                    sqr.CreateShortcutForThisExe(ShortcutLocation.StartMenu | ShortcutLocation.Desktop);
-                    // Create uninstaller entry
-                    sqr.CreateUninstallerRegistryEntry();
-#endif
                     Console.WriteLine("Please do not close this console window while Collapse is preparing the installation via Squirrel...");
                 },
                 onAppUpdate: (_, sqr) =>
                 {
-#if PORTABLE
-                    // Add generic shortcut
-                    sqr.CreateShortcutForThisExe(ShortcutLocation.StartMenu | ShortcutLocation.Desktop);
-                    // Update uninstaller entry
-                    sqr.CreateUninstallerRegistryEntry();
-#endif
                     Console.WriteLine("Please do not close this console window while Collapse is updating via Squirrel...");
                 },
                 onAppUninstall: (_, sqr) =>
                 {
-#if PORTABLE
-                    // Remove generic shortcut
-                    sqr.RemoveShortcutForThisExe();
-                    // Remove uninstaller entry
-                    sqr.RemoveUninstallerRegistryEntry();
-#endif
                     Console.WriteLine("Uninstalling Collapse via Squirrel...\r\nPlease do not close this console window while action is being performed!");
                 },
                 onEveryRun: (_, _, _) => { }
