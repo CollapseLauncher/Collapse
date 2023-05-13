@@ -1,25 +1,12 @@
 ﻿using CollapseLauncher.GameSettings.StarRail;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class StarRailGameSettingsPage : Page, INotifyPropertyChanged
+    public sealed partial class StarRailGameSettingsPage : Page
     {
-        #region Fields
-        private int prevGraphSelect;
-        #endregion
-        #region Methods
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
         #region GameResolution
         public bool IsFullscreenEnabled
         {
@@ -129,20 +116,6 @@ namespace CollapseLauncher.Pages
         }
         #endregion
         #region Models
-        private void UpdateModels()
-        {
-            OnPropertyChanged("FPS");
-            OnPropertyChanged("EnableVSync");
-            OnPropertyChanged("RenderScale");
-            OnPropertyChanged("ResolutionQuality");
-            OnPropertyChanged("ShadowQuality");
-            OnPropertyChanged("LightQuality");
-            OnPropertyChanged("CharacterQuality");
-            OnPropertyChanged("EnvDetailQuality");
-            OnPropertyChanged("ReflectionQuality");
-            OnPropertyChanged("BloomQuality");
-            OnPropertyChanged("AAMode");
-        }
         //FPS
         public int FPS
         {
@@ -223,40 +196,24 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Audio
-        private void UpdateAudioMasterVolume()
-        {
-            OnPropertyChanged("AudioMasterVolume");
-        }
         public int AudioMasterVolume
         {
             get => Settings.AudioSettings_Master.MasterVol = Settings.AudioSettings_Master.MasterVol;
             set => Settings.AudioSettings_Master.MasterVol = value;
         }
 
-        private void UpdateAudioBGMVolume()
-        {
-            OnPropertyChanged("AudioBGMVolume");
-        }
         public int AudioBGMVolume
         {
             get => Settings.AudioSettings_BGM.BGMVol = Settings.AudioSettings_BGM.BGMVol;
             set => Settings.AudioSettings_BGM.BGMVol = value;
         }
 
-        private void UpdateAudioSFXVolume()
-        {
-            OnPropertyChanged("AudioSFXVolume");
-        }
         public int AudioSFXVolume
         {
             get => Settings.AudioSettings_SFX.SFXVol = Settings.AudioSettings_SFX.SFXVol;
             set => Settings.AudioSettings_SFX.SFXVol = value;
         }
 
-        private void UpdateAudioVOVolume()
-        {
-            OnPropertyChanged("AudioVOVolume");
-        }
         public int AudioVOVolume
         {
             get => Settings.AudioSettings_VO.VOVol = Settings.AudioSettings_VO.VOVol;
