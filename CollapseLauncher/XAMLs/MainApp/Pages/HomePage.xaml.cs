@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
@@ -637,9 +637,12 @@ namespace CollapseLauncher.Pages
 
                 WatchOutputLog = new CancellationTokenSource();
 
-                ReadOutputLog();
-                GameLogWatcher();
-
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    ReadOutputLog();
+                    GameLogWatcher();
+                }
+                
                 await proc.WaitForExitAsync();
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -678,7 +681,6 @@ namespace CollapseLauncher.Pages
                 }
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
-
 
                 switch (apiID)
                 {
