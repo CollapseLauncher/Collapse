@@ -11,6 +11,23 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
+    public enum Quality // TypeDefIndex: 11339
+    {
+        None = 0,
+        VeryLow = 1,
+        Low = 2,
+        Medium = 3,
+        High = 4,
+        VeryHigh = 5
+    }
+
+    public enum AntialiasingMode // TypeDefIndex: 25409
+    {
+        Off = 0,
+        TAA = 1,
+        FXAA = 2
+    }
+
     internal class Model : IGameSettingsValue<Model>
     {
         #region Fields
@@ -54,58 +71,58 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// <summary>
         /// No idea what this is still...
         /// Options: 0, 1, 2, 3, 4
-        /// Default: 1.0
+        /// Default: Medium
         /// </summary>
-        public int ResolutionQuality { get; set; } = 1;
+        public Quality ResolutionQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Shadow Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), Low (2), Medium(3), High(4)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int ShadowQuality { get; set; } = 2;
+        public Quality ShadowQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Light Quality</c>" combobox In-game settings. <br/>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int LightQuality { get; set; } = 2;
+        public Quality LightQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Character Quality</c>" combobox In-game settings. <br/>
         /// Options: Low (2), Medium(3), High(4)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int CharacterQuality { get; set; } = 2;
+        public Quality CharacterQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Environment Quality</c>" combobox In-game settings. <br/>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int EnvDetailQuality { get; set; } = 2;
+        public Quality EnvDetailQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Reflection Quality</c>" combobox In-game settings. <br/>>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int ReflectionQuality { get; set; } = 2;
+        public Quality ReflectionQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
-        /// Default: Low
+        /// Default: Medium
         /// </summary>
-        public int BloomQuality { get; set; } = 2;
+        public Quality BloomQuality { get; set; } = Quality.Medium;
 
         /// <summary>
         /// This defines "<c>Anti Aliasing</c>" combobox In-game settings. <br/>
         /// Options: Off (0), TAA (1), FXAA (2)
         /// Default: TAA
         /// </summary>
-        public int AAMode { get; set; } = 1;
+        public AntialiasingMode AAMode { get; set; } = AntialiasingMode.TAA;
 
         #endregion
 

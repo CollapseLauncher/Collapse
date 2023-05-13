@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;

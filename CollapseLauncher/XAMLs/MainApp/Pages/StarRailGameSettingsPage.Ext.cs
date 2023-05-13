@@ -148,50 +148,50 @@ namespace CollapseLauncher.Pages
         //ResolutionQuality
         public int ResolutionQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.ResolutionQuality;
-            set => Settings.GraphicsSettings.ResolutionQuality = value;
+            get => (int)Settings.GraphicsSettings.ResolutionQuality;
+            set => Settings.GraphicsSettings.ResolutionQuality = (Quality)value;
         }
         //ShadowQuality
         public int ShadowQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.ShadowQuality;
-            set => Settings.GraphicsSettings.ShadowQuality = value;
+            get => (int)Settings.GraphicsSettings.ShadowQuality;
+            set => Settings.GraphicsSettings.ShadowQuality = (Quality)value;
         }
         //LightQuality
         public int LightQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.LightQuality;
-            set => Settings.GraphicsSettings.LightQuality = value;
+            get => (int)Settings.GraphicsSettings.LightQuality;
+            set => Settings.GraphicsSettings.LightQuality = (Quality)value;
         }
         //CharacterQuality
         public int CharacterQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.CharacterQuality;
-            set => Settings.GraphicsSettings.CharacterQuality = value;
+            get => (int)Settings.GraphicsSettings.CharacterQuality;
+            set => Settings.GraphicsSettings.CharacterQuality = (Quality)value;
         }
         //EnvDetailQuality
         public int EnvDetailQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.EnvDetailQuality;
-            set => Settings.GraphicsSettings.EnvDetailQuality = value;
+            get => (int)Settings.GraphicsSettings.EnvDetailQuality;
+            set => Settings.GraphicsSettings.EnvDetailQuality = (Quality)value;
         }
         //ReflectionQuality
         public int ReflectionQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.ReflectionQuality;
-            set => Settings.GraphicsSettings.ReflectionQuality = value;
+            get => (int)Settings.GraphicsSettings.ReflectionQuality;
+            set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
         }
         //BloomQuality
         public int BloomQuality
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.BloomQuality;
-            set => Settings.GraphicsSettings.BloomQuality = value;
+            get => (int)Settings.GraphicsSettings.BloomQuality;
+            set => Settings.GraphicsSettings.BloomQuality = (Quality)value;
         }
         //AAMode
         public int AAMode
         {
-            get => prevGraphSelect = Settings.GraphicsSettings.AAMode;
-            set => Settings.GraphicsSettings.AAMode = value;
+            get => (int)Settings.GraphicsSettings.AAMode;
+            set => Settings.GraphicsSettings.AAMode = (AntialiasingMode)value;
         }
         #endregion
 
