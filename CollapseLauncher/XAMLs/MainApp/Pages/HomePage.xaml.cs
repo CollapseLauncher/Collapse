@@ -41,13 +41,14 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class HomePage : Page
     {
-        Http HttpTool = new Http();
-        public RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
-        public HomeMenuPanel MenuPanels => regionNewsProp;
-        CancellationTokenSource PageToken = new CancellationTokenSource();
-        CancellationTokenSource CarouselToken = new CancellationTokenSource();
+        private HomeMenuPanel MenuPanels { get => regionNewsProp; }
+        private CancellationTokenSource PageToken { get; init; }
+        private CancellationTokenSource CarouselToken { get; set; }
+
         public HomePage()
         {
+            PageToken = new CancellationTokenSource();
+            CarouselToken = new CancellationTokenSource();
             this.InitializeComponent();
             CheckIfRightSideProgress();
             this.Loaded += StartLoadedRoutine;
@@ -592,8 +593,6 @@ namespace CollapseLauncher.Pages
 
         private void CancelPreDownload()
         {
-            HttpTool.DownloadProgress -= InstallerDownloadPreStatusChanged;
-
             PageStatics._GameInstall.CancelRoutine();
 
             PauseDownloadPreBtn.Visibility = Visibility.Collapsed;

@@ -44,11 +44,7 @@ namespace CollapseLauncher.Pages
                     Selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-#if DISABLE_COM
-                    folder = GetFolderPicker();
-#else
                     folder = await GetFolderPicker();
-#endif
                     if (folder != null)
                         if (IsUserHasPermission(folder))
                         {

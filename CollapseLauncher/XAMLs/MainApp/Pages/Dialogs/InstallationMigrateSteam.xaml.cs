@@ -347,11 +347,7 @@ namespace CollapseLauncher.Dialogs
                         targetPath = Path.Combine(folder, Path.GetFileName(GamePathOnSteam));
                         break;
                     case ContentDialogResult.Secondary:
-#if DISABLE_COM
-                        folder = GetFolderPicker();
-#else
                         folder = await GetFolderPicker();
-#endif
 
                         if (folder == null)
                             OperationCancelled();

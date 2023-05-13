@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-#if !DISABLE_COM
 using System.Threading.Tasks;
-#else
-using System.Text;
-using static Hi3Helper.Logger;
-using static Hi3Helper.InvokeProp;
-#endif
 
 namespace Hi3Helper
 {
@@ -396,111 +390,6 @@ namespace Hi3Helper
             FDEOR_REFUSE = 0x00000002
         }
 
-#if DISABLE_COM
-        // Flags for FolderPicker
-        public const int WM_USER = 0x400;
-        public const int BFFM_INITIALIZED = 1;
-        public const int BFFM_SELCHANGED = 2;
-        public const int BFFM_SETSELECTIONW = WM_USER + 103;
-        public const int BFFM_SETSTATUSTEXTW = WM_USER + 104;
-
-        private const uint BIF_DONTGOBELOWDOMAIN = 0x0002;
-        private const uint BIF_USENEWUI = 0x0040 + 0x0010;
-
-        private static string _initialPath = "";
-
-        private static int OnBrowseEvent(IntPtr hWnd, int msg, IntPtr lp, IntPtr lpData)
-        {
-            switch (msg)
-            {
-                case BFFM_INITIALIZED:
-                    {
-                        SendMessage(new HandleRef(null, hWnd), BFFM_SETSELECTIONW, 1, _initialPath);
-                        break;
-                    }
-                case BFFM_SELCHANGED:
-                    {
-                        IntPtr pathPtr = Marshal.AllocHGlobal((int)(260 * Marshal.SystemDefaultCharSize));
-                        if (SHGetPathFromIDList(lp, pathPtr))
-                            SendMessage(new HandleRef(null, hWnd), BFFM_SETSTATUSTEXTW, 0, pathPtr);
-                        Marshal.FreeHGlobal(pathPtr);
-                        break;
-                    }
-            }
-
-            return 0;
-        }
-
-        public static string GetFolderPicker()
-        {
-            StringBuilder sb = new StringBuilder(256);
-            IntPtr bufferAddress = Marshal.AllocHGlobal(256);
-            IntPtr pidl = IntPtr.Zero;
-            BROWSEINFO bi = new BROWSEINFO();
-            bi.hwndOwner = parentHandler;
-            bi.pidlRoot = IntPtr.Zero;
-            bi.ulFlags = BIF_USENEWUI | BIF_DONTGOBELOWDOMAIN;
-            bi.lpfn = new BrowseCallBackProc(OnBrowseEvent);
-            bi.lParam = IntPtr.Zero;
-            bi.iImage = 0;
-
-            try
-            {
-                pidl = SHBrowseForFolder(ref bi);
-                if (!SHGetPathFromIDList(pidl, bufferAddress))
-                {
-                    return null;
-                }
-                sb.Append(Marshal.PtrToStringAuto(bufferAddress));
-            }
-            finally
-            {
-                Marshal.FreeCoTaskMem(pidl);
-            }
-
-            return sb.ToString();
-        }
-
-        public static string GetFilePicker(Dictionary<string, string> FileTypeFilter = null)
-        {
-            var ofn = new OpenFileName();
-            ofn.structSize = Marshal.SizeOf(ofn);
-            ofn.filter = SetFileTypeFiler(FileTypeFilter);
-
-            ofn.file = new string(new char[256]);
-            ofn.maxFile = ofn.file.Length;
-
-            ofn.fileTitle = new string(new char[64]);
-            ofn.maxFileTitle = ofn.fileTitle.Length;
-
-            ofn.dlgOwner = parentHandler;
-
-            try
-            {
-                if (GetOpenFileName(ofn))
-                    return ofn.file;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-            }
-
-            return null;
-        }
-
-
-        private static string SetFileTypeFiler(Dictionary<string, string> FileTypeFilter)
-        {
-            string ret = "";
-            foreach (KeyValuePair<string, string> kvp in FileTypeFilter)
-            {
-                ret += $"{kvp.Key} ({kvp.Value})\0{kvp.Value}\0";
-            }
-
-            return ret + "\0";
-        }
-
-#else
         public static async Task<List<string>> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null) => await Task.Run(() =>
         {
             IFileOpenDialog dialog = null;
@@ -686,6 +575,5 @@ namespace Hi3Helper
 
             return results;
         }
-#endif
     }
 }

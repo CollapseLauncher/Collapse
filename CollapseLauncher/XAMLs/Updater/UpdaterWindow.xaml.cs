@@ -40,9 +40,6 @@ namespace CollapseLauncher
 #if DEBUG
             this.Title = title += "[DEBUG]";
 #endif
-#if PORTABLE
-            this.Title += "[PORTABLE]";
-#endif
             UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
             CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
 

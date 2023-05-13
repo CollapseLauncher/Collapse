@@ -257,7 +257,7 @@ namespace CollapseLauncher
 
         private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 3)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
@@ -269,7 +269,7 @@ namespace CollapseLauncher
 
         private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 3)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
@@ -284,23 +284,24 @@ namespace CollapseLauncher
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
 
-            QuantizedColor? Single = null;
             ColorThief cT = new ColorThief();
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
 
             try
             {
-                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
+                List<QuantizedColor> ThemedColors = await Task.Run(() => cT.GetPalette(bitmapinput, ColorCount, quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+
+                if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
+                for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
+                {
+                    output[i] = ColorThiefToColor(ThemedColors[i]);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                if (Single is null) Single = Colors.FirstOrDefault();
-                if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
+                LogWriteLine($"{ex}", LogType.Warning, true);
+                Windows.UI.Color defColor = ColorThiefToColor(new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1));
+                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
             }
-
-            for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single ?? new QuantizedColor());
-
-            cT = null;
 
             return output;
         }

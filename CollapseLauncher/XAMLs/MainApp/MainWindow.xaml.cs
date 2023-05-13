@@ -83,9 +83,6 @@ namespace CollapseLauncher
             m_presenter = m_appWindow.Presenter as OverlappedPresenter;
 
             string title = $"Collapse";
-#if PORTABLE
-                title += " Portable";
-#endif
             if (IsPreview)
                 title += " Preview";
 #if DEBUG

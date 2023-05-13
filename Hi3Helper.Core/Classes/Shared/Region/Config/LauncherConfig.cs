@@ -61,13 +61,7 @@ namespace Hi3Helper.Shared.Region
         public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();
-
-#if PORTABLE
         public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-        public static string AppConfigFolder = Path.Combine(AppFolder, "Config");
-#else
-        public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-#endif
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
@@ -89,14 +83,8 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
-#if PORTABLE
-        public static string AppConfigFile = Path.Combine(AppConfigFolder, "config.ini");
-        public static string AppConfigFileOld = Path.Combine(AppDataFolder, "config.ini");
-        public static string AppNotifIgnoreFile = Path.Combine(AppConfigFolder, "ignore_notif_ids.json");
-#else
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
-#endif
         public static string GamePathOnSteam;
 
         public const long AppDiscordApplicationID = 1089467141096484955;
@@ -126,7 +114,6 @@ namespace Hi3Helper.Shared.Region
         public static bool RequireAdditionalDataDownload;
         public static bool IsThisRegionInstalled = false;
         public static bool IsPreview = false;
-        public static bool IsPortable = false;
         public static bool IsAppThemeNeedRestart = false;
         public static bool IsAppLangNeedRestart = false;
         public static bool IsChangeRegionWarningNeedRestart = false;
@@ -190,10 +177,6 @@ namespace Hi3Helper.Shared.Region
 
         public static void InitAppPreset()
         {
-#if PORTABLE
-            TryCopyOldConfig();
-#endif
-
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
             appIni.ProfilePath = AppConfigFile;

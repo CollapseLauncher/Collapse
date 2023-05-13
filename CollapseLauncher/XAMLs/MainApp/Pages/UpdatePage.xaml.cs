@@ -34,8 +34,6 @@ namespace CollapseLauncher.Pages
             ChangeTitleDragArea.Change(DragAreaTemplate.Full);
 
             string ChannelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
-            if (IsPortable)
-                ChannelName += "-Portable";
             CurrentVersionLabel.Text = $"{AppCurrentVersion.VersionString}";
 
             GameVersion NewUpdateVersion = new GameVersion(LauncherUpdateWatcher.UpdateProperty.ver);
@@ -84,7 +82,6 @@ namespace CollapseLauncher.Pages
         private async Task GetSquirrelUpdate()
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
-            if (IsPortable) ChannelName += "Portable";
 
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             Updater updater = new Updater(ChannelName.ToLower());
