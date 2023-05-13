@@ -743,9 +743,11 @@ namespace CollapseLauncher.Pages
 
                         }
 
+                        int seconds = 0;
                         while (App.IsGameRunning)
                         {
-                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
+                            UpdatePlaytime(false, SumPlaytimes(seconds, Oldtime));
+                            seconds += 60;
                             await Task.Delay(60000, token);
                         }
                     }
