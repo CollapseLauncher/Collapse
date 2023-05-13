@@ -111,7 +111,7 @@ namespace CollapseLauncher.GameSettings.Base
                 using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
                     fs.Write(Encoding.UTF8.GetBytes("ColReg"));
-                    fs.Write(new byte[] {1}, 0, 1);
+                    fs.Write(new byte[] { 1 }, 0, 1);
 
                     using (XORStream xorS = new XORStream(fs, xorKey, true))
                     using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Compress, true))

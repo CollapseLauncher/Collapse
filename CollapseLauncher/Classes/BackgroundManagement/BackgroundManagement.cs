@@ -1,5 +1,7 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -17,13 +19,9 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
-#if DEBUG
-using static Hi3Helper.Logger;
-#endif
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Hi3Helper.Preset;
-using Hi3Helper.Data;
 
 namespace CollapseLauncher
 {
