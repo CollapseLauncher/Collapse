@@ -49,6 +49,7 @@
                 public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
                 public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;
                 public string PostPanel_NoNews { get; set; } = LangFallback?._HomePage.PostPanel_NoNews;
+                public string Nonotification { get; set; } = LangFallback?._HomePage.Nonotification;
             }
         }
         #endregion

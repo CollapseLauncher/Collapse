@@ -114,7 +114,8 @@
     "PostPanel_Events": "公告",
     "PostPanel_Notices": "通知",
     "PostPanel_Info": "信息",
-    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
+    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?",
+    "Nonotification": "您没有收到通知"
   },
   "_GameRepairPage": {
     "PageTitle": "游戏修复",
