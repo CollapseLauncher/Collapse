@@ -37,9 +37,6 @@ namespace CollapseLauncher.Pages
             else
                 Version = Version + " Stable";
 
-            if (IsPortable)
-                Version += "-Portable";
-
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
 
@@ -132,9 +129,6 @@ namespace CollapseLauncher.Pages
 
         private void LaunchUpdater(string ChannelName)
         {
-            if (IsPortable)
-                ChannelName += "Portable";
-
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {ChannelName}";
             Console.WriteLine(UpdateArgument);
@@ -174,8 +168,6 @@ namespace CollapseLauncher.Pages
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
         {
             string ChannelName = IsPreview ? " Preview" : " Stable";
-            if (IsPortable)
-                ChannelName += "-Portable";
 
             CheckUpdateBtn.IsEnabled = true;
             if (e.IsUpdateAvailable)
@@ -220,15 +212,9 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-#if DISABLE_COM
-        private void SelectBackgroundImg(object sender, RoutedEventArgs e)
-        {
-            string file = GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-#else
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-#endif
             if (file != null)
             {
                 regionBackgroundProp.imgLocalPath = file;
@@ -349,6 +335,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
+                if (value < 0) return;
                 SetAndSaveConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), value));
                 AppThemeSelectionWarning.Visibility = Visibility.Visible;
                 IsAppThemeNeedRestart = true;
