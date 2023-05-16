@@ -811,6 +811,8 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressPerFileSize = e.totalUncompressedSize;
 
                 // Assign local sizes to progress
+                _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
+                _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
                 _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
                 _progress.ProgressTotalSizeToDownload = _progressTotalSize;
 
@@ -858,6 +860,8 @@ namespace CollapseLauncher.InstallManager.Base
                 if (e.State != DownloadState.Merging)
                 {
                     // Assign local sizes to progress
+                    _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
                     _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
                     _progress.ProgressTotalSizeToDownload = _progressTotalSize;
 
@@ -881,6 +885,8 @@ namespace CollapseLauncher.InstallManager.Base
                     // and set the rest from the base class
                     _progress.ProgressTotalTimeLeft = e.TimeLeft;
                     _progress.ProgressTotalSpeed = e.Speed;
+                    _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
                     _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
                     _progress.ProgressTotalSizeToDownload = _progressTotalSize;
                     _progress.ProgressTotalPercentage = Math.Round(_progressTotalSizeCurrent / (double)_progressTotalSize * 100, 2);
