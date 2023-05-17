@@ -14,8 +14,10 @@ namespace CollapseLauncher
         public double ProgressTotalSpeed;
 
         // Extension for IGameInstallManager
-        public long ProgressTotalDownload;
-        public long ProgressTotalSizeToDownload;
+        public long ProgressPerFileDownload { get; set; }
+        public long ProgressPerFileSizeToDownload { get; set; }
+        public long ProgressTotalDownload { get; set; }
+        public long ProgressTotalSizeToDownload { get; set; }
         public TimeSpan ProgressTotalTimeLeft;
         public DownloadEvent DownloadEvent;
     }
