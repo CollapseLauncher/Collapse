@@ -1,5 +1,7 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -17,12 +19,9 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
-#if DEBUG
-using static Hi3Helper.Logger;
-#endif
 using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Hi3Helper.Preset;
 
 namespace CollapseLauncher
 {
@@ -97,7 +96,6 @@ namespace CollapseLauncher
 
             return ret.data.adv == null
               || ((ret.data.adv.version ?? 5) <= 4
-                && Preset.FallbackGameType == GameType.Unknown // TODO: Remove this line after 1.70.x release
                 && Preset.GameType == GameType.Honkai) ?
                     await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
                     ret;
@@ -158,8 +156,6 @@ namespace CollapseLauncher
                     Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
                 });
             }
-
-            regionNewsProp.sideMenuPanel = regionNewsProp.sideMenuPanel.OrderBy(x => x.URL).ToList();
         }
 
         private async ValueTask GetLauncherCarouselInfo(CancellationToken Token)
@@ -259,7 +255,7 @@ namespace CollapseLauncher
 
         private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 3)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, true, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
@@ -271,7 +267,7 @@ namespace CollapseLauncher
 
         private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 3)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 4, false, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
@@ -286,89 +282,120 @@ namespace CollapseLauncher
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
 
-            QuantizedColor? Single = null;
             ColorThief cT = new ColorThief();
-            IEnumerable<QuantizedColor> Colors = await Task.Run(() => cT.GetPalette(bitmapinput, 10, quality));
 
             try
             {
-                Single = Colors.Where(x => IsLight ? x.IsDark : !x.IsDark).FirstOrDefault();
+                List<QuantizedColor> ThemedColors = await Task.Run(() => cT.GetPalette(bitmapinput, ColorCount, quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+
+                if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
+                for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
+                {
+                    output[i] = ColorThiefToColor(ThemedColors[i]);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                if (Single is null) Single = Colors.FirstOrDefault();
-                if (Single is null) Single = new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1);
+                LogWriteLine($"{ex}", LogType.Warning, true);
+                Windows.UI.Color defColor = ColorThiefToColor(new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1));
+                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
             }
-
-            for (int i = 0; i < ColorCount; i++) output[i] = ColorThiefToColor(Single ?? new QuantizedColor());
-
-            cT = null;
 
             return output;
         }
 
         private static Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
 
-        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(IRandomAccessStream stream, uint ToWidth, uint ToHeight)
+        public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
         {
-            (uint, uint) OrigSize;
-            (uint, uint) ResizedSize;
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            using (IRandomAccessStream BackgroundStream = new InMemoryRandomAccessStream())
+            if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder);
+
+            string cachedFileHash = ConverterTool.BytesToCRC32Simple(stream.Name + stream.Length);
+            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+
+            FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
+
+            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 4 << 15;
+            FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create();
+
+            try
             {
-                using (stream)
+                if (!isCachedFileExist)
                 {
-                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-                    BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
-                    BitmapAlphaMode alpMod = decoder.DecoderInformation.CodecId != BitmapDecoder.PngDecoderId ?
-                        BitmapAlphaMode.Ignore :
-                        BitmapAlphaMode.Straight;
-                    ResizedSize = GetPreservedImageRatio(ToWidth, ToHeight, OrigSize.Item1 = decoder.PixelWidth, OrigSize.Item2 = decoder.PixelHeight);
-                    BitmapTransform transform = new BitmapTransform()
-                    {
-                        ScaledWidth = ResizedSize.Item1,
-                        ScaledHeight = ResizedSize.Item2,
-                        InterpolationMode = BitmapInterpolationMode.Fant
-                    };
-
-                    PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
-                                                        pixFmt,
-                                                        alpMod,
-                                                        transform,
-                                                        ExifOrientationMode.RespectExifOrientation,
-                                                        ColorManagementMode.DoNotColorManage);
-
-                    if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSize);
-                    BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.TiffEncoderId, BackgroundStream);
-                    byte[] pixelDataBytes = pixelData.DetachPixelData();
-                    encoder.SetPixelData(pixFmt, alpMod, ResizedSize.Item1, ResizedSize.Item2, m_appDPIScale, m_appDPIScale, pixelDataBytes);
-
-                    await encoder.FlushAsync();
-
-                    if (OrigSize.Item1 > ResizedSize.Item1
-                     && OrigSize.Item2 > ResizedSize.Item2)
-                    {
-                        bitmapRet = await Task.Run(() => Stream2Bitmap(BackgroundStream));
-                    }
-                    else
-                    {
-                        bitmapRet = await Task.Run(() => Stream2Bitmap(stream));
-                    }
-
-                    bitmapImageRet = await Stream2BitmapImage(BackgroundStream);
+                    await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
                 }
+
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+            }
+            catch { throw; }
+            finally
+            {
+                stream?.Dispose();
+                cachedFileStream?.Dispose();
+                GC.Collect();
             }
 
             return (bitmapRet, bitmapImageRet);
         }
 
-        private static void FlipSize(ref (uint, uint) b)
+        private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
         {
-            (uint, uint) _b = b;
-            b.Item1 = _b.Item2;
-            b.Item2 = _b.Item1;
+            uint ResizedSizeW;
+            uint ResizedSizeH;
+
+            IRandomAccessStream inputRandomStream = input.AsRandomAccessStream();
+            IRandomAccessStream outputRandomStream = output.AsRandomAccessStream();
+
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(inputRandomStream);
+            BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
+            Guid decoderCodecID = decoder.DecoderInformation.CodecId;
+            BitmapAlphaMode alpMod = decoderCodecID != BitmapDecoder.PngDecoderId ?
+                BitmapAlphaMode.Ignore :
+                BitmapAlphaMode.Straight;
+
+            (ResizedSizeW, ResizedSizeH) = GetPreservedImageRatio(ToWidth, ToHeight, decoder.PixelWidth, decoder.PixelHeight);
+
+            if (decoder.PixelWidth < ResizedSizeW
+             && decoder.PixelHeight < ResizedSizeH)
+            {
+                input.Seek(0, SeekOrigin.Begin);
+                input.CopyTo(output);
+                return;
+            }
+
+            BitmapTransform transform = new BitmapTransform()
+            {
+                ScaledWidth = ResizedSizeW,
+                ScaledHeight = ResizedSizeH,
+                InterpolationMode = BitmapInterpolationMode.Fant
+            };
+
+            PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
+                                                pixFmt,
+                                                alpMod,
+                                                transform,
+                                                ExifOrientationMode.RespectExifOrientation,
+                                                ColorManagementMode.DoNotColorManage);
+
+            if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSizeW, ref ResizedSizeH);
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(alpMod == BitmapAlphaMode.Straight ? BitmapEncoder.PngEncoderId : BitmapEncoder.BmpEncoderId, outputRandomStream);
+            byte[] pixelDataBytes = pixelData.DetachPixelData();
+            encoder.SetPixelData(pixFmt, alpMod, ResizedSizeW, ResizedSizeH, m_appDPIScale, m_appDPIScale, pixelDataBytes);
+
+            await encoder.FlushAsync();
+            outputRandomStream.Seek(0);
+        }
+
+        private static void FlipSize(ref uint w, ref uint h)
+        {
+            uint _w = w;
+            uint _h = h;
+            w = _h;
+            h = _w;
         }
 
         public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
@@ -426,7 +453,7 @@ namespace CollapseLauncher
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
-            IRandomAccessStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read).AsRandomAccessStream();
+            FileStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read);
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
@@ -434,6 +461,11 @@ namespace CollapseLauncher
 
             FadeOutFrontBg();
             FadeOutBackBg();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.WaitForFullGCComplete();
+            GC.Collect();
         }
 
         private async void FadeOutFrontBg()

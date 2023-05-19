@@ -31,21 +31,19 @@
                 <Image x:Name="BackgroundFrontBuffer" Margin="0,47,0,0" Source="ms-appx:///Assets/BG/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                 <Frame x:Name="LauncherFrame">
                     <Frame.ContentTransitions>
-                        <TransitionCollection>
-                            <NavigationThemeTransition/>
-                        </TransitionCollection>
+                        <NavigationThemeTransition/>
                     </Frame.ContentTransitions>
                 </Frame>
                 <Grid Height="47" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="52"/>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="101"/>
                         <ColumnDefinition x:Name="GridBG_RegionMargin"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="60"/>
-                        <ColumnDefinition Width="137"/>
+                        <ColumnDefinition Width="18"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="104"/>
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="TitleBarBg" Background="{ThemeResource WindowTrayBrush}"
                           Grid.ColumnSpan="8" Grid.Column="0"/>
@@ -133,12 +131,12 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <Grid Name="GridBG_NotifBtn" Grid.Column="6" Height="32"
-                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="8,0"
+                    <Grid Name="GridBG_NotifBtn" Grid.Column="6" Height="32" Width="32"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Right"
                       CornerRadius="0,0,0,0">
-                        <ToggleButton x:Name="ToggleNotificationPanelBtn" VerticalAlignment="Stretch" Click="ToggleNotificationPanelBtnClick">
+                        <ToggleButton x:Name="ToggleNotificationPanelBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="ToggleNotificationPanelBtnClick" Padding="0">
                             <Grid>
-                                <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf0e0;" FontSize="18"/>
+                                <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#xf0f3;" FontSize="18"/>
                             </Grid>
                         </ToggleButton>
                         <InfoBadge x:Name="NewNotificationCountBadge" Style="{StaticResource AttentionValueInfoBadgeStyle}"
@@ -174,33 +172,39 @@
                                  Maximum="100" VerticalAlignment="Bottom" Foreground="{ThemeResource DefaultFGColorAccent}"/>
                     </Grid>
                 </Grid>
-                <StackPanel x:Name="NotificationContainerBackground" Margin="0,0,0,0">
-                    <StackPanel.ChildrenTransitions>
-                        <AddDeleteThemeTransition/>
-                    </StackPanel.ChildrenTransitions>
-                </StackPanel>
-                <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
-                              Margin="0,47,-700,0" HorizontalAlignment="Right" Background="{ThemeResource WindowTrayBrush}">
-                    <ScrollViewer.Transitions>
-                        <RepositionThemeTransition/>
-                    </ScrollViewer.Transitions>
-                    <Grid MinHeight="200" MinWidth="648">
-                        <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
-                            <StackPanel.OpacityTransition>
-                                <ScalarTransition/>
-                            </StackPanel.OpacityTransition>
-                            <Image Margin="0,0,0,16" Source="ms-appx:///Assets/BG/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-                            <TextBlock Text="You have no notification" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
-                        </StackPanel>
-                        <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
-                            <StackPanel.ChildrenTransitions>
-                                <AddDeleteThemeTransition/>
-                            </StackPanel.ChildrenTransitions>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
             </Grid>
         </NavigationView>
+        <Grid x:Name="NotificationLostFocusBackground" Opacity="0" VerticalAlignment="Stretch"
+                      Visibility="Collapsed" PointerPressed="NotificationContainerBackground_PointerPressed">
+            <Grid.OpacityTransition>
+                <ScalarTransition/>
+            </Grid.OpacityTransition>
+            <Grid Background="{ThemeResource NotificationLostFocusGradientBG}" Opacity="0.00000001"/>
+            <Grid Margin="0,48,0,0" Background="{ThemeResource NotificationLostFocusGradientBG}"/>
+        </Grid>
+        <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
+                              Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">
+            <ScrollViewer.Transitions>
+                <RepositionThemeTransition/>
+            </ScrollViewer.Transitions>
+            <Grid MinHeight="200" MinWidth="608">
+                <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
+                    <StackPanel.OpacityTransition>
+                        <ScalarTransition/>
+                    </StackPanel.OpacityTransition>
+                    <Image Margin="0,0,0,16" Source="ms-appx:///Assets/BG/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBlock Text="You have no notification" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
+                </StackPanel>
+                <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
+                    <StackPanel.ChildrenTransitions>
+                        <TransitionCollection>
+                            <PopupThemeTransition/>
+                            <RepositionThemeTransition/>
+                        </TransitionCollection>
+                    </StackPanel.ChildrenTransitions>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
         <Frame x:Name="WebView2Frame"/>
     </Grid>
 </Page>

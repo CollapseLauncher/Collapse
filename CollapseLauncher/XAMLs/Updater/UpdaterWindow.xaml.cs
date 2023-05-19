@@ -40,9 +40,6 @@ namespace CollapseLauncher
 #if DEBUG
             this.Title = title += "[DEBUG]";
 #endif
-#if PORTABLE
-            this.Title += "[PORTABLE]";
-#endif
             UpdateChannelLabel.Text = m_arguments.Updater.UpdateChannel.ToString();
             CurrentVersionLabel.Text = AppCurrentVersion.VersionString;
 
@@ -76,7 +73,8 @@ namespace CollapseLauncher
                 }
 
                 File.WriteAllText(Path.Combine(workingDir, "..\\", "release"), m_arguments.Updater.UpdateChannel.ToString().ToLower());
-                Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, updateInfo.ver);
+                GameVersion ver = new GameVersion(updateInfo.ver);
+                Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
                 ActivityStatus.Text = Lang._UpdatePage.UpdateMessage5;
 
                 File.WriteAllText(newVerTagPath, updateInfo.ver);
@@ -169,16 +167,6 @@ namespace CollapseLauncher
             SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
                                         x, y, width, height,
                                         SetWindowPosFlags.SWP_NOMOVE);
-        }
-
-        private AppWindow GetAppWindowForCurrentWindow()
-        {
-            m_windowHandle = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(m_windowHandle);
-            AppWindow window = AppWindow.GetFromWindowId(wndId);
-            m_presenter = window.Presenter as OverlappedPresenter;
-            m_windowHandle = WindowNative.GetWindowHandle(this);
-            return window;
         }
 
         PointInt32 LastPos;

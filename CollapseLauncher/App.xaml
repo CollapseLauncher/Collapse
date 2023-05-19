@@ -21,6 +21,10 @@
                                 <GradientStop Color="#22000000" Offset="0.0"/>
                                 <GradientStop Color="#60000000" Offset="1"/>
                             </LinearGradientBrush>
+                            <LinearGradientBrush x:Key="NotificationLostFocusGradientBG" StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#00000000" Offset="0"/>
+                                <GradientStop Color="#FF000000" Offset="0.6"/>
+                            </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#000000" TintOpacity="0"/>
 
@@ -50,7 +54,8 @@
                             <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#FF222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#333333"/>
 
                             <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.75" FallbackColor="#DD222222"/>
-                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="#DD222222"/>
+                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.25" FallbackColor="#DD222222"/>
+                            <AcrylicBrush x:Key="NotificationPanelBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.5" FallbackColor="#DD222222"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.65" FallbackColor="#EE222222"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="{ThemeResource SystemAccentColorLight1}" TintOpacity="1"/>
@@ -67,8 +72,12 @@
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#000000"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#FFFFFF"/>
                             <LinearGradientBrush x:Key="LoadingGradientBG" StartPoint="0.5,0" EndPoint="0.5,1">
-                                <GradientStop Color="#00000000" Offset="0.25"/>
-                                <GradientStop Color="#60000000" Offset="1"/>
+                                <GradientStop Color="#00FFFFFF" Offset="0.50"/>
+                                <GradientStop Color="#A0FFFFFF" Offset="1"/>
+                            </LinearGradientBrush>
+                            <LinearGradientBrush x:Key="NotificationLostFocusGradientBG" StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#00FFFFFF" Offset="0"/>
+                                <GradientStop Color="#FFFFFFFF" Offset="0.6"/>
                             </LinearGradientBrush>
 
                             <AcrylicBrush x:Key="UnhandledErrorPageBrush" TintColor="#FFFFFF" TintOpacity="1" />
@@ -95,8 +104,9 @@
 
                             <AcrylicBrush x:Key="InfoBarInformationBrush" TintColor="#FFFFFF" TintOpacity="0.8" TintLuminosityOpacity="0.75" FallbackColor="#FFFFFF"/>
                             <AcrylicBrush x:Key="InfoBarAnnouncementBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="0.8" FallbackColor="#FFFFFF"/>
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#EEEEEE" TintOpacity="0.0" TintLuminosityOpacity="1" FallbackColor="#FFFFFFFF"/>
-                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#EEEEEE" TintOpacity="0.1" TintLuminosityOpacity="0.2" FallbackColor="#FFFFFFFF"/>
+                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="1" FallbackColor="#FFFFFFFF"/>
+                            <AcrylicBrush x:Key="WindowTrayBrush" TintColor="#EEEEEE" TintOpacity="0" TintLuminosityOpacity="0.2" FallbackColor="#FFFFFFFF"/>
+                            <AcrylicBrush x:Key="NotificationPanelBrush" TintColor="#EEEEEE" TintOpacity="0.0" TintLuminosityOpacity="0.8" FallbackColor="#FFFFFFFF"/>
                             <AcrylicBrush x:Key="GameSettingsBtnBrush" TintColor="#FFFFFF" TintOpacity="0.0" TintLuminosityOpacity="0.75"/>
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="1"/>

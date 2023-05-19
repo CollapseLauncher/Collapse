@@ -3,7 +3,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
@@ -42,13 +41,14 @@ namespace CollapseLauncher.Pages
 
     public sealed partial class HomePage : Page
     {
-        Http HttpTool = new Http();
-        public RegionResourceProp GameAPIProp { get => PageStatics._GameVersion.GameAPIProp; }
-        public HomeMenuPanel MenuPanels => regionNewsProp;
-        CancellationTokenSource PageToken = new CancellationTokenSource();
-        CancellationTokenSource CarouselToken = new CancellationTokenSource();
+        private HomeMenuPanel MenuPanels { get => regionNewsProp; }
+        private CancellationTokenSource PageToken { get; init; }
+        private CancellationTokenSource CarouselToken { get; set; }
+
         public HomePage()
         {
+            PageToken = new CancellationTokenSource();
+            CarouselToken = new CancellationTokenSource();
             this.InitializeComponent();
             CheckIfRightSideProgress();
             this.Loaded += StartLoadedRoutine;
@@ -760,27 +760,6 @@ namespace CollapseLauncher.Pages
             });
         }
 
-        string InstallDownloadSpeedString;
-        string InstallDownloadSizeString;
-        string InstallDownloadPerSizeString;
-        string DownloadSizeString;
-        string DownloadPerSizeString;
-
-        private void InstallerDownloadPreStatusChanged(object sender, DownloadEvent e)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                InstallDownloadSpeedString = SummarizeSizeSimple(e.Speed);
-                InstallDownloadSizeString = SummarizeSizeSimple(e.SizeDownloaded);
-                DownloadSizeString = SummarizeSizeSimple(e.SizeToBeDownloaded);
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.TimeLeft);
-                progressPreBar.Value = Math.Round(e.ProgressPercentage, 2);
-                progressPreBar.IsIndeterminate = false;
-            });
-        }
-
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
         {
             switch (GameInstallationState)
@@ -801,8 +780,6 @@ namespace CollapseLauncher.Pages
 
         private void CancelPreDownload()
         {
-            HttpTool.DownloadProgress -= InstallerDownloadPreStatusChanged;
-
             PageStatics._GameInstall.CancelRoutine();
 
             PauseDownloadPreBtn.Visibility = Visibility.Collapsed;
@@ -847,9 +824,12 @@ namespace CollapseLauncher.Pages
 
                 WatchOutputLog = new CancellationTokenSource();
 
-                ReadOutputLog();
-                GameLogWatcher();
-
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    ReadOutputLog();
+                    GameLogWatcher();
+                }
+                
                 await proc.WaitForExitAsync();
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -889,7 +869,6 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
 
-
                 switch (apiID)
                 {
                     case 0:
@@ -910,7 +889,29 @@ namespace CollapseLauncher.Pages
                         break;
                 }
             }
+            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            {
+                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
+                {
+                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
+                    RequireWindowExclusivePayload = true;
+                }
 
+                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+
+                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
             if (!GetAppConfigValue("EnableConsole").ToBool())
                 parameter.Append("-nolog ");
 
@@ -927,7 +928,7 @@ namespace CollapseLauncher.Pages
 
         public async Task<bool> CheckMediaPackInstalled()
         {
-            if (PageStatics._GameVersion.GamePreset.IsGenshin ?? false) return true;
+            if (PageStatics._GameVersion.GameType != GameType.Honkai) return true;
 
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
             if (reg != null)
@@ -1066,7 +1067,12 @@ namespace CollapseLauncher.Pages
 
         private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), "ScreenShot");
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), PageStatics._GameVersion.GamePreset.GameType switch
+            {
+                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                _ => "ScreenShot"
+            });
+
             LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
 
             if (!Directory.Exists(ScreenshotFolder))
@@ -1217,25 +1223,28 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            ProgressPrePerFileStatusFooter.Text = e.ActivityStatus;
+            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus );
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
         {
-            InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
-            InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
-            InstallDownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeDownloaded);
-            DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-            DownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeToBeDownloaded);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
+                string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
+                string InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileDownload);
+                string DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+                string DownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeToDownload);
 
-            ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-            ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-            ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-            ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
-            progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
-            progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
-            progressPreBar.IsIndeterminate = false;
-            progressPrePerFileBar.IsIndeterminate = false;
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
+                progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
+                progressPreBar.IsIndeterminate = false;
+                progressPrePerFileBar.IsIndeterminate = false;
+            });
         }
 
         private async void GameLogWatcher()

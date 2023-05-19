@@ -648,5 +648,64 @@
     "NotifPreviewBuildUsedTitle": "Kamu sedang menggunakan Build Preview!",
     "NotifPreviewBuildUsedSubtitle": "Kamu sedang menggunakan build preview dan kamu mungkin akan mengalami beberapa issue pada saat mencoba fitur eksperimental. Apabila kamu ingin melaporkan issue yang kamu dapat, klik tombol \"{0}\" di bawah ini untuk mengirim issue-mu.",
     "NotifPreviewBuildUsedBtn": "Kirim Issue"
+  },
+
+  "_StarRailGameSettingsPage": {
+    "PageTitle": "Pengaturan Game",
+
+    "Graphics_Title": "Pengaturan Grafis",
+    "Graphics_ResolutionPanel": "Resolusi Game",
+    "Graphics_Fullscreen": "Layar Penuh",
+    "Graphics_ExclusiveFullscreen": "Gunakan Layar Penuh Eksklusif",
+    "Graphics_ResSelectPlaceholder": "Pilih",
+    "Graphics_ResCustom": "Gunakan Resolusi Lainnya",
+    "Graphics_ResCustomW": "P",
+    "Graphics_ResCustomH": "T",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_FPS_Help": "120 FPS merupakan opsi EKSPERIMENTAL. Gunakan dengan resiko sendiri.",
+    "Graphics_FPS_Help2": "Selain itu, Setelan 120 FPS juga merusak Pengaturan Grafis dalam Game.\r\nGunakan Collapse untuk mengubah Pengaturan Grafis Game.",
+    "Graphics_VSync": "VSync",
+    "Graphics_RenderScale": "Akurasi Rendering",
+    "Graphics_ResolutionQuality": "Kualitas Resolusi",
+    "Graphics_ShadowQuality": "Kualitas Bayangan",
+    "Graphics_LightQuality": "Kualitas Cahaya",
+    "Graphics_CharacterQuality": "Kualitas Karakter",
+    "Graphics_EnvDetailQuality": "Detail Latar Tempat",
+    "Graphics_ReflectionQuality": "Kualitas Bayangan",
+    "Graphics_BloomQuality": "Efek Bloom",
+    "Graphics_AAMode": "Mode Anti-Aliasing",
+
+    "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
+    "SpecEnabled": "Hidup",
+    "SpecDisabled": "Mati",
+    "SpecVeryLow": "Sangat Rendah",
+    "SpecLow": "Rendah",
+    "SpecMedium": "Sedang",
+    "SpecHigh": "Tinggi",
+    "SpecVeryHigh": "Sangat Tinggi",
+
+    "ApplyBtn": "Terapkan perubahan",
+    "SettingsApplied": "Setelan telah diterapkan!",
+
+    "OverlayNotInstalledTitle": "Kamu tidak dapat menggunakan fitur ini karena game tidak terpasang/butuh diperbarui!",
+    "OverlayNotInstalledSubtitle": "Mohon pasang/perbarui game terlebih dahulu!",
+    "OverlayGameRunningTitle": "Game sedang berjalan!",
+    "OverlayGameRunningSubtitle": "Mohon tutup game terlebih dahulu sebelum menggunakan fitur ini!",
+    "OverlayFirstTimeTitle": "Kamu belum pernah memainkan game ini!",
+    "OverlayFirstTimeSubtitle": "Mohon jalankan game ini untuk pertama kalinya terlebih dahulu dan kembali lagi untuk menggunakan fitur ini.",
+
+    "CustomArgs_Title": "Penyesuaian Argumen Pemulaian",
+    "CustomArgs_Subtitle": "Argumen Pemulaian",
+    "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
+    "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
+    "CustomArgs_Footer3": "berikut.",
+
+    "Audio_Title": "Pengaturan Suara",
+    "Audio_Master": "Suara Utama",
+    "Audio_BGM": "Suara Musik",
+    "Audio_SFX": "Suara Efek Suara",
+    "Audio_VO": "Volume Suara",
+    "Audio_Mute": "Mute Suara"
   }
 }

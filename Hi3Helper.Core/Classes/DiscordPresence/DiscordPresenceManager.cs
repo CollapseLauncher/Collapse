@@ -67,7 +67,9 @@ namespace Hi3Helper.DiscordPresence
             }
 
             // Dispose Discord RPC client
+            // _client?.Dispose();
             _client?.Dispose();
+            _client = null;
         }
 
         public void EnablePresence()
@@ -84,6 +86,12 @@ namespace Hi3Helper.DiscordPresence
 
                     // Initialize the Activity Manager instance
                     _activityManager = _client.GetActivityManager();
+
+                    // Initialize the token source if the token is cancelled
+                    if (_clientToken.IsCancellationRequested)
+                    {
+                        _clientToken = new CancellationTokenSource();
+                    }
 
                     // Run .UpdateCallbacks() loop routine, initiate the activity and return
                     UpdateCallbacksRoutine();
@@ -146,7 +154,7 @@ namespace Hi3Helper.DiscordPresence
                     break;
             }
 
-            if (!_previousActivity.Equals(_activity))
+            if (!_previousActivity.Equals(_activity) && !_clientToken.IsCancellationRequested)
             {
                 UpdateActivity();
                 _previousActivity = _activity;
@@ -206,16 +214,13 @@ namespace Hi3Helper.DiscordPresence
 
         private async void UpdateCallbacksRoutine()
         {
-            while (true)
+            while (!_clientToken.IsCancellationRequested)
             {
-                // Take 33ms delay before the next update
-                await Task.Delay(_updateInterval);
-
-                // If a cancel is requested, then return
-                if (_clientToken.IsCancellationRequested) return;
-
                 // Run the update
                 _client?.RunCallbacks();
+
+                // Take 33ms delay before the next update
+                await Task.Delay(_updateInterval);
             }
         }
     }

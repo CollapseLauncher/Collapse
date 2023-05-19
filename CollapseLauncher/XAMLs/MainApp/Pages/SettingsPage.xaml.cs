@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.FileDialogNative;
@@ -35,9 +36,6 @@ namespace CollapseLauncher.Pages
                 Version = Version + " Preview";
             else
                 Version = Version + " Stable";
-
-            if (IsPortable)
-                Version += "-Portable";
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
@@ -131,9 +129,6 @@ namespace CollapseLauncher.Pages
 
         private void LaunchUpdater(string ChannelName)
         {
-            if (IsPortable)
-                ChannelName += "Portable";
-
             string ExecutableLocation = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             string UpdateArgument = $"elevateupdate --input \"{ExecutableLocation.Replace('\\', '/')}\" --channel {ChannelName}";
             Console.WriteLine(UpdateArgument);
@@ -173,8 +168,6 @@ namespace CollapseLauncher.Pages
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
         {
             string ChannelName = IsPreview ? " Preview" : " Stable";
-            if (IsPortable)
-                ChannelName += "-Portable";
 
             CheckUpdateBtn.IsEnabled = true;
             if (e.IsUpdateAvailable)
@@ -219,15 +212,9 @@ namespace CollapseLauncher.Pages
             }.Start();
         }
 
-#if DISABLE_COM
-        private void SelectBackgroundImg(object sender, RoutedEventArgs e)
-        {
-            string file = GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-#else
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-#endif
             if (file != null)
             {
                 regionBackgroundProp.imgLocalPath = file;
@@ -348,6 +335,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
+                if (value < 0) return;
                 SetAndSaveConfigValue("ThemeMode", Enum.GetName(typeof(AppThemeMode), value));
                 AppThemeSelectionWarning.Visibility = Visibility.Visible;
                 IsAppThemeNeedRestart = true;
@@ -411,7 +399,12 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
-                ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                var delayedDragAreaChange = async () =>
+                {
+                    await Task.Delay(250);
+                    ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                };
+                delayedDragAreaChange();
                 SaveAppConfig();
             }
         }

@@ -9,6 +9,7 @@
         AudioUpdate,
         Video,
         Chunk,
+
         Unused
     }
 
@@ -19,7 +20,12 @@
         AI,
         Unused,
         Dispatcher,
-        Gateway
+        Gateway,
+
+        General,    // Additional for HSR
+        IFix,       // Additional for HSR
+        DesignData, // Additional for HSR
+        Lua         // Additional for HSR
     }
 
     internal enum CacheAssetStatus
