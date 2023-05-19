@@ -54,8 +54,8 @@ namespace CollapseLauncher
             {
                 new RectInt32(0,
                               0,
-                              (int)(m_windowPosSize.Width * m_appDPIScale),
-                              (int)(40 * m_appDPIScale))
+                              (int)((m_windowPosSize.Width - 96) * m_appDPIScale),
+                              (int)(48 * m_appDPIScale))
             };
         }
 
