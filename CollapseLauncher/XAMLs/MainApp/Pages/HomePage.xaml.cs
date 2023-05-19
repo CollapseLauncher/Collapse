@@ -475,6 +475,12 @@ namespace CollapseLauncher.Pages
             }},
         };
 
+        // https://paimon.moe/
+        // https://enka.network/
+        // https://seelie.me/
+        // https://github.com/Andrewthe13th/Inventory_Kamera
+        // https://frzyc.github.io/genshin-optimizer
+        // https://akasha.cv/
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
         {
             new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
