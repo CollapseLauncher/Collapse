@@ -310,7 +310,7 @@ namespace CollapseLauncher.Pages
                     foreach (IconTextProperty iconProperty in IconPropertiesGenshin)
                     {
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                        //AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
                     //foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity)
                     //{
@@ -449,11 +449,30 @@ namespace CollapseLauncher.Pages
                     Debug.WriteLine(ex.Message);
                 }
             }},
-            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
             {
-                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
             }},
-            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+            new IconTextProperty() { IconGlyph = "", Text = "Genshin Impact Wiki", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
         };
 
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
