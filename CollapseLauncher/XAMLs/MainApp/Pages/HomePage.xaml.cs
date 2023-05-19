@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.UI.Controls;
@@ -299,6 +299,10 @@ namespace CollapseLauncher.Pages
                     foreach (IconTextProperty iconProperty in IconPropertiesHonkai)
                     {
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
+                    }
+                    // TODO: Fix this because I don't have time to make it more efficient, but also we don't have community tools for HI3 :/
+                    foreach (IconTextProperty iconProperty in IconPropertiesHonkaiCommunity)
+                    {
                         AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
                     break;
@@ -308,6 +312,10 @@ namespace CollapseLauncher.Pages
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
                         AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
+                    //foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity)
+                    //{
+                    //    AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                    //}
                     OpenCacheFolderButton.Visibility = Visibility.Collapsed;
                     break;
                 case GameType.StarRail:
@@ -316,6 +324,10 @@ namespace CollapseLauncher.Pages
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
                         AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
+                    //foreach (IconTextProperty iconTextProperty in IconPropertiesStarRailCommunity)
+                    //{
+                    //    AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
+                    //}
                     break;
             }
 
@@ -369,43 +381,84 @@ namespace CollapseLauncher.Pages
 
         private List<IconTextProperty> IconPropertiesHonkai = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
-            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-in", ClickAction = (a, b) =>
             {
-                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "You've opened Microsoft Edge";
-                new Process
+                try
                 {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "msedge.exe",
-                        UseShellExecute = true
-                    }
-                }.Start();
+                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
             }},
-            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Honkai Impact 3rd Wiki", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://honkaiimpact3.fandom.com/wiki/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+        };
+
+        private List<IconTextProperty> IconPropertiesHonkaiCommunity = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "Reddit Community", ClickAction = (a, b) => // Temp fix until I find a way to load multiple fonts
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://www.reddit.com/r/HonkaiImpact3rd/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
         };
 
         private List<IconTextProperty> IconPropertiesGenshin = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome" },
+            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481&hyl_auth_required=true&hyl_presentation_style=fullscreen&utm_source=hoyolab&utm_medium=tools&lang=en-us&bbs_theme=light&bbs_theme_device=1");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
             new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
             {
-                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "You've opened Microsoft Edge";
-                new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "msedge.exe",
-                        UseShellExecute = true
-                    }
-                }.Start();
+                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
             }},
             new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
         };
 
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome", ClickAction = (a, b) =>
+            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome", ClickAction = (a, b) =>
             {
                 try
                 {
@@ -426,7 +479,7 @@ namespace CollapseLauncher.Pages
 
         private void AddStackPanelChildren(IconTextProperty iconProperty, StackPanel panel)
         {
-            FontFamily iconFont = Application.Current.Resources["FontAwesomeBrand"] as FontFamily;
+            FontFamily iconFont = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
             StackPanel childrenPanel = new StackPanel() { Orientation = Orientation.Horizontal };
             childrenPanel.Children.Add(new FontIcon()
             {
@@ -439,8 +492,9 @@ namespace CollapseLauncher.Pages
                 Text = iconProperty.Text,
             });
 
-            Button btn = new Button() { Content = childrenPanel };
-
+            Button btn = new Button() { Content = childrenPanel, Margin = new Thickness(0, 0, 0, 8),
+                CornerRadius = new CornerRadius(14), HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left };
             panel.Children.Add(btn);
 
             if (iconProperty.ClickAction != null)
