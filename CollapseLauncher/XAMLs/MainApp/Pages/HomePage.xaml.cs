@@ -477,11 +477,11 @@ namespace CollapseLauncher.Pages
 
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Chrome Chrome", ClickAction = (a, b) =>
+            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
             {
                 try
                 {
-                    SpawnWebView2.SpawnWebView2Window("https://www.google.ca");
+                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311");
                 }
                 catch (Exception ex)
                 {
@@ -489,11 +489,30 @@ namespace CollapseLauncher.Pages
                     Debug.WriteLine(ex.Message);
                 }
             }},
-            new IconTextProperty() { IconGlyph = "", Text = "Microsoft Edge", ClickAction = (a, b) =>
+            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
             {
-                (((a as Button).Content as StackPanel).Children[1] as TextBlock).Text = "";
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
             }},
-            new IconTextProperty() { IconGlyph = "", Text = "Idk what button is this" }
+            new IconTextProperty() { IconGlyph = "", Text = "Honkai: Star Rail Wiki", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/pc/hsr/home");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
         };
 
         private void AddStackPanelChildren(IconTextProperty iconProperty, StackPanel panel)
