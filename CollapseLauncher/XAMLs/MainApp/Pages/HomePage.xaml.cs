@@ -421,7 +421,7 @@ namespace CollapseLauncher.Pages
 
         private List<IconTextProperty> IconPropertiesHonkaiCommunity = new List<IconTextProperty>
         {
-            new IconTextProperty() { IconGlyph = "", Text = "Reddit Community", ClickAction = (a, b) => // Temp fix until I find a way to load multiple fonts
+            new IconTextProperty() { IconGlyph = "", Text = "Reddit Community", ClickAction = (a, b) => // Icon Temp fix until I find a way to load multiple fonts
             {
                 try
                 {
@@ -465,7 +465,7 @@ namespace CollapseLauncher.Pages
             {
                 try
                 {
-                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/");
+                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/pc/genshin/home");
                 }
                 catch (Exception ex)
                 {
