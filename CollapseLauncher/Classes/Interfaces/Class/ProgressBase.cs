@@ -79,6 +79,8 @@ namespace CollapseLauncher.Interfaces
         protected virtual async void _httpClient_RepairAssetProgress(object sender, DownloadEvent e)
         {
             _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+            _progress.ProgressPerFileDownload = e.SizeDownloaded;
+            _progress.ProgressPerFileSizeToDownload = e.SizeToBeDownloaded;
             _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
             _progress.ProgressTotalSizeToDownload = _progressTotalSize;
 
@@ -546,6 +548,8 @@ namespace CollapseLauncher.Interfaces
                     0;
 
                 // Update the progress of total size
+                _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
+                _progress.ProgressPerFileSizeToDownload = _progressPerFileSize;
                 _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
                 _progress.ProgressTotalSizeToDownload = _progressTotalSize;
 

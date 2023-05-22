@@ -77,8 +77,11 @@ namespace CollapseLauncher.GameVersioning
             // If GameVersionInstalled doesn't have a value (null). then return null.
             if (!GameVersionInstalled.HasValue) return null;
 
+            // Get the pre-load status
+            bool isGameHasPreload = IsGameHasPreload() && GameVersionInstalled.Value.IsMatch(gameVersion);
+
             // If the game version doesn't match with the API's version, then go to the next check.
-            if (!GameVersionInstalled.Value.IsMatch(gameVersion))
+            if (!GameVersionInstalled.Value.IsMatch(gameVersion) || isGameHasPreload)
             {
                 // Sanitation check if the directory doesn't exist, then return null.
                 if (!Directory.Exists(gamePath)) return null;
@@ -92,6 +95,10 @@ namespace CollapseLauncher.GameVersioning
                     // If the version of the game is valid and the profile name matches, then return the property.
                     if (GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
                      && GameVersionAPI.IsMatch(patchProperty.TargetVer)
+                     && patchProperty.ProfileName == GamePreset.ProfileName) return patchProperty;
+                    // If the state is on pre-load, then try check the pre-load delta patch
+                    if (isGameHasPreload && GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
+                     && GameVersionAPIPreload.Value.IsMatch(patchProperty.TargetVer)
                      && patchProperty.ProfileName == GamePreset.ProfileName) return patchProperty;
                 }
             }

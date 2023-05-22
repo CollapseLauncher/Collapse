@@ -1220,25 +1220,28 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            ProgressPrePerFileStatusFooter.Text = e.ActivityStatus;
+            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus );
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
         {
-            string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
-            string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
-            string InstallDownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeDownloaded);
-            string DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
-            string DownloadPerSizeString = SummarizeSizeSimple(e.DownloadEvent.SizeToBeDownloaded);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressTotalSpeed);
+                string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressTotalDownload);
+                string InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileDownload);
+                string DownloadSizeString = SummarizeSizeSimple(e.ProgressTotalSizeToDownload);
+                string DownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeToDownload);
 
-            ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-            ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-            ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
-            ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
-            progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
-            progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
-            progressPreBar.IsIndeterminate = false;
-            progressPrePerFileBar.IsIndeterminate = false;
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
+                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
+                progressPreBar.Value = Math.Round(e.ProgressTotalPercentage, 2);
+                progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
+                progressPreBar.IsIndeterminate = false;
+                progressPrePerFileBar.IsIndeterminate = false;
+            });
         }
 
         private async void GameLogWatcher()
