@@ -11,6 +11,7 @@
     mc:Ignorable="d" Unloaded="Page_Unloaded">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
+        <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
         <Grid x:Name="Background" Visibility="Collapsed">
