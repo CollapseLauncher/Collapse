@@ -1,7 +1,10 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CollapseLauncher.InstallManager
 {
@@ -21,15 +24,25 @@ namespace CollapseLauncher.InstallManager
         public string HashString { get => HexTool.BytesToHexUnsafe(Hash); }
         public int LanguageID { get; set; } = int.MinValue;
         public string LanguageName { get; set; }
+        public List<GameInstallPackage> Segments { get; set; }
         #endregion
 
         public GameInstallPackage(RegionResourceVersion packageProperty, string pathOutput, string overrideVersion = null)
         {
-            URL = packageProperty.path;
+            if (packageProperty.path != null)
+            {
+                URL = packageProperty.path;
+                Name = Path.GetFileName(packageProperty.path);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
+
             DecompressedURL = packageProperty.decompressed_path;
-            Name = Path.GetFileName(packageProperty.path);
             SizeRequired = packageProperty.size;
-            Version = new GameVersion(overrideVersion == null ? packageProperty.version : overrideVersion);
+
+            if (packageProperty.version != null || overrideVersion != null)
+            {
+                Version = new GameVersion(overrideVersion == null ? packageProperty.version : overrideVersion);
+            }
 
             if (!string.IsNullOrEmpty(packageProperty.md5))
             {
@@ -40,7 +53,18 @@ namespace CollapseLauncher.InstallManager
                 LanguageID = packageProperty.languageID ?? 0;
                 LanguageName = packageProperty.language;
             }
-            PathOutput = Path.Combine(pathOutput, Name);
+
+            if (packageProperty.segments != null)
+            {
+                Name = Path.GetFileName(packageProperty.segments.FirstOrDefault()?.path);
+                PathOutput = Path.Combine(pathOutput, Name ?? "");
+                Segments = new List<GameInstallPackage>();
+
+                foreach (RegionResourceVersion segment in packageProperty.segments)
+                {
+                    Segments.Add(new GameInstallPackage(segment, pathOutput));
+                }
+            }
         }
 
         public string PrintSummary() => $"File [T: {PackageType}]: {URL}\t{ConverterTool.SummarizeSizeSimple(Size)} ({Size} bytes)";

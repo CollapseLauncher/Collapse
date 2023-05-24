@@ -118,7 +118,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Set the progress bar to indetermined
-            _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
+            _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
             _status.IsProgressPerFileIndetermined = true;
             _status.IsProgressTotalIndetermined = true;
             UpdateStatus();
@@ -150,8 +150,11 @@ namespace CollapseLauncher.InstallManager.Base
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> StartPackageVerification()
         {
+            // Get the total asset count
+            int assetCount = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1);
+
             // If the assetIndex is empty, then skip and return 0
-            if (_assetIndex.Count == 0)
+            if (assetCount == 0)
             {
                 return 0;
             }
@@ -163,8 +166,8 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSize = _assetIndex.Sum(x => x.Size);
             _progressTotalSizeCurrent = 0;
             _progressTotalCountCurrent = 1;
-            _progressTotalCount = _assetIndex.Count;
-            _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
+            _progressTotalCount = assetCount;
+            _status.IsIncludePerFileIndicator = assetCount > 1;
             RestartStopwatch();
 
             // Set progress bar to not indetermined
@@ -174,38 +177,67 @@ namespace CollapseLauncher.InstallManager.Base
             // Iterate the asset
             foreach (GameInstallPackage asset in _assetIndex)
             {
-                // Reset per size counter
-                _progressPerFileSizeCurrent = 0;
+                int returnCode = 0;
 
-                byte[] hashLocal;
-                using (FileStream fs = new FileStream(asset.PathOutput, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferBigLength))
+                // Iterate if the package has segment
+                if (asset.Segments != null)
                 {
-                    // Reset the per file size
-                    _progressPerFileSize = fs.Length;
-                    _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Verifying, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                    UpdateStatus();
-
-                    // Run the check and assign to hashLocal variable
-                    hashLocal = await Task.Run(() => base.CheckHash(fs, MD5.Create(), _token.Token, true));
-                }
-
-                // Check for the hash differences. If found, then show dialog to delete or cancel the process
-                if (!IsArrayMatch(hashLocal, asset.Hash))
-                {
-                    switch (await Dialog_GameInstallationFileCorrupt(_parentUI, asset.HashString, HexTool.BytesToHexUnsafe(hashLocal)))
+                    for (int i = 0; i < asset.Segments.Count; i++)
                     {
-                        case ContentDialogResult.Primary:
-                            _progressTotalSizeCurrent -= asset.Size;
-                            DeleteDownloadedFile(asset.PathOutput, _downloadThreadCount);
-                            return 0;
-                        case ContentDialogResult.None:
-                            return -1;
+                        // Run the package verification routine
+                        if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
+                        {
+                            return returnCode;
+                        }
                     }
+                    continue;
                 }
 
-                _progressTotalCountCurrent++;
+                // Run the package verification routine as a single package
+                if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
+                {
+                    return returnCode;
+                }
             }
 
+            return 1;
+        }
+
+        private async ValueTask<int> RunPackageVerificationRoutine(GameInstallPackage asset, CancellationToken token)
+        {
+            // Reset per size counter
+            _progressPerFileSizeCurrent = 0;
+
+            byte[] hashLocal;
+            using (FileStream fs = new FileStream(asset.PathOutput, FileMode.Open, FileAccess.Read, FileShare.Read, _bufferBigLength))
+            {
+                // Reset the per file size
+                _progressPerFileSize = fs.Length;
+                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Verifying, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                UpdateStatus();
+
+                // Run the check and assign to hashLocal variable
+                hashLocal = await Task.Run(() => base.CheckHash(fs, MD5.Create(), token, true));
+            }
+
+            // Check for the hash differences. If found, then show dialog to delete or cancel the process
+            if (!IsArrayMatch(hashLocal, asset.Hash))
+            {
+                switch (await Dialog_GameInstallationFileCorrupt(_parentUI, asset.HashString, HexTool.BytesToHexUnsafe(hashLocal)))
+                {
+                    case ContentDialogResult.Primary:
+                        _progressTotalSizeCurrent -= asset.Size;
+                        DeleteDownloadedFile(asset.PathOutput, _downloadThreadCount);
+                        return 0;
+                    case ContentDialogResult.None:
+                        return -1;
+                }
+            }
+
+            // Increment the total current count
+            _progressTotalCountCurrent++;
+
+            // Return 1 as OK
             return 1;
         }
 
@@ -261,9 +293,21 @@ namespace CollapseLauncher.InstallManager.Base
                             // If the _canDeleteZip flag is true, then delete the zip
                             if (_canDeleteZip)
                             {
-                                FileInfo fileInfo = new FileInfo(asset.PathOutput);
-                                fileInfo.IsReadOnly = false;
-                                fileInfo.Delete();
+                                if (asset.Segments != null)
+                                {
+                                    foreach (GameInstallPackage segment in asset.Segments)
+                                    {
+                                        FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                        fileInfo.IsReadOnly = false;
+                                        fileInfo.Delete();
+                                    }
+                                }
+                                else
+                                {
+                                    FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                    fileInfo.IsReadOnly = false;
+                                    fileInfo.Delete();
+                                }
                             }
 
                             // Get the information about diff and delete list file
@@ -590,6 +634,15 @@ namespace CollapseLauncher.InstallManager.Base
             // Try add the package into
             GameInstallPackage package = new GameInstallPackage(asset, _gamePath) { PackageType = GameInstallPackageType.General };
             packageList.Add(package);
+
+            if (package.Segments != null)
+            {
+                foreach (GameInstallPackage segment in package.Segments)
+                {
+                    LogWriteLine($"Adding segmented package: {segment.Name} to the list (Hash: {segment.HashString})", LogType.Default, true);
+                }
+                return;
+            }
             LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -630,9 +683,12 @@ namespace CollapseLauncher.InstallManager.Base
         #region Private Methods - StartPackageDownload
         private async Task InvokePackageDownloadRoutine(List<GameInstallPackage> packageList, CancellationToken token)
         {
+            // Get the package/segment count
+            int packageCount = packageList.Sum(x => x.Segments != null ? x.Segments.Count : 1);
+
             // Set progress count to beginning
             _progressTotalCountCurrent = 1;
-            _progressTotalCount = packageList.Count;
+            _progressTotalCount = packageCount;
             RestartStopwatch();
 
             // Subscribe the download progress to the event adapter
@@ -642,24 +698,20 @@ namespace CollapseLauncher.InstallManager.Base
                 // Iterate the package list
                 foreach (GameInstallPackage package in packageList)
                 {
-                    // Set the activity status
-                    _status.IsIncludePerFileIndicator = packageList.Count > 1;
-                    _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                    LogWriteLine($"Downloading package URL {_progressTotalCountCurrent}/{_progressTotalCount} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
-
-                    // If the file exist or package size is unmatched,
-                    // then start downloading
-                    FileInfo packageOutInfo = new FileInfo(package.PathOutput);
-                    if (!packageOutInfo.Exists
-                      || packageOutInfo.Length != package.SizeDownloaded)
+                    // If the package is segmented, then iterate and run the routine for segmented packages
+                    if (package.Segments != null)
                     {
-                        await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
-                        _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                        UpdateStatus();
-                        await _httpClient.Merge();
+                        // Iterate the segment list
+                        for (int i = 0; i < package.Segments.Count; i++)
+                        {
+                            await RunPackageDownloadRoutine(package.Segments[i], token, packageCount);
+                        }
+                        // Skip action below and continue to the next segment
+                        continue;
                     }
 
-                    _progressTotalCountCurrent++;
+                    // Else, run the routine as normal
+                    await RunPackageDownloadRoutine(package, token, packageCount);
                 }
             }
             finally
@@ -667,6 +719,29 @@ namespace CollapseLauncher.InstallManager.Base
                 // Unsubscribe the download progress from the event adapter
                 _httpClient.DownloadProgress -= HttpClientDownloadProgressAdapter;
             }
+        }
+
+        private async Task RunPackageDownloadRoutine(GameInstallPackage package, CancellationToken token, int packageCount)
+        {
+            // Set the activity status
+            _status.IsIncludePerFileIndicator = packageCount > 1;
+            _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+            LogWriteLine($"Downloading package URL {_progressTotalCountCurrent}/{_progressTotalCount} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
+
+            // If the file exist or package size is unmatched,
+            // then start downloading
+            FileInfo packageOutInfo = new FileInfo(package.PathOutput);
+            if (!packageOutInfo.Exists
+              || packageOutInfo.Length != package.SizeDownloaded)
+            {
+                await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
+                _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                UpdateStatus();
+                await _httpClient.Merge();
+            }
+
+            // Increment the total count
+            _progressTotalCountCurrent++;
         }
 
         private async Task CheckExistingDownloadAsync(UIElement Content, List<GameInstallPackage> packageList)
@@ -689,12 +764,22 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void ResetDownload(List<GameInstallPackage> packageList)
         {
-            // Reset teh _progressTotalSizeCurrent to 0
+            // Reset the _progressTotalSizeCurrent to 0
             _progressTotalSizeCurrent = 0;
 
             // Iterate and start deleting the existing file
             for (int i = 0; i < packageList.Count; i++)
             {
+                // Check if the package has segment. If yes, then iterate it per segment
+                if (packageList[i].Segments != null)
+                {
+                    for (int j = 0; j < packageList[i].Segments.Count; j++)
+                    {
+                        DeleteDownloadedFile(packageList[i].Segments[j].PathOutput, _downloadThreadCount);
+                    }
+                }
+
+                // Otherwise, delete the package as a single file
                 DeleteDownloadedFile(packageList[i].PathOutput, _downloadThreadCount);
             }
         }
@@ -723,6 +808,19 @@ namespace CollapseLauncher.InstallManager.Base
             // Iterate the size and find the total, then increment it to totalSize
             for (int i = 0; i < packageList.Count; i++)
             {
+                if (packageList[i].Segments != null)
+                {
+                    long totalSegmentDownloaded = 0;
+                    for (int j = 0; j < packageList[i].Segments.Count; j++)
+                    {
+                        long segmentDownloaded = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput, _downloadThreadCount, packageList[i].Segments[j].Size);
+                        totalSize += segmentDownloaded;
+                        totalSegmentDownloaded += segmentDownloaded;
+                    }
+                    packageList[i].SizeDownloaded = totalSegmentDownloaded;
+                    continue;
+                }
+
                 packageList[i].SizeDownloaded = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput, _downloadThreadCount, packageList[i].Size);
                 totalSize += packageList[i].SizeDownloaded;
             }
@@ -738,7 +836,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the total of required size on every package
             long RequiredSpace = packageList.Sum(x => x.SizeRequired);
-            long ExistingPackageSize = packageList.Sum(x => GetExistingPartialDownloadLength(x.PathOutput, x.Size));
+            long ExistingPackageSize = packageList.Sum(x => x.Segments != null ? x.Segments.Sum(y => GetExistingPartialDownloadLength(y.PathOutput, y.Size)) : GetExistingPartialDownloadLength(x.PathOutput, x.Size));
 
             // Get the total free space of the disk
             long DiskSpace = _DriveInfo.TotalFreeSpace;
@@ -747,9 +845,10 @@ namespace CollapseLauncher.InstallManager.Base
             // Check if the disk space is insufficient, then show the dialog.
             if (DiskSpace < (RequiredSpace - ExistingPackageSize))
             {
-                LogWriteLine($"DISK SPACE ON {_DriveInfo.Name} IS INSUFFICIENT!", LogType.Error, true);
+                string errStr = $"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
+                LogWriteLine(errStr, LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
-                throw new IOException($"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name}). Cancelling the task!");
+                throw new TaskCanceledException(errStr);
             }
         }
 
@@ -785,14 +884,37 @@ namespace CollapseLauncher.InstallManager.Base
             // Iterate and assign the remote size to each package inside the list
             for (int i = 0; i < packageList.Count; i++)
             {
-                await TryGetPackageRemoteSize(packageList[i], token);
+                if (packageList[i].Segments != null)
+                {
+                    await TryGetSegmentedPackageRemoteSize(packageList[i], token);
+                    continue;
+                }
 
-                LogWriteLine($"Package: [T: {packageList[i].PackageType}] {packageList[i].Name} has {ConverterTool.SummarizeSizeSimple(packageList[i].Size)} in size with {ConverterTool.SummarizeSizeSimple(packageList[i].SizeRequired)} of free space required", LogType.Default, true);
+                await TryGetPackageRemoteSize(packageList[i], token);
             }
         }
         #endregion
         #region Virtual Methods - StartPackageDownload
-        protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token) => asset.Size = await _httpClient.TryGetContentLengthAsync(asset.URL, token) ?? 0;
+        protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
+        {
+            asset.Size = await _httpClient.TryGetContentLengthAsync(asset.URL, token) ?? 0;
+
+            LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required", LogType.Default, true);
+        }
+        protected async Task TryGetSegmentedPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
+        {
+            long totalSize = 0;
+            for (int i = 0; i < asset.Segments.Count; i++)
+            {
+                long segmentSize = await _httpClient.TryGetContentLengthAsync(asset.Segments[i].URL, token) ?? 0;
+                totalSize += segmentSize;
+                asset.Segments[i].Size = segmentSize;
+                LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size", LogType.Default, true);
+            }
+
+            asset.Size = totalSize;
+            LogWriteLine($"Package Segment (count: {asset.Segments.Count}) has {ConverterTool.SummarizeSizeSimple(asset.Size)} in total size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required", LogType.Default, true);
+        }
         #endregion
 
         #region Event Methods
