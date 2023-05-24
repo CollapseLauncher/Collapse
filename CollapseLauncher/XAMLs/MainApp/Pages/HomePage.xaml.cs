@@ -312,10 +312,10 @@ namespace CollapseLauncher.Pages
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
                         //AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
-                    //foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity)
-                    //{
-                    //    AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
-                    //}
+                    foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity) // hack to prevent var overwrite
+                    {
+                        AddStackPanelChildren(iconTextProperty, CommunityToolsStackPanel);
+                    }
                     OpenCacheFolderButton.Visibility = Visibility.Collapsed;
                     break;
                 case GameType.StarRail:
@@ -466,6 +466,83 @@ namespace CollapseLauncher.Pages
                 try
                 {
                     SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/pc/genshin/home");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+        };
+
+        private List<IconTextProperty> IconPropertiesGenshinCommunity = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "paimon.moe", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://paimon.moe/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Enka Network", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://enka.network/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "seelie.me", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://seelie.me/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Genshin Optimizer", ClickAction = (a, b) => 
+            // FIXME: Find a way to load multiple fonts
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://frzyc.github.io/genshin-optimizer");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "Inventory Kamera", ClickAction = (a, b) => 
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://frzyc.github.io/genshin-optimizer");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+            new IconTextProperty() { IconGlyph = "", Text = "akasha.cv", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://akasha.cv");
                 }
                 catch (Exception ex)
                 {
