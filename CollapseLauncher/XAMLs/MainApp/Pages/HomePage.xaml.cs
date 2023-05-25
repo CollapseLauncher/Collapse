@@ -310,7 +310,6 @@ namespace CollapseLauncher.Pages
                     foreach (IconTextProperty iconProperty in IconPropertiesGenshin)
                     {
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                        //AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
                     foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity) // hack to prevent var overwrite
                     {
@@ -322,7 +321,6 @@ namespace CollapseLauncher.Pages
                     foreach (IconTextProperty iconProperty in IconPropertiesStarRail)
                     {
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
                     }
                     //foreach (IconTextProperty iconTextProperty in IconPropertiesStarRailCommunity)
                     //{
