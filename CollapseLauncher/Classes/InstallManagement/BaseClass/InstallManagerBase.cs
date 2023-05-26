@@ -184,7 +184,7 @@ namespace CollapseLauncher.InstallManager.Base
                     for (int i = 0; i < asset.Segments.Count; i++)
                     {
                         // Run the package verification routine
-                        if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
+                        if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], _token.Token)) < 1)
                         {
                             return returnCode;
                         }
@@ -258,7 +258,10 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Get the sum of uncompressed size and
                     // Set progress count to beginning
-                    _progressTotalSize = _assetIndex.Sum(x => zip.GetUncompressedSize(x.PathOutput));
+                    _progressTotalSize = _assetIndex.Sum(x => x.Segments != null ?
+                        zip.GetUncompressedSize(x.Segments.Select(x => x.PathOutput).ToArray()) :
+                        zip.GetUncompressedSize(x.PathOutput));
+
                     _progressTotalSizeCurrent = 0;
                     _progressTotalCountCurrent = 1;
                     _progressTotalCount = _assetIndex.Count;
@@ -283,31 +286,11 @@ namespace CollapseLauncher.InstallManager.Base
                         try
                         {
                             // Load the zip
-                            zip.LoadArchive(asset.PathOutput);
+                            zip.LoadArchive(asset.Segments != null ? asset.Segments.Select(x => x.PathOutput).ToArray() : new string[] { asset.PathOutput });
 
                             // Start extraction
                             zip.ExtractProgressChanged += ZipProgressAdapter;
                             zip.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
-
-                            // If the _canDeleteZip flag is true, then delete the zip
-                            if (_canDeleteZip)
-                            {
-                                if (asset.Segments != null)
-                                {
-                                    foreach (GameInstallPackage segment in asset.Segments)
-                                    {
-                                        FileInfo fileInfo = new FileInfo(asset.PathOutput);
-                                        fileInfo.IsReadOnly = false;
-                                        fileInfo.Delete();
-                                    }
-                                }
-                                else
-                                {
-                                    FileInfo fileInfo = new FileInfo(asset.PathOutput);
-                                    fileInfo.IsReadOnly = false;
-                                    fileInfo.Delete();
-                                }
-                            }
 
                             // Get the information about diff and delete list file
                             FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
@@ -324,10 +307,35 @@ namespace CollapseLauncher.InstallManager.Base
                             {
                                 deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
                             }
+
+                            // Make sure that the ZipTool is getting disposed first
+                            zip.Dispose();
+
+                            // If the _canDeleteZip flag is true, then delete the zip
+                            if (_canDeleteZip)
+                            {
+
+                                if (asset.Segments != null)
+                                {
+                                    foreach (GameInstallPackage segment in asset.Segments)
+                                    {
+                                        FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                        fileInfo.IsReadOnly = false;
+                                        fileInfo.Delete();
+                                    }
+                                }
+                                else
+                                {
+                                    FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                    fileInfo.IsReadOnly = false;
+                                    fileInfo.Delete();
+                                }
+                            }
                         }
                         finally
                         {
                             zip.ExtractProgressChanged -= ZipProgressAdapter;
+                            zip.Dispose();
                         }
 
                         _progressTotalCountCurrent++;
@@ -736,7 +744,9 @@ namespace CollapseLauncher.InstallManager.Base
                 await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
                 _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
                 UpdateStatus();
+                _stopwatch.Stop();
                 await _httpClient.Merge();
+                _stopwatch.Start();
             }
 
             // Increment the total count

@@ -1,4 +1,5 @@
-﻿using SevenZipExtractor;
+﻿using Hi3Helper.EncTool;
+using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,7 @@ namespace Hi3Helper.Data
     public class SevenZipTool : IDisposable
     {
         private string inputFilePath;
-        private FileStream inputFileStream;
+        private Stream inputFileStream;
         private ArchiveFile archiveReader7Zip;
         private Stopwatch stopWatch;
         private int extractedCount;
@@ -23,10 +24,16 @@ namespace Hi3Helper.Data
         private long totalUncompressedSize,
                      totalCompressedSize;
 
-        public void LoadArchive(string InputFile)
+        public void LoadArchive(params string[] paths)
         {
-            inputFilePath = InputFile;
-            inputFileStream = new FileStream(InputFile, FileMode.Open, FileAccess.Read);
+            if (paths == null || paths.Length == 0) throw new ArgumentException("You must at least define one path to the argument!");
+            inputFilePath = paths[0];
+            LoadArchive(paths.Length > 1 ? new CombinedStream(paths.Select(x => File.OpenRead(x) as Stream).ToArray()) : File.OpenRead(paths[0]));
+        }
+
+        public void LoadArchive(Stream stream)
+        {
+            inputFileStream = stream;
             archiveReader7Zip = new ArchiveFile(inputFileStream, null, @"Lib\7z.dll");
             archiveEntries7Zip = archiveReader7Zip.Entries;
             entriesCount = archiveEntries7Zip.Count();
@@ -37,25 +44,37 @@ namespace Hi3Helper.Data
             totalCompressedSize = archiveEntries7Zip.Sum(f => (long)f.PackedSize);
         }
 
-        public long GetUncompressedSize(string inputFile)
+        public long GetUncompressedSize(params string[] multiFiles)
         {
-            inputFilePath = inputFile;
-            inputFileStream = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+            if (multiFiles.Length == 0) throw new ArgumentException("You must at least define one path to the argument!");
 
-            switch (Path.GetExtension(inputFile).ToLower())
+            if (multiFiles.Length == 1)
+            {
+                inputFilePath = multiFiles[0];
+                inputFileStream = new FileStream(multiFiles[0], FileMode.Open, FileAccess.Read);
+            }
+            else
+            {
+                inputFileStream = new CombinedStream(multiFiles.Select(x => File.OpenRead(x) as Stream).ToArray());
+            }
+
+            switch (Path.GetExtension(multiFiles[0]).ToLower())
             {
                 case ".7z":
                 case ".zip":
-                    LoadArchive(inputFile);
+                case ".001":
+                    LoadArchive(inputFileStream);
+                    inputFileStream?.Dispose();
                     return totalUncompressedSize;
                 default:
-                    throw new FormatException($"Format {Path.GetExtension(inputFile)} is unsupported!");
+                    throw new FormatException($"Format {Path.GetExtension(multiFiles[0])} is unsupported!");
             }
         }
 
         public void Dispose()
         {
-            inputFileStream.Dispose();
+            inputFileStream?.Dispose();
+            archiveReader7Zip?.Dispose();
         }
 
         public void ExtractToDirectory(string outputDirectory, int thread = 1, CancellationToken token = new CancellationToken())
