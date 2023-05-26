@@ -130,7 +130,6 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalSize = _assetIndex.Sum(x => x.Size);
             _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
 
-
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
             await CheckDriveFreeSpace(_parentUI, _assetIndex);
 
@@ -816,6 +815,7 @@ namespace CollapseLauncher.InstallManager.Base
                         long segmentDownloaded = _httpClient.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput, _downloadThreadCount, packageList[i].Segments[j].Size);
                         totalSize += segmentDownloaded;
                         totalSegmentDownloaded += segmentDownloaded;
+                        packageList[i].Segments[j].SizeDownloaded = segmentDownloaded;
                     }
                     packageList[i].SizeDownloaded = totalSegmentDownloaded;
                     continue;
@@ -967,12 +967,12 @@ namespace CollapseLauncher.InstallManager.Base
             _status.IsProgressPerFileIndetermined = false;
             _status.IsProgressTotalIndetermined = false;
 
-            // Increment the total last read
-            _progressTotalReadCurrent += e.Read;
             if (e.State != DownloadState.Merging)
             {
                 // Increment the total current size if status is not merging
                 _progressTotalSizeCurrent += e.Read;
+                // Increment the total last read
+                _progressTotalReadCurrent += e.Read;
             }
 
             if (await base.CheckIfNeedRefreshStopwatch())
