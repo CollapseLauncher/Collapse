@@ -620,11 +620,11 @@
                                             <TextBlock x:Name="PlaytimeMinutes" Text="Minutes" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
                                         </StackPanel>
                                         <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
-                                        <Button x:Name="UpdatePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UpdatePlaytimeButton_Click">
+                                        <Button x:Name="ChangePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ChangePlaytimeButton_Click">
                                             <Button.Content> 
                                                 <StackPanel Orientation="Horizontal" Margin="3,0">
                                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf021;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_UpdateBtn}" Margin="7,0,0,0"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_ChangeBtn}" Margin="7,0,0,0"/>
                                                 </StackPanel>
                                             </Button.Content>
                                         </Button>

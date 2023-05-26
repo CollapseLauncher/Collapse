@@ -632,7 +632,7 @@ namespace CollapseLauncher.Pages
                     GameLogWatcher();
                 }
                 
-                StartPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc);
+                StartPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc, PageStatics._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
             }
@@ -642,11 +642,10 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async static void StartPlaytimeCounter(string OldRegionRK, Process proc)
+        private async static void StartPlaytimeCounter(string OldRegionRK, Process proc, PresetConfigV2 GamePreset)
         {
             int saveFrequencyinSeconds = 60;
 
-            string NewRegion = PageStatics._GameVersion.GamePreset.ZoneFullname;
             string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
             int seconds = 0;
             var ingametimer = new DispatcherTimer
@@ -664,6 +663,35 @@ namespace CollapseLauncher.Pages
             };
             ingametimer.Start();
             await proc.WaitForExitAsync();
+            if (GamePreset.GameType == GameType.Honkai)
+            {
+                try
+                {
+                    while (true)
+                    {
+                        Process[] pname = Process.GetProcessesByName(GamePreset.GameExecutableName.Split('.')[0]);
+                        switch (pname.Length)
+                        {
+                            case 0:
+                                break;
+                            case 1:
+                                proc = pname[0];
+                                LogWriteLine($"Found the main HI3 process [{pname[0].Id}]");
+                                await proc.WaitForExitAsync();
+                                break;
+                            default:
+                                await Task.Delay(5000);
+                                continue;
+                        }
+                        break;
+                    }
+                    
+                }
+                catch (Exception e)
+                {
+                    LogWriteLine($"Failed to find the main BH3 process [{e}]");
+                }
+            }
             SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
             LogWriteLine($"Added {seconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
             ingametimer.Stop();
@@ -1019,8 +1047,9 @@ namespace CollapseLauncher.Pages
 
         }
 
-        private void UpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
+        private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!await ShowPlaytimeConfirmationModal(this)) return;
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
             int FinalPlaytimeMinutes = playtimemins % 60;
@@ -1032,10 +1061,21 @@ namespace CollapseLauncher.Pages
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
             SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
+            LogWriteLine($"Playtime counter value was changed to \"{givenPlaytime}\". Previous value: \"{PlaytimeMainBtn.Text}\"");
             PlaytimeFlyout.Hide();
             UpdatePlaytime(false, givenPlaytime);
 
 
+        }
+
+        private async void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!await ShowPlaytimeConfirmationModal(this)) return;
+            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation,"0h 0m 0s");
+            LogWriteLine($"Playtime counter value was reset. Previous value: {PlaytimeMainBtn.Text}");
+            UpdatePlaytime(false, "0h 0m 0s");
+            InvalidTimeBlock.Visibility = Visibility.Collapsed;
+            PlaytimeFlyout.Hide();
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
@@ -1044,12 +1084,24 @@ namespace CollapseLauncher.Pages
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
-        private void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        private async Task<bool> ShowPlaytimeConfirmationModal(UIElement root)
         {
-            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation,"0h 0m 0s");
-            UpdatePlaytime(false, "0h 0m 0s");
-            InvalidTimeBlock.Visibility = Visibility.Collapsed;
-            PlaytimeFlyout.Hide();
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = Lang._HomePage.GamePlaytime_Confirmation_Title,
+                Content = Lang._HomePage.GamePlaytime_Confirmation_Subtitle,
+                PrimaryButtonText = Lang._Misc.Yes,
+                CloseButtonText = Lang._Misc.NoCancel,
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = root.XamlRoot
+            };
+
+            while (true)
+            {
+                ContentDialogResult result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary) return true;
+                return false;
+            }
         }
 
         private void UpdatePlaytime(bool reg = true, string CPtV = "")
