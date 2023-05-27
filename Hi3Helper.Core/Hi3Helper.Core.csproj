@@ -11,6 +11,7 @@
 		<PublishTrimmed>false</PublishTrimmed>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<DebugType>portable</DebugType>
+		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -113,6 +114,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 	</ItemGroup>
 
 </Project>

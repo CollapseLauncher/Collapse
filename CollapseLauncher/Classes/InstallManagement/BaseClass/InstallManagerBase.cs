@@ -286,11 +286,11 @@ namespace CollapseLauncher.InstallManager.Base
                         try
                         {
                             // Load the zip
-                            zip.LoadArchive(asset.Segments != null ? asset.Segments.Select(x => x.PathOutput).ToArray() : new string[] { asset.PathOutput });
+                            zip?.LoadArchive(asset.Segments != null ? asset.Segments.Select(x => x.PathOutput).ToArray() : new string[] { asset.PathOutput });
 
                             // Start extraction
                             zip.ExtractProgressChanged += ZipProgressAdapter;
-                            zip.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
+                            zip?.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
 
                             // Get the information about diff and delete list file
                             FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
@@ -309,7 +309,7 @@ namespace CollapseLauncher.InstallManager.Base
                             }
 
                             // Make sure that the ZipTool is getting disposed first
-                            zip.Dispose();
+                            zip?.Dispose();
 
                             // If the _canDeleteZip flag is true, then delete the zip
                             if (_canDeleteZip)
@@ -335,7 +335,7 @@ namespace CollapseLauncher.InstallManager.Base
                         finally
                         {
                             zip.ExtractProgressChanged -= ZipProgressAdapter;
-                            zip.Dispose();
+                            zip?.Dispose();
                         }
 
                         _progressTotalCountCurrent++;
