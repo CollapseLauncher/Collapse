@@ -71,8 +71,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Lang\es-419.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="Lang\en-us.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Lang\es-419.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\id-id.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
