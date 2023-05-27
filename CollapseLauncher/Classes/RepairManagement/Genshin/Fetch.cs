@@ -130,11 +130,11 @@ namespace CollapseLauncher
             string primaryParentURL;
             string secondaryParentURL;
 
-            // Parse release_res_versions_external
+            // Parse res_versions_external
             primaryParentURL = CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
             secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
-            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "release_res_versions_external",
-                "release_res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "res_versions_external",
+                "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
             // Parse data_versions
             primaryParentURL = queryProperty.ClientDesignDataURL;
