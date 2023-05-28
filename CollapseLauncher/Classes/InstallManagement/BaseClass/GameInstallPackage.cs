@@ -54,7 +54,7 @@ namespace CollapseLauncher.InstallManager
                 LanguageName = packageProperty.language;
             }
 
-            if (packageProperty.segments != null)
+            if (packageProperty.segments != null && packageProperty.segments.Count > 0)
             {
                 Name = Path.GetFileName(packageProperty.segments.FirstOrDefault()?.path);
                 PathOutput = Path.Combine(pathOutput, Name ?? "");
