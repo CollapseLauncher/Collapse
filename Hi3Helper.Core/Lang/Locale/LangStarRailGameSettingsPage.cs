@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region StarRailGameSettingsPage
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangStarRailGameSettingsPage _StarRailGameSettingsPage { get; set; } = LangFallback?._StarRailGameSettingsPage;
-            public class LangStarRailGameSettingsPage
+            public sealed class LangStarRailGameSettingsPage
             {
                 public string PageTitle { get; set; } = LangFallback?._StarRailGameSettingsPage.PageTitle;
                 public string Graphics_Title { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_Title;

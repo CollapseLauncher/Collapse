@@ -2,7 +2,7 @@
 
 namespace CollapseLauncher.GameSettings.Universal
 {
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(CollapseScreenSetting))]
-    internal partial class CollapseScreenSettingContext : JsonSerializerContext { }
+    internal sealed partial class CollapseScreenSettingContext : JsonSerializerContext { }
 }
