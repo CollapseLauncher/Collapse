@@ -314,12 +314,11 @@ namespace CollapseLauncher.InstallManager.Base
                             // If the _canDeleteZip flag is true, then delete the zip
                             if (_canDeleteZip)
                             {
-
                                 if (asset.Segments != null)
                                 {
                                     foreach (GameInstallPackage segment in asset.Segments)
                                     {
-                                        FileInfo fileInfo = new FileInfo(asset.PathOutput);
+                                        FileInfo fileInfo = new FileInfo(segment.PathOutput);
                                         fileInfo.IsReadOnly = false;
                                         fileInfo.Delete();
                                     }
