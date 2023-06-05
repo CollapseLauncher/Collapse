@@ -162,7 +162,19 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState) => new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
 
-        public virtual List<RegionResourceVersion> GetGamePreloadZip() => GameAPIProp.data.pre_download_game == null ? null : new List<RegionResourceVersion> { GameAPIProp.data.pre_download_game.latest };
+        public virtual List<RegionResourceVersion> GetGamePreloadZip()
+        {
+            // If the preload is not exist, then return null
+            if (GameAPIProp.data.pre_download_game == null) return null;
+
+            // Try get the diff file  by the first or default (null)
+            RegionResourceVersion diff = GameAPIProp.data.pre_download_game.diffs
+                .Where(x => x.version == GameVersionInstalled?.VersionString)
+                .FirstOrDefault();
+
+            // Return if the diff is null, then get the latest. If found, then return the diff one.
+            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.pre_download_game.latest : diff };
+        }
 
         public virtual DeltaPatchProperty GetDeltaPatchInfo() => null;
 
