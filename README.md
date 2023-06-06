@@ -56,11 +56,11 @@ This launcher also supports other game client, including:
 > Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported.
 
 # Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.20/CL-1.69.20_Installer.exe)
-> **Note**: The version for this build is `1.69.20` (Released on: May 27th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.21/CL-1.69.21_Installer.exe)
+> **Note**: The version for this build is `1.69.21` (Released on: June 6th, 2023).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.70.4-pre/CL-1.70.4-preview_Installer.exe)
-> **Note**: The version for this build is `1.70.4` (Released on: May 18th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.70.6-pre/CL-1.70.6-preview_Installer.exe)
+> **Note**: The version for this build is `1.70.6` (Released on: June 6th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
