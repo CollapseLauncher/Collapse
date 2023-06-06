@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -97,17 +98,18 @@ namespace CollapseLauncher.GameVersioning
                 // If has it, then check if the pre_download_game has diff.
                 // If null or no data, then return the latest one.
                 if (GameAPIProp.data.pre_download_game.diffs == null
-                 || GameAPIProp.data.pre_download_game.diffs.Count == 0) return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
+                 || GameAPIProp.data.pre_download_game.diffs.Count == 0) return TryGetNextVersionFromPkgFileName(GameAPIProp.data.pre_download_game.latest);
 
                 // Try get the diff version
                 RegionResourceVersion diffVersion = GameAPIProp.data.pre_download_game.diffs.Where(x => x.version == currentInstalled?.VersionString).FirstOrDefault();
                 // If diff is not found for current version, then return the latest one
-                if (diffVersion == null) return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
+                if (diffVersion == null) return TryGetNextVersionFromPkgFileName(GameAPIProp.data.pre_download_game.latest);
 
                 // If all passes, then return diff version
-                return new GameVersion(diffVersion.version);
+                return TryGetNextVersionFromPkgFileName(diffVersion);
             }
         }
+
         protected GameVersion? GameVersionInstalled
         {
             get
@@ -269,6 +271,34 @@ namespace CollapseLauncher.GameVersioning
 
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName), GamePreset.VendorType);
+        }
+
+        private GameVersion TryGetNextVersionFromPkgFileName(RegionResourceVersion pkgVersion)
+        {
+            // Get the package name
+            string pkgName = Path.GetFileNameWithoutExtension(pkgVersion.path);
+
+            try
+            {
+                // Split the package into sections by _
+                string[] pkgSections = pkgName.Split('_');
+
+                // Set the offset of the section. If the length > 2, then set 1
+                // Otherwise, set 2;
+                int offset = pkgSections.Length > 2 ? 2 : 1;
+
+                // Try get the version string, lower it and trim it
+                string versionStr = pkgSections[offset].ToLower().Trim('v');
+
+                // Try parse it and return it
+                return new GameVersion(versionStr);
+            }
+            catch (Exception ex)
+            {
+                // If fail, then fallback to the one provided by the pkgVersion
+                Logger.LogWriteLine($"Error while parsing version from package name! Will return the one from version variable instead.\r\nRAW String: {pkgVersion?.path ?? ""}\r\n{ex}");
+                return new GameVersion(pkgVersion.version);
+            }
         }
 
         private string TryFindGamePathFromExecutableAndConfig(string path)
