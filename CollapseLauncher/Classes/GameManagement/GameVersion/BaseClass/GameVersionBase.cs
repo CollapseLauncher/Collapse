@@ -162,7 +162,27 @@ namespace CollapseLauncher.GameVersioning
             return GameInstallStateEnum.NotInstalled;
         }
 
-        public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState) => new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+        public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState)
+        {
+            // If the GameVersion is not installed, then return the latest one
+            if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
+            {
+                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+            }
+
+            if (GameAPIProp.data.game.diffs == null || GameAPIProp.data.game.diffs.Count == 0)
+            {
+                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+            }
+
+            // Try get the diff file  by the first or default (null)
+            RegionResourceVersion diff = GameAPIProp.data.game.diffs
+                .Where(x => x.version == GameVersionInstalled?.VersionString)
+                .FirstOrDefault();
+
+            // Return if the diff is null, then get the latest. If found, then return the diff one.
+            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.game.latest : diff };
+        }
 
         public virtual List<RegionResourceVersion> GetGamePreloadZip()
         {

@@ -24,23 +24,6 @@ namespace CollapseLauncher.GameVersioning
 
         public override DeltaPatchProperty GetDeltaPatchInfo() => null;
 
-        public override List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState)
-        {
-            // If the GameVersion is not installed, then return the latest one
-            if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
-            {
-                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
-            }
-
-            // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.game.diffs
-                .Where(x => x.version == GameVersionInstalled?.VersionString)
-                .FirstOrDefault();
-
-            // Return if the diff is null, then get the latest. If found, then return the diff one.
-            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.game.latest : diff };
-        }
-
         private void TryReinitializeGameVersion()
         {
             // Check if the GameVersionInstalled == null (version config doesn't exist),
