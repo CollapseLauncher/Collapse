@@ -170,11 +170,6 @@ namespace CollapseLauncher.GameVersioning
                 return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
             }
 
-            if (GameAPIProp.data.game.diffs == null || GameAPIProp.data.game.diffs.Count == 0)
-            {
-                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
-            }
-
             // Try get the diff file  by the first or default (null)
             RegionResourceVersion diff = GameAPIProp.data.game.diffs
                 .Where(x => x.version == GameVersionInstalled?.VersionString)
