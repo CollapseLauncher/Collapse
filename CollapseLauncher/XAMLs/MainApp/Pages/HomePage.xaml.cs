@@ -703,8 +703,6 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
-            if (!GetAppConfigValue("EnableConsole").ToBool())
-                parameter.Append("-nolog ");
 
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
