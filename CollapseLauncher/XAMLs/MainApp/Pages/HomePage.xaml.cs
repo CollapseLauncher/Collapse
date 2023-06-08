@@ -322,10 +322,10 @@ namespace CollapseLauncher.Pages
                     {
                         AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
                     }
-                    //foreach (IconTextProperty iconTextProperty in IconPropertiesStarRailCommunity)
-                    //{
-                    //    AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
-                    //}
+                    foreach (IconTextProperty iconTextProperty in IconPropertiesStarRailCommunity)
+                    {
+                        AddStackPanelChildren(iconTextProperty, CommunityToolsStackPanel);
+                    }
                     break;
             }
 
@@ -550,12 +550,22 @@ namespace CollapseLauncher.Pages
             }},
         };
 
-        // https://paimon.moe/
-        // https://enka.network/
-        // https://seelie.me/
-        // https://github.com/Andrewthe13th/Inventory_Kamera
-        // https://frzyc.github.io/genshin-optimizer
-        // https://akasha.cv/
+        private List<IconTextProperty> IconPropertiesStarRailCommunity = new List<IconTextProperty>
+        {
+            new IconTextProperty() { IconGlyph = "", Text = "pom.moe", ClickAction = (a, b) =>
+            {
+                try
+                {
+                    SpawnWebView2.SpawnWebView2Window("https://pom.moe/");
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or display a message to the user
+                    Debug.WriteLine(ex.Message);
+                }
+            }},
+        };
+
         private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
         {
             new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
