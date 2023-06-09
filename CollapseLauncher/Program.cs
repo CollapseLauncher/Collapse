@@ -34,16 +34,16 @@ namespace CollapseLauncher
         [STAThreadAttribute]
         public static void Main(params string[] args)
         {
-            StartSquirrelHook();
-
-            AppCurrentArgument = args;
-#if PREVIEW
-            IsPreview = true;
-#endif
-            AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
-
             try
             {
+                StartSquirrelHook();
+
+                AppCurrentArgument = args;
+#if PREVIEW
+                IsPreview = true;
+#endif
+                AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
+
                 InitAppPreset();
                 string logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);

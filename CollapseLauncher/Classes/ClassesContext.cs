@@ -4,15 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher
 {
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(AppUpdateVersionProp))]
-    internal partial class AppUpdateVersionPropContext : JsonSerializerContext { }
+    internal sealed partial class AppUpdateVersionPropContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(NotificationPush))]
-    internal partial class NotificationPushContext : JsonSerializerContext { }
+    internal sealed partial class NotificationPushContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(CacheAsset))]
-    internal partial class CacheAssetContext : JsonSerializerContext { }
+    internal sealed partial class CacheAssetContext : JsonSerializerContext { }
 }

@@ -43,6 +43,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public bool is_recommended_update { get; set; }
         public string entry { get; set; }
         public List<RegionResourceVersion> voice_packs { get; set; }
+        public List<RegionResourceVersion> segments { get; set; }
     }
 
     public class HomeMenuPanel

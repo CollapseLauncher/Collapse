@@ -520,7 +520,7 @@ namespace CollapseLauncher
                 string filename = Path.GetFileName(asset);
 
                 // Universal
-                bool isIncluded = catalog.Contains(asset);
+                bool isIncluded = catalog.Any(x => x.Equals(asset, StringComparison.OrdinalIgnoreCase));
                 bool isScreenshot = asset.Contains("ScreenShot", StringComparison.OrdinalIgnoreCase);
                 bool isLog = asset.EndsWith(".log", StringComparison.OrdinalIgnoreCase);
 

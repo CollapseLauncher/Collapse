@@ -1,15 +1,13 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region AppNotification
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangAppNotification _AppNotification { get; set; } = LangFallback?._AppNotification;
-            public class LangAppNotification
+            public sealed class LangAppNotification
             {
-                private string _NotifFirstWelcomeTitle;
-
                 public string NotifMetadataUpdateTitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateTitle;
                 public string NotifMetadataUpdateSubtitle { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateSubtitle;
                 public string NotifMetadataUpdateBtn { get; set; } = LangFallback?._AppNotification.NotifMetadataUpdateBtn;
