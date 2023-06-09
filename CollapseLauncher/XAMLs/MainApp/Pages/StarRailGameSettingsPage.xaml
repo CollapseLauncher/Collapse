@@ -259,7 +259,9 @@
                         </StackPanel>
                     </Grid>
                     <StackPanel>
-                        <TextBlock Text="Language" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,0"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help1}" Style Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,0"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -272,19 +274,32 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
                                     <StackPanel>
-                                        <TextBlock Text="Audio" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
                                         <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,0" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="Japanese"/>
+                                            <ComboBoxItem Content="Chinese"/>
+                                            <ComboBoxItem Content="Korean"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" x:Name="LangSettingRight">
                                     <StackPanel>
-                                        <TextBlock Text="Text" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-100,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Text}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-100,0,0,8"/>
                                         <ComboBox x:Name="TextLangSelector" Margin="-100,0,0,0" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="Japanese"/>
+                                            <ComboBoxItem Content="Chinese Simplified"/>
+                                            <ComboBoxItem Content="Chinese Traditional"/>
+                                            <ComboBoxItem Content="Korean"/>
+                                            <ComboBoxItem Content="Spanish"/>
+                                            <ComboBoxItem Content="Russian"/>
+                                            <ComboBoxItem Content="Thai"/>
+                                            <ComboBoxItem Content="Vietnamese"/>
+                                            <ComboBoxItem Content="Indonesian"/>
+                                            <ComboBoxItem Content="French"/>
+                                            <ComboBoxItem Content="German"/>
+                                            <ComboBoxItem Content="Portuguese"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </StackPanel>

@@ -37,6 +37,8 @@
                 public string Audio_VO { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_VO;
                 public string Audio_Mute { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_Mute;
                 public string Language { get; set; } = LangFallback?._StarRailGameSettingsPage.Language;
+                public string Language_Help1 { get; set; } = LangFallback?._StarRailGameSettingsPage.Language_Help1;
+                public string Language_Help2 { get; set; } = LangFallback?._StarRailGameSettingsPage.Language_Help2;
                 public string Audio { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio;
                 public string Text { get; set; } = LangFallback?._StarRailGameSettingsPage.Text;
                 public string Graphics_FPS { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS;

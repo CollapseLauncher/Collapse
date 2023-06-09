@@ -711,6 +711,8 @@
     "Audio_Mute": "Mute Audio",
 
     "Language": "Language",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
     "Audio": "Audio",
     "Text": "Text"
   }
