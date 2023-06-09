@@ -52,8 +52,6 @@
                 public string GamePlaytime_Idle_ChangeBtn { get; set; } = LangFallback?._HomePage.GamePlaytime_Idle_ChangeBtn;
                 public string GamePlaytime_Running_Info1 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info1;
                 public string GamePlaytime_Running_Info2 { get; set; } = LangFallback?._HomePage.GamePlaytime_Running_Info2;
-                public string GamePlaytime_Confirmation_Title { get; set; } = LangFallback?._HomePage.GamePlaytime_Confirmation_Title;
-                public string GamePlaytime_Confirmation_Subtitle { get; set; } = LangFallback?._HomePage.GamePlaytime_Confirmation_Subtitle;
                 public string PostPanel_Events { get; set; } = LangFallback?._HomePage.PostPanel_Events;
                 public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
                 public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;

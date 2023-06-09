@@ -54,6 +54,12 @@
                 public string RelocateFolderSubtitle { get; set; } = LangFallback?._Dialogs.RelocateFolderSubtitle;
                 public string UninstallGameTitle { get; set; } = LangFallback?._Dialogs.UninstallGameTitle;
                 public string UninstallGameSubtitle { get; set; } = LangFallback?._Dialogs.UninstallGameSubtitle;
+                public string ChangePlaytimeTitle { get; set; } = LangFallback?._Dialogs.ChangePlaytimeTitle;
+                public string ChangePlaytimeSubtitle { get; set; } = LangFallback?._Dialogs.ChangePlaytimeSubtitle;
+                public string ResetPlaytimeTitle { get; set; } = LangFallback?._Dialogs.ResetPlaytimeTitle;
+                public string ResetPlaytimeSubtitle { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle;
+                public string ResetPlaytimeSubtitle2 { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle2;
+                public string ResetPlaytimeSubtitle3 { get; set; } = LangFallback?._Dialogs.ResetPlaytimeSubtitle3;
                 public string MigrationTitle { get; set; } = LangFallback?._Dialogs.MigrationTitle;
                 public string MigrationSubtitle { get; set; } = LangFallback?._Dialogs.MigrationSubtitle;
                 public string NeedInstallMediaPackTitle { get; set; } = LangFallback?._Dialogs.NeedInstallMediaPackTitle;

@@ -727,7 +727,7 @@ namespace CollapseLauncher.Pages
 
             bool dynamicUpdate = true;
 
-            await Task.Delay(2000);
+            await Task.Delay(2000, token);
 
             if (dynamicUpdate)
             {
@@ -847,8 +847,6 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
-            if (!GetAppConfigValue("EnableConsole").ToBool())
-                parameter.Append("-nolog ");
 
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
@@ -1044,12 +1042,12 @@ namespace CollapseLauncher.Pages
             {
                 UpdatePlaytime();
             }
-
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!await ShowPlaytimeConfirmationModal(this)) return;
+            if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
+
             int playtimemins = int.Parse(MinutePlaytimeTextBox.Text);
             int playtimehours = int.Parse(HourPlaytimeTextBox.Text);
             int FinalPlaytimeMinutes = playtimemins % 60;
@@ -1061,20 +1059,18 @@ namespace CollapseLauncher.Pages
             string givenPlaytime = HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m 0s";
 
             SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, givenPlaytime);
-            LogWriteLine($"Playtime counter value was changed to \"{givenPlaytime}\". Previous value: \"{PlaytimeMainBtn.Text}\"");
-            PlaytimeFlyout.Hide();
+            LogWriteLine($"Playtime counter changed to {givenPlaytime}. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, givenPlaytime);
-
-
+            PlaytimeFlyout.Hide();
         }
 
         private async void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!await ShowPlaytimeConfirmationModal(this)) return;
-            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation,"0h 0m 0s");
-            LogWriteLine($"Playtime counter value was reset. Previous value: {PlaytimeMainBtn.Text}");
+            if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
+
+            SavePlaytimetoRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, "0h 0m 0s");
+            LogWriteLine($"Playtime counter changed to 0h 0m 0s. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, "0h 0m 0s");
-            InvalidTimeBlock.Visibility = Visibility.Collapsed;
             PlaytimeFlyout.Hide();
         }
 
@@ -1084,32 +1080,12 @@ namespace CollapseLauncher.Pages
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
-        private async Task<bool> ShowPlaytimeConfirmationModal(UIElement root)
-        {
-            ContentDialog dialog = new ContentDialog
-            {
-                Title = Lang._HomePage.GamePlaytime_Confirmation_Title,
-                Content = Lang._HomePage.GamePlaytime_Confirmation_Subtitle,
-                PrimaryButtonText = Lang._Misc.Yes,
-                CloseButtonText = Lang._Misc.NoCancel,
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = root.XamlRoot
-            };
-
-            while (true)
-            {
-                ContentDialogResult result = await dialog.ShowAsync();
-                if (result == ContentDialogResult.Primary) return true;
-                return false;
-            }
-        }
-
         private void UpdatePlaytime(bool reg = true, string CPtV = "")
         {
-            string CurrentPlaytimeValue = reg ? ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation): CPtV;
+            string CurrentPlaytimeValue = reg ? ReadPlaytimeFromRegistry(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation) : CPtV;
             HourPlaytimeTextBox.Text = CurrentPlaytimeValue.Split("h")[0];
             MinutePlaytimeTextBox.Text = CurrentPlaytimeValue.Split(" ")[1].Split('m')[0];
-            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m" /*+ $" [{CurrentPlaytimeValue}]"*/;
+            PlaytimeMainBtn.Text = CurrentPlaytimeValue.Split('m')[0] + "m";
         }
 
         private static string ReadPlaytimeFromRegistry(string RegionRegKey)
