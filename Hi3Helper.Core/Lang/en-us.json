@@ -708,6 +708,10 @@
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VO": "Voice Over Volume",
-    "Audio_Mute": "Mute Audio"
+    "Audio_Mute": "Mute Audio",
+
+    "Language": "Language",
+    "Audio": "Audio",
+    "Text": "Text"
   }
 }
