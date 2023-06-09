@@ -528,7 +528,7 @@ namespace CollapseLauncher.Pages
             {
                 try
                 {
-                    SpawnWebView2.SpawnWebView2Window("https://frzyc.github.io/genshin-optimizer");
+                    SpawnWebView2.SpawnWebView2Window("https://github.com/Andrewthe13th/Inventory_Kamera");
                 }
                 catch (Exception ex)
                 {
