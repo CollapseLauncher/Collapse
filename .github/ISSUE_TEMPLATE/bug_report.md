@@ -34,7 +34,7 @@ Please attach a copy of `dxdiag.txt` to this issue so that we can better underst
 
 ### Console log
 [ Paste the log inside a code block here or attach the log file here ]
-[ Default location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` ]
+[ Default location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse. ]
 
 ### Screenshot
 [ Attach a screenshot if applicable ]
