@@ -190,7 +190,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -258,8 +258,9 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,0"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,8"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help1}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,0"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
                         <Grid>
@@ -275,7 +276,7 @@
                                 <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
-                                        <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,0" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
+                                        <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="Japanese"/>
                                             <ComboBoxItem Content="Chinese"/>
@@ -286,7 +287,7 @@
                                 <StackPanel Grid.Column="1" x:Name="LangSettingRight">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Text}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
-                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,0" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
+                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="Japanese"/>
                                             <ComboBoxItem Content="Chinese Simplified"/>
@@ -306,7 +307,7 @@
                             </Grid>
                         </Grid>
                     </StackPanel>
-                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"
