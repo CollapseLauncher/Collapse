@@ -18,27 +18,31 @@ namespace CollapseLauncher.GameSettings.StarRail
         #region Properties
         /// <summary>
         /// This defines "<c>Audio Language</c>" in-game setting
-        /// Range: en. // jp.
-        /// Default: en.
+        /// Range: en//jp//kr//cn
+        /// Default: en
         /// </summary>
         public string LocalAudioLang { get; set; } = "en";
 
         /// <summary>
-        /// This defines "<c>Voice-over</c>" radiobox In-game settings -> Audio.<br/><br/>
+        /// This defines "<c>Voice-over</c>" language In-game settings -> Audio.<br/><br/>
         /// Values:<br/>
-        ///     - 1 = jp.<br/>
-        ///     - 0 = en.<br/><br/>
-        /// Default: 0 (en.)
+        ///     - 1 = jp<br/>
+        ///     - 0 = en<br/><br/>
+        /// Default: 0 (en)
         /// </summary>
         public int LocalAudioLangInt
         {
             get => LocalAudioLang switch
             {
+                "kr" => 3,
+                "cn" => 2,
                 "jp" => 1,
                 _ => 0,
             };
             set => LocalAudioLang = value switch
             {
+                3 => "kr",
+                2 => "cn",
                 1 => "jp",
                 _ => "en",
             };

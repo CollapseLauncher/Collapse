@@ -24,8 +24,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         public string LocalTextLang { get; set; } = "en";
 
         /// <summary>
-        /// This defines "<c>Voice-over</c>" radiobox In-game settings -> Text.<br/><br/>
+        /// This defines "<c>Text</c>" language In-game settings -> Text.<br/><br/>
         /// Values:<br/>
+        ///     - 2 = cn.
         ///     - 1 = jp.<br/>
         ///     - 0 = en.<br/><br/>
         /// Default: 0 (en.)
@@ -34,11 +35,33 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             get => LocalTextLang switch
             {
-                "jp" => 1,
-                _ => 0,
+                "pt" => 12, //portuguese
+                "de" => 11, //german
+                "fr" => 10, //french
+                "id" => 9, //indonesian
+                "vi" => 8, //vietnamese
+                "th" => 7, //thai
+                "ru" => 6, //russian
+                "es" => 5, //spanish
+                "kr" => 4, //korean
+                "cht" => 3, //chinese traditional
+                "cn" => 2, //chinese simplified
+                "jp" => 1, //japanese
+                _ => 0,//english
             };
             set => LocalTextLang = value switch
             {
+                12 => "pt",
+                11 => "de",
+                10 => "fr",
+                9 => "id",
+                8 => "vi",
+                7 => "th",
+                6 => "ru",
+                5 => "es",
+                4 => "kr",
+                3 => "cht",
+                2 => "cn",
                 1 => "jp",
                 _ => "en",
             };
