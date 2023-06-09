@@ -8,7 +8,8 @@ assignees: ''
 ---
 
 ### System Information
-Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration. Google it if you are unsure how to do so. 
+Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration: "Save all information" (Run > Type `dxdiag` then enter > Save all information > Then Drag & Drop the file to your issue, or attach it through the file selection dialog). 
+
 * Collapse Version:
 
 ### Prerequisites
