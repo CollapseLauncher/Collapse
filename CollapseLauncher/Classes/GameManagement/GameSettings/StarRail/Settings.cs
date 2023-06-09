@@ -5,8 +5,6 @@ using CollapseLauncher.Statics;
 using Microsoft.Win32;
 using System.IO;
 using static CollapseLauncher.GameSettings.Statics;
-using static Hi3Helper.Logger;
-using Hi3Helper;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
