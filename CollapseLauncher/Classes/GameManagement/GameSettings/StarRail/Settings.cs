@@ -5,6 +5,8 @@ using CollapseLauncher.Statics;
 using Microsoft.Win32;
 using System.IO;
 using static CollapseLauncher.GameSettings.Statics;
+using static Hi3Helper.Logger;
+using Hi3Helper;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
@@ -18,6 +20,8 @@ namespace CollapseLauncher.GameSettings.StarRail
         public MasterVolume AudioSettings_Master { get; set; }
         public SFXVolume AudioSettings_SFX { get; set; }
         public VOVolume AudioSettings_VO { get; set; }
+        public LocalAudioLanguage AudioLanguage { get; set; } 
+        public LocalTextLanguage TextLanguage { get; set; }
 
         public StarRailSettings()
         {
@@ -46,6 +50,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioSettings_Master = MasterVolume.Load();
             AudioSettings_SFX = SFXVolume.Load();
             AudioSettings_VO = VOVolume.Load();
+            AudioLanguage = LocalAudioLanguage.Load();
+            TextLanguage = LocalTextLanguage.Load();
         }
 
         public void RevertSettings() => InitializeSettings();
@@ -61,6 +67,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioSettings_Master.Save();
             AudioSettings_SFX.Save();
             AudioSettings_VO.Save();
+            AudioLanguage.Save();
+            TextLanguage.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
