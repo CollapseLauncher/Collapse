@@ -1,9 +1,8 @@
 ---
 name: Bug Report
-about: Create a report to help us fix Collapse!
+description: Create a report to help us fix Collapse!
 title: "[Bug]: "
 labels: 'Needs Triaging'
-assignees: ''
 body:
   - type: markdown
     attributes:
@@ -18,7 +17,7 @@ body:
       label: Affected Version
       description: Known versions/branches of the project that the bug affects.
       placeholder: e.g. Collapse 1.69.22
-    validation:
+    validations:
       required: true
   
   - type: markdown
@@ -39,7 +38,7 @@ body:
       label: Bug Behavior
       description: Describe the encountered bug with as much detail as possible.
       placeholder: What happened?
-    validation:
+    validations:
       required: true
   
   - type: textarea
@@ -48,7 +47,7 @@ body:
       label: Expected Behavior
       description: Describe how Collapse should have behaved, being as detailed as possible in your answer.
       placeholder: What should have happened?
-    validation:
+    validations:
       required: true
       
   - type: textarea
@@ -60,7 +59,7 @@ body:
         1. [First step]
         2. [Second step]
         3. [so on...]
-    validation:
+    validations:
       required: true
   
   - type: input
