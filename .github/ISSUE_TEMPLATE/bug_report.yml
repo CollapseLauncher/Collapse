@@ -67,12 +67,17 @@ body:
     attributes:
       label: Related Issues
       description: If this issue affects other issues or has the potential to, mark it here.
-      placeholder: e.g. `#144, #111`
+      placeholder: e.g. `#144`
   
   - type: textarea
     id: screenshots
     attributes:
       label: Screenshot(s)
       description: If this issue affects a visual component (UI element) of Collapse, please paste the relevant screenshots, recordings and GIFs here.
-      
+  
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: If you have anything else to add that may help with resolving the issue (logs, dumps, comments, etc.), feel free to leave them here.
 ---
