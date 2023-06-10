@@ -9,12 +9,12 @@ body:
     attributes:
       value: |
         Hello and thank you for trying to help us make Collapse better for everyone!
-        Before filling anything out, please make sure that there **aren't** any open/closed issues for this topic & that this is *reproduceable*.
+        Before filling anything out, please make sure that there **aren't** any open/closed issues for this topic & that this is *reproducible*.
         All text areas support markdown syntax unless explicitly noted otherwise.
   
   - type: input
     id: affected-versions
-    attributes::
+    attributes:
       label: Affected Version
       description: Known versions/branches of the project that the bug affects.
       placeholder: e.g. Collapse 1.69.22
@@ -27,11 +27,11 @@ body:
         ### System Information
         Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration: "Save all information" (Run > Type `dxdiag` then enter > Save all information > Then Drag & Drop the file to your issue, or attach it through the file selection dialog). 
       
-    - type: markdown
-    attributes:
-      label: Console Log
-      description: | 
-        Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
+  - type: markdown
+  attributes:
+    label: Console Log
+    description: | 
+      Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
    
   - type: textarea
     id: bug-behavior
@@ -65,7 +65,7 @@ body:
   
   - type: input
     id: related-issues
-    attributes::
+    attributes:
       label: Related Issues
       description: If this issue affects other issues or has the potential to, mark it here.
       placeholder: e.g. `#144, #111`
