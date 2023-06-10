@@ -11,7 +11,7 @@ body:
         Hello and thank you for trying to help us make Collapse better for everyone!
         Before filling anything out, please make sure that there **aren't** any open/closed issues for this topic & that this is *reproducible*.
         All text areas support markdown syntax unless explicitly noted otherwise.
-  
+
   - type: input
     id: affected-versions
     attributes:
@@ -28,10 +28,10 @@ body:
         Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration: "Save all information" (Run > Type `dxdiag` then enter > Save all information > Then Drag & Drop the file to your issue, or attach it through the file selection dialog). 
       
   - type: markdown
-  attributes:
-    value: |
-      ###  Console Log
-      Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
+    attributes:
+      value: |
+        ###  Console Log
+        Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
    
   - type: textarea
     id: bug-behavior
