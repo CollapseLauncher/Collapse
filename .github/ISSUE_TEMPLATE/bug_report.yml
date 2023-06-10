@@ -1,0 +1,83 @@
+---
+name: Bug Report
+description: Create a report to help us fix Collapse!
+title: "[Bug]: "
+labels: 'Needs Triaging'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hello and thank you for trying to help us make Collapse better for everyone!
+        Before filling anything out, please make sure that there **aren't** any open/closed issues for this topic & that this is *reproducible*.
+        All text areas support markdown syntax unless explicitly noted otherwise.
+
+  - type: input
+    id: affected-versions
+    attributes:
+      label: Affected Version
+      description: Known versions/branches of the project that the bug affects.
+      placeholder: e.g. Collapse 1.69.22
+    validations:
+      required: true
+  
+  - type: markdown
+    attributes:
+      value: |
+        ### System Information
+        Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration: "Save all information" (Run > Type `dxdiag` then enter > Save all information > Then Drag & Drop the file to your issue, or attach it through the file selection dialog). 
+      
+  - type: markdown
+    attributes:
+      value: |
+        ###  Console Log
+        Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
+   
+  - type: textarea
+    id: bug-behavior
+    attributes:
+      label: Bug Behavior
+      description: Describe the encountered bug with as much detail as possible.
+      placeholder: What happened?
+    validations:
+      required: true
+  
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Describe how Collapse should have behaved, being as detailed as possible in your answer.
+      placeholder: What should have happened?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe the steps you took to reproduce the bug, with as much detail as possible.
+      placeholder: |
+        1. [First step]
+        2. [Second step]
+        3. [so on...]
+    validations:
+      required: true
+  
+  - type: input
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: If this issue affects other issues or has the potential to, mark it here.
+      placeholder: e.g. `#144`
+  
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshot(s)
+      description: If this issue affects a visual component (UI element) of Collapse, please paste the relevant screenshots, recordings and GIFs here.
+  
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: If you have anything else to add that may help with resolving the issue (logs, dumps, comments, etc.), feel free to leave them here.
+---
