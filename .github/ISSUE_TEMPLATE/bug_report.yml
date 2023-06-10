@@ -29,8 +29,8 @@ body:
       
   - type: markdown
   attributes:
-    label: Console Log
-    description: | 
+    value: |
+      ###  Console Log
       Paste the log inside a code block here or attach the log file here. By default, the location for the log file is `C:\Users\%username%\AppData\LocalLow\CollapseLauncher\_logs` The latest log will be today's date, or the date of the last time you launched Collapse.
    
   - type: textarea
