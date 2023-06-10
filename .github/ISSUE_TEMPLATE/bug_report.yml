@@ -23,8 +23,8 @@ body:
   
   - type: markdown
     attributes:
-      label: System Information
-      description: | 
+      value: |
+        ### System Information
         Please attach a copy of `dxdiag.txt` to this issue so that we can better understand your hardware configuration: "Save all information" (Run > Type `dxdiag` then enter > Save all information > Then Drag & Drop the file to your issue, or attach it through the file selection dialog). 
       
     - type: markdown
