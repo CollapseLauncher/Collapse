@@ -1,6 +1,5 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region.Honkai;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Locale;
@@ -59,12 +58,4 @@ namespace Hi3Helper
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(Dictionary<string, string>))]
     public sealed partial class D_StringString : JsonSerializerContext { }
-
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
-    [JsonSerializable(typeof(Dispatcher))]
-    public sealed partial class DispatcherContext : JsonSerializerContext { }
-
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
-    [JsonSerializable(typeof(Gateway))]
-    public sealed partial class GatewayContext : JsonSerializerContext { }
 }

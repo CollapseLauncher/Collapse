@@ -3,7 +3,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
-using Hi3Helper.Shared.Region.Honkai;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -16,9 +15,6 @@ namespace CollapseLauncher
     {
         #region Properties
         private string _cacheRegionalCheckName = "sprite";
-        private string _gameLang { get; set; }
-        private byte[] _gameSalt { get; set; }
-        private Gateway _gameGateway { get; set; }
         private List<SRAsset> _updateAssetIndex { get; set; }
         private GameTypeStarRailVersion _gameVersionManager { get => PageStatics._GameVersion as GameTypeStarRailVersion; }
         #endregion
