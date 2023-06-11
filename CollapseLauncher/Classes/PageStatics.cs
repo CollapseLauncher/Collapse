@@ -9,5 +9,6 @@ namespace CollapseLauncher.Statics
         internal static ICache _GameCache { get; set; }
         internal static IGameVersionCheck _GameVersion { get; set; }
         internal static IGameInstallManager _GameInstall { get; set; }
+        internal static CommunityToolsProperty _CommunityToolsProperty { get; set; }
     }
 }

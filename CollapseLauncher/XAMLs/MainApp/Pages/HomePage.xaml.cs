@@ -30,7 +30,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.Collections.Generic;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace CollapseLauncher.Pages
 {
@@ -269,7 +269,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
         {
-            SpawnWebView2.SpawnWebView2Window(((Button)sender).Tag.ToString());
+            SpawnWebView2.SpawnWebView2Window(((ButtonBase)sender).Tag.ToString());
         }
 
         private void CheckIfRightSideProgress()
@@ -292,42 +292,32 @@ namespace CollapseLauncher.Pages
             if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GameType != GameType.Honkai))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-            // NOTE: For future stuff, we can more easily toggle visibility of certain UI elements through a switch-case
-            switch (PageStatics._GameVersion.GameType)
+            // Clear the _CommunityToolsProperty statics
+            PageStatics._CommunityToolsProperty.Clear();
+
+            // Check if the _CommunityToolsProperty has the official tool list for current game type
+            if (PageStatics._CommunityToolsProperty.OfficialToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
             {
-                case GameType.Honkai:
-                    foreach (IconTextProperty iconProperty in IconPropertiesHonkai)
-                    {
-                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                    }
-                    // TODO: Fix this because I don't have time to make it more efficient, but also we don't have community tools for HI3 :/
-                    foreach (IconTextProperty iconProperty in IconPropertiesHonkaiCommunity)
-                    {
-                        AddStackPanelChildren(iconProperty, CommunityToolsStackPanel);
-                    }
-                    break;
-                case GameType.Genshin:
-                    foreach (IconTextProperty iconProperty in IconPropertiesGenshin)
-                    {
-                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                    }
-                    foreach (IconTextProperty iconTextProperty in IconPropertiesGenshinCommunity) // hack to prevent var overwrite
-                    {
-                        AddStackPanelChildren(iconTextProperty, CommunityToolsStackPanel);
-                    }
-                    OpenCacheFolderButton.Visibility = Visibility.Collapsed;
-                    break;
-                case GameType.StarRail:
-                    foreach (IconTextProperty iconProperty in IconPropertiesStarRail)
-                    {
-                        AddStackPanelChildren(iconProperty, OfficialToolsStackPanel);
-                    }
-                    foreach (IconTextProperty iconTextProperty in IconPropertiesStarRailCommunity)
-                    {
-                        AddStackPanelChildren(iconTextProperty, CommunityToolsStackPanel);
-                    }
-                    break;
+                // If yes, then iterate it and add it to the list, to then getting read by the
+                // DataTemplate from HomePage
+                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.OfficialToolsDictionary[PageStatics._GameVersion.GameType])
+                {
+                    PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                }
             }
+
+            // Check if the _CommunityToolsProperty has the community tool list for current game type
+            if (PageStatics._CommunityToolsProperty.CommunityToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
+            {
+                // If yes, then iterate it and add it to the list, to then getting read by the
+                // DataTemplate from HomePage
+                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.CommunityToolsDictionary[PageStatics._GameVersion.GameType])
+                {
+                    PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                }
+            }
+
+            if (PageStatics._GameVersion.GameType == GameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
 
             GameInstallationState = PageStatics._GameVersion.GetGameState();
             switch (GameInstallationState)
@@ -370,270 +360,13 @@ namespace CollapseLauncher.Pages
             OpenScreenshotFolderButton.IsEnabled = false;
         }
 
-        public struct IconTextProperty
+        private void OpenCommunityButtonLink(object sender, RoutedEventArgs e)
         {
-            public string IconGlyph;
-            public string Text;
-            public RoutedEventHandler ClickAction;
-        }
-
-        private List<IconTextProperty> IconPropertiesHonkai = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-in", ClickAction = (a, b) =>
+            DispatcherQueue.TryEnqueue(() =>
             {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Honkai Impact 3rd Wiki", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://honkaiimpact3.fandom.com/wiki/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private List<IconTextProperty> IconPropertiesHonkaiCommunity = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "Reddit Community", ClickAction = (a, b) => // Icon Temp fix until I find a way to load multiple fonts
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://www.reddit.com/r/HonkaiImpact3rd/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private List<IconTextProperty> IconPropertiesGenshin = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481&hyl_auth_required=true&hyl_presentation_style=fullscreen&utm_source=hoyolab&utm_medium=tools&lang=en-us&bbs_theme=light&bbs_theme_device=1");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Genshin Impact Wiki", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/pc/genshin/home");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private List<IconTextProperty> IconPropertiesGenshinCommunity = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "paimon.moe", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://paimon.moe/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Enka Network", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://enka.network/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "seelie.me", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://seelie.me/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Genshin Optimizer", ClickAction = (a, b) => 
-            // FIXME: Find a way to load multiple fonts
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://frzyc.github.io/genshin-optimizer");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Inventory Kamera", ClickAction = (a, b) => 
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://github.com/Andrewthe13th/Inventory_Kamera");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "akasha.cv", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://akasha.cv");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private List<IconTextProperty> IconPropertiesStarRailCommunity = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "pom.moe", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://pom.moe/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private List<IconTextProperty> IconPropertiesStarRail = new List<IconTextProperty>
-        {
-            new IconTextProperty() { IconGlyph = "", Text = "Daily Check-In", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "HoYoLab Website", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://www.hoyolab.com/");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-            new IconTextProperty() { IconGlyph = "", Text = "Honkai: Star Rail Wiki", ClickAction = (a, b) =>
-            {
-                try
-                {
-                    SpawnWebView2.SpawnWebView2Window("https://wiki.hoyolab.com/pc/hsr/home");
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception or display a message to the user
-                    Debug.WriteLine(ex.Message);
-                }
-            }},
-        };
-
-        private void AddStackPanelChildren(IconTextProperty iconProperty, StackPanel panel)
-        {
-            FontFamily iconFont = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
-            StackPanel childrenPanel = new StackPanel() { Orientation = Orientation.Horizontal };
-            childrenPanel.Children.Add(new FontIcon()
-            {
-                FontFamily = iconFont,
-                Glyph = iconProperty.IconGlyph,
-                Margin = new Thickness(0, 0, 8, 0)
+                CommunityToolsBtn.Flyout.Hide();
             });
-            childrenPanel.Children.Add(new TextBlock()
-            {
-                Text = iconProperty.Text,
-            });
-
-            Button btn = new Button() { Content = childrenPanel, Margin = new Thickness(0, 0, 0, 8),
-                CornerRadius = new CornerRadius(14), HorizontalAlignment = HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = HorizontalAlignment.Left };
-            panel.Children.Add(btn);
-
-            if (iconProperty.ClickAction != null)
-            {
-                btn.Click += iconProperty.ClickAction;
-                btn.Click += (sender, e) =>
-                {
-                    CommunityToolsBtn.Flyout.Hide();
-                };
-            }
+            OpenButtonLinkFromTag(sender, e);
         }
 
         private void SpawnPreloadBox()
@@ -920,7 +653,7 @@ namespace CollapseLauncher.Pages
                     ReadOutputLog();
                     GameLogWatcher();
                 }
-                
+
                 await proc.WaitForExitAsync();
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -1312,7 +1045,7 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus );
+            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
@@ -1351,6 +1084,13 @@ namespace CollapseLauncher.Pages
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+        }
+
+        private void OpenLinkFromButtonWithTag(object sender, RoutedEventArgs e)
+        {
+            object ImageTag = ((Button)sender).Tag;
+            if (ImageTag == null) return;
+            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
         }
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)

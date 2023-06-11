@@ -15,4 +15,8 @@ namespace CollapseLauncher
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(CacheAsset))]
     internal sealed partial class CacheAssetContext : JsonSerializerContext { }
+
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(CommunityToolsProperty))]
+    internal sealed partial class CommunityToolsPropertyContext : JsonSerializerContext { }
 }

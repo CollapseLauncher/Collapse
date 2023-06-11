@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:localStatic="using:CollapseLauncher.Statics"
     xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
@@ -596,6 +597,32 @@
                             PointerExited="AnimateGameRegSettingIcon_End"
                             Shadow="{ThemeResource SharedShadow}"
                             Margin="0 0 180 0">
+                        <Button.Resources>
+                            <DataTemplate x:Key="CommunityToolsInnerBtn" x:DataType="localStatic:CommunityToolsEntry">
+                                <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                    <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="28"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
+                                        <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                            <DataTemplate x:Key="CommunityToolsInnerAccentBtn" x:DataType="localStatic:CommunityToolsEntry">
+                                <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                    <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="28"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
+                                        <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </Button.Resources>
                         <Button.Content>
                             <Grid>
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
@@ -614,12 +641,60 @@
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
-                                <StackPanel MaxWidth="224" Margin="16,16">
-                                    <TextBlock Text="Official Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <StackPanel x:Name="OfficialToolsStackPanel" />
-                                    <TextBlock Text="Community Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                    <StackPanel x:Name="CommunityToolsStackPanel" />
-                                </StackPanel>
+                                <ScrollViewer HorizontalScrollBarVisibility="Hidden">
+                                    <Grid Margin="0,0,0,-8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Official Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
+                                            <GridView x:Name="OfficialToolsStackPanel"
+                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}"
+                                                      ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}">
+                                                <GridView.ItemContainerStyle>
+                                                    <Style TargetType="GridViewItem">
+                                                        <Setter Property="Margin" Value="0,4,8,4"/>
+                                                        <Setter Property="Width" Value="200"/>
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        <Setter Property="MinHeight" Value="0"/>
+                                                        <Setter Property="Padding" Value="0,0,0,0"/>
+                                                    </Style>
+                                                </GridView.ItemContainerStyle>
+                                                <GridView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
+                                                           MaximumRowsOrColumns="1"
+                                                           Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </GridView.ItemsPanel>
+                                            </GridView>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                                            <TextBlock Text="Community Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
+                                            <GridView x:Name="CommunityToolsStackPanel"
+                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}"
+                                                      ItemTemplate="{StaticResource CommunityToolsInnerBtn}">
+                                                <GridView.ItemContainerStyle>
+                                                    <Style TargetType="GridViewItem">
+                                                        <Setter Property="Margin" Value="0,4,8,4"/>
+                                                        <Setter Property="Width" Value="180"/>
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        <Setter Property="MinHeight" Value="0"/>
+                                                        <Setter Property="Padding" Value="0,0,0,0"/>
+                                                    </Style>
+                                                </GridView.ItemContainerStyle>
+                                                <GridView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
+                                                           MaximumRowsOrColumns="2"
+                                                           Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </GridView.ItemsPanel>
+                                            </GridView>
+                                        </StackPanel>
+                                    </Grid>
+                                </ScrollViewer>
                             </Flyout>
                         </Button.Flyout>
                     </Button>
