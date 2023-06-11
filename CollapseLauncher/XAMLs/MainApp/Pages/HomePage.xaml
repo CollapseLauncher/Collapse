@@ -598,7 +598,7 @@
                             Shadow="{ThemeResource SharedShadow}"
                             Margin="0 0 180 0">
                         <Button.Resources>
-                            <DataTemplate x:Key="CommunityToolsInnerBtn" x:DataType="localStatic:CommunityToolsEntry">
+                            <DataTemplate x:Key="CommunityToolsInnerBtn" x:DataType="local:CommunityToolsEntry">
                                 <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
                                         <Grid.ColumnDefinitions>
@@ -610,7 +610,7 @@
                                     </Grid>
                                 </Button>
                             </DataTemplate>
-                            <DataTemplate x:Key="CommunityToolsInnerAccentBtn" x:DataType="localStatic:CommunityToolsEntry">
+                            <DataTemplate x:Key="CommunityToolsInnerAccentBtn" x:DataType="local:CommunityToolsEntry">
                                 <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                     <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
                                         <Grid.ColumnDefinitions>
