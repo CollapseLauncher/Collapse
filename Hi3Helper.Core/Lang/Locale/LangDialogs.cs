@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region Dialogs
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangDialogs _Dialogs { get; set; } = LangFallback?._Dialogs;
-            public class LangDialogs
+            public sealed class LangDialogs
             {
                 public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;

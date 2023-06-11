@@ -230,7 +230,7 @@ namespace CollapseLauncher
             return cachePath;
         }
 
-        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality = 7)
+        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors;
             switch (CurrentAppTheme)
@@ -253,7 +253,7 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality = 3)
+        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
@@ -265,7 +265,7 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality = 3)
+        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
@@ -277,34 +277,32 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount = 4, bool IsLight = false, int quality = 3)
+        private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
             Windows.UI.Color[] output = new Windows.UI.Color[4];
 
-            ColorThief cT = new ColorThief();
-
             try
             {
-                List<QuantizedColor> ThemedColors = await Task.Run(() => cT.GetPalette(bitmapinput, ColorCount, quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
 
                 if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
                 for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
                 {
-                    output[i] = ColorThiefToColor(ThemedColors[i]);
+                    output[i] = DrawingColorToColor(ThemedColors[i]);
                 }
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Warning, true);
-                Windows.UI.Color defColor = ColorThiefToColor(new QuantizedColor(new CTColor { R = DefVal, G = DefVal, B = DefVal }, 1));
+                Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
                 return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
             }
 
             return output;
         }
 
-        private static Windows.UI.Color ColorThiefToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = 255 };
+        private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
 
         public static async Task<(Bitmap, BitmapImage)> GetResizedBitmap(FileStream stream, uint ToWidth, uint ToHeight)
         {
@@ -457,7 +455,7 @@ namespace CollapseLauncher
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
-            await ApplyAccentColor(this, PaletteBitmap);
+            await ApplyAccentColor(this, PaletteBitmap, 7);
 
             FadeOutFrontBg();
             FadeOutBackBg();

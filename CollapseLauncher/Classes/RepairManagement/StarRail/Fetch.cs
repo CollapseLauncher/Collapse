@@ -4,7 +4,6 @@ using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -77,43 +76,49 @@ namespace CollapseLauncher
             int voLangID = _gamePreset.GetVoiceLanguageID();
             string voLangName = _gamePreset.GetStarRailVoiceLanguageFullNameByID(voLangID);
 
-            IEnumerable<SRAsset> srAssetEnumerateFiltered = metadata.GetAssets().AssetList
-                .Where(x => IsAudioLangFile(x, voLangName));
+            IEnumerable<SRAsset> srAssetEnumerateFiltered = metadata.GetAssets().AssetList;
 
             int count = 0;
             long countSize = 0;
 
             foreach (SRAsset asset in srAssetEnumerateFiltered)
             {
-                assetIndex.Add(new FilePropertiesRemote
+                if (IsAudioLangFile(asset, voLangName, out bool isHasHashMark))
                 {
-                    N = asset.LocalName,
-                    RN = asset.RemoteURL,
-                    CRC = HexTool.BytesToHexUnsafe(asset.Hash),
-                    FT = ConvertFileTypeEnum(asset.AssetType),
-                    S = asset.Size,
-                    IsPatchApplicable = asset.IsPatch
-                });
-                count++;
-                countSize += asset.Size;
+                    string hash = HexTool.BytesToHexUnsafe(asset.Hash);
+
+                    assetIndex.Add(new FilePropertiesRemote
+                    {
+                        N = asset.LocalName,
+                        RN = asset.RemoteURL,
+                        CRC = hash,
+                        FT = ConvertFileTypeEnum(asset.AssetType),
+                        S = asset.Size,
+                        IsPatchApplicable = asset.IsPatch,
+                        IsHasHashMark = isHasHashMark
+                    });
+                    count++;
+                    countSize += asset.Size;
 
 #if DEBUG
-                LogWriteLine($"Adding {asset.LocalName} [T: {asset.AssetType}] [S: {SummarizeSizeSimple(asset.Size)} / {asset.Size} bytes]", LogType.Default, true);
+                    LogWriteLine($"Adding {asset.LocalName} [T: {asset.AssetType}] [S: {SummarizeSizeSimple(asset.Size)} / {asset.Size} bytes]", LogType.Default, true);
 #endif
+                }
             }
 
             LogWriteLine($"Added {count} assets with {SummarizeSizeSimple(countSize)}/{countSize} bytes in size", LogType.Default, true);
         }
 
-        private bool IsAudioLangFile(SRAsset asset, string langName)
+        private bool IsAudioLangFile(SRAsset asset, string langName, out bool isHasHashMark)
         {
+            isHasHashMark = false;
             switch (asset.AssetType)
             {
                 case SRAssetType.Audio:
                     string[] nameDef = asset.LocalName.Split('/');
                     if (nameDef.Length > 1)
                     {
-                        return nameDef[0] == langName || nameDef[0] == "SFX";
+                        return (isHasHashMark = nameDef[0] == langName) || nameDef[0] == "SFX";
                     }
                     return true;
                 default:

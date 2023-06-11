@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region UnhandledExceptionPage
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangUnhandledExceptionPage _UnhandledExceptionPage { get; set; } = LangFallback?._UnhandledExceptionPage;
-            public class LangUnhandledExceptionPage
+            public sealed class LangUnhandledExceptionPage
             {
                 public string UnhandledTitle1 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledTitle1;
                 public string UnhandledSubtitle1 { get; set; } = LangFallback?._UnhandledExceptionPage.UnhandledSubtitle1;

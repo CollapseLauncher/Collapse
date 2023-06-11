@@ -2,34 +2,26 @@
   "LanguageName": "日本語",
   "LanguageID": "ja-JP",
   "Author": "Vermilion-Shinsha",
-
   "_StartupPage": {
-    "PageTitle": "はじめに",
-    "Title1": "Collapse Launcher",
-    "Title2": "へようこそ！",
-    "Subtitle1": "こんにちは！",
-    "Subtitle2": "Collapseを初めて起動したようですね。",
-    "Subtitle3": "プロジェクトをご利用いただきありがとうございます。設定を完了するには、Collapseのデータを保存する場所を選択してください。",
-    "Subtitle4_1": "始めるには",
-    "Subtitle4_2": "\"フォルダを選択\"",
-    "Subtitle4_3": "下のボタンでゲームをインストールする場所を選択してください。",
-    "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダを選択してください。",
-    "FolderNotSelected": "フォルダが選択されていません。フォルダを選択してください！",
     "ChooseFolderBtn": "フォルダを選択",
-    "ChooseFolderDialogTitle": "フォルダを選択",
-    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
     "ChooseFolderDialogCancel": "キャンセル",
     "ChooseFolderDialogPrimary": "はい！",
     "ChooseFolderDialogSecondary": "いいえ、フォルダを選択します",
-    "OverlayPrepareFolderTitle": "アプリケーションフォルダを準備中",
+    "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
+    "ChooseFolderDialogTitle": "フォルダを選択",
+    "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダを選択してください。",
+    "FolderNotSelected": "フォルダが選択されていません。フォルダを選択してください！",
     "OverlayPrepareFolderSubtitle": "権限を適用中...",
-    "Pg1NextBtn": "次へ - ゲームの選択",
-    "Pg1LoadingTitle1": "ゲームリストを読込中...",
+    "OverlayPrepareFolderTitle": "アプリケーションフォルダを準備中",
+    "PageTitle": "はじめに",
     "Pg1LoadingSubitle1": "サポートされているゲームのリストを準備中...",
     "Pg1LoadingSubitle2": "完了！次のステップに進みます！",
+    "Pg1LoadingTitle1": "ゲームリストを読込中...",
+    "Pg1NextBtn": "次へ - ゲームの選択",
+    "Pg2ComboBox": "ゲームの選択",
+    "Pg2ComboBoxRegion": "サーバーの選択",
     "Pg2NextBtn": "終了 - ランチャーを開始",
     "Pg2PrevBtn": "戻る - フォルダを選択",
-    "Pg2Title": "風だ～！",
     "Pg2Subtitle1_1": "もう少しで",
     "Pg2Subtitle1_2": "Collapse Launcher",
     "Pg2Subtitle1_3": "を開始できます。",
@@ -38,10 +30,16 @@
     "Pg2Subtitle2_3": "のゲームをサポートしています。ランチャーを開始するには、",
     "Pg2Subtitle2_4": "Collapse Launcher",
     "Pg2Subtitle2_5": "を使いたいゲームを選択してください。",
-    "Pg2ComboBox": "ゲームの選択",
-    "Pg2ComboBoxRegion": "サーバーの選択"
+    "Pg2Title": "風だ～！",
+    "Subtitle1": "こんにちは！",
+    "Subtitle2": "Collapseを初めて起動したようですね。",
+    "Subtitle3": "プロジェクトをご利用いただきありがとうございます！設定を完了するには、Collapseのデータを保存する場所を選択してください。",
+    "Subtitle4_1": "始めるには",
+    "Subtitle4_2": "\"フォルダを選択\"",
+    "Subtitle4_3": "下のボタンでゲームをインストールする場所を選択してください。",
+    "Title1": "Collapse Launcher",
+    "Title2": "へようこそ！"
   },
-
   "_DisconnectedPage": {
     "PageTitle": "接続が切断されました",
     "Header1": "インターネット接続が",
@@ -51,7 +49,6 @@
     "Footer3": "をクリックしてやり直してください。",
     "ShowErrorBtn": "エラーメッセージを表示"
   },
-
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "未処理のエラー",
     "UnhandledSubtitle1": "次の例外が原因で処理されていないエラーが発生しました:",
@@ -63,7 +60,6 @@
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
     "GoBackPageBtn1": "前のページに戻る"
   },
-
   "_MainPage": {
     "PageTitle": "メインページ",
     "RegionChangeConfirm": "ゲームのサーバーが変更されます。続行しますか？",
@@ -76,9 +72,8 @@
     "RegionLoadingSubtitleTimeOut": "{0} サーバーの読込がタイムアウトしました。 (> {1}秒)。 再試行中...",
     "RegionLoadingSubtitleTooLong": "再試行に時間がかかっています...インターネット接続の安定を確認してください！",
     "NavCtrlTitleSettings": "アプリ設定",
-    "NotifNeverAsk": "二度と表示しない"
+    "NotifNeverAsk": "次回から表示しない"
   },
-
   "_HomePage": {
     "PageTitle": "ランチャー",
     "PreloadTitle": "事前ダウンロードが利用可能です！",
@@ -121,7 +116,6 @@
     "PostPanel_Info": "インフォメーション",
     "PostPanel_NoNews": "え？\n今日はニュースなし？"
   },
-
   "_GameRepairPage": {
     "PageTitle": "ゲームの修復",
     "ListCol1": "名前",
@@ -130,7 +124,7 @@
     "ListCol4": "サイズ",
     "ListCol5": "L.CRC",
     "ListCol6": "R.CRC",
-    "Status1": "ゲームファイルの整合性を確認するには、 \"ファイルの確認\"をクリックしてください。",
+    "Status1": "ゲームファイルの整合性を確認するには、 \"クイックチェック\"または\"フルチェック\"をクリックしてください。",
     "Status2": "インデックスの読み込み中...",
     "Status3": "{0}個のファイルが破損している可能性があります (合計 {1})。 'ゲームの修復'をクリックして修復を開始してください。",
     "Status4": "破損したファイルが検出されませんでした！",
@@ -153,12 +147,15 @@
     "TotalProgressTitle1": "総進行状況",
     "RepairBtn1": "ファイル修復",
     "RepairBtn2": "ファイルチェック",
+    "RepairBtn2Full": "フルチェック",
+    "RepairBtn2FullDesc": "ファイルのチェックサム/整合性、サイズ、可用性をチェックします。",
+    "RepairBtn2Quick": "クイックチェック",
+    "RepairBtn2QuickDesc": "この方式はファイルサイズと可用性のみをチェックします。ファイルの整合性をチェックする場合は、フルチェックを使用してください。",
     "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
   },
-
   "_CachesPage": {
     "PageTitle": "キャッシュ更新",
     "ListCol1": "名前",
@@ -168,30 +165,31 @@
     "ListCol5": "L.CRC",
     "ListCol6": "R.CRC",
     "ListCol7": "ステータス",
-    "Status1": "キャッシュの更新を確認するには、 \"更新の確認\"をクリックしてください。",
+    "Status1": "キャッシュの更新を確認するには、 \"クイックチェック\"または\"フルチェック\"をクリックしてください。",
     "CachesStatusHeader1": "総進行状況",
     "CachesStatusCancelled": "操作がキャンセルされました！",
     "CachesStatusFetchingType": "キャッシュタイプを読み込み中: {0}",
-    "CachesStatusNeedUpdate": "{0}個のキャッシュファイル ({1})を更新できます。キャッシュの更新を開始するには、 \"キャッシュの更新\"をクリックしてください。",
+    "CachesStatusNeedUpdate": "{0} 個のキャッシュファイル ({1}) を更新できます。キャッシュの更新を開始するには、 \"キャッシュ更新\"をクリックしてください。",
     "CachesStatusUpToDate": "キャッシュが最新の状態です！",
     "CachesStatusChecking": "{0} 確認中: {1}",
     "CachesTotalStatusNone": "なし",
     "CachesTotalStatusChecking": "処理中: {0}/{1}",
     "CachesBtn1": "キャッシュ更新",
     "CachesBtn2": "アップデートの確認",
+    "CachesBtn2Full": "フルチェック",
+    "CachesBtn2FullDesc": "このメソッドはキャッシュのチェックサム/整合性、サイズ、可用性のみをチェックします。ファイルの整合性をチェックしたい場合は\"フルチェック\"を使用してください。",
+    "CachesBtn2Quick": "クイックチェック",
+    "CachesBtn2QuickDesc": "この方式はキャッシュのサイズと可用性のみをチェックします。キャッシュの整合性をチェックしたい場合は\"フルチェック\"を使用してください。",
     "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！"
   },
-
   "_CutscenesPage": {
     "PageTitle": "CG"
   },
-
   "_GameSettingsPage": {
     "PageTitle": "ゲーム設定",
-
     "Graphics_Title": "グラフィック",
     "Graphics_ResolutionPanel": "解像度",
     "Graphics_Fullscreen": "フルスクリーン",
@@ -200,17 +198,15 @@
     "Graphics_ResCustom": "カスタム解像度を使用",
     "Graphics_ResCustomW": "横",
     "Graphics_ResCustomH": "縦",
-
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "戦闘フレーム",
     "Graphics_FPSInMenu": "その他",
-
     "Graphics_APIPanel": "パブリックAPI",
     "Graphics_APIHelp1": "このゲームでは以下のAPIモードが利用できます:",
     "Graphics_APIHelp2": "注:",
     "Graphics_APIHelp3": "ゲームがDirectX 12 APIにネイティブコンパイルされていないため、DirectX 12を使用するとクラッシュする可能性があります。",
-
     "Graphics_SpecPanel": "画質設定",
+    "Graphics_Preset": "画質プリセット",
     "Graphics_Render": "レンダリング精度",
     "Graphics_Shadow": "シャドウ",
     "Graphics_Reflection": "反射効果",
@@ -221,20 +217,17 @@
     "Graphics_FXHQ": "高品質",
     "Graphics_FXAA": "AntiAliasing",
     "Graphics_FXDistort": "歪曲効果",
-
     "Graphics_APHO2Panel": "後崩壊書第二部＆新章のグラフィック設定",
     "Graphics_APHO2GI": "グローバルイルミネーション",
     "Graphics_APHO2VL": "ボリュメトリックライト",
     "Graphics_APHO2AO": "アンビエントオクルージョン",
     "Graphics_APHO2LOD": "シーン詳細",
-
     "SpecDisabled": "OFF",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
     "SpecVeryHigh": "最高",
     "SpecMaximum": "極めて高い",
-
     "Audio_Title": "音量設定",
     "Audio_Master": "メイン音量",
     "Audio_BGM": "BGM",
@@ -247,7 +240,6 @@
     "Audio_Elf": "人形CV",
     "Audio_Cutscenes": "CG",
     "Audio_Mute": "ミュート",
-
     "ApplyBtn": "設定を適用",
     "SettingsApplied": "変更が保存されました!",
     "SettingsRegExported": "レジストリをエクスポートしました！",
@@ -256,54 +248,46 @@
     "SettingsRegImportTitle": "Collapse レジストリ ファイルを選択します...",
     "SettingsRegErr1": "パスが選択されていません！",
     "SettingsRegErr2": "Collapse レジストリのヘッダーが正しくありません！",
-
     "RegImportExport": "レジストリのインポート/エクスポート",
     "RegExportTitle": "エクスポート",
     "RegExportTooltip": "レジストリキーをCollapse レジストリファイルにエクスポートします。",
     "RegImportTitle": "インポート",
     "RegImportTooltip": "Collapse レジストリファイルからレジストリキーをインポートします。",
-
     "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
     "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
     "OverlayGameRunningTitle": "ゲームが実行中です！",
     "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
     "OverlayFirstTimeTitle": "このゲームを実行したことがありません！",
     "OverlayFirstTimeSubtitle": "まず、ゲームを実行して必要なファイルを生成してください。",
-
-    "CustomArgs_Title": "カスタム起動引数(詳細)",
-    "CustomArgs_Subtitle": "開始引数",
-    "CustomArgs_Footer1": "開始引数の詳細については",
+    "CustomArgs_Title": "カスタム起動引数(高度な設定)",
+    "CustomArgs_Subtitle": "起動引数",
+    "CustomArgs_Footer1": "起動引数の詳細については",
     "CustomArgs_Footer2": "Unity Standalone コマンドラインドキュメント",
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。"
   },
-
   "_SettingsPage": {
     "PageTitle": "ランチャー設定",
-
     "Debug": "デバッグ",
     "Debug_Console": "コンソールを表示",
     "Debug_MultipleInstance": "Collapse の多重起動を許可する",
-
+    "DiscordRPC_Toggle": "Discordのステータスに表示",
+    "ChangeRegionWarning_Toggle": "サーバー変更時に確認する",
+    "ChangeRegionWarning_Warning": "*この設定を反映するにはアプリを再起動してください。",
     "Language": "言語",
     "LanguageEntry": "{0} ({1} 提供)",
     "AppLang_ApplyNeedRestart": "*言語の変更を適用するには、ランチャーを再起動してください。",
-
     "AppThemes": "テーマ",
     "AppThemes_Default": "デフォルト (システム設定を使用)",
     "AppThemes_Light": "ライト",
     "AppThemes_Dark": "ダーク",
     "AppThemes_ApplyNeedRestart": "*テーマの変更を適用するには、ランチャーを再起動してください。",
-
     "AppWindowSize": "ウィンドウサイズ",
     "AppWindowSize_Normal": "通常",
     "AppWindowSize_Small": "小さめ",
-
     "AppCDNRepository": "リポジトリCDN",
-
     "AppBG": "背景",
     "AppBG_Checkbox": "カスタム背景を使用する",
     "AppBG_Note": "注: 拡張子は.png, .jpg, .tiff, .bmp、解像度は 4096x4096 以内。",
-
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
     "AppThreads_Extract": "抽出スレッド",
@@ -313,7 +297,6 @@
     "AppThreads_Help4": "0 (自動検出)",
     "AppThreads_Help5": "このスレッドはゲームのインストール/修復中に解凍/整合性チェック操作を処理します。",
     "AppThreads_Help6": "注: この設定は、崩壊3rd のインストール中は無効になります。",
-
     "Update": "アップデートの確認",
     "Update_CurVer": "現在のバージョン:",
     "Update_CheckBtn": "アップデートをチェック",
@@ -321,33 +304,26 @@
     "Update_NewVer1": "バージョン",
     "Update_NewVer2": "に更新できます！",
     "Update_LatestVer": "最新バージョンです。",
-
     "AppFiles": "ファイル管理",
     "AppFiles_OpenDataFolderBtn": "データフォルダを開く",
     "AppFiles_RelocateDataFolderBtn": "データフォルダの場所変更",
     "AppFiles_ClearLogBtn": "ログファイルの削除",
     "AppFiles_ClearImgCachesBtn": "画像ファイルの削除",
-
     "ReportIssueBtn": "問題を報告",
     "ContributePRBtn": "プルリクエストで貢献",
-
     "About": "Collapse Launcherについて",
-    "About_Copyright1": "© 2023 Created by",
+    "About_Copyright1": "© 2022-2023 Created by",
     "About_Copyright2": " neon-nyan [14372096 SEA]",
     "About_Copyright3": "Under",
     "About_Copyright4": " license. All rights reserved.",
-
     "Disclaimer": "免責事項",
     "Disclaimer1": "このアプリは",
     "Disclaimer2": "とは何の関係もありません。",
     "Disclaimer3": "完全にオープンソースです。どんな貢献も歓迎します。",
-
     "DiscordBtn1": "艦隊Discord(SEA)",
     "DiscordBtn2": "崩壊3rd公式Discord(GLB)",
-
     "AppChangeReleaseChannel": "{0} リリースチャンネルに変更"
   },
-
   "_Misc": {
     "UpdateCompleteTitle": "更新が完了しました！",
     "UpdateCompleteSubtitle": "ランチャーのバージョンが{0}に更新されました! (リリース チャネル: {1})",
@@ -361,7 +337,6 @@
     "SpeedPlaceholder": "速度: - /秒",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
-
     "Cancel": "キャンセル",
     "Close": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
@@ -376,16 +351,14 @@
     "Prev": "前へ",
     "Uninstall": "アンイストール",
     "Install": "インストール",
-
     "Yes": "はい",
     "YesRedownload": "ダウンロード続行",
     "YesResume": "再開する",
     "YesRelocate": "再設定する",
     "YesMigrateIt": "移動する",
     "YesConvertIt": "変換する",
-    "YesIHaveBeefyPC": "はい、つよつよPCです！",
+    "YesIHaveBeefyPC": "はい、つよつよPCです！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "場所を変更",
-
     "No": "いいえ",
     "NoStartFromBeginning": "最初からダウンロード",
     "NoCancel": "キャンセル",
@@ -393,12 +366,10 @@
     "NoIgnoreIt": "無視する",
     "NoOtherLocation": "インストールを続ける",
     "NotSelected": "未選択",
-
     "LangNameENUS": "英語(アメリカ)",
     "LangNameJP": "日本語",
     "LangNameCN": "中国語(簡体字)",
     "LangNameKR": "韓国語",
-
     "Downloading": "ダウンロード中",
     "Merging": "マージ中",
     "Idle": "待機",
@@ -418,14 +389,12 @@
     "ApplyingPatch": "パッチ適用中",
     "Disabled": "無効",
     "Enabled": "有効",
-
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
-
     "CDNDescription_Github": "ランチャーの公式(メイン)リポジトリ。",
-    "CDNDescription_Statically": "Statically が提供する公式(メイン)リポジトリのミラー。GitHubにアクセスできない場所に住んでいる場合に使用してください。"
+    "CDNDescription_Statically": "Statically が提供する公式(メイン)リポジトリのミラー。GitHubにアクセスできない場所に住んでいる場合に使用してください。",
+    "CDNDescription_jsDelivr": "jsDelivrは、CloudFlare、Fastly、Quantilなどの複数の CDN プロバイダを使用しており、アップタイムとパフォーマンスを最適化します。"
   },
-
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告: デルタ パッチ アップデートが検出されました！",
     "DeltaPatchDetectedSubtitle": "ゲームを {0} から {1} に更新するために、デルタ パッチが使用されます。\r\n一部のファイルはゲーム内でダウンロードする必要があります。\r\n\r\n続行しますか？",
@@ -450,17 +419,17 @@
     "RepairCompletedSubtitle": "{0}個のファイルが修復されました。",
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
     "ExtremeGraphicsSettingsWarnTitle": "非常に高い設定のプリセットが選択されました！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "設定プリセットを非常に高いに設定しようとしています！\r\n非常に高いプリセットはデフォルトでMSAA有効、レンダリングスケール2倍で全く最適化されていません！(NASAのスパコンでもなければ)。\r\n\r\nこの設定を使用しますか？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "設定プリセットを非常に高いに設定しようとしています！\n非常に高いプリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\nこの設定を使用しますか？",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
     "ExistingInstallSubtitle": "ゲームは次の場所に既にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしても公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
     "ExistingInstallBHI3LSubtitle": "ゲームは既に次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしてもBetterHi3Launcherを使用してゲームを開始できます。\r\n\r\n続行しますか？",
     "ExistingInstallSteamTitle": "Steam版の既存のインストールが検出されました！",
     "ExistingInstallSteamSubtitle": "ゲームはすでにSteamの次の場所にインストールされています:\r\n\r\n{0}\r\n\r\nこのバージョンをSteam版ではないPC版に変換しますか？\n注:変換するとSteamアカウントでログインできなくなります。miHoYo/HoYoverse通行証ログインのみ選択できます。\r\n\r\n続行しますか？",
-    "SteamConvertNeedMigrateTitle": "フォルダを移動する必要があります",
+    "SteamConvertNeedMigrateTitle": "フォルダを移行する必要があります",
     "SteamConvertNeedMigrateSubtitle": "Collapseがそのディレクトリに書き込む権限がないため、ゲームのインストールフォルダを別の場所に移動する必要があります。\nCollapseLauncherゲームフォルダに場所を移動することをお勧めしますが、直接場所を選択することもできます。\n\nCollapseLauncherゲームフォルダに移動しますか？",
     "SteamConvertIntegrityDoneTitle": "整合性チェックが完了しました！",
-    "SteamConvertIntegrityDoneSubtitle": "ゲームデータの整合性チェックが完了しました。変換プロセスで {0}個以上のファイルをダウンロードします。\n続行するか、キャンセルして後で再開することができます。\n\n変換プロセスを開始しますか？",
+    "SteamConvertIntegrityDoneSubtitle": "ゲームデータの整合性チェックが完了しました。変換プロセスで {0} 個以上のファイルをダウンロードします。\n続行するか、キャンセルして後で再開することができます。\n\n変換プロセスを開始しますか？",
     "SteamConvertFailedTitle": "変換に失敗しました！",
     "SteamConvertFailedSubtitle": "変換プロセスに失敗しました！:(\n変換プロセスをもう一度開始してください。",
     "InstallDataCorruptTitle": "ゲームのインストールが破損しています",
@@ -502,7 +471,6 @@
     "ReleaseChannelChangeSubtitle2": "説明:",
     "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。"
   },
-
   "_InstallMgmt": {
     "IntegrityCheckTitle": "整合性チェック",
     "PreparePatchTitle": "パッチを準備中",
@@ -511,7 +479,6 @@
     "RepairFilesRequiredTitle": "{0}個のファイルを修復する必要があります！",
     "RepairFilesRequiredSubtitle": "更新前に修復が必要なファイルが {0}以上({1})あります！\r\n\r\n参考:この作業は予想より長くかかる場合があります(接続速度と安定性によって異なります)。ダウンロード速度が遅い場合、VPNを使ってみてください(ProtonVPNのような無料VPNで十分です)。"
   },
-
   "_InstallConvert": {
     "PageTitle": "クロスバージョン変換",
     "Step1Title": "ゲームの選択と依存関係の取得",
@@ -538,13 +505,11 @@
     "ConvertSuccessSubtitle": "{0}から{1}へのゲーム変換が正常に完了しました！",
     "CookbookDownloadTitle": "レシピをダウンロード中",
     "CookbookDownloadSubtitle": "{0}から{1}への変換レシピをダウンロードしています",
-
     "CancelBtn": "変換をキャンセル",
     "CancelMsgTitle": "変換をキャンセルしています...",
     "CancelMsgSubtitle1": "変換プロセスをキャンセルしようとしています。変換の進行状況はすべて中止されます。\r\n\r\nよろしいですか？",
     "CancelMsgSubtitle2": "変換プロセスをキャンセルしようとしていますが、ゲームは既に{0}に変換されています。 \"変換後の整合性検証\" をスキップします。\r\n\r\n本当にスキップしますか？"
   },
-
   "_InstallMigrateSteam": {
     "PageTitle": "Steam変換",
     "Step1Title": "フォルダ権限の確認",
@@ -576,18 +541,16 @@
     "InnerConvertFile2": "{0} ダウンロード中 [{1}/{2}]: {3}",
     "InnerConvertFile3": "{0} ダウンロード中 [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
-
   "_InstallMigrate": {
-    "PageTitle": "ゲームの移動",
-    "Step1Title": "移動は5秒後に実行されます。移動タスクを開始するには、管理者権限を許可してください。",
-    "Step2Title": "移動が進行中です。コンソールウィンドウが表示されます。操作が完了するまでお待ちください。",
-    "Step3Title": "移動作業が完了しました！しばらくお待ちください...",
-    "StepCancelledTitle": "移動がキャンセルされました！しばらくお待ちください...",
-    "PageFooter1": "移動中は",
+    "PageTitle": "ゲームの移行",
+    "Step1Title": "移行は5秒後に実行されます。移行タスクを開始するには、管理者権限を許可してください。",
+    "Step2Title": "移行が進行中です。コンソールウィンドウが表示されます。操作が完了するまでお待ちください。",
+    "Step3Title": "移行作業が完了しました！しばらくお待ちください...",
+    "StepCancelledTitle": "移行がキャンセルされました！しばらくお待ちください...",
+    "PageFooter1": "移行中は",
     "PageFooter2": "絶対に",
     "PageFooter3": "他のページに切り替えたり、ランチャーを閉じたりしないでください。"
   },
-
   "_UpdatePage": {
     "PageTitle1": "更新",
     "PageTitle2": "が可能です！",
@@ -601,13 +564,11 @@
     "UpdateNowBtn": "今すぐ更新",
     "LoadingRelease": "リリースノートを取得しています...",
     "LoadingReleaseFailed": "リリースノートの取得中にエラーが発生しました。\r\n{0}",
-
     "UpdateHeader1": "説明:",
     "UpdateHeader2": "経過時間:",
     "UpdateHeader3": "ダウンロードサイズ:",
-    "UpdateHeader4": "形式:",
+    "UpdateHeader4": "速度:",
     "UpdateHeader5PlaceHolder": "アップデートをダウンロードしています [- / -]:",
-
     "UpdateStatus1": "アップデートを取得中:",
     "UpdateMessage1": "アップデートリポジトリに接続しています...",
     "UpdateStatus2": "検証中:",
@@ -615,22 +576,73 @@
     "UpdateStatus4": "現在、最新バージョン({0})を使用しています！",
     "UpdateMessage4": "まもなくゲームランチャースコープに戻ります...",
     "UpdateStatus5": "バージョンが {0}に更新されました！",
-    "UpdateMessage5": "ランチャーはまもなく再起動します..."
+    "UpdateMessage5": "ランチャーはまもなく再起動します...",
+    "UpdateCountdownMessage1": "ランチャーは {0} 秒後に更新されます...",
+    "UpdateCountdownMessage2": "(クリック",
+    "UpdateCountdownMessage3": "でカウントダウンを中止)"
   },
-
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "ランチャーメタデータが更新可能です！",
     "NotifMetadataUpdateSubtitle": "新しいランチャーメタデータが利用可能です！このプロセスは、ランチャーが miHoYo/HoYoverse サーバーと適切に通信できるようにするために自動的に行われます。更新はまもなく開始されます！",
     "NotifMetadataUpdateBtn": "メタデータ更新",
     "NotifMetadataUpdateBtnCountdown": "メタデータを {0}秒後に更新します。",
     "NotifMetadataUpdateBtnUpdating": "メタデータを更新しています。お待ちください...",
-
     "NotifFirstWelcomeTitle": "Collapseへようこそ！",
     "NotifFirstWelcomeSubtitle": "開始するには、下の \"{0}\" ボタンをクリックして、既存のゲームをインストールまたは紐づけする方法を確認してください。",
     "NotifFirstWelcomeBtn": "GitHub Wiki にアクセス",
-
     "NotifPreviewBuildUsedTitle": "プレビュービルドを使用しています！",
     "NotifPreviewBuildUsedSubtitle": "現在テスト中のプレビュービルドを使用しています。問題が発生した場合は、下の \"{0}\" ボタンを使用して問題を報告してください。よろしくね！",
     "NotifPreviewBuildUsedBtn": "問題を送信する"
+  },
+  "_StarRailGameSettingsPage": {
+    "PageTitle": "ゲーム設定",
+    "Graphics_Title": "画面設定",
+    "Graphics_ResolutionPanel": "解像度",
+    "Graphics_Fullscreen": "フルスクリーン",
+    "Graphics_ExclusiveFullscreen": "排他的フルスクリーンを使用",
+    "Graphics_ResSelectPlaceholder": "選択",
+    "Graphics_ResCustom": "カスタム解像度を使用",
+    "Graphics_ResCustomW": "横",
+    "Graphics_ResCustomH": "縦",
+    "Graphics_FPS": "フレームレート",
+    "Graphics_FPS_Help": "120FPSは実験的な機能です！ご利用は自己責任でお願いします。",
+    "Graphics_FPS_Help2": "120FPSにするとスターレイル本体の設定画面がおかしくなります。\n代わりにCollapseで画面設定を変更してください。",
+    "Graphics_VSync": "垂直同期",
+    "Graphics_RenderScale": "レンダリング精度",
+    "Graphics_ResolutionQuality": "解像度",
+    "Graphics_ShadowQuality": "シャドウ品質",
+    "Graphics_LightQuality": "照明効果",
+    "Graphics_CharacterQuality": "キャラ品質",
+    "Graphics_EnvDetailQuality": "シーン細部",
+    "Graphics_ReflectionQuality": "反射品質",
+    "Graphics_BloomQuality": "ブルーム効果",
+    "Graphics_AAMode": "アンチエイリアス",
+    "Graphics_SpecPanel": "画質",
+    "SpecEnabled": "有効",
+    "SpecDisabled": "無効",
+    "SpecVeryLow": "最低",
+    "SpecLow": "低",
+    "SpecMedium": "中",
+    "SpecHigh": "高",
+    "SpecVeryHigh": "最高",
+    "ApplyBtn": "設定を適用",
+    "SettingsApplied": "変更が保存されました!",
+    "OverlayNotInstalledTitle": "このサーバーがまだインストールされていないか更新されていないため、この機能は利用できません！",
+    "OverlayNotInstalledSubtitle": "ゲームランチャーページで先にゲームをダウンロード/更新してください！",
+    "OverlayGameRunningTitle": "ゲームが実行中です！",
+    "OverlayGameRunningSubtitle": "この機能を使用するには、まずゲームを終了してください！",
+    "OverlayFirstTimeTitle": "このゲームを実行したことがありません！",
+    "OverlayFirstTimeSubtitle": "まず、ゲームを実行して必要なファイルを生成してください。",
+    "CustomArgs_Title": "カスタム起動引数(高度な設定)",
+    "CustomArgs_Subtitle": "起動引数",
+    "CustomArgs_Footer1": "起動引数の詳細については",
+    "CustomArgs_Footer2": "Unity Standalone コマンドラインドキュメント",
+    "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
+    "Audio_Title": "音声設定",
+    "Audio_Master": "全体音量",
+    "Audio_BGM": "BGM",
+    "Audio_SFX": "SE",
+    "Audio_VO": "ボイス",
+    "Audio_Mute": "ミュート"
   }
 }

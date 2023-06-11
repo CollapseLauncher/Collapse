@@ -38,6 +38,7 @@ namespace CollapseLauncher.Pages
             (m_window as MainWindow).rootFrame.GoBack();
         }
 
+        private string lastSelectedCategory = "";
         private async void GameSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             object value = ((ComboBox)sender).SelectedValue;
@@ -54,14 +55,18 @@ namespace CollapseLauncher.Pages
 
                 if (_gamePosterBitmap is not null && IsSuccess)
                 {
-                    await MainPage.ApplyAccentColor(this, _gamePosterBitmap, 8);
+                    await MainPage.ApplyAccentColor(this, _gamePosterBitmap, 1);
                     MainPage.ReloadPageTheme(this, MainPage.ConvertAppThemeToElementTheme(CurrentAppTheme));
                 }
 
-                this.BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG), null, new DrillInNavigationTransitionInfo());
+                NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();
+
+                this.BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG), null, transition);
                 FadeBackground(0.25, 1);
                 BarBGLoading.IsIndeterminate = false;
                 BarBGLoading.Visibility = Visibility.Collapsed;
+
+                lastSelectedCategory = _selectedCategory;
 
                 return;
             }

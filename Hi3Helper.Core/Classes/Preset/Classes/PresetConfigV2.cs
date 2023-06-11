@@ -54,7 +54,7 @@ namespace Hi3Helper.Preset
         public long LastUpdated { get; set; }
     }
 
-    public class Metadata
+    public sealed class Metadata
     {
         public Dictionary<string, Dictionary<string, PresetConfigV2>>? MetadataV2 { get; set; }
         public string? MasterKey { get; set; }
@@ -105,7 +105,7 @@ namespace Hi3Helper.Preset
 #nullable enable
     }
 
-    public class PresetConfigV2
+    public sealed class PresetConfigV2
     {
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
         private const string PrefixRegGameConfig = "Software\\{0}\\{1}";

@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region InstallConvert
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangInstallConvert _InstallConvert { get; set; } = LangFallback?._InstallConvert;
-            public class LangInstallConvert
+            public sealed class LangInstallConvert
             {
                 public string PageTitle { get; set; } = LangFallback?._InstallConvert.PageTitle;
                 public string Step1Title { get; set; } = LangFallback?._InstallConvert.Step1Title;

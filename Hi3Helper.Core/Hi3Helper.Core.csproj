@@ -11,6 +11,7 @@
 		<PublishTrimmed>false</PublishTrimmed>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<DebugType>portable</DebugType>
+		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -71,8 +72,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Lang\es-419.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="Lang\en-us.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Lang\es-419.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lang\id-id.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -106,6 +114,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 	</ItemGroup>
 
 </Project>

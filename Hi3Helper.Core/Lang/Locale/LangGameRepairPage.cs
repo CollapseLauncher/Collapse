@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region GameRepairPage
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangGameRepairPage _GameRepairPage { get; set; } = LangFallback?._GameRepairPage;
-            public class LangGameRepairPage
+            public sealed class LangGameRepairPage
             {
                 public string PageTitle { get; set; } = LangFallback?._GameRepairPage.PageTitle;
                 public string ListCol1 { get; set; } = LangFallback?._GameRepairPage.ListCol1;

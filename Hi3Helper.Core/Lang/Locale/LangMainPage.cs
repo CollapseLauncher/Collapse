@@ -1,12 +1,12 @@
 ﻿namespace Hi3Helper
 {
-    public partial class Locale
+    public sealed partial class Locale
     {
         #region MainPage
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public LangMainPage _MainPage { get; set; } = LangFallback?._MainPage;
-            public class LangMainPage
+            public sealed class LangMainPage
             {
                 public string PageTitle { get; set; } = LangFallback?._MainPage.PageTitle;
                 public string RegionChangeConfirm { get; set; } = LangFallback?._MainPage.RegionChangeConfirm;

@@ -2,7 +2,6 @@
   "LanguageName": "Tiếng Việt",
   "LanguageID": "vi-VN",
   "Author": "kleqing",
-
   "_StartupPage": {
     "ChooseFolderBtn": "Vị trí thư mục",
     "ChooseFolderDialogCancel": "Huỷ",
@@ -12,13 +11,13 @@
     "ChooseFolderDialogTitle": "Vị trí thư mục",
     "FolderInsufficientPermission": "Truy cập bị từ chối! Vui lòng chọn thư mục khác.",
     "FolderNotSelected": "Chưa có thư mục nào được chọn. Vui lòng chọn một thư mục!",
-    "OverlayPrepareFolderTitle": "Đang chuẩn bị thư mục ứng dụng",
     "OverlayPrepareFolderSubtitle": "Đang áp dụng các quyền truy cập...",
+    "OverlayPrepareFolderTitle": "Đang chuẩn bị thư mục ứng dụng",
     "PageTitle": "First Startup Page",
     "Pg1LoadingSubitle1": "Chúng tôi đang chuẩn bị danh sách các trò chơi được hỗ trợ cho bạn...",
     "Pg1LoadingSubitle2": "trò chơi đã tải thành công! Vui lòng đợi một chút...",
     "Pg1LoadingTitle1": "Đang tải danh sách trò chơi...",
-    "Pg1NextBtn": "Tiếp tục - Chọn trò chơi", 
+    "Pg1NextBtn": "Tiếp tục - Chọn trò chơi",
     "Pg2ComboBox": "Chọn trò chơi",
     "Pg2ComboBoxRegion": "Chọn vùng",
     "Pg2NextBtn": "Đã xong! - Mở trình khởi chạy",
@@ -41,7 +40,6 @@
     "Title1": "Chào mừng",
     "Title2": "đến với trình khởi chạy Collapse"
   },
-
   "_DisconnectedPage": {
     "PageTitle": "Trang đã bị ngắt kết nối",
     "Header1": "Hiện tại bạn đã",
@@ -51,7 +49,6 @@
     "Footer3": "để thử lại.",
     "ShowErrorBtn": "Hiển thị thông báo lỗi"
   },
-
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Lỗi chưa thể xử lý",
     "UnhandledSubtitle1": "Lỗi này chỉ xảy ra khi bạn gặp vấn đề về:",
@@ -63,7 +60,6 @@
     "CopyClipboardBtn2": "Đã sao chép thành công!",
     "GoBackPageBtn1": "Trở lại trang trước"
   },
-
   "_MainPage": {
     "PageTitle": "Trang chủ",
     "RegionChangeConfirm": "Sever trò chơi sẽ thay đổi. Bạn có muốn tiếp tục?",
@@ -78,7 +74,6 @@
     "NavCtrlTitleSettings": "Cài đặt trình khởi chạy",
     "NotifNeverAsk": "Không hiển thị lại"
   },
-
   "_HomePage": {
     "PageTitle": "Trình khởi chạy",
     "PreloadTitle": "Tải về trước đã sẵn sàng",
@@ -121,7 +116,6 @@
     "PostPanel_Info": "Thông tin",
     "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?"
   },
-
   "_GameRepairPage": {
     "PageTitle": "Sửa trò chơi",
     "ListCol1": "Tên",
@@ -154,15 +148,14 @@
     "RepairBtn1": "Sửa tệp",
     "RepairBtn2": "Kiểm tra tệp",
     "RepairBtn2Full": "Kiểm tra toàn bộ",
-    "RepairBtn2FullDesc": "Điều này sẽ kiểm tra tính toàn vẹn/md5, kích thước và tính khả dụng", 
-    "RepairBtn2Quick": "Kiểm tra nhanh", 
+    "RepairBtn2FullDesc": "Điều này sẽ kiểm tra tính toàn vẹn/md5, kích thước và tính khả dụng",
+    "RepairBtn2Quick": "Kiểm tra nhanh",
     "RepairBtn2QuickDesc": "Điều này sẽ chỉ kiểm tra kích thước và tính khả dụng của tệp. Vui lòng sử dụng \"Kiểm tra toàn bộ\" nếu bạn muốn kiểm tra tính toàn vẹn của tệp",
     "OverlayNotInstalledTitle": "Bạn không thể dùng tính năng này khi trò chơi chưa được cài đặt tính năng này ở vùng của bạn hoặc trò chơi cần phải được cập nhật để sử dụng!",
     "OverlayNotInstalledSubtitle": "Vui lòng tải/cập nhật trò chơi trước ở trang chính của trình khởi chạy!",
     "OverlayGameRunningTitle": "Trò chơi hiện tại đang chạy!",
     "OverlayGameRunningSubtitle": "Vui lòng tắt trò chơi trước để sử dụng tính năng này!"
   },
-
   "_CachesPage": {
     "PageTitle": "Cập nhật cache",
     "ListCol1": "Tên",
@@ -192,14 +185,11 @@
     "OverlayGameRunningTitle": "Trò chơi hiện tại đang chạy!",
     "OverlayGameRunningSubtitle": "Vui lòng tắt trò chơi trước để sử dụng tính năng này!"
   },
-
   "_CutscenesPage": {
     "PageTitle": "Cutscenes"
   },
-
- "_GameSettingsPage": {
+  "_GameSettingsPage": {
     "PageTitle": "Cài đặt trò chơi",
-
     "Graphics_Title": "Đồ hoạ",
     "Graphics_ResolutionPanel": "Độ phân giải",
     "Graphics_Fullscreen": "Toàn màn hình",
@@ -208,16 +198,13 @@
     "Graphics_ResCustom": "Chọn độ phân giải khác",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
-
     "Graphics_FPSPanel": "FPS tối đa",
     "Graphics_FPSInCombat": "Chiến đấu",
     "Graphics_FPSInMenu": "Khác",
-
     "Graphics_APIPanel": "Đồ hoạ API",
     "Graphics_APIHelp1": "Một vài API đang hỗ trợ trò chơi này, bao gồm:",
     "Graphics_APIHelp2": "Lưu ý:",
     "Graphics_APIHelp3": "Sử dụng DirectX 12 có thể gây văng trò chơi bởi vì trò chơi chưa tương thích với DirectX 12 API",
-
     "Graphics_SpecPanel": "Đồ hoạ chung",
     "Graphics_Preset": "Preset đồ hoạ",
     "Graphics_Render": "Độ sắc nét",
@@ -230,23 +217,20 @@
     "Graphics_FXHQ": "Chất lượng cao",
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Hiệu ứng gấp khúc",
-
     "Graphics_APHO2Panel": "APHO2 & đồ hoạ các chương mới",
     "Graphics_APHO2GI": "Ánh sáng tổng thể",
     "Graphics_APHO2VL": "Chiếu sáng thể tích",
     "Graphics_APHO2AO": "Đổ bóng cố định",
     "Graphics_APHO2LOD": "Chi tiết bản đồ",
-
     "SpecDisabled": "Tắt",
     "SpecLow": "Thấp",
     "SpecMedium": "Trung bình",
     "SpecHigh": "Cao",
     "SpecVeryHigh": "Cực cao",
     "SpecMaximum": "Tối đa",
-
     "Audio_Title": "Cài đặt âm thanh",
     "Audio_Master": "Âm lượng chính",
-    "Audio_BGM": "Nhạc nền",
+    "Audio_BGM": "Âm lượng nhạc",
     "Audio_SFX": "Hiệu ứng âm thanh",
     "Audio_VOLang": "Ngôn ngữ lồng tiếng",
     "Audio_VOLang1": "CN (PRC)",
@@ -256,7 +240,6 @@
     "Audio_Elf": "Âm thanh lồng tiếng ELF",
     "Audio_Cutscenes": "Âm thanh cutscenes",
     "Audio_Mute": "Tắt âm thanh",
-
     "ApplyBtn": "Áp dụng",
     "SettingsApplied": "Đã lưu thay đổi!",
     "SettingsRegExported": "Registry đã được xuất ra!",
@@ -265,54 +248,46 @@
     "SettingsRegImportTitle": "Chọn tệp registry của Collapse...",
     "SettingsRegErr1": "Tệp chưa được chọn.",
     "SettingsRegErr2": "Phần đầu của tệp registry của Collapse không hợp lệ!",
-
     "RegImportExport": "Nhập/xuất registry",
     "RegExportTitle": "Xuất ra",
     "RegExportTooltip": "Xuất giá trị registry tới tệp registry của Collapse",
     "RegImportTitle": "Nhập vào",
     "RegImportTooltip": "Nhập giá trị registry tới tệp registry của Collapse",
-
     "OverlayNotInstalledTitle": "Bạn không thể sử dụng tính năng này vì vùng của bạn chưa được cài đặt tính năng này hoặc chưa được cập nhật!",
     "OverlayNotInstalledSubtitle": "Vui lòng tải/cập nhật trò chơi trước tại trang đầu tiên của trình khởi chạy!",
     "OverlayGameRunningTitle": "Trò chơi hiện tại đang chạy!",
     "OverlayGameRunningSubtitle": "Vui lòng tắt trò chơi trước để sử dụng tính năng này!",
     "OverlayFirstTimeTitle": "Bạn chưa từng chơi trò chơi này trước đó!",
     "OverlayFirstTimeSubtitle": "Vui lòng chạy trò chơi trước để trò chơi tạo các tệp cần thiết, sau đó hãy quay lại đây để sử dụng tính năng này.",
-
     "CustomArgs_Title": "Cấu hình tham số khởi động (Nâng cao)",
     "CustomArgs_Subtitle": "Tham số khởi động",
     "CustomArgs_Footer1": "Về các tham số khởi động, vui lòng xem tại",
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "để biết thêm chi tiết."
   },
-
   "_SettingsPage": {
     "PageTitle": "Cài đặt trình khởi chạy",
-
     "Debug": "Gỡ lỗi",
     "Debug_Console": "Hiển thị console (cmd)",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
-
+    "DiscordRPC_Toggle": "Hiện Trạng Thái Chi Tiết trên Discord",
+    "ChangeRegionWarning_Toggle": "Hiện thông báo Thay Đổi Lục Địa",
+    "ChangeRegionWarning_Warning": "*Bạn cần phải khởi động lại ứng dụng để áp dụng cài đặt này.",
     "Language": "Ngôn ngữ",
     "LanguageEntry": "{0} bởi {1}",
     "AppLang_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi ngôn ngữ.",
-
     "AppThemes": "Giao diện trình khởi chạy",
     "AppThemes_Default": "Mặc định (Theo hệ thống)",
     "AppThemes_Light": "Sáng",
     "AppThemes_Dark": "Tối",
     "AppThemes_ApplyNeedRestart": "*Bạn phải khởi động lại trình khởi chạy để thay đổi giao diện.",
-
     "AppWindowSize": "Kích thước cửa sổ",
     "AppWindowSize_Normal": "Bình thường",
     "AppWindowSize_Small": "Nhỏ",
-
     "AppCDNRepository": "Repository CDN",
-
     "AppBG": "Hình nền",
     "AppBG_Checkbox": "Dùng hình nền tuỳ chọn",
     "AppBG_Note": "Lưu ý: Ảnh phải định dạng .png, .jpg, .tiff hoặc .bmp và độ phân giải phải thấp hơn 4096x4096",
-
     "AppThreads": "Tải về",
     "AppThreads_Download": "Số lượng tải về",
     "AppThreads_Extract": "Số lượng giải nén",
@@ -322,7 +297,6 @@
     "AppThreads_Help4": "0 (Tự động)",
     "AppThreads_Help5": "Tuỳ chọn này sẽ giới hạn số tệp để giải nén/xác thực tài nguyên khi tải/sửa tài nguyên trò chơi.",
     "AppThreads_Help6": "Lưu ý: Tuỳ chọn này không có tác dụng với Honkai Impact 3rd.",
-
     "Update": "Cập nhật",
     "Update_CurVer": "Phiên bản hiện tại:",
     "Update_CheckBtn": "Kiểm tra cập nhật",
@@ -330,33 +304,26 @@
     "Update_NewVer1": "Cập nhật",
     "Update_NewVer2": "đã có sẵn!",
     "Update_LatestVer": "Bạn đang sử dụng phiên bản mới nhất.",
-
     "AppFiles": "Quản lí tệp ứng dụng",
     "AppFiles_OpenDataFolderBtn": "Mở thư mục dữ liệu ứng dụng",
     "AppFiles_RelocateDataFolderBtn": "Chọn lại đường dẫn thư mục dữ liệu ứng dụng",
     "AppFiles_ClearLogBtn": "Xoá tệp log",
     "AppFiles_ClearImgCachesBtn": "Xoá tệp ảnh đĩa",
-
     "ReportIssueBtn": "Báo lỗi",
     "ContributePRBtn": "Đóng góp",
-
     "About": "Về chúng tôi",
     "About_Copyright1": "© 2023 Được tạo bởi",
     "About_Copyright2": " neon-nyan [14372096 SEA]",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký bản quyền.",
-
     "Disclaimer": "Trách nhiệm và pháp lí",
     "Disclaimer1": "trình khởi chạy này không thuộc về",
     "Disclaimer2": "với bất kì điều nào",
     "Disclaimer3": "và hoàn toàn là mã nguồn mở. Chúng tôi luôn vui lòng với bất kì sự đóng góp nào đến từ bạn.",
-
     "DiscordBtn1": "Tham gia Armada Discord của chúng tôi",
     "DiscordBtn2": "Xem qua Discord Honkai Impact 3rd",
-
     "AppChangeReleaseChannel": "Thay đổi tới {0} kênh phát hành"
   },
-
   "_Misc": {
     "UpdateCompleteTitle": "Cập nhật hoàn tất!",
     "UpdateCompleteSubtitle": "trình khởi chạy của bạn đã được cập nhật tới phiên bản {0}! (Kênh chính thức: {1})",
@@ -370,7 +337,6 @@
     "SpeedPlaceholder": "Tốc độ: - /s",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
-
     "Cancel": "Huỷ",
     "Close": "Đóng",
     "UseCurrentDir": "Dùng thư mục hiện tại",
@@ -385,16 +351,14 @@
     "Prev": "Trước đó",
     "Uninstall": "Gỡ cài đặt",
     "Install": "Cài đặt",
-
     "Yes": "Có",
     "YesRedownload": "Có, hãy tải lại",
     "YesResume": "Có, hãy tiếp tục",
     "YesRelocate": "Có, hãy tiếp tục",
     "YesMigrateIt": "Có, hãy di chuyển nó",
     "YesConvertIt": "Có, hãy chuyển đổi nó",
-    "YesIHaveBeefyPC": "Tôi có máy tính đủ mạnh!",
+    "YesIHaveBeefyPC": "Tôi có máy tính đủ mạnh! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Có, hãy thay đổi vị trí",
-
     "No": "Không",
     "NoStartFromBeginning": "Không, hãy bắt đầu lại từ đầu",
     "NoCancel": "Không, hãy huỷ",
@@ -402,12 +366,10 @@
     "NoIgnoreIt": "Không, hãy mặc kệ nó",
     "NoOtherLocation": "Không, hãy tiếp tục cài đặt",
     "NotSelected": "Chưa được chọn",
-
     "LangNameENUS": "Tiếng Anh (Mỹ)",
     "LangNameJP": "Tiếng Nhật",
     "LangNameCN": "Tiếng Trung (Giản thể)",
     "LangNameKR": "Tiếng Hàn",
-
     "Downloading": "Đang tải",
     "Merging": "Đang gộp",
     "Idle": "Chờ",
@@ -427,15 +389,12 @@
     "ApplyingPatch": "Đang áp dụng bản vá",
     "Disabled": "Tắt",
     "Enabled": "Bật",
-
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
-
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Statically": "Một nhánh khác của kho lưu trữ chính thức, được cung cấp bởi Statically. Sử dụng nó nếu nơi ở của bạn không thể truy cập vào Github.",
     "CDNDescription_jsDelivr": "jsDelivr sử dụng nhiều CDN được cung cấp sẵn như CloudFlare, Fastly và Quantil, dẫn đến thời gian hoạt động và hiệu suất tốt nhất có thể."
   },
-
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Cảnh báo: Có bản cập nhật bản vá tạm thời!",
     "DeltaPatchDetectedSubtitle": "Bản vá tạm thời sẽ được dùng để cập nhật trò chơi của bạn từ {0} tới {1}.\r\nNên nhớ, bạn vẫn nên cần tải về một vài tệp trong trò chơi như thường lệ.\r\n\r\nBạn có muốn tiếp tục?",
@@ -505,14 +464,13 @@
     "CookbookLocateSubtitle5": "để xác định vị trí đã tải tệp chuyển đổi và tiếp tục.\r\n\r\n",
     "CookbookLocateSubtitle6": "Lưu ý:\r\n",
     "CookbookLocateSubtitle7": "Đây là tên của tệp chuyển đổi mà bạn cần phải tải xuống:\r\n",
-    "PrivilegeMustRunTitle": "Collapse yêu cầu quyền của quản trị viên!", 
+    "PrivilegeMustRunTitle": "Collapse yêu cầu quyền của quản trị viên!",
     "PrivilegeMustRunSubtitle": "Collapse yêu cầu quyền quản trị viên để hoạt động hoàn toàn. Bạn có muốn khởi động lại Collapse và chạy dưới quyền quản trị viên?",
     "ReleaseChannelChangeTitle": "Thay đổi kênh phát hành",
     "ReleaseChannelChangeSubtitle1": "Bạn đang thay đổi kênh phát hành của bạn tới:",
     "ReleaseChannelChangeSubtitle2": "Lưu ý:",
     "ReleaseChannelChangeSubtitle3": "Hành động này có thể làm thay đổi/khiến mọi thứ bị hỏng so với thiết lập hiện tại của bạn. Chúng tôi không chịu trách nhiệm về bất kỳ mất mát hoặc hư hỏng dữ liệu nào liên quan đến trò chơi của bạn."
   },
-
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Kiểm tra tính toàn vẹn",
     "PreparePatchTitle": "Đang chuẩn bị bản vá",
@@ -521,7 +479,6 @@
     "RepairFilesRequiredTitle": "{0} tệp nào cần được sửa!",
     "RepairFilesRequiredSubtitle": "Bạn cần ít nhất {0} tệp ({1}) cần được sửa trước khi cập nhật\r\n\r\nLưu ý: Quá trình này có thể lâu hơn dự kiên (phụ thuộc vào tốc độ và độ ổn định của mạng). Hãy cân nhắc sử dụng VPN (như ProtonVPN) nếu bạn có vấn đề về việc tải chậm :)"
   },
-
   "_InstallConvert": {
     "PageTitle": "Chuyển đổi xuyên phiên bản",
     "Step1Title": "Chọn trò chơi và tìm kiếm các gói phụ thuộc",
@@ -548,13 +505,11 @@
     "ConvertSuccessSubtitle": "Chuyển đổi trò chơi từ {0} qua {1} đã hoàn tất!",
     "CookbookDownloadTitle": "Đang tải các gói",
     "CookbookDownloadSubtitle": "Đang tải các gói cho việc chuyển đổi từ {0} qua {1}",
-
     "CancelBtn": "Huỷ quá trình chuyển đổi",
     "CancelMsgTitle": "Đang huỷ quá trình chuyển đổi...",
     "CancelMsgSubtitle1": "Bạn đang muốn huỷ quá trình chuyển đổi. Bất kỳ quá trình chuyển đổi nào cũng sẽ bị dừng lại.\r\n\r\nBạn có chắc không?",
     "CancelMsgSubtitle2": "Bạn đang muốn huỷ quá trình chuyển đổi nhưng trò chơi cảu bạn đã chuyển qua {0} trước đó. Bạn sẽ bỏ qua việc \"Xác minh tính toàn vẹn sau khi chuyển đổi\".\r\n\r\nBạn có chắc không?"
   },
-
   "_InstallMigrateSteam": {
     "PageTitle": "Chuyển đổi của Steam",
     "Step1Title": "Kiểm tra quyền thư mục",
@@ -586,7 +541,6 @@
     "InnerConvertFile2": "Đang tải {0} [{1}/{2}]: {3}",
     "InnerConvertFile3": "Đang tải {0} [{1}/{2}]: {3} -> (0x{4} | N: 0x{5})"
   },
-
   "_InstallMigrate": {
     "PageTitle": "Gộp trò chơi",
     "Step1Title": "Quá trình gộp sẽ bắt đầu trong 5 giây. VUi lòng ấn đồng ý (Yes) khi có thông báo hiện ra để bắt đầu quá trình chuyển đổi",
@@ -597,7 +551,6 @@
     "PageFooter2": "KHÔNG",
     "PageFooter3": "đổi sang trang khác hoặc đóng trình khởi chạy khi quá trình này diễn ra"
   },
-
   "_UpdatePage": {
     "PageTitle1": "CẬP NHẬT",
     "PageTitle2": "ĐÃ CÓ SẴN!",
@@ -611,13 +564,11 @@
     "UpdateNowBtn": "Cập nhật ngay",
     "LoadingRelease": "Đang tải nội dung phát hành...",
     "LoadingReleaseFailed": "Đã có lỗi xảy ra khi đọc nội dung phát hành.\r\n{0}",
-
     "UpdateHeader1": "Tiến trình:",
     "UpdateHeader2": "Thời gian:",
     "UpdateHeader3": "Kích thước tải về:",
     "UpdateHeader4": "Tốc độ:",
     "UpdateHeader5PlaceHolder": "Đang tải về cập nhật [- / -]:",
-
     "UpdateStatus1": "Đang đọc bản cập nhật:",
     "UpdateMessage1": "Đang kết nối với kho lưu trữ cập nhật...",
     "UpdateStatus2": "Đang xác minh:",
@@ -626,25 +577,72 @@
     "UpdateMessage4": "Đang quay lại trình khởi chạy...",
     "UpdateStatus5": "Phiên bản này đã được cập nhật đến {0}!",
     "UpdateMessage5": "Trình khởi chạy sẽ mở lại sau vài giây...",
-  
     "UpdateCountdownMessage1": "Trình khởi động của bạn sẽ cập nhật trong {0}...",
     "UpdateCountdownMessage2": "(Ấn",
     "UpdateCountdownMessage3": "để huỷ đếm ngược)"
   },
-
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "Cập nhật Metadata của trình khởi chạy đã có sẵn!",
     "NotifMetadataUpdateSubtitle": "Metadata mới dành cho trình khởi chạy đã có sẵn! Chúng tôi khuyễn khích bạn tiếp tục cài đặt bản cập nhật để đảm bảo rằng trình khởi chạy có thể kết nối với server của miHoYo/HoYoverse. Ấn vào \"Cập nhật Metadata\" để cập nhật.",
     "NotifMetadataUpdateBtn": "Cập nhật Metadata",
     "NotifMetadataUpdateBtnCountdown": "Đang cập nhật metadata trong: {0}",
     "NotifMetadataUpdateBtnUpdating": "Đang cập nhật Metadata, please wait...",
-
     "NotifFirstWelcomeTitle": "Chào mừng bạn tới Collapse!",
     "NotifFirstWelcomeSubtitle": "Để bắt đầu, ấn vào \"{0}\" nút dưới đây để xem cách cài đặt hoặc gộp trò chơi đã cài sẵn.",
     "NotifFirstWelcomeBtn": "Xem wiki trên github",
-
     "NotifPreviewBuildUsedTitle": "Bạn đang sử dụng phiên bản xem trước!",
     "NotifPreviewBuildUsedSubtitle": "Bạn đang sử dụng bản dựng XEM TRƯỚC trong khi vẫn còn đang được thử nghiệm. Nếu có bất kì lỗi nào, vui lòng báo lỗi với chúng tôi bằng cách ấn vào nút \"{0}\" dưới đây. Xin cảm ơn!",
     "NotifPreviewBuildUsedBtn": "Gửi lỗi"
+  },
+  "_StarRailGameSettingsPage": {
+    "PageTitle": "Cài đặt trò chơi",
+    "Graphics_Title": "Cài đặt đồ hoạ",
+    "Graphics_ResolutionPanel": "Độ phân giải trò chơi",
+    "Graphics_Fullscreen": "Toàn màn hình",
+    "Graphics_ExclusiveFullscreen": "Toàn màn hình với độ phân giải đã chọn",
+    "Graphics_ResSelectPlaceholder": "Chọn",
+    "Graphics_ResCustom": "Chọn độ phân giải khác",
+    "Graphics_ResCustomW": "W",
+    "Graphics_ResCustomH": "H",
+    "Graphics_FPS": "FPS",
+    "Graphics_FPS_Help": "120 FPS vẫn đang được THỬ NGHIỆM! Vui lòng sử dụng cẩn thận và hãy tự chịu trách nhiệm (DWYOR).",
+    "Graphics_FPS_Help2": "Theo lý thuyết, cài đặt FPS lên 120 sẽ làm hỏng cài đặt trong trò chơi.\nSử dụng Collapse để thay đổi cài đặt đồ hoạ trò chơi.",
+    "Graphics_VSync": "VSync",
+    "Graphics_RenderScale": "Kết xuất đồ hoạ",
+    "Graphics_ResolutionQuality": "Chất lượng độ phân giải",
+    "Graphics_ShadowQuality": "Chất lượng bóng đổ",
+    "Graphics_LightQuality": "Chất lượng ánh sáng",
+    "Graphics_CharacterQuality": "Chất lượng nhân vật",
+    "Graphics_EnvDetailQuality": "Chi tiết môi trường",
+    "Graphics_ReflectionQuality": "Chất lượng phản chiếu",
+    "Graphics_BloomQuality": "Hiệu ứng toả sáng",
+    "Graphics_AAMode": "Khử răng cưa",
+    "Graphics_SpecPanel": "Thiết lập đồ hoạ",
+    "SpecEnabled": "Bật",
+    "SpecDisabled": "Tắt",
+    "SpecVeryLow": "Rất thấp",
+    "SpecLow": "Thấp",
+    "SpecMedium": "Trung bình",
+    "SpecHigh": "Cao",
+    "SpecVeryHigh": "Rất cao",
+    "ApplyBtn": "Áp dụng cài đặt",
+    "SettingsApplied": "Các thay đổi đã được lưu!",
+    "OverlayNotInstalledTitle": "Bạn không thể sử dụng tính năng này vì nó chưa được cài đặt hoặc cần được cập nhật!",
+    "OverlayNotInstalledSubtitle": "Vui lòng tải/cập nhật trò chơi trước trong trang trình khởi động của trò chơi!",
+    "OverlayGameRunningTitle": "Trò chơi hiện tại đang chạy!",
+    "OverlayGameRunningSubtitle": "Vui lòng đóng trò chơi trước để sử dụng tính năng này!",
+    "OverlayFirstTimeTitle": "Bạn chưa chơi trò chơi này trước đó!",
+    "OverlayFirstTimeSubtitle": "Vui lòng chạy trò chơi trước để tạo các tệp cần thiết, sau đó hãy quay lại đây để sử dụng tính năng này.",
+    "CustomArgs_Title": "Tuỳ chỉnh tham só khởi động (Nâng cao)",
+    "CustomArgs_Subtitle": "Tham số khởi động",
+    "CustomArgs_Footer1": "Để biết thêm thông tin về tham số khởi động, vui lòng xem tại",
+    "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
+    "CustomArgs_Footer3": "để xem nhiều tham số hơn.",
+    "Audio_Title": "Thiết lập âm thanh",
+    "Audio_Master": "Âm lượng chung",
+    "Audio_BGM": "Âm lượng nhạc",
+    "Audio_SFX": "Âm lượng hiệu ứng",
+    "Audio_VO": "Âm lượng lồng tiếng",
+    "Audio_Mute": "Tắt tiếng"
   }
 }

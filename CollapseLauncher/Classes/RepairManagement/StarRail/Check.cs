@@ -95,6 +95,12 @@ namespace CollapseLauncher
             bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.S;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.S;
 
+            // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
+            asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+
+            // If the file has Hash Mark, then create the hash mark file
+            if (asset.IsHasHashMark) CreateHashMarkFile(asset.N, asset.CRC);
+
             // Check if both location has the file exist or has the size right
             if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
             {
@@ -118,9 +124,6 @@ namespace CollapseLauncher
                         null
                     )
                 ));
-
-                // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
-                asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
                 targetAssetIndex.Add(asset);
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
@@ -164,14 +167,19 @@ namespace CollapseLauncher
 
                     // Mark the main block as "need to be repaired"
                     asset.IsBlockNeedRepair = true;
-
-                    // Update the local path to full persistent or streaming path and add asset for unmatched CRC
-                    asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
                     targetAssetIndex.Add(asset);
 
                     LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
                 }
             }
+        }
+
+        private void CreateHashMarkFile(string filePath, string hash)
+        {
+            string basePath = Path.GetDirectoryName(filePath);
+            string baseName = Path.GetFileNameWithoutExtension(filePath);
+            string toName = Path.Combine(basePath, baseName + $"_{hash}.hash");
+            File.Create(toName).Dispose();
         }
         #endregion
     }

@@ -8,7 +8,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace Hi3Helper
 {
-    public class LangMetadata
+    public struct LangMetadata
     {
         public LangMetadata(string filePath, int index)
         {
@@ -43,15 +43,15 @@ namespace Hi3Helper
             }
         }
 
-        public int LangIndex { get; private set; }
-        public string LangFilePath { get; private set; }
-        public string LangAuthor { get; private set; }
-        public string LangID { get; private set; }
-        public string LangName { get; private set; }
-        public bool LangIsLoaded { get; private set; }
+        public int LangIndex;
+        public string LangFilePath;
+        public string LangAuthor;
+        public string LangID;
+        public string LangName;
+        public bool LangIsLoaded;
     }
 
-    public partial class Locale
+    public sealed partial class Locale
     {
         public const string FallbackLangID = "en-us";
         public static void InitializeLocale()
@@ -115,7 +115,7 @@ namespace Hi3Helper
         public static LocalizationParams Lang;
 #nullable enable
         public static LocalizationParams? LangFallback;
-        public partial class LocalizationParams
+        public sealed partial class LocalizationParams
         {
             public string LanguageName { get; set; } = "";
             public string LanguageID { get; set; } = "";

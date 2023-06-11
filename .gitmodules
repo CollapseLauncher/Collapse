@@ -10,3 +10,6 @@
 [submodule "Hi3Helper.EncTool"]
 	path = Hi3Helper.EncTool
 	url = https://github.com/neon-nyan/Hi3Helper.EncTool
+[submodule "Hi3Helper.SharpHDiffPatch"]
+	path = Hi3Helper.SharpHDiffPatch
+	url = https://github.com/neon-nyan/Hi3Helper.SharpHDiffPatch

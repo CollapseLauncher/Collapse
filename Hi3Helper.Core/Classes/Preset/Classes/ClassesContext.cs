@@ -1,6 +1,5 @@
 ﻿using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region.Honkai;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Locale;
@@ -8,63 +7,55 @@ using static Hi3Helper.Preset.PresetConfigV2;
 
 namespace Hi3Helper
 {
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(YSDispatchInfo))]
-    internal partial class YSDispatchInfoContext : JsonSerializerContext { }
+    internal sealed partial class YSDispatchInfoContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(PkgVersionProperties))]
-    public partial class PkgVersionPropertiesContext : JsonSerializerContext { }
+    public sealed partial class PkgVersionPropertiesContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = true, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(LocalizationParams))]
-    internal partial class LocalizationParamsContext : JsonSerializerContext { }
+    internal sealed partial class LocalizationParamsContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(GeneralDataProp))]
-    internal partial class GeneralDataPropContext : JsonSerializerContext { }
+    internal sealed partial class GeneralDataPropContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(Metadata))]
-    internal partial class MetadataContext : JsonSerializerContext { }
+    internal sealed partial class MetadataContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(Stamp))]
-    public partial class StampContext : JsonSerializerContext { }
+    public sealed partial class StampContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(BHI3LInfo))]
-    public partial class BHI3LInfoContext : JsonSerializerContext { }
+    public sealed partial class BHI3LInfoContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(DataProperties))]
-    public partial class DataPropertiesContext : JsonSerializerContext { }
+    public sealed partial class DataPropertiesContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(DataPropertiesContent))]
-    public partial class DataPropertiesContentContext : JsonSerializerContext { }
+    public sealed partial class DataPropertiesContentContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(RegionResourceProp))]
-    public partial class RegionResourcePropContext : JsonSerializerContext { }
+    public sealed partial class RegionResourcePropContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(FilePropertiesRemote[]))]
-    public partial class Array_FilePropertiesRemoteContext : JsonSerializerContext { }
+    public sealed partial class Array_FilePropertiesRemoteContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(List<FilePropertiesRemote>))]
-    public partial class L_FilePropertiesRemoteContext : JsonSerializerContext { }
+    public sealed partial class L_FilePropertiesRemoteContext : JsonSerializerContext { }
 
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(Dictionary<string, string>))]
-    public partial class D_StringString : JsonSerializerContext { }
-
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
-    [JsonSerializable(typeof(Dispatcher))]
-    public partial class DispatcherContext : JsonSerializerContext { }
-
-    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true, WriteIndented = false)]
-    [JsonSerializable(typeof(Gateway))]
-    public partial class GatewayContext : JsonSerializerContext { }
+    public sealed partial class D_StringString : JsonSerializerContext { }
 }
