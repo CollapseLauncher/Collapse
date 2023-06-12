@@ -60,10 +60,8 @@ namespace CollapseLauncher.GameSettings.StarRail
                 object? value = RegistryRoot.GetValue(_ValueName, null);
                 if (value != null)
                 {
-                    // This probably not an efficient code but damnit my brain hurt
-                    string __LocalAudioLang = Encoding.UTF8.GetString((byte[])value);
-                    string _LocalAudioLang = __LocalAudioLang.Remove(__LocalAudioLang.Length - 1);
-                    return new LocalAudioLanguage { LocalAudioLang = _LocalAudioLang };
+                    string _localAudioLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
+                    return new LocalAudioLanguage { LocalAudioLang = _localAudioLang };
                 }
             }
             catch (Exception ex)

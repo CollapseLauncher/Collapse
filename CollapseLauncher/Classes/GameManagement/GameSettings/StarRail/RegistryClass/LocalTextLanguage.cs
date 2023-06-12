@@ -79,10 +79,8 @@ namespace CollapseLauncher.GameSettings.StarRail
                 object? value = RegistryRoot.GetValue(_ValueName, null);
                 if (value != null)
                 {
-                    // This probably not an efficient code but damnit my brain hurt
-                    string __LocalTextLang = Encoding.UTF8.GetString((byte[])value);
-                    string _LocalTextLang = __LocalTextLang.Remove(__LocalTextLang.Length - 1);
-                    return new LocalTextLanguage { LocalTextLang = _LocalTextLang };
+                    string _localTextLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
+                    return new LocalTextLanguage { LocalTextLang = _localTextLang };
                 }
             }
             catch (Exception ex)
