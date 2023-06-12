@@ -665,8 +665,8 @@
     "Graphics_ResCustomH": "H",
 
     "Graphics_FPS": "FPS",
-    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use in caution, Do With Your Own Risk (DWYOR).",
-    "Graphics_FPS_Help2": "Additionally, Setting FPS to 120 will break in-game Graphics Settings.\r\nUse Collapse instead to change the Game Graphics Settings.",
+    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use with caution as Honkai: Star Rail does not officially support this!",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 will break the in-game Graphics Settings menu.\r\nIf your menu is broken in-game, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_RenderScale": "Render Scale",
     "Graphics_ResolutionQuality": "Resolution Quality",
