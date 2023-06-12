@@ -641,8 +641,11 @@
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
-                                <ScrollViewer HorizontalScrollBarVisibility="Hidden">
-                                    <Grid Margin="0,0,0,-8">
+                                <ScrollViewer
+                                    HorizontalScrollBarVisibility="Visible" HorizontalScrollMode="Enabled"
+                                    VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" MaxWidth="436"
+                                    Margin="-16,-4,-16,-16" Padding="0,0,0,0">
+                                    <Grid Margin="16,0,8,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition/>
