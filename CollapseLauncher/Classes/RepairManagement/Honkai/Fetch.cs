@@ -97,7 +97,7 @@ namespace CollapseLauncher
             if (!_isOnlyRecoverMain)
             {
                 // Find the cache asset. If null, then return
-                CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
+                CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}") || x.N.EndsWith($"{HashID.CGMetadata_CN}")).FirstOrDefault();
 
                 // Deserialize and build video index into asset index
                 await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, token);
