@@ -277,10 +277,10 @@
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
                                         <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
-                                            <ComboBoxItem Content="English"/>
-                                            <ComboBoxItem Content="日本語"/>
-                                            <ComboBoxItem Content="简体中文"/>
-                                            <ComboBoxItem Content="한국어"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_kr}"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </StackPanel>
