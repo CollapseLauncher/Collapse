@@ -269,6 +269,14 @@ namespace CollapseLauncher.Pages
 
         private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
         {
+            if (((ButtonBase)sender).Tag.ToString() == "https://github.com/Andrewthe13th/Inventory_Kamera")
+            {
+                LogWriteLine("Tag found to be Inventory Kamera, spawning process selection window!", LogType.Default, false);
+                // Spawn selection dialog here
+            } else
+            {
+                LogWriteLine(((ButtonBase)sender).Tag.ToString(), LogType.Error, false);
+            }
             SpawnWebView2.SpawnWebView2Window(((ButtonBase)sender).Tag.ToString());
         }
 
