@@ -1173,7 +1173,7 @@ namespace CollapseLauncher
 
         private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) && IsLoadRegionComplete)
+            if (IsLoadRegionComplete)
             {
                 switch (args.KeyboardAccelerator.Key)
                 {
