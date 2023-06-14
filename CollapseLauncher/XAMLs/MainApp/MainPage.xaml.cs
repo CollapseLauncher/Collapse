@@ -4,9 +4,11 @@ using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -20,6 +22,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Core;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -732,6 +736,9 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
+
+            CreateKeyBoardHandlers();
+
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -1137,6 +1144,50 @@ namespace CollapseLauncher
             IsNotificationPanelShow = false;
             ToggleNotificationPanelBtn.IsChecked = false;
             ShowHideNotificationPanel();
+        }
+
+        private void CreateKeyBoardHandlers()
+        {
+            int regionIndex = 0;
+            foreach (string region in ComboBoxGameCategory.Items)
+            {
+                KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                {
+                    Modifiers = VirtualKeyModifiers.Control,
+                    Key = VirtualKey.Number1 + regionIndex++,
+                };
+                keystroke.Invoked += KeyboardAccelerator_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+            }
+        }
+
+        private void ControlRegionChange(int index)
+        {
+            if (ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]) return;
+            ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
+            ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(ComboBoxGameCategory.SelectedValue.ToString());
+            ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+            ChangeRegionConfirmBtn.IsEnabled = false;
+            ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+        }
+
+        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) && IsLoadRegionComplete)
+            {
+                switch (args.KeyboardAccelerator.Key)
+                {
+                    case VirtualKey.Number1:
+                        ControlRegionChange(0);
+                        break;
+                    case VirtualKey.Number2:
+                        ControlRegionChange(1);
+                        break;
+                    case VirtualKey.Number3:
+                        ControlRegionChange(2);
+                        break;
+                }
+            }
         }
     }
 }
