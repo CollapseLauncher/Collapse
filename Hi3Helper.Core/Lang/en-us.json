@@ -515,7 +515,9 @@
     "ReleaseChannelChangeTitle": "Change Release Channel",
     "ReleaseChannelChangeSubtitle1": "You are about to change your release channel to:",
     "ReleaseChannelChangeSubtitle2": "Note:",
-    "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup. We are not responsible for any loss or corruption of data associated with your game."
+    "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup. We are not responsible for any loss or corruption of data associated with your game.",
+    "LocateExePathTitle": "Locate Executable Install Path",
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
   },
 
   "_InstallMgmt": {
