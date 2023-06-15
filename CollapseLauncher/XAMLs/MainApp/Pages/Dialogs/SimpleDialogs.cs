@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -309,30 +308,43 @@ namespace CollapseLauncher.Dialogs
                 );
 
         #region ShowKeybinds
-        private static StackPanel GenerateShortcutBlock(string[] images, string description, string example = null)
+        private static StackPanel GenerateShortcutBlock(string[] kbkeys, string description, string example = null)
         {
             StackPanel Shortcut = new StackPanel() { Margin = new Thickness(0, 4, 0, 4), Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            
-            foreach (string im in images)
+            string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
+
+            foreach (string im in kbkeys)
             {
-                Border keyboxborder = new Border() {
-                    Height = 50,
-                    Width = 50,
-                    Margin = new Thickness(5,5,5,5),
-                    CornerRadius = new CornerRadius(10),
-                    BorderBrush = new SolidColorBrush(color: new Windows.UI.Color(){A=255, B=255, G=255, R=255}),
-                    BorderThickness = new Thickness(2.5)
-                };
+                try
+                {
+                    Border keyboxborder = new Border()
+                    {
+                        Height = 50,
+                        Width = 50,
+                        Margin = new Thickness(5, 5, 5, 5),
+                        CornerRadius = new CornerRadius(5),
+                        Background = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources[colorSchm]),
+                    };
 
-                TextBlock keybox = new TextBlock() {
-                    Text = im,
-                    TextAlignment = TextAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
 
-                keyboxborder.Child = keybox;
-                Shortcut.Children.Add(keyboxborder);
-                Shortcut.Children.Add(new TextBlock() { Text = "+", FontWeight = FontWeights.Bold, FontSize=20, VerticalAlignment=VerticalAlignment.Center});
+
+                    TextBlock keybox = new TextBlock()
+                    {
+                        Text = im,
+                        FontWeight = FontWeights.Bold,
+                        TextAlignment = TextAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Foreground = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
+                    };
+                    
+
+                    keyboxborder.Child = keybox;
+                    Shortcut.Children.Add(keyboxborder);
+                    Shortcut.Children.Add(new TextBlock() { Text = "+", FontWeight = FontWeights.Bold, FontSize = 20, VerticalAlignment = VerticalAlignment.Center });
+                }catch(Exception ex)
+                {
+                    Hi3Helper.Logger.LogWriteLine(ex.ToString());
+                }
             }
 
             Shortcut.Children.RemoveAt(Shortcut.Children.Count-1);
@@ -364,6 +376,11 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(new TextBlock { Text = "(Num corresponds to a numbered key)", FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
             stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Num" }, "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)"));
             stack.Children.Add(GenerateShortcutBlock(new string[] { "Shift", "Num" }, "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region"));
+
+            foreach (object a in Application.Current.Resources)
+            {
+                Hi3Helper.Logger.LogWriteLine(a.ToString());
+            }
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",

@@ -1177,7 +1177,7 @@ namespace CollapseLauncher
             }
 
             numIndex = 0;
-            while (numIndex < 9)
+            while (numIndex < 6)
             {
                 KeyboardAccelerator keystroke = new KeyboardAccelerator()
                 {
