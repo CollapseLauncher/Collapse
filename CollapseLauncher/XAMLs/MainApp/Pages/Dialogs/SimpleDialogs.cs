@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -306,6 +307,75 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.OkayBackToMenu,
                     null
                 );
+
+        #region ShowKeybinds
+        private static StackPanel GenerateShortcutBlock(string[] images, string description, string example = null)
+        {
+            StackPanel Shortcut = new StackPanel() { Margin = new Thickness(0, 4, 0, 4), Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            
+            foreach (string im in images)
+            {
+                Border keyboxborder = new Border() {
+                    Height = 50,
+                    Width = 50,
+                    Margin = new Thickness(5,5,5,5),
+                    CornerRadius = new CornerRadius(10),
+                    BorderBrush = new SolidColorBrush(color: new Windows.UI.Color(){A=255, B=255, G=255, R=255}),
+                    BorderThickness = new Thickness(2.5)
+                };
+
+                TextBlock keybox = new TextBlock() {
+                    Text = im,
+                    TextAlignment = TextAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                keyboxborder.Child = keybox;
+                Shortcut.Children.Add(keyboxborder);
+                Shortcut.Children.Add(new TextBlock() { Text = "+", FontWeight = FontWeights.Bold, FontSize=20, VerticalAlignment=VerticalAlignment.Center});
+            }
+
+            Shortcut.Children.RemoveAt(Shortcut.Children.Count-1);
+
+            if (example != null)
+            {
+                StackPanel ShortcutDesc = new StackPanel() { Margin = new Thickness(5, 4, 0, 4), Orientation = Orientation.Vertical, VerticalAlignment = VerticalAlignment.Center };
+                ShortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 15});
+                ShortcutDesc.Children.Add(new TextBlock() { Text = example, FontSize = 12});
+                Shortcut.Children.Add(ShortcutDesc);
+            }
+            else
+            {
+                Shortcut.Children.Add(new TextBlock() { Margin = new Thickness(5, 0, 0, 0), Text = description, FontSize = 15, VerticalAlignment = VerticalAlignment.Center });
+            }
+
+            return Shortcut;
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content)
+        {
+            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth=500 };
+
+            stack.Children.Add(new TextBlock { Text = "General", FontSize = 18, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 8) });
+            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Tab" }, "Opens this menu"));
+            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "H" }, "Goes to the Home page"));
+
+            stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 18, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            stack.Children.Add(new TextBlock { Text = "(Num corresponds to a numbered key)", FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
+            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Num" }, "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)"));
+            stack.Children.Add(GenerateShortcutBlock(new string[] { "Shift", "Num" }, "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region"));
+
+            return await SpawnDialog(
+                    "Keyboard Shortcuts",
+                    stack,
+                    Content,
+                    Lang._Misc.Close,
+                    null,
+                    null,
+                    ContentDialogButton.Primary
+                );
+        }
+        #endregion
 
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,

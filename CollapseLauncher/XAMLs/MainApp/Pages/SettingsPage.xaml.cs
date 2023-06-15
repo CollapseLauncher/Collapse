@@ -431,5 +431,18 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.IsShowRegionChangeWarning = value;
             }
         }
+
+        private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.SimpleDialogs.Dialog_ShowKeybinds(this);
+
+        public static event EventHandler<bool> KeyboardShortcutsEvent;
+        private bool AreShortcutsEnabled
+        {
+            get => GetAppConfigValue("EnableShortcuts").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableShortcuts", value);
+                KeyboardShortcutsEvent(this, value);  
+            }
+        }
     }
 }

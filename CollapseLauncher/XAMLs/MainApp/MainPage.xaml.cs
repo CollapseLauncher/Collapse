@@ -199,6 +199,7 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
+            SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void UnsubscribeEvents()
@@ -210,6 +211,7 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
+            SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
@@ -735,8 +737,8 @@ namespace CollapseLauncher
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
 
-            CreateKeyBoardShortcutHandlers();
-
+            if (AreShortcutsEnabled) CreateKeyBoardShortcutHandlers();
+            
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -1137,7 +1139,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void NotificationContainerBackground_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             IsNotificationPanelShow = false;
             ToggleNotificationPanelBtn.IsChecked = false;
@@ -1146,20 +1148,53 @@ namespace CollapseLauncher
 
         private void CreateKeyBoardShortcutHandlers()
         {
-            int regionIndex = 0;
-            foreach (string region in ComboBoxGameCategory.Items)
+            KeyboardAccelerator kbshow = new KeyboardAccelerator()
+            {
+                Modifiers = VirtualKeyModifiers.Control,
+                Key = VirtualKey.Tab,
+            };
+            kbshow.Invoked += ShowKeybinds_Invoked;
+            KeyboardHandler.KeyboardAccelerators.Add(kbshow);
+
+            KeyboardAccelerator kbhome = new KeyboardAccelerator()
+            {
+                Modifiers = VirtualKeyModifiers.Control,
+                Key = VirtualKey.H,
+            };
+            kbhome.Invoked += GoHome_Invoked;
+            KeyboardHandler.KeyboardAccelerators.Add(kbhome);
+
+            int numIndex = 0;
+            foreach (string game in ComboBoxGameCategory.Items)
             {
                 KeyboardAccelerator keystroke = new KeyboardAccelerator()
                 {
                     Modifiers = VirtualKeyModifiers.Control,
-                    Key = VirtualKey.Number1 + regionIndex++,
+                    Key = VirtualKey.Number1 + numIndex++,
                 };
-                keystroke.Invoked += KeyboardShortcut_Invoked;
+                keystroke.Invoked += KeyboardGameShortcut_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+            }
+
+            numIndex = 0;
+            while (numIndex < 9)
+            {
+                KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                {
+                    Modifiers = VirtualKeyModifiers.Shift,
+                    Key = VirtualKey.Number1 + numIndex++,
+                };
+                keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                 KeyboardHandler.KeyboardAccelerators.Add(keystroke);
             }
         }
 
-        private void KeyboardShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void DeleteKeyboardHandlers()
+        {
+            KeyboardHandler.KeyboardAccelerators.Clear();
+        }
+
+        private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             int index = (int)args.KeyboardAccelerator.Key - 49;
             if (IsLoadRegionComplete && ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index] && index < ComboBoxGameCategory.Items.Count)
@@ -1169,6 +1204,44 @@ namespace CollapseLauncher
                 ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
                 ChangeRegionConfirmBtn.IsEnabled = false;
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+            }
+        }
+
+        private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            int index = (int)args.KeyboardAccelerator.Key - 49;
+            if (IsLoadRegionComplete && ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
+            {
+                ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
+                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+            }
+        }
+
+        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) => await Dialogs.SimpleDialogs.Dialog_ShowKeybinds(this);
+
+        private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
+            Navigate(typeof(HomePage), false, new NavigationViewItem() { Tag = "launcher" });
+        }
+
+        private bool AreShortcutsEnabled
+        {
+            get => GetAppConfigValue("EnableShortcuts").ToBool();
+        }
+
+        private void SettingsPage_KeyboardShortcutsEvent(object sender, bool e)
+        {
+            if (e)
+            {
+                CreateKeyBoardShortcutHandlers();
+            }
+            else
+            {
+                DeleteKeyboardHandlers();
             }
         }
     }
