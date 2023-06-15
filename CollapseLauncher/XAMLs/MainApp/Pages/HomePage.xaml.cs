@@ -31,6 +31,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Hi3Helper.Data;
+using System.Collections.Generic;
 
 namespace CollapseLauncher.Pages
 {
@@ -267,12 +269,63 @@ namespace CollapseLauncher.Pages
             SpawnWebView2.SpawnWebView2Window(((ImageEx)sender).Tag.ToString());
         }
 
-        private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
+        private async void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
         {
             if (((ButtonBase)sender).Tag.ToString() == "https://github.com/Andrewthe13th/Inventory_Kamera")
             {
-                LogWriteLine("Tag found to be Inventory Kamera, spawning process selection window!", LogType.Default, false);
+                LogWriteLine("Tag found to be 'Inventory Kamera', spawning process selection window!", LogType.Default, false);
                 // Spawn selection dialog here
+                bool isChosen = false;
+                while (!isChosen)
+                {
+                    switch (await Dialog_OpenExecutable(Content))
+                    {
+                        case ContentDialogResult.Secondary:
+                            isChosen = true;
+                            break;
+                        case ContentDialogResult.Primary:
+
+                            string file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Inventory Kamera", "InventoryKamera.exe" } }, "Select Program Executable");
+                            string folder = "";
+                            if (file != null)
+                            {
+                                folder = Path.GetFullPath(file).Trim();
+                                if (ConverterTool.IsUserHasPermission(folder)) // This does not work
+                                {
+                                    isChosen = true;
+                                    try
+                                    {
+                                        Process proc = new Process()
+                                        {
+                                            StartInfo = new ProcessStartInfo
+                                            {
+                                                UseShellExecute = true,
+                                                Verb = "runas",
+                                                FileName = AppExecutablePath,
+                                                WorkingDirectory = folder,
+                                            }
+                                        };
+                                        proc.Start();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogWriteLine($"Unable to start Inventory Kamera! {ex}", LogType.Error, true);
+                                    }
+                                }
+                                else
+                                {
+                                    await Dialog_InsufficientWritePermission(Content, folder);
+                                }
+                            } 
+                            else
+                            {
+                                isChosen = false;
+                            }
+                            break;
+                        case ContentDialogResult.None:
+                            break;
+                    }
+                }
             } else
             {
                 LogWriteLine(((ButtonBase)sender).Tag.ToString(), LogType.Error, false);
