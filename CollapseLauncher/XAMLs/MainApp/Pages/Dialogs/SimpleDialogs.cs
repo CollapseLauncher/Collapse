@@ -373,11 +373,6 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Num" }, "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)"));
             stack.Children.Add(GenerateShortcutBlock(new string[] { "Shift", "Num" }, "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region"));
 
-            foreach (object a in Application.Current.Resources)
-            {
-                Hi3Helper.Logger.LogWriteLine(a.ToString());
-            }
-
             return await SpawnDialog(
                     "Keyboard Shortcuts",
                     stack,
