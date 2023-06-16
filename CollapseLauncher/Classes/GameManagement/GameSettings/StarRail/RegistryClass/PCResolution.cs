@@ -133,7 +133,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         private void SaveIndividualRegistry()
         {
-            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
+            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 3, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
