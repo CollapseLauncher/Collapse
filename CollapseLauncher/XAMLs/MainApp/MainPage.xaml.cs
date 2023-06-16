@@ -200,6 +200,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeybindDialog.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void UnsubscribeEvents()
@@ -212,6 +213,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeybindDialog.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
@@ -737,8 +739,8 @@ namespace CollapseLauncher
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
 
-            if (AreShortcutsEnabled) CreateKeyBoardShortcutHandlers();
-            
+            if (AreShortcutsEnabled) CreateKeyboardShortcutHandlers();
+
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -1146,20 +1148,31 @@ namespace CollapseLauncher
             ShowHideNotificationPanel();
         }
 
-        private void CreateKeyBoardShortcutHandlers()
+        private void CreateKeyboardShortcutHandlers()
         {
+            List<List<string>> keys = Dialogs.KeybindDialog.KeyList ?? new List<List<string>>
+            {
+                //Default keybind list
+                new List<string> { "Ctrl", "Tab" },
+                new List<string> { "Ctrl", "H" },
+                new List<string> { "Ctrl", "Num" },
+                new List<string> { "Shift", "Num" }
+            };
+
+            int keysIndex = 0;
+
             KeyboardAccelerator kbshow = new KeyboardAccelerator()
             {
-                Modifiers = VirtualKeyModifiers.Control,
-                Key = VirtualKey.Tab,
+                Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                Key = StrToVKey(keys[keysIndex++][1])
             };
             kbshow.Invoked += ShowKeybinds_Invoked;
             KeyboardHandler.KeyboardAccelerators.Add(kbshow);
 
             KeyboardAccelerator kbhome = new KeyboardAccelerator()
             {
-                Modifiers = VirtualKeyModifiers.Control,
-                Key = VirtualKey.H,
+                Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                Key = StrToVKey(keys[keysIndex++][1]),
             };
             kbhome.Invoked += GoHome_Invoked;
             KeyboardHandler.KeyboardAccelerators.Add(kbhome);
@@ -1169,19 +1182,19 @@ namespace CollapseLauncher
             {
                 KeyboardAccelerator keystroke = new KeyboardAccelerator()
                 {
-                    Modifiers = VirtualKeyModifiers.Control,
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
                     Key = VirtualKey.Number1 + numIndex++,
                 };
                 keystroke.Invoked += KeyboardGameShortcut_Invoked;
                 KeyboardHandler.KeyboardAccelerators.Add(keystroke);
             }
 
-            numIndex = 0;
+            numIndex = 0; keysIndex++;
             while (numIndex < 6)
             {
                 KeyboardAccelerator keystroke = new KeyboardAccelerator()
                 {
-                    Modifiers = VirtualKeyModifiers.Shift,
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
                     Key = VirtualKey.Number1 + numIndex++,
                 };
                 keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
@@ -1189,7 +1202,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void DeleteKeyboardHandlers()
+        private void DeleteKeyboardShortcutHandlers()
         {
             KeyboardHandler.KeyboardAccelerators.Clear();
         }
@@ -1233,15 +1246,36 @@ namespace CollapseLauncher
             get => GetAppConfigValue("EnableShortcuts").ToBool();
         }
 
-        private void SettingsPage_KeyboardShortcutsEvent(object sender, bool e)
+        public static VirtualKey StrToVKey(string key)
         {
-            if (e)
+            return (VirtualKey)Enum.Parse(typeof(VirtualKey), key);
+        }
+
+        public static VirtualKeyModifiers StrToVKeyModifier(string key)
+        {
+            if (key == "Ctrl") key = "Control";
+            return (VirtualKeyModifiers)Enum.Parse(typeof(VirtualKeyModifiers), key);
+        }
+
+        private void SettingsPage_KeyboardShortcutsEvent(object sender, bool[] e)
+        {
+            if (e[0])
             {
-                CreateKeyBoardShortcutHandlers();
+                if (e[1])
+                {
+                    CreateKeyboardShortcutHandlers();
+                }
+                else
+                {
+                    LogWriteLine("swaping bitch");
+                    DeleteKeyboardShortcutHandlers();
+                    CreateKeyboardShortcutHandlers();
+                }
+                
             }
             else
             {
-                DeleteKeyboardHandlers();
+                DeleteKeyboardShortcutHandlers();
             }
         }
     }

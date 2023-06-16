@@ -8,8 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
+using static CollapseLauncher.Dialogs.KeybindDialog;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CommunityToolkit.WinUI.UI;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -307,71 +309,36 @@ namespace CollapseLauncher.Dialogs
                     null
                 );
 
-        #region ShowKeybinds
-        private static StackPanel GenerateShortcutBlock(string[] kbkeys, string description, string example = null)
-        {
-            StackPanel Shortcut = new StackPanel() { Margin = new Thickness(0, 4, 0, 4), Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
-
-            foreach (string im in kbkeys)
-            {
-
-                Border keyboxborder = new Border()
-                {
-                    Height = 42, Width = 42,
-                    Margin = new Thickness(5, 5, 5, 0),
-                    CornerRadius = new CornerRadius(5),
-                    Background = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources[colorSchm])
-                };
-                ThemeShadow ts = new ThemeShadow();
-                ts.Receivers.Add(keyboxborder);
-                keyboxborder.Translation += Shadow48;
-                keyboxborder.Shadow = ts;
-
-                TextBlock keybox = new TextBlock()
-                {
-                    Text = im,
-                    FontWeight = FontWeights.Bold,
-                    TextAlignment = TextAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Foreground = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
-                };
-
-
-                keyboxborder.Child = keybox;
-                Shortcut.Children.Add(keyboxborder);
-                Shortcut.Children.Add(new TextBlock() { Text = "+", FontWeight = FontWeights.Bold, FontSize = 20, VerticalAlignment = VerticalAlignment.Center });
-            }
-
-            Shortcut.Children.RemoveAt(Shortcut.Children.Count - 1);
-
-            if (example != null)
-            {
-                StackPanel ShortcutDesc = new StackPanel() { Margin = new Thickness(5, 1, 0, 1), Orientation = Orientation.Vertical, VerticalAlignment = VerticalAlignment.Center };
-                ShortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(0, 2, 0, 1) });
-                ShortcutDesc.Children.Add(new TextBlock() { Text = example, FontSize = 11, Margin = new Thickness(0, 1, 0, 2) });
-                Shortcut.Children.Add(ShortcutDesc);
-            }
-            else
-            {
-                Shortcut.Children.Add(new TextBlock() { Margin = new Thickness(5, 1, 0, 1), Text = description, FontSize = 14, VerticalAlignment = VerticalAlignment.Center });
-            }
-
-            return Shortcut;
-        }
-
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content)
         {
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth = 500 };
 
+            List<List<string>> keys = KeyList ?? new List<List<string>>
+            {
+                //Default keybind list
+                new List<string> { "Ctrl", "Tab" },
+                new List<string> { "Ctrl", "H" },
+                new List<string> { "Ctrl", "Num" },
+                new List<string> { "Shift", "Num" }
+            };
+
+            KeyList ??= keys;
+
             stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Tab" }, "Open this list"));
-            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "H" }, "Go to the Home page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[0], "Open this list"));
+            stack.Children.Add(GenerateShortcutBlock(keys[1], "Go to the Home page"));
 
             stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             stack.Children.Add(new TextBlock { Text = "Note: Num corresponds to a numbered key", FontSize = 11.5, Margin = new Thickness(0, 0, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(new string[] { "Ctrl", "Num" }, "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)"));
-            stack.Children.Add(GenerateShortcutBlock(new string[] { "Shift", "Num" }, "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region"));
+            stack.Children.Add(GenerateShortcutBlock(keys[2], "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)"));
+            stack.Children.Add(GenerateShortcutBlock(keys[3], "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region"));
+
+            StackPanel swapSP = new StackPanel() { Orientation = Orientation.Horizontal };
+            swapSP.Children.Add(new FontIcon() { Glyph = "", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily});
+            swapSP.Children.Add(new TextBlock() { Text = "Swap Keybinds", Margin = new Thickness(10, 0, 0, 0) });
+            Button swap = new Button { Content = swapSP, Margin = new Thickness(0, 8, 0, 0), HorizontalAlignment=HorizontalAlignment.Center };
+            swap.Click += Swap_Click;
+            stack.Children.Add(swap);
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
@@ -383,7 +350,15 @@ namespace CollapseLauncher.Dialogs
                     ContentDialogButton.Primary
                 );
         }
-        #endregion
+
+        public static void Swap_Click(object sender, RoutedEventArgs e)
+        {
+            SwapKeybind(new List<string> { "Shift", "Num" }, new List<string> { "Ctrl", "Num" });
+            
+            (((sender as Button).Parent as StackPanel).Parent as ContentDialog).Hide();
+            
+            (sender as Button).FindParent<ContentDialog>().Hide();
+        }
 
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
