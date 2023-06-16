@@ -1092,15 +1092,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
-                string PlaytimeValue = (string)RegionKey.GetValue("CollapseLauncher_Playtime", null);
-                if (PlaytimeValue == null)
-                {
-                    PlaytimeValue = "0h 0m 0s";
-                    SavePlaytimetoRegistry(RegionRegKey, PlaytimeValue);
-                    LogWriteLine($"Created REG_SZ value \"CollapseLauncher_Playtime\" for {RegionRegKey.Split('\\')[2]}.", LogType.Default, true);
-                }
-                return PlaytimeValue;
+                return (string)Registry.CurrentUser.OpenSubKey(RegionRegKey, true).GetValue("CollapseLauncher_Playtime", "0h 0m 0s");
             }
             catch(Exception ex)
             {
@@ -1114,8 +1106,7 @@ namespace CollapseLauncher.Pages
         {
             try 
             {
-                RegistryKey RegionKey = Registry.CurrentUser.OpenSubKey(RegionRegKey, true);
-                RegionKey.SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.String);
+                Registry.CurrentUser.OpenSubKey(RegionRegKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.String);
             }
             catch(Exception ex)
             {
