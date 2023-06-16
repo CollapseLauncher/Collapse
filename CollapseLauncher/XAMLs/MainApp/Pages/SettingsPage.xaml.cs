@@ -432,7 +432,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.SimpleDialogs.Dialog_ShowKeybinds(this);
+        private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 
         public static event EventHandler<bool[]> KeyboardShortcutsEvent;
         private bool AreShortcutsEnabled
