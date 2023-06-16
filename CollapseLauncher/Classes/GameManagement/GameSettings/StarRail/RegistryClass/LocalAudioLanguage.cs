@@ -61,6 +61,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     string _localAudioLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
                     return new LocalAudioLanguage { LocalAudioLang = _localAudioLang };
                 }
             }
@@ -78,7 +79,8 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 string data = LocalAudioLang + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot?.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);;
+                RegistryRoot?.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {data}", LogType.Default, true);
             }
             catch (Exception ex)
             {

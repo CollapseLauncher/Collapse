@@ -71,7 +71,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error has occured while importing registry!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error has occurred while importing registry!\r\n{ex}", Hi3Helper.LogType.Error, true);
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
