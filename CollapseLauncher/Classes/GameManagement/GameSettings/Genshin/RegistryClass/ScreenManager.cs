@@ -86,6 +86,20 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Default: 1
         /// </summary>
         public int fullscreen { get; set; } = 1;
+
+        public override bool isfullScreen
+        {
+            get => fullscreen switch
+            {
+                1 => true,
+                _ => false,
+            };
+            set => fullscreen = value switch
+            {
+                true => 1,
+                _ => 0,
+            };
+        }
         #endregion
 #nullable enable
         #region Methods
