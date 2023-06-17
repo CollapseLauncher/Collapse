@@ -709,5 +709,75 @@
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VO": "Voice Over Volume",
     "Audio_Mute": "Mute Audio"
+  },
+
+  "_GenshinGameSettingsPage": {
+    "PageTitle": "Game Settings",
+
+    "Graphics_Title": "Graphics Settings",
+    "Graphics_ResolutionPanel": "Game Resolution",
+    "Graphics_Fullscreen": "Fullscreen",
+    "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ResSelectPlaceholder": "Select",
+    "Graphics_ResCustom": "Use Custom Resolution",
+    "Graphics_ResCustomW": "W",
+    "Graphics_ResCustomH": "H",
+
+    "Graphics_FPS": "FPS",
+    "Graphics_RenderScale": "Render Scale",
+    "Graphics_ShadowQuality": "Shadow Quality",
+    "Graphics_VisualFX": "Visual Effects",
+    "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_EnvDetailQuality": "Environment Detail",
+    "Graphics_VSync": "VSync",
+    "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_VolFogs": "Volumetric Fogs",
+    "Graphics_ReflectionQuality": "Reflection Quality",
+    "Graphics_MotionBlur": "Motion Blur",
+    "Graphics_BloomQuality": "Bloom Quality",
+    "Graphics_CrowdDensity": "Crowd Density",
+    "Graphics_SubsurfaceScattering": "Subsurface Scattering",
+    "Graphics_TeammateFX": "Teammate Effects",
+    "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
+
+    "Graphics_SpecPanel": "Global Graphics Settings",
+    "SpecEnabled": "Enabled",
+    "SpecDisabled": "Disabled",
+    "SpecVeryLow": "Very Low",
+    "SpecLow": "Low",
+    "SpecMedium": "Medium",
+    "SpecHigh": "High",
+    "SpecVeryHigh": "Very High",
+
+    "ApplyBtn": "Apply Settings",
+    "SettingsApplied": "Changes have been saved!",
+
+    "OverlayNotInstalledTitle": "You cannot use this feature as the region isn't installed or needs to be updated!",
+    "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
+    "OverlayGameRunningTitle": "Game is Currently Running!",
+    "OverlayGameRunningSubtitle": "Please close the game first to use this feature!",
+    "OverlayFirstTimeTitle": "You have never played this game before!",
+    "OverlayFirstTimeSubtitle": "Please run the game first to generate the necessary files, then come back here to use this feature.",
+
+    "CustomArgs_Title": "Custom Start-up Arguments (Advanced)",
+    "CustomArgs_Subtitle": "Start-up Arguments",
+    "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
+    "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "Audio_Title": "Audio Settings",
+    "Audio_Master": "Master Volume",
+    "Audio_BGM": "BGM Volume",
+    "Audio_SFX": "Sound Effects Volume",
+    "Audio_VO": "Voice Over Volume",
+
+    "Audio_Output": "Audio Output Format",
+    "Audio_Output_Stereo": "Stereo",
+    "Audio_Output_Surround": "Surround",
+
+    "Audio_DynamicRange": "Audio Dynamic Range",
+    "Audio_DynamicRange_Full": "Full",
+    "Audio_DynamicRange_Limited": "Limited",
+    "Audio_Mute": "Mute Audio"
   }
 }
