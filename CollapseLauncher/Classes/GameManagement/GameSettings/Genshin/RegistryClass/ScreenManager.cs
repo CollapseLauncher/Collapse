@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
+using SharpCompress.Common;
 using System;
 using System.Drawing;
 using System.Text;
@@ -106,6 +107,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                     int width = (int)valueWidth;
                     int height = (int)valueHeight;
                     int fullscreen = (int)valueFullscreen;
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerWidth} : {width}", LogType.Default, true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Default, true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Default, true);
                     return new ScreenManager ();
                 }
             }
