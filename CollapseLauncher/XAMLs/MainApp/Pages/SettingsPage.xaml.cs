@@ -434,14 +434,14 @@ namespace CollapseLauncher.Pages
 
         private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 
-        public static event EventHandler<bool[]> KeyboardShortcutsEvent;
+        public static event EventHandler<int> KeyboardShortcutsEvent;
         private bool AreShortcutsEnabled
         {
             get => GetAppConfigValue("EnableShortcuts").ToBool();
             set
             {
                 SetAndSaveConfigValue("EnableShortcuts", value);
-                KeyboardShortcutsEvent(this, new bool[] { value, true });  
+                KeyboardShortcutsEvent(this, value ? 0 : 2);  
             }
         }
     }

@@ -1211,7 +1211,7 @@ namespace CollapseLauncher
 
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            int index = (int)args.KeyboardAccelerator.Key - 49;
+            int index = (int)sender.Key - 49;
             if (IsLoadRegionComplete && ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index] && index < ComboBoxGameCategory.Items.Count)
             {
                 ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
@@ -1224,7 +1224,7 @@ namespace CollapseLauncher
 
         private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            int index = (int)args.KeyboardAccelerator.Key - 49;
+            int index = (int)sender.Key - 49;
             if (IsLoadRegionComplete && ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
             {
                 ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
@@ -1248,24 +1248,20 @@ namespace CollapseLauncher
             get => GetAppConfigValue("EnableShortcuts").ToBool();
         }
 
-        private void SettingsPage_KeyboardShortcutsEvent(object sender, bool[] e)
+        private void SettingsPage_KeyboardShortcutsEvent(object sender, int e)
         {
-            if (e[0])
+            switch(e)
             {
-                if (e[1])
-                {
+                case 0:
                     CreateKeyboardShortcutHandlers();
-                }
-                else
-                {
+                    break;
+                case 1:
                     DeleteKeyboardShortcutHandlers();
                     CreateKeyboardShortcutHandlers();
-                }
-                
-            }
-            else
-            {
-                DeleteKeyboardShortcutHandlers();
+                    break;
+                case 2:
+                    DeleteKeyboardShortcutHandlers();
+                    break;                
             }
         }
     }

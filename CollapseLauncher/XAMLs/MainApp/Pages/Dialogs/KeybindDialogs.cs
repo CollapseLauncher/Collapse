@@ -17,7 +17,7 @@ namespace CollapseLauncher.Dialogs
 {
     public static class KeybindDialogs
     {
-        public static event EventHandler<bool[]> KeyboardShortcutsEvent;
+        public static event EventHandler<int> KeyboardShortcutsEvent;
 
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
 
@@ -264,7 +264,7 @@ namespace CollapseLauncher.Dialogs
                     keys[keys.FindIndex(i => i.Contains(oldKeys[0]) && i.Contains(oldKeys[1]))] = newKeys;
                     KeyList = keys;
                 }
-                KeyboardShortcutsEvent(null, new bool[] { true, false });
+                KeyboardShortcutsEvent(null, 1);
             }
             catch (Exception ex)
             {
