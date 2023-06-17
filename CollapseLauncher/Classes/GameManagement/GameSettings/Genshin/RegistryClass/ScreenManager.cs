@@ -30,7 +30,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 64 x 64 - int.MaxValue x int.MaxValue<br/>
         /// Default: Your screen resolution
         /// </summary>
-        [JsonIgnore]
         public override Size sizeRes
         {
             get => new Size(width, height);
@@ -46,7 +45,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 64 x 64 - int.MaxValue x int.MaxValue<br/>
         /// Default: Your screen resolution
         /// </summary>
-        [JsonIgnore]
         public override string sizeResString
         {
             get => $"{width}x{height}";
@@ -110,7 +108,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerWidth} : {width}", LogType.Default, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Default, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Default, true);
-                    return new ScreenManager ();
+                    return new ScreenManager();
                 }
             }
             catch (Exception ex)
@@ -127,8 +125,10 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Default, true);
+
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Default, true);
+
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Default, true);
             }
