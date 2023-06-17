@@ -42,17 +42,30 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// This define "<c>Text Language</c>" in-game settings. <br/>
         /// Valid values: 1-13 
         /// Default: 1
-        /// TODO: Index this language
-        /// EN(1)
+        /// English(1)
+        /// Simplified Chinese(2)
+        /// Traditional Chinese(3)
+        /// French(4)
+        /// German(5)
+        /// Spanish(6)
+        /// Portugese(7)
+        /// Russian(8)
+        /// Japanese(9)
+        /// Korean(10)
+        /// Thai(11)
+        /// Vietnamese(12)
+        /// Indonesian(13)
         /// </summary>
         public int deviceLanguageType { get; set; } = 1;
 
         /// <summary>
         /// This define "<c>Voice Language</c>" in-game settings. <br/>
-        /// Valid values: 1-4
+        /// Valid values: 0-3
         /// Default: 1
-        /// TODO: Index the language
-        /// JP(2)
+        /// Chinese(0)
+        /// English(1)
+        /// Japanese(2)
+        /// Korean(3)
         /// </summary>
         public int deviceVoiceLanguageType { get; set; } = 1;
 
@@ -216,8 +229,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public bool usingNewVibrationSetting { get; set; } = true;
 
         /// <summary>
-        /// This define "<c>Motion Blur</c>" settings in-game. <br/>
-        /// Default: true
+        /// Is not an actual blur setting
         /// </summary>
         public bool motionBlur { get; set; } = true;
 
@@ -235,7 +247,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
         /// </summary>
-        public float gammaValue { get; set; } = 2.0f;
+        public float gammaValue { get; set; } = 2.2f;
         
         /// <summary>
         /// This holds value for controllers input that has been customized.
