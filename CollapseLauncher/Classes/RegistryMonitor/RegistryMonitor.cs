@@ -318,10 +318,11 @@ namespace RegistryUtils
             if (result != 0)
                 throw new Win32Exception(result);
 
+            WaitHandle[] waitHandles = null;
             try
             {
                 AutoResetEvent _eventNotify = new AutoResetEvent(false);
-                WaitHandle[] waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
+                waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
                 while (!_eventTerminate.WaitOne(0, true))
                 {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -343,6 +344,8 @@ namespace RegistryUtils
                 {
                     RegCloseKey(registryKey);
                 }
+
+                for (int i = 0; i < waitHandles?.Length; i++) waitHandles?[i]?.Dispose();
             }
         }
     }
