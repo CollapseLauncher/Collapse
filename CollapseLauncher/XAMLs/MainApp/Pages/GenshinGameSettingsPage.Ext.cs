@@ -114,6 +114,6 @@ namespace CollapseLauncher.Pages
             }
             set => Settings.SettingsScreen.sizeResString = value;
         }
+        #endregion
     }
 }
-#endregion
