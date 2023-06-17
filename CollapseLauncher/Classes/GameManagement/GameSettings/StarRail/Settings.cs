@@ -48,7 +48,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioSettings_VO = VOVolume.Load();
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

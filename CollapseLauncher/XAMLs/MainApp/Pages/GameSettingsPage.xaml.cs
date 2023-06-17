@@ -8,10 +8,16 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Win32;
+using RegistryUtils;
 using System;
+using System.IO;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.GameSettings.Statics;
+using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -19,23 +25,47 @@ namespace CollapseLauncher.Pages
     {
         private HonkaiSettings Settings { get => (HonkaiSettings)PageStatics._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
+        private RegistryMonitor RegistryWatcher { get; set; }
+        private bool IsNoReload = false;
         public GameSettingsPage()
         {
             try
             {
-                this.InitializeComponent();
-                ApplyButton.Translation = Shadow32;
-                RegistryExport.Translation = Shadow32;
-                RegistryImport.Translation = Shadow32;
-                GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher.RegChanged += RegistryListener;
+                    RegistryWatcher.Start();
+                });
 
-                InheritApplyTextColor = ApplyText.Foreground;
+                LoadPage();
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void RegistryListener(object sender, EventArgs e)
+        {
+            if (!IsNoReload)
+            {
+                LogWriteLine("Module: RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+                DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
+            }
+        }
+
+        private void LoadPage()
+        {
+            Settings.ReloadSettings();
+
+            this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+            ApplyButton.Translation = Shadow32;
+            GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
+
+            InheritApplyTextColor = ApplyText.Foreground;
         }
 
         private void RegistryExportClick(object sender, RoutedEventArgs e)
@@ -52,7 +82,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error has occured while exporting registry!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error has occured while exporting registry!\r\n{ex}", LogType.Error, true);
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
@@ -73,7 +103,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error has occured while importing registry!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"Error has occured while importing registry!\r\n{ex}", LogType.Error, true);
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
@@ -112,7 +142,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"FATAL ERROR!!!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"FATAL ERROR!!!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -126,10 +156,11 @@ namespace CollapseLauncher.Pages
                 ApplyText.Visibility = Visibility.Visible;
 
                 Settings.SaveSettings();
+                IsNoReload = true;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -138,6 +169,15 @@ namespace CollapseLauncher.Pages
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+        }
+
+        private void OnUnload(object sender, RoutedEventArgs e)
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                RegistryWatcher.Stop();
+                RegistryWatcher.Dispose();
+            });
         }
     }
 }

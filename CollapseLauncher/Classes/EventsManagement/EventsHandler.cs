@@ -191,11 +191,24 @@ namespace CollapseLauncher
     #region MainFrameRegion
     internal static class MainFrameChanger
     {
+        private static Type currentWindow;
+        private static Type currentPage;
         static MainFrameChangerInvoker invoker = new MainFrameChangerInvoker();
-        public static void ChangeWindowFrame(Type e) => invoker.ChangeWindowFrame(e, new DrillInNavigationTransitionInfo());
-        public static void ChangeWindowFrame(Type e, NavigationTransitionInfo eT) => invoker.ChangeWindowFrame(e, eT);
-        public static void ChangeMainFrame(Type e) => invoker.ChangeMainFrame(e, new DrillInNavigationTransitionInfo());
-        public static void ChangeMainFrame(Type e, NavigationTransitionInfo eT) => invoker.ChangeMainFrame(e, eT);
+        public static void ChangeWindowFrame(Type e) => ChangeWindowFrame(e, new DrillInNavigationTransitionInfo());
+        public static void ChangeWindowFrame(Type e, NavigationTransitionInfo eT)
+        {
+            currentWindow = e;
+            invoker.ChangeWindowFrame(e, eT);
+        }
+        public static void ChangeMainFrame(Type e) => ChangeMainFrame(e, new DrillInNavigationTransitionInfo());
+        public static void ChangeMainFrame(Type e, NavigationTransitionInfo eT)
+        {
+            currentPage = e;
+            invoker.ChangeMainFrame(e, eT);
+        }
+
+        public static void ReloadCurrentWindowFrame() => ChangeWindowFrame(currentWindow);
+        public static void ReloadCurrentMainFrame() => ChangeMainFrame(currentPage);
     }
 
     internal class MainFrameChangerInvoker
