@@ -1157,22 +1157,6 @@ namespace CollapseLauncher
 
                 int keysIndex = 0;
 
-                KeyboardAccelerator kbshow = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1])
-                };
-                kbshow.Invoked += ShowKeybinds_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbshow);
-
-                KeyboardAccelerator kbhome = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1]),
-                };
-                kbhome.Invoked += GoHome_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbhome);
-
                 int numIndex = 0;
                 foreach (string game in ComboBoxGameCategory.Items)
                 {
@@ -1196,6 +1180,22 @@ namespace CollapseLauncher
                     keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
                 }
+
+                KeyboardAccelerator kbshow = new KeyboardAccelerator()
+                {
+                    Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
+                    Key = StrToVKey(keys[keysIndex++][1])
+                };
+                kbshow.Invoked += ShowKeybinds_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(kbshow);
+
+                KeyboardAccelerator kbhome = new KeyboardAccelerator()
+                {
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                    Key = StrToVKey(keys[keysIndex++][1]),
+                };
+                kbhome.Invoked += GoHome_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(kbhome);
             }
             catch
             {

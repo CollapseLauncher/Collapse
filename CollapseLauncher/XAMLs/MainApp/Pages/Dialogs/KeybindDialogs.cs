@@ -29,17 +29,17 @@ namespace CollapseLauncher.Dialogs
 
             stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[0], "Open this menu", "Can also be accessed thru the App Settings"));
+            stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "Can also be accessed thru the App Settings"));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[1], "Go to the Home page", "Instantly travel to the Home page from any page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page", "Instantly travel to the Home page from any page"));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order and can't be changed", FontSize = 11.5 });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[2], "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)", false));
+            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)", false));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[3], "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region", false));
+            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region", false));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             return await SpawnDialog(
@@ -317,10 +317,10 @@ namespace CollapseLauncher.Dialogs
 
         private readonly static List<List<string>> defaultKeyList = new List<List<string>>
                 {
-                    new List<string> { "Ctrl", "Tab" },
-                    new List<string> { "Ctrl", "H" },
                     new List<string> { "Ctrl", "1 - 9" },
-                    new List<string> { "Shift", "1 - 9" }
+                    new List<string> { "Shift", "1 - 9" },
+                    new List<string> { "Ctrl", "Tab" },
+                    new List<string> { "Ctrl", "H" }
                 };
 
         public static List<List<string>> KeyList
@@ -335,6 +335,17 @@ namespace CollapseLauncher.Dialogs
                 {
                     resultList.Add(combination.Split(",").ToList());
                 }
+
+                if (resultList.Count < defaultKeyList.Count) 
+                {
+                    resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, defaultKeyList.Count - resultList.Count));
+                }
+                
+                for(int i = resultList.Count; i > defaultKeyList.Count; i--)
+                {
+                    resultList.RemoveAt(i);
+                }
+
                 return resultList;
             }
 
@@ -343,6 +354,7 @@ namespace CollapseLauncher.Dialogs
                 value ??= defaultKeyList;
                 string res = "";
                 foreach (List<string> key in value) res = res + string.Join(",", key.ToArray()) + "|";
+                LogWriteLine("Updated Keylist: " + res.Remove(res.Length - 1));
                 SetAndSaveConfigValue("KbShortcutList", res.Remove(res.Length - 1));
             }
         }
