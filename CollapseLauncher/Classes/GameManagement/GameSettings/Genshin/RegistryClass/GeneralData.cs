@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Genshin.Context;
+﻿using CollapseLauncher.Classes.GameManagement.GameSettings.Genshin.RegistryClass;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
 
@@ -85,11 +87,11 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Needs to be serialized again with its keys and values in dictionary<br/>
         /// https://github.com/Myp3a/GenshinConfigurator/wiki/Config-format#graphics-data-format
         /// </summary>
-        //[JsonPropertyName("graphicsData")]
-        //public string _graphicsData { get; set; }
+        [JsonPropertyName("graphicsData")]
+        public string _graphicsData { get; set; }
 
-        //[JsonIgnore]
-        //public GraphicsData graphicsData { get; set; }
+        [JsonIgnore]
+        public GraphicsData graphicsData { get; set; }
 
         /// <summary>
         /// This is a dict that keeps track of graphics settings changes.<br/>
@@ -304,7 +306,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
-                    return (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
+                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
+                    data.graphicsData = GraphicsData.Load(data._graphicsData);
+                    return data;
                 }
             }
             catch (Exception ex)
@@ -321,6 +325,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
+                _graphicsData = graphicsData.Save();
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{data}", LogType.Default, true);
