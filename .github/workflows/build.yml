@@ -42,4 +42,8 @@ jobs:
       run: |
         msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
         dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f net7.0-windows10.0.22000.0
-
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}
