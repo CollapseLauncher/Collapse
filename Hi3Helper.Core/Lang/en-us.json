@@ -708,6 +708,16 @@
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VO": "Voice Over Volume",
-    "Audio_Mute": "Mute Audio"
+    "Audio_Mute": "Mute Audio",
+
+    "Language": "Language Settings",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Audio": "Audio",
+    "Text": "Text",
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   }
 }
