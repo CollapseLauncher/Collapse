@@ -52,7 +52,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             TextLanguage = LocalTextLanguage.Load();
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

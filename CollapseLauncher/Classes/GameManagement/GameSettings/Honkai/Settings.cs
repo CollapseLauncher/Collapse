@@ -53,7 +53,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context>.LoadPreset(GameType.Honkai, D_PersonalGraphicsSettingV2Context.Default);
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

@@ -36,7 +36,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsCustomArgument = CustomArgs.Load();
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

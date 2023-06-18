@@ -888,24 +888,18 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
-
-                if (PageStatics._GameVersion.GameType == GameType.Honkai)
-                {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
-                }
-                // TODO: Uncomment this one HSR receives proper Cache Update and/or Repair support
-                //if (PageStatics._GameVersion.GameType == GameType.StarRail)
-                //{
-                //    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                //    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
-                //}
             }
 
-            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            switch (PageStatics._GameVersion.GameType)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                case GameType.Honkai:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                    break;
+                case GameType.StarRail:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                    break;
             }
 
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
