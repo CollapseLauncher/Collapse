@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Hi3Helper.Shared.Region;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Hi3Helper
@@ -58,7 +61,12 @@ namespace Hi3Helper
         public virtual async void LogWriteLine(string line, LogType type) { }
         public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
         public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }
-        public async void WriteLog(string line, LogType type) => _logWriter?.WriteLine(GetLine(line, type, false));
+        public async void WriteLog(string line, LogType type)
+        {
+            // Always seek to the end of the file.
+            _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
+            _logWriter?.WriteLine(GetLine(line, type, false));
+        }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         #endregion
 
@@ -115,13 +123,33 @@ namespace Hi3Helper
             // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
             string fallbackString = isFallback ? ("-f" + Path.GetFileNameWithoutExtension(Path.GetTempFileName())) : string.Empty;
             string dateString = GetCurrentTime("yyyy-MM-dd");
-            _logPath = Path.Combine(_logFolder, $"Log-{dateString + fallbackString}.log");
+            // Append the build name
+            fallbackString += LauncherConfig.IsPreview ? "-pre" : "-sta";
+            // Append current app version
+            fallbackString += LauncherConfig.AppCurrentVersionString;
+            // Append the current instance number
+            fallbackString += $"-id{GetTotalInstance()}";
+            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");
 
             // Initialize _logWriter to the given _logPath.
-            // This time, the FileStream is getting the FileShare.Write to avoid
-            // throw while the same file is being used by more than one instance.
-            FileStream fs = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite); // FileMode.OpenOrCreate is append = true in StreamWriter.
+            // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
+            // to warm-restart itself in rare occassion (like update mechanism with Squirrel).
+            FileStream fs = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             _logWriter = new StreamWriter(fs, logEncoding) { AutoFlush = true };
+        }
+
+        private int GetTotalInstance()
+        {
+            // Get this app's process name
+            string currentProcName = Path.GetFileNameWithoutExtension(LauncherConfig.AppExecutablePath);
+
+            // Get the process count
+            int procCount = Process.GetProcesses()
+                .Where(x => x.ProcessName == currentProcName)
+                .Select(x => x.ProcessName).Count();
+
+            // If the procCount > 0, then procCount - 1. Else, 0
+            return procCount > 0 ? procCount - 1 : 0;
         }
 
         private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, NoTag or Empty!");
