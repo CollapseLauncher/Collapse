@@ -119,7 +119,12 @@
     "PostPanel_Events": "Events",
     "PostPanel_Notices": "Notices",
     "PostPanel_Info": "Info",
-    "PostPanel_NoNews": "What?\nNo news for today?"
+    "PostPanel_NoNews": "What?\nNo news for today?",
+
+    "CommunityToolsBtn": "Community Tools",
+    "CommunityToolsBtn_OfficialText": "Official Tools",
+    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
 
   "_GameRepairPage": {
