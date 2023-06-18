@@ -1,0 +1,43 @@
+# Credits to @Scighost from Starward for his contributions!
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x64, arm64]
+
+    env:
+      Configuration: ${{ matrix.configuration }}
+      Platform: ${{ matrix.platform }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3.1
+
+    - name: Restore
+      run: dotnet restore Starward
+
+    - name: Build
+      run: |
+        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
+        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f net7.0-windows10.0.22000.0
+
