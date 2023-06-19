@@ -138,6 +138,7 @@ namespace Hi3Helper
             LogType.Warning => "\u001b[33;1m",
             LogType.Scheme => "\u001b[34;1m",
             LogType.Game => "\u001b[35;1m",
+            LogType.Debug => "\u001b[36;1m",
             _ => string.Empty
         };
 
@@ -154,6 +155,7 @@ namespace Hi3Helper
             LogType.Warning => "[Warn]",
             LogType.Scheme => "[Schm]",
             LogType.Game => "[Game]",
+            LogType.Debug => "[DBG]",
             LogType.NoTag => "      ",
             _ => throw ThrowInvalidType()
         };
