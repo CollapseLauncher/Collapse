@@ -674,6 +674,9 @@ namespace CollapseLauncher
         {
             RunBackgroundCheck();
 
+            // Load community tools properties
+            PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
+
             Type Page;
 
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())

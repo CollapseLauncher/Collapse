@@ -33,6 +33,9 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Assets\Presets\CommunityTools.json" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
@@ -95,6 +98,9 @@
 		</Content>
 		<Content Update="Assets\Fonts\FontAwesomeSolid6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Assets\Presets\CommunityTools.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
