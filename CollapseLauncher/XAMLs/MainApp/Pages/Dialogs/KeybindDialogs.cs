@@ -12,6 +12,7 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Microsoft.UI.Xaml.Documents;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -29,17 +30,36 @@ namespace CollapseLauncher.Dialogs
 
             stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "Can also be accessed thru the App Settings"));
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
             stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page", "Instantly travel to the Home page from any page"));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
-            stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order and can't be changed", FontSize = 11.5 });
+            stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
+
+            TextBlock textBlock = new TextBlock();
+            textBlock.Inlines.Add(new Run()
+            {
+                Text = "",
+                FontSize = 12,
+                FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily
+            });
+            textBlock.Inlines.Add(new Run() { Text = " Swap special key" });
+
+            Button modifierSwap = new Button()
+            {
+                Content = textBlock,
+                CornerRadius = new CornerRadius(5),
+                DataContext = new List<string> { "Ctrl", "1 - X" },
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, -30, 0, 0)
+            };
+            modifierSwap.Click += Swap_Click;
+            stack.Children.Add(modifierSwap);
+
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", "E.g. CTRL+1 leads Honkai Impact 3rd's page (last used region)", false));
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", "E.g. For Genshin Impact, SHIFT+1 leads to the Global region", false));
+            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", keys[0][0]), false));
+            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", keys[1][0]), false));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             return await SpawnDialog(
@@ -191,10 +211,12 @@ namespace CollapseLauncher.Dialogs
                             keyCount++;
                             keysPressed.Text = "Shift" + " + ";
                             break;
+                        /*
                         case VirtualKey.Menu:
                             keyCount++;
                             keysPressed.Text = "Alt" + " + ";
                             break;
+                        */
                     }
                 }
             };
@@ -229,16 +251,14 @@ namespace CollapseLauncher.Dialogs
         {
             List<string> keys = (List<string>)(sender as Button).DataContext;
 
-            /* Logic to swap VKey modifiers between Game/Region
-
-            if (keys.Contains("1 - 9"))
+            if (keys.Any(x => x.StartsWith("1 - ")))
             {
-                SwapKeybind(defaultKeyList[defaultKeyList.Count-1], defaultKeyList[defaultKeyList.Count - 2]);
+                SwapKeybind();
                 (sender as Button).FindParent<ContentDialog>().Hide();
                 await Dialog_ShowKeybinds(sender as UIElement);
             }
             else
-            {*/
+            {
                 try
                 {
                     (sender as Button).FindParent<ContentDialog>().Hide();
@@ -250,7 +270,7 @@ namespace CollapseLauncher.Dialogs
                     LogWriteLine(ex.ToString());
                 }
 
-            //}
+            }
         }
 
         private static void ChangeKeybind(List<string> oldKeys, List<string> newKeys)
@@ -272,27 +292,22 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
-        /*
-        private static void SwapKeybind(List<string> oldKeys, List<string> newKeys)
+        private static void SwapKeybind()
         {
             try
             {
                 List<List<string>> keys = KeyList;
 
-                int oldIndex = keys.FindIndex(i => i.Contains(oldKeys[0]) && i.Contains(oldKeys[1]));
-                int newIndex = keys.FindIndex(i => i.Contains(newKeys[0]) && i.Contains(newKeys[1]));
-                keys[oldIndex] = newKeys;
-                keys[newIndex] = oldKeys;
+                (keys[1][0], keys[0][0]) = (keys[0][0], keys[1][0]);
 
                 KeyList = keys;
-                KeyboardShortcutsEvent(null, new bool[] { true, false });
+                KeyboardShortcutsEvent(null, 1);
             }
             catch (Exception ex)
             {
                 LogWriteLine(ex.ToString());
             }
         }
-        */
 
         public static VirtualKey StrToVKey(string key)
         {
@@ -317,8 +332,8 @@ namespace CollapseLauncher.Dialogs
 
         private readonly static List<List<string>> defaultKeyList = new List<List<string>>
                 {
-                    new List<string> { "Ctrl", "1 - 9" },
-                    new List<string> { "Shift", "1 - 9" },
+                    new List<string> { "Ctrl", "1 - 3" },
+                    new List<string> { "Shift", "1 - 6" },
                     new List<string> { "Ctrl", "Tab" },
                     new List<string> { "Ctrl", "H" }
                 };
