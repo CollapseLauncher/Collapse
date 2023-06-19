@@ -2,8 +2,10 @@
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+using System.Text;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
@@ -35,6 +37,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     int bgmVolume = (int)value;
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Default, true);
                     return new BGMVolume { BGMVol = bgmVolume };
                 }
             }
@@ -51,6 +54,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, BGMVol, RegistryValueKind.DWord);
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {BGMVol}", LogType.Default, true);
             }
             catch (Exception ex)
             {

@@ -6,16 +6,23 @@
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
-![de translation](https://img.shields.io/badge/dynamic/json?color=blue&label=de&style=flat&logo=crowdin&query=%24.progress.0.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![es-419 translation](https://img.shields.io/badge/dynamic/json?color=blue&label=es-419&style=flat&logo=crowdin&query=%24.progress.1.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![id translation](https://img.shields.io/badge/dynamic/json?color=blue&label=id&style=flat&logo=crowdin&query=%24.progress.2.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![ja translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ja&style=flat&logo=crowdin&query=%24.progress.3.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![ko translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ko&style=flat&logo=crowdin&query=%24.progress.4.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![pt-PT translation](https://img.shields.io/badge/dynamic/json?color=blue&label=pt-PT&style=flat&logo=crowdin&query=%24.progress.5.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![th translation](https://img.shields.io/badge/dynamic/json?color=blue&label=th&style=flat&logo=crowdin&query=%24.progress.6.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![vi translation](https://img.shields.io/badge/dynamic/json?color=blue&label=vi&style=flat&logo=crowdin&query=%24.progress.7.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
-![zh-CN translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-CN&style=flat&logo=crowdin&query=%24.progress.8.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387-update.json)
+![de translation](https://img.shields.io/badge/dynamic/json?color=blue&label=de&style=flat&logo=crowdin&query=%24.progress.0.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![es-419 translation](https://img.shields.io/badge/dynamic/json?color=blue&label=es-419&style=flat&logo=crowdin&query=%24.progress.1.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![id translation](https://img.shields.io/badge/dynamic/json?color=blue&label=id&style=flat&logo=crowdin&query=%24.progress.2.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![ja translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ja&style=flat&logo=crowdin&query=%24.progress.3.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![ko translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ko&style=flat&logo=crowdin&query=%24.progress.4.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![pt-PT translation](https://img.shields.io/badge/dynamic/json?color=blue&label=pt-PT&style=flat&logo=crowdin&query=%24.progress.5.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![ru translation](https://img.shields.io/badge/dynamic/json?color=blue&label=ru&style=flat&logo=crowdin&query=%24.progress.6.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![th translation](https://img.shields.io/badge/dynamic/json?color=blue&label=th&style=flat&logo=crowdin&query=%24.progress.7.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![vi translation](https://img.shields.io/badge/dynamic/json?color=blue&label=vi&style=flat&logo=crowdin&query=%24.progress.8.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![zh-CN translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-CN&style=flat&logo=crowdin&query=%24.progress.9.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
+![zh-TW translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-TW&style=flat&logo=crowdin&query=%24.progress.10.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 
+<p align="center">
+  <a href="https://discord.gg/vJd2exaS7j" target="_blank">
+    <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server"/>
+  </a>
+</p>
 
 # Why "Collapse"?
 Collapse came from the **Honkai Impact** translation in Chinese and Japanese. The word came from [**崩坏**] or **Bēng huài** in Chinese and also [**崩壊**] or **Houkai** in Japanese, both meaning "**Collapse**" which is why we chose it as our launcher name with the added inspiration that this was supposed to be an alternative (enhanced) launcher for *Honkai Impact 3rd* in the first place.

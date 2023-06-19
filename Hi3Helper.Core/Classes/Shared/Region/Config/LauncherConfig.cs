@@ -85,6 +85,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+        public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
 
         public const long AppDiscordApplicationID = 1089467141096484955;

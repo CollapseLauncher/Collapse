@@ -11,7 +11,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="InitializeSettings">
+    Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
@@ -175,11 +175,22 @@
                                             <ComboBoxItem Content="FXAA"/>
                                         </ComboBox>
                                     </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="ResolutionQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind ResolutionQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                        </ComboBox>
+                                    </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -247,7 +258,56 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
+                    <StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help1}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,0"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Language_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
+                                        <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_kr}"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" x:Name="LangSettingRight">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Text}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
+                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
+                                            <ComboBoxItem Content="English"/>
+                                            <ComboBoxItem Content="日本語"/>
+                                            <ComboBoxItem Content="简体中文"/>
+                                            <ComboBoxItem Content="繁體中文"/>
+                                            <ComboBoxItem Content="한국어"/>
+                                            <ComboBoxItem Content="Español"/>
+                                            <ComboBoxItem Content="Русский"/>
+                                            <ComboBoxItem Content="ภาษาไทย"/>
+                                            <ComboBoxItem Content="Tiếng Việt"/>
+                                            <ComboBoxItem Content="Bahasa Indonesia"/>
+                                            <ComboBoxItem Content="Français"/>
+                                            <ComboBoxItem Content="Deutsch"/>
+                                            <ComboBoxItem Content="Português"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"

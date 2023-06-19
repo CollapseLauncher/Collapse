@@ -1,13 +1,14 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Http;
-using Hi3Helper.Shared.Region.Honkai;
 using Hi3Helper.UABT;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
 
                 // Build _gameRepoURL from loading Dispatcher and Gateway
-                await BuildGameRepoURL(_httpClient, token);
+                await BuildGameRepoURL(token);
 
                 // Iterate type and do fetch
                 foreach (CacheAssetType type in Enum.GetValues(typeof(CacheAssetType)))
@@ -76,29 +77,34 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private async Task BuildGameRepoURL(Http _httpClient, CancellationToken token)
+        private async Task BuildGameRepoURL(CancellationToken token)
         {
-            // Fetch dispatcher
-            Dispatcher dispatcher = null;
+            KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            // Try fetch disppatcher by iterating the base URL
             foreach (string baseURL in _gamePreset.GameDispatchArrayURL)
             {
                 try
                 {
+                    // Init the key and decrypt it if exist.
+                    string key = null;
+                    if (_gamePreset.DispatcherKey != null)
+                    {
+                        mhyEncTool Decryptor = new mhyEncTool();
+                        Decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+
+                        key = _gamePreset.DispatcherKey;
+                        Decryptor.DecryptStringWithMasterKey(ref key);
+                    }
+
                     // Try assign dispatcher
-                    dispatcher = await FetchDispatcher(_httpClient, BuildDispatcherURL(baseURL), token);
+                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gamePreset.GameDispatchURLTemplate, _gamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
+                    lastException = null;
+                    break;
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-                }
-
-                // If no exception being thrown, then break
-                if (lastException == null)
-                {
-                    break;
                 }
             }
 
@@ -106,98 +112,11 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            string gatewayURL = GetPreferredGatewayURL(dispatcher, _gamePreset.GameGatewayDefault);
-            _gameGateway = await FetchGateway(_httpClient, gatewayURL, token);
-
-            // Set the Game Repo URL
+            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gamePreset.GameGatewayDefault, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
-        private async Task<Dispatcher> FetchDispatcher(Http _httpClient, string baseURL, CancellationToken token)
-        {
-            // Set total activity string as "Fetching Caches Type: Dispatcher"
-            _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Dispatcher);
-            _status.IsProgressTotalIndetermined = true;
-            _status.IsIncludePerFileIndicator = false;
-            UpdateStatus();
-
-            // Get the dispatcher properties
-            MemoryStream stream = new MemoryStream();
-
-            try
-            {
-                // Start downloading the dispatcher
-                await _httpClient.Download(baseURL, stream, null, null, token);
-                stream.Position = 0;
-
-                LogWriteLine($"Cache Update connected to dispatcher endpoint: {baseURL}", LogType.Default, true);
-
-                // Try deserialize dispatcher
-                return (Dispatcher)JsonSerializer.Deserialize(stream, typeof(Dispatcher), DispatcherContext.Default);
-            }
-            finally
-            {
-                // Dispose the stream
-                stream.Dispose();
-            }
-        }
-
-        private async Task<Gateway> FetchGateway(Http _httpClient, string baseURL, CancellationToken token)
-        {
-            // Set total activity string as "Fetching Caches Type: Gateway"
-            _status.ActivityStatus = string.Format(Lang._CachesPage.CachesStatusFetchingType, CacheAssetType.Gateway);
-            _status.IsProgressTotalIndetermined = true;
-            _status.IsIncludePerFileIndicator = false;
-            UpdateStatus();
-
-            // Get the gateway properties
-            MemoryStream stream = new MemoryStream();
-
-            try
-            {
-                // Start downloading the gateway
-                await _httpClient.Download(baseURL, stream, null, null, token);
-                stream.Position = 0;
-
-                LogWriteLine($"Cache Update connected to gateway endpoint: {baseURL}", LogType.Default, true);
-
-                // Try deserialize gateway
-                return (Gateway)JsonSerializer.Deserialize(stream, typeof(Gateway), GatewayContext.Default);
-            }
-            finally
-            {
-                // Dispose the stream
-                stream.Dispose();
-            }
-        }
-
-        private string GetPreferredGatewayURL(Dispatcher dispatcher, string preferredGateway)
-        {
-            // If preferredGateway == null, then return the first dispatch_url
-            if (preferredGateway == null)
-            {
-                return BuildGatewayURL(dispatcher.region_list[0].dispatch_url);
-            }
-
-            // Find the preferred region_list and return the dispatcher_url if found or null if doesn't
-            return BuildGatewayURL(dispatcher.region_list.Where(x => x.name == preferredGateway).FirstOrDefault().dispatch_url);
-        }
-
-        private string BuildAssetBundleURL(Gateway gateway) => CombineURLFromString(gateway.asset_bundle_url_list[0], "/{0}/editor_compressed/");
-
-        private string BuildDispatcherURL(string baseDispatcherURL)
-        {
-            // Format the Dispatcher URL based on template
-            long curTime = GetUnixTimestamp(true);
-            return string.Format(CombineURLFromString(baseDispatcherURL, _gamePreset.GameDispatchURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
-        }
-
-        private string BuildGatewayURL(string baseGatewayURL)
-        {
-            // Format the Gateway URL based on template
-            long curTime = GetUnixTimestamp(true);
-            return string.Format(CombineURLFromString(baseGatewayURL, _gamePreset.GameGatewayURLTemplate), _gameVersion.VersionString, _gamePreset.GameDispatchChannelName, curTime);
-        }
+        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway.AssetBundleUrls[0], "/{0}/editor_compressed/");
 
         private async Task<(int, long)> FetchByType(CacheAssetType type, Http _httpClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
@@ -353,13 +272,13 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = new List<CacheAsset>();
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(_httpClient, token);
+            await BuildGameRepoURL(token);
 
             // Fetch the progress
             _ = await FetchByType(type, _httpClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
-            return (returnAsset, _gameGateway.ex_resource_url_list.FirstOrDefault(), BuildAssetBundleURL(_gameGateway));
+            return (returnAsset, _gameGateway.ExternalAssetUrls.FirstOrDefault(), BuildAssetBundleURL(_gameGateway));
         }
     }
 }
