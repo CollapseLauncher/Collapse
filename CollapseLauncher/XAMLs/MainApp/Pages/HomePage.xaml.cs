@@ -367,19 +367,28 @@ namespace CollapseLauncher.Pages
                         // If the value is empty, then throw and back to fallback (open the URL).
                         if (argumentStr.Length < 2) throw new ArgumentException($"Argument error on {argumentStr[0]}: Executable name must be defined!");
 
-                        // Get the application executable name
+                        // Get the application executable 
                         applicationExecName = argumentStr[1];
+# if DEBUG
+                        LogWriteLine($"Got '{argumentStr[0]}' as parameter for application executable", LogType.Debug, true);
+# endif
                         break;
                     case "applicationname":
                         // Get the application name. If it's empty, then fallback to default "MyApplication" name.
                         // Else, return the defined application name.
                         applicationName = argumentStr.Length < 2 || string.IsNullOrEmpty(argumentStr[1]) ? "MyApplication" : argumentStr[1];
+#if DEBUG
+                        LogWriteLine($"Got '{argumentStr[1]}' as parameter for application name", LogType.Debug, true);
+# endif
                         break;
                     case "runasadmin":
                         // Try parse the boolean value. If it's valid and the value of runAsAdmin is true, then set
                         // runAsAdmin as true and "AND" it with isBoolValid.
                         bool isBoolValid = bool.TryParse(argumentStr[1], out runAsAdmin);
                         runAsAdmin = isBoolValid && runAsAdmin;
+#if DEBUG
+                        LogWriteLine($"Got '{isBoolValid}' as parameter for application executable", LogType.Debug, true);
+# endif
                         break;
                     default:
                         // If the argument type is unknown, then throw and back to fallback (open the URL).
