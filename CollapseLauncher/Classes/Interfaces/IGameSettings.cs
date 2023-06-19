@@ -6,7 +6,7 @@ namespace CollapseLauncher.Interfaces
     {
         Exception ImportSettings();
         Exception ExportSettings();
-        void RevertSettings();
+        void ReloadSettings();
         void SaveSettings();
         IGameSettingsUniversal AsIGameSettingsUniversal();
     }

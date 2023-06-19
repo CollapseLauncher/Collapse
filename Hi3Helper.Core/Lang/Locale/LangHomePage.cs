@@ -56,6 +56,10 @@
                 public string PostPanel_Notices { get; set; } = LangFallback?._HomePage.PostPanel_Notices;
                 public string PostPanel_Info { get; set; } = LangFallback?._HomePage.PostPanel_Info;
                 public string PostPanel_NoNews { get; set; } = LangFallback?._HomePage.PostPanel_NoNews;
+                public string CommunityToolsBtn { get; set; } = LangFallback?._HomePage.CommunityToolsBtn;
+                public string CommunityToolsBtn_OfficialText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OfficialText;
+                public string CommunityToolsBtn_CommunityText { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_CommunityText;
+                public string CommunityToolsBtn_OpenExecutableAppDialogTitle { get; set; } = LangFallback?._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle;
             }
         }
         #endregion

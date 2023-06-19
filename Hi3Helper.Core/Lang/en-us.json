@@ -126,7 +126,12 @@
     "PostPanel_Events": "Events",
     "PostPanel_Notices": "Notices",
     "PostPanel_Info": "Info",
-    "PostPanel_NoNews": "What?\nNo news for today?"
+    "PostPanel_NoNews": "What?\nNo news for today?",
+
+    "CommunityToolsBtn": "Community Tools",
+    "CommunityToolsBtn_OfficialText": "Official Tools",
+    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
 
   "_GameRepairPage": {
@@ -364,6 +369,7 @@
 
     "DiscordBtn1": "Join our Armada Discord!",
     "DiscordBtn2": "Honkai Impact 3rd Discord",
+    "DiscordBtn3": "Collapse's Official Discord!",
 
     "AppChangeReleaseChannel": "Change to {0} Release Channel"
   },
@@ -444,7 +450,9 @@
 
     "CDNDescription_Github": "The official (main) repository for the launcher.",
     "CDNDescription_Statically": "A mirror of the official (main) repository, provided by Statically. Use this if you're living in a place where GitHub is inaccessible.",
-    "CDNDescription_jsDelivr": "jsDelivr uses multiple CDN providers like CloudFlare, Fastly and Quantil, resulting in the best possible uptime and performance."
+    "CDNDescription_jsDelivr": "jsDelivr uses multiple CDN providers like CloudFlare, Fastly and Quantil, resulting in the best possible uptime and performance.",
+    
+    "LocateExecutable": "Locate Program Executable"
   },
 
   "_Dialogs": {
@@ -522,13 +530,14 @@
     "ReleaseChannelChangeSubtitle1": "You are about to change your release channel to:",
     "ReleaseChannelChangeSubtitle2": "Note:",
     "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup. We are not responsible for any loss or corruption of data associated with your game.",
-
     "ChangePlaytimeTitle": "Are you sure you want to change your playtime?",
     "ChangePlaytimeSubtitle": "Changing your playtime means overwriting the current value with the one you just inputted. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "ResetPlaytimeTitle": "Are you sure you want to reset your playtime?",
     "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter back to 0. This is a ",
     "ResetPlaytimeSubtitle2": "destructive",
-    "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game."
+    "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
+    "LocateExePathTitle": "Locate Executable Install Path",
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
   },
 
   "_InstallMgmt": {
@@ -679,8 +688,8 @@
     "Graphics_ResCustomH": "H",
 
     "Graphics_FPS": "FPS",
-    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use in caution, Do With Your Own Risk (DWYOR).",
-    "Graphics_FPS_Help2": "Additionally, Setting FPS to 120 will break in-game Graphics Settings.\r\nUse Collapse instead to change the Game Graphics Settings.",
+    "Graphics_FPS_Help": "120 FPS is EXPERIMENTAL! Please use with caution as Honkai: Star Rail does not officially support this!",
+    "Graphics_FPS_Help2": "Setting the FPS value to 120 will break the in-game Graphics Settings menu.\r\nIf your menu is broken in-game, use Collapse to change the Game Graphics Settings.",
     "Graphics_VSync": "VSync",
     "Graphics_RenderScale": "Render Scale",
     "Graphics_ResolutionQuality": "Resolution Quality",
@@ -722,6 +731,16 @@
     "Audio_BGM": "BGM Volume",
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VO": "Voice Over Volume",
-    "Audio_Mute": "Mute Audio"
+    "Audio_Mute": "Mute Audio",
+
+    "Language": "Language Settings",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Audio": "Audio",
+    "Text": "Text",
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   }
 }

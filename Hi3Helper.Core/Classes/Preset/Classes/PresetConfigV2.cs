@@ -16,12 +16,14 @@ namespace Hi3Helper.Preset
 {
 #nullable enable
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum ServerRegionID
+    public enum ServerRegionID : int
     {
         os_usa = 0,
         os_euro = 1,
         os_asia = 2,
-        os_cht = 3
+        os_cht = 3,
+        cn_gf01 = 4,
+        cn_qd01 = 5
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
