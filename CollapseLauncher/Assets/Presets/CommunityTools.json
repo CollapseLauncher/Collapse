@@ -99,7 +99,7 @@
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
                 "IconGlyph": "",
                 "Text": "Inventory Kamera",
-                "URL": "https://github.com/Andrewthe13th/Inventory_Kamera"
+                "URL": "https://github.com/Andrewthe13th/Inventory_Kamera$OpenExternalApp:ApplicationName=Inventory Kamera,ApplicationExecName=InventoryKamera.exe,RunAsAdmin=true$OpenUrlIfCancel"
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",

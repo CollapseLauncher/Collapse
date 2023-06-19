@@ -497,211 +497,212 @@
                             <TextBlock x:Name="ProgressTimeLeft" Text="{x:Bind helper:Locale.Lang._Misc.TimeRemainHMSFormatPlaceholder}" HorizontalAlignment="Center" FontWeight="Bold" FontSize="10"/>
                         </StackPanel>
                     </Grid>
-                    <Button x:Name="GameStartupSetting"
-                            Grid.Column="0" Grid.Row="2" 
+                    <StackPanel Orientation="Horizontal"
+                            Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right">
+                        <Button x:Name="CommunityToolsBtn"
                             VerticalAlignment="Stretch"
-                            CornerRadius="20"
+                            HorizontalAlignment="Right"
+                            CornerRadius="20" Margin="0,0,8,0"
                             PointerEntered="AnimateGameRegSettingIcon_Start"
                             PointerExited="AnimateGameRegSettingIcon_End"
                             Shadow="{ThemeResource SharedShadow}">
-                        <Button.Content>
-                            <Grid>
-                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
-                                <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <AnimatedIcon x:Name='GameRegionSettingIcon' Width="20">
-                                        <AnimatedIcon.Source>
-                                            <animatedvisuals:AnimatedSettingsVisualSource/>
-                                        </AnimatedIcon.Source>
-                                        <AnimatedIcon.FallbackIconSource>
-                                            <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
-                                        </AnimatedIcon.FallbackIconSource>
-                                    </AnimatedIcon>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
-                                </StackPanel>
-                            </Grid>
-                        </Button.Content>
-                        <Button.Flyout>
-                            <Flyout>
-                                <ScrollViewer MaxHeight="474" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" Margin="-16,-16">
-                                    <StackPanel MaxWidth="224" Margin="16,16">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf07b;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button x:Name="OpenCacheFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf65e;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ad;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button x:Name="UninstallGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button x:Name="ConvertVersionButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
-                                            <Button.Content>
-                                                <StackPanel Orientation="Horizontal" Margin="4,0">
-                                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf363;" FontSize="18"/>
-                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" Margin="8,0,0,0"/>
-                                                </StackPanel>
-                                            </Button.Content>
-                                        </Button>
-                                        <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                            <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
-                                        </StackPanel>
-                                        <StackPanel x:Name="MiscPanel">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                            <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
-                                            <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
-                                        </StackPanel>
+                            <Button.Resources>
+                                <DataTemplate x:Key="CommunityToolsInnerBtn" x:DataType="local:CommunityToolsEntry">
+                                    <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
+                                            <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                                <DataTemplate x:Key="CommunityToolsInnerAccentBtn" x:DataType="local:CommunityToolsEntry">
+                                    <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="28"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
+                                            <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </Button.Resources>
+                            <Button.Content>
+                                <Grid>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
+                                    <StackPanel Orientation="Horizontal" Margin="8,0">
+                                        <AnimatedIcon x:Name='GameRegionSettingIcon1' Width="20">
+                                            <AnimatedIcon.Source>
+                                                <animatedvisuals:AnimatedSettingsVisualSource/>
+                                            </AnimatedIcon.Source>
+                                            <AnimatedIcon.FallbackIconSource>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
+                                            </AnimatedIcon.FallbackIconSource>
+                                        </AnimatedIcon>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn}" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
                                     </StackPanel>
-                                </ScrollViewer>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                    <Button x:Name="CommunityToolsBtn"
-                            Grid.Column="1" Grid.Row="2" 
+                                </Grid>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <ScrollViewer
+                                    HorizontalScrollBarVisibility="Visible" HorizontalScrollMode="Enabled"
+                                    VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" MaxWidth="436"
+                                    Margin="-16,-4,-16,-16" Padding="0,0,0,0">
+                                        <Grid Margin="16,0,8,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
+                                                <GridView x:Name="OfficialToolsStackPanel"
+                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}"
+                                                      ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}">
+                                                    <GridView.ItemContainerStyle>
+                                                        <Style TargetType="GridViewItem">
+                                                            <Setter Property="Margin" Value="0,4,8,4"/>
+                                                            <Setter Property="Width" Value="200"/>
+                                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                            <Setter Property="MinHeight" Value="0"/>
+                                                            <Setter Property="Padding" Value="0,0,0,0"/>
+                                                        </Style>
+                                                    </GridView.ItemContainerStyle>
+                                                    <GridView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
+                                                           MaximumRowsOrColumns="1"
+                                                           Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </GridView.ItemsPanel>
+                                                </GridView>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
+                                                <GridView x:Name="CommunityToolsStackPanel"
+                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}"
+                                                      ItemTemplate="{StaticResource CommunityToolsInnerBtn}">
+                                                    <GridView.ItemContainerStyle>
+                                                        <Style TargetType="GridViewItem">
+                                                            <Setter Property="Margin" Value="0,4,8,4"/>
+                                                            <Setter Property="Width" Value="180"/>
+                                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                            <Setter Property="MinHeight" Value="0"/>
+                                                            <Setter Property="Padding" Value="0,0,0,0"/>
+                                                        </Style>
+                                                    </GridView.ItemContainerStyle>
+                                                    <GridView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
+                                                           MaximumRowsOrColumns="2"
+                                                           Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </GridView.ItemsPanel>
+                                                </GridView>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button x:Name="GameStartupSetting"
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Right"
                             CornerRadius="20"
                             PointerEntered="AnimateGameRegSettingIcon_Start"
                             PointerExited="AnimateGameRegSettingIcon_End"
-                            Shadow="{ThemeResource SharedShadow}"
-                            Margin="0 0 180 0">
-                        <Button.Resources>
-                            <DataTemplate x:Key="CommunityToolsInnerBtn" x:DataType="local:CommunityToolsEntry">
-                                <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                    <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="28"/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
-                                        <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
-                                    </Grid>
-                                </Button>
-                            </DataTemplate>
-                            <DataTemplate x:Key="CommunityToolsInnerAccentBtn" x:DataType="local:CommunityToolsEntry">
-                                <Button Tag="{x:Bind URL}" Click="OpenCommunityButtonLink" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                    <Grid HorizontalAlignment="Left" Margin="-8,0,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="28"/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <FontIcon FontFamily="{x:Bind IconFontFamily}" Glyph="{x:Bind IconGlyph}" FontSize="12" HorizontalAlignment="Center" Grid.Column="0"/>
-                                        <TextBlock Text="{x:Bind Text}" FontWeight="Medium" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
-                                    </Grid>
-                                </Button>
-                            </DataTemplate>
-                        </Button.Resources>
-                        <Button.Content>
-                            <Grid>
-                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
-                                <StackPanel Orientation="Horizontal" Margin="8,0">
-                                    <AnimatedIcon x:Name='GameRegionSettingIcon1' Width="20">
-                                        <AnimatedIcon.Source>
-                                            <animatedvisuals:AnimatedSettingsVisualSource/>
-                                        </AnimatedIcon.Source>
-                                        <AnimatedIcon.FallbackIconSource>
-                                            <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
-                                        </AnimatedIcon.FallbackIconSource>
-                                    </AnimatedIcon>
-                                    <TextBlock Text="Community Tools" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
-                                </StackPanel>
-                            </Grid>
-                        </Button.Content>
-                        <Button.Flyout>
-                            <Flyout>
-                                <ScrollViewer
-                                    HorizontalScrollBarVisibility="Visible" HorizontalScrollMode="Enabled"
-                                    VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled" MaxWidth="436"
-                                    Margin="-16,-4,-16,-16" Padding="0,0,0,0">
-                                    <Grid Margin="16,0,8,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Text="Official Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
-                                            <GridView x:Name="OfficialToolsStackPanel"
-                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}"
-                                                      ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}">
-                                                <GridView.ItemContainerStyle>
-                                                    <Style TargetType="GridViewItem">
-                                                        <Setter Property="Margin" Value="0,4,8,4"/>
-                                                        <Setter Property="Width" Value="200"/>
-                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                                        <Setter Property="MinHeight" Value="0"/>
-                                                        <Setter Property="Padding" Value="0,0,0,0"/>
-                                                    </Style>
-                                                </GridView.ItemContainerStyle>
-                                                <GridView.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="1"
-                                                           Orientation="Horizontal"/>
-                                                    </ItemsPanelTemplate>
-                                                </GridView.ItemsPanel>
-                                            </GridView>
+                            Shadow="{ThemeResource SharedShadow}">
+                            <Button.Content>
+                                <Grid>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource GameSettingsBtnBrush}" Margin="-16"/>
+                                    <StackPanel Orientation="Horizontal" Margin="8,0">
+                                        <AnimatedIcon x:Name='GameRegionSettingIcon' Width="20">
+                                            <AnimatedIcon.Source>
+                                                <animatedvisuals:AnimatedSettingsVisualSource/>
+                                            </AnimatedIcon.Source>
+                                            <AnimatedIcon.FallbackIconSource>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"/>
+                                            </AnimatedIcon.FallbackIconSource>
+                                        </AnimatedIcon>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettingsBtn}" FontWeight="Medium" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,-2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <ScrollViewer MaxHeight="474" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" Margin="-16,-16">
+                                        <StackPanel MaxWidth="224" Margin="16,16">
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                            <Button x:Name="OpenGameFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="OpenGameFolderButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf07b;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenGameFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="OpenCacheFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenCacheFolderButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf65e;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenCacheFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="OpenScreenshotFolderButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="OpenScreenshotFolderButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf03e;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel1OpenScreenshotFolder}" FontWeight="Medium" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                            <Button x:Name="RepairGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}" HorizontalContentAlignment="Left" Click="RepairGameButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ad;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2RepairGame}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="UninstallGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="UninstallGameButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf1f8;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button x:Name="ConvertVersionButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ConvertVersionButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf363;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+                                            <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                                <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="MiscPanel">
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                                <ToggleSwitch x:Name="ShowEventsPanelToggle" IsEnabled="False" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowEventsPanel}" IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}" />
+                                                <ToggleSwitch x:Name="ShowSocialMediaPanelToggle" IsEnabled="True" OffContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" OnContent="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}" IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}" />
+                                            </StackPanel>
                                         </StackPanel>
-                                        <StackPanel Grid.Column="1" Margin="16,0,0,0">
-                                            <TextBlock Text="Community Tools" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="16" Margin="0,0,0,8"/>
-                                            <GridView x:Name="CommunityToolsStackPanel"
-                                                      ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}"
-                                                      ItemTemplate="{StaticResource CommunityToolsInnerBtn}">
-                                                <GridView.ItemContainerStyle>
-                                                    <Style TargetType="GridViewItem">
-                                                        <Setter Property="Margin" Value="0,4,8,4"/>
-                                                        <Setter Property="Width" Value="180"/>
-                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                                        <Setter Property="MinHeight" Value="0"/>
-                                                        <Setter Property="Padding" Value="0,0,0,0"/>
-                                                    </Style>
-                                                </GridView.ItemContainerStyle>
-                                                <GridView.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="2"
-                                                           Orientation="Horizontal"/>
-                                                    </ItemsPanelTemplate>
-                                                </GridView.ItemsPanel>
-                                            </GridView>
-                                        </StackPanel>
-                                    </Grid>
-                                </ScrollViewer>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="1" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
+                                    </ScrollViewer>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                    <Grid x:Name="LauncherBtn" Grid.Column="0" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
                             <Button.Content>
