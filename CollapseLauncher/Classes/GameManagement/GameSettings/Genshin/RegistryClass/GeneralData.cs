@@ -80,7 +80,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public int localLevelIndex { get; set; } = 0;
         public string deviceID { get; set; } = "";
         public string targetUID { get; set; } = "";
-        public string currentAccountName { get; set; } = "";
+        public string curAccountName { get; set; } = "";
 
         /// <summary>
         /// This define "<c>Resolution</c>" index selected in-game. <br/>
@@ -110,6 +110,11 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// This is a dict that keeps track of graphics settings changes.<br/>
         /// Save to ignore (?)
         /// </summary>
+
+        // Temporary for fallback before the implementation is made
+        [JsonIgnore]
+        public string globalPerfData { get; set; }
+
         //[JsonPropertyName("globalPerfData")]
         //public string _globalPerfData { get; set; }
 
@@ -137,7 +142,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// not sure either what these does.
         /// </summary>
         public bool completionPkg { get; set; } = false;
-        public bool completionPkgGoPkg { get; set; } = false;
+        public bool completionPlayGoPkg { get; set; } = false;
 
         /// <summary>
         /// Could be for PlayStation multiplayer stuff
@@ -207,7 +212,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public bool _audioSuccessInit { get; set; } = true;
         public bool enableAudioChangeAndroidMinimumBufferCapacity { get; set; } = true;
-        public int audioAndroidMinimumBufferCapacity { get; set; } = 2048;
+        public int audioAndroidMiniumBufferCapacity { get; set; } = 2048;
 
         /// <summary>
         /// This define vibration level for certain controller probably ?
@@ -240,9 +245,9 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
         public bool firstHDRSetting { get; set; } = true;
-        public float maxLuminosity { get; set; } = 0.0f;
-        public float uiPaperWhite { get; set; } = 0.0f;
-        public float scenePaperWhite { get; set; } = 0.0f;
+        public double maxLuminosity { get; set; } = 0.0f;
+        public double uiPaperWhite { get; set; } = 0.0f;
+        public double scenePaperWhite { get; set; } = 0.0f;
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
@@ -258,6 +263,10 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// <summary>
         /// This holds said override for those controllers.
         /// </summary>
+
+        // Temporary for fallback before the implementation is made
+        public List<string> _overrideControllerMapValueList { get; set; }
+
         //[JsonPropertyName("_overrideControllerMapValueList")]
         //public List<string> __overrideControllerMapValueList { get; set; }
 
@@ -284,7 +293,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public int mtrAutoTraceInterval { get; set; } = 3600;
         public int mtrTraceCDEachReason { get; set; } = 600;
         public int mtrTimeInterval { get; set; } = 1000;
-        public List<object> mtrBanReason { get; set; }
+        public List<object> mtrBanReasons { get; set; }
         public List<string> _customDataKeyList { get; set; }
         public List<string> _customDataValueList { get; set; }
         public List<int> _serializedCodeSwitches { get; set; }
@@ -366,12 +375,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.uiSaveData == uiSaveData &&
                 comparedTo.inputData == inputData &&
                 comparedTo.graphicsData == graphicsData &&
-                //comparedTo.globalPerfData == globalPerfData &&
+                comparedTo.globalPerfData == globalPerfData &&
                 comparedTo.miniMapConfig == miniMapConfig &&
                 comparedTo.enableCameraSlope == enableCameraSlope &&
                 comparedTo.enableCameraCombatLock == enableCameraCombatLock &&
                 comparedTo.completionPkg == completionPkg &&
-                comparedTo.completionPkgGoPkg == completionPkgGoPkg &&
+                comparedTo.completionPlayGoPkg == completionPlayGoPkg &&
                 comparedTo.onlyPlayWithPSPlayer == onlyPlayWithPSPlayer &&
                 comparedTo.needPlayGoFullPkgPatch == needPlayGoFullPkgPatch &&
                 comparedTo.resinNotification == resinNotification &&
@@ -384,6 +393,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.audioOutput == audioOutput &&
                 comparedTo._audioSuccessInit == _audioSuccessInit &&
                 comparedTo.enableAudioChangeAndroidMinimumBufferCapacity == enableAudioChangeAndroidMinimumBufferCapacity &&
+                comparedTo.audioAndroidMiniumBufferCapacity == audioAndroidMiniumBufferCapacity &&
                 comparedTo.vibrationLevel == vibrationLevel &&
                 comparedTo.vibrationIntensity == vibrationIntensity &&
                 comparedTo.usingNewVibrationSetting == usingNewVibrationSetting &&
@@ -395,7 +405,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.scenePaperWhite == scenePaperWhite &&
                 comparedTo.gammaValue == gammaValue &&
                 comparedTo._overrideControllerMapKeyList == _overrideControllerMapKeyList &&
-                //comparedTo._overrideControllerMapValueList  == _overrideControllerMapValueList &&
+                comparedTo._overrideControllerMapValueList  == _overrideControllerMapValueList &&
                 comparedTo.rewiredDisableKeyboard == rewiredDisableKeyboard &&
                 comparedTo.rewiredEnableKeyboard == rewiredEnableKeyboard &&
                 comparedTo.rewiredEnableEDS == rewiredEnableEDS &&
@@ -414,7 +424,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.mtrAutoTraceInterval == mtrAutoTraceInterval &&
                 comparedTo.mtrTraceCDEachReason == mtrTraceCDEachReason &&
                 comparedTo.mtrTimeInterval == mtrTimeInterval &&
-                comparedTo.mtrBanReason == mtrBanReason &&
+                comparedTo.mtrBanReasons == mtrBanReasons &&
                 comparedTo._customDataKeyList == _customDataKeyList &&
                 comparedTo._customDataValueList == _customDataValueList &&
                 comparedTo._serializedCodeSwitches == _serializedCodeSwitches &&
