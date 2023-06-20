@@ -243,14 +243,14 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
         public bool firstHDRSetting { get; set; } = true;
-        public double maxLuminosity { get; set; } = 0.0f;
-        public double uiPaperWhite { get; set; } = 0.0f;
-        public double scenePaperWhite { get; set; } = 0.0f;
+        public decimal maxLuminosity { get; set; } = 0.0m;
+        public decimal uiPaperWhite { get; set; } = 0.0m;
+        public decimal scenePaperWhite { get; set; } = 0.0m;
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
         /// </summary>
-        public float gammaValue { get; set; } = 2.2f;
+        public double gammaValue { get; set; } = 2.2f;
         
         /// <summary>
         /// This holds value for controllers input that has been customized.
