@@ -1,14 +1,22 @@
-﻿using CollapseLauncher.GameSettings.Genshin.Context;
+﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Hi3Helper;
 using System.Collections.Generic;
 using System.Text.Json;
 using static Hi3Helper.Logger;
 
-namespace CollapseLauncher.Classes.GameManagement.GameSettings.Genshin.RegistryClass
+namespace CollapseLauncher.GameSettings.Genshin
 {
     internal class GraphicsData
     {
+        #region Properties
+
+        public int currentVolatielGrade { get; set; } = -1;
+        public List<Dictionary<string, int>> customVolatileGrades { get; set; } = new();
+        public string volatileVersion { get; set; } = "";
+        #endregion
+
         #region Settings
         /// <summary>
         /// This defines "<c>FPS</c>" combobox In-game settings. <br/>
@@ -122,13 +130,6 @@ namespace CollapseLauncher.Classes.GameManagement.GameSettings.Genshin.RegistryC
         /// Default: 8x [4]
         /// </summary>
         public AnisotropicFilteringOption AnisotropicFiltering = AnisotropicFilteringOption.x8;
-        #endregion
-
-        #region Properties
-
-        public int currentVolatielGrade { get; set; } = -1;
-        public List<Dictionary<string,int>> customVolatileGrades { get; set; } = new();
-        public string volatileVersion { get; set; } = "";
         #endregion
 
         #region Methods

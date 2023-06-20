@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Classes.GameManagement.GameSettings.Genshin.RegistryClass;
+﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;

@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Classes.GameManagement.GameSettings.Genshin.RegistryClass;
+﻿using CollapseLauncher.GameSettings.Genshin;
 using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.GameSettings.Genshin.Context
