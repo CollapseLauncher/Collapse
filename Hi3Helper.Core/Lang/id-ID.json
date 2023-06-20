@@ -643,6 +643,16 @@
     "Audio_BGM": "Suara Musik",
     "Audio_SFX": "Suara Efek Suara",
     "Audio_VO": "Volume Suara",
-    "Audio_Mute": "Mute Suara"
+    "Audio_Mute": "Mute Suara",
+
+    "Language": "Pengaturan Bahasa",
+    "Language_Help1": "Saat ini Collapse tidak dapat mengunduh langsung paket suara.",
+    "Language_Help2": "Paket suara VO akan diunduh saat menjalankan game.",
+    "Audio": "Suara",
+    "Text": "Tulisan",
+    "VO_en": "Inggris",
+    "VO_cn": "Cina",
+    "VO_jp": "Jepang",
+    "VO_kr": "Korea"
   }
 }

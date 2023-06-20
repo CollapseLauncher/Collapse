@@ -82,6 +82,8 @@
                 public string ReleaseChannelChangeSubtitle1 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle1;
                 public string ReleaseChannelChangeSubtitle2 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle2;
                 public string ReleaseChannelChangeSubtitle3 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle3;
+                public string LocateExePathTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
+                public string LocateExePathSubtitle{ get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
             }
         }
         #endregion
