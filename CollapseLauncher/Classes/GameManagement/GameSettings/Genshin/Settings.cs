@@ -48,6 +48,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             // Save Settings
             SettingsCustomArgument.Save();
             SettingsCollapseScreen.Save();
+            SettingsScreen.Save();
             SettingsGeneralData.Save();
         }
 
