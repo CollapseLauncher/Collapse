@@ -14,7 +14,7 @@
     Loaded="InitializeSettings">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
-        <conv:InverseBooleanConverter x:Key="BooleanReverse"/>
+        <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
