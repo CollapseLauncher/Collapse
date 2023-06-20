@@ -365,7 +365,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.targetUID == targetUID &&
                 comparedTo.uiSaveData == uiSaveData &&
                 comparedTo.inputData == inputData &&
-                //comparedTo.graphicsData == graphicsData &&
+                comparedTo.graphicsData == graphicsData &&
                 //comparedTo.globalPerfData == globalPerfData &&
                 comparedTo.miniMapConfig == miniMapConfig &&
                 comparedTo.enableCameraSlope == enableCameraSlope &&
@@ -395,6 +395,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.scenePaperWhite == scenePaperWhite &&
                 comparedTo.gammaValue == gammaValue &&
                 comparedTo._overrideControllerMapKeyList == _overrideControllerMapKeyList &&
+                //comparedTo._overrideControllerMapValueList  == _overrideControllerMapValueList &&
                 comparedTo.rewiredDisableKeyboard == rewiredDisableKeyboard &&
                 comparedTo.rewiredEnableKeyboard == rewiredEnableKeyboard &&
                 comparedTo.rewiredEnableEDS == rewiredEnableEDS &&
