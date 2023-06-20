@@ -110,9 +110,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// This is a dict that keeps track of graphics settings changes.<br/>
         /// Save to ignore (?)
         /// </summary>
-
         // Temporary for fallback before the implementation is made
-        [JsonIgnore]
         public string globalPerfData { get; set; }
 
         //[JsonPropertyName("globalPerfData")]
@@ -263,7 +261,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// <summary>
         /// This holds said override for those controllers.
         /// </summary>
-
         // Temporary for fallback before the implementation is made
         public List<string> _overrideControllerMapValueList { get; set; }
 
