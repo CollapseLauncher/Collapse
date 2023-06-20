@@ -193,14 +193,15 @@ namespace CollapseLauncher.GameSettings.Genshin
                         LogWriteLine($"Loaded Genshin Graphics - Crowd Density: {setting["value"]}", LogType.Debug, true);
                         graphics.CrowdDensity = (CrowdDensityOption)setting["value"];
                         break;
+                    /// yes, its actually 16 first before 15, wtf miyoyo
+                    case 16:
+                        LogWriteLine($"Loaded Genshin Graphics - Co-Op Teammate Effects: {setting["value"]}", LogType.Debug, true);
+                        graphics.CoOpTeammateEffects = (CoOpTeammateEffectsOption)setting["value"];
+                        break;
                     /// 14 is missing from settings
                     case 15:
                         LogWriteLine($"Loaded Genshin Graphics - Subsurface Scattering: {setting["value"]}", LogType.Debug, true);
                         graphics.SubsurfaceScattering = (SubsurfaceScatteringOption)setting["value"];
-                        break;
-                    case 16:
-                        LogWriteLine($"Loaded Genshin Graphics - Co-Op Teammate Effects: {setting["value"]}", LogType.Debug, true);
-                        graphics.CoOpTeammateEffects = (CoOpTeammateEffectsOption)setting["value"];
                         break;
                     case 17:
                         LogWriteLine($"Loaded Genshin Graphics - Anisotropic Filtering: {setting["value"]}", LogType.Debug, true);
@@ -228,8 +229,8 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new Dictionary<string, int>() { { "key", 11 }, { "value", (int)MotionBlur } },
                 new Dictionary<string, int>() { { "key", 12 }, { "value", (int)Bloom } },
                 new Dictionary<string, int>() { { "key", 13 }, { "value", (int)CrowdDensity } },
-                new Dictionary<string, int>() { { "key", 15 }, { "value", (int)SubsurfaceScattering } },
                 new Dictionary<string, int>() { { "key", 16 }, { "value", (int)CoOpTeammateEffects } },
+                new Dictionary<string, int>() { { "key", 15 }, { "value", (int)SubsurfaceScattering } },
                 new Dictionary<string, int>() { { "key", 17 }, { "value", (int)AnisotropicFiltering } },
                 };
                 string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
