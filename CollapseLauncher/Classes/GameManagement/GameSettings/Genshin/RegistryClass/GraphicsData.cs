@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Hi3Helper;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using static Hi3Helper.Logger;
@@ -141,68 +142,68 @@ namespace CollapseLauncher.GameSettings.Genshin
                 switch (setting["key"])
                 {
                     case 1:
-                        LogWriteLine($"Loaded Genshin Graphics - FPS: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - FPS: {setting["value"]}", LogType.Debug, true);
                         graphics.FPS = (FPSOption)setting["value"];
                         break;
                     case 2:
-                        LogWriteLine($"Loaded Genshin Graphics - Render Resolution: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Render Resolution: {setting["value"]}", LogType.Debug, true);
                         graphics.RenderResolution = (RenderResolutionOption)setting["value"];
                         break;
                     case 3:
-                        LogWriteLine($"Loaded Genshin Graphics - Shadow Quality: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Shadow Quality: {setting["value"]}", LogType.Debug, true);
                         graphics.ShadowQuality = (ShadowQualityOption)setting["value"];
                         break;
                     case 4:
-                        LogWriteLine($"Loaded Genshin Graphics - Visual Effects: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Visual Effects: {setting["value"]}", LogType.Debug, true);
                         graphics.VisualEffects = (VisualEffectsOption)setting["value"];
                         break;
                     case 5:
-                        LogWriteLine($"Loaded Genshin Graphics - SFX Quality: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - SFX Quality: {setting["value"]}", LogType.Debug, true);
                         graphics.SFXQuality = (SFXQualityOption)setting["value"];
                         break;
                     case 6:
-                        LogWriteLine($"Loaded Genshin Graphics - Environment Detail: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Environment Detail: {setting["value"]}", LogType.Debug, true);
                         graphics.EnvironmentDetail = (EnvironmentDetailOption)setting["value"];
                         break;
                     case 7:
-                        LogWriteLine($"Loaded Genshin Graphics - Vertical Sync: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Vertical Sync: {setting["value"]}", LogType.Debug, true);
                         graphics.VerticalSync = (VerticalSyncOption)setting["value"];
                         break;
                     case 8:
-                        LogWriteLine($"Loaded Genshin Graphics - Antialiasing: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Antialiasing: {setting["value"]}", LogType.Debug, true);
                         graphics.Antialiasing = (AntialiasingOption)setting["value"];
                         break;
                     case 9:
-                        LogWriteLine($"Loaded Genshin Graphics - Volumetric Fog: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Volumetric Fog: {setting["value"]}", LogType.Debug, true);
                         graphics.VolumetricFog = (VolumetricFogOption)setting["value"];
                         break;
                     case 10:
-                        LogWriteLine($"Loaded Genshin Graphics - Reflections: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Reflections: {setting["value"]}", LogType.Debug, true);
                         graphics.Reflections = (ReflectionsOption)setting["value"];
                         break;
                     case 11:
-                        LogWriteLine($"Loaded Genshin Graphics - Motion Blur: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Motion Blur: {setting["value"]}", LogType.Debug, true);
                         graphics.MotionBlur = (MotionBlurOption)setting["value"];
                         break;
                     case 12:
-                        LogWriteLine($"Loaded Genshin Graphics - Bloom: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Bloom: {setting["value"]}", LogType.Debug, true);
                         graphics.Bloom = (BloomOption)setting["value"];
                         break;
                     case 13:
-                        LogWriteLine($"Loaded Genshin Graphics - Crowd Density: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Crowd Density: {setting["value"]}", LogType.Debug, true);
                         graphics.CrowdDensity = (CrowdDensityOption)setting["value"];
                         break;
                     /// 14 is missing from settings
                     case 15:
-                        LogWriteLine($"Loaded Genshin Graphics - Subsurface Scattering: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Subsurface Scattering: {setting["value"]}", LogType.Debug, true);
                         graphics.SubsurfaceScattering = (SubsurfaceScatteringOption)setting["value"];
                         break;
                     case 16:
-                        LogWriteLine($"Loaded Genshin Graphics - Co-Op Teammate Effects: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Co-Op Teammate Effects: {setting["value"]}", LogType.Debug, true);
                         graphics.CoOpTeammateEffects = (CoOpTeammateEffectsOption)setting["value"];
                         break;
                     case 17:
-                        LogWriteLine($"Loaded Genshin Graphics - Anisotropic Filtering: {setting["value"]}", LogType.Default, true);
+                        LogWriteLine($"Loaded Genshin Graphics - Anisotropic Filtering: {setting["value"]}", LogType.Debug, true);
                         graphics.AnisotropicFiltering = (AnisotropicFilteringOption)setting["value"];
                         break;
                 }
@@ -230,10 +231,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new Dictionary<string, int>() { { "key", 15 }, { "value", (int)SubsurfaceScattering } },
                 new Dictionary<string, int>() { { "key", 16 }, { "value", (int)CoOpTeammateEffects } },
                 new Dictionary<string, int>() { { "key", 17 }, { "value", (int)AnisotropicFiltering } },
-
-            };
-            string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
-            return data;
+                };
+                string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
+                LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
+                return data;
         }
         #endregion
     }

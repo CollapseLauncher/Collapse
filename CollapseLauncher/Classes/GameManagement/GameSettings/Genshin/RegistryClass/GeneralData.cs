@@ -317,7 +317,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
                     GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     return data;
@@ -340,7 +340,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 _graphicsData = graphicsData.Save();
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{data}", LogType.Default, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
