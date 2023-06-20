@@ -7,6 +7,7 @@
         Default,
         Scheme,
         NoTag,
-        Game
+        Game,
+        Debug
     }
 }

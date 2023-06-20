@@ -219,6 +219,18 @@ namespace CollapseLauncher.Pages
             get => Settings.AudioSettings_VO.VOVol = Settings.AudioSettings_VO.VOVol;
             set => Settings.AudioSettings_VO.VOVol = value;
         }
+
+        public int AudioLang
+        {
+            get => Settings.AudioLanguage.LocalAudioLangInt = Settings.AudioLanguage.LocalAudioLangInt;
+            set => Settings.AudioLanguage.LocalAudioLangInt = value;
+        }
+
+        public int TextLang
+        {
+            get => Settings.TextLanguage.LocalTextLangInt = Settings.TextLanguage.LocalTextLangInt;
+            set => Settings.TextLanguage.LocalTextLangInt = value;
+        }
         #endregion
     }
 }

@@ -674,6 +674,9 @@ namespace CollapseLauncher
         {
             RunBackgroundCheck();
 
+            // Load community tools properties
+            PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
+
             Type Page;
 
             if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
@@ -888,24 +891,18 @@ namespace CollapseLauncher
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
-
-                if (PageStatics._GameVersion.GameType == GameType.Honkai)
-                {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
-                }
-                // TODO: Uncomment this one HSR receives proper Cache Update and/or Repair support
-                //if (PageStatics._GameVersion.GameType == GameType.StarRail)
-                //{
-                //    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                //    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
-                //}
             }
 
-            if (PageStatics._GameVersion.GameType == GameType.StarRail)
+            switch (PageStatics._GameVersion.GameType)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                case GameType.Honkai:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._GameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "gamesettings" });
+                    break;
+                case GameType.StarRail:
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                    { Content = Lang._StarRailGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "starrailgamesettings" });
+                    break;
             }
 
             if (PageStatics._GameVersion.GameType == GameType.Genshin)

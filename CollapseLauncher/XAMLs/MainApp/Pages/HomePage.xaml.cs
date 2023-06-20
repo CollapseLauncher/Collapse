@@ -30,6 +30,11 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Hi3Helper.Data;
+using System.Collections.Generic;
+using Hi3Helper.Shared.Region;
+using System.Linq;
 
 namespace CollapseLauncher.Pages
 {
@@ -84,6 +89,7 @@ namespace CollapseLauncher.Pages
                 SocMedPanel.Translation += Shadow48;
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
+                CommunityToolsBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
                     && MenuPanels.articlePanel != null)
@@ -265,9 +271,194 @@ namespace CollapseLauncher.Pages
             SpawnWebView2.SpawnWebView2Window(((ImageEx)sender).Tag.ToString());
         }
 
-        private void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
+        private async void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
         {
-            SpawnWebView2.SpawnWebView2Window(((Button)sender).Tag.ToString());
+            // Get the tag string.
+            string tagContent = ((ButtonBase)sender).Tag.ToString();
+
+            // Split the tag string by $ character as separator.
+            string[] tagProperty = tagContent.Split('$');
+
+            // If the tagProperty has more than 1 array (that means it has tag action property),
+            // then generate the tag action and execute it.
+            if (tagProperty.Length > 1)
+            {
+                // Check if the tag has "OpenUrlIfCancel". This will be used to check if the
+                // tag action is getting cancelled, then open the URL of the tag.
+                bool isOpenUrlIfCancel = tagProperty.Contains("OpenUrlIfCancel");
+
+                // Build the tag Task to be executed. The action will return boolean as the result.
+                //    true          => Task has been executed successfully.
+                //    false         => Task was cancelled or error has occurred.
+                //    Task<null>    => Means the tag action property failed to be deserialized caused by
+                //                     invalid tag or parameter/argument.
+                Task<bool> action = TryBuildTagPropertyAction(tagProperty[1]);
+
+                // If the action returns a null task (Task<null>), then fallback to open the URL instead.
+                if (action == null)
+                {
+                    LogWriteLine($"Tag Property seems to be invalid or incomplete. Failback to open the URL instead!\r\nTag String: {tagProperty[1]}", LogType.Warning, true);
+                    SpawnWebView2.SpawnWebView2Window(tagProperty[0]);
+                    return;
+                }
+
+                // Await and run the tag action task and put the action result to isActionCompleted
+                bool isActionCompleted = await action;
+                // If the action is true (successfully executed), then return
+                if (isActionCompleted) return;
+                // If the action is false (failed/cancel) and doesn't have "OpenUrlIfCancel" tag, then return
+                // Otherwise, fallback to open the URL.
+                if (!isOpenUrlIfCancel) return;
+            }
+
+            // Open the URL and spawn WebView2 window
+            SpawnWebView2.SpawnWebView2Window(tagProperty[0]);
+        }
+
+        private Task<bool> TryBuildTagPropertyAction(string tagProperty)
+        {
+            try
+            {
+                // Split the property string by : mark to get the tag action type and its parameter.
+                string[] property = tagProperty.Split(':');
+                // If the property array has less than 2, then return null to fallback (open the URL).
+                if (property.Length < 2) return null;
+
+                // Check the tag action type
+                switch (property[0].ToLower())
+                {
+                    case "openexternalapp":
+                        return TagPropertyAction_OpenExternalApp(property[1]);
+                }
+            }
+            // If the error has occured, then return null to fallback (open the URL).
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while parsing Tag Property: {tagProperty}!\r\n{ex}", LogType.Warning, true);
+            }
+            return null;
+        }
+
+        private async Task<bool> TagPropertyAction_OpenExternalApp(string propertiesString)
+        {
+            // Split the properties string by , mark to get the argument string.
+            string[] properties = propertiesString.Split(',');
+            // Initialize the application properties
+            string applicationName = "";
+            string applicationExecName = "";
+            bool runAsAdmin = false;
+
+            // If the properties array is empty, then throw and back to fallback (open the URL).
+            if (properties.Length == 0) throw new ArgumentNullException("Properties for OpenExternalApp can't be empty!");
+
+            // Iterate the properties array
+            for (int i = 0; i < properties.Length; i++)
+            {
+                // Split the property by = mark to get the argument and its value.
+                string[] argumentStr = properties[i].Split("=");
+
+                // If the argument array is empty, then throw and back to fallback (open the URL).
+                if (argumentStr.Length == 0) throw new ArgumentNullException("Argument can't be empty!");
+
+                // Check the argument type
+                switch (argumentStr[0].ToLower())
+                {
+                    case "applicationexecname":
+                        // If the value is empty, then throw and back to fallback (open the URL).
+                        if (argumentStr.Length < 2) throw new ArgumentException($"Argument error on {argumentStr[0]}: Executable name must be defined!");
+
+                        // Get the application executable 
+                        applicationExecName = argumentStr[1];
+# if DEBUG
+                        LogWriteLine($"Got '{argumentStr[0]}' as parameter for application executable", LogType.Debug, true);
+# endif
+                        break;
+                    case "applicationname":
+                        // Get the application name. If it's empty, then fallback to default "MyApplication" name.
+                        // Else, return the defined application name.
+                        applicationName = argumentStr.Length < 2 || string.IsNullOrEmpty(argumentStr[1]) ? "MyApplication" : argumentStr[1];
+#if DEBUG
+                        LogWriteLine($"Got '{argumentStr[1]}' as parameter for application name", LogType.Debug, true);
+# endif
+                        break;
+                    case "runasadmin":
+                        // Try parse the boolean value. If it's valid and the value of runAsAdmin is true, then set
+                        // runAsAdmin as true and "AND" it with isBoolValid.
+                        bool isBoolValid = bool.TryParse(argumentStr[1], out runAsAdmin);
+                        runAsAdmin = isBoolValid && runAsAdmin;
+#if DEBUG
+                        LogWriteLine($"Got '{isBoolValid}' as parameter for application executable", LogType.Debug, true);
+# endif
+                        break;
+                    default:
+                        // If the argument type is unknown, then throw and back to fallback (open the URL).
+                        throw new ArgumentException($"Argument {argumentStr[0]} is unknown!");
+                }
+            }
+
+            // Trim the space in the application name to be used for app config.
+            string applicationNameTrimmed = applicationName.Replace(" ", "");
+            // If the RunAsAdmin config key doesn't exist, then create one.
+            if (!IsConfigKeyExist($"Exec_RunAsAdmin_{applicationNameTrimmed}")) SetAndSaveConfigValue($"Exec_RunAsAdmin_{applicationNameTrimmed}", runAsAdmin);
+
+            // Check if the Application path config is exist. If not, then return empty string. Otherwise, return the actual value.
+            string applicationPath = IsConfigKeyExist($"Exec_Path_{applicationNameTrimmed}") ? GetAppConfigValue($"Exec_Path_{applicationNameTrimmed}").ToString() : "";
+            // Check if the applicationPath variable is empty or if the application path in applicationPath variable.
+            // If the variable is empty or the path is not exist, then spawn File Picker dialog.
+            if (string.IsNullOrEmpty(applicationPath) || !File.Exists(applicationPath))
+            {
+                // Run the loop
+                while (true)
+                {
+                    // Set initial value to null
+                    string file = null;
+                    switch (await Dialog_OpenExecutable(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            // Try get the file path
+                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
+                            // If the file returns null because of getting cancelled, then back to loop again.
+                            if (string.IsNullOrEmpty(file)) continue;
+                            // Otherwise, assign the value to applicationPath variable and save it to the app config
+                            applicationPath = file;
+                            SetAndSaveConfigValue($"Exec_Path_{applicationNameTrimmed}", file);
+                            break;
+                        case ContentDialogResult.Secondary:
+                            // If the main dialog is getting cancelled, then return false (as cancel and fallback to URL [if enabled]).
+                            return false;
+                    }
+
+                    // If the file variable is not null anymore, then break from the loop and continue
+                    // the call below.
+                    if (!string.IsNullOrEmpty(file)) break;
+                }
+            }
+
+            try
+            {
+                // Try run the application
+                Process proc = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        Verb = runAsAdmin ? "runas" : "",
+                        FileName = applicationPath,
+                        WorkingDirectory = Path.GetDirectoryName(applicationPath),
+                    }
+                };
+                proc.Start();
+            }
+            catch (Exception ex)
+            {
+                // If error happened while running the app, then log and return true as successful
+                // Thoughts @Cyr0? Should we mark it as successful (true) or failed (false)?
+                LogWriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
+                return true;
+            }
+
+            // If all above are executed successfully, then return true as "successful"
+            return true;
         }
 
         private void CheckIfRightSideProgress()
@@ -290,10 +481,32 @@ namespace CollapseLauncher.Pages
             if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GameType != GameType.Honkai))
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
-            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            // Clear the _CommunityToolsProperty statics
+            PageStatics._CommunityToolsProperty.Clear();
+
+            // Check if the _CommunityToolsProperty has the official tool list for current game type
+            if (PageStatics._CommunityToolsProperty.OfficialToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
             {
-                OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+                // If yes, then iterate it and add it to the list, to then getting read by the
+                // DataTemplate from HomePage
+                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.OfficialToolsDictionary[PageStatics._GameVersion.GameType])
+                {
+                    PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                }
             }
+
+            // Check if the _CommunityToolsProperty has the community tool list for current game type
+            if (PageStatics._CommunityToolsProperty.CommunityToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
+            {
+                // If yes, then iterate it and add it to the list, to then getting read by the
+                // DataTemplate from HomePage
+                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.CommunityToolsDictionary[PageStatics._GameVersion.GameType])
+                {
+                    PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                }
+            }
+
+            if (PageStatics._GameVersion.GameType == GameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
 
             GameInstallationState = PageStatics._GameVersion.GetGameState();
             switch (GameInstallationState)
@@ -334,6 +547,12 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
+        }
+
+        private void OpenCommunityButtonLink(object sender, RoutedEventArgs e)
+        {
+            DispatcherQueue.TryEnqueue(() => CommunityToolsBtn.Flyout.Hide());
+            OpenButtonLinkFromTag(sender, e);
         }
 
         private void SpawnPreloadBox()
@@ -509,7 +728,7 @@ namespace CollapseLauncher.Pages
             {
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {PageStatics._GameVersion.GamePreset.ZoneName}\r\n{ex}", Hi3Helper.LogType.Error, true);
-                ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
+                ErrorSender.SendException(new NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
                     $"Please report this issue to our GitHub here: https://github.com/neon-nyan/CollapseLauncher/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
             }
             catch (Exception ex)
@@ -620,7 +839,7 @@ namespace CollapseLauncher.Pages
                     ReadOutputLog();
                     GameLogWatcher();
                 }
-                
+
                 await proc.WaitForExitAsync();
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -628,7 +847,6 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {PageStatics._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
-
 
         #region LaunchArgumentBuilder
         bool RequireWindowExclusivePayload = false;
@@ -713,7 +931,6 @@ namespace CollapseLauncher.Pages
         }
 
         #endregion
-
 
         public async Task<bool> CheckMediaPackInstalled()
         {
@@ -1012,7 +1229,7 @@ namespace CollapseLauncher.Pages
 
         private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus );
+            DispatcherQueue.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
         private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
@@ -1051,6 +1268,13 @@ namespace CollapseLauncher.Pages
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+        }
+
+        private void OpenLinkFromButtonWithTag(object sender, RoutedEventArgs e)
+        {
+            object ImageTag = ((Button)sender).Tag;
+            if (ImageTag == null) return;
+            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
         }
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)

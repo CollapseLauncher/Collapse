@@ -41,7 +41,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsGeneralData = GeneralData.Load();
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

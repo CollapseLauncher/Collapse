@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
@@ -101,6 +102,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
                     return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), PCResolutionContext.Default) ?? new PCResolution();
                 }
             }
@@ -122,7 +124,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-
+                LogWriteLine($"Saved StarRail Settings: {_ValueName}\r\n{data}", LogType.Default, true);
                 SaveIndividualRegistry();
             }
             catch (Exception ex)
@@ -133,9 +135,12 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         private void SaveIndividualRegistry()
         {
-            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
+            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 3, RegistryValueKind.DWord);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Default, true);
             RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Default, true);
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Default, true);
         }
 
         public bool Equals(PCResolution? comparedTo)

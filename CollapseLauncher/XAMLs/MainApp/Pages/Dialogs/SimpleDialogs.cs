@@ -67,6 +67,16 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.LocateDir
                 );
 
+        public static async Task<ContentDialogResult> Dialog_OpenExecutable(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.LocateExePathTitle,
+                    Lang._Dialogs.LocateExePathSubtitle,
+                    Content,
+                    null,
+                    Lang._Misc.LocateExecutable,
+                    Lang._Misc.Cancel
+                );
+
         public static async Task<ContentDialogResult> Dialog_InsufficientWritePermission(UIElement Content, string path) =>
             await SpawnDialog(
                     Lang._Dialogs.UnauthorizedDirTitle,

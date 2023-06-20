@@ -77,6 +77,7 @@
                 public string CDNDescription_Github { get; set; } = LangFallback?._Misc.CDNDescription_Github;
                 public string CDNDescription_Statically { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
                 public string CDNDescription_jsDelivr { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
+                public string LocateExecutable { get; set; } = LangFallback?._Misc.LocateExecutable;
             }
         }
         #endregion
