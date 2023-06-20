@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Genshin.Enums;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace CollapseLauncher.Pages
@@ -113,6 +115,103 @@ namespace CollapseLauncher.Pages
                 return res;
             }
             set => Settings.SettingsScreen.sizeResString = value;
+        }
+
+        public bool VerticalSync
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VerticalSync - 1);
+            set => Settings.SettingsGeneralData.graphicsData.VerticalSync = (VerticalSyncOption)(Convert.ToInt32(value) + 1);
+        }
+
+        public bool VolumetricFog
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VolumetricFog - 1);
+            set => Settings.SettingsGeneralData.graphicsData.VolumetricFog = (VolumetricFogOption)(Convert.ToInt32(value) + 1);
+        }
+
+        public bool Reflections
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.Reflections - 1);
+            set => Settings.SettingsGeneralData.graphicsData.Reflections = (ReflectionsOption)(Convert.ToInt32(value) + 1);
+        }
+
+        public bool Bloom
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.Bloom - 1);
+            set => Settings.SettingsGeneralData.graphicsData.Bloom = (BloomOption)(Convert.ToInt32(value) + 1);
+        }
+
+        public int FPS
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.FPS - 1;
+            set => Settings.SettingsGeneralData.graphicsData.FPS = (FPSOption)(value + 1);
+        }
+
+        private List<double> _renderResolutions = new() { 0.6, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
+        public double RenderScale
+        {
+            get => _renderResolutions[(int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1];
+            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (GameSettings.Genshin.Enums.RenderResolutionOption)(_renderResolutions.IndexOf(Math.Round(value, 1)) + 1);
+        }
+
+        public int ShadowQuality
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.ShadowQuality - 1;
+            set => Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
+        }
+
+        public int VisualEffects
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.VisualEffects - 1;
+            set => Settings.SettingsGeneralData.graphicsData.VisualEffects = (VisualEffectsOption)(value + 1);
+        }
+
+        public int SFXQuality
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.SFXQuality - 1;
+            set => Settings.SettingsGeneralData.graphicsData.SFXQuality = (SFXQualityOption)(value + 1);
+        }
+
+        public int EnvironmentDetail
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.EnvironmentDetail - 1;
+            set => Settings.SettingsGeneralData.graphicsData.EnvironmentDetail = (EnvironmentDetailOption)(value + 1);
+        }
+
+        public int MotionBlur
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.MotionBlur - 1;
+            set => Settings.SettingsGeneralData.graphicsData.MotionBlur = (MotionBlurOption)(value + 1);
+        }
+
+        public int CrowdDensity
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.CrowdDensity - 1;
+            set => Settings.SettingsGeneralData.graphicsData.CrowdDensity = (CrowdDensityOption)(value + 1);
+        }
+
+        public int SubsurfaceScattering
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.SubsurfaceScattering - 1;
+            set => Settings.SettingsGeneralData.graphicsData.SubsurfaceScattering = (SubsurfaceScatteringOption)(value + 1);
+        }
+
+        public int CoOpTeammateEffects
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.CoOpTeammateEffects - 1;
+            set => Settings.SettingsGeneralData.graphicsData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)(value + 1);
+        }
+
+        public int AnisotropicFiltering
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.AnisotropicFiltering - 1;
+            set => Settings.SettingsGeneralData.graphicsData.AnisotropicFiltering = (AnisotropicFilteringOption)(value + 1);
+        }
+
+        public int Antialiasing
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.Antialiasing - 1;
+            set => Settings.SettingsGeneralData.graphicsData.Antialiasing = (AntialiasingOption)(value + 1);
         }
         #endregion
     }
