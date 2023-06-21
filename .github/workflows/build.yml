@@ -47,12 +47,12 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Debug' }}
       with:
-          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}
+          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
           path: ./CollapseLauncher/bin/x64/Debug/net7.0-windows10.0.22000.0/
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ github.head_ref }}.${{ github.sha }}.{{ matrix.platform }}-${{ matrix.configuration }}
+          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
           path: ./CollapseLauncher/bin/x64/Release/net7.0-windows10.0.22000.0/
