@@ -43,24 +43,133 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Choosing your voice-line language during the first installation, so you don't have to download it inside the game.
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
-# Supported Game Regions
-The launcher currently supports the following regions for Honkai Impact 3rd:
-* Southeast Asia
-* Global
-* TW/HK/MO
-* Mainland China
-* Korea
-* Japanese
-
-# Supported Game Clients
-This launcher also supports other game client, including:
-* Genshin Impact (Global Release)
-* 原神 / Yuan Shen (Mainland China's Genshin Impact)
-* Honkai: Star Rail (Global & Mainland China)
-* ~~Zenless Zone Zero~~ (Waiting for Official Release)
+# Supported Features 
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Game Title</th>
+      <th rowspan="2">Region</th>
+      <th colspan="7">Features</th>
+    </tr>
+    <tr>
+      <th>Install</th>
+      <th>Pre-load</th>
+      <th>Update</th>
+      <th>Game Repair</th>
+      <th>Cache Update</th>
+      <th>Game Settings</th>
+      <th>Game Region Convert</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="6">Honkai Impact 3rd</td>
+      <td>Southeast Asia</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+    </tr>
+    <tr>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td>TW/HK/MO</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td>Japan</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td>Korea</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Genshin Impact</td>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Honkai: Star Rail</td>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+    </tr>
+  </tbody>
+</table>
 
 > **Note**:
-> Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported.
+> Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported. The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released.
 
 # Download Ready-To-Use Build
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.23/CL-1.69.23_Installer.exe)
