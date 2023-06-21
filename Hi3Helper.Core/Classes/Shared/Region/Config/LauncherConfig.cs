@@ -37,7 +37,7 @@ namespace Hi3Helper.Shared.Region
             new CDNURLProperty
             {
                 Name = "Bitbucket",
-                URLPrefix = "http://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
+                URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
                 Description = Lang._Misc.CDNDescription_Bitbucket
             },
             new CDNURLProperty
