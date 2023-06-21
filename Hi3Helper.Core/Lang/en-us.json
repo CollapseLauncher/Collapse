@@ -442,9 +442,10 @@
     "BuildChannelStable": "Stable",
 
     "CDNDescription_Github": "The official (main) repository for the launcher.",
+    "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
     "CDNDescription_Statically": "A mirror of the official (main) repository, provided by Statically. Use this if you're living in a place where GitHub is inaccessible.",
     "CDNDescription_jsDelivr": "jsDelivr uses multiple CDN providers like CloudFlare, Fastly and Quantil, resulting in the best possible uptime and performance.",
-    
+
     "LocateExecutable": "Locate Program Executable"
   },
 

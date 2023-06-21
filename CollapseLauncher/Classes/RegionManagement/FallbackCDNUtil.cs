@@ -191,6 +191,12 @@ namespace CollapseLauncher
                 if (!urlStatus.Item1) return false;
 
                 // Continue to get the content and return true if successful
+                if (!cdnProp.PartialDownloadSupport)
+                {
+                    // If the CDN marked to not supporting the partial download, then use single thread mode download.
+                    await httpInstance.Download(urlStatus.Item2, outputPath, true, null, null, token);
+                    return true;
+                }
                 await httpInstance.Download(urlStatus.Item2, outputPath, (byte)parallelThread, true, token);
                 await httpInstance.Merge();
                 return true;
