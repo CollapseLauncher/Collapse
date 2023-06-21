@@ -88,6 +88,8 @@
                 public string SpecMedium { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecMedium;
                 public string SpecHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecHigh;
                 public string SpecVeryHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecVeryHigh;
+
+                public string SpecPartiallyOff { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecPartiallyOff;
                 #endregion
 
                 // TODO: add more controls locale when ready

@@ -117,6 +117,9 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
 
+        #endregion
+
+        #region Graphics Settings
         public bool VerticalSync
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VerticalSync - 1);
@@ -147,11 +150,10 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGeneralData.graphicsData.FPS = (FPSOption)(value + 1);
         }
 
-        private List<double> _renderResolutions = new() { 0.6, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 };
-        public double RenderScale
+        public int RenderScale
         {
-            get => _renderResolutions[(int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1];
-            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (GameSettings.Genshin.Enums.RenderResolutionOption)(_renderResolutions.IndexOf(Math.Round(value, 1)) + 1);
+            get => (int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1;
+            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (RenderResolutionOption)(value + 1);
         }
 
         public int ShadowQuality
@@ -212,6 +214,44 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.SettingsGeneralData.graphicsData.Antialiasing - 1;
             set => Settings.SettingsGeneralData.graphicsData.Antialiasing = (AntialiasingOption)(value + 1);
+        }
+        #endregion
+
+        #region Audio
+        public int Audio_Global
+        {
+            get => (int)Settings.SettingsGeneralData.volumeGlobal;
+            set => Settings.SettingsGeneralData.volumeGlobal = value;
+        }
+        
+        public int Audio_SFX
+        {
+            get => (int)Settings.SettingsGeneralData.volumeSFX;
+            set => Settings.SettingsGeneralData.volumeSFX = value;
+        }
+
+        public int Audio_Music
+        {
+            get => (int)Settings.SettingsGeneralData.volumeMusic;
+            set => Settings.SettingsGeneralData.volumeMusic = value;
+        }
+
+        public int Audio_Voice
+        {
+            get => (int)Settings.SettingsGeneralData.volumeVoice;
+            set => Settings.SettingsGeneralData.volumeVoice = value;
+        }
+
+        public bool Audio_DynamicRange
+        {
+            get => !Convert.ToBoolean((int)Settings.SettingsGeneralData.audioDynamicRange);
+            set => Settings.SettingsGeneralData.audioDynamicRange = Convert.ToInt32(!value);
+        }
+
+        public bool Audio_Surround
+        {
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.audioOutput);
+            set => Settings.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
         }
         #endregion
     }

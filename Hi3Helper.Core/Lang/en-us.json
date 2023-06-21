@@ -742,9 +742,9 @@
     "Graphics_VSync": "VSync",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_VolFogs": "Volumetric Fogs",
-    "Graphics_ReflectionQuality": "Reflection Quality",
+    "Graphics_ReflectionQuality": "Reflection",
     "Graphics_MotionBlur": "Motion Blur",
-    "Graphics_BloomQuality": "Bloom Quality",
+    "Graphics_BloomQuality": "Bloom",
     "Graphics_CrowdDensity": "Crowd Density",
     "Graphics_SubsurfaceScattering": "Subsurface Scattering",
     "Graphics_TeammateFX": "Teammate Effects",
@@ -758,6 +758,7 @@
     "SpecMedium": "Medium",
     "SpecHigh": "High",
     "SpecVeryHigh": "Very High",
+    "SpecPartiallyOff": "Partially Off",
 
     "ApplyBtn": "Apply Settings",
     "SettingsApplied": "Changes have been saved!",
@@ -785,7 +786,7 @@
     "Audio_Output_Stereo": "Stereo",
     "Audio_Output_Surround": "Surround",
 
-    "Audio_DynamicRange": "Audio Dynamic Range",
+    "Audio_DynamicRange": "Dynamic Range",
     "Audio_DynamicRange_Full": "Full",
     "Audio_DynamicRange_Limited": "Limited",
     "Audio_Mute": "Mute Audio",
