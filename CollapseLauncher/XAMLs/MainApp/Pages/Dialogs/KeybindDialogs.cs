@@ -37,14 +37,18 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
 
-            TextBlock textBlock = new TextBlock();
-            textBlock.Inlines.Add(new Run()
+            string gameMod = keys[0][0];
+            string regionMod = keys[1][0];
+
+            StackPanel textBlock = new StackPanel() { Orientation = Orientation.Horizontal };
+            textBlock.Children.Add(new TextBlock()
             {
                 Text = "",
                 FontSize = 12,
-                FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily
+                VerticalAlignment = VerticalAlignment.Center,
+                FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
             });
-            textBlock.Inlines.Add(new Run() { Text = " Swap special key" });
+            textBlock.Children.Add(new TextBlock() { Text = string.Format("Swap {0} and {1}" , gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
 
             Button modifierSwap = new Button()
             {
@@ -58,8 +62,8 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(modifierSwap);
 
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", keys[0][0]), false));
-            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", keys[1][0]), false));
+            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
+            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             return await SpawnDialog(
@@ -211,12 +215,10 @@ namespace CollapseLauncher.Dialogs
                             keyCount++;
                             keysPressed.Text = "Shift" + " + ";
                             break;
-                        /*
                         case VirtualKey.Menu:
                             keyCount++;
                             keysPressed.Text = "Alt" + " + ";
                             break;
-                        */
                     }
                 }
             };
@@ -226,10 +228,10 @@ namespace CollapseLauncher.Dialogs
             result.KeyUp += (e, s) =>
             {
                 int keyValue = (int)s.Key;
-                if (keyCount == 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || (keyValue >= 0x60 && keyValue <= 0x69) || keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
+                if (keyCount == 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || /*(keyValue >= 0x60 && keyValue <= 0x69) ||*/ keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
                 {
                     string keyStr = s.Key.ToString();
-                    if (keyStr.Contains("NumberPad")) keyStr = string.Concat("Num", keyStr.Substring(9, 1));
+                    //if (keyStr.Contains("NumberPad")) keyStr = string.Concat("Num", keyStr.Substring(9, 1));
 
                     keyCount++;
                     keysPressed.Text += keyStr;
@@ -369,7 +371,7 @@ namespace CollapseLauncher.Dialogs
                 value ??= defaultKeyList;
                 string res = "";
                 foreach (List<string> key in value) res = res + string.Join(",", key.ToArray()) + "|";
-                LogWriteLine("Updated Keylist: " + res.Remove(res.Length - 1));
+                LogWriteLine("Keybinds list was updated to: " + res.Remove(res.Length - 1));
                 SetAndSaveConfigValue("KbShortcutList", res.Remove(res.Length - 1));
             }
         }

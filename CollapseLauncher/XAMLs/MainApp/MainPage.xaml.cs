@@ -1153,32 +1153,51 @@ namespace CollapseLauncher
         {
             try
             {
+
                 List<List<string>> keys = KeyList;
 
                 int keysIndex = 0;
 
                 int numIndex = 0;
+                VirtualKeyModifiers keyModifier = StrToVKeyModifier(keys[keysIndex][0]);
                 foreach (string game in ComboBoxGameCategory.Items)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
-                        Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                        Key = VirtualKey.Number1 + numIndex++,
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.Number1 + numIndex,
                     };
                     keystroke.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+
+                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                    {
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.NumberPad1 + numIndex++,
+                    };
+                    keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
-                numIndex = 0; keysIndex++;
+                numIndex = 0;
+                keyModifier = StrToVKeyModifier(keys[++keysIndex][0]);
                 while (numIndex < 6)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
-                        Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                        Key = VirtualKey.Number1 + numIndex++,
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.Number1 + numIndex,
                     };
                     keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+
+                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                    {
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.NumberPad1 + numIndex++,
+                    };
+                    keystrokeNP.Invoked += KeyboardGameRegionShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
                 KeyboardAccelerator kbshow = new KeyboardAccelerator()
@@ -1207,11 +1226,12 @@ namespace CollapseLauncher
         private void DeleteKeyboardShortcutHandlers()
         {
             KeyboardHandler.KeyboardAccelerators.Clear();
+            LogWriteLine(KeyboardHandler.KeyboardAccelerators.Count.ToString());
         }
 
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            int index = (int)sender.Key - 49;
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
             if (IsLoadRegionComplete && ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index] && index < ComboBoxGameCategory.Items.Count)
             {
                 ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
@@ -1224,7 +1244,7 @@ namespace CollapseLauncher
 
         private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            int index = (int)sender.Key - 49;
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
             if (IsLoadRegionComplete && ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
             {
                 ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
