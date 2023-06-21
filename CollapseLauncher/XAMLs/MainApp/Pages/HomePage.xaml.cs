@@ -849,7 +849,7 @@ namespace CollapseLauncher.Pages
                     ReadOutputLog();
                     GameLogWatcher();
                 }
-                
+
                 StartPlaytimeCounter(PageStatics._GameVersion.GamePreset.ConfigRegistryLocation, proc, PageStatics._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
@@ -860,34 +860,37 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async static void StartPlaytimeCounter(string OldRegionRK, Process proc, PresetConfigV2 GamePreset)
+        private async static void StartPlaytimeCounter(string oldRegionRegistryKey, Process proc, PresetConfigV2 gamePreset)
         {
             int saveFrequencyinSeconds = 60;
 
-            string CurrentPlaytime = ReadPlaytimeFromRegistry(OldRegionRK);
-            int seconds = 0;
-            var ingametimer = new DispatcherTimer
+            string currentPlaytime = ReadPlaytimeFromRegistry(oldRegionRegistryKey);
+            int elapsedSeconds = 0;
+
+            var inGameTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5)
             };
-            ingametimer.Tick += (o, e) =>
+            inGameTimer.Tick += (o, e) =>
             {
-                seconds += 5;
+                elapsedSeconds += 5;
 
-                if (seconds % saveFrequencyinSeconds == 0){
+                if (elapsedSeconds % saveFrequencyinSeconds == 0)
+                {
                     //LogWriteLine($"Added \"fake\" {saveFrequencyinSeconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
-                    SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
+                    SavePlaytimetoRegistry(oldRegionRegistryKey, SumPlaytimes(elapsedSeconds, currentPlaytime));
                 }
             };
-            ingametimer.Start();
+            inGameTimer.Start();
+
             await proc.WaitForExitAsync();
-            if (GamePreset.GameType == GameType.Honkai)
+            if (gamePreset.GameType == GameType.Honkai)
             {
                 try
                 {
                     while (true)
                     {
-                        Process[] pname = Process.GetProcessesByName(GamePreset.GameExecutableName.Split('.')[0]);
+                        Process[] pname = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
                         switch (pname.Length)
                         {
                             case 0:
@@ -903,16 +906,16 @@ namespace CollapseLauncher.Pages
                         }
                         break;
                     }
-                    
+
                 }
                 catch (Exception e)
                 {
                     LogWriteLine($"Failed to find the main BH3 process [{e}]");
                 }
             }
-            SavePlaytimetoRegistry(OldRegionRK, SumPlaytimes(seconds, CurrentPlaytime));
-            LogWriteLine($"Added {seconds} seconds to {OldRegionRK.Split('\\')[2]} playtime.", LogType.Default, true);
-            ingametimer.Stop();
+            SavePlaytimetoRegistry(oldRegionRegistryKey, SumPlaytimes(elapsedSeconds, currentPlaytime));
+            LogWriteLine($"Added {elapsedSeconds} [{elapsedSeconds / 60}m : {elapsedSeconds % 60}s] seconds to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
+            inGameTimer.Stop();
         }
 
         private static string SumPlaytimes(int SessionPlaytime, string CurrentPlaytime)
@@ -922,7 +925,7 @@ namespace CollapseLauncher.Pages
             int StoredPlaytimeSeconds = int.Parse(CurrentPlaytime.Split(" ")[2].Split('s')[0]);
             int SessionPlaytimeHours = SessionPlaytime / 60 / 60 + StoredPlaytimeHours;
             int SessionPlaytimeMinutes = (SessionPlaytime / 60) % 60 + StoredPlaytimeMinutes;
-            int SessionPlaytimeSeconds =  SessionPlaytime % 60 + StoredPlaytimeSeconds;
+            int SessionPlaytimeSeconds = SessionPlaytime % 60 + StoredPlaytimeSeconds;
             if (SessionPlaytimeSeconds > 59)
             {
                 SessionPlaytimeMinutes += SessionPlaytimeSeconds / 60;
@@ -939,56 +942,59 @@ namespace CollapseLauncher.Pages
 
         private async void AutoUpdatePlaytimeCounter(bool bootByCollapse = false, CancellationToken token = new CancellationToken())
         {
-            string RegionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
-            string Oldtime = ReadPlaytimeFromRegistry(RegionKey);
-            UpdatePlaytime(false, Oldtime);
+            string regionKey = PageStatics._GameVersion.GamePreset.ConfigRegistryLocation;
+            string oldTime = ReadPlaytimeFromRegistry(regionKey);
+            UpdatePlaytime(false, oldTime);
 
             bool dynamicUpdate = true;
 
-            await Task.Delay(2000, token);
-
-            if (dynamicUpdate)
+            try
             {
-                try
+                await Task.Delay(2000, token);
+
+                if (!dynamicUpdate)
                 {
-                    if (bootByCollapse)
-                    {
-                        while (App.IsGameRunning)
-                        {
-                            await Task.Delay(60000, token);
-                            UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
-                        }
-                    }
-                    else
-                    {
-                        if (App.IsGameRunning)
-                        {
-                            await Task.Delay(60000, token);
-                            string Newtime = ReadPlaytimeFromRegistry(RegionKey);
-                            if (Newtime == Oldtime) return;
-                            //int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
-                            //await Task.Delay(60000 - CurrentSeconds, token);
+                    while (App.IsGameRunning) { }
+                    UpdatePlaytime();
+                    return;
+                }
 
-                        }
 
-                        int seconds = 0;
-                        while (App.IsGameRunning)
-                        {
-                            UpdatePlaytime(false, SumPlaytimes(seconds, Oldtime));
-                            seconds += 60;
-                            await Task.Delay(60000, token);
-                        }
+                if (bootByCollapse)
+                {
+                    while (App.IsGameRunning)
+                    {
+                        await Task.Delay(60000, token);
+                        UpdatePlaytime(false, SumPlaytimes(60, PlaytimeMainBtn.Text + " 0s"));
                     }
                     UpdatePlaytime();
+                    return;
                 }
-                catch
+
+                if (App.IsGameRunning)
                 {
+                    await Task.Delay(60000, token);
+                    string newTime = ReadPlaytimeFromRegistry(regionKey);
+                    if (newTime == oldTime) return;
+                    //int CurrentSeconds = int.Parse(Newtime.Split(' ')[2].Split('s')[0]) * 1000;
+                    //await Task.Delay(60000 - CurrentSeconds, token);
+
                 }
-            }
-            else
-            {
-                while (App.IsGameRunning){}
+
+                int elapsedSeconds = 0;
+                while (App.IsGameRunning)
+                {
+                    UpdatePlaytime(false, SumPlaytimes(elapsedSeconds, oldTime));
+                    elapsedSeconds += 60;
+                    await Task.Delay(60000, token);
+                }
+
                 UpdatePlaytime();
+            }
+                
+            catch 
+            {
+                PlaytimeToken.Cancel();
             }
         }
 
@@ -1311,7 +1317,7 @@ namespace CollapseLauncher.Pages
             {
                 return (string)Registry.CurrentUser.OpenSubKey(RegionRegKey, true).GetValue("CollapseLauncher_Playtime", "0h 0m 0s");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
                 return "0h 0m 0s";
@@ -1321,11 +1327,11 @@ namespace CollapseLauncher.Pages
 
         private static void SavePlaytimetoRegistry(string RegionRegKey, string value)
         {
-            try 
+            try
             {
                 Registry.CurrentUser.OpenSubKey(RegionRegKey, true).SetValue("CollapseLauncher_Playtime", value, RegistryValueKind.String);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
             }
