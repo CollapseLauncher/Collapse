@@ -111,10 +111,11 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Save to ignore (?)
         /// </summary>
         // Temporary for fallback before the implementation is made
-        public string globalPerfData { get; set; }
+        [JsonIgnore]
+        public GlobalPerfData globalPerfData { get; set; }
 
-        //[JsonPropertyName("globalPerfData")]
-        //public string _globalPerfData { get; set; }
+        [JsonPropertyName("globalPerfData")]
+        public string _globalPerfData { get; set; }
 
         //[JsonIgnore]
         //public globalPerfData globalPerfData { get; set; }
@@ -326,6 +327,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
                     GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
+                    data.globalPerfData = new();
                     return data;
                 }
             }
@@ -344,6 +346,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 _graphicsData = graphicsData.Save();
+                _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{data}", LogType.Debug, true);

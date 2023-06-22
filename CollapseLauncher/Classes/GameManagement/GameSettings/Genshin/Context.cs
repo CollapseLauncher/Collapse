@@ -10,4 +10,8 @@ namespace CollapseLauncher.GameSettings.Genshin.Context
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(GraphicsData))]
     internal sealed partial class GraphicsDataContext : JsonSerializerContext { }
+
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(GlobalPerfData))]
+    internal sealed partial class GlobalPerfDataContext : JsonSerializerContext { }
 }
