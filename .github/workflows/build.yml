@@ -3,7 +3,7 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "preview", "stable" ]
   pull_request:
     branches: [ "main" ]
 
