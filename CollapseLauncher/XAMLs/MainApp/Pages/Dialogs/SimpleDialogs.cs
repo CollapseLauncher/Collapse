@@ -317,6 +317,33 @@ namespace CollapseLauncher.Dialogs
                     null
                 );
 
+        public static async Task<ContentDialogResult> Dialog_ChangePlaytime (UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.ChangePlaytimeTitle,
+                    Lang._Dialogs.ChangePlaytimeSubtitle,
+                    Content,
+                    Lang._Misc.NoCancel,
+                    Lang._Misc.Yes,
+                    null
+            );
+        
+        public static async Task<ContentDialogResult> Dialog_ResetPlaytime (UIElement Content)
+        {
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle2, FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle3 });
+            
+            return await SpawnDialog(
+                    Lang._Dialogs.ResetPlaytimeTitle,
+                    texts,
+                    Content,
+                    Lang._Misc.NoCancel,
+                    Lang._Misc.Yes,
+                    null
+            );
+        }
+
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,
