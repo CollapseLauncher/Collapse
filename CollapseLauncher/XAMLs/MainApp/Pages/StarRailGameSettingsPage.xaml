@@ -275,7 +275,7 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
                                     <StackPanel>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Audio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageAudio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
                                         <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}"/>
@@ -286,7 +286,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" x:Name="LangSettingRight">
                                     <StackPanel>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Text}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageText}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
                                         <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="日本語"/>
