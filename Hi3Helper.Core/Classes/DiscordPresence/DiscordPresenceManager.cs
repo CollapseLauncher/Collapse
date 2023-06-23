@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static Hi3Helper.Locale;
 
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
@@ -121,31 +122,31 @@ namespace Hi3Helper.DiscordPresence
             switch (activity)
             {
                 case ActivityType.Play:
-                    BuildActivityGameStatus("Playing");
+                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Play);
                     break;
                 case ActivityType.Update:
-                    BuildActivityGameStatus("Updating");
+                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Update);
                     break;
                 case ActivityType.Repair:
-                    BuildActivityAppStatus("Repairing Game");
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair);
                     break;
                 case ActivityType.Cache:
-                    BuildActivityAppStatus("Updating Cache");
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache);
                     break;
                 case ActivityType.GameSettings:
-                    BuildActivityAppStatus("Changing Game Settings");
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings);
                     break;
                 case ActivityType.AppSettings:
-                    BuildActivityAppStatus("Changing App Settings");
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings);
                     break;
                 case ActivityType.Idle:
                     _lastUnixTimestamp = null;
-                    BuildActivityAppStatus("Idle");
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle);
                     break;
                 default:
                     _activity = new Activity
                     {
-                        Details = $"No Activity",
+                        Details = Lang._Misc.DiscordRP_Default,
                         Assets = new ActivityAssets
                         {
                             LargeImage = $"launcher-logo"
