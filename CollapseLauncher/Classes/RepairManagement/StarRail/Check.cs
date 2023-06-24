@@ -178,6 +178,7 @@ namespace CollapseLauncher
         {
             string basePath = Path.GetDirectoryName(filePath);
             string baseName = Path.GetFileNameWithoutExtension(filePath);
+            if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
             string toName = Path.Combine(basePath, baseName + $"_{hash}.hash");
             File.Create(toName).Dispose();
         }
