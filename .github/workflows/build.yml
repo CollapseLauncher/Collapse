@@ -1,11 +1,16 @@
 # Credits to @Scighost from Starward for his contributions!
-name: Build
+name: Build-latest
 
 on:
-  push:
-    branches: [ "preview", "stable" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: "Select which environment to compile for (Debug, Release)"
+        default: "Debug"
+        options:
+          - "Debug"
+          - "Release"
 
 
 jobs:
