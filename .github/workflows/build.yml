@@ -1,25 +1,36 @@
 # Credits to @Scighost from Starward for his contributions!
-name: Build-latest
+name: Build-Canary
 
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      os:
+      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
         type: choice
-        description: "Select which environment to compile for (Debug, Release)"
-        default: "Debug"
+        description: "Select Runner image to use for this deployment"
+        default: "windows-2019"
         options:
-          - "Debug"
-          - "Release"
+          - "windows-latest"
+          - "windows-2019"
+          - "windows-2022"
+      framework:
+      # Use net7.0-windows10.0.19041.0 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select .NET Framework version"
+        default: "net7.0-windows10.0.19041.0"
+        options:
+          - "net7.0-windows10.0.22000.0"
+          - "net7.0-windows10.0.19041.0"
+
 
 
 jobs:
 
   build:
-    runs-on: windows-latest
+    runs-on: ${{ github.event.inputs.os }}
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
 
     env:
@@ -46,7 +57,7 @@ jobs:
     - name: Build
       run: |
         msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
-        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f net7.0-windows10.0.22000.0
+        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ github.event.inputs.framework }}
     
     - name: Upload Artifact (Debug)
       uses: actions/upload-artifact@v3.1.2
