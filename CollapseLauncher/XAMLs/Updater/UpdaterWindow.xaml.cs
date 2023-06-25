@@ -100,13 +100,16 @@ namespace CollapseLauncher
 
         private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
         {
-            progressBar.IsIndeterminate = false;
-            progressBar.Value = e.ProgressPercentage;
-            ActivityStatus.Text = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
-            ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.SizeDownloaded)} / {SummarizeSizeSimple(e.SizeToBeDownloaded)}";
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                progressBar.IsIndeterminate = false;
+                progressBar.Value = e.ProgressPercentage;
+                ActivityStatus.Text = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+                ActivitySubStatus.Text = $"{SummarizeSizeSimple(e.SizeDownloaded)} / {SummarizeSizeSimple(e.SizeToBeDownloaded)}";
 
-            SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed));
-            TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
+                SpeedStatus.Text = string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed));
+                TimeEstimation.Text = string.Format("{0:%h}h{0:%m}m{0:%s}s left", e.TimeLeft);
+            });
         }
 
         private void InitializeAppWindowAndIntPtr()
