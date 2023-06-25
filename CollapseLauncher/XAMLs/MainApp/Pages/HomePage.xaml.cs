@@ -93,6 +93,7 @@ namespace CollapseLauncher.Pages
                 LauncherBtn.Translation += Shadow32;
                 GameStartupSetting.Translation += Shadow32;
                 CommunityToolsBtn.Translation += Shadow32;
+                PlaytimeBtn.Translation += Shadow32;
 
                 if (MenuPanels.imageCarouselPanel != null
                     && MenuPanels.articlePanel != null)
