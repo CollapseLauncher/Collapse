@@ -6,6 +6,7 @@ using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -71,7 +72,7 @@ namespace Hi3Helper.Shared.Region
         public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();
-        public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public static string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
@@ -85,7 +86,7 @@ namespace Hi3Helper.Shared.Region
         {
             get
             {
-                string execName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
+                string execName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
                 string dirPath = AppFolder;
                 return Path.Combine(dirPath, execName + ".exe");
             }
