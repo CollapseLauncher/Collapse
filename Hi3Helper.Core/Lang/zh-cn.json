@@ -114,7 +114,11 @@
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
     "PostPanel_Info": "资讯",
-    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
+    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?",
+    "CommunityToolsBtn": "Community Tools",
+    "CommunityToolsBtn_OfficialText": "Official Tools",
+    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "游戏修复",
@@ -322,6 +326,7 @@
     "Disclaimer3": "并完全开放源代码.我们欢迎任何贡献.",
     "DiscordBtn1": "加入我们的Armada Discord(大陆无法正常访问)",
     "DiscordBtn2": "访问崩坏3 Discord(大陆无法正常访问)",
+    "DiscordBtn3": "Collapse's Official Discord!",
     "AppChangeReleaseChannel": "更改为 {0} 发布频道"
   },
   "_Misc": {
@@ -393,7 +398,8 @@
     "BuildChannelStable": "正式版",
     "CDNDescription_Github": "启动器的官方(主) 存储库.",
     "CDNDescription_Statically": "官方(主) 存储库的镜像，由static提供。如果你住在一个无法访问GitHub的地方，可以使用这个。",
-    "CDNDescription_jsDelivr": "jsDelivr使用多个CDN提供商，如CloudFlare、Fastly和Quantil，从而获得最佳的正常运行时间和性能。"
+    "CDNDescription_jsDelivr": "jsDelivr使用多个CDN提供商，如CloudFlare、Fastly和Quantil，从而获得最佳的正常运行时间和性能。",
+    "LocateExecutable": "Locate Program Executable"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告.检测到Delta补丁更新!",
@@ -469,7 +475,9 @@
     "ReleaseChannelChangeTitle": "更改发布频道",
     "ReleaseChannelChangeSubtitle1": "您将要更改您的发行频道为：",
     "ReleaseChannelChangeSubtitle2": "注:",
-    "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。 我们不应对与您的游戏相关的任何数据丢失或损坏负责。"
+    "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。 我们不应对与您的游戏相关的任何数据丢失或损坏负责。",
+    "LocateExePathTitle": "Locate Executable Install Path",
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "完整性检查",
@@ -643,6 +651,15 @@
     "Audio_BGM": "音乐音量",
     "Audio_SFX": "音效音量",
     "Audio_VO": "语音音量",
-    "Audio_Mute": "静音"
+    "Audio_Mute": "静音",
+    "Language": "Language Settings",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Audio": "Audio",
+    "Text": "Text",
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   }
 }

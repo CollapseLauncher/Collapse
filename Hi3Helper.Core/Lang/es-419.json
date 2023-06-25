@@ -1,6 +1,6 @@
 {
   "LanguageName": "Español (Latinoamérica)",
-  "LanguageID": "es-ES",
+  "LanguageID": "es-419",
   "Author": "BloodDragooner, d-l-n",
   "_StartupPage": {
     "ChooseFolderBtn": "Buscar carpeta",
@@ -98,7 +98,7 @@
     "PauseCancelDownloadBtn": "Pausar/Cancelar",
     "PauseCancelBtn": "Pausar/Cancelar",
     "DownloadBtn": "Descargar el Juego",
-    "GameSettingsBtn": "Configuración Rápida",
+    "GameSettingsBtn": "Ajustes Rápidos",
     "GameSettings_Panel1": "Configuración Rápida",
     "GameSettings_Panel1OpenGameFolder": "Abrir Carpeta del Juego",
     "GameSettings_Panel1OpenCacheFolder": "Abrir Carpeta del Caché",
@@ -107,14 +107,18 @@
     "GameSettings_Panel2RepairGame": "Reparar Juego",
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión del Juego",
-    "GameSettings_Panel3": "Comandos Personalizados de Carga",
+    "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Panel de Redes Sociales",
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Anuncios",
     "PostPanel_Info": "Información",
-    "PostPanel_NoNews": "¿Qué?\n¿No hay noticias hoy?"
+    "PostPanel_NoNews": "¿Qué?\n¿No hay noticias hoy?",
+    "CommunityToolsBtn": "Community Tools",
+    "CommunityToolsBtn_OfficialText": "Official Tools",
+    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "Reparar Juego",
@@ -128,8 +132,8 @@
     "Status2": "Cargando Índices...",
     "Status3": "archivo(s) podrían estar rotos o corrompidos (en total). Haz clic en 'Reparar Juego' para comenzar el proceso de reparación.",
     "Status4": "¡No se ha detectado ningun archivo(s) rotos!",
-    "Status5": "Revisando Blk:",
-    "Status6": "Revisando:",
+    "Status5": "Chequeando Blk: {0}",
+    "Status6": "Chequeando: {0}",
     "Status7": "¡Reparación Completada!",
     "Status8": "Reparando: ",
     "Status9": "Reparando Blk:",
@@ -240,7 +244,7 @@
     "Audio_Elf": "Volumen de la Voz del Elfo",
     "Audio_Cutscenes": "Volumen de las Escenas",
     "Audio_Mute": "Silenciar Audio",
-    "ApplyBtn": "Aplicar Configuración",
+    "ApplyBtn": "Aplicar Ajustes",
     "SettingsApplied": "¡Se guardaron tus cambios!",
     "SettingsRegExported": "¡El registro ha sido exportado!",
     "SettingsRegExportTitle": "Guardar archivo de Registro de Collapse en...",
@@ -322,6 +326,7 @@
     "Disclaimer3": "y es completamente de código abierto. Cualquier contribución es bienvenida.",
     "DiscordBtn1": "¡Únete a nuestro Discord Armada!",
     "DiscordBtn2": "Discord de Honkai Impact 3rd",
+    "DiscordBtn3": "Collapse's Official Discord!",
     "AppChangeReleaseChannel": "Cambiar a Canal de Lanzamiento"
   },
   "_Misc": {
@@ -382,7 +387,7 @@
     "Completed": "Completado",
     "Skipped": "Saltado",
     "Select": "Seleccionar",
-    "NotRunning": "No se Está Ejecutando",
+    "NotRunning": "No se está ejecutando",
     "MovingFile": "Moviendo Archivo",
     "CheckingFile": "Chequeando Archivo",
     "RepairingFile": "Reparando Archivo",
@@ -393,7 +398,8 @@
     "BuildChannelStable": "Estable",
     "CDNDescription_Github": "El repositorio oficial (principal) del lanzador.",
     "CDNDescription_Statically": "Una copia del repositorio oficial (principal), proporcionada por Statically. Úsalo si vives en un lugar donde GitHub es inaccesible.",
-    "CDNDescription_jsDelivr": "jsDelivr utiliza múltiples proveedores CDN como CloudFlare, Fastly y Quantil, resultando en el mejor tiempo de actividad y rendimiento posible."
+    "CDNDescription_jsDelivr": "jsDelivr utiliza múltiples proveedores CDN como CloudFlare, Fastly y Quantil, resultando en el mejor tiempo de actividad y rendimiento posible.",
+    "LocateExecutable": "Locate Program Executable"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Advertencia: ¡Una actualización al Delta Patch ha sido detectada!",
@@ -469,7 +475,9 @@
     "ReleaseChannelChangeTitle": "Cambiar Canal de Lanzamiento",
     "ReleaseChannelChangeSubtitle1": "Estás a punto de cambiar el canal de lanzamiento a:",
     "ReleaseChannelChangeSubtitle2": "Aviso:",
-    "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego."
+    "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
+    "LocateExePathTitle": "Locate Executable Install Path",
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Verificación de Integridad",
@@ -536,7 +544,7 @@
     "ConvertSuccessSubtitle": "¡La conversión de {0} a {1} se completo con éxito!",
     "InnerCheckFile": "Chequeando {0} Archivo [{1}/{2}]: {3}",
     "InnerCheckBlock1": "Chequeando {0}: {1}",
-    "InnerCheckBlock2": "Verificando {0}: {1} -> (0x{2} | S: 0x{3})",
+    "InnerCheckBlock2": "Chequeando {0}: {1} -> (0x{2} | S: 0x{3})",
     "InnerConvertFile1": "Convirtiendo {0} Archivo [{1}/{2}]: {3}",
     "InnerConvertFile2": "Descargando {0} [{1}/{2}]: {3}",
     "InnerConvertFile3": "Descargando {0} [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
@@ -643,6 +651,15 @@
     "Audio_BGM": "Volumen BGM",
     "Audio_SFX": "Volumen Efectos de Sonido",
     "Audio_VO": "Volumen Voces",
-    "Audio_Mute": "Silenciar Audio"
+    "Audio_Mute": "Silenciar Audio",
+    "Language": "Language Settings",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Audio": "Audio",
+    "Text": "Text",
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   }
 }

@@ -114,7 +114,11 @@
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
-    "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?"
+    "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?",
+    "CommunityToolsBtn": "Community Tools",
+    "CommunityToolsBtn_OfficialText": "Official Tools",
+    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "Sửa trò chơi",
@@ -322,6 +326,7 @@
     "Disclaimer3": "và hoàn toàn là mã nguồn mở. Chúng tôi luôn vui lòng với bất kì sự đóng góp nào đến từ bạn.",
     "DiscordBtn1": "Tham gia Armada Discord của chúng tôi",
     "DiscordBtn2": "Xem qua Discord Honkai Impact 3rd",
+    "DiscordBtn3": "Collapse's Official Discord!",
     "AppChangeReleaseChannel": "Thay đổi tới {0} kênh phát hành"
   },
   "_Misc": {
@@ -393,7 +398,8 @@
     "BuildChannelStable": "Ổn định",
     "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
     "CDNDescription_Statically": "Một nhánh khác của kho lưu trữ chính thức, được cung cấp bởi Statically. Sử dụng nó nếu nơi ở của bạn không thể truy cập vào Github.",
-    "CDNDescription_jsDelivr": "jsDelivr sử dụng nhiều CDN được cung cấp sẵn như CloudFlare, Fastly và Quantil, dẫn đến thời gian hoạt động và hiệu suất tốt nhất có thể."
+    "CDNDescription_jsDelivr": "jsDelivr sử dụng nhiều CDN được cung cấp sẵn như CloudFlare, Fastly và Quantil, dẫn đến thời gian hoạt động và hiệu suất tốt nhất có thể.",
+    "LocateExecutable": "Locate Program Executable"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Cảnh báo: Có bản cập nhật bản vá tạm thời!",
@@ -469,7 +475,9 @@
     "ReleaseChannelChangeTitle": "Thay đổi kênh phát hành",
     "ReleaseChannelChangeSubtitle1": "Bạn đang thay đổi kênh phát hành của bạn tới:",
     "ReleaseChannelChangeSubtitle2": "Lưu ý:",
-    "ReleaseChannelChangeSubtitle3": "Hành động này có thể làm thay đổi/khiến mọi thứ bị hỏng so với thiết lập hiện tại của bạn. Chúng tôi không chịu trách nhiệm về bất kỳ mất mát hoặc hư hỏng dữ liệu nào liên quan đến trò chơi của bạn."
+    "ReleaseChannelChangeSubtitle3": "Hành động này có thể làm thay đổi/khiến mọi thứ bị hỏng so với thiết lập hiện tại của bạn. Chúng tôi không chịu trách nhiệm về bất kỳ mất mát hoặc hư hỏng dữ liệu nào liên quan đến trò chơi của bạn.",
+    "LocateExePathTitle": "Locate Executable Install Path",
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Kiểm tra tính toàn vẹn",
@@ -643,6 +651,15 @@
     "Audio_BGM": "Âm lượng nhạc",
     "Audio_SFX": "Âm lượng hiệu ứng",
     "Audio_VO": "Âm lượng lồng tiếng",
-    "Audio_Mute": "Tắt tiếng"
+    "Audio_Mute": "Tắt tiếng",
+    "Language": "Language Settings",
+    "Language_Help1": "Collapse currently cannot download Audio package directly.",
+    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Audio": "Audio",
+    "Text": "Text",
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   }
 }

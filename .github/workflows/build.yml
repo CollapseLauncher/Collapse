@@ -1,20 +1,36 @@
 # Credits to @Scighost from Starward for his contributions!
-name: Build
+name: Build-Canary
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      os:
+      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select Runner image to use for this deployment"
+        default: "windows-2019"
+        options:
+          - "windows-latest"
+          - "windows-2019"
+          - "windows-2022"
+      framework:
+      # Use net7.0-windows10.0.19041.0 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select .NET Framework version"
+        default: "net7.0-windows10.0.19041.0"
+        options:
+          - "net7.0-windows10.0.22000.0"
+          - "net7.0-windows10.0.19041.0"
+
 
 
 jobs:
 
   build:
-    runs-on: windows-latest
+    runs-on: ${{ github.event.inputs.os }}
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
 
     env:
@@ -41,18 +57,18 @@ jobs:
     - name: Build
       run: |
         msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
-        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f net7.0-windows10.0.22000.0
+        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ github.event.inputs.framework }}
     
     - name: Upload Artifact (Debug)
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Debug' }}
       with:
-          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}
+          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
           path: ./CollapseLauncher/bin/x64/Debug/net7.0-windows10.0.22000.0/
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}
+          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
           path: ./CollapseLauncher/bin/x64/Release/net7.0-windows10.0.22000.0/
