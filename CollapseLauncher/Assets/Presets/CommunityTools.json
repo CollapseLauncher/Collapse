@@ -114,6 +114,12 @@
                 "IconGlyph": "",
                 "Text": "pom.moe",
                 "URL": "https://pom.moe/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Project Yatta (HSR)",
+                "URL": "https://hsr.yatta.top/"
             }
         ]
     }
