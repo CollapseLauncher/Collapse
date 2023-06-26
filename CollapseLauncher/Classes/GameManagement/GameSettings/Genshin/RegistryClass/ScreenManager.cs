@@ -1,15 +1,10 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
-using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
-using SharpCompress.Common;
 using System;
 using System.Drawing;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
 
