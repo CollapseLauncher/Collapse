@@ -35,7 +35,8 @@
                                         <CheckBox x:Name="VSyncToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VerticalSync, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
                                                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
+                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}" Margin="0,0,0,8"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}" Margin="28,0,0,0"/>
                                         <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                       HorizontalAlignment="Left"  VerticalAlignment="Center"
                                                       IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"

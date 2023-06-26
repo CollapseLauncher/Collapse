@@ -761,6 +761,7 @@
     "Graphics_ResolutionPanel": "Game Resolution",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_ExclusiveFullscreen_Help": "Exclusive Fullscreen might cause random game freezes!",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
