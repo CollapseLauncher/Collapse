@@ -9,7 +9,7 @@
             public sealed class LangGenshinGameSettingsPage
             {
                 public string PageTitle { get; set; } = LangFallback?._GenshinGameSettingsPage.PageTitle;
-                #region overlay
+                #region Overlay
                 public string OverlayNotInstalledTitle { get; set; } = LangFallback?._GenshinGameSettingsPage.OverlayNotInstalledTitle;
                 public string OverlayNotInstalledSubtitle { get; set; } = LangFallback?._GenshinGameSettingsPage.OverlayNotInstalledSubtitle;
                 public string OverlayGameRunningTitle { get; set; } = LangFallback?._GenshinGameSettingsPage.OverlayGameRunningTitle;
@@ -96,10 +96,6 @@
                 public string VO_jp { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_jp;
                 public string VO_kr { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_kr;
                 #endregion
-                // TODO: add more controls locale when ready
-                #region Controls
-                #endregion
-
             }
         }
         #endregion
