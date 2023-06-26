@@ -254,5 +254,19 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
         }
         #endregion
+
+        #region Language
+        public int AudioLang
+        {
+            get => (int)Settings.SettingsGeneralData.deviceVoiceLanguageType;
+            set => Settings.SettingsGeneralData.deviceVoiceLanguageType = value;
+        }
+        
+        public int TextLang
+        {
+            get => (int)Settings.SettingsGeneralData.deviceLanguageType - 1;
+            set => Settings.SettingsGeneralData.deviceLanguageType = value + 1;
+        }
+        #endregion
     }
 }

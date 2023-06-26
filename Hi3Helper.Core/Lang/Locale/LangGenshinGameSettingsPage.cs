@@ -92,6 +92,17 @@
                 public string SpecPartiallyOff { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecPartiallyOff;
                 #endregion
 
+                #region Language
+                public string Language { get; set; } = LangFallback?._GenshinGameSettingsPage.Language;
+                public string Language_Help1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Language_Help1;
+                public string Language_Help2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Language_Help2;
+                public string LanguageAudio { get; set; } = LangFallback?._GenshinGameSettingsPage.LanguageAudio;
+                public string LanguageText { get; set; } = LangFallback?._GenshinGameSettingsPage.LanguageText;
+                public string VO_en { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_en;
+                public string VO_cn { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_cn;
+                public string VO_jp { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_jp;
+                public string VO_kr { get; set; } = LangFallback?._GenshinGameSettingsPage.VO_kr;
+                #endregion
                 // TODO: add more controls locale when ready
                 #region Controls
                 #endregion

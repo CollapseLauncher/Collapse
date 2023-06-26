@@ -69,13 +69,6 @@
                         <StackPanel x:Name="StarRailGameGraphicsPanel" Margin="0,0" Grid.Column="1">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
-                                <!--<StackPanel Grid.Column="0" Margin="0,0,56,8">
-                                    <Grid x:Name="RenderScaleGrid">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_RenderScale}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                        <TextBlock Text="{Binding Value, ElementName=RenderScaleSlider}" HorizontalAlignment="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                    </Grid>
-                                    <Slider x:Name="RenderScaleSlider" Minimum="0.6" Maximum="1.5" Value="{x:Bind RenderScale, Mode=TwoWay}" TickPlacement="Outside" TickFrequency="0.1" StepFrequency="0.1" />
-                                </StackPanel>-->
                                 <StackPanel>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -312,7 +305,58 @@
                             </StackPanel>
                         </Grid>
                     </StackPanel>
-                    <MenuFlyoutSeparator Margin="0,16,0,48"/>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
+                    <StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help1}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageAudio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
+                                        <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_cn}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_en}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_jp}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_kr}"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" x:Name="LangSettingRight">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageText}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
+                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
+                                            <ComboBoxItem Content="English"/>
+                                            <ComboBoxItem Content="简体中文"/>
+                                            <ComboBoxItem Content="繁體中文"/>
+                                            <ComboBoxItem Content="Français"/>
+                                            <ComboBoxItem Content="Deutsch"/>
+                                            <ComboBoxItem Content="Español"/>
+                                            <ComboBoxItem Content="Português"/>
+                                            <ComboBoxItem Content="Русский"/>
+                                            <ComboBoxItem Content="日本語"/>
+                                            <ComboBoxItem Content="한국어"/>
+                                            <ComboBoxItem Content="ภาษาไทย"/>
+                                            <ComboBoxItem Content="Tiếng Việt"/>
+                                            <ComboBoxItem Content="Bahasa Indonesia"/>
+                                            <ComboBoxItem Content="Türkçe"/>
+                                            <ComboBoxItem Content="Italiano"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                    <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.CustomArgs_Subtitle}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                     <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}" CornerRadius="8,8,0,0"

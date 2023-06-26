@@ -55,6 +55,8 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Thai(11)
         /// Vietnamese(12)
         /// Indonesian(13)
+        /// Turkish(14)
+        /// Italy(15)
         /// </summary>
         public int deviceLanguageType { get; set; } = 1;
 
