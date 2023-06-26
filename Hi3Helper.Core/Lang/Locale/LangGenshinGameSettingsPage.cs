@@ -56,6 +56,7 @@
                 public string Graphics_ResCustomW { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_ResCustomW;
                 public string Graphics_ResCustomH { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_ResCustomH;
 
+                public string Graphics_Gamma { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_Gamma;
                 public string Graphics_FPS { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_FPS;
                 public string Graphics_RenderScale { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_RenderScale;
                 public string Graphics_ShadowQuality { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_ShadowQuality;

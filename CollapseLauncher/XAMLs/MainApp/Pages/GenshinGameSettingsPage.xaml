@@ -71,6 +71,13 @@
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
                                 <StackPanel>
+                                    <Grid x:Name="GammaGrid">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Gamma}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                        <TextBlock Text="{Binding Value, ElementName=GammaSlider}" HorizontalAlignment="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    </Grid>
+                                    <Slider x:Name="GammaSlider" Minimum="1.4" Maximum="3.0" Value="{x:Bind Gamma, Mode=TwoWay}"  StepFrequency="0.000000000000001" TickFrequency="0.2" TickPlacement="Outside" Margin="0,0,56,8" IsThumbToolTipEnabled="False"/>
+                                </StackPanel>
+                                <StackPanel>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>

@@ -119,6 +119,12 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Graphics Settings
+        public double Gamma
+        {
+            get => (double)Settings.SettingsGeneralData.gammaValue;
+            set => Settings.SettingsGeneralData.gammaValue = value;
+        }
+
         public bool VerticalSync
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VerticalSync - 1);

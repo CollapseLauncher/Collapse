@@ -767,6 +767,7 @@
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
 
+    "Graphics_Gamma": "Gamma",
     "Graphics_FPS": "FPS",
     "Graphics_RenderScale": "Render Scale",
     "Graphics_ShadowQuality": "Shadow Quality",
