@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace CollapseLauncher.GameSettings.Genshin.Enums
+﻿namespace CollapseLauncher.GameSettings.Genshin.Enums
 {
-    enum FPSOption
+    enum FPSOption : int
     {
         f30 = 1,
         f60 = 2,

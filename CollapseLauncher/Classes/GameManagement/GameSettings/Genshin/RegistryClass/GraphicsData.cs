@@ -1,9 +1,9 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Genshin.Context;
+﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Hi3Helper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using static Hi3Helper.Logger;
 
@@ -12,8 +12,22 @@ namespace CollapseLauncher.GameSettings.Genshin
     internal class GraphicsData
     {
         #region Properties
-        public static readonly int[] FPSIndex = new int[] { 30, 60, 45 };
-        public static readonly decimal[] RenderScaleIndex = new decimal[] { 0.6m, 0.8m, 1.0m, 1.1m, 1.2m, 1.3m, 1.4m, 1.5m }; 
+        // Generate the list of the FPSOption value and order by ascending it.
+        public static readonly FPSOption[] FPSOptionsList = Enum.GetValues<FPSOption>().OrderBy(GetFPSOptionNumber).ToArray();
+        // Generate the list of the FPS number to be displayed on FPS Combobox
+        public static readonly int[] FPSIndex = FPSOptionsList.Select(GetFPSOptionNumber).ToArray();
+
+        private static int GetFPSOptionNumber(FPSOption value)
+        {
+            // Get the string of the number by trimming the 'f' letter at the beginning
+            string fpsStrNum = value.ToString().TrimStart('f');
+            // Try parse the fpsStrNum as a number
+            _ = int.TryParse(fpsStrNum, out int number);
+            // Return the number
+            return number;
+        }
+
+        public static readonly decimal[] RenderScaleIndex = new decimal[] { 0.6m, 0.8m, 1.0m, 1.1m, 1.2m, 1.3m, 1.4m, 1.5m };
         public int currentVolatielGrade { get; set; } = -1;
         public List<Dictionary<string, int>> customVolatileGrades { get; set; } = new();
         public string volatileVersion { get; set; } = "";
@@ -138,7 +152,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public static GraphicsData Load(string graphicsJson)
         {
             GraphicsData graphics = (GraphicsData?)JsonSerializer.Deserialize(graphicsJson, typeof(GraphicsData), GraphicsDataContext.Default) ?? new GraphicsData();
-            foreach (Dictionary<string,int> setting in graphics.customVolatileGrades)
+            foreach (Dictionary<string, int> setting in graphics.customVolatileGrades)
             {
                 switch (setting["key"])
                 {
@@ -234,9 +248,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new Dictionary<string, int>() { { "key", 15 }, { "value", (int)SubsurfaceScattering } },
                 new Dictionary<string, int>() { { "key", 17 }, { "value", (int)AnisotropicFiltering } },
                 };
-                string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
-                LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
-                return data;
+            string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
+            LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
+            return data;
         }
         #endregion
     }

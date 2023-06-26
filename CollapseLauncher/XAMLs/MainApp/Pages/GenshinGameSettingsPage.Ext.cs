@@ -2,7 +2,6 @@
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace CollapseLauncher.Pages
@@ -146,8 +145,25 @@ namespace CollapseLauncher.Pages
 
         public int FPS
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.FPS - 1;
-            set => Settings.SettingsGeneralData.graphicsData.FPS = (FPSOption)(value + 1);
+            get
+            {
+                // Get the current value
+                FPSOption curValue = Settings.SettingsGeneralData.graphicsData.FPS;
+                // Get the index of the current value in FPSOptionsList array
+                int indexOfValue = Array.IndexOf(GraphicsData.FPSOptionsList, curValue);
+                // Return the index of the value
+                return indexOfValue;
+            }
+            set
+            {
+                // [HACK]: Fix some rare occasion where the "value" turned into -1. If so, then return
+                if (value < 0) return;
+
+                // Get the FPSOption based on the selected index by the "value"
+                FPSOption valueFromIndex = GraphicsData.FPSOptionsList[value];
+                // Set the actual value to its property
+                Settings.SettingsGeneralData.graphicsData.FPS = valueFromIndex;
+            }
         }
 
         public int RenderScale
@@ -223,7 +239,7 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.SettingsGeneralData.volumeGlobal;
             set => Settings.SettingsGeneralData.volumeGlobal = value;
         }
-        
+
         public int Audio_SFX
         {
             get => (int)Settings.SettingsGeneralData.volumeSFX;
@@ -261,7 +277,7 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.SettingsGeneralData.deviceVoiceLanguageType;
             set => Settings.SettingsGeneralData.deviceVoiceLanguageType = value;
         }
-        
+
         public int TextLang
         {
             get => (int)Settings.SettingsGeneralData.deviceLanguageType - 1;
