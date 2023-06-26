@@ -39,15 +39,8 @@
                 public string Audio_SFX { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_SFX;
                 public string Audio_VO { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_VO;
 
-                public string Audio_Output { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_Output;
-                public string Audio_Output_Stereo { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_Output_Stereo;
                 public string Audio_Output_Surround { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_Output_Surround;
-
                 public string Audio_DynamicRange { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_DynamicRange;
-                public string Audio_DynamicRange_Full { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_DynamicRange_Full;
-                public string Audio_DynamicRange_Limited { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_DynamicRange_Limited;
-
-                public string Audio_Mute { get; set; } = LangFallback?._GenshinGameSettingsPage.Audio_Mute;
                 #endregion
 
                 #region Graphics
@@ -89,7 +82,6 @@
                 public string SpecMedium { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecMedium;
                 public string SpecHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecHigh;
                 public string SpecVeryHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecVeryHigh;
-
                 public string SpecPartiallyOff { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecPartiallyOff;
                 #endregion
 
