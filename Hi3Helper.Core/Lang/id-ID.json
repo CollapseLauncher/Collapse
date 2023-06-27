@@ -114,7 +114,11 @@
     "PostPanel_Events": "Event",
     "PostPanel_Notices": "Pemberitahuan",
     "PostPanel_Info": "Informasi",
-    "PostPanel_NoNews": "Hah?\nNggak ada berita?"
+    "PostPanel_NoNews": "Hah?\nNggak ada berita?",
+    "CommunityToolsBtn": "Alat Komunitas",
+    "CommunityToolsBtn_OfficialText": "Alat Resmi",
+    "CommunityToolsBtn_CommunityText": "Alat Komunitas",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Pilih Executable Program: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "Perbaikan Game",
@@ -322,6 +326,7 @@
     "Disclaimer3": "dan sepenuhnya \"Open-Source\". Kontribusi apapun dipersilahkan.",
     "DiscordBtn1": "Gabung Discord Armada Kami",
     "DiscordBtn2": "Kunjungi Discord Honkai Impact 3rd",
+    "DiscordBtn3": "Discord Resmi Collapse!",
     "AppChangeReleaseChannel": "Ubah Kanal Rilis ke {0}"
   },
   "_Misc": {
@@ -393,7 +398,8 @@
     "BuildChannelStable": "Stable",
     "CDNDescription_Github": "Repositori resmi (utama) untuk launcher",
     "CDNDescription_Statically": "Sebuah mirror dari Repository resmi (utama) dan disediakan oleh Statically. Gunakan ini apabila kamu tinggal di daerah dimana GitHub tidak dapat diakses",
-    "CDNDescription_jsDelivr": "jsDelivr menggunakan beragam penyedia CDN seperti CloudFlare, Fastly dan Quantil, dan menawarkan performa dan uptime sebaik mungkin."
+    "CDNDescription_jsDelivr": "jsDelivr menggunakan beragam penyedia CDN seperti CloudFlare, Fastly dan Quantil, dan menawarkan performa dan uptime sebaik mungkin.",
+    "LocateExecutable": "Pilih Executable Program"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Pemberitahuan: Pembaruan Delta Patch Terdeteksi!",
@@ -469,7 +475,9 @@
     "ReleaseChannelChangeTitle": "Ubah Kanal Rilis",
     "ReleaseChannelChangeSubtitle1": "Kamu akan mengubah kanal rilismu ke:",
     "ReleaseChannelChangeSubtitle2": "Catatan:",
-    "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas."
+    "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas.",
+    "LocateExePathTitle": "Pilih Lokasi Pemasangan Executable",
+    "LocateExePathSubtitle": "Silahkan arahkan Collapse ke lokasi dari executable aplikasimu:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Cek Integritas",
@@ -644,14 +652,13 @@
     "Audio_SFX": "Suara Efek Suara",
     "Audio_VO": "Volume Suara",
     "Audio_Mute": "Mute Suara",
-
     "Language": "Pengaturan Bahasa",
-    "Language_Help1": "Saat ini Collapse tidak dapat mengunduh langsung paket suara.",
-    "Language_Help2": "Paket suara VO akan diunduh saat menjalankan game.",
-    "Audio": "Suara",
-    "Text": "Tulisan",
+    "Language_Help1": "Collapse saat ini tidak mendukung pengunduhan paket Audio secara langsung.",
+    "Language_Help2": "Paket Audio dapat diunduh di dalam game setelah kamu menjalankan gamenya kemudian.",
+    "Audio": "Audio",
+    "Text": "Text",
     "VO_en": "Inggris",
-    "VO_cn": "Cina",
+    "VO_cn": "Mandarin",
     "VO_jp": "Jepang",
     "VO_kr": "Korea"
   }
