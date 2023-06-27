@@ -36,10 +36,15 @@
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
                                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}" Margin="0,0,0,8"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}" Margin="28,0,0,0"/>
+                                        <!--
+                                        Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
+                                        Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work
+                                        Delete `Visibility="Collapsed"' to revert this change
+                                        -->
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}" Visibility="Collapsed" Margin="28,0,0,0"/>
                                         <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                       HorizontalAlignment="Left"  VerticalAlignment="Center"
-                                                      IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
+                                                      IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}" Visibility="Collapsed"
                                                       IsChecked="{x:Bind IsExclusiveFullscreenEnabled, Mode=TwoWay}"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
