@@ -100,6 +100,12 @@
 		<Content Include="Lang\ja-jp.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="Lang\zh-TW.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Lang\ru-RU.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Lib\7z.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

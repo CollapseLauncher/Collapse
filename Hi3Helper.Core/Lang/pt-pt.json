@@ -114,7 +114,11 @@
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
     "PostPanel_Info": "Info",
-    "PostPanel_NoNews": "O quê?\nHoje não há novidades?"
+    "PostPanel_NoNews": "O quê?\nHoje não há novidades?",
+    "CommunityToolsBtn": "Ferramentas da comunidade",
+    "CommunityToolsBtn_OfficialText": "Ferramentas oficiais",
+    "CommunityToolsBtn_CommunityText": "Ferramentas da comunidade",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Seleciona o executável do programa: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "Reparar jogo",
@@ -322,6 +326,7 @@
     "Disclaimer3": "e é completamente open-source. Qualquer contribuição é apreciada.",
     "DiscordBtn1": "Junta-te ao Discord da nossa Armada",
     "DiscordBtn2": "Visita o Discord do Honkai Impact 3rd",
+    "DiscordBtn3": "Discord oficial do Collapse!",
     "AppChangeReleaseChannel": "Mudar para o canal da lançamento {0}"
   },
   "_Misc": {
@@ -393,7 +398,8 @@
     "BuildChannelStable": "Stable",
     "CDNDescription_Github": "O repositório oficial (principal) do launcher.",
     "CDNDescription_Statically": "Um mirror do repositório oficial (principal), através da Statically. Usa isto se viveres num sítio onde não é possível acessar o GitHub.",
-    "CDNDescription_jsDelivr": "jsDelivr usa vários provedores de CDN como a CloudFlare, a Fastly e a Quantil, o que resulta na melhor disponibilide e performance possível."
+    "CDNDescription_jsDelivr": "jsDelivr usa vários provedores de CDN como a CloudFlare, a Fastly e a Quantil, o que resulta na melhor disponibilide e performance possível.",
+    "LocateExecutable": "Localizar executável"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Aviso: atualização Delta detetada!",
@@ -469,7 +475,9 @@
     "ReleaseChannelChangeTitle": "Mudar canal de lançamento",
     "ReleaseChannelChangeSubtitle1": "Estás prestes a mudar o teu canal de lançamentos para:",
     "ReleaseChannelChangeSubtitle2": "Nota:",
-    "ReleaseChannelChangeSubtitle3": "Esta ação poderá causar mudanças irreversíveis e/ou estragar elementos da tua configuração atual. Não nos responsabilizamos por qualquer perda ou corrupção de dados associados com o jogo."
+    "ReleaseChannelChangeSubtitle3": "Esta ação poderá causar mudanças irreversíveis e/ou estragar elementos da tua configuração atual. Não nos responsabilizamos por qualquer perda ou corrupção de dados associados com o jogo.",
+    "LocateExePathTitle": "Localizar caminho de instalação do executável",
+    "LocateExePathSubtitle": "Indica a localização do executável da aplicação:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Verificação de integridade",
@@ -643,6 +651,15 @@
     "Audio_BGM": "Volume da BGM",
     "Audio_SFX": "Volume dos efeitos sonoros",
     "Audio_VO": "Nível de destaque das vozes",
-    "Audio_Mute": "Silenciar áudio"
+    "Audio_Mute": "Silenciar áudio",
+    "Language": "Definições de idioma",
+    "Language_Help1": "O Collapse não consegue baixar pacotes de áudio diretamente.",
+    "Language_Help2": "Pacotes de áudio irão ser baixados na próxima vez que iniciares o jogo.",
+    "Audio": "Áudio",
+    "Text": "Texto",
+    "VO_en": "Inglês",
+    "VO_cn": "Chinês",
+    "VO_jp": "Japonês",
+    "VO_kr": "Coreano"
   }
 }
