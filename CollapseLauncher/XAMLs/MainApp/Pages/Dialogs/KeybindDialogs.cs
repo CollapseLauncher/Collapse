@@ -119,7 +119,7 @@ namespace CollapseLauncher.Dialogs
             {
                 Button shortcutSwap = new Button()
                 {
-                    Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5,0,-5,0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
+                    Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5,0,-5,0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
                     CornerRadius = new CornerRadius(5),
                     DataContext = kbKeys,
                     Margin = new Thickness(0,0,5,0)
@@ -161,10 +161,9 @@ namespace CollapseLauncher.Dialogs
             TextBlock keybox = new TextBlock()
             {
                 Text = key,
-                FontWeight = FontWeights.Bold,
+                FontWeight = FontWeights.Medium,
                 TextAlignment = TextAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Foreground = (Brush)Application.Current.Resources["DialogAcrylicBrush"]
+                VerticalAlignment = VerticalAlignment.Center
             };
 
             keyboxBorder.Child = keybox;
