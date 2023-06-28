@@ -29,6 +29,12 @@
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://genshin.hoyoverse.com/gift"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
                 "IconGlyph": "",
                 "Text": "HoYoLab Website",
                 "URL": "https://www.hoyolab.com/"
@@ -46,6 +52,12 @@
                 "IconGlyph": "",
                 "Text": "Daily Check-in",
                 "URL": "https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://hsr.hoyoverse.com/gift"
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
@@ -120,6 +132,18 @@
                 "IconGlyph": "",
                 "Text": "Project Yatta (HSR)",
                 "URL": "https://hsr.yatta.top/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "Star Rail Station",
+              "URL": "https://starrailstation.com/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "prydwen.gg",
+              "URL": "https://www.prydwen.gg/star-rail/"
             }
         ]
     }
