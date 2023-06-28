@@ -725,10 +725,10 @@
                                             <TextBox x:Name="MinutePlaytimeTextBox" BeforeTextChanging="NumberValidationTextBox" HorizontalContentAlignment="Center" Margin="2,0,8,0" Text=""/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0">
-                                            <TextBlock x:Name="PlaytimeHours" Text="Hours" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="5,1,0,8"/>
-                                            <TextBlock x:Name="PlaytimeMinutes" Text="Minutes" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
+                                            <TextBlock x:Name="PlaytimeHours" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="5,1,0,8"/>
+                                            <TextBlock x:Name="PlaytimeMinutes" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
                                         </StackPanel>
-                                        <TextBlock x:Name="InvalidTimeBlock" Text="Invalid values" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
+                                        <TextBlock x:Name="InvalidTimeBlock" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_InvalidTimeBlock}" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
                                         <Button x:Name="ChangePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ChangePlaytimeButton_Click">
                                             <Button.Content>
                                                 <StackPanel Orientation="Horizontal" Margin="3,0">

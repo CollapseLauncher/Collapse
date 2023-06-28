@@ -19,6 +19,7 @@
                 public string RegionLoadingSubtitleTimeOut { get; set; } = LangFallback?._MainPage.RegionLoadingSubtitleTimeOut;
                 public string RegionLoadingSubtitleTooLong { get; set; } = LangFallback?._MainPage.RegionLoadingSubtitleTooLong;
                 public string NotifNeverAsk { get; set; } = LangFallback?._MainPage.NotifNeverAsk;
+                public string NotifNoNewNotifs { get; set; } = LangFallback?._MainPage.NotifNoNewNotifs;
             }
         }
         #endregion
