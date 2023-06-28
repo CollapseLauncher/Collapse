@@ -194,7 +194,7 @@
                         <ScalarTransition/>
                     </StackPanel.OpacityTransition>
                     <Image Margin="0,0,0,16" Source="ms-appx:///Assets/BG/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-                    <TextBlock Text="You have no notification" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
+                    <TextBlock Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
                 </StackPanel>
                 <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
                     <StackPanel.ChildrenTransitions>
