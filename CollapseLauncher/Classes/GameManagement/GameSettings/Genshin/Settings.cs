@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
@@ -13,6 +14,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public GeneralData SettingsGeneralData { get; set; }
 
         public GenshinSettings()
         {
@@ -34,6 +36,9 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
+            SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsScreen = ScreenManager.Load();
+            SettingsGeneralData = GeneralData.Load();
         }
 
         public void ReloadSettings() => InitializeSettings();
@@ -42,6 +47,9 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Save Settings
             SettingsCustomArgument.Save();
+            SettingsCollapseScreen.Save();
+            SettingsScreen.Save();
+            SettingsGeneralData.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
