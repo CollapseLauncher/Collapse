@@ -123,18 +123,18 @@ namespace Hi3Helper.DiscordPresence
 
             if (IsGameStatusEnabled)
             {
-                if (_client != null) _client?.Dispose();
+                if (_client != null) Dispose();
 
                 switch (GameCategory)
                 {
                     case "Honkai: Star Rail":
-                        EnablePresence(AppDiscordApplicationStarRailID);
+                        EnablePresence(AppDiscordApplicationID_HSR);
                         break;
                     case "Honkai Impact 3rd":
-                        EnablePresence(AppDiscordApplicationHonkaiID);
+                        EnablePresence(AppDiscordApplicationID_HI3);
                         break;
                     case "Genshin Impact":
-                        EnablePresence(AppDiscordApplicationGenshinID);
+                        EnablePresence(AppDiscordApplicationID_GI);
                         break;
                     default:
                         Logger.LogWriteLine($"Discord Presence (Unknown Game)");
@@ -143,7 +143,7 @@ namespace Hi3Helper.DiscordPresence
             }
             else
             {
-                if (_client != null) _client?.Dispose();
+                if (_client != null) Dispose();
                 EnablePresence();
             }
         }
