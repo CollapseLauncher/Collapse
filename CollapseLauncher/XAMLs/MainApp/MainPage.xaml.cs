@@ -905,6 +905,12 @@ namespace CollapseLauncher
                     break;
             }
 
+            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
+                { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
+            }
+
             NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
             (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
             (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
@@ -986,6 +992,10 @@ namespace CollapseLauncher
 
                         case "starrailgamesettings":
                             Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
+                            break;
+
+                        case "genshingamesettings":
+                            Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), true, item);
                             break;
                     }
                     LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);

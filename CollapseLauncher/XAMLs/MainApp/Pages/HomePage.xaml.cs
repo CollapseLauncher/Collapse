@@ -934,7 +934,30 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
+            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            {
+                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
+                {
+                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
+                    RequireWindowExclusivePayload = true;
+                    LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
+                }
 
+                System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
+
+                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
+
+                if (apiID == 4)
+                {
+                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                    else
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+                }
+                else
+                    parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
+            }
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
             if (!string.IsNullOrEmpty(customArgs))
