@@ -80,7 +80,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     string _localTextLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
                     return new LocalTextLanguage { LocalTextLang = _localTextLang };
                 }
             }
@@ -99,7 +101,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 string data = LocalTextLang + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot?.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {data}", LogType.Default, true);
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {data}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {
