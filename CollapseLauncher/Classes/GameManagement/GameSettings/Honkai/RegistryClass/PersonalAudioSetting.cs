@@ -184,6 +184,9 @@ namespace CollapseLauncher.GameSettings.Honkai
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
+#if DEBUG
+                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
                     return (PersonalAudioSetting?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) ?? new PersonalAudioSetting();
                 }
             }
@@ -205,6 +208,9 @@ namespace CollapseLauncher.GameSettings.Honkai
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+#if DEBUG
+                LogWriteLine($"Saved HI3 Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
                 _VolumeValue.Save();
             }
             catch (Exception ex)

@@ -1,10 +1,12 @@
 ﻿using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json;
 using static CollapseLauncher.GameSettings.Statics;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Honkai
 {
@@ -67,27 +69,46 @@ namespace CollapseLauncher.GameSettings.Honkai
 #nullable enable
         public static PersonalAudioSettingVolume Load()
         {
-            if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-
-            object? value = RegistryRoot.GetValue(_ValueName, null);
-
-            if (value != null)
+            try
             {
-                ReadOnlySpan<byte> byteStr = (byte[])value;
-                return (PersonalAudioSettingVolume?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalAudioSettingVolume), PersonalAudioSettingVolumeContext.Default) ?? new PersonalAudioSettingVolume();
-            }
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
 
+                object? value = RegistryRoot.GetValue(_ValueName, null);
+
+                if (value != null)
+                {
+                    ReadOnlySpan<byte> byteStr = (byte[])value;
+#if DEBUG
+                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
+                    return (PersonalAudioSettingVolume?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalAudioSettingVolume), PersonalAudioSettingVolumeContext.Default) ?? new PersonalAudioSettingVolume();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+            }
             return new PersonalAudioSettingVolume();
         }
 
         public void Save()
         {
-            if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+            try
+            {
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-            string data = JsonSerializer.Serialize(this, typeof(PersonalAudioSettingVolume), PersonalAudioSettingVolumeContext.Default) + '\0';
-            byte[] dataByte = Encoding.UTF8.GetBytes(data);
+                string data = JsonSerializer.Serialize(this, typeof(PersonalAudioSettingVolume), PersonalAudioSettingVolumeContext.Default) + '\0';
+                byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-            RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+#if DEBUG
+                LogWriteLine($"Saved HI3 Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+            }
         }
 
         public bool Equals(PersonalAudioSettingVolume? comparedTo)
