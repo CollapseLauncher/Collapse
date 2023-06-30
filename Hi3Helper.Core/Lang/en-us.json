@@ -76,7 +76,8 @@
     "RegionLoadingSubtitleTimeOut": "Action timed out (> {1} seconds). Retrying to load Region {0}...",
     "RegionLoadingSubtitleTooLong": "This is taking a bit longer than expected... Please ensure that your Internet connection is stable!",
     "NavCtrlTitleSettings": "App Settings",
-    "NotifNeverAsk": "Never show again"
+    "NotifNeverAsk": "Never show again",
+    "NotifNoNewNotifs": "No new notifications"
   },
 
   "_HomePage": {
@@ -121,8 +122,9 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minutes",
     "GamePlaytime_Idle_ResetBtn": "Reset",
     "GamePlaytime_Idle_ChangeBtn": "Change",
+    "GamePlaytime_Idle_InvalidTimeBlock": "Invalid values provided.",
     "GamePlaytime_Running_Info1": "An instance of this game is currently running, therefore playtime can't be edited.",
-    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played till that point) and only sessions started using Collapse will be tracked.",
+    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point) & only sessions started using Collapse will be tracked.",
     "PostPanel_Events": "Events",
     "PostPanel_Notices": "Notices",
     "PostPanel_Info": "Info",
