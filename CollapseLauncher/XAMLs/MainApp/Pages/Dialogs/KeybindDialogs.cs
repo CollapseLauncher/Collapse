@@ -5,14 +5,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.System;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Microsoft.UI.Xaml.Documents;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -48,7 +47,7 @@ namespace CollapseLauncher.Dialogs
                 VerticalAlignment = VerticalAlignment.Center,
                 FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
             });
-            textBlock.Children.Add(new TextBlock() { Text = string.Format("Swap {0} and {1}" , gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
+            textBlock.Children.Add(new TextBlock() { Text = string.Format("Swap {0} and {1}", gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
 
             Button modifierSwap = new Button()
             {
@@ -119,10 +118,10 @@ namespace CollapseLauncher.Dialogs
             {
                 Button shortcutSwap = new Button()
                 {
-                    Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5,0,-5,0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
+                    Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
                     CornerRadius = new CornerRadius(5),
                     DataContext = kbKeys,
-                    Margin = new Thickness(0,0,5,0)
+                    Margin = new Thickness(0, 0, 5, 0)
                 };
                 shortcutButtons.Children.Add(shortcutSwap);
                 shortcutSwap.Click += Swap_Click;
@@ -177,10 +176,10 @@ namespace CollapseLauncher.Dialogs
             {
                 Orientation = Orientation.Vertical,
             };
-            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = "Input a valid key combination to change the shortcut.", Margin = new Thickness(0,0,0,20)});
-            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize=18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
-            mainSwitchKeyContent.Children.Add(new FontIcon() { Glyph = "", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(0,10,0,10) });
-            TextBlock keysPressed = new TextBlock() { Text = "...", FontSize=18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center,  };
+            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = "Input a valid key combination to change the shortcut.", Margin = new Thickness(0, 0, 0, 20) });
+            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
+            mainSwitchKeyContent.Children.Add(new FontIcon() { Glyph = "", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(0, 10, 0, 10) });
+            TextBlock keysPressed = new TextBlock() { Text = "...", FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
             mainSwitchKeyContent.Children.Add(keysPressed);
 
             ContentDialog result = new ContentDialog
@@ -236,7 +235,7 @@ namespace CollapseLauncher.Dialogs
                     keysPressed.Text += keyStr;
 
                     newKeys = keysPressed.Text.Split(" + ").ToList();
-                    result.IsPrimaryButtonEnabled = KeyList.FindIndex(i => i.Contains(newKeys[0]) && i.Contains(newKeys[1]) ) == -1;
+                    result.IsPrimaryButtonEnabled = KeyList.FindIndex(i => i.Contains(newKeys[0]) && i.Contains(newKeys[1])) == -1;
                 }
             };
 
@@ -352,12 +351,12 @@ namespace CollapseLauncher.Dialogs
                     resultList.Add(combination.Split(",").ToList());
                 }
 
-                if (resultList.Count < defaultKeyList.Count) 
+                if (resultList.Count < defaultKeyList.Count)
                 {
                     resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, defaultKeyList.Count - resultList.Count));
                 }
-                
-                for(int i = resultList.Count; i > defaultKeyList.Count; i--)
+
+                for (int i = resultList.Count; i > defaultKeyList.Count; i--)
                 {
                     resultList.RemoveAt(i);
                 }
