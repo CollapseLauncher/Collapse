@@ -55,7 +55,7 @@ namespace CollapseLauncher.GameSettings.Universal
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded Collapse Screen Settings:\r\n{JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(CollapseScreenSetting), CollapseScreenSettingContext.Default)}", LogType.Debug, true);
+                    LogWriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
                     return (CollapseScreenSetting?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(CollapseScreenSetting), CollapseScreenSettingContext.Default) ?? new CollapseScreenSetting();
                 }
