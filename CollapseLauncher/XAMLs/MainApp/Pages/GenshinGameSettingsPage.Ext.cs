@@ -121,8 +121,12 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings
         public double Gamma
         {
-            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue, 5);
-            set => Settings.SettingsGeneralData.gammaValue = Math.Round(value, 5);  // Round it to x.xxxxx because floating point
+            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue*-1+4.4, 5);
+            set => Settings.SettingsGeneralData.gammaValue = Math.Round(value*-1+4.4, 5);  
+            // This should belong in programmer horror stories, *DO NOT EVER DO THIS*
+            // Basically, calculate the stepper function which amounts to y = -x + 4.4, so we inverse the value and add 4.4
+            // DON'T ASK HOW WE DID THIS, IT'S a 4AM THING :)
+            // Round it to x.xxxxx because floating point
         }
 
         public bool VerticalSync
