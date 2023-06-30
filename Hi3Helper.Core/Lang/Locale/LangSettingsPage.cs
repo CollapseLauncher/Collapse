@@ -12,7 +12,6 @@
                 public string Debug { get; set; } = LangFallback?._SettingsPage.Debug;
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
                 public string Debug_MultipleInstance { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
-                public string DiscordRPC_Toggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string ChangeRegionWarning_Toggle { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
                 public string ChangeRegionWarning_Warning { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;
                 public string Language { get; set; } = LangFallback?._SettingsPage.Language;
@@ -39,6 +38,9 @@
                 public string AppThreads_Help4 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help4;
                 public string AppThreads_Help5 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help5;
                 public string AppThreads_Help6 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help6;
+                public string DiscordRPC { get; set; } = LangFallback?._SettingsPage.DiscordRPC;
+                public string DiscordRPC_Toggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
+                public string DiscordRPC_GameStatusToggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;
                 public string Update { get; set; } = LangFallback?._SettingsPage.Update;
                 public string Update_CurVer { get; set; } = LangFallback?._SettingsPage.Update_CurVer;
                 public string Update_CheckBtn { get; set; } = LangFallback?._SettingsPage.Update_CheckBtn;

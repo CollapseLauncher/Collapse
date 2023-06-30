@@ -80,6 +80,7 @@
                 public string CDNDescription_jsDelivr { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
                 public string LocateExecutable { get; set; } = LangFallback?._Misc.LocateExecutable;
                 public string DiscordRP_Play { get; set; } = LangFallback?._Misc.DiscordRP_Play;
+                public string DiscordRP_InGame { get; set; } = LangFallback?._Misc.DiscordRP_InGame;
                 public string DiscordRP_Update { get; set; } = LangFallback?._Misc.DiscordRP_Update;
                 public string DiscordRP_Repair { get; set; } = LangFallback?._Misc.DiscordRP_Repair;
                 public string DiscordRP_Cache { get; set; } = LangFallback?._Misc.DiscordRP_Cache;

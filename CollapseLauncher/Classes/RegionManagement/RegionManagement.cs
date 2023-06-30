@@ -7,6 +7,7 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
+using Discord;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -354,6 +355,9 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+#if !DISABLEDISCORD
+                AppDiscordPresence.SetupPresence();
+#endif
                 return true;
             }
 

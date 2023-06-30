@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
+using System.Security.Cryptography;
 
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
@@ -42,7 +43,7 @@ namespace Hi3Helper.DiscordPresence
             // If it's set to be initially started, then enable the presence
             if (initialStart)
             {
-                EnablePresence();
+                SetupPresence();
                 SetActivity(ActivityType.None);
             }
         }
@@ -73,7 +74,7 @@ namespace Hi3Helper.DiscordPresence
             _client = null;
         }
 
-        public void EnablePresence()
+        public void EnablePresence(long applicationId = AppDiscordApplicationID)
         {
             // Get the DLL path and check if the dll exist. If yes, then initialize the Discord Presence client.
             string dllPath = Path.Combine(AppFolder, "Lib\\discord_game_sdk.dll");
@@ -82,7 +83,7 @@ namespace Hi3Helper.DiscordPresence
                 try
                 {
                     // Initialize Discord Presence client and Activity property
-                    _client = new Discord.Discord(AppDiscordApplicationID, (ulong)CreateFlags.NoRequireDiscord);
+                    _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
                     _activity = new Activity();
 
                     // Initialize the Activity Manager instance
@@ -116,16 +117,50 @@ namespace Hi3Helper.DiscordPresence
             await DisposeAsync();
         }
 
+        public void SetupPresence()
+        {
+            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+            bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+
+            if (IsGameStatusEnabled)
+            {
+                if (_client != null) _client?.Dispose();
+
+                switch (GameCategory)
+                {
+                    case "Honkai: Star Rail":
+                        EnablePresence(AppDiscordApplicationStarRailID);
+                        break;
+                    case "Honkai Impact 3rd":
+                        EnablePresence(AppDiscordApplicationHonkaiID);
+                        break;
+                    case "Genshin Impact":
+                        EnablePresence(AppDiscordApplicationGenshinID);
+                        break;
+                    default:
+                        Logger.LogWriteLine($"Discord Presence (Unknown Game)");
+                        break;
+                }
+            }
+            else
+            {
+                if (_client != null) _client?.Dispose();
+                EnablePresence();
+            }
+        }
+
         public async void SetActivity(ActivityType activity, int delay = 500)
         {
             await Task.Delay(delay);
+            bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+
             switch (activity)
             {
                 case ActivityType.Play:
-                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Play);
+                    BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
                     break;
                 case ActivityType.Update:
-                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Update);
+                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
                     break;
                 case ActivityType.Repair:
                     BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair);
@@ -162,11 +197,11 @@ namespace Hi3Helper.DiscordPresence
             }
         }
 
-        private void BuildActivityGameStatus(string activityName)
+        private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
         {
             _activity = new Activity
             {
-                Details = $"{activityName} {ConfigV2Store.CurrentConfigV2GameCategory}",
+                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : "")}",
                 State = $"Server: {ConfigV2Store.CurrentConfigV2GameRegion}",
                 Assets = new ActivityAssets
                 {

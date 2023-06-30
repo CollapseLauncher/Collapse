@@ -100,6 +100,10 @@ namespace Hi3Helper.Shared.Region
         public static string GamePathOnSteam;
 
         public const long AppDiscordApplicationID = 1089467141096484955;
+        public const long AppDiscordApplicationGenshinID = 1105254164377915412;
+        public const long AppDiscordApplicationStarRailID = 1105272973730005093;
+        public const long AppDiscordApplicationHonkaiID = 1105273174314188811;
+        
         public const string AppNotifURLPrefix = "/notification_{0}.json";
         public const string AppGameConfigV2URLPrefix = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";

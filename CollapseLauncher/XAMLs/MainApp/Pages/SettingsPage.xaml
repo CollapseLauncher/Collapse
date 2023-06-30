@@ -21,7 +21,6 @@
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}"/>
-                        <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsShowRegionChangeWarning, Mode=TwoWay}"/>
                         <TextBlock x:Name="ChangeRegionToggleWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}" Margin="0,0,0,8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         <StackPanel Margin="0,0,0,16">
@@ -123,6 +122,9 @@
                             <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="8" SpinButtonPlacementMode="Compact"/>
                             <NumberBox x:Name="ExtractionThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Margin="16,0,0,0" Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" Minimum="0" Maximum="128" Width="128" SpinButtonPlacementMode="Compact"/>
                         </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                        <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
+                        <ToggleSwitch x:Name="ToggleDiscordGameStatus" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_GameStatusToggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsEnabled="False" IsOn="{x:Bind IsDiscordGameStatusEnabled, Mode=TwoWay}" />
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
                         <StackPanel Orientation="Vertical" Margin="0,0,0,16">
                             <StackPanel Orientation="Horizontal">
