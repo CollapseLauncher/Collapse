@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
-using System.Security.Cryptography;
 
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
