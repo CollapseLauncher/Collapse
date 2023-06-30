@@ -18,7 +18,9 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.GameSettings.Statics;
 using Hi3Helper;
-
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Windows.Globalization.NumberFormatting;
 
 namespace CollapseLauncher.Pages
 {
@@ -176,10 +178,27 @@ namespace CollapseLauncher.Pages
             });
         }
 
+        private void GammaValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            GammaSlider.Value = Math.Round(sender.Value, 5);
+            LogWriteLine($"Sender Object value: {sender.Value}", LogType.Debug, false);
+            LogWriteLine($"Sender Object Rounded value: {Math.Round(sender.Value, 5)}", LogType.Debug, false);
+        }
+
+        private void GammaSlider_ValueChanged(object sender,  RangeBaseValueChangedEventArgs e)
+        {
+            GammaValue.Value = Math.Round(e.NewValue, 5);
+        }
+
         public string CustomArgsValue
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+        }
+
+        private void GammaSlider_ValueChanged_1(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+
         }
     }
 }

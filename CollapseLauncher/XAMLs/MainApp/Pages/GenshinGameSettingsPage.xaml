@@ -10,12 +10,14 @@
     xmlns:static="using:CollapseLauncher.GameSettings.Genshin"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:f="using:Windows.Globalization.NumberFormatting"
     mc:Ignorable="d"
     Loaded="InitializeSettings"
     Unloaded="OnUnload">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
+        <f:DecimalFormatter x:Key="DecimalFormatter" SignificantDigits="5"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -78,9 +80,10 @@
                                 <StackPanel>
                                     <Grid x:Name="GammaGrid">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Gamma}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                        <TextBlock Text="{Binding Value, ElementName=GammaSlider}" HorizontalAlignment="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                        <TextBox Text="{Binding Value, ElementName=GammaSlider}" HorizontalAlignment="Right" Style="{ThemeResource BodyStrongTextBlockStyle}"  />
+                                        <!--<NumberBox Name="GammaValue" Minimum="1.4" Maximum="3.0" HorizontalAlignment="Right" Width="200" ValueChanged="GammaValue_ValueChanged" NumberFormatter="{StaticResource DecimalFormatter}"/>-->
                                     </Grid>
-                                    <Slider x:Name="GammaSlider" Minimum="1.4" Maximum="3.0" Value="{x:Bind Gamma, Mode=TwoWay}"  StepFrequency="0.000000000000001" TickFrequency="0.2" TickPlacement="Outside" Margin="0,0,56,8" IsThumbToolTipEnabled="False"/>
+                                    <Slider x:Name="GammaSlider" Minimum="1.4" Maximum="3.0" Value="{x:Bind Gamma, Mode=TwoWay}"  TickFrequency="0.2" StepFrequency="0.000001" TickPlacement="Outside" Margin="0,0,56,8" IsThumbToolTipEnabled="False" ValueChanged="GammaSlider_ValueChanged"/>
                                 </StackPanel>
                                 <StackPanel>
                                     <Grid>

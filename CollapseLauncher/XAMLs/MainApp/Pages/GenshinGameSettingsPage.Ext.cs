@@ -121,8 +121,8 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings
         public double Gamma
         {
-            get => (double)Settings.SettingsGeneralData.gammaValue;
-            set => Settings.SettingsGeneralData.gammaValue = value;
+            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue, 5);
+            set => Settings.SettingsGeneralData.gammaValue = Math.Round(value, 5);  // Round it to x.xxxxx because floating point
         }
 
         public bool VerticalSync

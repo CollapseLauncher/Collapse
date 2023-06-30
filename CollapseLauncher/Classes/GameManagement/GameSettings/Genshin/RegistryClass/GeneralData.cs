@@ -345,6 +345,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 _graphicsData = graphicsData.Save();
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
+                LogWriteLine($"Saved Gamma Value {gammaValue}", LogType.Debug);
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}", LogType.Debug, true);
