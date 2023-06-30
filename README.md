@@ -131,7 +131,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:x:</td>
-      <td>:x:</td>
+      <td>:white_check_mark:</td>
       <td>:x:</td>
     </tr>
     <tr>
@@ -139,9 +139,9 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
-      <td>:x:</td>
       <td>:x:</td>
     </tr>
     <tr>
