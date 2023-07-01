@@ -12,8 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:f="using:Windows.Globalization.NumberFormatting"
     mc:Ignorable="d"
-    Loaded="InitializeSettings"
-    Unloaded="OnUnload">
+    Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>

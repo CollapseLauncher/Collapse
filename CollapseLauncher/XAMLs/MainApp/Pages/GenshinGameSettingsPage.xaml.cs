@@ -37,8 +37,8 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig));
-                    RegistryWatcher.RegChanged += RegistryListener;
                     RegistryWatcher.Start();
+                    ToggleRegistrySubscribe(true);
 
                 });
 
@@ -49,6 +49,14 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void ToggleRegistrySubscribe(bool doSubscribe)
+        {
+            if (doSubscribe)
+                RegistryWatcher.RegChanged += RegistryListener;
+            else
+                RegistryWatcher.RegChanged -= RegistryListener;
         }
 
         private void RegistryListener(object sender, EventArgs e)
@@ -76,6 +84,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                ToggleRegistrySubscribe(false);
                 Exception exc = Settings.ExportSettings();
 
                 if (exc != null) throw exc;
@@ -91,12 +100,17 @@ namespace CollapseLauncher.Pages
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
+            }
         }
 
         private void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
+                ToggleRegistrySubscribe(false);
                 Exception exc = Settings.ImportSettings();
 
                 if (exc != null) throw exc;
@@ -111,6 +125,10 @@ namespace CollapseLauncher.Pages
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
+            }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -159,13 +177,28 @@ namespace CollapseLauncher.Pages
                 ApplyText.Text = Lang._StarRailGameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
+                ToggleRegistrySubscribe(false);
                 Settings.SaveSettings();
-                IsNoReload = true;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
+            }
+        }
+
+        public string CustomArgsValue
+        {
+            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            set
+            {
+                ToggleRegistrySubscribe(false);
+                ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -173,6 +206,7 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                ToggleRegistrySubscribe(false);
                 RegistryWatcher.Stop();
                 RegistryWatcher.Dispose();
             });
@@ -194,12 +228,6 @@ namespace CollapseLauncher.Pages
         private void GammaSlider_ValueChanged(object sender,  RangeBaseValueChangedEventArgs e)
         {
             GammaValue.Value = Math.Round(e.NewValue, 5);
-        }
-
-        public string CustomArgsValue
-        {
-            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
-            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
         }
     }
 }
