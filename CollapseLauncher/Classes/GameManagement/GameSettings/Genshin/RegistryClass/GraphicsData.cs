@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin.Context;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using Hi3Helper;
 using System;
