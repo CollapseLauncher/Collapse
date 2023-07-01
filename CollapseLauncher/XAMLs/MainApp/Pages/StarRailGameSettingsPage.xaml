@@ -291,7 +291,7 @@
                                 <StackPanel Grid.Column="1" x:Name="LangSettingRight">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageText}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
-                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}">
+                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}" MaxDropDownHeight="200">
                                             <ComboBoxItem Content="English"/>
                                             <ComboBoxItem Content="日本語"/>
                                             <ComboBoxItem Content="简体中文"/>

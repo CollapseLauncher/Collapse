@@ -26,7 +26,7 @@
                         <TextBlock x:Name="ChangeRegionToggleWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}" Margin="0,0,0,8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" ItemsSource="{x:Bind LanguageList}" SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"/>
+                            <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" ItemsSource="{x:Bind LanguageList}" SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" MaxDropDownHeight="200"/>
                             <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                         </StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
