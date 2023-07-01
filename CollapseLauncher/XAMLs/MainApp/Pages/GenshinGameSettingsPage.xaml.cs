@@ -220,16 +220,33 @@ namespace CollapseLauncher.Pages
         /// <param name="args"></param>
         private void GammaValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
-            IncrementNumberRounder rounder = new IncrementNumberRounder();
-            rounder.Increment = 0.0000001;
+            try
+            {
+                // Check if NumberBox is cleared (NaN) then reuse old value
+                // Why is this not the default behavior instead of throwing errors? I don't know ask Microsoft
+                if (double.IsNaN(args.NewValue))
+                {
+                    LogWriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    GammaValue.Value = args.OldValue;
+                }
+                else
+                {
+                    IncrementNumberRounder rounder = new IncrementNumberRounder();
+                    rounder.Increment = 0.0000001;
 
-            DecimalFormatter formatter = new DecimalFormatter();
-            formatter.IntegerDigits = 1;
-            formatter.FractionDigits = 5;
-            formatter.NumberRounder = rounder;
+                    DecimalFormatter formatter = new DecimalFormatter();
+                    formatter.IntegerDigits = 1;
+                    formatter.FractionDigits = 5;
+                    formatter.NumberRounder = rounder;
+                    GammaValue.NumberFormatter = formatter;
 
-            GammaValue.NumberFormatter = formatter;
-            GammaSlider.Value = GammaValue.Value;
+                    GammaSlider.Value = GammaValue.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when processing Gamma NumberBox!\r\n{ex}", LogType.Error, true);
+            }
         }
 
         /// <summary>
