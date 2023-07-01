@@ -74,7 +74,7 @@ namespace CollapseLauncher.Dialogs
                     Content,
                     null,
                     Lang._Misc.LocateExecutable,
-                    Lang._Misc.Cancel
+                    Lang._Misc.OpenDownloadPage
                 );
 
         public static async Task<ContentDialogResult> Dialog_InsufficientWritePermission(UIElement Content, string path) =>

@@ -79,6 +79,7 @@
                 public string CDNDescription_Statically { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
                 public string CDNDescription_jsDelivr { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
                 public string LocateExecutable { get; set; } = LangFallback?._Misc.LocateExecutable;
+                public string OpenDownloadPage { get; set; } = LangFallback?._Misc.OpenDownloadPage;
                 public string DiscordRP_Play { get; set; } = LangFallback?._Misc.DiscordRP_Play;
                 public string DiscordRP_Update { get; set; } = LangFallback?._Misc.DiscordRP_Update;
                 public string DiscordRP_Repair { get; set; } = LangFallback?._Misc.DiscordRP_Repair;
