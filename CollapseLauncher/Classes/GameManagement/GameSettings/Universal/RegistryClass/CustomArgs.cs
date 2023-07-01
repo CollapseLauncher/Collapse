@@ -36,7 +36,9 @@ namespace CollapseLauncher.GameSettings.Universal
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-
+#if DEBUG
+                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)RegistryRoot.GetValue(_ValueName, null) ?? ""}", LogType.Debug, true);
+#endif
                 return new CustomArgs { CustomArgumentValue = (string?)RegistryRoot.GetValue(_ValueName, null) ?? "" };
             }
             catch (Exception ex)
@@ -51,7 +53,9 @@ namespace CollapseLauncher.GameSettings.Universal
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-
+#if DEBUG
+                LogWriteLine($"Saved Collapse Custom Argument Settings:\r\n{CustomArgumentValue}", LogType.Debug, true);
+#endif
                 RegistryRoot.SetValue(_ValueName, CustomArgumentValue, RegistryValueKind.String);
             }
             catch (Exception ex)

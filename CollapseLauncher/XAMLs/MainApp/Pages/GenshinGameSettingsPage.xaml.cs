@@ -37,8 +37,8 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig));
-                    RegistryWatcher.RegChanged += RegistryListener;
                     RegistryWatcher.Start();
+                    ToggleRegistrySubscribe(true);
 
                 });
 
@@ -49,6 +49,14 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
+        }
+
+        private void ToggleRegistrySubscribe(bool doSubscribe)
+        {
+            if (doSubscribe)
+                RegistryWatcher.RegChanged += RegistryListener;
+            else
+                RegistryWatcher.RegChanged -= RegistryListener;
         }
 
         private void RegistryListener(object sender, EventArgs e)
@@ -76,6 +84,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                ToggleRegistrySubscribe(false);
                 Exception exc = Settings.ExportSettings();
 
                 if (exc != null) throw exc;
@@ -91,12 +100,17 @@ namespace CollapseLauncher.Pages
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
             }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
+            }
         }
 
         private void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
+                ToggleRegistrySubscribe(false);
                 Exception exc = Settings.ImportSettings();
 
                 if (exc != null) throw exc;
@@ -111,6 +125,10 @@ namespace CollapseLauncher.Pages
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
+            }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -159,13 +177,28 @@ namespace CollapseLauncher.Pages
                 ApplyText.Text = Lang._StarRailGameSettingsPage.SettingsApplied;
                 ApplyText.Visibility = Visibility.Visible;
 
+                ToggleRegistrySubscribe(false);
                 Settings.SaveSettings();
-                IsNoReload = true;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
+            }
+            finally
+            {
+                ToggleRegistrySubscribe(true);
+            }
+        }
+
+        public string CustomArgsValue
+        {
+            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            set
+            {
+                ToggleRegistrySubscribe(false);
+                ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                ToggleRegistrySubscribe(true);
             }
         }
 
@@ -173,33 +206,58 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                ToggleRegistrySubscribe(false);
                 RegistryWatcher.Stop();
                 RegistryWatcher.Dispose();
             });
         }
 
+        /// <summary>
+        /// This updates Gamma Slider every time GammaNumber is entered.
+        /// Do NOT touch this unless really necessary to do so!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void GammaValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
-            IncrementNumberRounder rounder = new IncrementNumberRounder();
-            rounder.Increment = 0.0000001;
+            try
+            {
+                // Check if NumberBox is cleared (NaN) then reuse old value
+                // Why is this not the default behavior instead of throwing errors? I don't know ask Microsoft
+                if (double.IsNaN(args.NewValue))
+                {
+                    LogWriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    GammaValue.Value = args.OldValue;
+                }
+                else
+                {
+                    IncrementNumberRounder rounder = new IncrementNumberRounder();
+                    rounder.Increment = 0.0000001;
 
-            DecimalFormatter formatter = new DecimalFormatter();
-            formatter.IntegerDigits = 1;
-            formatter.FractionDigits = 5;
-            formatter.NumberRounder = rounder;
+                    DecimalFormatter formatter = new DecimalFormatter();
+                    formatter.IntegerDigits = 1;
+                    formatter.FractionDigits = 5;
+                    formatter.NumberRounder = rounder;
+                    GammaValue.NumberFormatter = formatter;
 
-            GammaValue.NumberFormatter = formatter;
+                    GammaSlider.Value = GammaValue.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when processing Gamma NumberBox!\r\n{ex}", LogType.Error, true);
+            }
         }
 
+        /// <summary>
+        /// This updates Gamma NumberBox when slider is moved.
+        /// no touchy :)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GammaSlider_ValueChanged(object sender,  RangeBaseValueChangedEventArgs e)
         {
             GammaValue.Value = Math.Round(e.NewValue, 5);
-        }
-
-        public string CustomArgsValue
-        {
-            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
-            set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
         }
     }
 }

@@ -37,7 +37,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     int bgmVolume = (int)value;
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Default, true);
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Debug, true);
+#endif
                     return new BGMVolume { BGMVol = bgmVolume };
                 }
             }
@@ -54,7 +56,9 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, BGMVol, RegistryValueKind.DWord);
-                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {BGMVol}", LogType.Default, true);
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {BGMVol}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {

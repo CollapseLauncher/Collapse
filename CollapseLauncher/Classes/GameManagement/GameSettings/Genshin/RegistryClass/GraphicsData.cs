@@ -157,68 +157,117 @@ namespace CollapseLauncher.GameSettings.Genshin
                 switch (setting["key"])
                 {
                     case 1:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - FPS: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.FPS = (FPSOption)setting["value"];
                         break;
+
                     case 2:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Render Resolution: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.RenderResolution = (RenderResolutionOption)setting["value"];
                         break;
+
                     case 3:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Shadow Quality: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.ShadowQuality = (ShadowQualityOption)setting["value"];
                         break;
+
                     case 4:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Visual Effects: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.VisualEffects = (VisualEffectsOption)setting["value"];
                         break;
+
                     case 5:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - SFX Quality: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.SFXQuality = (SFXQualityOption)setting["value"];
                         break;
+
                     case 6:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Environment Detail: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.EnvironmentDetail = (EnvironmentDetailOption)setting["value"];
                         break;
+
                     case 7:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Vertical Sync: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.VerticalSync = (VerticalSyncOption)setting["value"];
                         break;
+
                     case 8:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Antialiasing: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.Antialiasing = (AntialiasingOption)setting["value"];
                         break;
+
                     case 9:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Volumetric Fog: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.VolumetricFog = (VolumetricFogOption)setting["value"];
                         break;
+
                     case 10:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Reflections: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.Reflections = (ReflectionsOption)setting["value"];
                         break;
+
                     case 11:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Motion Blur: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.MotionBlur = (MotionBlurOption)setting["value"];
                         break;
+
                     case 12:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Bloom: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.Bloom = (BloomOption)setting["value"];
                         break;
+
                     case 13:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Crowd Density: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.CrowdDensity = (CrowdDensityOption)setting["value"];
                         break;
+
+                    // 14 is missing from settings
+                    // And yes, do not reorder this unless the game order finally changes
+                    // It is meant to be like this because miyoyo
                     case 16:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Co-Op Teammate Effects: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.CoOpTeammateEffects = (CoOpTeammateEffectsOption)setting["value"];
                         break;
-                    /// 14 is missing from settings
+
                     case 15:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Subsurface Scattering: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.SubsurfaceScattering = (SubsurfaceScatteringOption)setting["value"];
                         break;
+
                     case 17:
+#if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Anisotropic Filtering: {setting["value"]}", LogType.Debug, true);
+#endif
                         graphics.AnisotropicFiltering = (AnisotropicFilteringOption)setting["value"];
                         break;
                 }
@@ -248,7 +297,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new Dictionary<string, int>() { { "key", 17 }, { "value", (int)AnisotropicFiltering } },
                 };
             string data = JsonSerializer.Serialize(this, typeof(GraphicsData), GraphicsDataContext.Default);
+#if DEBUG
             LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
+#endif
             return data;
         }
         #endregion

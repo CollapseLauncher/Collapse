@@ -114,9 +114,11 @@ namespace CollapseLauncher.GameSettings.Genshin
                     int width = (int)valueWidth;
                     int height = (int)valueHeight;
                     int fullscreen = (int)valueFullscreen;
+#if DEBUG
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerWidth} : {width}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
+#endif
                     return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
                 }
             }
@@ -133,13 +135,19 @@ namespace CollapseLauncher.GameSettings.Genshin
             try
             {
                 RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
+#if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
+#endif
 
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
+#if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
+#endif
 
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+#if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {

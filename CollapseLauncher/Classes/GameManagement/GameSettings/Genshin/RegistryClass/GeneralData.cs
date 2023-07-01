@@ -251,6 +251,9 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
+        /// This implementation is quite janky but hear me out <br/>
+        /// The value is directly controlled by Gamma Slider, which linked with GammaValue (NumberBox) <br/>
+        /// Since the value is flipped, math function of y = -x + 4.4 is used (Refer GenshinGameSettingsPage.Ext.cs Line 122)
         /// </summary>
         public double gammaValue { get; set; } = 2.2f;
         
@@ -322,7 +325,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
+#if DEBUG
+                    // If you want to debug GeneralData, Append this to the LogWriteLine:
+                    // '\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)'
+                    // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+#endif
                     GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     data.globalPerfData = new();
@@ -345,11 +353,27 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 _graphicsData = graphicsData.Save();
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
-                LogWriteLine($"Saved Gamma Value {gammaValue}", LogType.Debug);
+ 
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}", LogType.Debug, true);
+
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+#if DEBUG
+                // Only tracking actually used items (besides GlobalPerfData and GraphicsData)
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
+                    $"\r\n      Text Language        : {deviceLanguageType}" +
+                    $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
+                    $"\r\n      Audio - Master Volume: {volumeGlobal}" +
+                    $"\r\n      Audio - Music Volume : {volumeMusic}" +
+                    $"\r\n      Audio - SFX Volume   : {volumeSFX}" +
+                    $"\r\n      Audio - Voice Volume : {volumeVoice}" +
+                    $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
+                    $"\r\n      Audio - Surround     : {audioOutput}" +
+                    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
+                // If you want to debug GeneralData, uncomment this LogWriteLine
+                // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
+                // LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {
@@ -361,8 +385,8 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             if (ReferenceEquals(this, comparedTo)) return true;
             if (comparedTo == null) return false;
-            //todo add properties
 
+            // nightmare nightmare nightmare nightmare nightmare 
             return comparedTo.deviceUUID == deviceUUID &&
                 comparedTo.userLocalDataVersionId == userLocalDataVersionId &&
                 comparedTo.deviceLanguageType == deviceLanguageType &&

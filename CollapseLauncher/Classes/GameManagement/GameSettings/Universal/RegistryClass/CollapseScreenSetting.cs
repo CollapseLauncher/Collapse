@@ -54,6 +54,9 @@ namespace CollapseLauncher.GameSettings.Universal
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
+#if DEBUG
+                    LogWriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
                     return (CollapseScreenSetting?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(CollapseScreenSetting), CollapseScreenSettingContext.Default) ?? new CollapseScreenSetting();
                 }
             }
@@ -73,7 +76,9 @@ namespace CollapseLauncher.GameSettings.Universal
 
                 string data = JsonSerializer.Serialize(this, typeof(CollapseScreenSetting), CollapseScreenSettingContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-
+#if DEBUG
+                LogWriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);
+#endif
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)

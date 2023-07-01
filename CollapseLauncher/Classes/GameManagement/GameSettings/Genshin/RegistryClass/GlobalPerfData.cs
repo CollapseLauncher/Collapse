@@ -38,8 +38,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public string Create(GraphicsData graphics, string version)
         {
-            LogWriteLine($"Created Genshin GlobalPerfData\r\n{graphics}", LogType.Debug, true);
-
             saveItems = new()
             {
                 new PerfDataItem (1, (int)graphics.FPS - 1, version),
@@ -60,7 +58,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
             };
             string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GlobalPerfDataContext.Default);
-            LogWriteLine($"Created Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
+#if DEBUG
+            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
+#endif
             return data;
         }
         #endregion

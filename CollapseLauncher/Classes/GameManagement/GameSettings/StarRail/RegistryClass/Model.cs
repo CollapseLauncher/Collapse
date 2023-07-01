@@ -12,6 +12,8 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
+
+    #region Enums
     public enum Quality // TypeDefIndex: 11339
     {
         None = 0,
@@ -28,6 +30,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         TAA = 1,
         FXAA = 2
     }
+#endregion
 
     internal class Model : IGameSettingsValue<Model>
     {
@@ -139,7 +142,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Default, true);
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
                     return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), ModelContext.Default) ?? new Model();
                 }
             }
@@ -160,7 +165,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 string data = JsonSerializer.Serialize(this, typeof(Model), ModelContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-                LogWriteLine($"Saved StarRail Settings: {_ValueName}\r\n{data}", LogType.Default, true);
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {

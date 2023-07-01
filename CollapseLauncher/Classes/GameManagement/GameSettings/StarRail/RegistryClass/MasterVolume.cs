@@ -35,7 +35,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     int masterVolume = (int)value;
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Default, true);
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Debug, true);
+#endif
                     return new MasterVolume { MasterVol = masterVolume };
                 }
             }
@@ -52,7 +54,9 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, MasterVol, RegistryValueKind.DWord);
-                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {MasterVol}", LogType.Default, true);
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {MasterVol}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {
