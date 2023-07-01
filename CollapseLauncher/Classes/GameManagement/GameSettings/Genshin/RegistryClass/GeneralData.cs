@@ -251,6 +251,9 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
+        /// This implementation is quite janky but hear me out <br/>
+        /// The value is directly controlled by Gamma Slider, which linked with GammaValue (NumberBox) <br/>
+        /// Since the value is flipped, math function of y = -x + 4.4 is used (Refer GenshinGameSettingsPage.Ext.cs Line 122)
         /// </summary>
         public double gammaValue { get; set; } = 2.2f;
         

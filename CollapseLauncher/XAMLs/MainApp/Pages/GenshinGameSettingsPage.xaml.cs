@@ -212,6 +212,12 @@ namespace CollapseLauncher.Pages
             });
         }
 
+        /// <summary>
+        /// This updates Gamma Slider every time GammaNumber is entered.
+        /// Do NOT touch this unless really necessary to do so!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void GammaValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
             IncrementNumberRounder rounder = new IncrementNumberRounder();
@@ -223,8 +229,15 @@ namespace CollapseLauncher.Pages
             formatter.NumberRounder = rounder;
 
             GammaValue.NumberFormatter = formatter;
+            GammaSlider.Value = GammaValue.Value;
         }
 
+        /// <summary>
+        /// This updates Gamma NumberBox when slider is moved.
+        /// no touchy :)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GammaSlider_ValueChanged(object sender,  RangeBaseValueChangedEventArgs e)
         {
             GammaValue.Value = Math.Round(e.NewValue, 5);

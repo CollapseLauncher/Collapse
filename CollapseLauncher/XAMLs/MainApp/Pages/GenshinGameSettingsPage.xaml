@@ -79,7 +79,7 @@
                                 <StackPanel>
                                     <Grid x:Name="GammaGrid">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Gamma}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                        <NumberBox Name="GammaValue" Minimum="1.4" Maximum="3.0" HorizontalAlignment="Right" Width="80" ValueChanged="GammaValue_ValueChanged" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,28,0"/>
+                                        <NumberBox Name="GammaValue" Minimum="1.4" Maximum="3.0" HorizontalAlignment="Right" Width="110" ValueChanged="GammaValue_ValueChanged" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,28,0"/>
                                     </Grid>
                                     <Slider x:Name="GammaSlider" Minimum="1.4" Maximum="3.0" Value="{x:Bind Gamma, Mode=TwoWay}"  TickFrequency="0.2" StepFrequency="0.000001" TickPlacement="Outside" Margin="0,0,28,8" IsThumbToolTipEnabled="False" ValueChanged="GammaSlider_ValueChanged"/>
                                 </StackPanel>
