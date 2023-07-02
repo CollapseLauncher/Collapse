@@ -42,7 +42,7 @@ namespace Hi3Helper.DiscordPresence
             // If it's set to be initially started, then enable the presence
             if (initialStart)
             {
-                SetupPresence();
+                SetupPresence(true);
                 SetActivity(ActivityType.None);
             }
         }
@@ -73,7 +73,7 @@ namespace Hi3Helper.DiscordPresence
             _client = null;
         }
 
-        public void EnablePresence(long applicationId = AppDiscordApplicationID)
+        public void EnablePresence(bool isInitialStart, long applicationId = AppDiscordApplicationID)
         {
             // Get the DLL path and check if the dll exist. If yes, then initialize the Discord Presence client.
             string dllPath = Path.Combine(AppFolder, "Lib\\discord_game_sdk.dll");
@@ -83,7 +83,7 @@ namespace Hi3Helper.DiscordPresence
                 {
                     // Initialize Discord Presence client and Activity property
                     _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
-                    _activity = new Activity();
+                    if (isInitialStart) _activity = new Activity();
 
                     // Initialize the Activity Manager instance
                     _activityManager = _client.GetActivityManager();
@@ -116,7 +116,7 @@ namespace Hi3Helper.DiscordPresence
             await DisposeAsync();
         }
 
-        public void SetupPresence()
+        public void SetupPresence(bool isInitialStart = false)
         {
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
             bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
@@ -128,13 +128,13 @@ namespace Hi3Helper.DiscordPresence
                 switch (GameCategory)
                 {
                     case "Honkai: Star Rail":
-                        EnablePresence(AppDiscordApplicationID_HSR);
+                        EnablePresence(isInitialStart, AppDiscordApplicationID_HSR);
                         break;
                     case "Honkai Impact 3rd":
-                        EnablePresence(AppDiscordApplicationID_HI3);
+                        EnablePresence(isInitialStart, AppDiscordApplicationID_HI3);
                         break;
                     case "Genshin Impact":
-                        EnablePresence(AppDiscordApplicationID_GI);
+                        EnablePresence(isInitialStart, AppDiscordApplicationID_GI);
                         break;
                     default:
                         Logger.LogWriteLine($"Discord Presence (Unknown Game)");
@@ -144,7 +144,7 @@ namespace Hi3Helper.DiscordPresence
             else
             {
                 if (_client != null) Dispose();
-                EnablePresence();
+                EnablePresence(isInitialStart);
             }
         }
 
