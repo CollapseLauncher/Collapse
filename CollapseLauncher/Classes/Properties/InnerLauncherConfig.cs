@@ -58,6 +58,7 @@ namespace CollapseLauncher
         public static Color SystemAppTheme;
         public static NotificationPush NotificationData;
         public static bool IsCustomBG = false;
+        public static bool IsSkippingUpdateCheck = false;
         public static GameVersion AppCurrentVersion;
 
         public static ApplicationTheme GetAppTheme()

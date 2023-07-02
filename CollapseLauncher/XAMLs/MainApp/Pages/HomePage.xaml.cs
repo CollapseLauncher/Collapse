@@ -686,6 +686,8 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                IsSkippingUpdateCheck = true;
+
                 if (PageStatics._GameVersion.GamePreset.UseRightSideProgress ?? false)
                     HideImageCarousel(true);
 
@@ -750,6 +752,7 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                IsSkippingUpdateCheck = false;
                 PageStatics._GameInstall.ProgressChanged -= GameInstall_ProgressChanged;
                 PageStatics._GameInstall.StatusChanged -= GameInstall_StatusChanged;
                 PageStatics._GameInstall.Flush();
@@ -1415,6 +1418,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
                 ProgressPreStatusGrid.Visibility = Visibility.Visible;
                 ProgressPreButtonGrid.Visibility = Visibility.Visible;
@@ -1453,6 +1457,7 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
+                IsSkippingUpdateCheck = false;
                 PageStatics._GameInstall.ProgressChanged -= PreloadDownloadProgress;
                 PageStatics._GameInstall.StatusChanged -= PreloadDownloadStatus;
                 PageStatics._GameInstall.Flush();
