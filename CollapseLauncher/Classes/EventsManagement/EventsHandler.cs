@@ -32,7 +32,16 @@ namespace CollapseLauncher
 
             while (true)
             {
-                if (!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate)
+                if (!IsSkippingUpdateCheck)
+                {
+#if DEBUG
+                    LogWriteLine("Skipping update as an important task is running!", LogType.Debug, true);
+#else
+                    LogWrite("Skipping update as an important task is running!", LogType.Warning, true);
+#endif
+                    continue;
+                }
+                if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate))
                 {
                     try
                     {
