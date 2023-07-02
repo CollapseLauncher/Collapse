@@ -255,7 +255,7 @@ namespace CollapseLauncher
 
         private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, true, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 128, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
             Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
@@ -284,7 +284,7 @@ namespace CollapseLauncher
 
             try
             {
-                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, IsLight ? 1 : quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
 
                 if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
                 for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
