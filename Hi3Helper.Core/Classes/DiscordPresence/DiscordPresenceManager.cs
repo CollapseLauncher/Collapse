@@ -34,6 +34,7 @@ namespace Hi3Helper.DiscordPresence
         private Activity _activity;
         private Activity _previousActivity;
         private ActivityManager _activityManager;
+        private ActivityType _activityType;
         private int? _lastUnixTimestamp;
         #endregion
 
@@ -84,6 +85,7 @@ namespace Hi3Helper.DiscordPresence
                     // Initialize Discord Presence client and Activity property
                     _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
                     if (isInitialStart) _activity = new Activity();
+                    else SetActivity(_activityType);
 
                     // Initialize the Activity Manager instance
                     _activityManager = _client.GetActivityManager();
@@ -153,6 +155,8 @@ namespace Hi3Helper.DiscordPresence
             await Task.Delay(delay);
             bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
 
+            _activityType = activity;
+
             switch (activity)
             {
                 case ActivityType.Play:
@@ -162,20 +166,20 @@ namespace Hi3Helper.DiscordPresence
                     BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
                     break;
                 case ActivityType.Repair:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair);
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
                     break;
                 case ActivityType.Cache:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache);
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache, IsGameStatusEnabled);
                     break;
                 case ActivityType.GameSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings);
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
                     break;
                 case ActivityType.AppSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings);
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
                     break;
                 case ActivityType.Idle:
                     _lastUnixTimestamp = null;
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle);
+                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
                     break;
                 default:
                     _activity = new Activity
@@ -200,7 +204,7 @@ namespace Hi3Helper.DiscordPresence
         {
             _activity = new Activity
             {
-                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : "")}",
+                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}",
                 State = $"Server: {ConfigV2Store.CurrentConfigV2GameRegion}",
                 Assets = new ActivityAssets
                 {
@@ -225,11 +229,11 @@ namespace Hi3Helper.DiscordPresence
             return _lastUnixTimestamp ?? 0;
         }
 
-        private void BuildActivityAppStatus(string activityName)
+        private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled)
         {
             _activity = new Activity
             {
-                Details = $"{activityName}",
+                Details = $"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}",
                 State = $"Server: {ConfigV2Store.CurrentConfigV2GameRegion}",
                 Assets = new ActivityAssets
                 {

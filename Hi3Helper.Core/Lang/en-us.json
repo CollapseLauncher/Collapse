@@ -468,7 +468,8 @@
     "DiscordRP_GameSettings": "Changing Game Settings",
     "DiscordRP_AppSettings": "Changing App Settings",
     "DiscordRP_Idle": "Idle",
-    "DiscordRP_Default": "No Activity"
+    "DiscordRP_Default": "No Activity",
+    "DiscordRP_Ad": "- On Collapse Launcher"
   },
 
   "_Dialogs": {
