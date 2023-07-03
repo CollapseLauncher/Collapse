@@ -251,7 +251,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                         "Chinese" => new KeyValuePair<string, int>("zh-cn", 0),
                         "English(US)" => new KeyValuePair<string, int>("en-us", 1),
                         "Japanese" => new KeyValuePair<string, int>("ja-jp", 2),
-                        "Korean" => new KeyValuePair<string, int>("ko-kr", 2),
+                        "Korean" => new KeyValuePair<string, int>("ko-kr", 3),
                         _ => throw new KeyNotFoundException($"Key: {langStr} is not supported!")
                     };
 
