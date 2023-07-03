@@ -29,6 +29,7 @@ namespace Hi3Helper.DiscordPresence
         #region Properties
         private Discord.Discord _client;
         private CancellationTokenSource _clientToken = new CancellationTokenSource();
+        private readonly object _sdkLock = new object();
 
         private int _updateInterval = 250; // in Milliseconds
         private Activity _activity;
@@ -82,18 +83,21 @@ namespace Hi3Helper.DiscordPresence
             {
                 try
                 {
-                    // Initialize Discord Presence client and Activity property
-                    _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
-                    if (isInitialStart) _activity = new Activity();
-                    else SetActivity(_activityType);
-
-                    // Initialize the Activity Manager instance
-                    _activityManager = _client.GetActivityManager();
-
-                    // Initialize the token source if the token is cancelled
-                    if (_clientToken.IsCancellationRequested)
+                    lock (_sdkLock)
                     {
-                        _clientToken = new CancellationTokenSource();
+                        // Initialize Discord Presence client and Activity property
+                        _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
+                        if (isInitialStart) _activity = new Activity();
+                        else SetActivity(_activityType);
+
+                        // Initialize the Activity Manager instance
+                        _activityManager = _client.GetActivityManager();
+
+                        // Initialize the token source if the token is cancelled
+                        if (_clientToken.IsCancellationRequested)
+                        {
+                            _clientToken = new CancellationTokenSource();
+                        }
                     }
 
                     // Run .UpdateCallbacks() loop routine, initiate the activity and return
@@ -125,28 +129,34 @@ namespace Hi3Helper.DiscordPresence
 
             if (IsGameStatusEnabled)
             {
-                if (_client != null) Dispose();
-
-                switch (GameCategory)
+                lock (_sdkLock)
                 {
-                    case "Honkai: Star Rail":
-                        EnablePresence(isInitialStart, AppDiscordApplicationID_HSR);
-                        break;
-                    case "Honkai Impact 3rd":
-                        EnablePresence(isInitialStart, AppDiscordApplicationID_HI3);
-                        break;
-                    case "Genshin Impact":
-                        EnablePresence(isInitialStart, AppDiscordApplicationID_GI);
-                        break;
-                    default:
-                        Logger.LogWriteLine($"Discord Presence (Unknown Game)");
-                        break;
+                    if (_client != null) Dispose();
+
+                    switch (GameCategory)
+                    {
+                        case "Honkai: Star Rail":
+                            EnablePresence(isInitialStart, AppDiscordApplicationID_HSR);
+                            break;
+                        case "Honkai Impact 3rd":
+                            EnablePresence(isInitialStart, AppDiscordApplicationID_HI3);
+                            break;
+                        case "Genshin Impact":
+                            EnablePresence(isInitialStart, AppDiscordApplicationID_GI);
+                            break;
+                        default:
+                            Logger.LogWriteLine($"Discord Presence (Unknown Game)");
+                            break;
+                    }
                 }
             }
             else
             {
-                if (_client != null) Dispose();
-                EnablePresence(isInitialStart);
+                lock (_sdkLock)
+                {
+                    if (_client != null) Dispose();
+                    EnablePresence(isInitialStart);
+                }
             }
         }
 
@@ -157,40 +167,43 @@ namespace Hi3Helper.DiscordPresence
 
             _activityType = activity;
 
-            switch (activity)
+            lock (_sdkLock)
             {
-                case ActivityType.Play:
-                    BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
-                    break;
-                case ActivityType.Update:
-                    BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
-                    break;
-                case ActivityType.Repair:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
-                    break;
-                case ActivityType.Cache:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache, IsGameStatusEnabled);
-                    break;
-                case ActivityType.GameSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
-                    break;
-                case ActivityType.AppSettings:
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
-                    break;
-                case ActivityType.Idle:
-                    _lastUnixTimestamp = null;
-                    BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
-                    break;
-                default:
-                    _activity = new Activity
-                    {
-                        Details = Lang._Misc.DiscordRP_Default,
-                        Assets = new ActivityAssets
+                switch (activity)
+                {
+                    case ActivityType.Play:
+                        BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.Update:
+                        BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.Repair:
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.Cache:
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.GameSettings:
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.AppSettings:
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
+                        break;
+                    case ActivityType.Idle:
+                        _lastUnixTimestamp = null;
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                        break;
+                    default:
+                        _activity = new Activity
                         {
-                            LargeImage = $"launcher-logo"
-                        }
-                    };
-                    break;
+                            Details = Lang._Misc.DiscordRP_Default,
+                            Assets = new ActivityAssets
+                            {
+                                LargeImage = $"launcher-logo"
+                            }
+                        };
+                        break;
+                }
             }
 
             if (!_previousActivity.Equals(_activity) && !_clientToken.IsCancellationRequested)
@@ -251,16 +264,27 @@ namespace Hi3Helper.DiscordPresence
 #endif
         });
 
-        private async void UpdateCallbacksRoutine()
+        private void UpdateCallbacksRoutine()
         {
-            while (!_clientToken.IsCancellationRequested)
+            Task.Run(async () =>
             {
-                // Run the update
-                _client?.RunCallbacks();
+                while (!_clientToken.IsCancellationRequested)
+                {
+                    lock (_sdkLock)
+                    {
+                        try
+                        {
+                            _client?.RunCallbacks();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogWriteLine($"Discord Presence: {ex.Message}", LogType.Error);
+                        }
+                    }
 
-                // Take 33ms delay before the next update
-                await Task.Delay(_updateInterval);
-            }
+                    await Task.Delay(_updateInterval);
+                }
+            }, _clientToken.Token);
         }
     }
 }
