@@ -1054,7 +1054,6 @@ namespace CollapseLauncher.Pages
             PageToken.Cancel();
             CarouselToken.Cancel();
             PlaytimeToken.Cancel();
-            PageStatics._GameInstall.CancelRoutine();
             GC.Collect();
         }
 

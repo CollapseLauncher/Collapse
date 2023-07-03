@@ -7,6 +7,7 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -262,8 +263,14 @@ namespace CollapseLauncher
 
         private void DisposeAllPageStatics()
         {
+            PageStatics._GameInstall?.CancelRoutine();
+            PageStatics._GameRepair?.CancelRoutine();
             PageStatics._GameRepair?.Dispose();
+            PageStatics._GameCache?.CancelRoutine();
             PageStatics._GameCache?.Dispose();
+#if DEBUG
+            LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
+#endif
         }
 
         private async void SpawnRegionNotification(string RegionProfileName)
