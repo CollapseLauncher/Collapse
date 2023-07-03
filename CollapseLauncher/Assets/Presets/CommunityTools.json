@@ -3,15 +3,15 @@
         "Honkai": [
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
-                "IconGlyph": "",
-                "Text": "HoYoLab Website",
-                "URL": "https://www.hoyolab.com/"
-            },
-            {
-                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
                 "IconGlyph": "",
                 "Text": "Daily Check-in",
                 "URL": "https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "HoYoLab Website",
+                "URL": "https://www.hoyolab.com/"
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
@@ -29,12 +29,6 @@
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
-                "IconGlyph": "",
-                "Text": "Redeem Codes",
-                "URL": "https://genshin.hoyoverse.com/gift"
-            },
-            {
-                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
                 "IconGlyph": "",
                 "Text": "HoYoLab Website",
                 "URL": "https://www.hoyolab.com/"
@@ -44,6 +38,12 @@
                 "IconGlyph": "",
                 "Text": "Gensin Impact Wiki",
                 "URL": "https://wiki.hoyolab.com/pc/genshin/home"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://genshin.hoyoverse.com/gift"
             }
         ],
         "StarRail": [
@@ -52,12 +52,6 @@
                 "IconGlyph": "",
                 "Text": "Daily Check-in",
                 "URL": "https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311"
-            },
-            {
-                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
-                "IconGlyph": "",
-                "Text": "Redeem Codes",
-                "URL": "https://hsr.hoyoverse.com/gift"
             },
             {
                 "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
@@ -70,6 +64,12 @@
                 "IconGlyph": "",
                 "Text": "Honkai: Star Rail Wiki",
                 "URL": "https://wiki.hoyolab.com/pc/hsr/home"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://hsr.hoyoverse.com/gift"
             }
         ]
     },
@@ -124,6 +124,12 @@
                 "IconGlyph": "",
                 "Text": "akasha.cv",
                 "URL": "https://akasha.cv"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Genshin Configurator",
+                "URL": "https://github.com/Myp3a/GenshinConfigurator/$OpenExternalApp:ApplicationName=Genshin Impact Configurator,ApplicationExecName=GenshinConfigurator*.exe,RunAsAdmin=true$OpenUrlIfCancel"
             }
         ],
         "StarRail": [
