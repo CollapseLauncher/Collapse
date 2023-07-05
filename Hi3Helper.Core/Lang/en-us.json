@@ -307,7 +307,6 @@
     "Debug_Console": "Show Console",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
-    "DiscordRPC_Toggle": "Show Discord Presence",
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
     "ChangeRegionWarning_Warning": "*You need to restart the app for this setting to take effect.",
 
@@ -340,6 +339,10 @@
     "AppThreads_Help4": "0 (Auto-detect)",
     "AppThreads_Help5": "This thread will handle the extraction/verification process while installing/repairing the game.",
     "AppThreads_Help6": "Note: This setting is no longer effective while installing Honkai Impact 3rd.",
+
+    "DiscordRPC": "Discord Rich Presence",
+    "DiscordRPC_Toggle": "Show Discord Presence",
+    "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
 
     "Update": "Check for Updates",
     "Update_CurVer": "Current Version:",
@@ -459,13 +462,15 @@
     "OpenDownloadPage": "Open Download Page",
 
     "DiscordRP_Play": "Playing",
+    "DiscordRP_InGame": "In Game",
     "DiscordRP_Update": "Updating",
     "DiscordRP_Repair": "Repairing Game",
     "DiscordRP_Cache": "Updating Cache",
     "DiscordRP_GameSettings": "Changing Game Settings",
     "DiscordRP_AppSettings": "Changing App Settings",
     "DiscordRP_Idle": "Idle",
-    "DiscordRP_Default": "No Activity"
+    "DiscordRP_Default": "No Activity",
+    "DiscordRP_Ad": "- On Collapse Launcher"
   },
 
   "_Dialogs": {

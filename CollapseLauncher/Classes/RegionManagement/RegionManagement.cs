@@ -361,6 +361,9 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+#if !DISABLEDISCORD
+                AppDiscordPresence.SetupPresence();
+#endif
                 return true;
             }
 
