@@ -303,19 +303,41 @@ namespace CollapseLauncher.Pages
 #if !DISABLEDISCORD
         private bool IsDiscordRPCEnabled
         {
-            get => GetAppConfigValue("EnableDiscordRPC").ToBool();
+            get
+            {
+                bool IsEnabled = GetAppConfigValue("EnableDiscordRPC").ToBool();
+                ToggleDiscordGameStatus.IsEnabled = IsEnabled;
+                return IsEnabled;
+            }
             set
             {
                 if (value)
-                    AppDiscordPresence.EnablePresence();
+                    AppDiscordPresence.SetupPresence();
                 else
                     AppDiscordPresence.DisablePresence();
 
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
+                ToggleDiscordGameStatus.IsEnabled = value;
+            }
+        }
+
+        private bool IsDiscordGameStatusEnabled
+        {
+            get => GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableDiscordGameStatus", value);
+                AppDiscordPresence.SetupPresence();
             }
         }
 #else
         private bool IsDiscordRPCEnabled
+        {
+            get => false;
+            set => _ = value;
+        }
+
+        private bool IsDiscordGameStatusEnabled
         {
             get => false;
             set => _ = value;
