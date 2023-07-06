@@ -58,17 +58,6 @@ namespace Hi3Helper.Data
                 inputFileStream = new CombinedStream(multiFiles.Select(x => File.OpenRead(x) as Stream).ToArray());
             }
 
-            switch (Path.GetExtension(multiFiles[0]).ToLower())
-            {
-                case ".7z":
-                case ".zip":
-                case ".001":
-                    LoadArchive(inputFileStream);
-                    inputFileStream?.Dispose();
-                    return totalUncompressedSize;
-                default:
-                    throw new FormatException($"Format {Path.GetExtension(multiFiles[0])} is unsupported!");
-            }
         }
 
         public void Dispose()
