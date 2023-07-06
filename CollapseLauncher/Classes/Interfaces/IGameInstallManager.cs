@@ -16,7 +16,7 @@ namespace CollapseLauncher.Interfaces
         void ApplyGameConfig(bool forceUpdateToLatest = false);
 
         Task MoveGameLocation();
-        Task<bool> UninstallGame();
+        ValueTask<bool> UninstallGame();
         void Flush();
         void CancelRoutine();
         bool IsPreloadCompleted();

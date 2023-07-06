@@ -1,10 +1,13 @@
-﻿using Hi3Helper.Data;
+﻿using Hi3Helper.Http;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Hi3Helper;
 
 namespace CollapseLauncher.InstallManager
 {
@@ -65,6 +68,80 @@ namespace CollapseLauncher.InstallManager
                     Segments.Add(new GameInstallPackage(segment, pathOutput));
                 }
             }
+        }
+
+        public Stream GetReadStream(int count)
+        {
+            FileInfo fileInfo = new FileInfo(PathOutput);
+            if (fileInfo.Exists && fileInfo.Length == Size)
+            {
+                return fileInfo.Open(new FileStreamOptions
+                {
+                    Access = FileAccess.Read,
+                    BufferSize = 4 << 10,
+                    Mode = FileMode.Open,
+                    Options = FileOptions.None,
+                    Share = FileShare.Read
+                });
+            }
+
+            return GetCombinedStreamFromPackageAsset(count);
+        }
+
+        public void DeleteFile(int count)
+        {
+            string lastFile = PathOutput;
+            try
+            {
+                FileInfo fileInfo = new FileInfo(PathOutput);
+                if (fileInfo.Exists && fileInfo.Length == Size)
+                {
+                    fileInfo.Delete();
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    long ID = Http.GetHashNumber(count, i);
+                    string path = $"{PathOutput}.{ID}";
+                    lastFile = path;
+                    fileInfo = new FileInfo(path);
+                    if (fileInfo.Exists)
+                    {
+                        fileInfo.Delete();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Failed while deleting file: {lastFile}. Skipping!\r\n{ex}", LogType.Warning, true);
+            }
+        }
+
+        private CombinedStream GetCombinedStreamFromPackageAsset(int count)
+        {
+            FileStream[] streamList = new FileStream[count];
+            for (int i = 0; i < streamList.Length; i++)
+            {
+                long ID = Http.GetHashNumber(count, i);
+                string path = $"{PathOutput}.{ID}";
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Exists)
+                {
+                    streamList[i] = fileInfo.Open(new FileStreamOptions
+                    {
+                        Access = FileAccess.Read,
+                        BufferSize = 4 << 10,
+                        Mode = FileMode.Open,
+                        Options = FileOptions.None,
+                        Share = FileShare.Read
+                    });
+                    continue;
+                }
+
+                throw new FileNotFoundException($"File chunk doesn't exist in this path! -> {path}");
+            }
+
+            return new CombinedStream(streamList);
         }
 
         public string PrintSummary() => $"File [T: {PackageType}]: {URL}\t{ConverterTool.SummarizeSizeSimple(Size)} ({Size} bytes)";
