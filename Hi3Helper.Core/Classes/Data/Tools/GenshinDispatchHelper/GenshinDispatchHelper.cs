@@ -73,7 +73,7 @@ namespace Hi3Helper.Data
                                     Gateway.GatewayProperties.RepoDesignDataURL,
                                     Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
                                     Gateway.GatewayProperties.RepoDesignDataSilenceHash),
-                DataRevisionNum = Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
+                DataRevisionNum = Gateway.GatewayProperties.RepoDesignDataNumber,
                 SilenceRevisionNum = Gateway.GatewayProperties.RepoDesignDataSilenceNumber,
                 ResRevisionNum = Gateway.GatewayProperties.RepoResVersionProperties.ResVersionNumber,
                 ChannelName = this.ChannelName,
