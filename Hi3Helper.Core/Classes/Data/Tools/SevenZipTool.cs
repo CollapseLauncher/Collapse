@@ -106,10 +106,9 @@ Initializing...
 
                 StartArchiveExtractThread(outputDirectory, token);
             }
-            catch (OperationCanceledException)
+            catch (Exception)
             {
-                Console.WriteLine($"Extraction cancelled!");
-                throw new OperationCanceledException($"Extraction cancelled!");
+                throw;
             }
 
             stopWatch.Stop();
