@@ -58,6 +58,15 @@ namespace Hi3Helper.Data
                 inputFileStream = new CombinedStream(multiFiles.Select(x => File.OpenRead(x) as Stream).ToArray());
             }
 
+            return GetUncompressedSize(inputFileStream);
+        }
+
+        public long GetUncompressedSize(Stream inputFileStream)
+        {
+            totalUncompressedSize = 0;
+            LoadArchive(inputFileStream);
+            inputFileStream?.Dispose();
+            return totalUncompressedSize;
         }
 
         public void Dispose()
