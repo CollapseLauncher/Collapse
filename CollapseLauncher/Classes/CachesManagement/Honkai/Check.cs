@@ -62,7 +62,9 @@ namespace CollapseLauncher
             // Iterate the file contained in the _gamePath
             foreach (string filePath in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
             {
-                if (!filePath.Contains("output_log") && !filePath.Contains("Crashes") && !filePath.Contains("Verify.txt") && !filePath.Contains("APM") && !assetIndex.Exists(x => x.ConcatPath == filePath))
+                if (!filePath.Contains("output_log") && !filePath.Contains("Crashes")
+                 && !filePath.Contains("Verify.txt") && !filePath.Contains("APM")
+                 && !filePath.Contains("asb.dat") && !assetIndex.Exists(x => x.ConcatPath == filePath))
                 {
                     // Increment the total found count
                     _progressTotalCountFound++;
