@@ -80,6 +80,12 @@
                 "IconGlyph": "",
                 "Text": "Reddit Community",
                 "URL": "https://www.reddit.com/r/HonkaiImpact3rd/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "ER Build Guide",
+              "URL": "https://risbi0.github.io/Elysian-Realm/"
             }
         ],
         "Genshin": [
