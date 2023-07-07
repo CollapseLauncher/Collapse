@@ -115,9 +115,9 @@
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
     "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?",
-    "CommunityToolsBtn": "Community Tools",
-    "CommunityToolsBtn_OfficialText": "Official Tools",
-    "CommunityToolsBtn_CommunityText": "Community Tools",
+    "CommunityToolsBtn": "Công cụ cộng đồng",
+    "CommunityToolsBtn_OfficialText": "Công cụ chính thức",
+    "CommunityToolsBtn_CommunityText": "Công cụ cộng đồng",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
   },
   "_GameRepairPage": {
@@ -326,7 +326,7 @@
     "Disclaimer3": "và hoàn toàn là mã nguồn mở. Chúng tôi luôn vui lòng với bất kì sự đóng góp nào đến từ bạn.",
     "DiscordBtn1": "Tham gia Armada Discord của chúng tôi",
     "DiscordBtn2": "Xem qua Discord Honkai Impact 3rd",
-    "DiscordBtn3": "Collapse's Official Discord!",
+    "DiscordBtn3": "Discord Chính thức của Collapse!",
     "AppChangeReleaseChannel": "Thay đổi tới {0} kênh phát hành"
   },
   "_Misc": {
@@ -653,13 +653,13 @@
     "Audio_VO": "Âm lượng lồng tiếng",
     "Audio_Mute": "Tắt tiếng",
     "Language": "Language Settings",
-    "Language_Help1": "Collapse currently cannot download Audio package directly.",
-    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
+    "Language_Help1": "Collapse hiện không thể tải trực tiếp gói ngôn ngữ.",
+    "Language_Help2": "Gói ngôn ngữ sẽ được tải xuống trong lần tới bạn khởi động trò chơi.",
     "Audio": "Audio",
     "Text": "Text",
-    "VO_en": "English",
-    "VO_cn": "Chinese",
-    "VO_jp": "Japanese",
-    "VO_kr": "Korean"
+    "VO_en": "Tiếng Anh",
+    "VO_cn": "Tiếng Trung",
+    "VO_jp": "Tiếng Nhật",
+    "VO_kr": "Tiếng Hàn"
   }
 }
