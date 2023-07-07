@@ -73,6 +73,7 @@ namespace CollapseLauncher
                 return false;
             }
 
+            Logger.LogWriteLine($"Starting launcher update...", LogType.Scheme, true);
             Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
             UpdateStatus();
             UpdateProgress();

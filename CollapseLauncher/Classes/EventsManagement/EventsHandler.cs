@@ -36,6 +36,7 @@ namespace CollapseLauncher
                 {
                     try
                     {
+                        LogWriteLine($"Checking for Collapse update...", LogType.Scheme, false);
                         using (Updater updater = new Updater(UpdateChannelName))
                         {
                             UpdateInfo info = await updater.StartCheck();
