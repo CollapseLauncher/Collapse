@@ -90,6 +90,7 @@
                 public string DiscordRP_Idle { get; set; } = LangFallback?._Misc.DiscordRP_Idle;
                 public string DiscordRP_Default { get; set; } = LangFallback?._Misc.DiscordRP_Default;
                 public string DiscordRP_Ad { get; set; } = LangFallback?._Misc.DiscordRP_Ad;
+                public string DiscordRP_Server { get; set; } = LangFallback?._Misc.DiscordRP_Server;
             }
         }
         #endregion

@@ -469,9 +469,10 @@
     "DiscordRP_Cache": "Updating Cache",
     "DiscordRP_GameSettings": "Changing Game Settings",
     "DiscordRP_AppSettings": "Changing App Settings",
-    "DiscordRP_Idle": "Idle",
+    "DiscordRP_Idle": "Idling",
     "DiscordRP_Default": "No Activity",
-    "DiscordRP_Ad": "- On Collapse Launcher"
+    "DiscordRP_Ad": "- With Collapse Launcher",
+    "DiscordRP_Server": "Server:"
   },
 
   "_Dialogs": {
