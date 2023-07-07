@@ -55,6 +55,7 @@
                 public string AppFiles_ClearImgCachesBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearImgCachesBtn;
                 public string ReportIssueBtn { get; set; } = LangFallback?._SettingsPage.ReportIssueBtn;
                 public string ContributePRBtn { get; set; } = LangFallback?._SettingsPage.ContributePRBtn;
+                public string ContributorListBtn { get; set; } = LangFallback?._SettingsPage.ContributorListBtn;
                 public string About { get; set; } = LangFallback?._SettingsPage.About;
                 public string About_Copyright1 { get; set; } = LangFallback?._SettingsPage.About_Copyright1;
                 public string About_Copyright2 { get; set; } = LangFallback?._SettingsPage.About_Copyright2;
