@@ -1,4 +1,4 @@
-﻿#if !DISABLEDISCORD
+#if !DISABLEDISCORD
 using Discord;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
