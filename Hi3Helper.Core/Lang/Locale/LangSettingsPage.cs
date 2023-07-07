@@ -11,6 +11,7 @@
                 public string PageTitle { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug { get; set; } = LangFallback?._SettingsPage.Debug;
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
+                public string Debug_IncludeGameLogs { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_MultipleInstance { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string ChangeRegionWarning_Toggle { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
                 public string ChangeRegionWarning_Warning { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;

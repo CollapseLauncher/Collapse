@@ -294,15 +294,34 @@ namespace CollapseLauncher.Pages
 
         private bool IsConsoleEnabled
         {
-            get => GetAppConfigValue("EnableConsole").ToBool();
+            get
+            {
+                bool isEnabled = GetAppConfigValue("EnableConsole").ToBool();
+                if (isEnabled)
+                {
+                    ToggleIncludeGameLogs.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
+                }
+
+                return isEnabled;
+            }
             set
             {
                 _log.Dispose();
                 if (value)
+                {
                     _log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                    ToggleIncludeGameLogs.Visibility = Visibility.Visible;
+                }
                 else
+                {
                     _log = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
-
+                    ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
+                }
+                    
                 SetAndSaveConfigValue("EnableConsole", value);
             }
         }
@@ -466,6 +485,12 @@ namespace CollapseLauncher.Pages
                 SetAppConfigValue("CurrentCDN", value);
                 SaveAppConfig();
             }
+        }
+
+        private bool IsIncludeGameLogs
+        {
+            get => GetAppConfigValue("IncludeGameLogs").ToBool();
+            set => SetAndSaveConfigValue("IncludeGameLogs", value);
         }
 
         private bool IsShowRegionChangeWarning

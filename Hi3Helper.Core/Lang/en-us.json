@@ -305,6 +305,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Show Console",
+    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",

@@ -184,8 +184,9 @@ namespace Hi3Helper.Shared.Region
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", true },
 #if !DISABLEDISCORD
-            { "EnableDiscordRPC", false }
+            { "EnableDiscordRPC", false },
 #endif
+            {"IncludeGameLogs", false }
         };
 
         public static void LoadGamePreset()
