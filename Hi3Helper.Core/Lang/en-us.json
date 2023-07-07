@@ -217,6 +217,7 @@
     "Graphics_Title": "Graphics Settings",
     "Graphics_ResolutionPanel": "Game Resolution",
     "Graphics_Fullscreen": "Fullscreen",
+    "Graphics_Borderless": "Use Borderless Window",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",

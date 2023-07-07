@@ -31,7 +31,12 @@
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_ResolutionPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                                     <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,8">
-                                        <CheckBox x:Name="VSyncToggle" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"/>
+                                        <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  IsChecked="{x:Bind IsBorderless, Mode=TwoWay}"/>
+                                        <CheckBox x:Name="VSyncToggle" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_VSync}" 
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                                  IsChecked="{x:Bind EnableVSync, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>

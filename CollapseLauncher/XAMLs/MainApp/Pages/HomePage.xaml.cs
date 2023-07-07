@@ -879,6 +879,11 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
+                if (_Settings.SettingsCollapseScreen.UseBorderless)
+                {
+                    parameter.Append("-popupwindow ");
+                }
+
                 System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
@@ -922,6 +927,11 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                 }
 
+                if (_Settings.SettingsCollapseScreen.UseBorderless)
+                {
+                    parameter.Append("-popupwindow ");
+                }
+
                 System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
 
                 byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
@@ -944,6 +954,11 @@ namespace CollapseLauncher.Pages
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
+                }
+
+                if (_Settings.SettingsCollapseScreen.UseBorderless)
+                {
+                    parameter.Append("-popupwindow ");
                 }
 
                 System.Drawing.Size screenSize = _Settings.SettingsScreen.sizeRes;
