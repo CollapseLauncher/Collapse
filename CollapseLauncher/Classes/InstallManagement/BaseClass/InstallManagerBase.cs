@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -21,7 +21,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.VoiceCommands;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -513,14 +512,36 @@ namespace CollapseLauncher.InstallManager.Base
         {
             try
             {
+                // Why do they have to have an important-for-user folder inside their Game Data folder?
+                // I just don't understand how this makes sense in their dev meeting? like yep, put the screenshots folder inside the game data folder, no players likes it anyway.
                 string GameFolder = ConverterTool.NormalizePath(_gamePath);
+                string GameDataFolderName = "StarRail_Data";
 
                 string[] foldersToDelete = { "StarRail_Data", "AntiCheatExpert" };
                 string[] filesToDelete = { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" };
+                string[] foldersToKeep = { "ScreenShots" };
 
                 foreach (string folderName in Directory.GetDirectories(GameFolder))
                 {
                     if (foldersToDelete.Contains(Path.GetFileName(folderName)))
+                    {
+                        try
+                        {
+                            Directory.Delete(folderName, true);
+                            LogWriteLine($"Deleted {folderName}", LogType.Default, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine($"An error occurred while deleting folder {folderName}\r\n{ex}", LogType.Error, true);
+                        }
+                        continue;
+                    }
+                }
+
+                foreach (string folderName in Directory.GetDirectories(Path.Combine(GameFolder, GameDataFolderName)))
+                {
+                    string folderNameData = Path.GetFileName(folderName);
+                    if (!foldersToKeep.Contains(folderNameData))
                     {
                         try
                         {
