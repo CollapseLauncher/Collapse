@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -21,7 +21,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.VoiceCommands;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
