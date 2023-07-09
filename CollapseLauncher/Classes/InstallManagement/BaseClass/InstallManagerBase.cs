@@ -517,7 +517,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string GameFolder = ConverterTool.NormalizePath(_gamePath);
                 string GameDataFolderName = "StarRail_Data";
 
-                string[] foldersToDelete = { "StarRail_Data", "AntiCheatExpert" };
+                string[] foldersToDelete = { "AntiCheatExpert" };
                 string[] filesToDelete = { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" };
                 string[] foldersToKeep = { "ScreenShots" };
 
@@ -538,21 +538,44 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                 }
 
-                foreach (string folderName in Directory.GetDirectories(Path.Combine(GameFolder, GameDataFolderName)))
+                foreach (string folderGameData in Directory.GetDirectories(Path.Combine(GameFolder, GameDataFolderName)))
                 {
-                    string folderNameData = Path.GetFileName(folderName);
-                    if (!foldersToKeep.Contains(folderNameData))
+                    if (!foldersToKeep.Contains(folderGameData))
                     {
                         try
                         {
-                            Directory.Delete(folderName, true);
-                            LogWriteLine($"Deleted {folderName}", LogType.Default, true);
+                            if (File.GetAttributes(folderGameData).HasFlag(FileAttributes.Directory))
+                            {
+                                // Delete the folder
+                                Directory.Delete(folderGameData, true);
+                                LogWriteLine($"Deleted folder: {folderGameData}", LogType.Default, true);
+                            }
+                            else
+                            {
+                                // Delete individual file
+                                File.Delete(folderGameData);
+                                LogWriteLine($"Deleted file: {folderGameData}", LogType.Default, true);
+                            }
                         }
                         catch (Exception ex)
                         {
-                            LogWriteLine($"An error occurred while deleting folder {folderName}\r\n{ex}", LogType.Error, true);
+                            LogWriteLine($"An error occurred while deleting folder {folderGameData}\r\n{ex}", LogType.Error, true);
                         }
                         continue;
+                    }
+
+                    // Do check if the folder empty after cleaning up 
+                    if (Directory.Exists(folderGameData) && !Directory.EnumerateFileSystemEntries(folderGameData).Any())
+                    {
+                        try
+                        {
+                            Directory.Delete(folderGameData);
+                            LogWriteLine($"Deleted empty game folder: {folderGameData}", LogType.Default, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWriteLine($"An error occurred while deleting folder {folderGameData}\r\n{ex}", LogType.Error, true);
+                        }
                     }
                 }
 
@@ -572,23 +595,6 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         continue;
                     }
-                }
-
-                if (Directory.Exists(GameFolder) && !Directory.EnumerateFileSystemEntries(GameFolder).Any())
-                {
-                    try
-                    {
-                        Directory.Delete(GameFolder);
-                        LogWriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
-                    }
-                }
-                else
-                {
-                    LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...", LogType.Default, true);
                 }
 
                 UninstallGameCleanDir();
@@ -644,23 +650,6 @@ namespace CollapseLauncher.InstallManager.Base
                             }
                             continue;
                         }
-                    }
-
-                    if (Directory.Exists(GameFolder) && !Directory.EnumerateFileSystemEntries(GameFolder).Any())
-                    {
-                        try
-                        {
-                            Directory.Delete(GameFolder);
-                            LogWriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
-                        }
-                    }
-                    else
-                    {
-                        LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...", LogType.Default, true);
                     }
 
                     UninstallGameCleanDir();
