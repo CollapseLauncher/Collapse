@@ -481,23 +481,6 @@ namespace CollapseLauncher.InstallManager.Base
                         continue;
                     }
                 }
-
-                if (Directory.Exists(GameFolder) && !Directory.EnumerateFileSystemEntries(GameFolder).Any())
-                {
-                    try
-                    {
-                        Directory.Delete(GameFolder);
-                        LogWriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
-                    }
-                }
-                else
-                {
-                    LogWriteLine($"Game folder {GameFolder} is not empty, skipping delete root directory...", LogType.Default, true);
-                }
             }
             catch (Exception ex)
             {
@@ -519,7 +502,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 string[] foldersToDelete = { "AntiCheatExpert" };
                 string[] filesToDelete = { "ACE-BASE.sys", "GameAssembly.dll", "pkg_version", "config.ini", "^StarRail.*", "^Unity.*" };
-                string[] foldersToKeep = { "ScreenShots" };
+                string[] foldersToKeep = { "ScreenShots" }; // Put the folder name you don't want to get deleted that is inside X_Data folder
 
                 foreach (string folderName in Directory.GetDirectories(GameFolder))
                 {
