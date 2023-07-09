@@ -29,13 +29,13 @@ namespace CollapseLauncher.GameSettings.Universal
         public bool UseExclusiveFullscreen { get; set; } = false;
 
         /// <summary>
-        /// This defines if the game gonna be running with Borderless option enabled.<br/><br/>
+        /// This defines if the game going to be running with Borderless option enabled.<br/><br/>
         /// Default: false
         /// </summary>
         public bool UseBorderless { get; set; } = false;
 
         /// <summary>
-        /// This defines the Graphics API will be used for the game to run.<br/><br/>
+        /// This defines the Graphics API that will be used for the game to run.<br/><br/>
         /// Values:<br/>
         ///     - 0 = DirectX 11 (Feature Level: 10.1)<br/>
         ///     - 1 = DirectX 11 (Feature Level: 11.0) No Single-thread<br/>
