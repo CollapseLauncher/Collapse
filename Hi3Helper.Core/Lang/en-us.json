@@ -825,8 +825,8 @@
     "Audio_SFX": "Sound Effects Volume",
     "Audio_VO": "Voice Over Volume",
 
-    "Audio_Output_Surround": "Surround",
-    "Audio_DynamicRange": "Dynamic Range",
+    "Audio_Output_Surround": "Use Surround Sound",
+    "Audio_DynamicRange": "Full Dynamic Range",
 
     "Language": "Language Settings",
     "Language_Help1": "Collapse currently cannot download Audio package directly.",

@@ -626,7 +626,7 @@
     "Graphics_CharacterQuality": "角色品質",
     "Graphics_EnvDetailQuality": "場景細節",
     "Graphics_ReflectionQuality": "反射品質",
-    "Graphics_BloomQuality": "Bloom 品質",
+    "Graphics_BloomQuality": "泛光（Bloom）品質",
     "Graphics_AAMode": "反鋸齒模式",
     "Graphics_SpecPanel": "全局畫面設定",
     "SpecEnabled": "已啟用",
@@ -665,7 +665,6 @@
     "VO_jp": "日文",
     "VO_kr": "韓文"
   },
-
   "_GenshinGameSettingsPage": {
     "PageTitle": "遊戲設定",
 
@@ -689,9 +688,9 @@
     "Graphics_VSync": "垂直同步",
     "Graphics_AAMode": "反鋸齒模式",
     "Graphics_VolFogs": "體積霧",
-    "Graphics_ReflectionQuality": "反射品質",
+    "Graphics_ReflectionQuality": "反射",
     "Graphics_MotionBlur": "動態模糊",
-    "Graphics_BloomQuality": "Bloom",
+    "Graphics_BloomQuality": "泛光（Bloom）",
     "Graphics_CrowdDensity": "人群密度",
     "Graphics_SubsurfaceScattering": "次表面散射",
     "Graphics_TeammateFX": "多人遊戲隊友特效",
