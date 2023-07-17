@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -148,6 +149,52 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Start downloading process
             await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
+        }
+
+        public virtual async Task StartPackageDownload(bool skipDialog, bool startDownload)
+        {
+            ResetToken();
+
+            // Get the game state and run the action for each of them
+            GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
+            LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
+
+            switch (gameState)
+            {
+                case GameInstallStateEnum.NotInstalled:
+                case GameInstallStateEnum.GameBroken:
+                case GameInstallStateEnum.NeedsUpdate:
+                    await GetLatestPackageList(_assetIndex, gameState, false);
+                    break;
+                case GameInstallStateEnum.InstalledHavePreload:
+                    await GetLatestPackageList(_assetIndex, gameState, true);
+                    break;
+            }
+
+            // Set the progress bar to indetermined
+            _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
+            _status.IsProgressPerFileIndetermined = true;
+            _status.IsProgressTotalIndetermined = true;
+            UpdateStatus();
+
+            // Start getting the size of the packages
+            await GetPackagesRemoteSize(_assetIndex, _token.Token);
+
+            // Get the remote total size and current total size
+            _progressTotalSize = _assetIndex.Sum(x => x.Size);
+            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
+
+            // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
+            await CheckDriveFreeSpace(_parentUI, _assetIndex);
+
+            // Sanitize Check: Show dialog for resuming/reset the existing download
+            if (!skipDialog)
+            {
+                await CheckExistingDownloadAsync(_parentUI, _assetIndex);
+            }
+
+            // Start downloading process
+            if (startDownload) await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
         }
 
         // Bool:  0      -> Indicates that one of the package is failing and need to redownload
@@ -378,15 +425,37 @@ namespace CollapseLauncher.InstallManager.Base
             _gameVersionManager.Reinitialize();
         }
 
+
         public virtual bool IsPreloadCompleted()
         {
-            return _gameVersionManager.GetGamePreloadZip().All(x =>
+            LogWriteLine(_gameVersionManager.GetGamePreloadZip().Count().ToString(), LogType.Default, true);
+            StartPackageDownload(true, false);
+            bool resultSlice = false, resultZip=false;
+            foreach (GameInstallPackage asset in _assetIndex)
+            {
+                LogWriteLine(asset.PathOutput);
+                try
+                {
+                    resultSlice= asset.Segments != null && asset.Segments.Count != 0 ?
+                     asset.Segments.Select(selector: x => x.GetReadStream(_downloadThreadCount)).ToArray().Length>0 : asset.GetReadStream(_downloadThreadCount).Length>0;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine(ex.ToString(), LogType.Default);
+                    continue;
+                }
+            }
+            resultZip = _gameVersionManager.GetGamePreloadZip().All(x =>
             {
                 string name = Path.GetFileName(x.path);
                 string path = Path.Combine(_gamePath, name);
 
                 return File.Exists(path);
             });
+            if (resultZip) LogWriteLine("Zip Found");
+            if (resultSlice) LogWriteLine("Slices found");
+            return resultSlice || resultZip;
+
         }
 
         public async Task MoveGameLocation()
