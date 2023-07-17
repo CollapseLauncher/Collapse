@@ -37,7 +37,7 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async Task TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        protected override async ValueTask TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
         {
             // Do action from base method first
             await base.TryAddResourceVersionList(asset, packageList);

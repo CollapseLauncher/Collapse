@@ -115,10 +115,10 @@
     "PostPanel_Notices": "Anuncios",
     "PostPanel_Info": "Información",
     "PostPanel_NoNews": "¿Qué?\n¿No hay noticias hoy?",
-    "CommunityToolsBtn": "Community Tools",
-    "CommunityToolsBtn_OfficialText": "Official Tools",
-    "CommunityToolsBtn_CommunityText": "Community Tools",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
+    "CommunityToolsBtn": "Herramientas",
+    "CommunityToolsBtn_OfficialText": "Oficiales",
+    "CommunityToolsBtn_CommunityText": "De la Comunidad",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Selecciona el Ejecutable: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "Reparar Juego",
@@ -326,7 +326,7 @@
     "Disclaimer3": "y es completamente de código abierto. Cualquier contribución es bienvenida.",
     "DiscordBtn1": "¡Únete a nuestro Discord Armada!",
     "DiscordBtn2": "Discord de Honkai Impact 3rd",
-    "DiscordBtn3": "Collapse's Official Discord!",
+    "DiscordBtn3": "¡Discord Oficial de Collapse!",
     "AppChangeReleaseChannel": "Cambiar a Canal de Lanzamiento"
   },
   "_Misc": {
@@ -399,7 +399,7 @@
     "CDNDescription_Github": "El repositorio oficial (principal) del lanzador.",
     "CDNDescription_Statically": "Una copia del repositorio oficial (principal), proporcionada por Statically. Úsalo si vives en un lugar donde GitHub es inaccesible.",
     "CDNDescription_jsDelivr": "jsDelivr utiliza múltiples proveedores CDN como CloudFlare, Fastly y Quantil, resultando en el mejor tiempo de actividad y rendimiento posible.",
-    "LocateExecutable": "Locate Program Executable"
+    "LocateExecutable": "Localiza el Ejecutable"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Advertencia: ¡Una actualización al Delta Patch ha sido detectada!",
@@ -476,8 +476,8 @@
     "ReleaseChannelChangeSubtitle1": "Estás a punto de cambiar el canal de lanzamiento a:",
     "ReleaseChannelChangeSubtitle2": "Aviso:",
     "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
-    "LocateExePathTitle": "Locate Executable Install Path",
-    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
+    "LocateExePathTitle": "Localiza la Carpeta del Ejecutable",
+    "LocateExePathSubtitle": "Por favor, selecciona la ubicacion del ejecutable de la aplicación:"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Verificación de Integridad",
@@ -652,14 +652,14 @@
     "Audio_SFX": "Volumen Efectos de Sonido",
     "Audio_VO": "Volumen Voces",
     "Audio_Mute": "Silenciar Audio",
-    "Language": "Language Settings",
-    "Language_Help1": "Collapse currently cannot download Audio package directly.",
-    "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
-    "Audio": "Audio",
-    "Text": "Text",
-    "VO_en": "English",
-    "VO_cn": "Chinese",
-    "VO_jp": "Japanese",
-    "VO_kr": "Korean"
+    "Language": "Configuración de Idioma",
+    "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
+    "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
+    "Audio": "Voces",
+    "Text": "Texto",
+    "VO_en": "Ingles",
+    "VO_cn": "Chino",
+    "VO_jp": "Japones",
+    "VO_kr": "Coreano"
   }
 }

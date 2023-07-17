@@ -1414,6 +1414,8 @@ namespace CollapseLauncher.Pages
             PauseDownloadPreBtn.Visibility = Visibility.Visible;
             ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
             PreloadDialogBox.IsClosable = false;
+            PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32); 
+            // While this fixes #191, we need to find a way to move all elements above it by at least 16
 
             try
             {

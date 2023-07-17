@@ -82,6 +82,9 @@ namespace CollapseLauncher
         #region PrimaryManifest
         private async Task BuildPrimaryManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
+            // Try Cleanup Download Profile file
+            TryDeleteDownloadPref();
+
             // Build basic file entry.
             string ManifestPath = Path.Combine(_gamePath, "pkg_version");
 
@@ -101,6 +104,17 @@ namespace CollapseLauncher
 
             // Build cutscenes entry.
             EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL);
+        }
+
+        private void TryDeleteDownloadPref()
+        {
+            // Get the paths
+            string downloadPrefPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\DownloadPref");
+            string ctablePersistPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\ctable.dat");
+
+            // Check the file existence and delete it
+            if (File.Exists(downloadPrefPath)) TryDeleteReadOnlyFile(downloadPrefPath);
+            if (File.Exists(ctablePersistPath)) TryDeleteReadOnlyFile(ctablePersistPath);
         }
         #endregion
 

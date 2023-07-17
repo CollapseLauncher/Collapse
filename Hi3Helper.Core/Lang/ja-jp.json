@@ -6,7 +6,7 @@
     "ChooseFolderBtn": "フォルダを選択",
     "ChooseFolderDialogCancel": "キャンセル",
     "ChooseFolderDialogPrimary": "はい！",
-    "ChooseFolderDialogSecondary": "いいえ、フォルダを選択します",
+    "ChooseFolderDialogSecondary": "別のフォルダを選ぶ",
     "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
     "ChooseFolderDialogTitle": "フォルダを選択",
     "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダを選択してください。",

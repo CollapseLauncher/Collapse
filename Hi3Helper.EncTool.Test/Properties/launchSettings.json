@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Hi3Helper.EncTool.Test": {
+      "commandName": "Project",
+      "commandLineArgs": "BH3"
+    }
+  }
+}
