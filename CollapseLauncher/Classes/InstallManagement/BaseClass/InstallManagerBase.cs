@@ -151,52 +151,6 @@ namespace CollapseLauncher.InstallManager.Base
             await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
         }
 
-        public virtual async Task StartPackageDownload(bool skipDialog, bool startDownload)
-        {
-            ResetToken();
-
-            // Get the game state and run the action for each of them
-            GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
-            LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
-
-            switch (gameState)
-            {
-                case GameInstallStateEnum.NotInstalled:
-                case GameInstallStateEnum.GameBroken:
-                case GameInstallStateEnum.NeedsUpdate:
-                    await GetLatestPackageList(_assetIndex, gameState, false);
-                    break;
-                case GameInstallStateEnum.InstalledHavePreload:
-                    await GetLatestPackageList(_assetIndex, gameState, true);
-                    break;
-            }
-
-            // Set the progress bar to indetermined
-            _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
-            _status.IsProgressPerFileIndetermined = true;
-            _status.IsProgressTotalIndetermined = true;
-            UpdateStatus();
-
-            // Start getting the size of the packages
-            await GetPackagesRemoteSize(_assetIndex, _token.Token);
-
-            // Get the remote total size and current total size
-            _progressTotalSize = _assetIndex.Sum(x => x.Size);
-            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
-
-            // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, _assetIndex);
-
-            // Sanitize Check: Show dialog for resuming/reset the existing download
-            if (!skipDialog)
-            {
-                await CheckExistingDownloadAsync(_parentUI, _assetIndex);
-            }
-
-            // Start downloading process
-            if (startDownload) await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
-        }
-
         // Bool:  0      -> Indicates that one of the package is failing and need to redownload
         //                  or the verification can't be started because the download never being performed first
         //        1      -> Continue to the next step (all passes)
@@ -428,8 +382,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual bool IsPreloadCompleted()
         {
-            LogWriteLine(_gameVersionManager.GetGamePreloadZip().Count().ToString(), LogType.Default, true);
-            StartPackageDownload(true, false);
+            GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true).Wait();
             bool resultSlice = false, resultZip=false;
             foreach (GameInstallPackage asset in _assetIndex)
             {
