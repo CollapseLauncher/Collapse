@@ -998,7 +998,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // If the full downloaded package output is already exist and the size is the same as remote,
             // then return the actual size
-            if (fileInfo.Exists && fileInfo.Length != remoteSize)
+            if (fileInfo.Exists && fileInfo.Length == remoteSize)
                 return fileInfo.Length;
 
             // If above not passed, then try enumerate for the chunk
