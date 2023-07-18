@@ -984,7 +984,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Check if the disk space is insufficient, then show the dialog.
             if (DiskSpace < (RequiredSpace - ExistingPackageSize))
             {
-                string errStr = $"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
+                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
                 throw new TaskCanceledException(errStr);
