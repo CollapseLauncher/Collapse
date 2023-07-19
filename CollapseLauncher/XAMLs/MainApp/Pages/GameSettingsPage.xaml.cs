@@ -59,7 +59,7 @@ namespace CollapseLauncher.Pages
         {
             if (!IsNoReload)
             {
-                LogWriteLine("Module: RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+                LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
                 DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
             }
         }
