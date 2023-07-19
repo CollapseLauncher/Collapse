@@ -42,12 +42,12 @@ namespace Hi3Helper.Shared.Region
                 Description = Lang._Misc.CDNDescription_Cloudflare,
                 PartialDownloadSupport = true
             },
-            new CDNURLProperty
-            {
-                Name = "Bitbucket",
-                URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
-                Description = Lang._Misc.CDNDescription_Bitbucket
-            },
+            //new CDNURLProperty
+            //{
+            //    Name = "Bitbucket",
+            //    URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
+            //    Description = Lang._Misc.CDNDescription_Bitbucket
+            //},
             new CDNURLProperty
             {
                 Name = "Statically",
