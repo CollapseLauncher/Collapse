@@ -305,6 +305,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Show Console",
+    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
@@ -360,6 +361,7 @@
 
     "ReportIssueBtn": "Report an Issue",
     "ContributePRBtn": "Contribute with a Pull Request",
+    "ContributorListBtn": "Open Source Contributors",
 
     "About": "About",
     "About_Copyright1": "© 2022-2023 Created by",
@@ -471,7 +473,8 @@
     "DiscordRP_AppSettings": "Changing App Settings",
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "No Activity",
-    "DiscordRP_Ad": "- On Collapse Launcher"
+    "DiscordRP_Ad": "- With Collapse Launcher",
+    "DiscordRP_Region": "Region:"
   },
 
   "_Dialogs": {
