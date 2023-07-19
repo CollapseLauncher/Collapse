@@ -984,7 +984,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Check if the disk space is insufficient, then show the dialog.
             if (DiskSpace < (RequiredSpace - ExistingPackageSize))
             {
-                string errStr = $"Free Space on {_DriveInfo.Name} is sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
+                string errStr = $"Free Space on {_DriveInfo.Name} is not sufficient! (Free space: {DiskSpace}, Req. Space: {RequiredSpace - ExistingPackageSize}, Drive: {_DriveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
                 await Dialog_InsufficientDriveSpace(Content, DiskSpace, RequiredSpace - ExistingPackageSize, _DriveInfo.Name);
                 throw new TaskCanceledException(errStr);
@@ -998,7 +998,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // If the full downloaded package output is already exist and the size is the same as remote,
             // then return the actual size
-            if (fileInfo.Exists && fileInfo.Length != remoteSize)
+            if (fileInfo.Exists && fileInfo.Length == remoteSize)
                 return fileInfo.Length;
 
             // If above not passed, then try enumerate for the chunk
