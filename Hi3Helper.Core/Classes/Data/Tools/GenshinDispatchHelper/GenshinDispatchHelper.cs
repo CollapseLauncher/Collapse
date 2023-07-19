@@ -25,6 +25,10 @@ namespace Hi3Helper.Data
 
         public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken())
         {
+            if (RegionID == 4)
+            {
+                ChannelName = "CNRELWin";
+            }
             this._httpClient = new Http.Http(false, 1, 1);
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
@@ -131,6 +135,7 @@ namespace Hi3Helper.Data
                  * 1 = Europe
                  * 2 = Asia
                  * 3 = TW/HK/MO
+                 * 4 = Mainland China
                  */
                 case 0:
                     return "osusadispatch";
@@ -140,6 +145,8 @@ namespace Hi3Helper.Data
                     return "osasiadispatch";
                 case 3:
                     return "oschtdispatch";
+                case 4:
+                    return "cngfdispatch";
                 default:
                     throw new FormatException("Unknown region ID!");
             }
