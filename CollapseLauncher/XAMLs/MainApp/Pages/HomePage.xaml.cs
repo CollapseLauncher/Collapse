@@ -1188,6 +1188,7 @@ namespace CollapseLauncher.Pages
 
             string line;
             int barwidth = ((consoleWidth - 22) / 2) - 1;
+            LogWriteLine($"Is Game logs gets saved to Collapse's logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
             {
@@ -1210,7 +1211,7 @@ namespace CollapseLauncher.Pages
                                 StartExclusiveWindowPayload();
                                 RequireWindowExclusivePayload = false;
                             }
-                            LogWriteLine(line, LogType.Game, true);
+                            LogWriteLine(line, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
                         }
                         await Task.Delay(100, WatchOutputLog.Token);
                     }
