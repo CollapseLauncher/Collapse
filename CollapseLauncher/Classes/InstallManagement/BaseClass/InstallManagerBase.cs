@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -378,15 +379,36 @@ namespace CollapseLauncher.InstallManager.Base
             _gameVersionManager.Reinitialize();
         }
 
+
         public virtual bool IsPreloadCompleted()
         {
-            return _gameVersionManager.GetGamePreloadZip().All(x =>
+            GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true).Wait();
+            bool resultSlice = false, resultZip=false;
+            foreach (GameInstallPackage asset in _assetIndex)
+            {
+                LogWriteLine(asset.PathOutput);
+                try
+                {
+                    resultSlice= asset.Segments != null && asset.Segments.Count != 0 ?
+                     asset.Segments.Select(selector: x => x.GetReadStream(_downloadThreadCount)).ToArray().Length>0 : asset.GetReadStream(_downloadThreadCount).Length>0;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine(ex.ToString(), LogType.Default);
+                    continue;
+                }
+            }
+            resultZip = _gameVersionManager.GetGamePreloadZip().All(x =>
             {
                 string name = Path.GetFileName(x.path);
                 string path = Path.Combine(_gamePath, name);
 
                 return File.Exists(path);
             });
+            if (resultZip) LogWriteLine("Zip Found");
+            if (resultSlice) LogWriteLine("Slices found");
+            return resultSlice || resultZip;
+
         }
 
         public async Task MoveGameLocation()
