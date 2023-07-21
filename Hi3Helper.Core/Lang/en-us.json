@@ -719,6 +719,7 @@
     "Graphics_ReflectionQuality": "Reflection Quality",
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_SFXQuality": "SFX Quality",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
