@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="CollapseLauncher.Pages.StarRailGameSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -188,6 +187,17 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_SFXQuality}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
+                                        <ComboBox x:Name="SFXQualitySelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind SFXQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" Visibility="Collapsed" IsEnabled="False"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryLow}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecLow}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecMedium}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecHigh}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecVeryHigh}" Visibility="Collapsed" IsEnabled="False"/>
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>

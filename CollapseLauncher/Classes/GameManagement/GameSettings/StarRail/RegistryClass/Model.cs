@@ -115,6 +115,13 @@ namespace CollapseLauncher.GameSettings.StarRail
         public Quality ReflectionQuality { get; set; } = Quality.Medium;
 
         /// <summary>
+        /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>>
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4)
+        /// Default: Medium
+        /// </summary>
+        public Quality SFXQuality { get; set; } = Quality.Medium;
+
+        /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
         /// Default: Medium
