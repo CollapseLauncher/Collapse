@@ -46,6 +46,14 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Secondary:
                     folder = await GetFolderPicker();
                     if (folder != null)
+                    {
+                        if (!CheckIfFolderIsValid(folder))
+                        {
+                            NextPage.IsEnabled = false;
+                            await Dialogs.SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
+                            break;
+                        }
+
                         if (IsUserHasPermission(folder))
                         {
                             AppGameFolder = folder;
@@ -59,6 +67,7 @@ namespace CollapseLauncher.Pages
                             ErrMsg.Text = Lang._StartupPage.FolderInsufficientPermission;
                             ErrMsg.Foreground = new SolidColorBrush(new Color() { R = 255, G = 0, B = 0, A = 255 });
                         }
+                    }
                     else
                     {
                         NextPage.IsEnabled = false;
@@ -75,6 +84,23 @@ namespace CollapseLauncher.Pages
                 ErrMsg.Foreground = new SolidColorBrush((Color)Application.Current.Resources["TextFillColorPrimary"]);
                 ErrMsg.TextWrapping = TextWrapping.Wrap;
             }
+        }
+
+        private bool CheckIfFolderIsValid(string basePath)
+        {
+            bool IsInAppFolderExist = File.Exists(Path.Combine(basePath, AppExecutableName))
+                                   || File.Exists(Path.Combine($"{basePath}\\..\\", AppExecutableName))
+                                   || File.Exists(Path.Combine($"{basePath}\\..\\..\\", AppExecutableName))
+                                   || File.Exists(Path.Combine($"{basePath}\\..\\..\\..\\", AppExecutableName));
+
+            string DriveLetter = Path.GetPathRoot(basePath);
+
+            bool IsInAppFolderExist2 = basePath.EndsWith("Collapse Launcher")
+                                    || basePath.StartsWith(Path.Combine(DriveLetter, "Program Files"))
+                                    || basePath.StartsWith(Path.Combine(DriveLetter, "Program Files (x86)"))
+                                    || basePath.StartsWith(Path.Combine(DriveLetter, "Windows"));
+
+            return !(IsInAppFolderExist || IsInAppFolderExist2);
         }
 
         private async Task HideLoadingPopup(bool hide, string title, string subtitle)

@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
     <Grid>
-        <Grid Margin="32,80,32,18" x:Name="PageContent">
+        <Grid Margin="32,40,32,18" x:Name="PageContent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition/>

@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
+using WinRT;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -194,10 +196,13 @@ namespace CollapseLauncher
             MainFrameChangerInvoker.FrameEvent += MainFrameChangerInvoker_FrameEvent;
             NotificationInvoker.EventInvoker += NotificationInvoker_EventInvoker;
             BackgroundImgChangerInvoker.ImgEvent += CustomBackgroundChanger_Event;
+            BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
         }
+
+        private void BackgroundImg_IsImageHideEvent(object sender, bool e) => HideBackgroundImage(e);
 
         private void UnsubscribeEvents()
         {
@@ -205,6 +210,7 @@ namespace CollapseLauncher
             MainFrameChangerInvoker.FrameEvent -= MainFrameChangerInvoker_FrameEvent;
             NotificationInvoker.EventInvoker -= NotificationInvoker_EventInvoker;
             BackgroundImgChangerInvoker.ImgEvent -= CustomBackgroundChanger_Event;
+            BackgroundImgChangerInvoker.IsImageHide -= BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
@@ -225,7 +231,7 @@ namespace CollapseLauncher
 
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
-            HideBackgroundImage(!e.Hide);
+            BackgroundImgChanger.ToggleBackground(e.Hide);
             HideLoadingPopup(e.Hide, e.Title, e.Subtitle);
         }
 
@@ -878,7 +884,7 @@ namespace CollapseLauncher
 
             if ((PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemSeparator());
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
 
                 if (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {
@@ -930,10 +936,11 @@ namespace CollapseLauncher
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.IsSettingsInvoked)
+            if (args.IsSettingsInvoked && PreviousTag != "settings")
             {
                 MainFrameChanger.ChangeMainFrame(typeof(SettingsPage));
                 PreviousTag = "settings";
+                PreviousTagString.Add(PreviousTag);
                 LogWriteLine($"Page changed to App Settings", LogType.Scheme);
             }
             else
@@ -950,11 +957,14 @@ namespace CollapseLauncher
             }
         }
 
+        private List<string> PreviousTagString = new List<string>();
+
         void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
         {
             string tagStr = (string)tag.Tag;
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
+            PreviousTagString.Add(tagStr);
         }
 
         private void NavView_Navigate(NavigationViewItem item)
@@ -1034,13 +1044,11 @@ namespace CollapseLauncher
                 if (e.Exception.GetType() == typeof(NotImplementedException))
                 {
                     PreviousTag = "unavailable";
-                    HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
                 }
                 else
                 {
                     PreviousTag = "crashinfo";
-                    HideBackgroundImage();
                     MainFrameChanger.ChangeMainFrame(typeof(UnhandledExceptionPage));
                 }
             });
@@ -1048,30 +1056,8 @@ namespace CollapseLauncher
 
         private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)
         {
-            switch (e.FrameTo.Name)
-            {
-                case "HomePage":
-                    HideBackgroundImage(false);
-                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
-                    break;
-                case "RepairPage":
-                    PreviousTag = "repair";
-                    IList<object> menuItems = NavigationViewControl.MenuItems;
-                    if (menuItems != null && menuItems.Count > 2)
-                    {
-                        NavigationViewControl.SelectedItem = (NavigationViewItem)menuItems[2];
-                    }
-                    HideBackgroundImage();
-                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
-                    break;
-                default:
-                case "UnhandledExceptionPage":
-                case "BlankPage":
-                    HideBackgroundImage();
-                    LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
-                    break;
-            }
             m_appCurrentFrameName = e.FrameTo.Name;
+            LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
         private void SpawnWebView2Panel(Uri URL)
@@ -1144,6 +1130,115 @@ namespace CollapseLauncher
             IsNotificationPanelShow = false;
             ToggleNotificationPanelBtn.IsChecked = false;
             ShowHideNotificationPanel();
+        }
+
+        private void NavigationViewControl_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        {
+            if (LauncherFrame.CanGoBack)
+            {
+                LauncherFrame.GoBack();
+                if (PreviousTagString.Count < 1) return;
+
+                string lastPreviousTag = PreviousTagString[PreviousTagString.Count - 1];
+                string currentNavigationItemTag = (string)((NavigationViewItem)sender.SelectedItem).Tag;
+
+                if (lastPreviousTag.ToLower() == currentNavigationItemTag.ToLower())
+                {
+                    string goLastPreviousTag = PreviousTagString[PreviousTagString.Count - 2];
+                    NavigationViewItem goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
+                    
+                    if (goLastPreviousTag == "settings")
+                    {
+                        PreviousTag = goLastPreviousTag;
+                        PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                        sender.SelectedItem = sender.SettingsItem;
+                        return;
+                    }
+
+                    if (goPreviousNavigationItem != null)
+                    {
+                        sender.SelectedItem = goPreviousNavigationItem;
+                        PreviousTag = goLastPreviousTag;
+                        PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                    }
+                }
+            }
+        }
+
+        private bool IsTitleIconForceShow = false;
+
+        private void NavigationPanelOpening_Event(NavigationView sender, object args)
+        {
+            Thickness curMargin = GridBG_Icon.Margin;
+            curMargin.Left = 48;
+            GridBG_Icon.Margin = curMargin;
+            IsTitleIconForceShow = true;
+            ToggleTitleIcon(false);
+        }
+
+        private void NavigationPanelClosing_Event(NavigationView sender, NavigationViewPaneClosingEventArgs args)
+        {
+            Thickness curMargin = GridBG_Icon.Margin;
+            curMargin.Left = 58;
+            GridBG_Icon.Margin = curMargin;
+            IsTitleIconForceShow = false;
+            ToggleTitleIcon(true);
+        }
+
+        private void ToggleTitleIcon(bool hide)
+        {
+            if (!hide)
+            {
+                GridBG_IconTitle.Width = double.NaN;
+                if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
+                    GridBG_IconTitle.Visibility = Visibility.Visible;
+                return;
+            }
+
+            GridBG_IconTitle.Width = 0;
+            if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
+                GridBG_IconTitle.Visibility = Visibility.Collapsed;
+        }
+
+        private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            if (!IsTitleIconForceShow)
+            {
+                Thickness curMargin = GridBG_Icon.Margin;
+                curMargin.Left = 50;
+                GridBG_Icon.Margin = curMargin;
+                ToggleTitleIcon(false);
+            }
+        }
+
+        private void GridBG_Icon_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            if (!IsTitleIconForceShow)
+            {
+                Thickness curMargin = GridBG_Icon.Margin;
+                curMargin.Left = 58;
+                GridBG_Icon.Margin = curMargin;
+                ToggleTitleIcon(true);
+            }
+        }
+
+        private void GridBG_Icon_Click(object sender, RoutedEventArgs e)
+        {
+            if (PreviousTag.ToLower() == "launcher") return;
+
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+            PreviousTag = "launcher";
+            PreviousTagString.Add(PreviousTag);
+
+            NavigationViewItem navItem = NavigationViewControl.MenuItems
+                .OfType<NavigationViewItem>()
+                .Where(x => ((string)x.Tag).ToLower() == PreviousTag)
+                .FirstOrDefault();
+
+            if (navItem != null)
+            {
+                NavigationViewControl.SelectedItem = navItem;
+            }
         }
     }
 }

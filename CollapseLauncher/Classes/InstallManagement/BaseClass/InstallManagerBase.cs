@@ -975,7 +975,7 @@ namespace CollapseLauncher.InstallManager.Base
                 _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
                 UpdateStatus();
                 _stopwatch.Stop();
-                // await _httpClient.Merge();
+                await _httpClient.Merge();
                 _stopwatch.Start();
             }
 

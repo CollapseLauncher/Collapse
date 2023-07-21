@@ -9,8 +9,6 @@ using Hi3Helper.Shared.ClassStruct;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
-using Hi3Helper.Data;
-using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -53,12 +51,12 @@ namespace CollapseLauncher.Pages
 
         public HomePage()
         {
+            this.Loaded += StartLoadedRoutine;
             PageToken = new CancellationTokenSource();
             CarouselToken = new CancellationTokenSource();
             PlaytimeToken = new CancellationTokenSource();
             this.InitializeComponent();
             CheckIfRightSideProgress();
-            this.Loaded += StartLoadedRoutine;
         }
 
         private bool IsPageUnload = false;
@@ -74,6 +72,7 @@ namespace CollapseLauncher.Pages
 
         private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(false);
             try
             {
                 GetCurrentGameState();
@@ -1077,7 +1076,7 @@ namespace CollapseLauncher.Pages
             PageToken.Cancel();
             CarouselToken.Cancel();
             PlaytimeToken.Cancel();
-            GC.Collect();
+            PageStatics._GameInstall.CancelRoutine();
         }
 
         private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
@@ -1506,13 +1505,6 @@ namespace CollapseLauncher.Pages
         {
             get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
-        }
-
-        private void OpenLinkFromButtonWithTag(object sender, RoutedEventArgs e)
-        {
-            object ImageTag = ((Button)sender).Tag;
-            if (ImageTag == null) return;
-            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
         }
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)

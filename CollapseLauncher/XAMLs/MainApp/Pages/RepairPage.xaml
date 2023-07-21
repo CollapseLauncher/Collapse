@@ -12,7 +12,7 @@
     Unloaded="Page_Unloaded" Loaded="InitializeLoaded">
 
     <Grid>
-        <Grid Margin="32,80,32,18" x:Name="PageContent">
+        <Grid Margin="32,40,32,18" x:Name="PageContent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition/>

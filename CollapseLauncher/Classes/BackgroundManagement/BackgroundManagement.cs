@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
@@ -33,20 +32,6 @@ namespace CollapseLauncher
         private Bitmap PaletteBitmap;
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
-
-        private async ValueTask FetchLauncherLocalizedResources(CancellationToken Token, PresetConfigV2 Preset)
-        {
-            regionBackgroundProp = Preset.LauncherSpriteURLMultiLang ?
-                await TryGetMultiLangResourceProp(Token, Preset) :
-                await TryGetSingleLangResourceProp(Token, Preset);
-
-            await DownloadBackgroundImage(Token);
-
-            await GetLauncherAdvInfo(Token, Preset);
-            await GetLauncherCarouselInfo(Token);
-            await GetLauncherEventInfo(Token);
-            GetLauncherPostInfo();
-        }
 
         private async Task ChangeBackgroundImageAsRegion()
         {
@@ -68,166 +53,6 @@ namespace CollapseLauncher
             }
 
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
-        }
-
-        private async ValueTask FetchLauncherDownloadInformation(CancellationToken Token, PresetConfigV2 Preset)
-        {
-            using (Stream netStream = (await _httpClient.DownloadFromSessionStreamAsync(
-                Preset.LauncherResourceURL,
-                0,
-                null,
-                Token
-                )).Item1)
-            {
-                _gameAPIProp = (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
-
-#if DEBUG
-                if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
-                if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
-                if (_gameAPIProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
-                if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
-#endif
-            }
-        }
-
-        private async ValueTask<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
-        {
-            RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token, Preset);
-
-            return ret.data.adv == null
-              || ((ret.data.adv.version ?? 5) <= 4
-                && Preset.GameType == GameType.Honkai) ?
-                    await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
-                    ret;
-        }
-
-        private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
-        {
-            using (Stream netStream = (await _httpClient.DownloadFromSessionStreamAsync(
-                string.Format(Preset.LauncherSpriteURL, langID),
-                0,
-                null,
-                token
-                )).Item1)
-            {
-                return (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
-            }
-        }
-
-        private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
-        {
-            using (Stream netStream = (await _httpClient.DownloadFromSessionStreamAsync(
-                Preset.LauncherSpriteURL,
-                0,
-                null,
-                Token
-                )).Item1)
-            {
-                return (RegionResourceProp)JsonSerializer.Deserialize(netStream, typeof(RegionResourceProp), RegionResourcePropContext.Default) ?? new RegionResourceProp();
-            }
-        }
-
-        private void ResetRegionProp()
-        {
-            LastRegionNewsProp = regionNewsProp.Copy();
-            regionNewsProp = new HomeMenuPanel()
-            {
-                sideMenuPanel = null,
-                imageCarouselPanel = null,
-                articlePanel = null,
-                eventPanel = null
-            };
-        }
-
-        private async ValueTask GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
-        {
-            if (regionBackgroundProp.data.icon.Count == 0) return;
-
-            regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
-            foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
-            {
-                regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
-                {
-                    URL = item.url,
-                    Icon = await GetCachedSprites(item.img, Token),
-                    IconHover = await GetCachedSprites(item.img_hover, Token),
-                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img, Token),
-                    QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
-                });
-            }
-        }
-
-        private async ValueTask GetLauncherCarouselInfo(CancellationToken Token)
-        {
-            if (regionBackgroundProp.data.banner.Count == 0) return;
-
-            regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
-            foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
-            {
-                regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
-                {
-                    URL = item.url,
-                    Icon = await GetCachedSprites(item.img, Token),
-                    Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
-                });
-            }
-        }
-
-        private async ValueTask GetLauncherEventInfo(CancellationToken Token)
-        {
-            if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
-
-            regionNewsProp.eventPanel = new RegionBackgroundProp
-            {
-                url = regionBackgroundProp.data.adv.url,
-                icon = await GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
-            };
-        }
-
-        private void GetLauncherPostInfo()
-        {
-            if (regionBackgroundProp.data.post.Count == 0) return;
-
-            regionNewsProp.articlePanel = new PostCarouselTypes();
-            foreach (RegionSocMedProp item in regionBackgroundProp.data.post)
-            {
-                switch (item.type)
-                {
-                    case PostCarouselType.POST_TYPE_ACTIVITY:
-                        regionNewsProp.articlePanel.Events.Add(item);
-                        break;
-                    case PostCarouselType.POST_TYPE_ANNOUNCE:
-                        regionNewsProp.articlePanel.Notices.Add(item);
-                        break;
-                    case PostCarouselType.POST_TYPE_INFO:
-                        regionNewsProp.articlePanel.Info.Add(item);
-                        break;
-                }
-            }
-        }
-
-        public async ValueTask<string> GetCachedSprites(string URL, CancellationToken token)
-        {
-            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-            if (!Directory.Exists(cacheFolder))
-                Directory.CreateDirectory(cacheFolder);
-
-            FileInfo fInfo = new FileInfo(cachePath);
-
-            if (!fInfo.Exists || fInfo.Length < (1 << 10))
-            {
-                using (FileStream fs = fInfo.Create())
-                {
-                    using (Stream netStream = (await _httpClient.DownloadFromSessionStreamAsync(URL, 0, null, token)).Item1)
-                    {
-                        netStream.CopyTo(fs);
-                    }
-                }
-            }
-
-            return cachePath;
         }
 
         public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality)
@@ -268,11 +93,11 @@ namespace CollapseLauncher
         private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
-            Application.Current.Resources["SystemAccentColor"] = _colors[0];
+            Application.Current.Resources["SystemAccentColor"] = _colors[1];
             Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorLight2"] = _colors[2];
-            Application.Current.Resources["SystemAccentColorLight3"] = _colors[3];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
+            Application.Current.Resources["SystemAccentColorLight2"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorLight3"] = _colors[1];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[1]);
 
             return _colors;
         }
@@ -284,7 +109,10 @@ namespace CollapseLauncher
 
             try
             {
-                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, IsLight ? 1 : quality).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+                LumaUtils.DarkThreshold = IsLight ? 300f : 300f;
+                LumaUtils.IgnoreWhiteThreshold = IsLight ? 900f : 750f;
+                LumaUtils.ChangeCoeToBT709();
+                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, IsLight ? 1 : 1).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
 
                 if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
                 for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
@@ -316,25 +144,21 @@ namespace CollapseLauncher
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
 
-            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 4 << 15;
-            FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create();
-
-            try
+            bool isCachedFileExist = cachedFileInfo.Exists && cachedFileInfo.Length > 1 << 15;
+            using (stream)
+            using (FileStream cachedFileStream = isCachedFileExist ? cachedFileInfo.OpenRead() : cachedFileInfo.Create())
             {
-                if (!isCachedFileExist)
+                try
                 {
-                    await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
-                }
+                    if (!isCachedFileExist)
+                    {
+                        await GetResizedImageStream(stream, cachedFileStream, ToWidth, ToHeight);
+                    }
 
-                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
-            }
-            catch { throw; }
-            finally
-            {
-                stream?.Dispose();
-                cachedFileStream?.Dispose();
-                GC.Collect();
+                    bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
+                    bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+                }
+                catch { throw; }
             }
 
             return (bitmapRet, bitmapImageRet);
@@ -421,27 +245,6 @@ namespace CollapseLauncher
             return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
         }
 
-        private async ValueTask DownloadBackgroundImage(CancellationToken Token)
-        {
-            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
-            SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
-
-            if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
-                Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
-
-            FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
-
-            if (fI.Exists) return;
-
-            using (Stream netStream = (await _httpClient.DownloadFromSessionStreamAsync(regionBackgroundProp.data.adv.background, 0, null, Token)).Item1)
-            {
-                using (Stream outStream = fI.Create())
-                {
-                    netStream.CopyTo(outStream);
-                }
-            }
-        }
-
         private async void ApplyBackgroundAsync() => await ApplyBackground();
 
         private async Task ApplyBackground()
@@ -459,11 +262,6 @@ namespace CollapseLauncher
 
             FadeOutFrontBg();
             FadeOutBackBg();
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.WaitForFullGCComplete();
-            GC.Collect();
         }
 
         private async void FadeOutFrontBg()

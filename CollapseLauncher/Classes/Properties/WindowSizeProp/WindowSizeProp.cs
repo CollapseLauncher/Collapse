@@ -15,7 +15,7 @@ namespace CollapseLauncher.WindowSize
                 "Normal",
                 new WindowSizeProp()
                 {
-                    WindowBounds = new Size(1196, 726),
+                    WindowBounds = new Size(1243, 726),
                     EventPostCarouselBounds = new Size(399, 185),
                     PostPanelBounds = new Size(399, 134),
                     PostPanelBottomMargin = new Thickness(0, 0, 0, 52),

@@ -257,14 +257,17 @@ namespace CollapseLauncher
         static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
         public static async Task WaitForBackgroundToLoad() => await invoker.WaitForBackgroundToLoad();
         public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker.ChangeBackground(ImgPath, IsCustom);
+        public static void ToggleBackground(bool Hide) => invoker.ToggleBackground(Hide);
     }
 
     internal class BackgroundImgChangerInvoker
     {
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
+        public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
         public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property.IsImageLoaded) { } });
         public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
+        public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
 
     internal class BackgroundImgProperty

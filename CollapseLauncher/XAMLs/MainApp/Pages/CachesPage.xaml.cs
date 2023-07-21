@@ -21,6 +21,7 @@ namespace CollapseLauncher.Pages
         public CachesPage()
         {
             this.InitializeComponent();
+            BackgroundImgChanger.ToggleBackground(true);
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.Cache);
 #endif

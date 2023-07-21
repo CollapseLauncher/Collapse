@@ -250,6 +250,17 @@ namespace CollapseLauncher.Dialogs
                     Lang._StartupPage.ChooseFolderDialogSecondary
             );
 
+        public static async Task<ContentDialogResult> Dialog_CannotUseAppLocationForGameDir(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.CannotUseAppLocationForGameDirTitle,
+                    Lang._Dialogs.CannotUseAppLocationForGameDirSubtitle,
+                    Content,
+                    Lang._Misc.Okay,
+                    null,
+                    null,
+                    ContentDialogButton.Close
+            );
+
         public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
             await SpawnDialog(
                     Lang._Dialogs.InstallDataDownloadResumeTitle,

@@ -376,7 +376,9 @@
     "DiscordBtn2": "Honkai Impact 3rd Discord",
     "DiscordBtn3": "Collapse's Official Discord!",
 
-    "AppChangeReleaseChannel": "Change to {0} Release Channel"
+    "AppChangeReleaseChannel": "Change to {0} Release Channel",
+
+    "EnableAcrylicEffect":  "Use Acrylic Blur Effect"
   },
 
   "_Misc": {
@@ -556,7 +558,9 @@
     "ResetPlaytimeSubtitle2": "destructive",
     "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "LocateExePathTitle": "Locate Executable Install Path",
-    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
+    "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
+    "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!"
   },
 
   "_InstallMgmt": {

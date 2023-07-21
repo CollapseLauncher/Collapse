@@ -17,7 +17,7 @@
         <Image Source="ms-appx:///Assets/BG/StartUpBG2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="GameDetails">
             <Image x:Name="GameDetailsPoster"
-               VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+               VerticalAlignment="Stretch" HorizontalAlignment="Right" Stretch="UniformToFill"/>
             <StackPanel Width="466" VerticalAlignment="Bottom"
                     HorizontalAlignment="Right" Margin="0,0,40,110">
                 <Grid x:Name="GameDetailsLogoShadow"/>

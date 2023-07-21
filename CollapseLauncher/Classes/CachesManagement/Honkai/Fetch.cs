@@ -140,25 +140,6 @@ namespace CollapseLauncher
                 // Build the asset index and return the count and size of each type
                 (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
 
-                /*
-                // Fetch additional patch for Data type
-                if (type == CacheAssetType.Data)
-                {
-                    // Get the patch config file
-                    assetIndexURL = CombineURLFromString(baseURL, "patch", "patchconfig.xmf");
-
-                    // Reinitialize the memory stream;
-                    stream.Dispose();
-                    stream = new MemoryStream();
-
-                    // Start downloading the patch config
-                    await _httpClient.Download(assetIndexURL, stream, null, null, token);
-
-                    // Build patch config for Data type
-                    BuildDataPatchConfig(stream, assetIndex);
-                }
-                */
-
                 return returnValue;
             }
             catch { throw; }

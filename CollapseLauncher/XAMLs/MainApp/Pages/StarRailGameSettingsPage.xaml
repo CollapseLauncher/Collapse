@@ -19,7 +19,7 @@
     <Grid>
         <Grid x:Name="PageContent">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="32,80,32,32" Padding="0,0,0,74">
+                <StackPanel Margin="32,40,32,32" Padding="0,0,0,74">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -324,7 +324,7 @@
                 </StackPanel>
             </ScrollViewer>
             <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource MyAcrylicBrush}"
-                  HorizontalAlignment="Stretch" CornerRadius="8" Margin="0" Padding="24,16"
+                  HorizontalAlignment="Stretch" CornerRadius="8" Margin="16" Padding="16,16"
                   Shadow="{ThemeResource SharedShadow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -335,10 +335,10 @@
                             VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{ThemeResource SharedShadow}">
                     <StackPanel Orientation="Horizontal" Margin="8,0">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="14"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
+                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" Margin="16,-4,16,0" VerticalAlignment="Center" FontWeight="Medium"/>
                     <Button x:Name="RegistryExport" CornerRadius="16,0,0,16" Height="32"

@@ -19,6 +19,7 @@ namespace CollapseLauncher.Pages
     {
         public RepairPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.Repair);
