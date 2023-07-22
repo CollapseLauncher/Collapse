@@ -216,6 +216,7 @@
 
     "Graphics_Title": "Graphics Settings",
     "Graphics_ResolutionPanel": "Game Resolution",
+    "Graphics_Borderless": "Borderless Screen",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",
@@ -722,6 +723,7 @@
     "Graphics_ReflectionQuality": "Reflection Quality",
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_SFXQuality": "SFX Quality",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

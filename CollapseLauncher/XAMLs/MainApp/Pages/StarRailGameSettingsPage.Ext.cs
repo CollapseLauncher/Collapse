@@ -24,6 +24,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsBorderlessEnabled
+        {
+            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            set => Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+        }
+
         public bool IsCustomResolutionEnabled
         {
             get => Settings.SettingsCollapseScreen.UseCustomResolution;
@@ -180,6 +186,12 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.GraphicsSettings.ReflectionQuality;
             set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
+        }
+        //SFXQuality
+        public int SFXQuality
+        {
+            get => (int)Settings.GraphicsSettings.SFXQuality;
+            set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
         }
         //BloomQuality
         public int BloomQuality

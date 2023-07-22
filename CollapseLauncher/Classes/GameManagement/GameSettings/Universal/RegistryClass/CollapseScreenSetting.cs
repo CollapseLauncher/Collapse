@@ -17,16 +17,22 @@ namespace CollapseLauncher.GameSettings.Universal
 
         #region Properties
         /// <summary>
-        /// This defines if the game will be running in a custom resolution.<br/><br/>
+        /// This defines if the game should run in a custom resolution.<br/><br/>
         /// Default: false
         /// </summary>
         public bool UseCustomResolution { get; set; } = false;
 
         /// <summary>
-        /// This defines if the game will be running in Exclusive Fullscreen mode.<br/><br/>
+        /// This defines if the game should run in Exclusive Fullscreen mode.<br/><br/>
         /// Default: false
         /// </summary>
         public bool UseExclusiveFullscreen { get; set; } = false;
+
+        /// <summary>
+        /// This defines if the game should run in Borderless Screen mode. <br/><br/>
+        /// Default: false
+        /// </summary>
+        public bool UseBorderlessScreen { get; set; } = false;
 
         /// <summary>
         /// This defines the Graphics API will be used for the game to run.<br/><br/>

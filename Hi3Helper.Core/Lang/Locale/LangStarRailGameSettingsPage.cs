@@ -57,6 +57,7 @@
                 public string Graphics_EnvDetailQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_EnvDetailQuality;
                 public string Graphics_ReflectionQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ReflectionQuality;
                 public string Graphics_BloomQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_BloomQuality;
+                public string Graphics_SFXQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SFXQuality;
                 public string Graphics_AAMode { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_AAMode;
                 public string Graphics_SpecPanel { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SpecPanel;
                 public string SpecEnabled { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecEnabled;

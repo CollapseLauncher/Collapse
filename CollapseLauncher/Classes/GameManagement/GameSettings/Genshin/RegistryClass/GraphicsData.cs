@@ -149,6 +149,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         #endregion
 
         #region Methods
+#nullable enable
         public static GraphicsData Load(string graphicsJson)
         {
             GraphicsData graphics = (GraphicsData?)JsonSerializer.Deserialize(graphicsJson, typeof(GraphicsData), GraphicsDataContext.Default) ?? new GraphicsData();
@@ -302,6 +303,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
             return data;
         }
+#nullable disable
         #endregion
     }
 }
