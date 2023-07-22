@@ -324,14 +324,14 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 if (value != null)
                 {
-                    ReadOnlySpan<byte> byteStr = (byte[])value;
+                    string regStr = Encoding.UTF8.GetString((byte[])value).TrimEnd('\0');
 #if DEBUG
                     // If you want to debug GeneralData, Append this to the LogWriteLine:
                     // '\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)'
                     // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #endif
-                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
+                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(regStr, typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     data.globalPerfData = new();
                     return data;

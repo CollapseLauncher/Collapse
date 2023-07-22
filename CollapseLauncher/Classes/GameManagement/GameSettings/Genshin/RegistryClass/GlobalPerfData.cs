@@ -1,8 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Genshin.Context;
-using CollapseLauncher.GameSettings.Genshin.Enums;
+﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using static Hi3Helper.Logger;
@@ -18,13 +15,31 @@ namespace CollapseLauncher.GameSettings.Genshin
         #endregion
 
         #region Methods
-        public PerfDataItem(int entryType, int index, string itemVersion) { 
+        public PerfDataItem(int entryType, int index, string itemVersion)
+        {
             this.entryType = entryType;
             this.index = index;
             this.itemVersion = itemVersion;
         }
         #endregion
     }
+
+    internal class GenshinKeyValuePair
+    {
+        #region Properties
+        public int key { get; set; }
+        public int value { get; set; }
+        #endregion
+
+        #region Methods
+        public GenshinKeyValuePair(int Key, int Value)
+        {
+            key = Key;
+            value = Value;
+        }
+        #endregion
+    }
+
     internal class GlobalPerfData
     {
         #region Properties
@@ -35,7 +50,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         #endregion
 
         #region Methods
-
         public string Create(GraphicsData graphics, string version)
         {
             saveItems = new()
