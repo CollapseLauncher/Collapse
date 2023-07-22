@@ -961,6 +961,11 @@ namespace CollapseLauncher.Pages
                 else
                     parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
             }
+
+            if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
+            {
+                parameter.Append("-popupwindow ");
+            }
             string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
             if (!string.IsNullOrEmpty(customArgs))
