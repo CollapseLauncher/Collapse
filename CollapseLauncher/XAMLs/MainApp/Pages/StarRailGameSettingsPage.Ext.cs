@@ -24,6 +24,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsBorderlessEnabled
+        {
+            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            set => Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+        }
+
         public bool IsCustomResolutionEnabled
         {
             get => Settings.SettingsCollapseScreen.UseCustomResolution;

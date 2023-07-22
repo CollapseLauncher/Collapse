@@ -34,6 +34,9 @@
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_Fullscreen}"
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
+                                        <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+          HorizontalAlignment="Left" VerticalAlignment="Center"
+          IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"/>
                                         <!--
                                         Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
                                         Delete `Visibility="Collapsed"' to revert this change
