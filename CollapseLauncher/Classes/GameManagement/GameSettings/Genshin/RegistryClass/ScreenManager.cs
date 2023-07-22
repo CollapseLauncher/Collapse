@@ -96,8 +96,9 @@ namespace CollapseLauncher.GameSettings.Genshin
             };
         }
         #endregion
-#nullable enable
+
         #region Methods
+#nullable enable
         public static ScreenManager Load()
         {
             try
@@ -135,18 +136,12 @@ namespace CollapseLauncher.GameSettings.Genshin
             try
             {
                 RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
-#if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
-#endif
-
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
-#if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
-#endif
-
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
@@ -165,8 +160,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 comparedTo.width == this.width &&
                 comparedTo.fullscreen == this.fullscreen;
         }
-        #endregion
 #nullable disable
-
+        #endregion
     }
 }
