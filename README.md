@@ -91,7 +91,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td>TW/HK/MO</td>
@@ -101,7 +101,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td>Japan</td>
@@ -111,7 +111,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td>Korea</td>
@@ -121,7 +121,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td rowspan="2">Genshin Impact</td>
@@ -132,7 +132,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:x:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -142,7 +142,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:x:</td>
       <td>:x:</td>
       <td>:white_check_mark:</td>
-      <td>:x:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td rowspan="2">Honkai: Star Rail</td>
@@ -150,26 +150,27 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
       <td>:x:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
     </tr>
     <tr>
       <td>Mainland China</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
       <td>:x:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
     </tr>
   </tbody>
 </table>
 
 > **Note**:
 > Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported. The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released.
+> > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Build
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.70.10/CL-1.70.10_Installer.exe)
