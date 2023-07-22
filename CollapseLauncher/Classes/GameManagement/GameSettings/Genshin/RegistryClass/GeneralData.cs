@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
@@ -292,7 +293,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                     // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #endif
-                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), GeneralDataContext.Default) ?? new GeneralData();
+                    JsonSerializerOptions options = new JsonSerializerOptions()
+                    {
+                        TypeInfoResolver = GeneralDataContext.Default,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), options) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     data.globalPerfData = new();
                     return data;
@@ -314,8 +320,12 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 _graphicsData = graphicsData.Save();
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
- 
-                string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
+                JsonSerializerOptions options = new JsonSerializerOptions()
+                {
+                    TypeInfoResolver = GeneralDataContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                string data = JsonSerializer.Serialize(this, typeof(GeneralData), options) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
