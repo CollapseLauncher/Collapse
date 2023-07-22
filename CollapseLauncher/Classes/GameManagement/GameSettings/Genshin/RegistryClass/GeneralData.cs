@@ -1,6 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Genshin.Context;
-using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
@@ -256,7 +254,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Since the value is flipped, math function of y = -x + 4.4 is used (Refer GenshinGameSettingsPage.Ext.cs Line 122)
         /// </summary>
         public double gammaValue { get; set; } = 2.2f;
-        
+
         /// <summary>
         /// This holds value for controllers input that has been customized.
         /// </summary>
@@ -353,7 +351,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 _graphicsData = graphicsData.Save();
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
- 
+
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), GeneralDataContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
@@ -381,90 +379,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
         }
 
-        public bool Equals(GeneralData? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            // nightmare nightmare nightmare nightmare nightmare 
-            return comparedTo.deviceUUID == deviceUUID &&
-                comparedTo.userLocalDataVersionId == userLocalDataVersionId &&
-                comparedTo.deviceLanguageType == deviceLanguageType &&
-                comparedTo.deviceVoiceLanguageType == deviceVoiceLanguageType &&
-                comparedTo.selectedServerName == selectedServerName &&
-                comparedTo.localLevelIndex == localLevelIndex &&
-                comparedTo.deviceID == deviceID &&
-                comparedTo.targetUID == targetUID &&
-                comparedTo.uiSaveData == uiSaveData &&
-                comparedTo.inputData == inputData &&
-                comparedTo.graphicsData == graphicsData &&
-                comparedTo.globalPerfData == globalPerfData &&
-                comparedTo.miniMapConfig == miniMapConfig &&
-                comparedTo.enableCameraSlope == enableCameraSlope &&
-                comparedTo.enableCameraCombatLock == enableCameraCombatLock &&
-                comparedTo.completionPkg == completionPkg &&
-                comparedTo.completionPlayGoPkg == completionPlayGoPkg &&
-                comparedTo.onlyPlayWithPSPlayer == onlyPlayWithPSPlayer &&
-                comparedTo.needPlayGoFullPkgPatch == needPlayGoFullPkgPatch &&
-                comparedTo.resinNotification == resinNotification &&
-                comparedTo.exploreNotification == exploreNotification &&
-                comparedTo.volumeGlobal == volumeGlobal &&
-                comparedTo.volumeSFX == volumeSFX &&
-                comparedTo.volumeVoice == volumeVoice &&
-                comparedTo.audioAPI == audioAPI &&
-                comparedTo.audioDynamicRange == audioDynamicRange &&
-                comparedTo.audioOutput == audioOutput &&
-                comparedTo._audioSuccessInit == _audioSuccessInit &&
-                comparedTo.enableAudioChangeAndroidMinimumBufferCapacity == enableAudioChangeAndroidMinimumBufferCapacity &&
-                comparedTo.audioAndroidMiniumBufferCapacity == audioAndroidMiniumBufferCapacity &&
-                comparedTo.vibrationLevel == vibrationLevel &&
-                comparedTo.vibrationIntensity == vibrationIntensity &&
-                comparedTo.usingNewVibrationSetting == usingNewVibrationSetting &&
-                comparedTo.motionBlur == motionBlur &&
-                comparedTo.gyroAiming == gyroAiming &&
-                comparedTo.firstHDRSetting == firstHDRSetting &&
-                comparedTo.maxLuminosity == maxLuminosity &&
-                comparedTo.uiPaperWhite == uiPaperWhite &&
-                comparedTo.scenePaperWhite == scenePaperWhite &&
-                comparedTo.gammaValue == gammaValue &&
-                comparedTo._overrideControllerMapKeyList == _overrideControllerMapKeyList &&
-                comparedTo._overrideControllerMapValueList  == _overrideControllerMapValueList &&
-                comparedTo.rewiredDisableKeyboard == rewiredDisableKeyboard &&
-                comparedTo.rewiredEnableKeyboard == rewiredEnableKeyboard &&
-                comparedTo.rewiredEnableEDS == rewiredEnableEDS &&
-                comparedTo.disableRewiredDelayInit == disableRewiredDelayInit &&
-                comparedTo.disableRewiredInitProtection == disableRewiredInitProtection &&
-                comparedTo.lastSeenPreDownloadTime == lastSeenPreDownloadTime &&
-                comparedTo.enableEffectAssembleInEditor == enableEffectAssembleInEditor &&
-                comparedTo.forceDisableQuestResourceManagement == forceDisableQuestResourceManagement &&
-                comparedTo.needReportQuestResourceDeleteStatusFiles == needReportQuestResourceDeleteStatusFiles &&
-                comparedTo.mtrCached == mtrCached &&
-                comparedTo.mtrIsOpen == mtrIsOpen &&
-                comparedTo.mtrMaxTTL == mtrMaxTTL &&
-                comparedTo.mtrTimeOut == mtrTimeOut &&
-                comparedTo.mtrTraceCount == mtrTraceCount &&
-                comparedTo.mtrAbortTimeOutCount == mtrAbortTimeOutCount &&
-                comparedTo.mtrAutoTraceInterval == mtrAutoTraceInterval &&
-                comparedTo.mtrTraceCDEachReason == mtrTraceCDEachReason &&
-                comparedTo.mtrTimeInterval == mtrTimeInterval &&
-                comparedTo.mtrBanReasons == mtrBanReasons &&
-                comparedTo._customDataKeyList == _customDataKeyList &&
-                comparedTo._customDataValueList == _customDataValueList &&
-                comparedTo._serializedCodeSwitches == _serializedCodeSwitches &&
-                comparedTo.urlCheckCached == urlCheckCached &&
-                comparedTo.urlCheckIsOpen == urlCheckIsOpen &&
-                comparedTo.urlCheckAllIP == urlCheckAllIP &&
-                comparedTo.urlCheckTimeOut == urlCheckTimeOut &&
-                comparedTo.urlCheckSueecssTraceCount == urlCheckSueecssTraceCount &&
-                comparedTo.urlCheckErrorTraceCount == urlCheckErrorTraceCount &&
-                comparedTo.urlCheckAbortTimeOutCount == urlCheckAbortTimeOutCount &&
-                comparedTo.urlCheckTimeInterval == urlCheckTimeInterval &&
-                comparedTo.urlCheckCDEachReason == urlCheckCDEachReason &&
-                comparedTo.urlCheckBanReasons == urlCheckBanReasons &&
-                comparedTo.mtrUseOldWinVersion == mtrUseOldWinVersion &&
-                comparedTo.greyTestDeviceUniqueId == greyTestDeviceUniqueId;
-        }
-#nullable disable
+        public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

@@ -65,14 +65,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(SFXVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.SFXVol == this.SFXVol;
-        }
-#nullable disable
+        public bool Equals(SFXVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

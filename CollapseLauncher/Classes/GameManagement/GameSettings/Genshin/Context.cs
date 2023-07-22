@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.GameSettings.Genshin.Context
 {

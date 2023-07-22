@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;

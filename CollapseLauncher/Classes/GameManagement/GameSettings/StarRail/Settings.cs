@@ -18,7 +18,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         public MasterVolume AudioSettings_Master { get; set; }
         public SFXVolume AudioSettings_SFX { get; set; }
         public VOVolume AudioSettings_VO { get; set; }
-        public LocalAudioLanguage AudioLanguage { get; set; } 
+        public LocalAudioLanguage AudioLanguage { get; set; }
         public LocalTextLanguage TextLanguage { get; set; }
 
         public StarRailSettings()

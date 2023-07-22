@@ -192,28 +192,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(PersonalGraphicsSettingV2? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.UseHDR == this.UseHDR &&
-                comparedTo.UseFXAA == this.UseFXAA &&
-                comparedTo.UsePostFX == this.UsePostFX &&
-                comparedTo.ResolutionQuality == this.ResolutionQuality &&
-                comparedTo.ReflectionQuality == this.ReflectionQuality &&
-                comparedTo.ShadowLevel == this.ShadowLevel &&
-                comparedTo.AmbientOcclusion == this.AmbientOcclusion &&
-                comparedTo.GlobalIllumination == this.GlobalIllumination &&
-                comparedTo.LodGrade == this.LodGrade &&
-                comparedTo.PostFXGrade == this.PostFXGrade &&
-                comparedTo.TargetFrameRateForInLevel == this.TargetFrameRateForInLevel &&
-                comparedTo.TargetFrameRateForOthers == this.TargetFrameRateForOthers &&
-                comparedTo.UseDistortion == this.UseDistortion &&
-                comparedTo.UseDynamicBone == this.UseDynamicBone &&
-                comparedTo.VolumetricLight == this.VolumetricLight;
-        }
-#nullable disable
+        public bool Equals(PersonalGraphicsSettingV2? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

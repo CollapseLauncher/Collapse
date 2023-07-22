@@ -93,14 +93,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-       public bool Equals(LocalAudioLanguage? comparedTo)
-       {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.LocalAudioLang == this.LocalAudioLang;
-        }
-#nullable disable
+        public bool Equals(LocalAudioLanguage? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

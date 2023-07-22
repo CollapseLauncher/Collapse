@@ -65,14 +65,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(MasterVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.MasterVol == this.MasterVol;
-        }
-#nullable disable
+        public bool Equals(MasterVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

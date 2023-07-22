@@ -11,7 +11,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Logger;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
@@ -150,17 +149,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 #endif
         }
 
-        public bool Equals(PCResolution? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.sizeRes == this.sizeRes &&
-                comparedTo.height == this.height &&
-                comparedTo.width == this.width &&
-                comparedTo.isfullScreen == this.isfullScreen;
-        }
-#nullable disable
+        public bool Equals(PCResolution? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

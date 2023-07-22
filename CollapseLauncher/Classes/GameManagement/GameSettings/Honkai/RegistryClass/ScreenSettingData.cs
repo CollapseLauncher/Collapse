@@ -144,17 +144,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
 
-        public bool Equals(ScreenSettingData? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.sizeRes == this.sizeRes &&
-                comparedTo.height == this.height &&
-                comparedTo.width == this.width &&
-                comparedTo.isfullScreen == this.isfullScreen;
-        }
-#nullable disable
+        public bool Equals(ScreenSettingData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

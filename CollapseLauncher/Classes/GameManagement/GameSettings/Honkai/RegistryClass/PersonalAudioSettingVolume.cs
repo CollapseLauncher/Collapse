@@ -111,20 +111,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(PersonalAudioSettingVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.BGMVolumeValue == this.BGMVolumeValue &&
-                comparedTo.CGVolumeValue == this.CGVolumeValue &&
-                comparedTo.ElfVolumeValue == this.ElfVolumeValue &&
-                comparedTo.SoundEffectVolumeValue == this.SoundEffectVolumeValue &&
-                comparedTo.CreateByDefault == this.CreateByDefault &&
-                comparedTo.VoiceVolumeValue == this.VoiceVolumeValue &&
-                comparedTo.MasterVolumeValue == this.MasterVolumeValue;
-        }
-#nullable disable
+        public bool Equals(PersonalAudioSettingVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

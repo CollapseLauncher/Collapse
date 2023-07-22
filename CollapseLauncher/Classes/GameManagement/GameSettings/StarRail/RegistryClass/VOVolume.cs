@@ -65,14 +65,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(VOVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.VOVol == this.VOVol;
-        }
-#nullable disable
+        public bool Equals(VOVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }
