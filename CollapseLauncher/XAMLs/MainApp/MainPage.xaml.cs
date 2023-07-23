@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +20,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
-using WinRT;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -1146,7 +1144,7 @@ namespace CollapseLauncher
                 {
                     string goLastPreviousTag = PreviousTagString[PreviousTagString.Count - 2];
                     NavigationViewItem goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().Where(x => goLastPreviousTag == (string)x.Tag).FirstOrDefault();
-                    
+
                     if (goLastPreviousTag == "settings")
                     {
                         PreviousTag = goLastPreviousTag;

@@ -55,30 +55,28 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        public static async Task<Windows.UI.Color[]> ApplyAccentColor(Page page, Bitmap bitmapinput, int quality)
+        public static async void ApplyAccentColor(Page page, Bitmap bitmapinput, int quality)
         {
-            Windows.UI.Color[] _colors;
             switch (CurrentAppTheme)
             {
                 case AppThemeMode.Light:
-                    _colors = await SetLightColors(bitmapinput, quality);
+                    await SetLightColors(bitmapinput, quality);
                     break;
                 case AppThemeMode.Dark:
-                    _colors = await SetDarkColors(bitmapinput, quality);
+                    await SetDarkColors(bitmapinput, quality);
                     break;
                 default:
                     if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        _colors = await SetLightColors(bitmapinput, quality);
+                        await SetLightColors(bitmapinput, quality);
                     else
-                        _colors = await SetDarkColors(bitmapinput, quality);
+                        await SetDarkColors(bitmapinput, quality);
                     break;
             }
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
-            return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetLightColors(Bitmap bitmapinput, int quality)
+        private static async Task SetLightColors(Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 128, true, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
@@ -86,11 +84,9 @@ namespace CollapseLauncher
             Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
             Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
             Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
-
-            return _colors;
         }
 
-        private static async Task<Windows.UI.Color[]> SetDarkColors(Bitmap bitmapinput, int quality)
+        private static async Task SetDarkColors(Bitmap bitmapinput, int quality)
         {
             Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
             Application.Current.Resources["SystemAccentColor"] = _colors[1];
@@ -98,8 +94,6 @@ namespace CollapseLauncher
             Application.Current.Resources["SystemAccentColorLight2"] = _colors[0];
             Application.Current.Resources["SystemAccentColorLight3"] = _colors[1];
             Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[1]);
-
-            return _colors;
         }
 
         private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
@@ -258,7 +252,7 @@ namespace CollapseLauncher
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
-            await ApplyAccentColor(this, PaletteBitmap, 7);
+            ApplyAccentColor(this, PaletteBitmap, 7);
 
             FadeOutFrontBg();
             FadeOutBackBg();
