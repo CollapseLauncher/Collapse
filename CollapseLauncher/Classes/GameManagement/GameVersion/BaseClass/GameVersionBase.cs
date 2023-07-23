@@ -217,7 +217,6 @@ namespace CollapseLauncher.GameVersioning
 
             // Check if the executable file exist and has the size at least > 2 MiB. If not, then return as false.
             FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, GamePreset.GameExecutableName));
-            if (execFileInfo.Exists) return execFileInfo.Length > 1 << 16;
 
             // Check if the vendor type exist. If not, then return false
             if (VendorTypeProp.GameName == null || !VendorTypeProp.VendorType.HasValue) return false;

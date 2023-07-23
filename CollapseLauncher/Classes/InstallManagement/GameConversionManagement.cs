@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.SharpHDiffPatch;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -159,13 +160,16 @@ namespace CollapseLauncher
                     {
                         await Task.Run(() =>
                         {
-                            LocalHash = Entry.DataType != FileType.Blocks ?
-                                BytesToCRC32Simple(fs) :
-                                CreateMD5Shared(fs);
+                            LocalHash = Entry.CurrCRC.Length > 8 ?
+                                CreateMD5Shared(fs) :
+                                BytesToCRC32Simple(fs);
 
                             Token.ThrowIfCancellationRequested();
                             if (LocalHash.ToLower() != Entry.CurrCRC)
+                            {
+                                LogWriteLine($"File {Entry.FileName} has unmatched hash. Local: {LocalHash.ToLower()} Remote: {Entry.CurrCRC}", LogType.Warning, true);
                                 BrokenManifest.Add(Entry);
+                            }
                         }, Token);
                     }
                 }
@@ -278,10 +282,6 @@ namespace CollapseLauncher
                 ConvertStatus, ConvertDetail);
         }
 
-        FileSystemWatcher ConvertFsWatcher;
-
-        long ConvertRead = 0;
-        long ConvertTotalSize = 0;
         public async Task StartConversion()
         {
             ResetSw();
@@ -294,26 +294,20 @@ namespace CollapseLauncher
                     TryDirectoryDelete(OutputPath, true);
 
                 Directory.CreateDirectory(OutputPath);
-                ConvertTotalSize = TargetFileManifest.Sum(x => x.FileSize);
 
-                ConvertFsWatcher = new FileSystemWatcher()
+                EventListener.PatchEvent += EventListener_PatchEvent;
+
+                await Task.Run(() =>
                 {
-                    Path = OutputPath,
-                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
-                                 | NotifyFilters.Size,
-                    IncludeSubdirectories = true,
-                    EnableRaisingEvents = true
-                };
+                    HDiffPatch patch = new HDiffPatch();
+                    patch.Initialize(CookbookPath);
+                    patch.Patch(IngredientsPath, OutputPath, false, Token);
+                }, Token);
 
-                ConvertFsWatcher.Created += ConvertFsWatcher_Created;
-
-                await Task.Run(() => new HPatchUtil().HPatchDir(IngredientsPath, CookbookPath, OutputPath), Token);
                 TryDirectoryDelete(IngredientsPath, true);
                 TryFileDelete(CookbookPath);
                 MoveMiscSourceFiles(SourceProfile.ActualGameDataLocation, OutputPath);
                 TryDirectoryDelete(SourceProfile.ActualGameDataLocation, true);
-
-                ConvertFsWatcher.Created -= ConvertFsWatcher_Created;
             }
             catch (Exception ex)
             {
@@ -329,6 +323,16 @@ namespace CollapseLauncher
                 LogWriteLine($"Conversion process has failed! But don't worry, the files have been reverted :D\r\n{ex}", LogType.Error, true);
                 throw new Exception($"Conversion process has failed! But don't worry, the file have been reverted :D\r\n{ex}", ex);
             }
+            finally
+            {
+                EventListener.PatchEvent -= EventListener_PatchEvent;
+            }
+        }
+
+        private void EventListener_PatchEvent(object sender, PatchEvent e)
+        {
+            ConvertDetail = string.Format(Lang._Misc.Converting, "");
+            UpdateProgress(e.CurrentSizePatched, e.TotalSizeToBePatched, 1, 1, e.TimeLeft, ConvertStatus, ConvertDetail);
         }
 
         private void TryFileDelete(string Input)
@@ -387,19 +391,6 @@ namespace CollapseLauncher
                         Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
                     File.Move(_Entry, OutputFile);
                 }
-            }
-        }
-
-        string lastName = null;
-        private void ConvertFsWatcher_Created(object sender, FileSystemEventArgs e)
-        {
-            if (!Directory.Exists(e.FullPath))
-            {
-                ConvertDetail = string.Format(Lang._Misc.Converting, e.Name);
-                UpdateProgress(ConvertRead, ConvertTotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
-                if (lastName != null)
-                    ConvertRead += new FileInfo(lastName).Length;
-                lastName = e.FullPath;
             }
         }
 
