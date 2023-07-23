@@ -11,6 +11,8 @@ namespace CollapseLauncher
             if (self == null && to == null) return true;
             // Check if the reference is equal
             if (ReferenceEquals(self, to)) return true;
+            // Check if either both of them are null
+            if ((self == null && to != null) || (self != null && to == null)) return false;
 
             // Get the type of the instance
             Type type = typeof(T);
