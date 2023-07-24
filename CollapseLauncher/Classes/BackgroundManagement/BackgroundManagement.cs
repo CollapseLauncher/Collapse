@@ -1,7 +1,6 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,12 +12,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -55,73 +52,110 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        public static async void ApplyAccentColor(Page page, Bitmap bitmapinput, int quality)
+        public static async void ApplyAccentColor(Page page, Bitmap bitmapinput)
         {
             switch (CurrentAppTheme)
             {
                 case AppThemeMode.Light:
-                    await SetLightColors(bitmapinput, quality);
+                    await SetLightColors(bitmapinput);
                     break;
                 case AppThemeMode.Dark:
-                    await SetDarkColors(bitmapinput, quality);
+                    await SetDarkColors(bitmapinput);
                     break;
                 default:
                     if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        await SetLightColors(bitmapinput, quality);
+                        await SetLightColors(bitmapinput);
                     else
-                        await SetDarkColors(bitmapinput, quality);
+                        await SetDarkColors(bitmapinput);
                     break;
             }
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private static async Task SetLightColors(Bitmap bitmapinput, int quality)
+        private static async Task SetLightColors(Bitmap bitmapinput)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 128, true, quality);
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, true, 1);
             Application.Current.Resources["SystemAccentColor"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorDark1"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorDark2"] = _colors[2];
-            Application.Current.Resources["SystemAccentColorDark3"] = _colors[3];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
-        }
-
-        private static async Task SetDarkColors(Bitmap bitmapinput, int quality)
-        {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 255, false, quality);
-            Application.Current.Resources["SystemAccentColor"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorLight1"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorLight2"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorLight3"] = _colors[1];
+            Application.Current.Resources["SystemAccentColorDark1"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorDark2"] = _colors[1];
+            Application.Current.Resources["SystemAccentColorDark3"] = _colors[1];
             Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[1]);
         }
 
+        private static async Task SetDarkColors(Bitmap bitmapinput)
+        {
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, false, 1);
+            Application.Current.Resources["SystemAccentColor"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorLight1"] = _colors[0];
+            Application.Current.Resources["SystemAccentColorLight2"] = _colors[1];
+            Application.Current.Resources["SystemAccentColorLight3"] = _colors[0];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
+        }
+
+
+        private static List<QuantizedColor> _generatedColors = new List<QuantizedColor>();
         private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
         {
             byte DefVal = (byte)(IsLight ? 80 : 255);
-            Windows.UI.Color[] output = new Windows.UI.Color[4];
 
             try
             {
-                LumaUtils.DarkThreshold = IsLight ? 300f : 300f;
-                LumaUtils.IgnoreWhiteThreshold = IsLight ? 900f : 750f;
-                LumaUtils.ChangeCoeToBT709();
-                List<QuantizedColor> ThemedColors = await Task.Run(() => ColorThief.GetPalette(bitmapinput, ColorCount, IsLight ? 1 : 1).Where(x => IsLight ? x.IsDark : !x.IsDark).ToList());
+                LumaUtils.DarkThreshold = IsLight ? 200f : 400f;
+                LumaUtils.IgnoreWhiteThreshold = IsLight ? 900f : 800f;
+                if (!IsLight)
+                    LumaUtils.ChangeCoeToBT709();
+                else
+                    LumaUtils.ChangeCoeToBT601();
 
-                if (ThemedColors.Count == 0 || ThemedColors.Count < output.Length) throw new Exception($"The image doesn't have {output.Length} matched colors to assign. Fallback to default!");
-                for (int i = 0, j = output.Length - 1; i < output.Length; i++, j--)
+                return await Task.Run(() =>
                 {
-                    output[i] = DrawingColorToColor(ThemedColors[i]);
-                }
+                    _generatedColors.Clear();
+
+                    IEnumerable<QuantizedColor> averageColors = ColorThief.GetPalette(bitmapinput, ColorCount, quality, !IsLight)
+                            .Where(x => IsLight ? x.IsDark : !x.IsDark)
+                            .OrderBy(x => x.Population);
+
+                    QuantizedColor dominatedColor = new QuantizedColor(
+                            Color.FromArgb(
+                                255,
+                                (byte)averageColors.Average(a => a.Color.R),
+                                (byte)averageColors.Average(a => a.Color.G),
+                                (byte)averageColors.Average(a => a.Color.B)
+                            ), (int)averageColors.Average(a => a.Population));
+
+                    _generatedColors.Add(dominatedColor);
+                    _generatedColors.AddRange(averageColors);
+
+                    return EnsureLengthCopyLast(_generatedColors
+                        .Select(DrawingColorToColor)
+                        .ToArray(), 2);
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Warning, true);
-                Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
-                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
             }
 
-            return output;
+            Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
+            return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
+        }
+
+        private static T[] EnsureLengthCopyLast<T>(T[] array, int toLength)
+        {
+            if (array.Length == 0) throw new IndexOutOfRangeException("Array has no content in it");
+            if (array.Length >= toLength) return array;
+
+            T lastArray = array[array.Length - 1];
+            T[] newArray = new T[toLength];
+            Array.Copy(array, newArray, array.Length);
+
+            for (int i = array.Length; i < newArray.Length; i++)
+            {
+                newArray[i] = lastArray;
+            }
+
+            return newArray;
         }
 
         private static Windows.UI.Color DrawingColorToColor(QuantizedColor i) => new Windows.UI.Color { R = i.Color.R, G = i.Color.G, B = i.Color.B, A = i.Color.A };
@@ -252,7 +286,7 @@ namespace CollapseLauncher
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
-            ApplyAccentColor(this, PaletteBitmap, 7);
+            ApplyAccentColor(this, PaletteBitmap);
 
             FadeOutFrontBg();
             FadeOutBackBg();
