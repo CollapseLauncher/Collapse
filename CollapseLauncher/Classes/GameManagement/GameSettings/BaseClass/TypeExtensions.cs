@@ -6,13 +6,18 @@ namespace CollapseLauncher
     public static class TypeExtensions
     {
         public static bool IsInstancePropertyEqual<T>(T self, T to) where T : class
-        {
-            // Check if the value is null
-            if (self == null && to == null) return true;
-            // Check if the reference is equal
-            if (ReferenceEquals(self, to)) return true;
-            // Check if either both of them are null
-            if ((self == null && to != null) || (self != null && to == null)) return false;
+        {   
+            // Check if the one of the value is null, if true check the other value if it's null
+            if (self == null)
+            {
+                if (to != null) return false;
+                else return true;
+            }
+            if (to == null)
+            {
+                if (self != null) return false;
+                else return true;
+            }
 
             // Get the type of the instance
             Type type = typeof(T);
