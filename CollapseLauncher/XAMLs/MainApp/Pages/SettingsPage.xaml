@@ -216,14 +216,14 @@
                 </Button>
                 <Button Style="{ThemeResource AccentButtonStyle}" Height="40" Width="300" CornerRadius="20" Margin="0,8,0,8" Tag="https://discord.gg/NAYQ8TT2Ge" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="-4,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" FontSize="14" VerticalAlignment="Center" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{ThemeResource AccentButtonStyle}" Height="40" Width="300" CornerRadius="20" Margin="0,8,0,8" Tag="https://discord.gg/hi3" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="1,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" FontSize="14" VerticalAlignment="Center" FontWeight="Medium"/>
                     </StackPanel>
