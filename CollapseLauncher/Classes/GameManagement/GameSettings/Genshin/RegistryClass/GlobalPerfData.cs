@@ -1,8 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Genshin.Context;
-using Hi3Helper;
 using System.Collections.Generic;
 using System.Text.Json;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
