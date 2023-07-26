@@ -552,10 +552,14 @@ namespace CollapseLauncher
                 // Delta-patch related
                 bool isDeltaPatch = filename.StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
 
+                // Direct X related
+                bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                    || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
+
                 if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
                     && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch
-                    && !isDeltaPatch && !isFlags && !isZip)
+                    && !isDeltaPatch && !isFlags && !isZip && !isDirectX)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);
