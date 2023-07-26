@@ -11,6 +11,7 @@
                 public string PageTitle { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug { get; set; } = LangFallback?._SettingsPage.Debug;
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
+                public string Debug_IncludeGameLogs { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_MultipleInstance { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string ChangeRegionWarning_Toggle { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
                 public string ChangeRegionWarning_Warning { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;
@@ -55,6 +56,7 @@
                 public string AppFiles_ClearImgCachesBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearImgCachesBtn;
                 public string ReportIssueBtn { get; set; } = LangFallback?._SettingsPage.ReportIssueBtn;
                 public string ContributePRBtn { get; set; } = LangFallback?._SettingsPage.ContributePRBtn;
+                public string ContributorListBtn { get; set; } = LangFallback?._SettingsPage.ContributorListBtn;
                 public string About { get; set; } = LangFallback?._SettingsPage.About;
                 public string About_Copyright1 { get; set; } = LangFallback?._SettingsPage.About_Copyright1;
                 public string About_Copyright2 { get; set; } = LangFallback?._SettingsPage.About_Copyright2;

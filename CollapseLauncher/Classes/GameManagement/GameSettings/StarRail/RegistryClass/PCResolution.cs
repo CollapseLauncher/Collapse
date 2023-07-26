@@ -143,9 +143,9 @@ namespace CollapseLauncher.GameSettings.StarRail
             RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
 #if DEBUG
-            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
-            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
-            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
 #endif
         }
 

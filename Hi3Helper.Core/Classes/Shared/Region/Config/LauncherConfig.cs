@@ -187,7 +187,8 @@ namespace Hi3Helper.Shared.Region
 #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
 #endif
-            { "EnableAcrylicEffect", true }
+            { "EnableAcrylicEffect", true },
+            { "IncludeGameLogs", false }
         };
 
         public static void LoadGamePreset()

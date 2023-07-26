@@ -45,7 +45,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         #region Properties
         public List<PerfDataItem> saveItems { get; set; } = new();
         public bool truePortedFromGraphicData { get; set; } = true;
-        public string portedVersion { get; set; } = "OSRELWin3.7.0";
+        public string portedVersion { get; set; } = "OSRELWin3.8.0";
         public bool portedFromGraphicsData { get; set; } = false;
         #endregion
 

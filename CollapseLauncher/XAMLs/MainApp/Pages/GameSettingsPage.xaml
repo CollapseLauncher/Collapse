@@ -32,6 +32,9 @@
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Fullscreen}"
                                                   HorizontalAlignment="Left" VerticalAlignment="Center"
                                                   IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}"/>
+                                        <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionFullscreenExclusive" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_ExclusiveFullscreen}"
                                                   HorizontalAlignment="Left"  VerticalAlignment="Center"
                                                   IsEnabled="{x:Bind IsCanExclusiveFullscreen, Mode=OneWay}"
