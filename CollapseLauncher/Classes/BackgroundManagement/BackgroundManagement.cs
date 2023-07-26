@@ -117,16 +117,16 @@ namespace CollapseLauncher
                         try
                         {
                             IEnumerable<QuantizedColor> averageColors = ColorThief.GetPalette(bitmapinput, ColorCount, quality, !IsLight)
-                                    .Where(x => IsLight ? x.IsDark : !x.IsDark)
-                                    .OrderBy(x => x.Population);
+                                .Where(x => IsLight ? x.IsDark : !x.IsDark)
+                                .OrderBy(x => x.Population);
 
                             QuantizedColor dominatedColor = new QuantizedColor(
-                                    Color.FromArgb(
-                                        255,
-                                        (byte)averageColors.Average(a => a.Color.R),
-                                        (byte)averageColors.Average(a => a.Color.G),
-                                        (byte)averageColors.Average(a => a.Color.B)
-                                    ), (int)averageColors.Average(a => a.Population));
+                                Color.FromArgb(
+                                    255,
+                                    (byte)averageColors.Average(a => a.Color.R),
+                                    (byte)averageColors.Average(a => a.Color.G),
+                                    (byte)averageColors.Average(a => a.Color.B)
+                                ), (int)averageColors.Average(a => a.Population));
 
                             _generatedColors.Add(dominatedColor);
                             _generatedColors.AddRange(averageColors);
