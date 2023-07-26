@@ -112,20 +112,34 @@ namespace CollapseLauncher
                 {
                     _generatedColors.Clear();
 
-                    IEnumerable<QuantizedColor> averageColors = ColorThief.GetPalette(bitmapinput, ColorCount, quality, !IsLight)
-                            .Where(x => IsLight ? x.IsDark : !x.IsDark)
-                            .OrderBy(x => x.Population);
+                    while (true)
+                    {
+                        try
+                        {
+                            IEnumerable<QuantizedColor> averageColors = ColorThief.GetPalette(bitmapinput, ColorCount, quality, !IsLight)
+                                    .Where(x => IsLight ? x.IsDark : !x.IsDark)
+                                    .OrderBy(x => x.Population);
 
-                    QuantizedColor dominatedColor = new QuantizedColor(
-                            Color.FromArgb(
-                                255,
-                                (byte)averageColors.Average(a => a.Color.R),
-                                (byte)averageColors.Average(a => a.Color.G),
-                                (byte)averageColors.Average(a => a.Color.B)
-                            ), (int)averageColors.Average(a => a.Population));
+                            QuantizedColor dominatedColor = new QuantizedColor(
+                                    Color.FromArgb(
+                                        255,
+                                        (byte)averageColors.Average(a => a.Color.R),
+                                        (byte)averageColors.Average(a => a.Color.G),
+                                        (byte)averageColors.Average(a => a.Color.B)
+                                    ), (int)averageColors.Average(a => a.Population));
 
-                    _generatedColors.Add(dominatedColor);
-                    _generatedColors.AddRange(averageColors);
+                            _generatedColors.Add(dominatedColor);
+                            _generatedColors.AddRange(averageColors);
+
+                            break;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            if (ColorCount > 100) throw;
+                            LogWriteLine($"Regenerating colors by adding 20 more colors to generate: {ColorCount} to {ColorCount + 20}", LogType.Warning, true);
+                            ColorCount += 20;
+                        }
+                    }
 
                     return EnsureLengthCopyLast(_generatedColors
                         .Select(DrawingColorToColor)
