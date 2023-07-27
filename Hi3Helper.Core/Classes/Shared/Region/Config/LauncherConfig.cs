@@ -188,7 +188,8 @@ namespace Hi3Helper.Shared.Region
             { "EnableDiscordRPC", false },
 #endif
             { "EnableAcrylicEffect", true },
-            { "IncludeGameLogs", false }
+            { "IncludeGameLogs", false },
+            { "UseDownloadChunksMerging", false }
         };
 
         public static void LoadGamePreset()

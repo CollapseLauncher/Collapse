@@ -516,5 +516,11 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.IsShowRegionChangeWarning = value;
             }
         }
+
+        private bool IsUseDownloadChunksMerging
+        {
+            get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
+            set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
+        }
     }
 }

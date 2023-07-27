@@ -119,10 +119,11 @@
                                 </Button.Flyout>
                             </Button>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,16" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal" HorizontalAlignment="Left">
                             <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="8" SpinButtonPlacementMode="Compact"/>
                             <NumberBox x:Name="ExtractionThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Margin="16,0,0,0" Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" Minimum="0" Maximum="128" Width="128" SpinButtonPlacementMode="Compact"/>
                         </StackPanel>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableDownloadChunksMerging}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsUseDownloadChunksMerging, Mode=TwoWay}"/>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}" Margin="0,4"/>
                         <ToggleSwitch x:Name="ToggleIncludeGameLogs" Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_IncludeGameLogs}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsIncludeGameLogs, Mode=TwoWay}" Margin="0,4" Visibility="Collapsed"/>

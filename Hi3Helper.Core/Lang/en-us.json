@@ -381,7 +381,8 @@
 
     "AppChangeReleaseChannel": "Change to {0} Release Channel",
 
-    "EnableAcrylicEffect":  "Use Acrylic Blur Effect"
+    "EnableAcrylicEffect": "Use Acrylic Blur Effect",
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
   },
 
   "_Misc": {
