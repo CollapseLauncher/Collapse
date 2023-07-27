@@ -31,7 +31,7 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
-        private bool IsLoadFrameCompleted;
+        private bool IsLoadFrameCompleted = true;
         public static bool IsChangeDragArea = true;
 
         private RectInt32[] DragAreaMode_Normal
@@ -935,6 +935,7 @@ namespace CollapseLauncher
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
+            if (!IsLoadFrameCompleted) return;
             if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
 
             NavigationViewItem item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
