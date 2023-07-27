@@ -31,6 +31,7 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
+        private bool IsLoadFrameCompleted;
         public static bool IsChangeDragArea = true;
 
         private RectInt32[] DragAreaMode_Normal
@@ -934,86 +935,56 @@ namespace CollapseLauncher
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.IsSettingsInvoked && PreviousTag != "settings")
+            if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
+
+            NavigationViewItem item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            if (item == null) return;
+
+            string itemTag = (string)item.Tag;
+            if (itemTag == PreviousTag) return;
+
+            switch (itemTag)
             {
-                MainFrameChanger.ChangeMainFrame(typeof(SettingsPage));
-                PreviousTag = "settings";
-                PreviousTagString.Add(PreviousTag);
-                LogWriteLine($"Page changed to App Settings", LogType.Scheme);
-            }
-            else
-            {
-                if (sender.MenuItems.Count != 0)
-                {
-                    var item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
-                    NavView_Navigate(item);
-                }
-                else
-                {
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage), new DrillInNavigationTransitionInfo());
-                }
+                case "launcher":
+                    Navigate(typeof(HomePage), itemTag);
+                    break;
+
+                case "repair":
+                    if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                        Navigate(typeof(UnavailablePage), itemTag);
+                    else
+                        Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "caches":
+                    if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                        Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                    else
+                        Navigate(typeof(UnavailablePage), itemTag);
+                    break;
+
+                case "gamesettings":
+                    Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "starrailgamesettings":
+                    Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "genshingamesettings":
+                    Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
             }
         }
 
         private List<string> PreviousTagString = new List<string>();
 
-        void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
+        void Navigate(Type sourceType, string tagStr)
         {
-            string tagStr = (string)tag.Tag;
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
             PreviousTagString.Add(tagStr);
-        }
-
-        private void NavView_Navigate(NavigationViewItem item)
-        {
-            try
-            {
-                if (!(PreviousTag == (string)item.Tag))
-                {
-                    switch (item.Tag)
-                    {
-                        case "launcher":
-                            Navigate(typeof(HomePage), false, item);
-                            break;
-
-                        case "repair":
-                            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
-                                Navigate(typeof(UnavailablePage), true, item);
-                            else
-                                Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "caches":
-                            if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                                Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), true, item);
-                            else
-                                Navigate(typeof(UnavailablePage), true, item);
-                            break;
-
-                        case "cutscenes":
-                            throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
-
-                        case "gamesettings":
-                            Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "starrailgamesettings":
-                            Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "genshingamesettings":
-                            Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-                    }
-                    LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
+            LogWriteLine($"Page changed to {sourceType.Name} with Tag: {tagStr}", LogType.Scheme);
         }
 
         private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
@@ -1054,8 +1025,10 @@ namespace CollapseLauncher
 
         private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)
         {
+            IsLoadFrameCompleted = false;
             m_appCurrentFrameName = e.FrameTo.Name;
             LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+            IsLoadFrameCompleted = true;
         }
 
         private void SpawnWebView2Panel(Uri URL)
@@ -1132,7 +1105,7 @@ namespace CollapseLauncher
 
         private void NavigationViewControl_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (LauncherFrame.CanGoBack)
+            if (LauncherFrame.CanGoBack && IsLoadFrameCompleted)
             {
                 LauncherFrame.GoBack();
                 if (PreviousTagString.Count < 1) return;
@@ -1155,9 +1128,9 @@ namespace CollapseLauncher
 
                     if (goPreviousNavigationItem != null)
                     {
-                        sender.SelectedItem = goPreviousNavigationItem;
                         PreviousTag = goLastPreviousTag;
                         PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                        sender.SelectedItem = goPreviousNavigationItem;
                     }
                 }
             }
