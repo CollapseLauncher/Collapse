@@ -19,7 +19,7 @@ namespace CollapseLauncher.Interfaces
         ValueTask<bool> UninstallGame();
         void Flush();
         void CancelRoutine();
-        bool IsPreloadCompleted();
+        ValueTask<bool> IsPreloadCompleted();
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();

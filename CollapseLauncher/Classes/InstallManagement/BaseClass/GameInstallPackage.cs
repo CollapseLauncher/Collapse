@@ -70,11 +70,35 @@ namespace CollapseLauncher.InstallManager
             }
         }
 
+        public bool IsReadStreamExist(int count)
+        {
+            // Check if the single file exist or not
+            FileInfo fileInfo = new FileInfo(PathOutput);
+            if (fileInfo.Exists)
+                return true;
+
+            // Check for the chunk files
+            return Enumerable.Range(0, count).All(chunkID =>
+            {
+                // Get the hash number
+                long ID = Http.GetHashNumber(count, chunkID);
+                // Append the hash number to the path
+                string path = $"{PathOutput}.{ID}";
+                // Get the file info
+                FileInfo fileInfo = new FileInfo(path);
+                // Check if the file exist
+                return fileInfo.Exists;
+            });
+        }
+
         public Stream GetReadStream(int count)
         {
+            // Get the file info of the single file
             FileInfo fileInfo = new FileInfo(PathOutput);
+            // Check if the file exist and the length is equal to the size
             if (fileInfo.Exists && fileInfo.Length == Size)
             {
+                // Return the stream for read
                 return fileInfo.Open(new FileStreamOptions
                 {
                     Access = FileAccess.Read,
@@ -85,6 +109,7 @@ namespace CollapseLauncher.InstallManager
                 });
             }
 
+            // If the single file doesn't exist, then try getting chunk stream
             return GetCombinedStreamFromPackageAsset(count);
         }
 
@@ -119,14 +144,20 @@ namespace CollapseLauncher.InstallManager
 
         private CombinedStream GetCombinedStreamFromPackageAsset(int count)
         {
+            // Set the array
             FileStream[] streamList = new FileStream[count];
+            // Enumerate the ID
             for (int i = 0; i < streamList.Length; i++)
             {
+                // Get the hash ID
                 long ID = Http.GetHashNumber(count, i);
+                // Append hash ID to the path
                 string path = $"{PathOutput}.{ID}";
+                // Get the file info and check if the file exist
                 FileInfo fileInfo = new FileInfo(path);
                 if (fileInfo.Exists)
                 {
+                    // Allocate to the array and open the stream
                     streamList[i] = fileInfo.Open(new FileStreamOptions
                     {
                         Access = FileAccess.Read,
@@ -135,12 +166,15 @@ namespace CollapseLauncher.InstallManager
                         Options = FileOptions.None,
                         Share = FileShare.Read
                     });
+                    // Then go back to the loop routine
                     continue;
                 }
 
+                // If not found, then throw
                 throw new FileNotFoundException($"File chunk doesn't exist in this path! -> {path}");
             }
 
+            // Assign the array and initiate it as a combined stream
             return new CombinedStream(streamList);
         }
 

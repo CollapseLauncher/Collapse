@@ -105,7 +105,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
         }
 
-        public override bool IsPreloadCompleted()
+        public override async ValueTask<bool> IsPreloadCompleted()
         {
             // Get the primary file first check
             List<RegionResourceVersion> resource = _gameVersionManager.GetGamePreloadZip();

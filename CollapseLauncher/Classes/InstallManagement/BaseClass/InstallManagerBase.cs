@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -46,6 +45,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected bool _canDeleteZip { get => !File.Exists(Path.Combine(_gamePath, "@NoDeleteZip")); }
         protected bool _canSkipVerif { get => File.Exists(Path.Combine(_gamePath, "@NoVerification")); }
         protected bool _canSkipExtract { get => File.Exists(Path.Combine(_gamePath, "@NoExtraction")); }
+        protected bool _canMergeDownloadChunks { get => LauncherConfig.GetAppConfigValue("UseDownloadChunksMerging").ToBool(); }
         protected virtual bool _canDeltaPatch { get => false; }
         protected virtual DeltaPatchProperty _gameDeltaPatchProperty { get => null; }
 
@@ -380,35 +380,51 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
 
-        public virtual bool IsPreloadCompleted()
+        public virtual async ValueTask<bool> IsPreloadCompleted()
         {
-            GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true).Wait();
-            bool resultSlice = false, resultZip=false;
-            foreach (GameInstallPackage asset in _assetIndex)
-            {
-                LogWriteLine(asset.PathOutput);
-                try
-                {
-                    resultSlice= asset.Segments != null && asset.Segments.Count != 0 ?
-                     asset.Segments.Select(selector: x => x.GetReadStream(_downloadThreadCount)).ToArray().Length>0 : asset.GetReadStream(_downloadThreadCount).Length>0;
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine(ex.ToString(), LogType.Default);
-                    continue;
-                }
-            }
-            resultZip = _gameVersionManager.GetGamePreloadZip().All(x =>
-            {
-                string name = Path.GetFileName(x.path);
-                string path = Path.Combine(_gamePath, name);
+            // Get the latest package list and await
+            await GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true);
+            // Get the total size of the packages
+            long totalPackageSize = _assetIndex.Sum(x => x.Size);
 
-                return File.Exists(path);
-            });
-            if (resultZip) LogWriteLine("Zip Found");
-            if (resultSlice) LogWriteLine("Slices found");
-            return resultSlice || resultZip;
+            // Get the sum of the total size of the single or segmented packages
+            return _assetIndex.Sum(asset =>
+            {
+                // Check if the package is segmented
+                if (asset.Segments != null && asset.Segments.Count != 0)
+                {
+                    // Get the sum of the total size/length for each of its streams
+                    return asset.Segments.Sum(segment =>
+                    {
+                        // Check if the read stream exist
+                        if (segment.IsReadStreamExist(_downloadThreadCount))
+                        {
+                            // Get the stream of the segment and using (and auto dispose) it
+                            using Stream segmentStream = segment.GetReadStream(_downloadThreadCount);
+                            // Return the size/length of the stream
+                            return segmentStream.Length;
+                        }
+                        // If not, then return 0
+                        return 0;
+                    });
+                }
 
+                // If segment is none, check if the single stream exist
+                if (asset.IsReadStreamExist(_downloadThreadCount))
+                {
+                    // If yes, then using single stream
+                    using Stream singleStream = asset.GetReadStream(_downloadThreadCount);
+                    // Return the size of the stream
+                    return singleStream.Length;
+                }
+
+                // If neither of both exist, then return 0
+                return 0;
+            }) == totalPackageSize; // Then compare if the total package size is equal
+
+            // Note:
+            // x.GetReadStream() will check if the single package/zip exist.
+            // So checking the fully downloaded single package is unnecessary.
         }
 
         public async Task MoveGameLocation()
@@ -975,7 +991,10 @@ namespace CollapseLauncher.InstallManager.Base
                 _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Merging, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
                 UpdateStatus();
                 _stopwatch.Stop();
-                await _httpClient.Merge();
+                if (_canMergeDownloadChunks)
+                {
+                    await _httpClient.Merge();
+                }
                 _stopwatch.Start();
             }
 

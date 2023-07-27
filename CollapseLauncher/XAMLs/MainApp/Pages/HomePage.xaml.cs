@@ -665,7 +665,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Preload
-        private void SpawnPreloadBox()
+        private async void SpawnPreloadBox()
         {
             PreloadDialogBox.Translation += Shadow48;
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
@@ -688,7 +688,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
 
-            if (!PageStatics._GameInstall.IsPreloadCompleted())
+            if (!await PageStatics._GameInstall.IsPreloadCompleted())
             {
                 PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, ver);
             }
