@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using System.Collections.Generic;
 using System.Text.Json;
+using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
@@ -71,7 +72,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             };
             string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GlobalPerfDataContext.Default);
 #if DEBUG
-            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
+            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", Hi3Helper.LogType.Debug, true);
 #endif
             return data;
         }
