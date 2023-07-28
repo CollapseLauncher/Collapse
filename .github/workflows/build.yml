@@ -1,5 +1,6 @@
 # Credits to @Scighost from Starward for his contributions!
 name: Build-Canary
+run-name: Canary Build for ${{ github.ref }}
 
 on:
   workflow_dispatch:
@@ -45,6 +46,10 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set outputs
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
     - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
       id: cache-dotnet
       uses: actions/cache@v3
@@ -88,5 +93,5 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
+          name: collapse_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
           path: ./CollapseLauncher/bin/x64/Release/net7.0-windows10.0.22000.0/
