@@ -625,7 +625,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 .Deserialize(
                                     listReader.ReadLine(),
                                     typeof(PkgVersionProperties),
-                                    PkgVersionPropertiesContext.Default);
+                                    CoreLibraryJSONContext.Default);
 
                             string filePath = Path.Combine(_gamePath, prop.remoteName + ".hdiff");
                             if (File.Exists(filePath))
@@ -777,7 +777,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value = Encoding.UTF8.GetString(keyValue);
-                config = (BHI3LInfo?)JsonSerializer.Deserialize(value, typeof(BHI3LInfo), BHI3LInfoContext.Default);
+                config = (BHI3LInfo?)JsonSerializer.Deserialize(value, typeof(BHI3LInfo), CoreLibraryJSONContext.Default);
             }
             catch (Exception ex)
             {

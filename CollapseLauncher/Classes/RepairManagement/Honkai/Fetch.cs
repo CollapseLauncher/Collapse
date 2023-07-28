@@ -283,7 +283,7 @@ namespace CollapseLauncher
 
                 // Deserialize metadata
                 mfs.Position = 0;
-                return (Dictionary<string, string>)JsonSerializer.Deserialize(mfs, typeof(Dictionary<string, string>), D_StringString.Default);
+                return (Dictionary<string, string>)JsonSerializer.Deserialize(mfs, typeof(Dictionary<string, string>), CoreLibraryJSONContext.Default);
             }
         }
 

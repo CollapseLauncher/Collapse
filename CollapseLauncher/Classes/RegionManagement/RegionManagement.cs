@@ -196,7 +196,7 @@ namespace CollapseLauncher
 
         private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
         {
-            _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, RegionResourcePropContext.Default, token);
+            _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, CoreLibraryJSONContext.Default, token);
 #if DEBUG
             if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
             if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
@@ -217,11 +217,11 @@ namespace CollapseLauncher
         }
 
         private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
-            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), RegionResourcePropContext.Default, token);
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), CoreLibraryJSONContext.Default, token);
 
 
         private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfigV2 Preset)
-            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, RegionResourcePropContext.Default, token);
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, CoreLibraryJSONContext.Default, token);
 
         private void ResetRegionProp()
         {

@@ -13,7 +13,7 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class HonkaiSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
     {
         #region PresetProperties
-        public Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context> Preset_SettingsGraphics { get; set; }
+        public Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext> Preset_SettingsGraphics { get; set; }
         #endregion
 
         #region SettingProperties
@@ -50,7 +50,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCollapseScreen = CollapseScreenSetting.Load();
 
             // Load Preset
-            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context>.LoadPreset(GameType.Honkai, D_PersonalGraphicsSettingV2Context.Default);
+            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameType.Honkai, HonkaiSettingsJSONContext.Default);
         }
 
         public void ReloadSettings() => InitializeSettings();

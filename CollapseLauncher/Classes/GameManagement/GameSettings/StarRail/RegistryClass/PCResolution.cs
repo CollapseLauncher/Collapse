@@ -105,7 +105,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), PCResolutionContext.Default) ?? new PCResolution();
+                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), StarRailSettingsJSONContext.Default) ?? new PCResolution();
                 }
             }
             catch (Exception ex)
@@ -122,7 +122,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PCResolution), PCResolutionContext.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(PCResolution), StarRailSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

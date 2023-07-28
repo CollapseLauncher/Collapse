@@ -40,7 +40,7 @@ namespace CollapseLauncher
             {
                 if (!File.Exists(filePath)) throw new FileNotFoundException("Community Tools file is not found!", filePath);
 
-                return (CommunityToolsProperty)JsonSerializer.Deserialize(File.ReadAllText(filePath), typeof(CommunityToolsProperty), CommunityToolsPropertyContext.Default);
+                return (CommunityToolsProperty)JsonSerializer.Deserialize(File.ReadAllText(filePath), typeof(CommunityToolsProperty), InternalAppJSONContext.Default);
             }
             catch (Exception ex)
             {

@@ -73,7 +73,7 @@ namespace CollapseLauncher
                 await FallbackCDNUtil.DownloadCDNFallbackContent(client, ms, relativePath, default);
                 ms.Position = 0;
 
-                return (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default);
+                return (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), InternalAppJSONContext.Default);
             }
         }
 

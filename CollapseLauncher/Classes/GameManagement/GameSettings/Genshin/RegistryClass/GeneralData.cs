@@ -293,7 +293,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                     JsonSerializerOptions options = new JsonSerializerOptions()
                     {
-                        TypeInfoResolver = GeneralDataContext.Default,
+                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                     };
                     GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), options) ?? new GeneralData();
@@ -320,7 +320,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
                 JsonSerializerOptions options = new JsonSerializerOptions()
                 {
-                    TypeInfoResolver = GeneralDataContext.Default,
+                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                 };
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), options) + '\0';

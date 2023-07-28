@@ -348,7 +348,7 @@ namespace CollapseLauncher
                     {
                         await FallbackCDNUtil.DownloadCDNFallbackContent(_http, fs, string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
                         fs.Position = 0;
-                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), NotificationPushContext.Default);
+                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), InternalAppJSONContext.Default);
                         IsLoadNotifComplete = true;
 
                         NotificationData.EliminatePushList();

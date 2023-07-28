@@ -153,7 +153,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #nullable enable
         public static GraphicsData Load(string graphicsJson)
         {
-            GraphicsData graphics = (GraphicsData?)JsonSerializer.Deserialize(graphicsJson, typeof(GraphicsData), GraphicsDataContext.Default) ?? new GraphicsData();
+            GraphicsData graphics = (GraphicsData?)JsonSerializer.Deserialize(graphicsJson, typeof(GraphicsData), GenshinSettingsJSONContext.Default) ?? new GraphicsData();
             foreach (GenshinKeyValuePair setting in graphics.customVolatileGrades)
             {
                 switch (setting.key)
@@ -301,7 +301,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
             JsonSerializerOptions options = new JsonSerializerOptions()
             {
-                TypeInfoResolver = GraphicsDataContext.Default,
+                TypeInfoResolver = GenshinSettingsJSONContext.Default,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 

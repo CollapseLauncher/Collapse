@@ -70,7 +70,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (15,(int) graphics.SubsurfaceScattering - 1, version),
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
             };
-            string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GlobalPerfDataContext.Default);
+            string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GenshinSettingsJSONContext.Default);
 #if DEBUG
             LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", Hi3Helper.LogType.Debug, true);
 #endif

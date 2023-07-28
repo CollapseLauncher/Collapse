@@ -226,7 +226,7 @@ namespace Hi3Helper.Preset
                 }
 
                 regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-                GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default);
+                GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), CoreLibraryJSONContext.Default);
                 return RegValues?.deviceVoiceLanguageType ?? 2;
             }
             catch (JsonException ex)
@@ -274,13 +274,13 @@ namespace Hi3Helper.Preset
                     result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
                     if (result is null) return;
                     regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
+                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), CoreLibraryJSONContext.Default) ?? initValue;
                 }
 
                 initValue.deviceVoiceLanguageType = LangID;
                 keys.SetValue("GENERAL_DATA_h2389025596",
                     Encoding.UTF8.GetBytes(
-                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), CoreLibraryJSONContext.Default) + '\0'));
             }
             catch (Exception ex)
             {
@@ -325,7 +325,7 @@ namespace Hi3Helper.Preset
 
             try
             {
-                return (int?)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName) ?? 0;
+                return (int?)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), CoreLibraryJSONContext.Default))?.selectedServerName) ?? 0;
             }
             catch (Exception ex)
             {
