@@ -12,6 +12,7 @@
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<DebugType>portable</DebugType>
 		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
