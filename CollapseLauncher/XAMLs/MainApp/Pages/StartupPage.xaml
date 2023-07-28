@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource PagesSolidAcrylicBrush}">
     <Grid>
-        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/Images/StartUpBG2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
+        <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/Images/StartupBackground2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="Bg" Margin="32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

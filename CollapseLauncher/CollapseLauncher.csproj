@@ -89,11 +89,11 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
-		<Content Update="Assets\Images\StartUpBG.png">
+		<Content Update="Assets\Images\StartupBackground.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
-		<Content Update="Assets\Images\StartUpBG2.png">
+		<Content Update="Assets\Images\StartupBackground2.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     

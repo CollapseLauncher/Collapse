@@ -14,7 +14,7 @@
         <s:AttachedDropShadow x:Key="DetailsTextShadowController" BlurRadius="8" Opacity="1" CastTo="{x:Bind GameDetailsTextShadow}"/>
     </Page.Resources>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <Image Source="ms-appx:///Assets/Images/StartUpBG2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
+        <Image Source="ms-appx:///Assets/Images/StartupBackground2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="GameDetails">
             <Image x:Name="GameDetailsPoster"
                VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
