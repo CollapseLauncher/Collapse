@@ -36,12 +36,30 @@ jobs:
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
+      DOTNET_INSTALL_DIR: '.\.dotnet' 
+
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.DOTNET_INSTALL_DIR }}
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7   
+        
+    - name: Cache nuget # cache nuget https://github.com/actions/cache/blob/main/examples.md#c---nuget
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Install .NET
       uses: actions/setup-dotnet@v3
