@@ -626,7 +626,13 @@ namespace CollapseLauncher.Pages
 
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = BtnRunningGame;
-                        GameStartupSetting.IsEnabled = false;
+
+                        //GameStartupSetting.IsEnabled = false;
+                        RepairGameButton.IsEnabled = false;
+                        UninstallGameButton.IsEnabled = false;
+                        ConvertVersionButton.IsEnabled = false;
+                        CustomArgsTextBox.IsEnabled = false;
+
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
@@ -641,7 +647,13 @@ namespace CollapseLauncher.Pages
 
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = BtnStartGame;
-                    GameStartupSetting.IsEnabled = true;
+
+                    //GameStartupSetting.IsEnabled = true;
+                    RepairGameButton.IsEnabled = true;
+                    UninstallGameButton.IsEnabled = true;
+                    ConvertVersionButton.IsEnabled = true;
+                    CustomArgsTextBox.IsEnabled = true;
+
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
 
