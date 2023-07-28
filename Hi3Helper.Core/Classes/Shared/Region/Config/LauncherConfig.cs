@@ -163,7 +163,7 @@ namespace Hi3Helper.Shared.Region
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
-            { "CurrentBackground", "ms-appx:///Assets/BG/default.png" },
+            { "CurrentBackground", "ms-appx:///Assets/Images/default.png" },
             { "DownloadThread", 4 },
             { "ExtractionThread", 0 },
             { "GameFolder", Path.Combine(AppDataFolder, "GameFolder") },
