@@ -53,6 +53,7 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Public Properties
+        public bool IsRunning { get; protected set; }
         #endregion
 
         public InstallManagerBase(UIElement parentUI)
@@ -72,6 +73,7 @@ namespace CollapseLauncher.InstallManager.Base
             _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
+            IsRunning = false;
             Flush();
         }
 
@@ -109,46 +111,59 @@ namespace CollapseLauncher.InstallManager.Base
         {
             ResetToken();
 
+            IsRunning = true;
+
             // Get the game state and run the action for each of them
             GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
             LogWriteLine($"Gathering packages information for installation (State: {gameState})...", LogType.Default, true);
 
-            switch (gameState)
+            try
             {
-                case GameInstallStateEnum.NotInstalled:
-                case GameInstallStateEnum.GameBroken:
-                case GameInstallStateEnum.NeedsUpdate:
-                    await GetLatestPackageList(_assetIndex, gameState, false);
-                    break;
-                case GameInstallStateEnum.InstalledHavePreload:
-                    await GetLatestPackageList(_assetIndex, gameState, true);
-                    break;
+                switch (gameState)
+                {
+                    case GameInstallStateEnum.NotInstalled:
+                    case GameInstallStateEnum.GameBroken:
+                    case GameInstallStateEnum.NeedsUpdate:
+                        await GetLatestPackageList(_assetIndex, gameState, false);
+                        break;
+                    case GameInstallStateEnum.InstalledHavePreload:
+                        await GetLatestPackageList(_assetIndex, gameState, true);
+                        break;
+                }
+
+                // Set the progress bar to indetermined
+                _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
+                _status.IsProgressPerFileIndetermined = true;
+                _status.IsProgressTotalIndetermined = true;
+                UpdateStatus();
+
+                // Start getting the size of the packages
+                await GetPackagesRemoteSize(_assetIndex, _token.Token);
+
+                // Get the remote total size and current total size
+                _progressTotalSize = _assetIndex.Sum(x => x.Size);
+                _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
+
+                // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
+                await CheckDriveFreeSpace(_parentUI, _assetIndex);
+
+                // Sanitize Check: Show dialog for resuming/reset the existing download
+                if (!skipDialog)
+                {
+                    await CheckExistingDownloadAsync(_parentUI, _assetIndex);
+                }
+
+                // Start downloading process
+                await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
             }
-
-            // Set the progress bar to indetermined
-            _status.IsIncludePerFileIndicator = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1) > 1;
-            _status.IsProgressPerFileIndetermined = true;
-            _status.IsProgressTotalIndetermined = true;
-            UpdateStatus();
-
-            // Start getting the size of the packages
-            await GetPackagesRemoteSize(_assetIndex, _token.Token);
-
-            // Get the remote total size and current total size
-            _progressTotalSize = _assetIndex.Sum(x => x.Size);
-            _progressTotalSizeCurrent = GetExistingDownloadPackageSize(_assetIndex);
-
-            // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(_parentUI, _assetIndex);
-
-            // Sanitize Check: Show dialog for resuming/reset the existing download
-            if (!skipDialog)
+            catch
             {
-                await CheckExistingDownloadAsync(_parentUI, _assetIndex);
+                throw;
             }
-
-            // Start downloading process
-            await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
+            finally
+            {
+                IsRunning = false;
+            }
         }
 
         // Bool:  0      -> Indicates that one of the package is failing and need to redownload
@@ -157,6 +172,8 @@ namespace CollapseLauncher.InstallManager.Base
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> StartPackageVerification()
         {
+            IsRunning = true;
+
             // Get the total asset count
             int assetCount = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1);
 
@@ -181,30 +198,41 @@ namespace CollapseLauncher.InstallManager.Base
             _status.IsProgressPerFileIndetermined = false;
             _status.IsProgressTotalIndetermined = false;
 
-            // Iterate the asset
-            foreach (GameInstallPackage asset in _assetIndex)
+            try
             {
-                int returnCode = 0;
-
-                // Iterate if the package has segment
-                if (asset.Segments != null)
+                // Iterate the asset
+                foreach (GameInstallPackage asset in _assetIndex)
                 {
-                    for (int i = 0; i < asset.Segments.Count; i++)
+                    int returnCode = 0;
+
+                    // Iterate if the package has segment
+                    if (asset.Segments != null)
                     {
-                        // Run the package verification routine
-                        if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], _token.Token)) < 1)
+                        for (int i = 0; i < asset.Segments.Count; i++)
                         {
-                            return returnCode;
+                            // Run the package verification routine
+                            if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], _token.Token)) < 1)
+                            {
+                                return returnCode;
+                            }
                         }
+                        continue;
                     }
-                    continue;
-                }
 
-                // Run the package verification routine as a single package
-                if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
-                {
-                    return returnCode;
+                    // Run the package verification routine as a single package
+                    if ((returnCode = await RunPackageVerificationRoutine(asset, _token.Token)) < 1)
+                    {
+                        return returnCode;
+                    }
                 }
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                IsRunning = false;
             }
 
             return 1;
@@ -277,92 +305,107 @@ namespace CollapseLauncher.InstallManager.Base
             asset.DeleteFile(_downloadThreadCount);
         }
 
-        public virtual async Task StartPackageInstallation() => await Task.Run(StartPackageInstallationInner, _token.Token);
-
-        public void StartPackageInstallationInner()
+        public async Task StartPackageInstallation()
         {
-            // Sanity Check: Check if the package list is empty or not
-            if (_assetIndex.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
-
-            // If _canSkipExtract flag is true, then return (skip) the extraction
-            if (_canSkipExtract) return;
-
-            // Start Async Thread
-            // Since the SevenZipTool (especially with the callbacks) can't run under
-            // different thread, so the async call will be called at the start
-
-            // Initialize the zip tool
-            using (SevenZipTool zip = new SevenZipTool())
+            IsRunning = true;
+            try
             {
-                // Get the sum of uncompressed size and
-                // Set progress count to beginning
-                _progressTotalSize = GetAssetIndexTotalUncompressSize(zip, _assetIndex);
-
-                _progressTotalSizeCurrent = 0;
-                _progressTotalCountCurrent = 1;
-                _progressTotalCount = _assetIndex.Count;
-                _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
-                RestartStopwatch();
-
-                // Reset the last size counter
-                _totalLastSizeCurrent = 0;
-
-                // Try unassign read-only and redundant diff files
-                TryUnassignReadOnlyFiles();
-                TryRemoveRedundantHDiffList();
-
-                foreach (GameInstallPackage asset in _assetIndex)
-                {
-                    // Update the status
-                    _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                    _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressTotalIndetermined = false;
-                    UpdateStatus();
-
-                    try
-                    {
-                        // Load the zip
-                        zip.LoadArchive(GetSingleOrSegmentedDownloadStream(asset));
-
-                        // Start extraction
-                        zip.ExtractProgressChanged += ZipProgressAdapter;
-                        zip.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
-
-                        // Get the information about diff and delete list file
-                        FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
-                        FileInfo deleteList = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt"));
-
-                        // If diff list file exist, then rename the file
-                        if (hdiffList.Exists)
-                        {
-                            hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
-                        }
-
-                        // If the delete zip file exist, then rename the file
-                        if (deleteList.Exists)
-                        {
-                            deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
-                        }
-
-                        // Make sure that the ZipTool is getting disposed first
-                        zip?.Dispose();
-
-                        // If the _canDeleteZip flag is true, then delete the zip
-                        if (_canDeleteZip)
-                        {
-                            DeleteSingleOrSegmentedDownloadStream(asset);
-                        }
-                    }
-                    catch (Exception) { throw; }
-                    finally
-                    {
-                        zip.ExtractProgressChanged -= ZipProgressAdapter;
-                        zip?.Dispose();
-                    }
-
-                    _progressTotalCountCurrent++;
-                }
+                await StartPackageInstallationInner();
             }
+            catch
+            {
+                IsRunning = false;
+                throw;
+            }
+        }
+
+        protected virtual async Task StartPackageInstallationInner()
+        {
+            await Task.Run(() =>
+            {
+                // Sanity Check: Check if the package list is empty or not
+                if (_assetIndex.Count == 0) throw new InvalidOperationException("Package list is empty. Make sure you have ran StartPackageDownload() first.");
+
+                // If _canSkipExtract flag is true, then return (skip) the extraction
+                if (_canSkipExtract) return;
+
+                // Start Async Thread
+                // Since the SevenZipTool (especially with the callbacks) can't run under
+                // different thread, so the async call will be called at the start
+
+                // Initialize the zip tool
+                using (SevenZipTool zip = new SevenZipTool())
+                {
+                    // Get the sum of uncompressed size and
+                    // Set progress count to beginning
+                    _progressTotalSize = GetAssetIndexTotalUncompressSize(zip, _assetIndex);
+
+                    _progressTotalSizeCurrent = 0;
+                    _progressTotalCountCurrent = 1;
+                    _progressTotalCount = _assetIndex.Count;
+                    _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
+                    RestartStopwatch();
+
+                    // Reset the last size counter
+                    _totalLastSizeCurrent = 0;
+
+                    // Try unassign read-only and redundant diff files
+                    TryUnassignReadOnlyFiles();
+                    TryRemoveRedundantHDiffList();
+
+                    foreach (GameInstallPackage asset in _assetIndex)
+                    {
+                        // Update the status
+                        _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                        _status.IsProgressPerFileIndetermined = false;
+                        _status.IsProgressTotalIndetermined = false;
+                        UpdateStatus();
+
+                        try
+                        {
+                            // Load the zip
+                            zip.LoadArchive(GetSingleOrSegmentedDownloadStream(asset));
+
+                            // Start extraction
+                            zip.ExtractProgressChanged += ZipProgressAdapter;
+                            zip.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
+
+                            // Get the information about diff and delete list file
+                            FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
+                            FileInfo deleteList = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt"));
+
+                            // If diff list file exist, then rename the file
+                            if (hdiffList.Exists)
+                            {
+                                hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
+                            }
+
+                            // If the delete zip file exist, then rename the file
+                            if (deleteList.Exists)
+                            {
+                                deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
+                            }
+
+                            // Make sure that the ZipTool is getting disposed first
+                            zip?.Dispose();
+
+                            // If the _canDeleteZip flag is true, then delete the zip
+                            if (_canDeleteZip)
+                            {
+                                DeleteSingleOrSegmentedDownloadStream(asset);
+                            }
+                        }
+                        catch (Exception) { throw; }
+                        finally
+                        {
+                            zip.ExtractProgressChanged -= ZipProgressAdapter;
+                            zip?.Dispose();
+                        }
+
+                        _progressTotalCountCurrent++;
+                    }
+                }
+            });
         }
 
         public virtual async Task StartPostInstallVerification()

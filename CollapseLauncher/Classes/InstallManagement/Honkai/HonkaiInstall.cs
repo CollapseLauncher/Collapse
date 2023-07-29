@@ -4,7 +4,6 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
@@ -40,6 +39,7 @@ namespace CollapseLauncher.InstallManager.Honkai
         #region Public Methods
         public override async ValueTask<int> StartPackageVerification()
         {
+            IsRunning = true;
             DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
@@ -86,7 +86,11 @@ namespace CollapseLauncher.InstallManager.Honkai
                         await _gameRepairTool.StartRepairRoutine(true);
                     }
                 }
-                catch { throw; }
+                catch
+                {
+                    IsRunning = false;
+                    throw;
+                }
                 finally
                 {
                     // Unsubscribe the progress event
@@ -101,7 +105,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             return await base.StartPackageVerification();
         }
 
-        public override async Task StartPackageInstallation()
+        protected override async Task StartPackageInstallationInner()
         {
             if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
             {
@@ -158,7 +162,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             }
 
             // If no delta patch is happening, then do the base installation
-            await base.StartPackageInstallation();
+            await base.StartPackageInstallationInner();
         }
 
         public override async ValueTask<bool> TryShowFailedDeltaPatchState()

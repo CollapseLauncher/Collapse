@@ -25,10 +25,10 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
         #region Public Methods
-        public override async Task StartPackageInstallation()
+        protected override async Task StartPackageInstallationInner()
         {
             // Run the base installation process
-            await base.StartPackageInstallation();
+            await base.StartPackageInstallationInner();
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();

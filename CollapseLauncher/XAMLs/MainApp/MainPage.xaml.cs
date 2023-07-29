@@ -293,6 +293,19 @@ namespace CollapseLauncher
 
         private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
         {
+            if (e.IsCustomNotif)
+            {
+                if (e.CustomNotifAction == NotificationCustomAction.Add)
+                {
+                    SpawnNotificationoUI(e.Notification.MsgId, e.OtherContent as InfoBar);
+                }
+                else
+                {
+                    RemoveNotificationUI(e.Notification.MsgId);
+                }
+                return;
+            }
+
             SpawnNotificationPush(e.Notification.Title, e.Notification.Message, e.Notification.Severity,
                 e.Notification.MsgId, e.Notification.IsClosable ?? true, e.Notification.IsDisposable ?? true, e.CloseAction,
                 e.OtherContent, e.IsAppNotif, e.Notification.Show, e.Notification.IsForceShowNotificationPanel);
@@ -544,8 +557,6 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                Grid Container = new Grid();
-
                 StackPanel OtherContentContainer = new StackPanel
                 {
                     Orientation = Orientation.Vertical,
@@ -592,35 +603,64 @@ namespace CollapseLauncher
 
                 Notification.Tag = MsgId;
                 Notification.CloseButtonClick += CloseClickHandler;
-                Notification.Loaded += (a, b) =>
-                {
-                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                    NewNotificationCountBadge.Visibility = Visibility.Visible;
-                    NewNotificationCountBadge.Value++;
-                };
-                Notification.Closed += (s, a) =>
-                {
-                    s.Translation -= Shadow32;
-                    s.Height = 0;
-                    s.Margin = new Thickness(0);
-                    int msg = (int)s.Tag;
 
-                    if (NotificationData.CurrentShowMsgIds.Contains(msg))
-                    {
-                        NotificationData.CurrentShowMsgIds.Remove(msg);
-                    }
-                    NotificationContainer.Children.Remove(Container);
-                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                };
-
-                Container.Children.Add(Notification);
-                NotificationContainer.Children.Add(Container);
+                SpawnNotificationoUI(MsgId, Notification);
 
                 if (ForceShowNotificationPanel && !IsNotificationPanelShow)
                 {
                     this.ForceShowNotificationPanel();
                 }
             });
+        }
+
+        private void SpawnNotificationoUI(int tagID, InfoBar Notification)
+        {
+            Grid Container = new Grid() { Tag = tagID, };
+            Notification.Loaded += (a, b) =>
+            {
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+                NewNotificationCountBadge.Visibility = Visibility.Visible;
+                NewNotificationCountBadge.Value++;
+            };
+
+            Notification.Closed += (s, a) =>
+            {
+                s.Translation -= Shadow32;
+                s.Height = 0;
+                s.Margin = new Thickness(0);
+                int msg = (int)s.Tag;
+
+                if (NotificationData.CurrentShowMsgIds.Contains(msg))
+                {
+                    NotificationData.CurrentShowMsgIds.Remove(msg);
+                }
+                NotificationContainer.Children.Remove(Container);
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+
+                if (NewNotificationCountBadge.Value > 0)
+                {
+                    NewNotificationCountBadge.Value--;
+                }
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+                NewNotificationCountBadge.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            };
+
+            Container.Children.Add(Notification);
+            NotificationContainer.Children.Add(Container);
+        }
+
+        private void RemoveNotificationUI(int tagID)
+        {
+            Grid notif = NotificationContainer.Children.OfType<Grid>().Where(x => (int)x.Tag == tagID).FirstOrDefault();
+            if (notif != null)
+            {
+                NotificationContainer.Children.Remove(notif);
+                InfoBar notifBar = notif.Children.OfType<InfoBar>()?.FirstOrDefault();
+                if (notifBar != null)
+                {
+                    notifBar.IsOpen = false;
+                }
+            }
         }
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)

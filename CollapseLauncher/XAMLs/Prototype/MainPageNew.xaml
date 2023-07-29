@@ -107,7 +107,6 @@
                     </StackPanel>
                 </StackPanel>
             </Button>
-            <Grid Background="White" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
         <Grid x:Name="NotificationLostFocusBackground" Opacity="0" VerticalAlignment="Stretch"
                       Visibility="Collapsed" PointerPressed="NotificationContainerBackground_PointerPressed">
@@ -118,10 +117,10 @@
             <Grid Margin="0,48,0,0" Background="{ThemeResource NotificationLostFocusGradientBG}"/>
         </Grid>
         <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
-                              Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">
-            <ScrollViewer.Transitions>
+                              Margin="0,48,0,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">
+            <!--<ScrollViewer.Transitions>
                 <RepositionThemeTransition/>
-            </ScrollViewer.Transitions>
+            </ScrollViewer.Transitions>-->
             <Grid MinHeight="200" MinWidth="608">
                 <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
                     <StackPanel.OpacityTransition>

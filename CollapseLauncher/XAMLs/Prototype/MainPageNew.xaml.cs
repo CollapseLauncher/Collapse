@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Prototype
@@ -14,6 +13,7 @@ namespace CollapseLauncher.Prototype
             try
             {
                 InitializeComponent();
+                BackgroundActivityManager.Attach(null, null);
             }
             catch (Exception ex)
             {

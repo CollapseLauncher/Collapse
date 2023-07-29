@@ -136,7 +136,6 @@ namespace CollapseLauncher.Pages
             PageToken.Cancel();
             CarouselToken.Cancel();
             PlaytimeToken.Cancel();
-            GC.Collect();
             PageStatics._GameInstall.CancelRoutine();
         }
         #endregion

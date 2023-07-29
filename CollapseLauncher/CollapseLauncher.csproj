@@ -32,6 +32,9 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="XAMLs\Prototype\honkai-logo.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
@@ -62,6 +65,10 @@
     
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Include="XAMLs\Prototype\honkai-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
 		<None Include="..\.editorconfig" Link=".editorconfig" />

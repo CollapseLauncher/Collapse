@@ -55,13 +55,13 @@ namespace CollapseLauncher.InstallManager.Genshin
         }
 
         #region Public Methods
-        public override async Task StartPackageInstallation()
+        protected override async Task StartPackageInstallationInner()
         {
             // Starting from 3.6 update, the Audio files have been moved to "AudioAssets" folder
             EnsureMoveOldToNewAudioDirectory();
 
             // Run the base installation process
-            await base.StartPackageInstallation();
+            await base.StartPackageInstallationInner();
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
