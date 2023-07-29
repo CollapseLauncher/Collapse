@@ -23,10 +23,7 @@ on:
           - "net7.0-windows10.0.22000.0"
           - "net7.0-windows10.0.19041.0"
 
-
-
 jobs:
-
   build:
     runs-on: ${{ github.event.inputs.os }}
     strategy:
@@ -39,16 +36,17 @@ jobs:
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
 
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: recursive
 
-    - name: Set outputs
+    - name: Get short Git SHA
       id: vars
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: | 
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
 
     - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
       id: cache-dotnet
@@ -82,16 +80,16 @@ jobs:
         msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
         dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ github.event.inputs.framework }}
     
-    - name: Upload Artifact (Debug)
-      uses: actions/upload-artifact@v3.1.2
-      if: ${{ matrix.configuration == 'Debug' }}
-      with:
-          name: collapse_${{ github.sha }}.${{ matrix.platform }}-${{ matrix.configuration }}
-          path: ./CollapseLauncher/bin/x64/Debug/net7.0-windows10.0.22000.0/
+#    - name: Upload Artifact (Debug)
+#      uses: actions/upload-artifact@v3.1.2
+#      if: ${{ matrix.configuration == 'Debug' }}
+#      with:
+#          name: collapse_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
+#          path: ./CollapseLauncher/bin/x64/Debug/${{ github.event.inputs.framework }}/
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
-          path: ./CollapseLauncher/bin/x64/Release/net7.0-windows10.0.22000.0/
+          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ github.event.inputs.framework }}_${{ github.sha }}
+          path: ./CollapseLauncher/bin/x64/Release/${{ github.event.inputs.framework }}/
