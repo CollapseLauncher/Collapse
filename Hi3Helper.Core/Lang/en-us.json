@@ -113,6 +113,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
@@ -560,7 +561,10 @@
     "ResetPlaytimeSubtitle2": "destructive",
     "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "LocateExePathTitle": "Locate Executable Install Path",
-    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
+
+    "StopGameTitle": "Force Stop Game",
+    "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress."
   },
 
   "_InstallMgmt": {
