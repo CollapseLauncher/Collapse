@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -14,15 +13,16 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
-        private GameTypeStarRailVersion _gameVersionManager { get => PageStatics._GameVersion as GameTypeStarRailVersion; }
+        private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
         private bool _isOnlyRecoverMain { get; set; }
         #endregion
 
-        public StarRailRepair(UIElement parentUI, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, null, "", versionOverride)
+        public StarRailRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, GameVersionManager, null, "", versionOverride)
         {
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
+            _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
         }
 
         ~StarRailRepair() => Dispose();

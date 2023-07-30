@@ -21,21 +21,21 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, PkgVersionProperties>, IRepair
     {
         #region ExtensionProperties
-        private protected string _execPrefix { get => Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName); }
+        private protected string _execPrefix { get => Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName); }
         private protected int _dispatcherRegionID { get; init; }
-        private protected string _dispatcherURL { get => _gamePreset.GameDispatchURL ?? ""; }
-        private protected string _dispatcherKey { get => _gamePreset.DispatcherKey ?? ""; }
-        private protected int _dispatcherKeyLength { get => _gamePreset.DispatcherKeyBitLength ?? 0x100; }
-        private protected string _gamePersistentPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data", "Persistent"); }
-        private protected string _gameStreamingAssetsPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
+        private protected string _dispatcherURL { get => _gameVersionManager.GamePreset.GameDispatchURL ?? ""; }
+        private protected string _dispatcherKey { get => _gameVersionManager.GamePreset.DispatcherKey ?? ""; }
+        private protected int _dispatcherKeyLength { get => _gameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0x100; }
+        private protected string _gamePersistentPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
+        private protected string _gameStreamingAssetsPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 
-        public GenshinRepair(UIElement parentUI, string gameRepoURL)
-            : base(parentUI, null, gameRepoURL, null)
+        public GenshinRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, string gameRepoURL)
+            : base(parentUI, GameVersionManager, null, gameRepoURL, null)
         {
-            _audioLanguage = (GenshinAudioLanguage)_gamePreset.GetVoiceLanguageID();
-            _dispatcherRegionID = _gamePreset.GetRegServerNameID();
+            _audioLanguage = (GenshinAudioLanguage)_gameVersionManager.GamePreset.GetVoiceLanguageID();
+            _dispatcherRegionID = _gameVersionManager.GamePreset.GetRegServerNameID();
         }
 
         ~GenshinRepair() => Dispose();

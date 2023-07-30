@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Statics;
+﻿using static CollapseLauncher.Statics.GamePropertyVault;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -173,7 +173,7 @@ namespace CollapseLauncher.Dialogs
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, PageStatics._GameVersion.GamePreset.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, CurrentGameProperty._GameVersion.GamePreset.ActualGameDataLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,

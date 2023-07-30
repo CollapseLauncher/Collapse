@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
-using static CollapseLauncher.Statics.PageStatics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -57,7 +57,7 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                bool IsGameBroken = await _GameRepair.StartCheckRoutine(isFast);
+                bool IsGameBroken = await CurrentGameProperty._GameRepair.StartCheckRoutine(isFast);
 
                 RepairFilesBtn.IsEnabled = IsGameBroken;
                 CheckFilesBtn.IsEnabled = !IsGameBroken;
@@ -94,7 +94,7 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                await _GameRepair.StartRepairRoutine();
+                await CurrentGameProperty._GameRepair.StartRepairRoutine();
 
                 RepairFilesBtn.IsEnabled = false;
                 CheckFilesBtn.IsEnabled = true;
@@ -135,8 +135,8 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
-            _GameRepair.ProgressChanged += _repairTool_ProgressChanged;
-            _GameRepair.StatusChanged += _repairTool_StatusChanged;
+            CurrentGameProperty._GameRepair.ProgressChanged += _repairTool_ProgressChanged;
+            CurrentGameProperty._GameRepair.StatusChanged += _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = true;
             RepairPerFileProgressBar.IsIndeterminate = true;
@@ -144,8 +144,8 @@ namespace CollapseLauncher.Pages
 
         private void RemoveEvent()
         {
-            _GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
-            _GameRepair.StatusChanged -= _repairTool_StatusChanged;
+            CurrentGameProperty._GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
+            CurrentGameProperty._GameRepair.StatusChanged -= _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = false;
             RepairPerFileProgressBar.IsIndeterminate = false;
@@ -188,12 +188,12 @@ namespace CollapseLauncher.Pages
 
         private void CancelOperation(object sender, RoutedEventArgs e)
         {
-            _GameRepair?.CancelRoutine();
+            CurrentGameProperty._GameRepair?.CancelRoutine();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _GameRepair?.CancelRoutine();
+            CurrentGameProperty._GameRepair?.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)

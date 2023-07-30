@@ -22,8 +22,13 @@ namespace CollapseLauncher.Interfaces
         GamePropertyBase<T1, T2> where T1 : Enum
                                  where T2 : IAssetIndexSummary
     {
-        public ProgressBase(UIElement parentUI, string gamePath, string gameRepoURL, string versionOverride)
-            : base(parentUI, gamePath, gameRepoURL, versionOverride)
+        public ProgressBase(UIElement parentUI, IGameVersionCheck GameVersionManager, IGameSettings GameSettings, string gamePath, string gameRepoURL, string versionOverride)
+            : base(parentUI, GameVersionManager, GameSettings, gamePath, gameRepoURL, versionOverride) => Init();
+
+        public ProgressBase(UIElement parentUI, IGameVersionCheck GameVersionManager, string gamePath, string gameRepoURL, string versionOverride)
+            : base(parentUI, GameVersionManager, gamePath, gameRepoURL, versionOverride) => Init();
+
+        private void Init()
         {
             _status = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
             _progress = new TotalPerfileProgress();

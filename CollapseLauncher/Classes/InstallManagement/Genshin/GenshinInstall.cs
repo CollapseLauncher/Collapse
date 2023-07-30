@@ -2,6 +2,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -18,11 +19,11 @@ namespace CollapseLauncher.InstallManager.Genshin
     internal class GenshinInstall : InstallManagerBase<GameTypeGenshinVersion>, IGameInstallManager
     {
         #region Override Properties
-        protected override int _gameVoiceLanguageID { get => _gamePreset.GetVoiceLanguageID(); }
+        protected override int _gameVoiceLanguageID { get => _gameVersionManager.GamePreset.GetVoiceLanguageID(); }
         #endregion
 
         #region Private Properties
-        private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data"); }
+        private string _gameDataPath { get => Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data"); }
         private string _gameDataPersistentPath { get => Path.Combine(_gameDataPath, "Persistent"); }
         private string _gameAudioLangListPath
         {
@@ -48,8 +49,8 @@ namespace CollapseLauncher.InstallManager.Genshin
         private string _gameAudioOldPath { get => Path.Combine(_gameDataPath, "StreamingAssets", "Audio", "GeneratedSoundBanks", "Windows"); }
         #endregion
 
-        public GenshinInstall(UIElement parentUI)
-            : base(parentUI)
+        public GenshinInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+            : base(parentUI, GameVersionManager)
         {
 
         }
@@ -198,7 +199,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 packageList.Add(package);
 
                 // Set the voice language ID to value given
-                _gamePreset.SetVoiceLanguageID(langID);
+                _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
 
                 LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }

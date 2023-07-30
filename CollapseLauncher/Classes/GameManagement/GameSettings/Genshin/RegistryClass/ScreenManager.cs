@@ -5,7 +5,7 @@ using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin

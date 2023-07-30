@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 
 namespace CollapseLauncher
 {
@@ -22,7 +23,7 @@ namespace CollapseLauncher
             try
             {
                 // Subscribe the event listener
-                _gameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
+                _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize metadata
                 // Set total activity string as "Fetching Caches Type: Dispatcher"
@@ -30,7 +31,7 @@ namespace CollapseLauncher
                 _status.IsProgressTotalIndetermined = true;
                 _status.IsIncludePerFileIndicator = false;
                 UpdateStatus();
-                await _gameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data\\Persistent"));
+                await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent"));
 
                 // Iterate type and do fetch
                 foreach (SRAssetType type in Enum.GetValues(typeof(SRAssetType)))
@@ -62,7 +63,7 @@ namespace CollapseLauncher
             finally
             {
                 // Unsubscribe the event listener and dispose Http client
-                _gameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
+                _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
 
             // Return asset index
@@ -84,18 +85,18 @@ namespace CollapseLauncher
                 switch (type)
                 {
                     case SRAssetType.IFix:
-                        await _gameVersionManager.StarRailMetadataTool.ReadIFixMetadataInformation(token);
-                        assetProperty = _gameVersionManager.StarRailMetadataTool.MetadataIFix.GetAssets();
+                        await _innerGameVersionManager.StarRailMetadataTool.ReadIFixMetadataInformation(token);
+                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataIFix.GetAssets();
                         assetIndex.AddRange(assetProperty.AssetList);
                         return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
                     case SRAssetType.DesignData:
-                        await _gameVersionManager.StarRailMetadataTool.ReadDesignMetadataInformation(token);
-                        assetProperty = _gameVersionManager.StarRailMetadataTool.MetadataDesign.GetAssets();
+                        await _innerGameVersionManager.StarRailMetadataTool.ReadDesignMetadataInformation(token);
+                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign.GetAssets();
                         assetIndex.AddRange(assetProperty.AssetList);
                         return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
                     case SRAssetType.Lua:
-                        await _gameVersionManager.StarRailMetadataTool.ReadLuaMetadataInformation(token);
-                        assetProperty = _gameVersionManager.StarRailMetadataTool.MetadataLua.GetAssets();
+                        await _innerGameVersionManager.StarRailMetadataTool.ReadLuaMetadataInformation(token);
+                        assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua.GetAssets();
                         assetIndex.AddRange(assetProperty.AssetList);
                         return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
                 }
@@ -112,10 +113,10 @@ namespace CollapseLauncher
         private unsafe string GetExistingGameRegionID()
         {
 #nullable enable
-            object? value = GameSettings.Statics.RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
+            object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             if (value == null)
             {
-                return _gamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
+                return _gameVersionManager.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
             }
 #nullable disable
 

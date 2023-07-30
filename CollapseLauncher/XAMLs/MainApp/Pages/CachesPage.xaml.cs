@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.Statics.PageStatics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -58,7 +58,7 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                bool IsNeedUpdate = await _GameCache.StartCheckRoutine(isFast);
+                bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
 
                 UpdateCachesBtn.IsEnabled = IsNeedUpdate;
                 CheckUpdateBtn.IsEnabled = !IsNeedUpdate;
@@ -95,7 +95,7 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                await _GameCache.StartUpdateRoutine();
+                await CurrentGameProperty._GameCache.StartUpdateRoutine();
 
                 UpdateCachesBtn.IsEnabled = false;
                 CheckUpdateBtn.IsEnabled = true;
@@ -136,16 +136,16 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
-            _GameCache.ProgressChanged += _cacheTool_ProgressChanged;
-            _GameCache.StatusChanged += _cacheTool_StatusChanged;
+            CurrentGameProperty._GameCache.ProgressChanged += _cacheTool_ProgressChanged;
+            CurrentGameProperty._GameCache.StatusChanged += _cacheTool_StatusChanged;
 
             CachesTotalProgressBar.IsIndeterminate = true;
         }
 
         private void RemoveEvent()
         {
-            _GameCache.ProgressChanged -= _cacheTool_ProgressChanged;
-            _GameCache.StatusChanged -= _cacheTool_StatusChanged;
+            CurrentGameProperty._GameCache.ProgressChanged -= _cacheTool_ProgressChanged;
+            CurrentGameProperty._GameCache.StatusChanged -= _cacheTool_StatusChanged;
 
             CachesTotalProgressBar.IsIndeterminate = false;
         }
@@ -189,7 +189,7 @@ namespace CollapseLauncher.Pages
 
         public void CancelOperation(object sender, RoutedEventArgs e)
         {
-            _GameCache?.CancelRoutine();
+            CurrentGameProperty._GameCache?.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
@@ -216,7 +216,7 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _GameCache?.CancelRoutine();
+            CurrentGameProperty._GameCache?.CancelRoutine();
         }
     }
 }

@@ -16,14 +16,14 @@ using System.IO;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper;
 
 namespace CollapseLauncher.Pages
 {
     public partial class StarRailGameSettingsPage : Page
     {
-        private StarRailSettings Settings { get => (StarRailSettings)PageStatics._GameSettings; }
+        private StarRailSettings Settings { get; set; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload = false;
@@ -31,9 +31,11 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                Settings = CurrentGameProperty._GameSettings as StarRailSettings;
+
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
                     RegistryWatcher.Start();
                     ToggleRegistrySubscribe(true);
                 });
@@ -190,11 +192,11 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }

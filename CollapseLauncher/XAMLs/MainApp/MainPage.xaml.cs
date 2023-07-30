@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -285,7 +286,7 @@ namespace CollapseLauncher
         {
             while (true && !App.IsAppKilled)
             {
-                string execName = Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName);
+                string execName = Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
                 await Task.Delay(500);
             }
@@ -921,24 +922,24 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if ((PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if ((CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
 
-                if (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)
+                if (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
                 }
 
-                if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                if (CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
             }
 
-            switch (PageStatics._GameVersion.GameType)
+            switch (CurrentGameProperty._GameVersion.GameType)
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -950,7 +951,7 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -991,14 +992,14 @@ namespace CollapseLauncher
                     break;
 
                 case "repair":
-                    if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                    if (!(CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false))
                         Navigate(typeof(UnavailablePage), itemTag);
                     else
                         Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
                     break;
 
                 case "caches":
-                    if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                    if (CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                         Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);

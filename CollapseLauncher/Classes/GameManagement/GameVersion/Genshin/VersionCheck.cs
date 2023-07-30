@@ -3,7 +3,6 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CollapseLauncher.GameVersioning
 {

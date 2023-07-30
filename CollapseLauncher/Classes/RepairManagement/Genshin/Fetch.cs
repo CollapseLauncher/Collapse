@@ -66,7 +66,7 @@ namespace CollapseLauncher
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(List<PkgVersionProperties> assetIndex)
         {
             // Section: Eliminate unused audio files
-            List<string> audioLangList = (PageStatics._GameVersion as GameTypeGenshinVersion)._audioVoiceLanguageList;
+            List<string> audioLangList = (_gameVersionManager as GameTypeGenshinVersion)._audioVoiceLanguageList;
             string audioLangListPath = Path.Combine(_gamePath, $"{_execPrefix}_Data", "Persistent", "audio_lang_14");
 
             // Get the list of audio lang list
@@ -301,7 +301,7 @@ namespace CollapseLauncher
         private async Task<QueryProperty> GetDispatcherQuery(Http _httpClient, CancellationToken token)
         {
             // Initialize dispatch helper
-            using (GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(_dispatcherRegionID, _gamePreset.ProtoDispatchKey, _dispatcherURL, _gameVersion.VersionString, token))
+            using (GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(_dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey, _dispatcherURL, _gameVersion.VersionString, token))
             {
                 // Get the master decryptor
                 YSDispatchDec dispatchDecryptor = InitializeMasterDecryptor();

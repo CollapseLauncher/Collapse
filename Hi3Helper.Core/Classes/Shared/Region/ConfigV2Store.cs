@@ -68,6 +68,7 @@ namespace Hi3Helper.Preset
                 .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)).LastUpdated;
 
             ConfigV2.DecryptStrings();
+            ConfigV2.GenerateHashID();
         }
 
         public static bool GetConfigV2Regions(string GameCategoryName)

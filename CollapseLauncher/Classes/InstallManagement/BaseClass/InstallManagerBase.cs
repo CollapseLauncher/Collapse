@@ -32,7 +32,6 @@ namespace CollapseLauncher.InstallManager.Base
         #region Properties
         protected readonly string _gamePersistentFolderBasePath;
         protected readonly string _gameStreamingAssetsFolderBasePath;
-        protected T _gameVersionManager { get => (T)PageStatics._GameVersion; }
         protected RegionResourceGame _gameRegion { get => _gameVersionManager.GameAPIProp.data; }
         protected GameVersion _gameLatestVersion { get => _gameVersionManager.GetGameVersionAPI(); }
         protected GameVersion? _gameLatestPreloadVersion { get => _gameVersionManager.GetGameVersionAPIPreload(); }
@@ -56,12 +55,13 @@ namespace CollapseLauncher.InstallManager.Base
         public bool IsRunning { get; protected set; }
         #endregion
 
-        public InstallManagerBase(UIElement parentUI)
-            : base(parentUI, "", "", null)
+        public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
+            : base(parentUI, GameVersionManager, "", "", null)
         {
             _httpClient = new Http(true);
-            _gamePersistentFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data\\Persistent";
-            _gameStreamingAssetsFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName)}_Data\\StreamingAssets";
+            _gameVersionManager = GameVersionManager;
+            _gamePersistentFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent";
+            _gameStreamingAssetsFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\StreamingAssets";
         }
 
         ~InstallManagerBase() => Dispose();
@@ -479,7 +479,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
-            switch (await Dialog_UninstallGame(_parentUI, GameFolder, _gamePreset.ZoneFullname))
+            switch (await Dialog_UninstallGame(_parentUI, GameFolder, _gameVersionManager.GamePreset.ZoneFullname))
             {
                 case ContentDialogResult.Primary:
                     try
@@ -490,7 +490,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         LogWriteLine($"Failed while deleting the game folder: {GameFolder}\r\n{ex}", LogType.Error, true);
                     }
-                    PageStatics._GameVersion.Reinitialize();
+                    _gameVersionManager.Reinitialize();
                     return true;
                 default:
                     return false;
@@ -750,13 +750,13 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async ValueTask<int> CheckExistingOfficialInstallation()
         {
-            if (_gamePreset.CheckExistingGame())
+            if (_gameVersionManager.GamePreset.CheckExistingGame())
             {
                 switch (await Dialog_ExistingInstallation(_parentUI))
                 {
                     // If action to migrate was taken, then update the game path (but don't save it to the config file)
                     case ContentDialogResult.Primary:
-                        _gameVersionManager.UpdateGamePath(_gamePreset.ActualGameDataLocation.Replace('\\', '/'), false);
+                        _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation.Replace('\\', '/'), false);
                         return 0;
                     // If action to fresh install was taken, then return 2 (selecting path)
                     case ContentDialogResult.Secondary:
@@ -774,9 +774,9 @@ namespace CollapseLauncher.InstallManager.Base
         private bool TryGetExistingSteamPath(ref string OutputPath)
         {
             // If the game preset doesn't have SteamGameID, then return false
-            if (_gamePreset.SteamGameID == null) return false;
+            if (_gameVersionManager.GamePreset.SteamGameID == null) return false;
             // Assign Steam ID
-            int steamID = _gamePreset.SteamGameID ?? 0;
+            int steamID = _gameVersionManager.GamePreset.SteamGameID ?? 0;
 
             // Try get the list of Steam Libs and Apps
             List<string> steamLibsList = SteamTool.GetSteamLibs();
@@ -802,7 +802,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
 #nullable enable
             // If the preset doesn't have BetterHi3Launcher registry ver info, then return false
-            if (_gamePreset.BetterHi3LauncherVerInfoReg == null) return false;
+            if (_gameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg == null) return false;
 
             // Try open BHI3L registry key
             // If the key doesn't exist, then return false
@@ -811,7 +811,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Try get the key value
             // If the key also doesn't exist, then return false
-            byte[]? keyValue = (byte[]?)Key?.GetValue(_gamePreset.BetterHi3LauncherVerInfoReg);
+            byte[]? keyValue = (byte[]?)Key?.GetValue(_gameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg);
             if (keyValue == null) return false;
 
             BHI3LInfo? config;
@@ -824,7 +824,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Registry Value {_gamePreset.BetterHi3LauncherVerInfoReg}:\r\n{value}\r\n\r\nException:\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Registry Value {_gameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg}:\r\n{value}\r\n\r\nException:\r\n{ex}", LogType.Error, true);
                 return false;
             }
 
@@ -832,7 +832,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (config != null && config.game_info.installed
              && !string.IsNullOrEmpty(config.game_info.install_path))
             {
-                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gamePreset.GameExecutableName));
+                FileInfo execPath = new FileInfo(Path.Combine(config.game_info.install_path, _gameVersionManager.GamePreset.GameExecutableName));
                 OutputPath = config.game_info.install_path;
                 return execPath.Exists && execPath.Length > 1 >> 16;
             }
@@ -856,7 +856,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // If primary button is clicked, then set folder with the default path
                     case ContentDialogResult.Primary:
-                        folder = Path.Combine(LauncherConfig.AppGameFolder, _gamePreset.ProfileName, _gamePreset.GameDirectoryName);
+                        folder = Path.Combine(LauncherConfig.AppGameFolder, _gameVersionManager.GamePreset.ProfileName, _gameVersionManager.GamePreset.GameDirectoryName);
                         isChoosen = true;
                         break;
                     // If secondary, then show folder picker dialog to choose the folder
@@ -1024,6 +1024,12 @@ namespace CollapseLauncher.InstallManager.Base
             _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Downloading, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
             LogWriteLine($"Downloading package URL {_progressTotalCountCurrent}/{_progressTotalCount} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
 
+            // Get the directory path
+            string pathDir = Path.GetDirectoryName(package.PathOutput);
+
+            // If the directory doesn't exist, then create one
+            if (!Directory.Exists(pathDir)) Directory.CreateDirectory(pathDir);
+
             // If the file exist or package size is unmatched,
             // then start downloading
             FileInfo packageOutInfo = new FileInfo(package.PathOutput);
@@ -1158,6 +1164,12 @@ namespace CollapseLauncher.InstallManager.Base
 
         private long GetExistingPartialDownloadLength(string fileOutput, long remoteSize)
         {
+            // Get the directory path
+            string pathDir = Path.GetDirectoryName(fileOutput);
+
+            // If the directory doesn't exist, then return 0
+            if (!Directory.Exists(pathDir)) return 0;
+
             // Try get the status of the full downloaded package output
             FileInfo fileInfo = new FileInfo(fileOutput);
 

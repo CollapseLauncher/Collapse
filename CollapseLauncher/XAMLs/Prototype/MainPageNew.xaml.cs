@@ -13,7 +13,6 @@ namespace CollapseLauncher.Prototype
             try
             {
                 InitializeComponent();
-                BackgroundActivityManager.Attach(null, null);
             }
             catch (Exception ex)
             {

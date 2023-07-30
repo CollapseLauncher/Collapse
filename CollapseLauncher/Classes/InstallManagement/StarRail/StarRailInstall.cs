@@ -15,11 +15,11 @@ namespace CollapseLauncher.InstallManager.StarRail
     internal class StarRailInstall : InstallManagerBase<GameTypeStarRailVersion>, IGameInstallManager
     {
         #region Override Properties
-        protected override int _gameVoiceLanguageID { get => _gamePreset.GetVoiceLanguageID(); }
+        protected override int _gameVoiceLanguageID { get => _gameVersionManager.GamePreset.GetVoiceLanguageID(); }
         #endregion
 
-        public StarRailInstall(UIElement parentUI)
-            : base(parentUI)
+        public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+            : base(parentUI, GameVersionManager)
         {
 
         }
@@ -55,10 +55,10 @@ namespace CollapseLauncher.InstallManager.StarRail
                 langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
 
                 // Set the voice language ID to value given
-                _gamePreset.SetVoiceLanguageID(langID);
+                _gameVersionManager.GamePreset.SetVoiceLanguageID(langID);
             }
 
-            LogWriteLine($"Setting audio ID to: {_gamePreset.GetStarRailVoiceLanguageFullNameByID(_gameVoiceLanguageID)}", LogType.Default, true);
+            LogWriteLine($"Setting audio ID to: {_gameVersionManager.GamePreset.GetStarRailVoiceLanguageFullNameByID(_gameVoiceLanguageID)}", LogType.Default, true);
         }
 
         private List<string> EnumerateAudioLanguageString()

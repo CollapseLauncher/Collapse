@@ -57,7 +57,7 @@ namespace CollapseLauncher
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.ContainsKey(_gameVersion.VersionString))
                 {
-                    throw new VersionNotFoundException($"Manifest for {_gamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                    throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
                 // Assign the URL based on the version
@@ -276,7 +276,7 @@ namespace CollapseLauncher
             using (MemoryStream mfs = new MemoryStream())
             {
                 // Set metadata URL
-                string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gamePreset.ProfileName);
+                string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
 
                 // Start downloading metadata using FallbackCDNUtil
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
@@ -293,7 +293,7 @@ namespace CollapseLauncher
             using (MemoryStream mfs = new MemoryStream())
             {
                 // Set asset index URL
-                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
 
                 // Start downloading asset index using FallbackCDNUtil
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlIndex, token);

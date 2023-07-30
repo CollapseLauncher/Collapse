@@ -104,9 +104,26 @@ namespace Hi3Helper.Preset
                 }
             }
         }
+
+        public void GenerateHashID()
+        {
+            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> game in MetadataV2)
+            {
+                foreach (KeyValuePair<string, PresetConfigV2> region in game.Value)
+                {
+                    string HashComposition = $"{ConverterTool.GetUnixTimestamp(true)} - {game.Key} - {region.Value.ZoneName}";
+                    int HashID = ConverterTool.BytesToCRC32Int(HashComposition);
+                    region.Value.HashID = HashID;
+                    region.Value.GameName = game.Key;
+
+                    LogWriteLine($"Cur. Session Region Hash: {HashID} ({HashComposition})", LogType.Default, true);
+                }
+            }
+        }
 #nullable enable
     }
 
+    [Serializable]
     public sealed class PresetConfigV2
     {
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
@@ -453,6 +470,8 @@ namespace Hi3Helper.Preset
             return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
 
+        public string? GameName { get; set; }
+        public int HashID { get; set; }
         private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
         public string? ProfileName { get; set; }
         public GameChannel GameChannel { get; set; } = GameChannel.Stable;

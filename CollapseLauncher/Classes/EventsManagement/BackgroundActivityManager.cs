@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -10,7 +9,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
@@ -20,48 +18,26 @@ namespace CollapseLauncher
         private static ThemeShadow _infoBarShadow = new ThemeShadow();
 
         public static Dictionary<int, IBackgroundActivity> BackgroundActivities = new Dictionary<int, IBackgroundActivity>();
-        public static void RegisterActivity(IBackgroundActivity activity)
+
+        public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-
-        }
-
-        public static void GetCurrentActivity()
-        {
-
-        }
-
-        public static int GetActivityHashID(IBackgroundActivity activity, PresetConfigV2 config)
-        {
-            string gameName = config.ProfileName;
-            string regionName = config.ZoneName;
-            string activityName = activity.GetType().FullName;
-
-            return ConverterTool.BytesToCRC32Int(activityName + gameName + regionName);
-        }
-
-        public static void Attach(int? hashID, IBackgroundActivity activity)
-        {
-            if (hashID == null) return;
-            if (!BackgroundActivities.ContainsKey(hashID ?? 0))
+            if (!BackgroundActivities.ContainsKey(hashID))
             {
-                AttachEventToNotification(hashID ?? 0, activity);
-                BackgroundActivities.Add(hashID ?? 0, activity);
+                AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle);
+                BackgroundActivities.Add(hashID, activity);
 #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
 #endif
                 return;
             }
-
-            throw new Exception($"Background activity with ID: {hashID} is already attached!");
         }
 
         public static void Detach(int hashID)
         {
             if (BackgroundActivities.ContainsKey(hashID))
             {
-                IBackgroundActivity activity = BackgroundActivities[hashID];
                 BackgroundActivities.Remove(hashID);
-                DetachEventFromNotification(hashID, activity);
+                DetachEventFromNotification(hashID);
 #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
 #endif
@@ -73,7 +49,7 @@ namespace CollapseLauncher
 #endif
         }
 
-        private static void AttachEventToNotification(int hashID, IBackgroundActivity activity)
+        private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
             // TODO: Attach the event to notification
             InfoBar _parentNotifUI = new InfoBar()
@@ -86,12 +62,12 @@ namespace CollapseLauncher
                 Margin = new Thickness(4, 4, 4, 0),
                 CornerRadius = new CornerRadius(8),
                 Shadow = _infoBarShadow,
-                Title = "Downloading Honkai Impact 3rd",
-                Message = "Southeast Asia"
+                Title = activityTitle,
+                Message = activitySubtitle
             };
             _parentNotifUI.Translation += LauncherConfig.Shadow32;
 
-            StackPanel _parentContainer = new StackPanel() { Margin = new Thickness(-28, -8, _parentNotifUI.IsClosable ? -28 : 32, 20) };
+            StackPanel _parentContainer = new StackPanel() { Margin = new Thickness(-28, -8, _parentNotifUI.IsClosable ? -28 : 24, 20) };
             _parentNotifUI.Content = _parentContainer;
             Grid _parentGrid = new Grid()
             {
@@ -236,12 +212,17 @@ namespace CollapseLauncher
                 }
             };
 
+            _parentNotifUI.Closed += (sender, args) =>
+            {
+                Detach(hashID);
+            };
+
             _parentContainer.Children.Add(cancelButton);
 
             NotificationSender.SendCustomNotification(hashID, _parentNotifUI);
         }
 
-        private static void DetachEventFromNotification(int hashID, IBackgroundActivity activity)
+        private static void DetachEventFromNotification(int hashID)
         {
             // TODO: Detach the event to notification
 
