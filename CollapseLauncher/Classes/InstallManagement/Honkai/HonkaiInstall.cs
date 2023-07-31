@@ -2,7 +2,6 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.SharpHDiffPatch;

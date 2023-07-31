@@ -62,6 +62,7 @@ namespace CollapseLauncher.InstallManager.Base
             _gameVersionManager = GameVersionManager;
             _gamePersistentFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent";
             _gameStreamingAssetsFolderBasePath = $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\StreamingAssets";
+            UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
         ~InstallManagerBase() => Dispose();
@@ -81,6 +82,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
+            UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
         #region Public Methods
@@ -109,9 +111,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async Task StartPackageDownload(bool skipDialog)
         {
+            UpdateCompletenessStatus(CompletenessStatus.Running);
             ResetToken();
-
-            IsRunning = true;
 
             // Get the game state and run the action for each of them
             GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
@@ -155,14 +156,13 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Start downloading process
                 await InvokePackageDownloadRoutine(_assetIndex, _token.Token);
+
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch
             {
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
-            }
-            finally
-            {
-                IsRunning = false;
             }
         }
 
@@ -172,34 +172,34 @@ namespace CollapseLauncher.InstallManager.Base
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> StartPackageVerification()
         {
-            IsRunning = true;
-
-            // Get the total asset count
-            int assetCount = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1);
-
-            // If the assetIndex is empty, then skip and return 0
-            if (assetCount == 0)
-            {
-                return 0;
-            }
-
-            // If _canSkipVerif flag is true, then return 1 (skip) the verification;
-            if (_canSkipVerif) return 1;
-
-            // Set progress count to beginning
-            _progressTotalSize = _assetIndex.Sum(x => x.Size);
-            _progressTotalSizeCurrent = 0;
-            _progressTotalCountCurrent = 1;
-            _progressTotalCount = assetCount;
-            _status.IsIncludePerFileIndicator = assetCount > 1;
-            RestartStopwatch();
-
-            // Set progress bar to not indetermined
-            _status.IsProgressPerFileIndetermined = false;
-            _status.IsProgressTotalIndetermined = false;
-
             try
             {
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
+                // Get the total asset count
+                int assetCount = _assetIndex.Sum(x => x.Segments != null ? x.Segments.Count : 1);
+
+                // If the assetIndex is empty, then skip and return 0
+                if (assetCount == 0)
+                {
+                    return 0;
+                }
+
+                // If _canSkipVerif flag is true, then return 1 (skip) the verification;
+                if (_canSkipVerif) return 1;
+
+                // Set progress count to beginning
+                _progressTotalSize = _assetIndex.Sum(x => x.Size);
+                _progressTotalSizeCurrent = 0;
+                _progressTotalCountCurrent = 1;
+                _progressTotalCount = assetCount;
+                _status.IsIncludePerFileIndicator = assetCount > 1;
+                RestartStopwatch();
+
+                // Set progress bar to not indetermined
+                _status.IsProgressPerFileIndetermined = false;
+                _status.IsProgressTotalIndetermined = false;
+
                 // Iterate the asset
                 foreach (GameInstallPackage asset in _assetIndex)
                 {
@@ -225,14 +225,12 @@ namespace CollapseLauncher.InstallManager.Base
                         return returnCode;
                     }
                 }
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch
             {
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
-            }
-            finally
-            {
-                IsRunning = false;
             }
 
             return 1;
@@ -307,14 +305,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         public async Task StartPackageInstallation()
         {
-            IsRunning = true;
             try
             {
+                UpdateCompletenessStatus(CompletenessStatus.Running);
+
                 await StartPackageInstallationInner();
+
+                UpdateCompletenessStatus(CompletenessStatus.Completed);
             }
             catch
             {
-                IsRunning = false;
+                UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 throw;
             }
         }
@@ -1211,6 +1212,40 @@ namespace CollapseLauncher.InstallManager.Base
         }
         #endregion
         #region Virtual Methods - StartPackageDownload
+
+        private enum CompletenessStatus { Running, Completed, Cancelled, Idle }
+        private void UpdateCompletenessStatus(CompletenessStatus status)
+        {
+            switch (status)
+            {
+                case CompletenessStatus.Running:
+                    IsRunning = true;
+                    _status.IsRunning = true;
+                    _status.IsCompleted = false;
+                    _status.IsCanceled = false;
+                    break;
+                case CompletenessStatus.Completed:
+                    IsRunning = false;
+                    _status.IsRunning = false;
+                    _status.IsCompleted = true;
+                    _status.IsCanceled = false;
+                    break;
+                case CompletenessStatus.Cancelled:
+                    IsRunning = false;
+                    _status.IsRunning = false;
+                    _status.IsCompleted = false;
+                    _status.IsCanceled = true;
+                    break;
+                case CompletenessStatus.Idle:
+                    IsRunning = false;
+                    _status.IsRunning = false;
+                    _status.IsCompleted = false;
+                    _status.IsCanceled = false;
+                    break;
+            }
+            UpdateStatus();
+        }
+
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
         {
             asset.Size = await _httpClient.TryGetContentLengthAsync(asset.URL, token) ?? 0;
@@ -1264,7 +1299,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Calculate the timelapse
                 _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
 
-                UpdateProgress();
+                UpdateAll();
             }
         }
 

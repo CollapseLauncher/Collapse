@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Interfaces;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
@@ -51,7 +50,9 @@ namespace CollapseLauncher
 
         private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            // TODO: Attach the event to notification
+            Thickness containerNotClosableMargin = new Thickness(-28, -8, 24, 20);
+            Thickness containerClosableMargin = new Thickness(-28, -8, -28, 20);
+
             InfoBar _parentNotifUI = new InfoBar()
             {
                 Tag = hashID,
@@ -67,7 +68,7 @@ namespace CollapseLauncher
             };
             _parentNotifUI.Translation += LauncherConfig.Shadow32;
 
-            StackPanel _parentContainer = new StackPanel() { Margin = new Thickness(-28, -8, _parentNotifUI.IsClosable ? -28 : 24, 20) };
+            StackPanel _parentContainer = new StackPanel() { Margin = _parentNotifUI.IsClosable ? containerClosableMargin : containerNotClosableMargin };
             _parentNotifUI.Content = _parentContainer;
             Grid _parentGrid = new Grid()
             {
@@ -184,55 +185,59 @@ namespace CollapseLauncher
                 }
             };
 
-            cancelButton.Click += (sender, args) =>
+            cancelButton.Click += (_, args) =>
             {
-                Button btnSender = (Button)sender;
-                btnSender.IsEnabled = false;
+                cancelButton.IsEnabled = false;
                 activity.CancelRoutine();
                 _parentNotifUI.IsOpen = false;
             };
 
-            activity.ProgressChanged += (sender, args) =>
+            activity.ProgressChanged += (_, args) => activity.Dispatch(() =>
             {
-                activity.Dispatch(() =>
+                progressBar.Value = args.ProgressTotalPercentage;
+                progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
+                progressRightTitle.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, args.ProgressTotalTimeLeft);
+                progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
+            });
+
+            activity.StatusChanged += (_, args) => activity.Dispatch(() =>
+            {
+                progressLeftTitle.Text = args.ActivityStatus;
+                if (args.IsCanceled)
                 {
-                    progressBar.Value = args.ProgressTotalPercentage;
-                    progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
-                    progressRightTitle.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, args.ProgressTotalTimeLeft);
-                    progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
-                });
-            };
-
-            activity.StatusChanged += (sender, args) =>
-            {
-                activity.Dispatch(() =>
+                    cancelButton.IsEnabled = false;
+                    cancelButton.Visibility = Visibility.Collapsed;
+                    _parentNotifUI.Severity = InfoBarSeverity.Error;
+                    _parentNotifUI.Title = "[Error] " + activityTitle;
+                    _parentNotifUI.IsClosable = true;
+                    _parentContainer.Margin = containerClosableMargin;
+                }
+                if (args.IsCompleted)
                 {
-                    progressLeftTitle.Text = args.ActivityStatus;
-                    if (args.IsCanceled || args.IsCompleted)
-                    {
-                        Button btnSender = (Button)sender;
-                        btnSender.IsEnabled = false;
-                        activity.CancelRoutine();
-                        _parentNotifUI.IsOpen = false;
-                    }
-                });
-            };
+                    cancelButton.IsEnabled = false;
+                    cancelButton.Visibility = Visibility.Collapsed;
+                    _parentNotifUI.Severity = InfoBarSeverity.Success;
+                    _parentNotifUI.Title = "[Completed] " + activityTitle;
+                    _parentNotifUI.IsClosable = true;
+                    _parentContainer.Margin = containerClosableMargin;
+                }
+                if (args.IsRunning)
+                {
+                    cancelButton.IsEnabled = true;
+                    cancelButton.Visibility = Visibility.Visible;
+                    _parentNotifUI.Severity = InfoBarSeverity.Informational;
+                    _parentNotifUI.Title = activityTitle;
+                    _parentNotifUI.IsClosable = false;
+                    _parentContainer.Margin = containerNotClosableMargin;
+                }
+            });
 
-            _parentNotifUI.Closed += (sender, args) =>
-            {
-                Detach(hashID);
-            };
-
+            _parentNotifUI.Closing += (_, _) => Detach(hashID);
             _parentContainer.Children.Add(cancelButton);
 
             NotificationSender.SendCustomNotification(hashID, _parentNotifUI);
         }
 
-        private static void DetachEventFromNotification(int hashID)
-        {
-            // TODO: Detach the event to notification
-
-            NotificationSender.RemoveCustomNotification(hashID);
-        }
+        private static void DetachEventFromNotification(int hashID) => NotificationSender.RemoveCustomNotification(hashID);
     }
 }
