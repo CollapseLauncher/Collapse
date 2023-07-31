@@ -194,22 +194,28 @@ namespace CollapseLauncher
 
             activity.ProgressChanged += (sender, args) =>
             {
-                progressBar.Value = args.ProgressTotalPercentage;
-                progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
-                progressRightTitle.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, args.ProgressTotalTimeLeft);
-                progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
+                activity.Dispatch(() =>
+                {
+                    progressBar.Value = args.ProgressTotalPercentage;
+                    progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
+                    progressRightTitle.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, args.ProgressTotalTimeLeft);
+                    progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
+                });
             };
 
             activity.StatusChanged += (sender, args) =>
             {
-                progressLeftTitle.Text = args.ActivityStatus;
-                if (args.IsCanceled || args.IsCompleted)
+                activity.Dispatch(() =>
                 {
-                    Button btnSender = (Button)sender;
-                    btnSender.IsEnabled = false;
-                    activity.CancelRoutine();
-                    _parentNotifUI.IsOpen = false;
-                }
+                    progressLeftTitle.Text = args.ActivityStatus;
+                    if (args.IsCanceled || args.IsCompleted)
+                    {
+                        Button btnSender = (Button)sender;
+                        btnSender.IsEnabled = false;
+                        activity.CancelRoutine();
+                        _parentNotifUI.IsOpen = false;
+                    }
+                });
             };
 
             _parentNotifUI.Closed += (sender, args) =>

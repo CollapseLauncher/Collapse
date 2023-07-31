@@ -531,6 +531,8 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HandlerUpdaters
+        public void Dispatch(DispatcherQueueHandler handler) => _parentUI.DispatcherQueue.TryEnqueue(handler);
+
         protected virtual void PopRepairAssetEntry() => Dispatch(() =>
         {
             try
@@ -587,7 +589,6 @@ namespace CollapseLauncher.Interfaces
             UpdateStatus();
         }
 
-        protected void Dispatch(DispatcherQueueHandler handler) => _parentUI.DispatcherQueue.TryEnqueue(handler);
         protected async Task<bool> CheckIfNeedRefreshStopwatch()
         {
             if (_refreshStopwatch.ElapsedMilliseconds > _refreshInterval)

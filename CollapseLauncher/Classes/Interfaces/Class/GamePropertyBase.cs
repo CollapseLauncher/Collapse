@@ -44,7 +44,6 @@ namespace CollapseLauncher.Interfaces
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
         protected CancellationTokenSource _token { get; set; }
-        protected UIElement _parentUI { get; init; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
         protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : _gameVersionManager.GetGameExistingVersion().Value; }
@@ -56,5 +55,6 @@ namespace CollapseLauncher.Interfaces
         protected bool _useFastMethod { get; set; }
 
         public ObservableCollection<AssetProperty<T1>> AssetEntry { get; set; }
+        public UIElement _parentUI { get; init; }
     }
 }
