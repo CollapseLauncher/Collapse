@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
@@ -9,7 +10,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -18,8 +18,12 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class CachesPage : Page
     {
+        private GamePresetProperty CurrentGameProperty { get; set; }
+
         public CachesPage()
         {
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+
             this.InitializeComponent();
             BackgroundImgChanger.ToggleBackground(true);
 #if !DISABLEDISCORD

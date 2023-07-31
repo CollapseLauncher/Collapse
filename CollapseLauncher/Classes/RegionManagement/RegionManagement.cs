@@ -35,6 +35,7 @@ namespace CollapseLauncher
             DownloadInformation
         }
 
+        private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
         private string PreviousTag = string.Empty;
@@ -91,6 +92,10 @@ namespace CollapseLauncher
             // Finalize Region Load
             await ChangeBackgroundImageAsRegion();
             FinalizeLoadRegion(preset);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+
+            GamePropertyVault.AttachNotifForCurrentGame(GamePropertyVault.LastGameHashID);
+            GamePropertyVault.DetachNotifForCurrentGame(GamePropertyVault.CurrentGameHashID);
 
             // Set IsLoadRegionComplete to false
             IsLoadRegionComplete = true;
@@ -388,11 +393,11 @@ namespace CollapseLauncher
 
         private void DisposeAllPageStatics()
         {
-            // GamePropertyVault.CurrentGameProperty._GameInstall?.CancelRoutine();
-            GamePropertyVault.CurrentGameProperty?._GameRepair?.CancelRoutine();
-            GamePropertyVault.CurrentGameProperty?._GameRepair?.Dispose();
-            GamePropertyVault.CurrentGameProperty?._GameCache?.CancelRoutine();
-            GamePropertyVault.CurrentGameProperty?._GameCache?.Dispose();
+            // CurrentGameProperty._GameInstall?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.Dispose();
+            CurrentGameProperty?._GameCache?.CancelRoutine();
+            CurrentGameProperty?._GameCache?.Dispose();
 #if DEBUG
             LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
 #endif

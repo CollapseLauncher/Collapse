@@ -15,7 +15,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -35,11 +34,13 @@ namespace CollapseLauncher.Dialogs
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         Dictionary<string, PresetConfigV2> ConvertibleRegions;
+        private GamePresetProperty CurrentGameProperty { get; set; }
 
         public InstallationConvert()
         {
             try
             {
+                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 this.InitializeComponent();
             }
             catch (Exception ex)

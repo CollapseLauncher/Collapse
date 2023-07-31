@@ -19,17 +19,20 @@ using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Windows.Globalization.NumberFormatting;
+using CollapseLauncher.Statics;
 
 namespace CollapseLauncher.Pages
 {
     public partial class GenshinGameSettingsPage : Page
     {
+        private GamePresetProperty CurrentGameProperty { get; set; }
         private GenshinSettings Settings { get => (GenshinSettings)CurrentGameProperty._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload = false;
         public GenshinGameSettingsPage()
         {
+            CurrentGameProperty = GetCurrentGameProperty();
             try
             {
                 DispatcherQueue.TryEnqueue(() =>

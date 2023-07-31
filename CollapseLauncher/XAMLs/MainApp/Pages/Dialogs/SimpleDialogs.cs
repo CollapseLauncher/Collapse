@@ -170,10 +170,10 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content, string actualLocation) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, CurrentGameProperty._GameVersion.GamePreset.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,

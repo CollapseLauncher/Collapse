@@ -922,24 +922,24 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if ((CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
 
-                if (CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false)
+                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
                 }
 
-                if (CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
             }
 
-            switch (CurrentGameProperty._GameVersion.GameType)
+            switch (GetCurrentGameProperty()._GameVersion.GameType)
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -951,7 +951,7 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin)
+            if (GetCurrentGameProperty()._GameVersion.GameType == GameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -992,14 +992,14 @@ namespace CollapseLauncher
                     break;
 
                 case "repair":
-                    if (!(CurrentGameProperty._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                    if (!(GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
                         Navigate(typeof(UnavailablePage), itemTag);
                     else
                         Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
                     break;
 
                 case "caches":
-                    if (CurrentGameProperty._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                    if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                         Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Statics;
+using Hi3Helper;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
@@ -17,8 +18,10 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {
+        private GamePresetProperty CurrentGameProperty { get; set; }
         public RepairPage()
         {
+            CurrentGameProperty = GetCurrentGameProperty();
             BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
 #if !DISABLEDISCORD

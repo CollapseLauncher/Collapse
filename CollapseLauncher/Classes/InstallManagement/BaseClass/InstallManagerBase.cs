@@ -752,7 +752,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             if (_gameVersionManager.GamePreset.CheckExistingGame())
             {
-                switch (await Dialog_ExistingInstallation(_parentUI))
+                switch (await Dialog_ExistingInstallation(_parentUI, _gameVersionManager.GamePreset.ActualGameDataLocation))
                 {
                     // If action to migrate was taken, then update the game path (but don't save it to the config file)
                     case ContentDialogResult.Primary:

@@ -23,6 +23,7 @@ namespace CollapseLauncher.Pages
 {
     public partial class StarRailGameSettingsPage : Page
     {
+        private GamePresetProperty CurrentGameProperty { get; set; }
         private StarRailSettings Settings { get; set; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
@@ -31,6 +32,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                CurrentGameProperty = GetCurrentGameProperty();
                 Settings = CurrentGameProperty._GameSettings as StarRailSettings;
 
                 DispatcherQueue.TryEnqueue(() =>

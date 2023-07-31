@@ -6,6 +6,7 @@ using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -19,8 +20,8 @@ namespace CollapseLauncher.Statics
     {
         internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
         {
-            CopyGamePreset(GamePreset);
-            _APIResouceProp = APIResouceProp;
+            _GamePreset = CopyGamePreset(GamePreset);
+            _APIResouceProp = APIResouceProp.Copy();
 
             switch (GamePreset.GameType)
             {
@@ -65,7 +66,7 @@ namespace CollapseLauncher.Statics
         }
 
         #region Goofy Ah Copy Method. TODO: Use Generics for this :pepehands:
-        private void CopyGamePreset(PresetConfigV2 GamePreset) => _GamePreset = new PresetConfigV2
+        private PresetConfigV2 CopyGamePreset(PresetConfigV2 GamePreset) => new PresetConfigV2()
         {
             ActualGameDataLocation = GamePreset.ActualGameDataLocation,
             BetterHi3LauncherVerInfoReg = GamePreset.BetterHi3LauncherVerInfoReg,
@@ -130,24 +131,24 @@ namespace CollapseLauncher.Statics
         private static Dictionary<int, GamePresetProperty> Vault = new Dictionary<int, GamePresetProperty>();
         public static int LastGameHashID { get; set; }
         public static int CurrentGameHashID { get; set; }
-        public static GamePresetProperty CurrentGameProperty { get; set; }
+        public static GamePresetProperty GetCurrentGameProperty() => Vault[CurrentGameHashID];
 
         public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
         {
             LastGameHashID = LastGameHashID == 0 ? GamePreset.HashID : LastGameHashID;
             CurrentGameHashID = GamePreset.HashID;
-            CurrentGameProperty = RegisterGameProperty(UIElementParent, APIResouceProp, GamePreset);
+            RegisterGameProperty(UIElementParent, APIResouceProp, GamePreset);
         }
 
-        public static GamePresetProperty RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
+        public static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
         {
             CleanupUnusedGameProperty();
             if (Vault.ContainsKey(GamePreset.HashID))
             {
 #if DEBUG
-                Logger.LogWriteLine($"[GamePropertyVault] Returning cached game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
+                Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
 #endif
-                return Vault[GamePreset.HashID];
+                return;
             }
 
             GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GamePreset);
@@ -155,7 +156,6 @@ namespace CollapseLauncher.Statics
 #if DEBUG
             Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);
 #endif
-            return Property;
         }
 
         private static void CleanupUnusedGameProperty()
@@ -176,9 +176,10 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        public static void AttachNotifForCurrentGame()
+        public static void AttachNotifForCurrentGame(int hashID = int.MinValue)
         {
-            if (Vault.ContainsKey(CurrentGameHashID)) AttachNotifForCurrentGame_Inner(CurrentGameHashID);
+            if (hashID < 0) hashID = CurrentGameHashID;
+            if (Vault.ContainsKey(hashID)) AttachNotifForCurrentGame_Inner(hashID);
         }
 
         private static void AttachNotifForCurrentGame_Inner(int HashID)
@@ -192,9 +193,10 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        public static void DetachNotifForCurrentGame()
+        public static void DetachNotifForCurrentGame(int hashID = int.MinValue)
         {
-            if (Vault.ContainsKey(CurrentGameHashID)) BackgroundActivityManager.Detach(CurrentGameHashID);
+            if (hashID < 0) hashID = CurrentGameHashID;
+            if (Vault.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);
         }
     }
 
