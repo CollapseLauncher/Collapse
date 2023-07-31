@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
