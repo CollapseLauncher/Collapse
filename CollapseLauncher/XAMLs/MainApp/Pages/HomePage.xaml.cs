@@ -685,7 +685,6 @@ namespace CollapseLauncher.Pages
         {
             PreloadDialogBox.Translation += Shadow48;
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
-            PreloadDialogBox.IsOpen = true;
 
             string ver = CurrentGameProperty._GameVersion.GetGameVersionAPIPreload()?.VersionString;
 
@@ -696,6 +695,7 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
                     PreloadDialogBox.Message = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
                     DownloadPreBtn.Visibility = Visibility.Collapsed;
+                    PreloadDialogBox.IsOpen = true;
                     return;
                 }
             }
@@ -734,6 +734,7 @@ namespace CollapseLauncher.Pages
 
                 DownloadPreBtn.Content = Text;
             }
+            PreloadDialogBox.IsOpen = true;
         }
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)
