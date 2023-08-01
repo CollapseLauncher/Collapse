@@ -547,7 +547,7 @@ namespace CollapseLauncher
                 bool isFlags = filename.StartsWith('@');
 
                 // Archive file related
-                bool isZip = filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || filename.EndsWith(".7z", StringComparison.OrdinalIgnoreCase);
+                bool isZip = filename.Contains(".zip", StringComparison.OrdinalIgnoreCase) || filename.Contains(".7z", StringComparison.OrdinalIgnoreCase);
 
                 // Delta-patch related
                 bool isDeltaPatch = filename.StartsWith(_gameVersionManager.GamePreset.ProfileName) && asset.EndsWith(".patch");
