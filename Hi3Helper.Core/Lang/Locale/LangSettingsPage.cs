@@ -70,6 +70,8 @@
                 public string DiscordBtn2 { get; set; } = LangFallback?._SettingsPage.DiscordBtn2;
                 public string DiscordBtn3 { get; set; } = LangFallback?._SettingsPage.DiscordBtn3;
                 public string AppChangeReleaseChannel { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
+                public string EnableAcrylicEffect { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
+                public string EnableDownloadChunksMerging { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
             }
         }
         #endregion

@@ -2,10 +2,8 @@
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
-using System.Text;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
@@ -67,14 +65,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(BGMVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.BGMVol == this.BGMVol;
-        }
-#nullable disable
+        public bool Equals(BGMVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

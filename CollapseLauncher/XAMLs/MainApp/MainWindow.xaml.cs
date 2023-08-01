@@ -37,7 +37,7 @@ namespace CollapseLauncher
             try
             {
                 InitializeWindowSettings();
-                m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+                if (m_appWindow.TitleBar.ExtendsContentIntoTitleBar) m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
                 if (IsFirstInstall)
                 {
@@ -68,6 +68,7 @@ namespace CollapseLauncher
         {
             SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+            // rootFrame.Navigate(typeof(MainPageNew), null, new DrillInNavigationTransitionInfo());
         }
 
         private void InitializeAppWindowAndIntPtr()

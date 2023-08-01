@@ -9,7 +9,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.2</Version>
+		<Version>1.71.3</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
@@ -34,7 +34,7 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="Assets\Presets\CommunityTools.json" />
+	  <None Remove="XAMLs\Prototype\honkai-logo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -66,6 +66,10 @@
     
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Include="XAMLs\Prototype\honkai-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
 		<None Include="..\.editorconfig" Link=".editorconfig" />

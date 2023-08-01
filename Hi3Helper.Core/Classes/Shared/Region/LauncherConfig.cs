@@ -42,12 +42,12 @@ namespace Hi3Helper.Shared.Region
                 Description = Lang._Misc.CDNDescription_Cloudflare,
                 PartialDownloadSupport = true
             },
-            //new CDNURLProperty
-            //{
-            //    Name = "Bitbucket",
-            //    URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
-            //    Description = Lang._Misc.CDNDescription_Bitbucket
-            //},
+            new CDNURLProperty
+            {
+                Name = "Bitbucket",
+                URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
+                Description = Lang._Misc.CDNDescription_Bitbucket
+            },
             new CDNURLProperty
             {
                 Name = "Statically",
@@ -98,6 +98,7 @@ namespace Hi3Helper.Shared.Region
                 return Path.Combine(dirPath, execName + ".exe");
             }
         }
+        public static string AppExecutableName { get => Path.GetFileName(AppExecutablePath); }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
@@ -162,7 +163,7 @@ namespace Hi3Helper.Shared.Region
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
-            { "CurrentBackground", "ms-appx:///Assets/Images/default.png" },
+            { "CurrentBackground", "ms-appx:///Assets/BG/default.png" },
             { "DownloadThread", 4 },
             { "ExtractionThread", 0 },
             { "GameFolder", Path.Combine(AppDataFolder, "GameFolder") },
@@ -186,7 +187,9 @@ namespace Hi3Helper.Shared.Region
 #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
 #endif
-            { "IncludeGameLogs", false }
+            { "EnableAcrylicEffect", true },
+            { "IncludeGameLogs", false },
+            { "UseDownloadChunksMerging", false }
         };
 
         public static void LoadGamePreset()

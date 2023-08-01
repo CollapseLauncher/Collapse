@@ -107,7 +107,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
             <Frame.Content>
-                <Grid x:Name="FrameGrid" Margin="32,56,32,32">
+                <Grid x:Name="FrameGrid" Margin="32,8,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
@@ -128,9 +128,6 @@
                         Grid.Column="0" Grid.ColumnSpan="2"
                         Grid.Row="3"
                         HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                        <InfoBar.Transitions>
-                            <PopupThemeTransition/>
-                        </InfoBar.Transitions>
                         <InfoBar.Content>
                             <StackPanel Orientation="Vertical" Margin="0,0,38,0">
                                 <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
@@ -764,9 +761,9 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="0" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
+                    <Grid x:Name="LauncherBtn" Grid.Column="0" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
+                                Style="{ThemeResource NewAccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf019;" FontSize="18"/>
@@ -775,7 +772,7 @@
                             </Button.Content>
                         </Button>
                         <Button x:Name="UpdateGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Click="UpdateGameDialog" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Click="UpdateGameDialog" CornerRadius="20"
                                 Visibility="Collapsed">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
@@ -785,7 +782,7 @@
                             </Button.Content>
                         </Button>
                         <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
                                 Click="StartGame">
                             <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf11b;" FontSize="22"/>
@@ -793,12 +790,12 @@
                             </StackPanel>
                         </Button>
                         <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
                                 Click="CancelInstallationProcedure">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" FontWeight="Medium"/>
                         </Button>
                         <Button x:Name="ResumeDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20">
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" FontWeight="Medium"/>
                         </Button>
                     </Grid>

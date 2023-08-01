@@ -1,6 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Genshin.Context;
-using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
@@ -9,7 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
@@ -252,7 +250,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public int volumeGlobal { get; set; } = 10;
 
         public decimal maxLuminosity { get; set; } = 0.0m;
-        
+
         /// <summary>
         /// userLocalDataVersionId<br/>
         /// This should be static<br/>
@@ -295,7 +293,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                     JsonSerializerOptions options = new JsonSerializerOptions()
                     {
-                        TypeInfoResolver = GeneralDataContext.Default,
+                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                     };
                     GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), options) ?? new GeneralData();
@@ -322,7 +320,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
                 JsonSerializerOptions options = new JsonSerializerOptions()
                 {
-                    TypeInfoResolver = GeneralDataContext.Default,
+                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                 };
                 string data = JsonSerializer.Serialize(this, typeof(GeneralData), options) + '\0';
@@ -352,89 +350,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
         }
 
-        public bool Equals(GeneralData? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            // nightmare nightmare nightmare nightmare nightmare 
-            return comparedTo.deviceUUID == deviceUUID &&
-                comparedTo.userLocalDataVersionId == userLocalDataVersionId &&
-                comparedTo.deviceLanguageType == deviceLanguageType &&
-                comparedTo.deviceVoiceLanguageType == deviceVoiceLanguageType &&
-                comparedTo.selectedServerName == selectedServerName &&
-                comparedTo.localLevelIndex == localLevelIndex &&
-                comparedTo.deviceID == deviceID &&
-                comparedTo.targetUID == targetUID &&
-                comparedTo.uiSaveData == uiSaveData &&
-                comparedTo.inputData == inputData &&
-                comparedTo.graphicsData == graphicsData &&
-                comparedTo.globalPerfData == globalPerfData &&
-                comparedTo.miniMapConfig == miniMapConfig &&
-                comparedTo.enableCameraSlope == enableCameraSlope &&
-                comparedTo.enableCameraCombatLock == enableCameraCombatLock &&
-                comparedTo.completionPkg == completionPkg &&
-                comparedTo.completionPlayGoPkg == completionPlayGoPkg &&
-                comparedTo.onlyPlayWithPSPlayer == onlyPlayWithPSPlayer &&
-                comparedTo.needPlayGoFullPkgPatch == needPlayGoFullPkgPatch &&
-                comparedTo.resinNotification == resinNotification &&
-                comparedTo.exploreNotification == exploreNotification &&
-                comparedTo.volumeGlobal == volumeGlobal &&
-                comparedTo.volumeSFX == volumeSFX &&
-                comparedTo.volumeVoice == volumeVoice &&
-                comparedTo.audioAPI == audioAPI &&
-                comparedTo.audioDynamicRange == audioDynamicRange &&
-                comparedTo.audioOutput == audioOutput &&
-                comparedTo._audioSuccessInit == _audioSuccessInit &&
-                comparedTo.enableAudioChangeAndroidMinimumBufferCapacity == enableAudioChangeAndroidMinimumBufferCapacity &&
-                comparedTo.audioAndroidMiniumBufferCapacity == audioAndroidMiniumBufferCapacity &&
-                comparedTo.vibrationLevel == vibrationLevel &&
-                comparedTo.vibrationIntensity == vibrationIntensity &&
-                comparedTo.usingNewVibrationSetting == usingNewVibrationSetting &&
-                comparedTo.motionBlur == motionBlur &&
-                comparedTo.gyroAiming == gyroAiming &&
-                comparedTo.firstHDRSetting == firstHDRSetting &&
-                comparedTo.maxLuminosity == maxLuminosity &&
-                comparedTo.uiPaperWhite == uiPaperWhite &&
-                comparedTo.scenePaperWhite == scenePaperWhite &&
-                comparedTo.gammaValue == gammaValue &&
-                comparedTo._overrideControllerMapKeyList == _overrideControllerMapKeyList &&
-                comparedTo._overrideControllerMapValueList  == _overrideControllerMapValueList &&
-                comparedTo.rewiredDisableKeyboard == rewiredDisableKeyboard &&
-                comparedTo.rewiredEnableKeyboard == rewiredEnableKeyboard &&
-                comparedTo.rewiredEnableEDS == rewiredEnableEDS &&
-                comparedTo.disableRewiredDelayInit == disableRewiredDelayInit &&
-                comparedTo.disableRewiredInitProtection == disableRewiredInitProtection &&
-                comparedTo.lastSeenPreDownloadTime == lastSeenPreDownloadTime &&
-                comparedTo.enableEffectAssembleInEditor == enableEffectAssembleInEditor &&
-                comparedTo.forceDisableQuestResourceManagement == forceDisableQuestResourceManagement &&
-                comparedTo.needReportQuestResourceDeleteStatusFiles == needReportQuestResourceDeleteStatusFiles &&
-                comparedTo.mtrCached == mtrCached &&
-                comparedTo.mtrIsOpen == mtrIsOpen &&
-                comparedTo.mtrMaxTTL == mtrMaxTTL &&
-                comparedTo.mtrTimeOut == mtrTimeOut &&
-                comparedTo.mtrTraceCount == mtrTraceCount &&
-                comparedTo.mtrAbortTimeOutCount == mtrAbortTimeOutCount &&
-                comparedTo.mtrAutoTraceInterval == mtrAutoTraceInterval &&
-                comparedTo.mtrTraceCDEachReason == mtrTraceCDEachReason &&
-                comparedTo.mtrTimeInterval == mtrTimeInterval &&
-                comparedTo.mtrBanReasons == mtrBanReasons &&
-                comparedTo._customDataKeyList == _customDataKeyList &&
-                comparedTo._customDataValueList == _customDataValueList &&
-                comparedTo._serializedCodeSwitches == _serializedCodeSwitches &&
-                comparedTo.urlCheckCached == urlCheckCached &&
-                comparedTo.urlCheckIsOpen == urlCheckIsOpen &&
-                comparedTo.urlCheckAllIP == urlCheckAllIP &&
-                comparedTo.urlCheckTimeOut == urlCheckTimeOut &&
-                comparedTo.urlCheckSueecssTraceCount == urlCheckSueecssTraceCount &&
-                comparedTo.urlCheckErrorTraceCount == urlCheckErrorTraceCount &&
-                comparedTo.urlCheckAbortTimeOutCount == urlCheckAbortTimeOutCount &&
-                comparedTo.urlCheckTimeInterval == urlCheckTimeInterval &&
-                comparedTo.urlCheckCDEachReason == urlCheckCDEachReason &&
-                comparedTo.urlCheckBanReasons == urlCheckBanReasons &&
-                comparedTo.mtrUseOldWinVersion == mtrUseOldWinVersion &&
-                comparedTo.greyTestDeviceUniqueId == greyTestDeviceUniqueId;
-        }
+        public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
         #endregion
     }

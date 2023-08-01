@@ -47,9 +47,21 @@ namespace CollapseLauncher.Pages
 
             await GetReleaseNote();
 
-            // Wait for countdown
-            await WaitForCountdown();
-            await StartUpdateRoutine();
+            try
+            {
+                // Wait for countdown
+                await WaitForCountdown();
+                await StartUpdateRoutine();
+            }
+            catch (TaskCanceledException)
+            {
+                Logger.LogWriteLine("Update countdown has been cancelled!", LogType.Default, true);
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+                Logger.LogWriteLine($"Update has failed!\r\n{ex}", LogType.Error, true);
+            }
         }
 
         private async Task StartUpdateRoutine()

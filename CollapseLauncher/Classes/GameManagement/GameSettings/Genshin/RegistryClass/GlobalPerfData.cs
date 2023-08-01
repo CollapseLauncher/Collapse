@@ -1,8 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Genshin.Context;
-using CollapseLauncher.GameSettings.Genshin.Enums;
-using Hi3Helper;
-using System;
+﻿using CollapseLauncher.GameSettings.Genshin.Context;
 using System.Collections.Generic;
 using System.Text.Json;
 using static Hi3Helper.Logger;
@@ -18,13 +14,31 @@ namespace CollapseLauncher.GameSettings.Genshin
         #endregion
 
         #region Methods
-        public PerfDataItem(int entryType, int index, string itemVersion) { 
+        public PerfDataItem(int entryType, int index, string itemVersion)
+        {
             this.entryType = entryType;
             this.index = index;
             this.itemVersion = itemVersion;
         }
         #endregion
     }
+
+    internal class GenshinKeyValuePair
+    {
+        #region Properties
+        public int key { get; set; }
+        public int value { get; set; }
+        #endregion
+
+        #region Methods
+        public GenshinKeyValuePair(int Key, int Value)
+        {
+            key = Key;
+            value = Value;
+        }
+        #endregion
+    }
+
     internal class GlobalPerfData
     {
         #region Properties
@@ -35,7 +49,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         #endregion
 
         #region Methods
-
         public string Create(GraphicsData graphics, string version)
         {
             saveItems = new()
@@ -57,9 +70,9 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (15,(int) graphics.SubsurfaceScattering - 1, version),
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
             };
-            string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GlobalPerfDataContext.Default);
+            string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GenshinSettingsJSONContext.Default);
 #if DEBUG
-            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
+            LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", Hi3Helper.LogType.Debug, true);
 #endif
             return data;
         }

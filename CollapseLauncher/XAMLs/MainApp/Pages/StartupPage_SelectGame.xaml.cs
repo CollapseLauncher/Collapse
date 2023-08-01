@@ -53,10 +53,9 @@ namespace CollapseLauncher.Pages
                 FadeBackground(1, 0.25);
                 bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
 
-                if (_gamePosterBitmap is not null && IsSuccess)
+                if (_gamePosterBitmap != null && IsSuccess)
                 {
-                    await MainPage.ApplyAccentColor(this, _gamePosterBitmap, 1);
-                    MainPage.ReloadPageTheme(this, MainPage.ConvertAppThemeToElementTheme(CurrentAppTheme));
+                    MainPage.ApplyAccentColor(this, _gamePosterBitmap);
                 }
 
                 NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();

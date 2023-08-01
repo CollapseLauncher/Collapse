@@ -5,7 +5,7 @@ using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
@@ -150,16 +150,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
         }
 
-        public bool Equals(ScreenManager? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.sizeRes == this.sizeRes &&
-                comparedTo.height == this.height &&
-                comparedTo.width == this.width &&
-                comparedTo.fullscreen == this.fullscreen;
-        }
+        public bool Equals(ScreenManager? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
         #endregion
     }

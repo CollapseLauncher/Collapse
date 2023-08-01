@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
 
@@ -187,7 +187,7 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (PersonalAudioSetting?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) ?? new PersonalAudioSetting();
+                    return (PersonalAudioSetting?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalAudioSetting), HonkaiSettingsJSONContext.Default) ?? new PersonalAudioSetting();
                 }
             }
             catch (Exception ex)
@@ -204,7 +204,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PersonalAudioSetting), PersonalAudioSettingContext.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(PersonalAudioSetting), HonkaiSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
@@ -219,23 +219,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(PersonalAudioSetting? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.IsUserDefined == this.IsUserDefined &&
-                comparedTo.CVLanguage == this.CVLanguage &&
-                comparedTo._userCVLanguage == this._userCVLanguage &&
-                comparedTo.BGMVolume == this.BGMVolume &&
-                comparedTo.ElfVolume == this.ElfVolume &&
-                comparedTo.CGVolumeV2 == this.CGVolumeV2 &&
-                comparedTo.MasterVolume == this.MasterVolume &&
-                comparedTo.SoundEffectVolume == this.SoundEffectVolume &&
-                comparedTo.VoiceVolume == this.VoiceVolume &&
-                comparedTo.Mute == this.Mute;
-        }
-#nullable disable
+        public bool Equals(PersonalAudioSetting? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

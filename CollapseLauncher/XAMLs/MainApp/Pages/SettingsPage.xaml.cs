@@ -27,6 +27,7 @@ namespace CollapseLauncher.Pages
     {
         public SettingsPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
             LoadAppConfig();
             this.DataContext = this;
@@ -375,6 +376,17 @@ namespace CollapseLauncher.Pages
                 AppDiscordPresence.SetupPresence();
             }
         }
+
+        private bool IsAcrylicEffectEnabled
+        {
+            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableAcrylicEffect", value);
+                App.ToggleBlurBackdrop(value);
+            }
+        }
+
 #else
         private bool IsDiscordRPCEnabled
         {
@@ -503,6 +515,12 @@ namespace CollapseLauncher.Pages
 
                 LauncherConfig.IsShowRegionChangeWarning = value;
             }
+        }
+
+        private bool IsUseDownloadChunksMerging
+        {
+            get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
+            set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
     }
 }

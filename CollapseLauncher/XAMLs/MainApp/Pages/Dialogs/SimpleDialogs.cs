@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Statics;
+﻿using static CollapseLauncher.Statics.GamePropertyVault;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -170,10 +170,10 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content, string actualLocation) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, PageStatics._GameVersion.GamePreset.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,
@@ -248,6 +248,17 @@ namespace CollapseLauncher.Dialogs
                     Lang._StartupPage.ChooseFolderDialogCancel,
                     Lang._StartupPage.ChooseFolderDialogPrimary,
                     Lang._StartupPage.ChooseFolderDialogSecondary
+            );
+
+        public static async Task<ContentDialogResult> Dialog_CannotUseAppLocationForGameDir(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.CannotUseAppLocationForGameDirTitle,
+                    Lang._Dialogs.CannotUseAppLocationForGameDirSubtitle,
+                    Content,
+                    Lang._Misc.Okay,
+                    null,
+                    null,
+                    ContentDialogButton.Close
             );
 
         public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
