@@ -684,6 +684,15 @@
                                                     </StackPanel>
                                                 </Button.Content>
                                             </Button>
+                                            <Button x:Name="StopGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="StopGameButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf28d;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                                
+                                            </Button>
                                             <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                                 <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>

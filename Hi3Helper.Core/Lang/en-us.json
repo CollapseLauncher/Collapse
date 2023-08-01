@@ -113,6 +113,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
@@ -565,7 +566,9 @@
     "LocateExePathTitle": "Locate Executable Install Path",
     "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
     "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
-    "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!"
+    "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+    "StopGameTitle": "Force Stop Game",
+    "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress."
   },
 
   "_InstallMgmt": {

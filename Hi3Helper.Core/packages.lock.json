@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net7.0": {
+      "Google.Protobuf": {
+        "type": "Transitive",
+        "resolved": "3.23.4",
+        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+      },
+      "hi3helper.enctool": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Protobuf": "[3.23.4, )",
+          "Hi3Helper.Http": "[1.0.0, )"
+        }
+      },
+      "hi3helper.http": {
+        "type": "Project"
+      },
+      "hi3helper.sharphdiffpatch": {
+        "type": "Project"
+      }
+    }
+  }
+}

@@ -337,6 +337,16 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.Yes,
                     null
             );
+
+        public static async Task<ContentDialogResult> Dialog_StopGame(UIElement Content) =>
+            await SpawnDialog(
+                Lang._Dialogs.StopGameTitle,
+                Lang._Dialogs.StopGameSubtitle,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null
+                );
         
         public static async Task<ContentDialogResult> Dialog_ResetPlaytime (UIElement Content)
         {
