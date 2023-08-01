@@ -429,6 +429,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the latest package list and await
             await GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true);
             // Get the total size of the packages
+            await GetPackagesRemoteSize(_assetIndex, _token.Token);
             long totalPackageSize = _assetIndex.Sum(x => x.Size);
 
             // Get the sum of the total size of the single or segmented packages

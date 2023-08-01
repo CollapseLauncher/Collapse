@@ -299,7 +299,7 @@ namespace CollapseLauncher.GameVersioning
 
                 // Set the offset of the section. If the length > 2, then set 1
                 // Otherwise, set 2;
-                int offset = pkgSections.Length > 2 ? 2 : 1;
+                int offset = pkgSections.Length > 2 ? 1 : 2;
 
                 // Try get the version string, lower it and trim it
                 string versionStr = pkgSections[offset].ToLower().Trim('v');
