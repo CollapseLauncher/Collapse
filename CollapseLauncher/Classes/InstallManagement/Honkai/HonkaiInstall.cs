@@ -2,9 +2,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
@@ -28,18 +26,20 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Private Properties
+        private HonkaiCache _gameCacheManager { get; set; }
         private bool _forceIgnoreDeltaPatch = false;
         #endregion
 
-        public HonkaiInstall(UIElement parentUI)
-            : base(parentUI)
+        public HonkaiInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager)
+            : base(parentUI, GameVersionManager)
         {
-
+            _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 
         #region Public Methods
         public override async ValueTask<int> StartPackageVerification()
         {
+            IsRunning = true;
             DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
@@ -62,7 +62,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 ResetToken();
 
                 // Initialize repair tool
-                _gameRepairTool = new HonkaiRepair(_parentUI, true, patchProperty.SourceVer);
+                _gameRepairTool = new HonkaiRepair(_parentUI, _gameVersionManager, _gameCacheManager, _gameSettings, true, patchProperty.SourceVer);
                 try
                 {
                     // Set the activity
@@ -86,7 +86,11 @@ namespace CollapseLauncher.InstallManager.Honkai
                         await _gameRepairTool.StartRepairRoutine(true);
                     }
                 }
-                catch { throw; }
+                catch
+                {
+                    IsRunning = false;
+                    throw;
+                }
                 finally
                 {
                     // Unsubscribe the progress event
@@ -101,7 +105,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             return await base.StartPackageVerification();
         }
 
-        public override async Task StartPackageInstallation()
+        protected override async Task StartPackageInstallationInner()
         {
             if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
             {
@@ -158,7 +162,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             }
 
             // If no delta patch is happening, then do the base installation
-            await base.StartPackageInstallation();
+            await base.StartPackageInstallationInner();
         }
 
         public override async ValueTask<bool> TryShowFailedDeltaPatchState()
@@ -169,7 +173,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             // If path doesn't exist, then return false
             if (!Directory.Exists(GamePathIngredients)) return false;
 
-            LogWriteLine($"Previous failed delta patch has been detected on Game {_gamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
+            LogWriteLine($"Previous failed delta patch has been detected on Game {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousDeltaPatchInstallFailed(_parentUI))
             {
@@ -197,7 +201,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
             if (FileSize < 1 << 20) return false;
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {_gamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousGameConversionFailed(_parentUI))
             {
@@ -324,7 +328,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 // Step back once from the game directory
                 string ParentPath = Path.GetDirectoryName(basepath);
                 // Get the ingredient path
-                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{PageStatics._GameVersion.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
+                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{_gameVersionManager.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
                     .FirstOrDefault();
                 // If the path is not null, then return
                 if (IngredientPath is not null) return IngredientPath;

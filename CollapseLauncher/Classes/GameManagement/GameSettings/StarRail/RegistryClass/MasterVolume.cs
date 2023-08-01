@@ -2,7 +2,7 @@
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail

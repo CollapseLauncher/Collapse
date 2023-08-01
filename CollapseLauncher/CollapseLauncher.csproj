@@ -23,7 +23,6 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
-		<Optimize>False</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
@@ -33,6 +32,9 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="XAMLs\Prototype\honkai-logo.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
@@ -56,49 +58,69 @@
 		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
+		<Content Include="XAMLs\Prototype\honkai-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
 		<None Include="..\.editorconfig" Link=".editorconfig" />
-		<Content Update="Assets\BG\AiHappy.png">
+    
+		<Content Update="Assets\Images\AiHappy.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\AponiaFly.png">
+    
+		<Content Update="Assets\Images\AponiaFly.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\default.png">
+    
+		<Content Update="Assets\Images\default.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\PaimonSleep.png">
+    
+		<Content Update="Assets\Images\PaimonSleep.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\PaimonWhat.png">
+    
+		<Content Update="Assets\Images\PaimonWhat.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\StartUpBG.png">
+    
+		<Content Update="Assets\Images\StartupBackground.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Assets\BG\StartUpBG2.png">
+    
+		<Content Update="Assets\Images\StartupBackground2.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\CollapseLauncherLogo.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\Fonts\FontAwesomeRegular6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\Fonts\FontAwesomeSolid6.otf">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\Presets\CommunityTools.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+    
 		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

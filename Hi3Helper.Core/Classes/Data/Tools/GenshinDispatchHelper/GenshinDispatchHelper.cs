@@ -53,7 +53,7 @@ namespace Hi3Helper.Data
 #endif
                 await this._httpClient.Download(DispatchBaseURL, s, null, null, cancelToken).ConfigureAwait(false);
                 s.Position = 0;
-                DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), YSDispatchInfoContext.Default);
+                DispatcherDataInfo = (YSDispatchInfo)JsonSerializer.Deserialize(s, typeof(YSDispatchInfo), CoreLibraryJSONContext.Default);
             }
 
             return DispatcherDataInfo;
@@ -97,15 +97,15 @@ namespace Hi3Helper.Data
             {
                 (ValProp.ClientGameRes as List<PkgVersionProperties>)
                     .Add(
-                        (PkgVersionProperties)JsonSerializer.Deserialize(Data, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default)
+                        (PkgVersionProperties)JsonSerializer.Deserialize(Data, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default)
                     );
             }
         }
 
         private void ParseGameResPkgProp(ref QueryProperty ValProp)
         {
-            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataJSON, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
-            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataSilenceJSON, typeof(PkgVersionProperties), PkgVersionPropertiesContext.Default);
+            ValProp.ClientDesignData = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataJSON, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+            ValProp.ClientDesignDataSil = (PkgVersionProperties)JsonSerializer.Deserialize(Gateway.GatewayProperties.RepoDesignDataSilenceJSON, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
         }
 
         private async Task ParseAudioAssetsURL(QueryProperty ValProp)

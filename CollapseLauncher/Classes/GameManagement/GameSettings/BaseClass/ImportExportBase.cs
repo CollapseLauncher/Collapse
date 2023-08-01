@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using static CollapseLauncher.GameSettings.Statics;
 using static Hi3Helper.Locale;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 
 namespace CollapseLauncher.GameSettings.Base
 {

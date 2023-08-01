@@ -74,7 +74,7 @@ namespace CollapseLauncher
                     ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
                     buffer.Position = 0;
-                    SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                    SourceFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), CoreLibraryJSONContext.Default);
                 }
 
                 using (MemoryStream buffer = new MemoryStream())
@@ -83,7 +83,7 @@ namespace CollapseLauncher
                     ConvertDetail = Lang._InstallConvert.Step2Subtitle;
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_http, buffer, URL, Token);
                     buffer.Position = 0;
-                    TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), L_FilePropertiesRemoteContext.Default);
+                    TargetFileRemote = (List<FilePropertiesRemote>)JsonSerializer.Deserialize(buffer, typeof(List<FilePropertiesRemote>), CoreLibraryJSONContext.Default);
                 }
             }
             finally

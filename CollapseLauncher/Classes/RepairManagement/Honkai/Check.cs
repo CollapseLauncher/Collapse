@@ -550,7 +550,7 @@ namespace CollapseLauncher
                 bool isZip = filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || filename.EndsWith(".7z", StringComparison.OrdinalIgnoreCase);
 
                 // Delta-patch related
-                bool isDeltaPatch = filename.StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
+                bool isDeltaPatch = filename.StartsWith(_gameVersionManager.GamePreset.ProfileName) && asset.EndsWith(".patch");
 
                 // Direct X related
                 bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))

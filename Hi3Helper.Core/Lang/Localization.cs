@@ -33,7 +33,7 @@ namespace Hi3Helper
         {
             using (Stream s = new FileStream(this.LangFilePath, FileMode.Open, FileAccess.Read))
             {
-                LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), LocalizationParamsContext.Default);
+                LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(s, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
                 this.LangAuthor = _langData.Author;
                 this.LangID = _langData.LanguageID.ToLower();
                 this.LangName = _langData.LanguageName;

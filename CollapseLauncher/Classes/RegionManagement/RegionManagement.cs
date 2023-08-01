@@ -35,6 +35,7 @@ namespace CollapseLauncher
             DownloadInformation
         }
 
+        private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
         private string PreviousTag = string.Empty;
@@ -91,6 +92,10 @@ namespace CollapseLauncher
             // Finalize Region Load
             await ChangeBackgroundImageAsRegion();
             FinalizeLoadRegion(preset);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+
+            GamePropertyVault.AttachNotifForCurrentGame(GamePropertyVault.LastGameHashID);
+            GamePropertyVault.DetachNotifForCurrentGame(GamePropertyVault.CurrentGameHashID);
 
             // Set IsLoadRegionComplete to false
             IsLoadRegionComplete = true;
@@ -196,7 +201,7 @@ namespace CollapseLauncher
 
         private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
         {
-            _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, RegionResourcePropContext.Default, token);
+            _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, CoreLibraryJSONContext.Default, token);
 #if DEBUG
             if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
             if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
@@ -217,11 +222,11 @@ namespace CollapseLauncher
         }
 
         private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
-            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), RegionResourcePropContext.Default, token);
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), CoreLibraryJSONContext.Default, token);
 
 
         private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfigV2 Preset)
-            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, RegionResourcePropContext.Default, token);
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, CoreLibraryJSONContext.Default, token);
 
         private void ResetRegionProp()
         {
@@ -363,7 +368,7 @@ namespace CollapseLauncher
         private void FinalizeLoadRegion(PresetConfigV2 preset)
         {
             // Log if region has been successfully loaded
-            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
             LoadGameStaticsByGameType(preset);
@@ -377,59 +382,22 @@ namespace CollapseLauncher
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
         {
+            GamePropertyVault.AttachNotifForCurrentGame();
             DisposeAllPageStatics();
 
-            switch (preset.GameType)
-            {
-                case GameType.Honkai:
-                    // TEMP:
-                    // This is used to handle FallbackGameType
-                    if (preset.FallbackGameType == GameType.StarRail)
-                    {
-                        PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
-                        PageStatics._GameSettings = new StarRailSettings();
-                        PageStatics._GameCache = null;
-                        PageStatics._GameRepair = null;
-                        PageStatics._GameInstall = new StarRailInstall(this);
-
-                        preset.GameType = GameType.StarRail;
-                    }
-                    else
-                    {
-                        PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
-                        PageStatics._GameSettings = new HonkaiSettings();
-                        PageStatics._GameCache = new HonkaiCache(this);
-                        PageStatics._GameRepair = new HonkaiRepair(this);
-                        PageStatics._GameInstall = new HonkaiInstall(this);
-                    }
-                    break;
-                case GameType.Genshin:
-                    PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new GenshinSettings();
-                    PageStatics._GameCache = null;
-                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path);
-                    PageStatics._GameInstall = new GenshinInstall(this);
-                    break;
-                case GameType.StarRail:
-                    PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new StarRailSettings();
-                    PageStatics._GameCache = new StarRailCache(this);
-                    PageStatics._GameRepair = new StarRailRepair(this);
-                    PageStatics._GameInstall = new StarRailInstall(this);
-                    break;
-            }
+            GamePropertyVault.LoadGameProperty(this, _gameAPIProp, preset);
 
             // Spawn Region Notification
-            SpawnRegionNotification(PageStatics._GameVersion.GamePreset.ProfileName);
+            SpawnRegionNotification(preset.ProfileName);
         }
 
         private void DisposeAllPageStatics()
         {
-            PageStatics._GameInstall?.CancelRoutine();
-            PageStatics._GameRepair?.CancelRoutine();
-            PageStatics._GameRepair?.Dispose();
-            PageStatics._GameCache?.CancelRoutine();
-            PageStatics._GameCache?.Dispose();
+            // CurrentGameProperty._GameInstall?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.Dispose();
+            CurrentGameProperty?._GameCache?.CancelRoutine();
+            CurrentGameProperty?._GameCache?.Dispose();
 #if DEBUG
             LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
 #endif

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
@@ -16,11 +17,10 @@ namespace CollapseLauncher
         ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
     {
         #region Properties
-        private HonkaiCache _cacheUtil = (PageStatics._GameCache as ICacheBase<HonkaiCache>).AsBaseType();
-
         private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm" };
+        private HonkaiCache _cacheUtil { get; init; }
         private string _assetBaseURL { get; set; }
         private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
         private string _blockAsbBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/asb"); }
@@ -41,21 +41,23 @@ namespace CollapseLauncher
         private protected List<FilePropertiesRemote> _originAssetIndex { get; set; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, null, "", versionOverride)
+        public HonkaiRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, GameVersionManager, GameSettings, null, "", versionOverride)
         {
+            _cacheUtil = (GameCacheManager as ICacheBase<HonkaiCache>).AsBaseType();
+
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
 
             // Initialize audio asset language
-            string audioLanguage = (PageStatics._GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
+            string audioLanguage = (_gameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
             switch (audioLanguage)
             {
                 case "Chinese(PRC)":
                     _audioLanguage = AudioLanguageType.Chinese;
                     break;
                 default:
-                    _audioLanguage = _gamePreset.GameDefaultCVLanguage;
+                    _audioLanguage = _gameVersionManager.GamePreset.GameDefaultCVLanguage;
                     break;
             }
         }

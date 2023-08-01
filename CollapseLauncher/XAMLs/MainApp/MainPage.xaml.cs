@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -31,6 +32,7 @@ namespace CollapseLauncher
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
+        private bool IsLoadFrameCompleted = true;
         public static bool IsChangeDragArea = true;
 
         private RectInt32[] DragAreaMode_Normal
@@ -284,7 +286,7 @@ namespace CollapseLauncher
         {
             while (true && !App.IsAppKilled)
             {
-                string execName = Path.GetFileNameWithoutExtension(PageStatics._GameVersion.GamePreset.GameExecutableName);
+                string execName = Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
                 await Task.Delay(500);
             }
@@ -292,6 +294,19 @@ namespace CollapseLauncher
 
         private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
         {
+            if (e.IsCustomNotif)
+            {
+                if (e.CustomNotifAction == NotificationCustomAction.Add)
+                {
+                    SpawnNotificationoUI(e.Notification.MsgId, e.OtherContent as InfoBar);
+                }
+                else
+                {
+                    RemoveNotificationUI(e.Notification.MsgId);
+                }
+                return;
+            }
+
             SpawnNotificationPush(e.Notification.Title, e.Notification.Message, e.Notification.Severity,
                 e.Notification.MsgId, e.Notification.IsClosable ?? true, e.Notification.IsDisposable ?? true, e.CloseAction,
                 e.OtherContent, e.IsAppNotif, e.Notification.Show, e.Notification.IsForceShowNotificationPanel);
@@ -347,7 +362,7 @@ namespace CollapseLauncher
                     {
                         await FallbackCDNUtil.DownloadCDNFallbackContent(_http, fs, string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
                         fs.Position = 0;
-                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), NotificationPushContext.Default);
+                        NotificationData = (NotificationPush)JsonSerializer.Deserialize(fs, typeof(NotificationPush), InternalAppJSONContext.Default);
                         IsLoadNotifComplete = true;
 
                         NotificationData.EliminatePushList();
@@ -543,8 +558,6 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                Grid Container = new Grid();
-
                 StackPanel OtherContentContainer = new StackPanel
                 {
                     Orientation = Orientation.Vertical,
@@ -591,35 +604,64 @@ namespace CollapseLauncher
 
                 Notification.Tag = MsgId;
                 Notification.CloseButtonClick += CloseClickHandler;
-                Notification.Loaded += (a, b) =>
-                {
-                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                    NewNotificationCountBadge.Visibility = Visibility.Visible;
-                    NewNotificationCountBadge.Value++;
-                };
-                Notification.Closed += (s, a) =>
-                {
-                    s.Translation -= Shadow32;
-                    s.Height = 0;
-                    s.Margin = new Thickness(0);
-                    int msg = (int)s.Tag;
 
-                    if (NotificationData.CurrentShowMsgIds.Contains(msg))
-                    {
-                        NotificationData.CurrentShowMsgIds.Remove(msg);
-                    }
-                    NotificationContainer.Children.Remove(Container);
-                    NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                };
-
-                Container.Children.Add(Notification);
-                NotificationContainer.Children.Add(Container);
+                SpawnNotificationoUI(MsgId, Notification);
 
                 if (ForceShowNotificationPanel && !IsNotificationPanelShow)
                 {
                     this.ForceShowNotificationPanel();
                 }
             });
+        }
+
+        private void SpawnNotificationoUI(int tagID, InfoBar Notification)
+        {
+            Grid Container = new Grid() { Tag = tagID, };
+            Notification.Loaded += (a, b) =>
+            {
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+                NewNotificationCountBadge.Visibility = Visibility.Visible;
+                NewNotificationCountBadge.Value++;
+            };
+
+            Notification.Closed += (s, a) =>
+            {
+                s.Translation -= Shadow32;
+                s.Height = 0;
+                s.Margin = new Thickness(0);
+                int msg = (int)s.Tag;
+
+                if (NotificationData.CurrentShowMsgIds.Contains(msg))
+                {
+                    NotificationData.CurrentShowMsgIds.Remove(msg);
+                }
+                NotificationContainer.Children.Remove(Container);
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+
+                if (NewNotificationCountBadge.Value > 0)
+                {
+                    NewNotificationCountBadge.Value--;
+                }
+                NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
+                NewNotificationCountBadge.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            };
+
+            Container.Children.Add(Notification);
+            NotificationContainer.Children.Add(Container);
+        }
+
+        private void RemoveNotificationUI(int tagID)
+        {
+            Grid notif = NotificationContainer.Children.OfType<Grid>().Where(x => (int)x.Tag == tagID).FirstOrDefault();
+            if (notif != null)
+            {
+                NotificationContainer.Children.Remove(notif);
+                InfoBar notifBar = notif.Children.OfType<InfoBar>()?.FirstOrDefault();
+                if (notifBar != null)
+                {
+                    notifBar.IsOpen = false;
+                }
+            }
         }
 
         private void NeverAskNotif_Checked(object sender, RoutedEventArgs e)
@@ -880,24 +922,24 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Add(new NavigationViewItem()
             { Content = Lang._HomePage.PageTitle, Icon = IconLauncher, Tag = "launcher" });
 
-            if ((PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
 
-                if (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false)
+                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._GameRepairPage.PageTitle, Icon = IconRepair, Tag = "repair" });
                 }
 
-                if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                     { Content = Lang._CachesPage.PageTitle, Icon = IconCaches, Tag = "caches" });
                 }
             }
 
-            switch (PageStatics._GameVersion.GameType)
+            switch (GetCurrentGameProperty()._GameVersion.GameType)
             {
                 case GameType.Honkai:
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem()
@@ -909,7 +951,7 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (PageStatics._GameVersion.GameType == GameType.Genshin)
+            if (GetCurrentGameProperty()._GameVersion.GameType == GameType.Genshin)
             {
                 NavigationViewControl.MenuItems.Add(new NavigationViewItem()
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
@@ -934,86 +976,57 @@ namespace CollapseLauncher
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            if (args.IsSettingsInvoked && PreviousTag != "settings")
+            if (!IsLoadFrameCompleted) return;
+            if (args.IsSettingsInvoked && PreviousTag != "settings") Navigate(typeof(SettingsPage), "settings");
+
+            NavigationViewItem item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+            if (item == null) return;
+
+            string itemTag = (string)item.Tag;
+            if (itemTag == PreviousTag) return;
+
+            switch (itemTag)
             {
-                MainFrameChanger.ChangeMainFrame(typeof(SettingsPage));
-                PreviousTag = "settings";
-                PreviousTagString.Add(PreviousTag);
-                LogWriteLine($"Page changed to App Settings", LogType.Scheme);
-            }
-            else
-            {
-                if (sender.MenuItems.Count != 0)
-                {
-                    var item = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
-                    NavView_Navigate(item);
-                }
-                else
-                {
-                    MainFrameChanger.ChangeMainFrame(typeof(HomePage), new DrillInNavigationTransitionInfo());
-                }
+                case "launcher":
+                    Navigate(typeof(HomePage), itemTag);
+                    break;
+
+                case "repair":
+                    if (!(GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                        Navigate(typeof(UnavailablePage), itemTag);
+                    else
+                        Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "caches":
+                    if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                        Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                    else
+                        Navigate(typeof(UnavailablePage), itemTag);
+                    break;
+
+                case "gamesettings":
+                    Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "starrailgamesettings":
+                    Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
+
+                case "genshingamesettings":
+                    Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), itemTag);
+                    break;
             }
         }
 
         private List<string> PreviousTagString = new List<string>();
 
-        void Navigate(Type sourceType, bool hideImage, NavigationViewItem tag)
+        void Navigate(Type sourceType, string tagStr)
         {
-            string tagStr = (string)tag.Tag;
             MainFrameChanger.ChangeMainFrame(sourceType, new DrillInNavigationTransitionInfo());
             PreviousTag = tagStr;
             PreviousTagString.Add(tagStr);
-        }
-
-        private void NavView_Navigate(NavigationViewItem item)
-        {
-            try
-            {
-                if (!(PreviousTag == (string)item.Tag))
-                {
-                    switch (item.Tag)
-                    {
-                        case "launcher":
-                            Navigate(typeof(HomePage), false, item);
-                            break;
-
-                        case "repair":
-                            if (!(PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false))
-                                Navigate(typeof(UnavailablePage), true, item);
-                            else
-                                Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "caches":
-                            if (PageStatics._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                                Navigate(IsGameInstalled() ? typeof(CachesPage) : typeof(NotInstalledPage), true, item);
-                            else
-                                Navigate(typeof(UnavailablePage), true, item);
-                            break;
-
-                        case "cutscenes":
-                            throw new NotImplementedException("Cutscenes Downloading Page isn't yet implemented for now.");
-
-                        case "gamesettings":
-                            Navigate(IsGameInstalled() ? typeof(GameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "starrailgamesettings":
-                            Navigate(IsGameInstalled() ? typeof(StarRailGameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-
-                        case "genshingamesettings":
-                            Navigate(IsGameInstalled() ? typeof(GenshinGameSettingsPage) : typeof(NotInstalledPage), true, item);
-                            break;
-                    }
-                    LogWriteLine($"Page changed to {item.Content}", LogType.Scheme);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
-            }
+            LogWriteLine($"Page changed to {sourceType.Name} with Tag: {tagStr}", LogType.Scheme);
         }
 
         private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
@@ -1054,8 +1067,10 @@ namespace CollapseLauncher
 
         private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)
         {
+            IsLoadFrameCompleted = false;
             m_appCurrentFrameName = e.FrameTo.Name;
             LauncherFrame.Navigate(e.FrameTo, null, e.Transition);
+            IsLoadFrameCompleted = true;
         }
 
         private void SpawnWebView2Panel(Uri URL)
@@ -1132,7 +1147,7 @@ namespace CollapseLauncher
 
         private void NavigationViewControl_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (LauncherFrame.CanGoBack)
+            if (LauncherFrame.CanGoBack && IsLoadFrameCompleted)
             {
                 LauncherFrame.GoBack();
                 if (PreviousTagString.Count < 1) return;
@@ -1155,9 +1170,9 @@ namespace CollapseLauncher
 
                     if (goPreviousNavigationItem != null)
                     {
-                        sender.SelectedItem = goPreviousNavigationItem;
                         PreviousTag = goLastPreviousTag;
                         PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                        sender.SelectedItem = goPreviousNavigationItem;
                     }
                 }
             }

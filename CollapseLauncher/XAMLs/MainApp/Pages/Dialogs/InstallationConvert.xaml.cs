@@ -34,11 +34,13 @@ namespace CollapseLauncher.Dialogs
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         Dictionary<string, PresetConfigV2> ConvertibleRegions;
+        private GamePresetProperty CurrentGameProperty { get; set; }
 
         public InstallationConvert()
         {
             try
             {
+                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 this.InitializeComponent();
             }
             catch (Exception ex)
@@ -107,12 +109,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (Exception ex)
@@ -157,7 +159,7 @@ namespace CollapseLauncher.Dialogs
                     string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_Http, s, repoListURL, tokenSource.Token);
                     s.Position = 0;
-                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
+                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), CoreLibraryJSONContext.Default);
                 }
             }
             finally
@@ -171,7 +173,7 @@ namespace CollapseLauncher.Dialogs
             {
                 await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 s.Position = 0;
-                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), CoreLibraryJSONContext.Default);
             }
 
             GameVersion = _Entry.data.game.latest.version;
@@ -218,7 +220,7 @@ namespace CollapseLauncher.Dialogs
                 string localVersionString = SourceIniVersionFile["General"]["game_version"].ToString();
                 if (string.IsNullOrEmpty(localVersionString)) return false;
                 GameVersion localVersion = new GameVersion(localVersionString);
-                GameVersion remoteVersion = PageStatics._GameVersion.GetGameVersionAPI();
+                GameVersion remoteVersion = CurrentGameProperty._GameVersion.GetGameVersionAPI();
                 if (!localVersion.IsMatch(remoteVersion)) return false;
 
                 ExecPath = Path.Combine(GamePath, Profile.GameExecutableName);
@@ -494,9 +496,9 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            PageStatics._GameVersion.GamePreset = TargetProfile;
-            PageStatics._GameVersion.Reinitialize();
-            PageStatics._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
+            CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
+            CurrentGameProperty._GameVersion.Reinitialize();
+            CurrentGameProperty._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
             SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);

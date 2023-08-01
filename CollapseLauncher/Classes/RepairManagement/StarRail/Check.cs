@@ -35,7 +35,7 @@ namespace CollapseLauncher
                     RestartStopwatch();
 
                     // Get persistent and streaming paths
-                    string execName = Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName);
+                    string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
                     string baseBlocksPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Asb\Windows");
                     string baseBlocksPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Asb\Windows");
 

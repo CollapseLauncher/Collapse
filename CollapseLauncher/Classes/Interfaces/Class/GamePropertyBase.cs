@@ -1,6 +1,4 @@
-﻿using CollapseLauncher.Statics;
-using Hi3Helper.Preset;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,8 +14,15 @@ namespace CollapseLauncher.Interfaces
         private GameVersion _gameVersionOverride { get; init; }
         private bool _isVersionOverride { get; init; }
 
-        public GamePropertyBase(UIElement parentUI, string gamePath, string gameRepoURL, string versionOverride)
+        public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, IGameSettings gameSettings, string gamePath, string gameRepoURL, string versionOverride)
+            : this(parentUI, gameVersionManager, gamePath, gameRepoURL, versionOverride)
         {
+            _gameSettings = gameSettings;
+        }
+
+        public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, string gamePath, string gameRepoURL, string versionOverride)
+        {
+            _gameVersionManager = gameVersionManager;
             _parentUI = parentUI;
             _gamePathField = gamePath;
             _gameRepoURL = gameRepoURL;
@@ -39,16 +44,17 @@ namespace CollapseLauncher.Interfaces
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
         protected CancellationTokenSource _token { get; set; }
-        protected UIElement _parentUI { get; init; }
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
-        protected string _gamePath { get => string.IsNullOrEmpty(_gamePathField) ? PageStatics._GameVersion.GameDirPath : _gamePathField; }
+        protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : _gameVersionManager.GetGameExistingVersion().Value; }
+        protected IGameVersionCheck _gameVersionManager { get; set; }
+        protected IGameSettings _gameSettings { get; set; }
+        protected string _gamePath { get => string.IsNullOrEmpty(_gamePathField) ? _gameVersionManager.GameDirPath : _gamePathField; }
         protected string _gameRepoURL { get; set; }
-        protected PresetConfigV2 _gamePreset { get => PageStatics._GameVersion.GamePreset; }
-        protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : PageStatics._GameVersion.GetGameExistingVersion().Value; }
         protected List<T2> _assetIndex { get; set; }
         protected bool _useFastMethod { get; set; }
 
         public ObservableCollection<AssetProperty<T1>> AssetEntry { get; set; }
+        public UIElement _parentUI { get; init; }
     }
 }

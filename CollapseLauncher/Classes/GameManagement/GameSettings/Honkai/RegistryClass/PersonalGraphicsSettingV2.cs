@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Honkai
@@ -161,7 +161,7 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (PersonalGraphicsSettingV2?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) ?? new PersonalGraphicsSettingV2();
+                    return (PersonalGraphicsSettingV2?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) ?? new PersonalGraphicsSettingV2();
                 }
             }
             catch (Exception ex)
@@ -178,7 +178,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
