@@ -691,7 +691,6 @@
                                                         <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" Margin="8,0,0,0"/>
                                                     </StackPanel>
                                                 </Button.Content>
-                                                
                                             </Button>
                                             <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>

@@ -1035,7 +1035,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static void StopGame(PresetConfigV2 gamePreset)
+        private async void StopGame(PresetConfigV2 gamePreset)
         {
             try
             {
