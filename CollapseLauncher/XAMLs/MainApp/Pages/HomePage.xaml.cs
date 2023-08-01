@@ -1048,7 +1048,7 @@ namespace CollapseLauncher.Pages
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to stop Game with Region: {PageStatics._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
         #endregion
@@ -1366,7 +1366,7 @@ namespace CollapseLauncher.Pages
         private async void StopGameButton_Click(object sender, RoutedEventArgs e)
         {
            if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
-           StopGame(PageStatics._GameVersion.GamePreset);
+           StopGame(CurrentGameProperty._GameVersion.GamePreset);
         }
         #endregion
 
