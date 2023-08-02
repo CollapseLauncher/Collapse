@@ -9,6 +9,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
+using CollapseLauncher.Statics;
+using Hi3Helper.Preset;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
@@ -19,6 +21,8 @@ namespace CollapseLauncher
 
         public static Dictionary<int, IBackgroundActivity> BackgroundActivities = new Dictionary<int, IBackgroundActivity>();
 
+        private static GamePresetProperty CurrentGameProperty;
+        
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
             if (!BackgroundActivities.ContainsKey(hashID))
@@ -89,14 +93,56 @@ namespace CollapseLauncher
             };
             _parentGrid.Children.Add(progressLogoContainer);
             Grid.SetColumn(progressLogoContainer, 0);
-
-            Image progressLogo = new Image()
+            
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            switch (CurrentGameProperty._GameVersion.GameType)
             {
-                Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/honkai-logo.png")),
-                Width = 64,
-                Height = 64
-            };
-            progressLogoContainer.Children.Add(progressLogo);
+                case GameType.Honkai:
+                    Image progressLogoHonkai = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/honkai-logo.png")),
+                        Width = 64,
+                        Height = 64
+                    };
+                    progressLogoContainer.Children.Add(progressLogoHonkai);
+                    break;
+                case GameType.Genshin:
+                    Image progressLogoGenshin = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/genshin-logo.png")),
+                        Width = 64,
+                        Height = 64
+                    };
+                    progressLogoContainer.Children.Add(progressLogoGenshin);
+                    break;
+                case GameType.StarRail:
+                    Image progressLogoStarRail = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/starrail-logo.png")),
+                        Width = 64,
+                        Height = 64
+                    };
+                    progressLogoContainer.Children.Add(progressLogoStarRail);
+                    break;
+                case GameType.Zenless:
+                    Image progressLogoZenless = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/zenless-logo.png")),
+                        Width = 64,
+                        Height = 64
+                    };
+                    progressLogoContainer.Children.Add(progressLogoZenless);
+                    break;
+                case GameType.Unknown:
+                    Image progressLogoUnknown = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/honkai-logo.png")),
+                        Width = 64,
+                        Height = 64
+                    };
+                    progressLogoContainer.Children.Add(progressLogoUnknown);
+                    break;
+            }
 
             StackPanel progressStatusContainer = new StackPanel()
             {
