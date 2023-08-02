@@ -642,7 +642,14 @@ namespace CollapseLauncher.Pages
 
                         StartGameBtn.IsEnabled = false;
                         StartGameBtn.Content = BtnRunningGame;
-                        GameStartupSetting.IsEnabled = false;
+
+                        //GameStartupSetting.IsEnabled = false;
+                        RepairGameButton.IsEnabled = false;
+                        UninstallGameButton.IsEnabled = false;
+                        ConvertVersionButton.IsEnabled = false;
+                        CustomArgsTextBox.IsEnabled = false;
+                        StopGameButton.IsEnabled = true;
+
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
@@ -657,7 +664,14 @@ namespace CollapseLauncher.Pages
 
                     StartGameBtn.IsEnabled = true;
                     StartGameBtn.Content = BtnStartGame;
-                    GameStartupSetting.IsEnabled = true;
+
+                    //GameStartupSetting.IsEnabled = true;
+                    RepairGameButton.IsEnabled = true;
+                    UninstallGameButton.IsEnabled = true;
+                    ConvertVersionButton.IsEnabled = true;
+                    CustomArgsTextBox.IsEnabled = true;
+                    StopGameButton.IsEnabled = false;
+
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
 
@@ -1021,7 +1035,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static void StopGame(PresetConfigV2 gamePreset)
+        private async void StopGame(PresetConfigV2 gamePreset)
         {
             try
             {
@@ -1034,157 +1048,8 @@ namespace CollapseLauncher.Pages
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to stop Game with Region: {PageStatics._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
-        }
-        #endregion
-
-        #region Game State
-        private void GetCurrentGameState()
-        {
-            Visibility RepairGameButtonVisible = (PageStatics._GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
-
-            if ((!(PageStatics._GameVersion.GamePreset.IsConvertible ?? false)) || (PageStatics._GameVersion.GameType != GameType.Honkai))
-                ConvertVersionButton.Visibility = Visibility.Collapsed;
-
-            // Clear the _CommunityToolsProperty statics
-            PageStatics._CommunityToolsProperty.Clear();
-
-            // Check if the _CommunityToolsProperty has the official tool list for current game type
-            if (PageStatics._CommunityToolsProperty.OfficialToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
-            {
-                // If yes, then iterate it and add it to the list, to then getting read by the
-                // DataTemplate from HomePage
-                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.OfficialToolsDictionary[PageStatics._GameVersion.GameType])
-                {
-                    PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
-                }
-            }
-
-            // Check if the _CommunityToolsProperty has the community tool list for current game type
-            if (PageStatics._CommunityToolsProperty.CommunityToolsDictionary.ContainsKey(PageStatics._GameVersion.GameType))
-            {
-                // If yes, then iterate it and add it to the list, to then getting read by the
-                // DataTemplate from HomePage
-                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.CommunityToolsDictionary[PageStatics._GameVersion.GameType])
-                {
-                    PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
-                }
-            }
-
-            if (PageStatics._GameVersion.GameType == GameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
-
-            GameInstallationState = PageStatics._GameVersion.GetGameState();
-            switch (GameInstallationState)
-            {
-                case GameInstallStateEnum.Installed:
-                    {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
-                        InstallGameBtn.Visibility = Visibility.Collapsed;
-                        StartGameBtn.Visibility = Visibility.Visible;
-                        CustomStartupArgs.Visibility = Visibility.Visible;
-                    }
-                    return;
-                case GameInstallStateEnum.InstalledHavePreload:
-                    {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
-                        CustomStartupArgs.Visibility = Visibility.Visible;
-                        InstallGameBtn.Visibility = Visibility.Collapsed;
-                        StartGameBtn.Visibility = Visibility.Visible;
-                        NeedShowEventIcon = false;
-                        SpawnPreloadBox();
-                    }
-                    return;
-                case GameInstallStateEnum.NeedsUpdate:
-                    {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
-                        RepairGameButton.IsEnabled = false;
-                        UpdateGameBtn.Visibility = Visibility.Visible;
-                        StartGameBtn.Visibility = Visibility.Collapsed;
-                        InstallGameBtn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-            }
-
-            UninstallGameButton.IsEnabled = false;
-            RepairGameButton.IsEnabled = false;
-            OpenGameFolderButton.IsEnabled = false;
-            OpenCacheFolderButton.IsEnabled = false;
-            ConvertVersionButton.IsEnabled = false;
-            CustomArgsTextBox.IsEnabled = false;
-            OpenScreenshotFolderButton.IsEnabled = false;
-
-        }
-
-        private async void CheckRunningGameInstance(CancellationToken Token)
-        {
-            FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
-            VerticalAlignment TVAlign = VerticalAlignment.Center;
-            Orientation SOrient = Orientation.Horizontal;
-            Thickness Margin = new Thickness(0, -2, 8, 0);
-            Thickness SMargin = new Thickness(16, 0, 16, 0);
-            FontWeight FW = FontWeights.Medium;
-            string Gl = "";
-
-            StackPanel BtnStartGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
-            BtnStartGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtn });
-            BtnStartGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
-
-            StackPanel BtnRunningGame = new StackPanel() { Orientation = SOrient, Margin = SMargin };
-            BtnRunningGame.Children.Add(new TextBlock() { FontWeight = FW, Margin = Margin, VerticalAlignment = TVAlign, Text = Lang._HomePage.StartBtnRunning });
-            BtnRunningGame.Children.Add(new TextBlock() { FontFamily = FF, Text = Gl, FontSize = 18 });
-
-            try
-            {
-                while (!Token.IsCancellationRequested)
-                {
-                    while (App.IsGameRunning)
-                    {
-                        if (StartGameBtn.IsEnabled)
-                            LauncherBtn.Translation -= Shadow16;
-
-                        StartGameBtn.IsEnabled = false;
-                        StartGameBtn.Content = BtnRunningGame;
-
-                        //GameStartupSetting.IsEnabled = false;
-                        RepairGameButton.IsEnabled = false;
-                        UninstallGameButton.IsEnabled = false;
-                        ConvertVersionButton.IsEnabled = false;
-                        CustomArgsTextBox.IsEnabled = false;
-                        StopGameButton.IsEnabled = true;
-
-                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
-                        PlaytimeRunningStack.Visibility = Visibility.Visible;
-
-                        await Task.Delay(100, Token);
-#if !DISABLEDISCORD
-                        AppDiscordPresence.SetActivity(ActivityType.Play, 0);
-#endif
-                    }
-
-                    if (!StartGameBtn.IsEnabled)
-                        LauncherBtn.Translation += Shadow16;
-
-                    StartGameBtn.IsEnabled = true;
-                    StartGameBtn.Content = BtnStartGame;
-
-                    //GameStartupSetting.IsEnabled = true;
-                    RepairGameButton.IsEnabled = true;
-                    UninstallGameButton.IsEnabled = true;
-                    ConvertVersionButton.IsEnabled = true;
-                    CustomArgsTextBox.IsEnabled = true;
-                    StopGameButton.IsEnabled = false;
-
-                    PlaytimeIdleStack.Visibility = Visibility.Visible;
-                    PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-
-                    await Task.Delay(100, Token);
-#if !DISABLEDISCORD
-                    AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
-#endif
-                }
-            }
-            catch { return; }
         }
         #endregion
 
@@ -1501,7 +1366,7 @@ namespace CollapseLauncher.Pages
         private async void StopGameButton_Click(object sender, RoutedEventArgs e)
         {
            if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
-           StopGame(PageStatics._GameVersion.GamePreset);
+           StopGame(CurrentGameProperty._GameVersion.GamePreset);
         }
         #endregion
 
