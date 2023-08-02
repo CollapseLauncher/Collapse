@@ -5,6 +5,7 @@ namespace CollapseLauncher.GameSettings.Base
 {
     internal class SettingsBase : ImportExportBase
     {
+#nullable enable
         internal static string? RegistryPath;
         internal static RegistryKey? RegistryRoot;
 
@@ -12,7 +13,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             _gameVersionManager = GameVersionManager;
         }
-
+#nullable disable
         protected static IGameVersionCheck _gameVersionManager { get; set; }
     }
 }
