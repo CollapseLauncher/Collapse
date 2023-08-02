@@ -1000,7 +1000,7 @@ namespace CollapseLauncher.Pages
         CancellationTokenSource WatchOutputLog = new CancellationTokenSource();
         #endregion
 
-        #region Game Start Method
+        #region Game Start/Stop Method
         private async void StartGame(object sender, RoutedEventArgs e)
         {
             try
@@ -1035,7 +1035,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void StopGame(PresetConfigV2 gamePreset)
+        private void StopGame(PresetConfigV2 gamePreset)
         {
             try
             {
