@@ -71,7 +71,19 @@
 		<Content Include="XAMLs\Prototype\honkai-logo.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
+
+		<Content Include="XAMLs\Prototype\genshin-logo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
+		<Content Include="XAMLs\Prototype\starrail-logo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
+		<Content Include="XAMLs\Prototype\zenless-logo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		
 		<None Include="..\.editorconfig" Link=".editorconfig" />
     
 		<Content Update="Assets\Images\AiHappy.png">
