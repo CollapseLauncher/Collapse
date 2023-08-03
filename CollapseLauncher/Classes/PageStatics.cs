@@ -30,7 +30,7 @@ namespace CollapseLauncher.Statics
                     _GameSettings = new HonkaiSettings(_GameVersion);
                     _GameCache = new HonkaiCache(UIElementParent, _GameVersion);
                     _GameRepair = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                    _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache);
+                    _GameInstall = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
                     break;
                 case GameType.StarRail:
                     _GameVersion = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, _GamePreset);

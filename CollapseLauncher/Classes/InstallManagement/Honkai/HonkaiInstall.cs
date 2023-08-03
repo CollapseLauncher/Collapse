@@ -30,9 +30,10 @@ namespace CollapseLauncher.InstallManager.Honkai
         private bool _forceIgnoreDeltaPatch = false;
         #endregion
 
-        public HonkaiInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager)
+        public HonkaiInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings)
             : base(parentUI, GameVersionManager)
         {
+            _gameSettings = GameSettings;
             _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 

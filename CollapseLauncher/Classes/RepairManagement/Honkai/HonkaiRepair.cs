@@ -50,7 +50,7 @@ namespace CollapseLauncher
             _isOnlyRecoverMain = onlyRecoverMainAsset;
 
             // Initialize audio asset language
-            string audioLanguage = (_gameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
+            string audioLanguage = (GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
             switch (audioLanguage)
             {
                 case "Chinese(PRC)":
