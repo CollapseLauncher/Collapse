@@ -188,7 +188,6 @@ namespace CollapseLauncher
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
-
             // Iterate lines of the TextAsset
             foreach (ReadOnlySpan<char> line in dataTextAsset.GetStringEnumeration())
             {
@@ -203,21 +202,38 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                // Deserialize the line and set the type
-                CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), InternalAppJSONContext.Default);
-                content.DataType = type;
-
-                // Check if the asset is regional and contains only selected language.
-                if (IsValidRegionFile(content.N, _gameLang))
+                // If the line is not started with '{' and ended with '}' (JSON),
+                // then skip it.
+                if (line[0] != '{' && line[line.Length - 1] != '}')
                 {
-                    // If valid, then add the asset to assetIndex
-                    count++;
-                    size += content.CS;
+                    LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
+                    continue;
+                }
 
-                    // Set base URL and Path and add it to asset index
-                    content.BaseURL = baseURL;
-                    content.BasePath = GetAssetBasePathByType(type);
-                    assetIndex.Add(content);
+                try
+                {
+                    // Deserialize the line and set the type
+                    CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), InternalAppJSONContext.Default);
+                    content.DataType = type;
+
+                    // Check if the asset is regional and contains only selected language.
+                    if (IsValidRegionFile(content.N, _gameLang))
+                    {
+                        // If valid, then add the asset to assetIndex
+                        count++;
+                        size += content.CS;
+
+                        // Set base URL and Path and add it to asset index
+                        content.BaseURL = baseURL;
+                        content.BasePath = GetAssetBasePathByType(type);
+                        assetIndex.Add(content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // If failed while parsing the file, then skip it.
+                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}", LogType.Warning, true);
+                    continue;
                 }
             }
 
