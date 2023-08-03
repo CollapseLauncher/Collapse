@@ -184,10 +184,11 @@ namespace CollapseLauncher.Pages
 
         private async void NextPage_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsConfigV2StampExist() || !IsConfigV2ContentExist())
+            bool content = IsConfigV2ContentExist(), stamp = IsConfigV2StampExist();
+            if (!stamp || !content)
             {
                 await HideLoadingPopup(false, Lang._StartupPage.Pg1LoadingTitle1, Lang._StartupPage.Pg1LoadingSubitle1);
-                await DownloadConfigV2Files(true, true);
+                await DownloadConfigV2Files(stamp, content);
                 Ring.IsIndeterminate = false;
                 OverlayTitle.Text = Lang._StartupPage.Pg1LoadingTitle1;
                 OverlaySubtitle.Text = Lang._StartupPage.Pg1LoadingSubitle2;

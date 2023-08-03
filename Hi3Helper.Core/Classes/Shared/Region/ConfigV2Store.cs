@@ -53,7 +53,11 @@ namespace Hi3Helper.Preset
         public static void LoadConfigV2()
         {
             string stamp = File.ReadAllText(AppGameConfigV2StampPath);
-            string content = File.ReadAllText(AppGameConfigV2MetadataPath);
+            string content = null;
+            foreach (string s in AppGameConfigV2MetadataPath)
+            {
+                content += File.ReadAllText(s);
+            }
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
             if (string.IsNullOrEmpty(content)) throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
 
@@ -128,6 +132,16 @@ namespace Hi3Helper.Preset
             FileInfo file = new FileInfo(name);
             if (!file.Exists) return false;
             if (file.Length < 2) return false;
+            return true;
+        }
+        private static bool CheckConfigV2StampContent(string[] name)
+        {
+            foreach (string s in name)
+            {
+                    FileInfo file = new(s);
+                    if (!file.Exists) return false;
+                    if (file.Length < 2) return false;
+            }
             return true;
         }
     }

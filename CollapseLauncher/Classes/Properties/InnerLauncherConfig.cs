@@ -210,5 +210,17 @@ namespace CollapseLauncher
                 await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, URL, default).ConfigureAwait(false);
             }
         }
+        private static async Task GetConfigV2Content(Http _httpClient, string prefix, string[] output)
+        {
+            
+            string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + prefix);
+            foreach (string s in output)
+            {
+                using (FileStream fs = new FileStream(s, FileMode.Create, FileAccess.Write))
+                {
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, URL, default).ConfigureAwait(false);
+                }
+            }
+        }
     }
 }
