@@ -82,23 +82,23 @@ namespace CollapseLauncher
             KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            foreach (string baseURL in _gamePreset.GameDispatchArrayURL)
+            foreach (string baseURL in _gameVersionManager.GamePreset.GameDispatchArrayURL)
             {
                 try
                 {
                     // Init the key and decrypt it if exist.
                     string key = null;
-                    if (_gamePreset.DispatcherKey != null)
+                    if (_gameVersionManager.GamePreset.DispatcherKey != null)
                     {
                         mhyEncTool Decryptor = new mhyEncTool();
                         Decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
-                        key = _gamePreset.DispatcherKey;
+                        key = _gameVersionManager.GamePreset.DispatcherKey;
                         Decryptor.DecryptStringWithMasterKey(ref key);
                     }
 
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gamePreset.GameDispatchURLTemplate, _gamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
+                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gameVersionManager.GamePreset.GameDispatchURLTemplate, _gameVersionManager.GamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
                     lastException = null;
                     break;
                 }
@@ -112,7 +112,7 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gamePreset.GameGatewayDefault, token);
+            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gameVersionManager.GamePreset.GameGatewayDefault, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
@@ -139,25 +139,6 @@ namespace CollapseLauncher
 
                 // Build the asset index and return the count and size of each type
                 (int, long) returnValue = BuildAssetIndex(type, baseURL, xorStream, assetIndex);
-
-                /*
-                // Fetch additional patch for Data type
-                if (type == CacheAssetType.Data)
-                {
-                    // Get the patch config file
-                    assetIndexURL = CombineURLFromString(baseURL, "patch", "patchconfig.xmf");
-
-                    // Reinitialize the memory stream;
-                    stream.Dispose();
-                    stream = new MemoryStream();
-
-                    // Start downloading the patch config
-                    await _httpClient.Download(assetIndexURL, stream, null, null, token);
-
-                    // Build patch config for Data type
-                    BuildDataPatchConfig(stream, assetIndex);
-                }
-                */
 
                 return returnValue;
             }
@@ -207,7 +188,6 @@ namespace CollapseLauncher
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
-
             // Iterate lines of the TextAsset
             foreach (ReadOnlySpan<char> line in dataTextAsset.GetStringEnumeration())
             {
@@ -222,21 +202,38 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                // Deserialize the line and set the type
-                CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), CacheAssetContext.Default);
-                content.DataType = type;
-
-                // Check if the asset is regional and contains only selected language.
-                if (IsValidRegionFile(content.N, _gameLang))
+                // If the line is not started with '{' and ended with '}' (JSON),
+                // then skip it.
+                if (line[0] != '{' && line[line.Length - 1] != '}')
                 {
-                    // If valid, then add the asset to assetIndex
-                    count++;
-                    size += content.CS;
+                    LogWriteLine($"Skipping non-JSON line in [T: {type}]:\r\n{line}", LogType.Warning, true);
+                    continue;
+                }
 
-                    // Set base URL and Path and add it to asset index
-                    content.BaseURL = baseURL;
-                    content.BasePath = GetAssetBasePathByType(type);
-                    assetIndex.Add(content);
+                try
+                {
+                    // Deserialize the line and set the type
+                    CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), InternalAppJSONContext.Default);
+                    content.DataType = type;
+
+                    // Check if the asset is regional and contains only selected language.
+                    if (IsValidRegionFile(content.N, _gameLang))
+                    {
+                        // If valid, then add the asset to assetIndex
+                        count++;
+                        size += content.CS;
+
+                        // Set base URL and Path and add it to asset index
+                        content.BaseURL = baseURL;
+                        content.BasePath = GetAssetBasePathByType(type);
+                        assetIndex.Add(content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // If failed while parsing the file, then skip it.
+                    LogWriteLine($"Failed while parsing a line in [T: {type}]:\r\n{line}\r\nReason: {ex}", LogType.Warning, true);
+                    continue;
                 }
             }
 
