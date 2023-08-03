@@ -163,7 +163,8 @@ namespace CollapseLauncher
                 }
                 else
                 {
-                    VersionNumberIndicator.Text = "PRE";    
+                    // Temp "*" indicator for distinguishing preview builds from stable      
+                    VersionNumberIndicator.Text = AppCurrentVersion.VersionString + "*"; 
                 }
                 
 
