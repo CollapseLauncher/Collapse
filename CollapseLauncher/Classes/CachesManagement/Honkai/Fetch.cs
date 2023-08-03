@@ -82,23 +82,23 @@ namespace CollapseLauncher
             KianaDispatch dispatch = null;
             Exception lastException = null;
 
-            foreach (string baseURL in _gameVersionManager.GamePreset.GameDispatchArrayURL)
+            foreach (string baseURL in _gamePreset.GameDispatchArrayURL)
             {
                 try
                 {
                     // Init the key and decrypt it if exist.
                     string key = null;
-                    if (_gameVersionManager.GamePreset.DispatcherKey != null)
+                    if (_gamePreset.DispatcherKey != null)
                     {
                         mhyEncTool Decryptor = new mhyEncTool();
                         Decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
-                        key = _gameVersionManager.GamePreset.DispatcherKey;
+                        key = _gamePreset.DispatcherKey;
                         Decryptor.DecryptStringWithMasterKey(ref key);
                     }
 
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gameVersionManager.GamePreset.GameDispatchURLTemplate, _gameVersionManager.GamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
+                    dispatch = await KianaDispatch.GetDispatch(baseURL, _gamePreset.GameDispatchURLTemplate, _gamePreset.GameDispatchChannelName, key, _gameVersion.VersionArray, token);
                     lastException = null;
                     break;
                 }
@@ -112,7 +112,7 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gameVersionManager.GamePreset.GameGatewayDefault, token);
+            _gameGateway = await KianaDispatch.GetGameserver(dispatch, _gamePreset.GameGatewayDefault, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
@@ -213,7 +213,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Deserialize the line and set the type
-                    CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), InternalAppJSONContext.Default);
+                    CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), CacheAssetContext.Default);
                     content.DataType = type;
 
                     // Check if the asset is regional and contains only selected language.
