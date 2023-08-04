@@ -42,6 +42,7 @@ namespace CollapseLauncher
 
             try
             {
+
                 StartSquirrelHook();
 
                 AppCurrentArgument = args;
