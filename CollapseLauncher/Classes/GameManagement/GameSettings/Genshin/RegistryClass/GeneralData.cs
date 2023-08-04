@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin.Context;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
