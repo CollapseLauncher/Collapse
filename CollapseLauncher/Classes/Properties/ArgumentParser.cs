@@ -49,7 +49,11 @@ namespace CollapseLauncher
             }
 
             if (rootCommand.Invoke(args) > 0)
-                throw new ArgumentException($"Argument to run this command is invalid! See the information above for more detail.");
+            {
+                new ArgumentException($"Argument to run this command is invalid! See the information above for more detail.");
+                m_appMode = AppMode.Launcher;
+                return;
+            }
         }
 
         public static void ParseHi3CacheUpdaterArguments(params string[] args)
