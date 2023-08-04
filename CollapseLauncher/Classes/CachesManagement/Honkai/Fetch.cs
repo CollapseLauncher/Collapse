@@ -1,4 +1,4 @@
-using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -178,6 +178,7 @@ namespace CollapseLauncher
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
             bool isFirst = type == CacheAssetType.Data;
+            bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
             stream.Position = 0;
@@ -199,6 +200,14 @@ namespace CollapseLauncher
                 {
                     _gameSalt = GetAssetIndexSalt(line.ToString());
                     isFirst = false;
+                    continue;
+                }
+
+                // Get the lucky number if it does so 👀
+                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
+                {
+                    _luckyNumber = luckyNumber;
+                    isNeedReadLuckyNumber = false;
                     continue;
                 }
 
@@ -263,7 +272,7 @@ namespace CollapseLauncher
             return true;
         }
 
-        public async Task<(List<CacheAsset>, string, string)> GetCacheAssetList(Http _httpClient, CacheAssetType type, CancellationToken token)
+        public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(Http _httpClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new List<CacheAsset>();
@@ -275,7 +284,7 @@ namespace CollapseLauncher
             _ = await FetchByType(type, _httpClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
-            return (returnAsset, _gameGateway.ExternalAssetUrls.FirstOrDefault(), BuildAssetBundleURL(_gameGateway));
+            return (returnAsset, _gameGateway.ExternalAssetUrls.FirstOrDefault(), BuildAssetBundleURL(_gameGateway), _luckyNumber);
         }
     }
 }
