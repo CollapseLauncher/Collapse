@@ -98,6 +98,7 @@ namespace Hi3Helper.Shared.Region
                 return Path.Combine(dirPath, execName + ".exe");
             }
         }
+        public static string AppExecutableName { get => Path.GetFileName(AppExecutablePath); }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
@@ -184,8 +185,11 @@ namespace Hi3Helper.Shared.Region
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", true },
 #if !DISABLEDISCORD
-            { "EnableDiscordRPC", false }
+            { "EnableDiscordRPC", false },
 #endif
+            { "EnableAcrylicEffect", true },
+            { "IncludeGameLogs", false },
+            { "UseDownloadChunksMerging", false }
         };
 
         public static void LoadGamePreset()

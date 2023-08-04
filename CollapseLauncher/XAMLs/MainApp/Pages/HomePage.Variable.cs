@@ -4,13 +4,14 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
 
+using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage : Page
     {
-        string GameDirPath { get => PageStatics._GameVersion.GameDirPath; }
+        string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
 
         public Visibility IsPostEventPanelVisible => regionNewsProp.articlePanel?.Events.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostEventPanelEmpty => regionNewsProp.articlePanel?.Events.Count != 0 ? Visibility.Collapsed : Visibility.Visible;

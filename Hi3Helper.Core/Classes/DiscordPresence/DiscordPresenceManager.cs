@@ -218,12 +218,13 @@ namespace Hi3Helper.DiscordPresence
             _activity = new Activity
             {
                 Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}",
-                State = $"Server: {ConfigV2Store.CurrentConfigV2GameRegion}",
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
                 Assets = new ActivityAssets
                 {
                     LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
                     LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}",
-                    SmallImage = $"launcher-logo"
+                    SmallImage = $"launcher-logo",
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                 },
                 Timestamps = new ActivityTimestamps
                 {
@@ -247,21 +248,20 @@ namespace Hi3Helper.DiscordPresence
             _activity = new Activity
             {
                 Details = $"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}",
-                State = $"Server: {ConfigV2Store.CurrentConfigV2GameRegion}",
+                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
                 Assets = new ActivityAssets
                 {
                     LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
                     LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory}",
-                    SmallImage = $"launcher-logo"
+                    SmallImage = $"launcher-logo",
+                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
                 },
             };
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
         {
-#if DEBUG
             Logger.LogWriteLine($"Activity updated! => {_activity.Details} - {_activity.State}");
-#endif
         });
 
         private void UpdateCallbacksRoutine()

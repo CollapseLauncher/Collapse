@@ -73,7 +73,7 @@ namespace CollapseLauncher
                 await FallbackCDNUtil.DownloadCDNFallbackContent(client, ms, relativePath, default);
                 ms.Position = 0;
 
-                return (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), AppUpdateVersionPropContext.Default);
+                return (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), InternalAppJSONContext.Default);
             }
         }
 
@@ -235,6 +235,25 @@ namespace CollapseLauncher
     {
         static NotificationInvoker invoker = new NotificationInvoker();
         public static void SendNotification(NotificationInvokerProp e) => invoker.SendNotification(e);
+        public static void SendCustomNotification(int tagID, InfoBar infoBarUI) => invoker.SendNotification(new NotificationInvokerProp
+        {
+            IsCustomNotif = true,
+            CustomNotifAction = NotificationCustomAction.Add,
+            Notification = new NotificationProp
+            {
+                MsgId = tagID,
+            },
+            OtherContent = infoBarUI
+        });
+        public static void RemoveCustomNotification(int tagID) => invoker.SendNotification(new NotificationInvokerProp
+        {
+            IsCustomNotif = true,
+            CustomNotifAction = NotificationCustomAction.Remove,
+            Notification = new NotificationProp
+            {
+                MsgId = tagID,
+            }
+        });
     }
 
     internal class NotificationInvoker
@@ -243,12 +262,16 @@ namespace CollapseLauncher
         public void SendNotification(NotificationInvokerProp e) => EventInvoker?.Invoke(this, e);
     }
 
+    public enum NotificationCustomAction { Add, Remove }
     public class NotificationInvokerProp
     {
         public TypedEventHandler<InfoBar, object> CloseAction { get; set; } = null;
         public UIElement OtherContent { get; set; } = null;
         public NotificationProp Notification { get; set; }
         public bool IsAppNotif { get; set; } = true;
+        public bool IsCustomNotif { get; set; } = false;
+        public NotificationCustomAction CustomNotifAction { get; set; }
+
     }
     #endregion
     #region BackgroundRegion
@@ -257,14 +280,17 @@ namespace CollapseLauncher
         static BackgroundImgChangerInvoker invoker = new BackgroundImgChangerInvoker();
         public static async Task WaitForBackgroundToLoad() => await invoker.WaitForBackgroundToLoad();
         public static void ChangeBackground(string ImgPath, bool IsCustom = true) => invoker.ChangeBackground(ImgPath, IsCustom);
+        public static void ToggleBackground(bool Hide) => invoker.ToggleBackground(Hide);
     }
 
     internal class BackgroundImgChangerInvoker
     {
         public static event EventHandler<BackgroundImgProperty> ImgEvent;
+        public static event EventHandler<bool> IsImageHide;
         BackgroundImgProperty property;
         public async Task WaitForBackgroundToLoad() => await Task.Run(() => { while (!property.IsImageLoaded) { } });
         public void ChangeBackground(string ImgPath, bool IsCustom) => ImgEvent?.Invoke(this, property = new BackgroundImgProperty(ImgPath, IsCustom));
+        public void ToggleBackground(bool Hide) => IsImageHide?.Invoke(this, Hide);
     }
 
     internal class BackgroundImgProperty

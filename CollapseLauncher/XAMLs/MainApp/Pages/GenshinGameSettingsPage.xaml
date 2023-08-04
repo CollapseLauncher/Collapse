@@ -21,7 +21,7 @@
     <Grid>
         <Grid x:Name="PageContent">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="32,55,32,32" Padding="0,0,0,74">
+                <StackPanel Margin="32,40,32,32" Padding="0,0,0,74">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Title}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -32,11 +32,14 @@
                             <StackPanel x:Name="GameResolutionPanel" Margin="0,0">
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ResolutionPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                                    <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,8">
+                                    <StackPanel x:Name="GameResolutionWindow" Orientation="Vertical" Margin="0,0,0,0">
                                         <CheckBox x:Name="VSyncToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VSync}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VerticalSync, Mode=TwoWay}"/>
                                         <CheckBox x:Name="GameResolutionFullscreen" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_Fullscreen}"
-                                                      HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}" Margin="0,0,0,8"/>
+                                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            IsChecked="{x:Bind IsFullscreenEnabled, Mode=TwoWay}" Margin="0,0,0,0"/>
+                                        <CheckBox x:Name="GameResolutionBorderless" Content="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Borderless}"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            IsChecked="{x:Bind IsBorderlessEnabled, Mode=TwoWay}" Margin="0,0,0,8"/>
                                         <!--
                                         Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
                                         Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work
@@ -383,7 +386,7 @@
                 </StackPanel>
             </ScrollViewer>
             <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource MyAcrylicBrush}"
-                  HorizontalAlignment="Stretch" CornerRadius="8" Margin="0" Padding="24,16"
+                  HorizontalAlignment="Stretch" CornerRadius="8" Margin="16" Padding="16,16"
                   Shadow="{ThemeResource SharedShadow}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -394,10 +397,10 @@
                             VerticalAlignment="Center" IsEnabled="True" Click="ApplyButton_Click" Shadow="{ThemeResource SharedShadow}">
                     <StackPanel Orientation="Horizontal" Margin="8,0">
                         <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf00c;" FontSize="14"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.ApplyBtn}" Margin="8,0,0,0" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
+                <TextBlock Grid.Column="1" x:Name="ApplyText" Text="{x:Bind helper:Locale.Lang._GameSettingsPage.SettingsApplied}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" Margin="16,-4,0,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Visibility="Collapsed"/>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
                     <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.RegImportExport}" Margin="16,-4,16,0" VerticalAlignment="Center" FontWeight="Medium"/>
                     <Button x:Name="RegistryExport" CornerRadius="16,0,0,16" Height="32"

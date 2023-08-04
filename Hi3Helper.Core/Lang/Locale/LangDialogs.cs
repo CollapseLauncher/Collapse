@@ -89,7 +89,11 @@
                 public string ReleaseChannelChangeSubtitle2 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle2;
                 public string ReleaseChannelChangeSubtitle3 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle3;
                 public string LocateExePathTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
-                public string LocateExePathSubtitle{ get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
+                public string CannotUseAppLocationForGameDirTitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirTitle;
+                public string CannotUseAppLocationForGameDirSubtitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirSubtitle;
+                public string LocateExePathSubtitle { get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
+                public string StopGameTitle { get; set; } = LangFallback?._Dialogs.StopGameTitle;
+                public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
             }
         }
         #endregion

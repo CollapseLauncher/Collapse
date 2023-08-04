@@ -547,15 +547,19 @@ namespace CollapseLauncher
                 bool isFlags = filename.StartsWith('@');
 
                 // Archive file related
-                bool isZip = filename.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || filename.EndsWith(".7z", StringComparison.OrdinalIgnoreCase);
+                bool isZip = filename.Contains(".zip", StringComparison.OrdinalIgnoreCase) || filename.Contains(".7z", StringComparison.OrdinalIgnoreCase);
 
                 // Delta-patch related
-                bool isDeltaPatch = filename.StartsWith(_gamePreset.ProfileName) && asset.EndsWith(".patch");
+                bool isDeltaPatch = filename.StartsWith(_gameVersionManager.GamePreset.ProfileName) && asset.EndsWith(".patch");
+
+                // Direct X related
+                bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                    || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
 
                 if (!isIncluded && !isIni && !isXMFBlocks && !isXMFBlocksVer && !isXMFMeta
                     && !isVersion && !isScreenshot && !isWebcaches && !isSDKcaches && !isLog
                     && !isUSM && !isWwiseHeader && !isAudioManifest && !isBlockPatch
-                    && !isDeltaPatch && !isFlags && !isZip)
+                    && !isDeltaPatch && !isFlags && !isZip && !isDirectX)
                 {
                     string n = asset.AsSpan().Slice(pathOffset).ToString();
                     FileInfo f = new FileInfo(asset);

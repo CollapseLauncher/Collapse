@@ -16,9 +16,16 @@ If you wish to add new language that isn't yet listed in the Crowdin project, pl
 ## Tools Needed
 Below is a list of tools needed to contribute to this project:
 1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
+   - Select .NET desktop development component
 2. **Windows SDK (10.0.19043.0 or 10.0.22000.0 ONLY)** via Visual Studio Installer
 3. .NET Core 7 SDK: [**(7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 4. WinUI 3: [**(WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
+
+> **Note**:
+> 
+> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.3 Stable`.
+> 
+> Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, no support will be provided for this method. **This is not recommended for beginner users.**
 
 ## Restrictions for New Feature(s)
 While this software is fully open source and not affiliated with HoYoverse, Cognosphere, or any of its related entities in any way, we are nonetheless bound to their Terms of Service and Code of Conduct when developing Collapse. This means that there are some features that we will **not** implement. We will close any issue or PRs that are made to add such functionality to Collapse. Such features include, but are not limited to:

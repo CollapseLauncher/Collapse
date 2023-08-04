@@ -107,7 +107,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
             <Frame.Content>
-                <Grid x:Name="FrameGrid" Margin="32,56,32,32">
+                <Grid x:Name="FrameGrid" Margin="32,8,32,32">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
@@ -128,9 +128,6 @@
                         Grid.Column="0" Grid.ColumnSpan="2"
                         Grid.Row="3"
                         HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                        <InfoBar.Transitions>
-                            <PopupThemeTransition/>
-                        </InfoBar.Transitions>
                         <InfoBar.Content>
                             <StackPanel Orientation="Vertical" Margin="0,0,38,0">
                                 <Grid x:Name="ProgressPreStatusGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top" Visibility="Collapsed">
@@ -309,7 +306,7 @@
                                   PointerExited="CarouselRestartScroll">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/BG/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -361,7 +358,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostEventPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -404,7 +401,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostNoticePanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -447,7 +444,7 @@
                                             </ScrollViewer>
                                             <StackPanel Visibility="{x:Bind IsPostInfoPanelEmpty}" Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}">
                                                 <Grid>
-                                                    <Image Source="ms-appx:///Assets/BG/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
+                                                    <Image Source="ms-appx:///Assets/Images/PaimonWhat.png" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonHeight}"
                                                            Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonInnerMargin}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PostPanel_NoNews}"
                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -687,6 +684,14 @@
                                                     </StackPanel>
                                                 </Button.Content>
                                             </Button>
+                                            <Button x:Name="StopGameButton" Margin="0,8" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="StopGameButton_Click">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal" Margin="4,0">
+                                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf28d;" FontSize="18"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2StopGame}" Margin="8,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
                                             <StackPanel x:Name="CustomStartupArgs" Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
                                                 <TextBox x:Name="CustomArgsTextBox" Text="{x:Bind CustomArgsValue, Mode=TwoWay}"/>
@@ -726,7 +731,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0">
                                             <TextBlock x:Name="PlaytimeHours" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="5,1,0,8"/>
-                                            <TextBlock x:Name="PlaytimeMinutes" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Hours}" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
+                                            <TextBlock x:Name="PlaytimeMinutes" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_Panel1Minutes}" Width="55" HorizontalAlignment="Center" FontSize="11" Margin="19,1,0,8"/>
                                         </StackPanel>
                                         <TextBlock x:Name="InvalidTimeBlock" Text="{x:Bind helper:Locale.Lang._HomePage.GamePlaytime_Idle_InvalidTimeBlock}" HorizontalAlignment="Center" Visibility="Collapsed" FontSize="13" Margin="0,2,0,2"/>
                                         <Button x:Name="ChangePlaytimeButton" Margin="0,8" Style="{ThemeResource AccentButtonStyle}" CornerRadius="14" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Click="ChangePlaytimeButton_Click">
@@ -755,9 +760,9 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="LauncherBtn" Grid.Column="0" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource GameSettingsBtnBrush}" CornerRadius="20">
+                    <Grid x:Name="LauncherBtn" Grid.Column="0" Grid.Row="2" Shadow="{ThemeResource SharedShadow}" CornerRadius="20">
                         <Button x:Name="InstallGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
+                                Style="{ThemeResource NewAccentButtonStyle}" Click="InstallGameDialog" CornerRadius="20">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf019;" FontSize="18"/>
@@ -766,7 +771,7 @@
                             </Button.Content>
                         </Button>
                         <Button x:Name="UpdateGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Click="UpdateGameDialog" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Click="UpdateGameDialog" CornerRadius="20"
                                 Visibility="Collapsed">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
@@ -776,7 +781,7 @@
                             </Button.Content>
                         </Button>
                         <Button x:Name="StartGameBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
                                 Click="StartGame">
                             <StackPanel Orientation="Horizontal" Margin="16,0,16,0">
                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf11b;" FontSize="22"/>
@@ -784,12 +789,12 @@
                             </StackPanel>
                         </Button>
                         <Button x:Name="CancelDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20"
                                 Click="CancelInstallationProcedure">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.PauseCancelDownloadBtn}" FontWeight="Medium"/>
                         </Button>
                         <Button x:Name="ResumeDownloadBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" CornerRadius="20">
+                                Style="{ThemeResource NewAccentButtonStyle}" Visibility="Collapsed" CornerRadius="20">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.ResumeDownloadBtn}" FontWeight="Medium"/>
                         </Button>
                     </Grid>

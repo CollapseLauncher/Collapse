@@ -113,6 +113,7 @@
     "GameSettings_Panel2RepairGame": "Repair Game",
     "GameSettings_Panel2UninstallGame": "Uninstall Game",
     "GameSettings_Panel2ConvertVersion": "Convert Game Version",
+    "GameSettings_Panel2StopGame": "Force Close Game",
     "GameSettings_Panel3": "Custom Start-up Args",
     "GameSettings_Panel4": "Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
@@ -216,6 +217,7 @@
 
     "Graphics_Title": "Graphics Settings",
     "Graphics_ResolutionPanel": "Game Resolution",
+    "Graphics_Borderless": "Borderless Screen",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",
@@ -305,6 +307,7 @@
 
     "Debug": "Debugging",
     "Debug_Console": "Show Console",
+    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
@@ -360,6 +363,7 @@
 
     "ReportIssueBtn": "Report an Issue",
     "ContributePRBtn": "Contribute with a Pull Request",
+    "ContributorListBtn": "Open Source Contributors",
 
     "About": "About",
     "About_Copyright1": "© 2022-2023 Created by",
@@ -376,7 +380,10 @@
     "DiscordBtn2": "Honkai Impact 3rd Discord",
     "DiscordBtn3": "Collapse's Official Discord!",
 
-    "AppChangeReleaseChannel": "Change to {0} Release Channel"
+    "AppChangeReleaseChannel": "Change to {0} Release Channel",
+
+    "EnableAcrylicEffect": "Use Acrylic Blur Effect",
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
   },
 
   "_Misc": {
@@ -471,7 +478,8 @@
     "DiscordRP_AppSettings": "Changing App Settings",
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "No Activity",
-    "DiscordRP_Ad": "- On Collapse Launcher"
+    "DiscordRP_Ad": "- With Collapse Launcher",
+    "DiscordRP_Region": "Region:"
   },
 
   "_Dialogs": {
@@ -556,7 +564,11 @@
     "ResetPlaytimeSubtitle2": "destructive",
     "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "LocateExePathTitle": "Locate Executable Install Path",
-    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:"
+    "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
+    "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
+    "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+    "StopGameTitle": "Force Stop Game",
+    "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress."
   },
 
   "_InstallMgmt": {
@@ -719,6 +731,7 @@
     "Graphics_ReflectionQuality": "Reflection Quality",
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
+    "Graphics_SFXQuality": "SFX Quality",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

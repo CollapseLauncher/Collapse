@@ -15,6 +15,7 @@ using System.IO;
 using System.Threading;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using static Hi3Helper.Logger;
 
 namespace RegistryUtils
 {
@@ -144,6 +145,11 @@ namespace RegistryUtils
         public RegistryMonitor(RegistryHive registryHive, string subKey)
         {
             InitRegistryKey(registryHive, subKey);
+#if DEBUG
+            LogWriteLine($"RegistryMonitor Initialized!\r\n" +
+                $"  Hive: {registryHive}\r\n" +
+                $"  subKey: {subKey}", Hi3Helper.LogType.Debug, true);
+#endif
         }
 
         /// <summary>
@@ -154,6 +160,9 @@ namespace RegistryUtils
             Stop();
             _disposed = true;
             GC.SuppressFinalize(this);
+#if DEBUG
+            LogWriteLine($"RegistryMonitor Disposed!", Hi3Helper.LogType.Debug, true);
+#endif
         }
 
         /// <summary>
@@ -333,6 +342,11 @@ namespace RegistryUtils
 
                     if (WaitHandle.WaitAny(waitHandles) == 0)
                     {
+#if DEBUG
+                        LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +
+                            $"  Hive: {_registryHive}\r\n" +
+                            $"  subName: {_registrySubName}", Hi3Helper.LogType.Debug, true);
+#endif
                         OnRegChanged();
                     }
                 }

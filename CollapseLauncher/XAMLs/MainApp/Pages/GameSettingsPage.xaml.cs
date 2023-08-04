@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
@@ -16,24 +15,27 @@ using System.IO;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper;
+using CollapseLauncher.Statics;
 
 namespace CollapseLauncher.Pages
 {
     public partial class GameSettingsPage : Page
     {
-        private HonkaiSettings Settings { get => (HonkaiSettings)PageStatics._GameSettings; }
+        private GamePresetProperty CurrentGameProperty { get; set; }
+        private HonkaiSettings Settings { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload = false;
         public GameSettingsPage()
         {
+            CurrentGameProperty = GetCurrentGameProperty();
             try
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
                     RegistryWatcher.Start();
                     ToggleRegistrySubscribe(true);
                 });
@@ -59,13 +61,14 @@ namespace CollapseLauncher.Pages
         {
             if (!IsNoReload)
             {
-                LogWriteLine("Module: RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+                LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
                 DispatcherQueue.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
             }
         }
 
         private void LoadPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             Settings.ReloadSettings();
 
             this.InitializeComponent();
@@ -189,11 +192,11 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)PageStatics._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }

@@ -1,13 +1,12 @@
 ﻿using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
-using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail
@@ -30,7 +29,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         TAA = 1,
         FXAA = 2
     }
-#endregion
+    #endregion
 
     internal class Model : IGameSettingsValue<Model>
     {
@@ -115,6 +114,13 @@ namespace CollapseLauncher.GameSettings.StarRail
         public Quality ReflectionQuality { get; set; } = Quality.Medium;
 
         /// <summary>
+        /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>>
+        /// Options: VeryLow (1), Low (2), Medium(3), High(4)
+        /// Default: Medium
+        /// </summary>
+        public Quality SFXQuality { get; set; } = Quality.Medium;
+
+        /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5)
         /// Default: Medium
@@ -145,7 +151,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), ModelContext.Default) ?? new Model();
+                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), StarRailSettingsJSONContext.Default) ?? new Model();
                 }
             }
             catch (Exception ex)
@@ -162,7 +168,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(Model), ModelContext.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(Model), StarRailSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
@@ -174,24 +180,8 @@ namespace CollapseLauncher.GameSettings.StarRail
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
-        public bool Equals(Model? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
 
-            return comparedTo.AAMode == this.AAMode &&
-                comparedTo.ShadowQuality == this.ShadowQuality &&
-                comparedTo.LightQuality == this.LightQuality &&
-                comparedTo.CharacterQuality == this.CharacterQuality &&
-                comparedTo.BloomQuality == this.BloomQuality &&
-                comparedTo.EnvDetailQuality == this.EnvDetailQuality &&
-                comparedTo.ReflectionQuality == this.ReflectionQuality &&
-                comparedTo.FPS == this.FPS &&
-                comparedTo.EnableVSync == this.EnableVSync &&
-                comparedTo.RenderScale == this.RenderScale &&
-                comparedTo.ResolutionQuality == this.ResolutionQuality;
-#nullable disable
-        }
+        public bool Equals(Model? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }
