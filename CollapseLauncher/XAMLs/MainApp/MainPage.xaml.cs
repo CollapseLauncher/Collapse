@@ -151,9 +151,9 @@ namespace CollapseLauncher
                     Application.Current.Exit();
                     return;
                 }
-
+#if !DEBUG
                 LauncherUpdateWatcher.StartCheckUpdate();
-
+#endif
                 LoadGamePreset();
                 SetThemeParameters();
 

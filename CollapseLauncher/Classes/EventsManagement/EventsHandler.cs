@@ -26,10 +26,20 @@ namespace CollapseLauncher
         public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
+#if DEBUG
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#endif
         public static async void StartCheckUpdate()
+#if DEBUG
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#endif
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
 
+#if DEBUG
+
+            LogWriteLine($"This is a DEBUG build, can't update.\r\n", LogType.Error, true);
+#else
             while (true)
             {
                 if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate) && !IsSkippingUpdateCheck)
@@ -57,10 +67,10 @@ namespace CollapseLauncher
                         LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
                     }
                 }
-
-                // Delay for 15 minutes
-                await Task.Delay(900 * 1000);
+            // Delay for 15 minutes
+            await Task.Delay(900 * 1000);
             }
+#endif
         }
 
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
@@ -110,7 +120,7 @@ namespace CollapseLauncher
         public GameVersion NewVersionName { get; set; }
         public bool QuitFromUpdateMenu { get; set; } = false;
     }
-    #endregion
+#endregion
     #region ThemeChangeRegion
     internal static class ThemeChanger
     {
