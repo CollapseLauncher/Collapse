@@ -68,8 +68,9 @@ namespace CollapseLauncher
                 foreach (CacheAsset asset in assetIndex)
                 {
                     // Yes, the path is written in this way. Idk why miHoYo did this...
+                    // Update 6.8: They finally notices that they use "//" instead of "/"
                     string basePath = GetAssetBasePathByType(asset.DataType).Replace('\\', '/');
-                    string path = basePath + "//" + asset.ConcatN;
+                    string path = basePath + "/" + asset.ConcatN;
                     sw.WriteLine(path);
                 }
             }
