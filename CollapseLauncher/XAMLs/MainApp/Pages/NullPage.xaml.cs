@@ -6,7 +6,6 @@ namespace CollapseLauncher.Pages
     {
         public NullPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
         }
     }
