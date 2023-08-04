@@ -92,12 +92,17 @@ namespace CollapseLauncher.Statics
             HashID = GamePreset.HashID,
             InternalGameNameFolder = GamePreset.InternalGameNameFolder,
             InternalGameNameInConfig = GamePreset.InternalGameNameInConfig,
-            IsCacheUpdateEnabled = GamePreset.IsCacheUpdateEnabled,
             IsConvertible = GamePreset.IsConvertible,
             IsExperimental = GamePreset.IsExperimental,
             IsGenshin = GamePreset.IsGenshin,
             IsHideSocMedDesc = GamePreset.IsHideSocMedDesc,
+#if DEBUG
+            IsRepairEnabled = true,
+            IsCacheUpdateEnabled = true,
+#else
             IsRepairEnabled = GamePreset.IsRepairEnabled,
+            IsCacheUpdateEnabled = GamePreset.IsCacheUpdateEnabled,
+#endif
             LauncherResourceURL = GamePreset.LauncherResourceURL,
             LauncherSpriteURL = GamePreset.LauncherSpriteURL,
             LauncherSpriteURLMultiLang = GamePreset.LauncherSpriteURLMultiLang,
@@ -115,7 +120,7 @@ namespace CollapseLauncher.Statics
             ZonePosterURL = GamePreset.ZonePosterURL,
             ZoneURL = GamePreset.ZoneURL,
         };
-        #endregion
+#endregion
 
         internal RegionResourceProp _APIResouceProp { get; set; }
         internal PresetConfigV2 _GamePreset { get; set; }

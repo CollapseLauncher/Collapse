@@ -92,22 +92,22 @@ namespace CollapseLauncher
         private async Task<(string, string)> FetchVideoAndGateway(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Fetch data cache file only and get the gateway
-            (List<CacheAsset>, string, string) cacheProperty = await _cacheUtil.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
+            (List<CacheAsset>, string, string, int) cacheProperty = await _cacheUtil.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
 
             if (!_isOnlyRecoverMain)
             {
                 // Find the cache asset. If null, then return
-                CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}") || x.N.EndsWith($"{HashID.CGMetadata_CN}")).FirstOrDefault();
+                CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
 
                 // Deserialize and build video index into asset index
-                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, token);
+                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, cacheProperty.Item4, token);
             }
 
             // Return the gateway URL including asset bundle and asset cache
             return (cacheProperty.Item2, cacheProperty.Item3);
         }
 
-        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, int luckyNumber, CancellationToken token)
         {
             // Get the remote stream and use CacheStream
             using (Stream memoryStream = new MemoryStream())
@@ -117,7 +117,7 @@ namespace CollapseLauncher
                 memoryStream.Position = 0;
 
                 // Use CacheStream to decrypt and read it as Stream
-                using (CacheStream cacheStream = new CacheStream(memoryStream))
+                using (CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber))
                 {
                     // Enumerate and iterate the metadata to asset index
                     BuildAndEnumerateVideoVersioningFile(CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, assetBundleURL);

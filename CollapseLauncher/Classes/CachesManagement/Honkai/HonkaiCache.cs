@@ -19,6 +19,7 @@ namespace CollapseLauncher
         private byte[] _gameSalt { get; set; }
         private KianaDispatch _gameGateway { get; set; }
         private List<CacheAsset> _updateAssetIndex { get; set; }
+        private int _luckyNumber { get; set; }
         #endregion
 
         public HonkaiCache(UIElement parentUI, IGameVersionCheck GameVersionManager)

@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Screen;

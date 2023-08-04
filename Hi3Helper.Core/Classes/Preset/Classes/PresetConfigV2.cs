@@ -521,8 +521,13 @@ namespace Hi3Helper.Preset
         public string? LauncherResourceURL { get; set; }
         public string? DispatcherKey { get; set; }
         public int? DispatcherKeyBitLength { get; set; }
+#if DEBUG
+        public bool? IsRepairEnabled = true;
+        public bool? IsCacheUpdateEnabled = true;
+#else
         public bool? IsRepairEnabled { get; set; }
         public bool? IsCacheUpdateEnabled { get; set; }
+#endif
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
     }
