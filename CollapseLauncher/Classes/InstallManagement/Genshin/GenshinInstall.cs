@@ -284,14 +284,8 @@ namespace CollapseLauncher.InstallManager.Genshin
             {
                 "Global" => "GenshinImpact",
                 "Mainland China" => "YuanShen",
-                _ => string.Empty
+                _ => throw new NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
             };
-
-            if (string.IsNullOrEmpty(execName))
-            {
-                LogWriteLine($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}", LogType.Error, true);
-                return new UninstallGameProperty();
-            }
 
             return new UninstallGameProperty()
             {
