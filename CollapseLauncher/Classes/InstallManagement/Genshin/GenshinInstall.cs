@@ -2,6 +2,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -273,6 +274,26 @@ namespace CollapseLauncher.InstallManager.Genshin
 
                 LogWriteLine($"Adding additional {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
+        }
+        #endregion
+
+        #region Override Methods - UninstallGame
+        protected override UninstallGameProperty AssignUninstallFolders()
+        {
+            string execName = _gameVersionManager.GamePreset.ZoneName switch
+            {
+                "Global" => "GenshinImpact",
+                "Mainland China" => "YuanShen",
+                _ => throw new NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
+            };
+
+            return new UninstallGameProperty()
+            {
+                gameDataFolderName = $"{execName}_Data",
+                foldersToDelete = new string[] { $"{execName}_Data" },
+                filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" },
+                foldersToKeepInData = new string[] { "ScreenShot" }
+            };
         }
         #endregion
     }
