@@ -510,7 +510,7 @@ namespace CollapseLauncher.InstallManager.Base
                     foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
                 }
 
-                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {ConfigV2Store.CurrentConfigV2GameRegion}\r\n" +
+                LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n" +
                     $"  GameFolder          : {GameFolder}\r\n" +
                     $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
                     $"  foldersToDelete     : {string.Join(", ", UninstallProperty.foldersToDelete)}\r\n" +
@@ -622,7 +622,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - region: {ConfigV2Store.CurrentConfigV2GameRegion}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
             }
             _gameVersionManager.Reinitialize();
             return true;
