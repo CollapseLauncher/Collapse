@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -52,12 +53,29 @@ namespace Hi3Helper.Preset
 
         public static void LoadConfigV2()
         {
-            string stamp = File.ReadAllText(AppGameConfigV2StampPath);
-            string content = null;
-            foreach (string s in AppGameConfigV2MetadataPath)
+            string stamp = File.ReadAllText(AppGameConfigV2StampPath); //this will be useless once we fully implement this
+
+            string other = null, buildMetadata = "\"MetadataV2\":{"; //initialize two strings, one that will contain other info, one games metadata
+            foreach (string s in AppGameConfigV2MetadataPath) 
             {
-                content += File.ReadAllText(s);
+                string[] temp = File.ReadAllText(s).Split("#"); //read the output and split it in x parts divided by # 
+                //Split 0 is empty
+                //Split 1 contains timestamp
+                //Split 2 contains MetadataV2 or anything else
+                //Split 3 actual JSON content
+                if (temp[2].Contains("MetadataV2"))
+                {
+                    //if it's metadata add it to buildMetada
+                    buildMetadata = $"{buildMetadata}{temp[3]},"; 
+                }
+                else
+                {
+                    //else add it to other info
+                    other =$"{other}{temp[3]},";
+                }
             }
+            //build complete string to deserialize
+            string content = "{\n" + buildMetadata.Remove(buildMetadata.LastIndexOf(",")) +"\n}," + other.Remove(other.LastIndexOf(",")) + "\n}";
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
             if (string.IsNullOrEmpty(content)) throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
 
@@ -138,9 +156,9 @@ namespace Hi3Helper.Preset
         {
             foreach (string s in name)
             {
-                    FileInfo file = new(s);
-                    if (!file.Exists) return false;
-                    if (file.Length < 2) return false;
+                FileInfo file = new(s);
+                if (!file.Exists) return false;
+                if (file.Length < 2) return false;
             }
             return true;
         }
