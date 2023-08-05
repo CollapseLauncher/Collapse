@@ -6,7 +6,7 @@
     "ChooseFolderBtn": "フォルダを選択",
     "ChooseFolderDialogCancel": "キャンセル",
     "ChooseFolderDialogPrimary": "はい！",
-    "ChooseFolderDialogSecondary": "いいえ、フォルダを選択します",
+    "ChooseFolderDialogSecondary": "別のフォルダを選ぶ",
     "ChooseFolderDialogSubtitle": "デフォルトのインストールディレクトリは次の場所です。:\r\n\r\n{0}\r\n\r\n このディレクトリを使用しますか？",
     "ChooseFolderDialogTitle": "フォルダを選択",
     "FolderInsufficientPermission": "アクセスが拒否されました！別のフォルダを選択してください。",
@@ -34,9 +34,9 @@
     "Subtitle1": "こんにちは！",
     "Subtitle2": "Collapseを初めて起動したようですね。",
     "Subtitle3": "プロジェクトをご利用いただきありがとうございます！設定を完了するには、Collapseのデータを保存する場所を選択してください。",
-    "Subtitle4_1": "始めるには",
+    "Subtitle4_1": "最初に、",
     "Subtitle4_2": "\"フォルダを選択\"",
-    "Subtitle4_3": "下のボタンでゲームをインストールする場所を選択してください。",
+    "Subtitle4_3": "を押して、ランチャーに必要なデータを保存する場所を選択してください。",
     "Title1": "Collapse Launcher",
     "Title2": "へようこそ！"
   },
@@ -114,7 +114,11 @@
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
     "PostPanel_Info": "インフォメーション",
-    "PostPanel_NoNews": "え？\n今日はニュースなし？"
+    "PostPanel_NoNews": "え？\n今日はニュースなし？",
+    "CommunityToolsBtn": "便利リンク集",
+    "CommunityToolsBtn_OfficialText": "公式ツール",
+    "CommunityToolsBtn_CommunityText": "非公式便利ツール",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "ツールの.exeファイル: {0}"
   },
   "_GameRepairPage": {
     "PageTitle": "ゲームの修復",
@@ -126,7 +130,7 @@
     "ListCol6": "R.CRC",
     "Status1": "ゲームファイルの整合性を確認するには、 \"クイックチェック\"または\"フルチェック\"をクリックしてください。",
     "Status2": "インデックスの読み込み中...",
-    "Status3": "{0}個のファイルが破損している可能性があります (合計 {1})。 'ゲームの修復'をクリックして修復を開始してください。",
+    "Status3": "{0}個のファイルが破損している可能性があります (合計 {1})。 'ファイル修復'をクリックして修復を開始してください。",
     "Status4": "破損したファイルが検出されませんでした！",
     "Status5": "チェックしたブロック: {0}",
     "Status6": "確認中: {0}",
@@ -143,7 +147,7 @@
     "PerProgressSubtitle2": "進行状況: {0}/{1}",
     "PerProgressSubtitle3": "取得: {0}/秒",
     "PerProgressSubtitle4": "パッチ取得: {0}/{1}",
-    "PerProgressSubtitle5": "パッチ適用: {0}/?",
+    "PerProgressSubtitle5": "パッチ適用: {0}/秒",
     "TotalProgressTitle1": "総進行状況",
     "RepairBtn1": "ファイル修復",
     "RepairBtn2": "ファイルチェック",
@@ -201,7 +205,7 @@
     "Graphics_FPSPanel": "最大FPS",
     "Graphics_FPSInCombat": "戦闘フレーム",
     "Graphics_FPSInMenu": "その他",
-    "Graphics_APIPanel": "パブリックAPI",
+    "Graphics_APIPanel": "グラフィックスAPI",
     "Graphics_APIHelp1": "このゲームでは以下のAPIモードが利用できます:",
     "Graphics_APIHelp2": "注:",
     "Graphics_APIHelp3": "ゲームがDirectX 12 APIにネイティブコンパイルされていないため、DirectX 12を使用するとクラッシュする可能性があります。",
@@ -320,8 +324,9 @@
     "Disclaimer1": "このアプリは",
     "Disclaimer2": "とは何の関係もありません。",
     "Disclaimer3": "完全にオープンソースです。どんな貢献も歓迎します。",
-    "DiscordBtn1": "艦隊Discord(SEA)",
+    "DiscordBtn1": "開発者の艦隊Discord(SEA)",
     "DiscordBtn2": "崩壊3rd公式Discord(GLB)",
+    "DiscordBtn3": "Collapse Launcher公式Discord",
     "AppChangeReleaseChannel": "{0} リリースチャンネルに変更"
   },
   "_Misc": {
@@ -357,7 +362,7 @@
     "YesRelocate": "再設定する",
     "YesMigrateIt": "移動する",
     "YesConvertIt": "変換する",
-    "YesIHaveBeefyPC": "はい、つよつよPCです！ᕦ(ò_ó)ᕤ",
+    "YesIHaveBeefyPC": "はい、つよつよPCなので！ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "場所を変更",
     "No": "いいえ",
     "NoStartFromBeginning": "最初からダウンロード",
@@ -393,7 +398,8 @@
     "BuildChannelStable": "安定版",
     "CDNDescription_Github": "ランチャーの公式(メイン)リポジトリ。",
     "CDNDescription_Statically": "Statically が提供する公式(メイン)リポジトリのミラー。GitHubにアクセスできない場所に住んでいる場合に使用してください。",
-    "CDNDescription_jsDelivr": "jsDelivrは、CloudFlare、Fastly、Quantilなどの複数の CDN プロバイダを使用しており、アップタイムとパフォーマンスを最適化します。"
+    "CDNDescription_jsDelivr": "jsDelivrは、CloudFlare、Fastly、Quantilなどの複数の CDN プロバイダを使用しており、アップタイムとパフォーマンスを最適化します。",
+    "LocateExecutable": ".exeファイルを指定"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告: デルタ パッチ アップデートが検出されました！",
@@ -418,8 +424,8 @@
     "RepairCompletedTitle": "修復が完了しました！",
     "RepairCompletedSubtitle": "{0}個のファイルが修復されました。",
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
-    "ExtremeGraphicsSettingsWarnTitle": "非常に高い設定のプリセットが選択されました！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "設定プリセットを非常に高いに設定しようとしています！\n非常に高いプリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\nこの設定を使用しますか？",
+    "ExtremeGraphicsSettingsWarnTitle": "超すごい設定のプリセットが選択されました！",
+    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
     "ExistingInstallTitle": "既存のインストールが検出されました！",
     "ExistingInstallSubtitle": "ゲームは次の場所に既にインストールされています:\r\n\r\n{0}\r\n\r\nゲームをCollapse Launcherに紐づけすることをお勧めします。\r\nゲームを紐づけしても公式ランチャーを使ってゲームを始めることができます。\r\n\r\n続行しますか？",
     "ExistingInstallBHI3LTitle": "BetterHi3Launcherの既存のインストールが検出されました！",
@@ -468,8 +474,10 @@
     "PrivilegeMustRunSubtitle": "Collapseは管理者権限が必要です。Collapseを管理者権限で再起動しますか？",
     "ReleaseChannelChangeTitle": "リリースチャネルの変更",
     "ReleaseChannelChangeSubtitle1": "リリースチャネルを次に変更しようとしています:",
-    "ReleaseChannelChangeSubtitle2": "説明:",
-    "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。"
+    "ReleaseChannelChangeSubtitle2": "注意：",
+    "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。",
+    "LocateExePathTitle": ".exeファイルのパスを指定",
+    "LocateExePathSubtitle": "ツールの.exeファイルを指定すると、リンクから直接開けるようになります。"
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "整合性チェック",
@@ -578,8 +586,8 @@
     "UpdateStatus5": "バージョンが {0}に更新されました！",
     "UpdateMessage5": "ランチャーはまもなく再起動します...",
     "UpdateCountdownMessage1": "ランチャーは {0} 秒後に更新されます...",
-    "UpdateCountdownMessage2": "(クリック",
-    "UpdateCountdownMessage3": "でカウントダウンを中止)"
+    "UpdateCountdownMessage2": "(カウントダウンを停止するには",
+    "UpdateCountdownMessage3": "をクリックしてください)"
   },
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "ランチャーメタデータが更新可能です！",
@@ -643,6 +651,15 @@
     "Audio_BGM": "BGM",
     "Audio_SFX": "SE",
     "Audio_VO": "ボイス",
-    "Audio_Mute": "ミュート"
+    "Audio_Mute": "ミュート",
+    "Language": "言語設定",
+    "Language_Help1": "Collapseには音声パッケージを直接ダウンロードする機能がありません。",
+    "Language_Help2": "音声パッケージはゲームの次回起動時にダウンロードされます。",
+    "Audio": "キャラボイス",
+    "Text": "テキスト言語",
+    "VO_en": "英語",
+    "VO_cn": "中国語",
+    "VO_jp": "日本語",
+    "VO_kr": "韓国語"
   }
 }

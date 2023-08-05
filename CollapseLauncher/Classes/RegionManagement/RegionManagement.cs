@@ -7,6 +7,7 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -14,6 +15,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +35,7 @@ namespace CollapseLauncher
             DownloadInformation
         }
 
-        private Http _httpClient;
+        private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
         private string PreviousTag = string.Empty;
@@ -49,55 +51,56 @@ namespace CollapseLauncher
 
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
-            using (_httpClient = new Http(default, 4, 250))
+            IsExplicitCancel = false;
+            RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
+            LogWriteLine($"Initializing {RegionToChangeName}...", Hi3Helper.LogType.Scheme, true);
+
+            // Set IsLoadRegionComplete to false
+            IsLoadRegionComplete = false;
+
+            // Clear MainPage State, like NavigationView, Load State, etc.
+            ClearMainPageState();
+
+            // Load Region Resource from Launcher API
+            bool IsLoadLocalizedResourceSuccess = await TryLoadResourceInfo(ResourceLoadingType.LocalizedResource, preset);
+            bool IsLoadResourceRegionSuccess = false;
+            if (IsLoadLocalizedResourceSuccess)
             {
-                IsExplicitCancel = false;
-                RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
-                LogWriteLine($"Initializing {RegionToChangeName}...", Hi3Helper.LogType.Scheme, true);
-
-                // Set IsLoadRegionComplete to false
-                IsLoadRegionComplete = false;
-
-                // Clear MainPage State, like NavigationView, Load State, etc.
-                ClearMainPageState();
-
-                // Load Region Resource from Launcher API
-                bool IsLoadLocalizedResourceSuccess = await TryLoadResourceInfo(ResourceLoadingType.LocalizedResource, preset);
-                bool IsLoadResourceRegionSuccess = false;
-                if (IsLoadLocalizedResourceSuccess)
-                {
-                    IsLoadResourceRegionSuccess = await TryLoadResourceInfo(ResourceLoadingType.DownloadInformation, preset);
-                }
-
-                if (IsExplicitCancel)
-                {
-                    // If explicit cancel was triggered, restore the navigation menu item then return false
-                    foreach (object item in LastNavigationItem)
-                    {
-                        NavigationViewControl.MenuItems.Add(item);
-                    }
-                    NavigationViewControl.IsSettingsVisible = true;
-                    regionNewsProp = LastRegionNewsProp.Copy();
-                    LastRegionNewsProp = null;
-                    LastNavigationItem.Clear();
-                    return false;
-                }
-
-                if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
-                {
-                    MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
-                    return false;
-                }
-
-                // Finalize Region Load
-                await ChangeBackgroundImageAsRegion();
-                FinalizeLoadRegion(preset);
-
-                // Set IsLoadRegionComplete to false
-                IsLoadRegionComplete = true;
-
-                return true;
+                IsLoadResourceRegionSuccess = await TryLoadResourceInfo(ResourceLoadingType.DownloadInformation, preset);
             }
+
+            if (IsExplicitCancel)
+            {
+                // If explicit cancel was triggered, restore the navigation menu item then return false
+                foreach (object item in LastNavigationItem)
+                {
+                    NavigationViewControl.MenuItems.Add(item);
+                }
+                NavigationViewControl.IsSettingsVisible = true;
+                regionNewsProp = LastRegionNewsProp.Copy();
+                LastRegionNewsProp = null;
+                LastNavigationItem.Clear();
+                return false;
+            }
+
+            if (!IsLoadLocalizedResourceSuccess || !IsLoadResourceRegionSuccess)
+            {
+                MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
+                return false;
+            }
+
+            // Finalize Region Load
+            await ChangeBackgroundImageAsRegion();
+            FinalizeLoadRegion(preset);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+
+            GamePropertyVault.AttachNotifForCurrentGame(GamePropertyVault.LastGameHashID);
+            GamePropertyVault.DetachNotifForCurrentGame(GamePropertyVault.CurrentGameHashID);
+
+            // Set IsLoadRegionComplete to false
+            IsLoadRegionComplete = true;
+
+            return true;
         }
 
         public void ClearMainPageState()
@@ -107,6 +110,9 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.IsSettingsVisible = false;
             PreviousTag = "launcher";
+            PreviousTagString.Clear();
+            PreviousTagString.Add(PreviousTag);
+            LauncherFrame.BackStack.Clear();
             ResetRegionProp();
         }
 
@@ -161,6 +167,168 @@ namespace CollapseLauncher
             return false;
         }
 
+        private async ValueTask FetchLauncherLocalizedResources(CancellationToken Token, PresetConfigV2 Preset)
+        {
+            regionBackgroundProp = Preset.LauncherSpriteURLMultiLang ?
+                await TryGetMultiLangResourceProp(Token, Preset) :
+                await TryGetSingleLangResourceProp(Token, Preset);
+
+            await DownloadBackgroundImage(Token);
+
+            await GetLauncherAdvInfo(Token, Preset);
+            await GetLauncherCarouselInfo(Token);
+            await GetLauncherEventInfo(Token);
+            GetLauncherPostInfo();
+        }
+
+        private async ValueTask DownloadBackgroundImage(CancellationToken Token)
+        {
+            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+            SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
+
+            if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
+                Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
+
+            FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
+            if (fI.Exists) return;
+
+            using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(regionBackgroundProp.data.adv.background, Token))
+            using (Stream outStream = fI.Create())
+            {
+                netStream.CopyTo(outStream);
+            }
+        }
+
+        private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
+        {
+            _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, CoreLibraryJSONContext.Default, token);
+#if DEBUG
+            if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
+            if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
+            if (_gameAPIProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
+            if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
+#endif
+        }
+
+        private async ValueTask<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
+        {
+            RegionResourceProp ret = await GetMultiLangResourceProp(Lang.LanguageID.ToLower(), Token, Preset);
+
+            return ret.data.adv == null
+              || ((ret.data.adv.version ?? 5) <= 4
+                && Preset.GameType == GameType.Honkai) ?
+                    await GetMultiLangResourceProp(Preset.LauncherSpriteURLMultiLangFallback ?? "en-us", Token, Preset) :
+                    ret;
+        }
+
+        private async ValueTask<RegionResourceProp> GetMultiLangResourceProp(string langID, CancellationToken token, PresetConfigV2 Preset)
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherSpriteURL, langID), CoreLibraryJSONContext.Default, token);
+
+
+        private async ValueTask<RegionResourceProp> TryGetSingleLangResourceProp(CancellationToken token, PresetConfigV2 Preset)
+            => await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherSpriteURL, CoreLibraryJSONContext.Default, token);
+
+        private void ResetRegionProp()
+        {
+            LastRegionNewsProp = regionNewsProp.Copy();
+            regionNewsProp = new HomeMenuPanel()
+            {
+                sideMenuPanel = null,
+                imageCarouselPanel = null,
+                articlePanel = null,
+                eventPanel = null
+            };
+        }
+
+        private async ValueTask GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
+        {
+            if (regionBackgroundProp.data.icon.Count == 0) return;
+
+            regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
+            {
+                regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img, Token),
+                    IconHover = await GetCachedSprites(item.img_hover, Token),
+                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img, Token),
+                    QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
+                    Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
+                });
+            }
+        }
+
+        private async ValueTask GetLauncherCarouselInfo(CancellationToken Token)
+        {
+            if (regionBackgroundProp.data.banner.Count == 0) return;
+
+            regionNewsProp.imageCarouselPanel = new List<MenuPanelProp>();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.banner)
+            {
+                regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
+                {
+                    URL = item.url,
+                    Icon = await GetCachedSprites(item.img, Token),
+                    Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
+                });
+            }
+        }
+
+        private async ValueTask GetLauncherEventInfo(CancellationToken Token)
+        {
+            if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
+
+            regionNewsProp.eventPanel = new RegionBackgroundProp
+            {
+                url = regionBackgroundProp.data.adv.url,
+                icon = await GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
+            };
+        }
+
+        private void GetLauncherPostInfo()
+        {
+            if (regionBackgroundProp.data.post.Count == 0) return;
+
+            regionNewsProp.articlePanel = new PostCarouselTypes();
+            foreach (RegionSocMedProp item in regionBackgroundProp.data.post)
+            {
+                switch (item.type)
+                {
+                    case PostCarouselType.POST_TYPE_ACTIVITY:
+                        regionNewsProp.articlePanel.Events.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_ANNOUNCE:
+                        regionNewsProp.articlePanel.Notices.Add(item);
+                        break;
+                    case PostCarouselType.POST_TYPE_INFO:
+                        regionNewsProp.articlePanel.Info.Add(item);
+                        break;
+                }
+            }
+        }
+
+        public async ValueTask<string> GetCachedSprites(string URL, CancellationToken token)
+        {
+            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
+            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(cacheFolder))
+                Directory.CreateDirectory(cacheFolder);
+
+            FileInfo fInfo = new FileInfo(cachePath);
+
+            if (!fInfo.Exists || fInfo.Length < (1 << 10))
+            {
+                using (FileStream fs = fInfo.Create())
+                using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(URL, token))
+                {
+                    netStream.CopyTo(fs);
+                }
+            }
+
+            return cachePath;
+        }
+
         private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout)
         {
             DispatcherQueue.TryEnqueue(() =>
@@ -200,7 +368,7 @@ namespace CollapseLauncher
         private void FinalizeLoadRegion(PresetConfigV2 preset)
         {
             // Log if region has been successfully loaded
-            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
             LoadGameStaticsByGameType(preset);
@@ -214,56 +382,25 @@ namespace CollapseLauncher
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
         {
+            GamePropertyVault.AttachNotifForCurrentGame();
             DisposeAllPageStatics();
 
-            switch (preset.GameType)
-            {
-                case GameType.Honkai:
-                    // TEMP:
-                    // This is used to handle FallbackGameType
-                    if (preset.FallbackGameType == GameType.StarRail)
-                    {
-                        PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
-                        PageStatics._GameSettings = new StarRailSettings();
-                        PageStatics._GameCache = null;
-                        PageStatics._GameRepair = null;
-                        PageStatics._GameInstall = new StarRailInstall(this);
-
-                        preset.GameType = GameType.StarRail;
-                    }
-                    else
-                    {
-                        PageStatics._GameVersion = new GameTypeHonkaiVersion(this, _gameAPIProp, preset);
-                        PageStatics._GameSettings = new HonkaiSettings();
-                        PageStatics._GameCache = new HonkaiCache(this);
-                        PageStatics._GameRepair = new HonkaiRepair(this);
-                        PageStatics._GameInstall = new HonkaiInstall(this);
-                    }
-                    break;
-                case GameType.Genshin:
-                    PageStatics._GameVersion = new GameTypeGenshinVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new GenshinSettings();
-                    PageStatics._GameCache = null;
-                    PageStatics._GameRepair = new GenshinRepair(this, PageStatics._GameVersion.GameAPIProp.data.game.latest.decompressed_path);
-                    PageStatics._GameInstall = new GenshinInstall(this);
-                    break;
-                case GameType.StarRail:
-                    PageStatics._GameVersion = new GameTypeStarRailVersion(this, _gameAPIProp, preset);
-                    PageStatics._GameSettings = new StarRailSettings();
-                    PageStatics._GameCache = new StarRailCache(this);
-                    PageStatics._GameRepair = new StarRailRepair(this);
-                    PageStatics._GameInstall = new StarRailInstall(this);
-                    break;
-            }
+            GamePropertyVault.LoadGameProperty(this, _gameAPIProp, preset);
 
             // Spawn Region Notification
-            SpawnRegionNotification(PageStatics._GameVersion.GamePreset.ProfileName);
+            SpawnRegionNotification(preset.ProfileName);
         }
 
         private void DisposeAllPageStatics()
         {
-            PageStatics._GameRepair?.Dispose();
-            PageStatics._GameCache?.Dispose();
+            // CurrentGameProperty._GameInstall?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.CancelRoutine();
+            CurrentGameProperty?._GameRepair?.Dispose();
+            CurrentGameProperty?._GameCache?.CancelRoutine();
+            CurrentGameProperty?._GameCache?.Dispose();
+#if DEBUG
+            LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
+#endif
         }
 
         private async void SpawnRegionNotification(string RegionProfileName)
@@ -323,6 +460,7 @@ namespace CollapseLauncher
             await LoadRegionRootButton();
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
             MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+            LauncherFrame.BackStack.Clear();
         }
 
         private async void ChangeRegion(object sender, RoutedEventArgs e)
@@ -354,6 +492,9 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
+#if !DISABLEDISCORD
+                AppDiscordPresence.SetupPresence();
+#endif
                 return true;
             }
 
@@ -375,6 +516,7 @@ namespace CollapseLauncher
                 ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
                 MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+                LauncherFrame.BackStack.Clear();
             }
 
             (sender as Button).IsEnabled = !IsHide;

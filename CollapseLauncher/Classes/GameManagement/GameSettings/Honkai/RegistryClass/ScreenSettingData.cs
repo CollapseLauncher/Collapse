@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Honkai
@@ -102,7 +102,10 @@ namespace CollapseLauncher.GameSettings.Honkai
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    return (ScreenSettingData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(ScreenSettingData), ScreenSettingDataContext.Default) ?? new ScreenSettingData();
+#if DEBUG
+                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
+                    return (ScreenSettingData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(ScreenSettingData), HonkaiSettingsJSONContext.Default) ?? new ScreenSettingData();
                 }
             }
             catch (Exception ex)
@@ -119,11 +122,13 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(ScreenSettingData), ScreenSettingDataContext.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(ScreenSettingData), HonkaiSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-
+#if DEBUG
+                LogWriteLine($"Saved HI3 Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
                 SaveIndividualRegistry();
             }
             catch (Exception ex)
@@ -139,17 +144,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
 
-        public bool Equals(ScreenSettingData? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.sizeRes == this.sizeRes &&
-                comparedTo.height == this.height &&
-                comparedTo.width == this.width &&
-                comparedTo.isfullScreen == this.isfullScreen;
-        }
-#nullable disable
+        public bool Equals(ScreenSettingData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

@@ -6,6 +6,8 @@
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
+[![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
+
 ![de translation](https://img.shields.io/badge/dynamic/json?color=blue&label=de&style=flat&logo=crowdin&query=%24.progress.0.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 ![es-419 translation](https://img.shields.io/badge/dynamic/json?color=blue&label=es-419&style=flat&logo=crowdin&query=%24.progress.1.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 ![id translation](https://img.shields.io/badge/dynamic/json?color=blue&label=id&style=flat&logo=crowdin&query=%24.progress.2.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
@@ -18,6 +20,11 @@
 ![zh-CN translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-CN&style=flat&logo=crowdin&query=%24.progress.9.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 ![zh-TW translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-TW&style=flat&logo=crowdin&query=%24.progress.10.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 
+<p align="center">
+  <a href="https://discord.gg/vJd2exaS7j" target="_blank">
+    <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server"/>
+  </a>
+</p>
 
 # Why "Collapse"?
 Collapse came from the **Honkai Impact** translation in Chinese and Japanese. The word came from [**崩坏**] or **Bēng huài** in Chinese and also [**崩壊**] or **Houkai** in Japanese, both meaning "**Collapse**" which is why we chose it as our launcher name with the added inspiration that this was supposed to be an alternative (enhanced) launcher for *Honkai Impact 3rd* in the first place.
@@ -38,31 +45,141 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Choosing your voice-line language during the first installation, so you don't have to download it inside the game.
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
-# Supported Game Regions
-The launcher currently supports the following regions for Honkai Impact 3rd:
-* Southeast Asia
-* Global
-* TW/HK/MO
-* Mainland China
-* Korea
-* Japanese
-
-# Supported Game Clients
-This launcher also supports other game client, including:
-* Genshin Impact (Global Release)
-* 原神 / Yuan Shen (Mainland China's Genshin Impact)
-* Honkai: Star Rail (Global & Mainland China)
-* ~~Zenless Zone Zero~~ (Waiting for Official Release)
+# Supported Features 
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Game Title</th>
+      <th rowspan="2">Region</th>
+      <th colspan="7">Features</th>
+    </tr>
+    <tr>
+      <th>Install</th>
+      <th>Pre-load</th>
+      <th>Update</th>
+      <th>Game Repair</th>
+      <th>Cache Update</th>
+      <th>Game Settings</th>
+      <th>Game Region Convert</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="6">Honkai Impact 3rd</td>
+      <td>Southeast Asia</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+    </tr>
+    <tr>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>TW/HK/MO</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Japan</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Korea</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Genshin Impact</td>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Honkai: Star Rail</td>
+      <td>Global</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:x:</td>
+      <td>:x:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+  </tbody>
+</table>
 
 > **Note**:
-> Some features such as Game Data Repair and Preloading are available for other games, but more advanced features such as Game Settings modification and Caches Download are currently not available and unsupported.
+> The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released. If you have any issues with any supported features above, checks our GitHub issue tab, report if no active issues for it is found.
+> > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.69.23/CL-1.69.23_Installer.exe)
-> **Note**: The version for this build is `1.69.23` (Released on: June 7th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.70.13/CL-1.70.13_Installer.exe)
+> **Note**: The version for this build is `1.70.13` (Released on: August 4th, 2023).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/CollapseLauncher/releases/download/CL-v1.70.8-pre/CL-1.70.8-preview_Installer.exe)
-> **Note**: The version for this build is `1.70.8` (Released on: June 7th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.4-pre/CL-1.71.4-preview_Installer.exe)
+> **Note**: The version for this build is `1.71.4` (Released on: August 4th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -74,18 +191,9 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 ***
 
 # Prerequisites for Building Locally/Development
-## More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
-*Collapse* is presently powered by .NET 7 and as such, the packages listed below are required to create a local and development build of the launcher. Furthermore, *Collapse* uses many submodules and packages outside of this, which will automatically be loaded when the user sets up a local environment of the application.
-1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
-2. **Windows 10 SDK (10.0.19043.0) or Windows 11 SDK (10.0.22000.0)** via Visual Studio Installer
-3. .NET: [**.NET Core 7 SDK (7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-4. WinUI 3: [**WinUI 3 (WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
+> ### More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
 
-> **Note**:
-> 
-> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.3 Stable`.
-> 
-> Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, minimal support will be provided for this method. **This is not recommended for beginner users.**
+***
 
 # Third-party repositories and libraries used in this project
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft

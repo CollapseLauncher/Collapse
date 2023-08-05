@@ -35,7 +35,7 @@ namespace CollapseLauncher
                     RestartStopwatch();
 
                     // Get persistent and streaming paths
-                    string execName = Path.GetFileNameWithoutExtension(_gamePreset.GameExecutableName);
+                    string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
                     string baseBlocksPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Asb\Windows");
                     string baseBlocksPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Asb\Windows");
 
@@ -99,7 +99,29 @@ namespace CollapseLauncher
             asset.N = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
             // If the file has Hash Mark, then create the hash mark file
-            if (asset.IsHasHashMark) CreateHashMarkFile(asset.N, asset.CRC);
+            if (asset.IsHasHashMark && UsePersistent) CreateHashMarkFile(asset.N, asset.CRC);
+
+            // Check if the file exist on both persistent and streaming path, then mark the
+            // streaming path as redundant (unused)
+            if (IsPersistentExist && IsStreamingExist)
+            {
+                // Add the count and asset. Mark the type as "RepairAssetType.Unused"
+                _progressTotalCountFound++;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(fileInfoStreaming.FullName),
+                        RepairAssetType.Unused,
+                        Path.GetDirectoryName(fileInfoStreaming.FullName),
+                        asset.S,
+                        null,
+                        null
+                    )
+                ));
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
+            }
 
             // Check if both location has the file exist or has the size right
             if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
@@ -176,9 +198,21 @@ namespace CollapseLauncher
 
         private void CreateHashMarkFile(string filePath, string hash)
         {
+            // Get the base path and name
             string basePath = Path.GetDirectoryName(filePath);
             string baseName = Path.GetFileNameWithoutExtension(filePath);
-            string toName = Path.Combine(basePath, baseName + $"_{hash}.hash");
+
+            // Create base path if not exist
+            if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+
+            // Enumerate any possible existing hash path and delete it
+            foreach (string existingPath in Directory.EnumerateFiles(basePath, $"{baseName}_*.hash"))
+            {
+                File.Delete(existingPath);
+            }
+
+            // Re-create the hash file
+            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
             File.Create(toName).Dispose();
         }
         #endregion

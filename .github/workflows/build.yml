@@ -1,0 +1,95 @@
+# Credits to @Scighost from Starward for his contributions!
+name: Build-Canary
+run-name: Canary Build for ${{ github.ref }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select Runner image to use for this deployment"
+        default: "windows-2019"
+        options:
+          - "windows-latest"
+          - "windows-2019"
+          - "windows-2022"
+      framework:
+      # Use net7.0-windows10.0.19041.0 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select .NET Framework version"
+        default: "net7.0-windows10.0.19041.0"
+        options:
+          - "net7.0-windows10.0.22000.0"
+          - "net7.0-windows10.0.19041.0"
+
+jobs:
+  build:
+    runs-on: ${{ github.event.inputs.os }}
+    strategy:
+      matrix:
+        configuration: [Release] # No need to distribute Debug builds
+        platform: [x64]
+
+    env:
+      Configuration: ${{ matrix.configuration }}
+      Platform: ${{ matrix.platform }}
+      DOTNET_INSTALL_DIR: '.\.dotnet' 
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Get short Git SHA
+      id: vars
+      run: | 
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+
+    - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.DOTNET_INSTALL_DIR }}
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7   
+        
+    - name: Cache nuget # cache nuget https://github.com/actions/cache/blob/main/examples.md#c---nuget
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3.1
+
+    - name: Restore
+      run: dotnet restore CollapseLauncher
+
+    - name: Build
+      run: |
+        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
+        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ github.event.inputs.framework }}
+    
+#    - name: Upload Artifact (Debug)
+#      uses: actions/upload-artifact@v3.1.2
+#      if: ${{ matrix.configuration == 'Debug' }}
+#      with:
+#          name: collapse_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
+#          path: ./CollapseLauncher/bin/x64/Debug/${{ github.event.inputs.framework }}/
+          
+    - name: Upload Artifact (Release)
+      uses: actions/upload-artifact@v3.1.2
+      if: ${{ matrix.configuration == 'Release' }}
+      with:
+          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ github.event.inputs.framework }}_${{ github.sha }}
+          path: ./CollapseLauncher/bin/x64/Release/${{ github.event.inputs.framework }}/

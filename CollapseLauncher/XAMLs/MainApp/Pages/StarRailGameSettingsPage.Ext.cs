@@ -24,6 +24,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsBorderlessEnabled
+        {
+            get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
+            set => Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+        }
+
         public bool IsCustomResolutionEnabled
         {
             get => Settings.SettingsCollapseScreen.UseCustomResolution;
@@ -181,6 +187,12 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.GraphicsSettings.ReflectionQuality;
             set => Settings.GraphicsSettings.ReflectionQuality = (Quality)value;
         }
+        //SFXQuality
+        public int SFXQuality
+        {
+            get => (int)Settings.GraphicsSettings.SFXQuality;
+            set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
+        }
         //BloomQuality
         public int BloomQuality
         {
@@ -218,6 +230,18 @@ namespace CollapseLauncher.Pages
         {
             get => Settings.AudioSettings_VO.VOVol = Settings.AudioSettings_VO.VOVol;
             set => Settings.AudioSettings_VO.VOVol = value;
+        }
+
+        public int AudioLang
+        {
+            get => Settings.AudioLanguage.LocalAudioLangInt = Settings.AudioLanguage.LocalAudioLangInt;
+            set => Settings.AudioLanguage.LocalAudioLangInt = value;
+        }
+
+        public int TextLang
+        {
+            get => Settings.TextLanguage.LocalTextLangInt = Settings.TextLanguage.LocalTextLangInt;
+            set => Settings.TextLanguage.LocalTextLangInt = value;
         }
         #endregion
     }

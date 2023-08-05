@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Microsoft.UI.Xaml;
@@ -14,18 +13,20 @@ namespace CollapseLauncher
     internal partial class StarRailCache : ProgressBase<CacheAssetType, SRAsset>, ICache
     {
         #region Properties
+        private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
         private string _cacheRegionalCheckName = "sprite";
         private List<SRAsset> _updateAssetIndex { get; set; }
-        private GameTypeStarRailVersion _gameVersionManager { get => PageStatics._GameVersion as GameTypeStarRailVersion; }
         #endregion
 
-        public StarRailCache(UIElement parentUI)
+        public StarRailCache(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(
                   parentUI,
-                  PageStatics._GameVersion.GameDirPath,
+                  GameVersionManager,
+                  GameVersionManager.GameDirPath,
                   null,
-                  PageStatics._GameVersion.GetGameVersionAPI().VersionString)
+                  GameVersionManager.GetGameVersionAPI().VersionString)
         {
+            _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
         }
 
         ~StarRailCache() => Dispose();

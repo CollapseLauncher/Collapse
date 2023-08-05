@@ -1,13 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameInstallManager
+    internal interface IGameInstallManager : IBackgroundActivity
     {
-        event EventHandler<TotalPerfileProgress> ProgressChanged;
-        event EventHandler<TotalPerfileStatus> StatusChanged;
-
         ValueTask<int> GetInstallationPath();
         Task StartPackageDownload(bool skipDialog = false);
         ValueTask<int> StartPackageVerification();
@@ -16,10 +12,9 @@ namespace CollapseLauncher.Interfaces
         void ApplyGameConfig(bool forceUpdateToLatest = false);
 
         Task MoveGameLocation();
-        Task<bool> UninstallGame();
+        ValueTask<bool> UninstallGame();
         void Flush();
-        void CancelRoutine();
-        bool IsPreloadCompleted();
+        ValueTask<bool> IsPreloadCompleted();
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();

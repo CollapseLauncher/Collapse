@@ -76,9 +76,23 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressTotalSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressTotalSize)),
                 true);
 
-            // Start asset download task
-            await RunDownloadTask(asset.S, asset.N, asset.RN, _httpClient, token);
-            LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} has been downloaded!", LogType.Default, true);
+            // If asset type is unused, then delete it
+            if (asset.FT == FileType.Unused)
+            {
+                FileInfo fileInfo = new FileInfo(asset.N);
+                if (fileInfo.Exists)
+                {
+                    fileInfo.IsReadOnly = false;
+                    fileInfo.Delete();
+                    LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} deleted!", LogType.Default, true);
+                }
+            }
+            else
+            {
+                // Start asset download task
+                await RunDownloadTask(asset.S, asset.N, asset.RN, _httpClient, token);
+                LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} has been downloaded!", LogType.Default, true);
+            }
 
             // Pop repair asset display entry
             PopRepairAssetEntry();

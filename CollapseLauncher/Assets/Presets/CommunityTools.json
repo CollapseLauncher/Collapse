@@ -1,0 +1,168 @@
+{
+    "OfficialToolsDictionary": {
+        "Honkai": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Daily Check-in",
+                "URL": "https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "HoYoLab Website",
+                "URL": "https://www.hoyolab.com/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Honkai Impact 3rd Wiki",
+                "URL": "https://honkaiimpact3.fandom.com/wiki/"
+            }
+        ],
+        "Genshin": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Daily Check-in",
+                "URL": "https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481&hyl_auth_required=true&hyl_presentation_style=fullscreen&utm_source=hoyolab&utm_medium=tools&lang=en-us&bbs_theme=light&bbs_theme_device=1"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "HoYoLab Website",
+                "URL": "https://www.hoyolab.com/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Gensin Impact Wiki",
+                "URL": "https://wiki.hoyolab.com/pc/genshin/home"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://genshin.hoyoverse.com/gift"
+            }
+        ],
+        "StarRail": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Daily Check-in",
+                "URL": "https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "HoYoLab Website",
+                "URL": "https://www.hoyolab.com/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Honkai: Star Rail Wiki",
+                "URL": "https://wiki.hoyolab.com/pc/hsr/home"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Redeem Codes",
+                "URL": "https://hsr.hoyoverse.com/gift"
+            }
+        ]
+    },
+    "CommunityToolsDictionary": {
+        "Honkai": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Reddit Community",
+                "URL": "https://www.reddit.com/r/HonkaiImpact3rd/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "ER Build Guide",
+              "URL": "https://risbi0.github.io/Elysian-Realm/"
+            }
+        ],
+        "Genshin": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "paimon.moe",
+                "URL": "https://paimon.moe/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Enka Network",
+                "URL": "https://enka.network/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "seelie.me",
+                "URL": "https://seelie.me/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Genshin Optimizer",
+                "URL": "https://frzyc.github.io/genshin-optimizer"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Inventory Kamera",
+                "URL": "https://github.com/Andrewthe13th/Inventory_Kamera$OpenExternalApp:ApplicationName=Inventory Kamera,ApplicationExecName=InventoryKamera.exe,RunAsAdmin=true$OpenUrlIfCancel"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Kongying Map",
+                "URL": "https://yuanshen.site/docs/en/$OpenExternalApp:ApplicationName=Kongying Map,ApplicationExecName=Map.exe,RunAsAdmin=true$OpenUrlIfCancel"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "akasha.cv",
+                "URL": "https://akasha.cv"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Genshin Configurator",
+                "URL": "https://github.com/Myp3a/GenshinConfigurator/$OpenExternalApp:ApplicationName=Genshin Impact Configurator,ApplicationExecName=GenshinConfigurator*.exe,RunAsAdmin=true$OpenUrlIfCancel"
+            }
+        ],
+        "StarRail": [
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "pom.moe",
+                "URL": "https://pom.moe/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Project Yatta (HSR)",
+                "URL": "https://hsr.yatta.top/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "Star Rail Station",
+              "URL": "https://starrailstation.com/"
+            },
+            {
+              "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+              "IconGlyph": "",
+              "Text": "prydwen.gg",
+              "URL": "https://www.prydwen.gg/star-rail/"
+            }
+        ]
+    }
+}

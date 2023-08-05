@@ -2,7 +2,7 @@
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail
@@ -35,6 +35,9 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     int masterVolume = (int)value;
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {value}", LogType.Debug, true);
+#endif
                     return new MasterVolume { MasterVol = masterVolume };
                 }
             }
@@ -51,6 +54,9 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
                 RegistryRoot?.SetValue(_ValueName, MasterVol, RegistryValueKind.DWord);
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {MasterVol}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {
@@ -59,14 +65,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(MasterVolume? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.MasterVol == this.MasterVol;
-        }
-#nullable disable
+        public bool Equals(MasterVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

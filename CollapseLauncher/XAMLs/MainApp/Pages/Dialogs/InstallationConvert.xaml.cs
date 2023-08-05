@@ -34,11 +34,13 @@ namespace CollapseLauncher.Dialogs
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         Dictionary<string, PresetConfigV2> ConvertibleRegions;
+        private GamePresetProperty CurrentGameProperty { get; set; }
 
         public InstallationConvert()
         {
             try
             {
+                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 this.InitializeComponent();
             }
             catch (Exception ex)
@@ -107,12 +109,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {PageStatics._GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (Exception ex)
@@ -157,7 +159,7 @@ namespace CollapseLauncher.Dialogs
                     string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_Http, s, repoListURL, tokenSource.Token);
                     s.Position = 0;
-                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), D_StringString.Default);
+                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), CoreLibraryJSONContext.Default);
                 }
             }
             finally
@@ -171,7 +173,7 @@ namespace CollapseLauncher.Dialogs
             {
                 await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 s.Position = 0;
-                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), RegionResourcePropContext.Default);
+                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), CoreLibraryJSONContext.Default);
             }
 
             GameVersion = _Entry.data.game.latest.version;
@@ -194,6 +196,32 @@ namespace CollapseLauncher.Dialogs
                 GamePath = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
                 if (!Directory.Exists(GamePath))
                     return false;
+
+                // Concat the vendor app info file and return if it doesn't exist
+                string infoVendorPath = Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(Profile.GameExecutableName)}_Data\\app.info");
+                if (!File.Exists(infoVendorPath)) return false;
+
+                // If does, then process the file
+                string[] infoEntries = File.ReadAllLines(infoVendorPath);
+                if (infoEntries.Length < 2) return false;
+
+                // Try parse the vendor name and internal game name. If parsing fail, then return false
+                if (!Enum.TryParse(infoEntries[0], out GameVendorType _VendorType)) return false;
+                if (!(_VendorType == SourceProfile.VendorType && infoEntries[1] == SourceProfile.InternalGameNameInConfig)) return false;
+
+                // Try load the Version INI file
+                string SourceINIVersionPath = Path.Combine(GamePath, "config.ini");
+                if (!File.Exists(SourceINIVersionPath)) return false;
+                IniFile SourceIniVersionFile = new IniFile();
+                SourceIniVersionFile.Load(SourceINIVersionPath);
+
+                // Check if the version value exist and matches
+                if (!(SourceIniVersionFile.ContainsSection("General") && SourceIniVersionFile["General"].ContainsKey("game_version"))) return false;
+                string localVersionString = SourceIniVersionFile["General"]["game_version"].ToString();
+                if (string.IsNullOrEmpty(localVersionString)) return false;
+                GameVersion localVersion = new GameVersion(localVersionString);
+                GameVersion remoteVersion = CurrentGameProperty._GameVersion.GetGameVersionAPI();
+                if (!localVersion.IsMatch(remoteVersion)) return false;
 
                 ExecPath = Path.Combine(GamePath, Profile.GameExecutableName);
                 if (!File.Exists(ExecPath))
@@ -322,7 +350,7 @@ namespace CollapseLauncher.Dialogs
             string cPath = null;
             while (!IsChoosen)
             {
-                string FileName = string.Format("Cookbook_{0}_{1}_{2}_lzma2_crc32.diff", SourceProfile.ProfileName, TargetProfile.ProfileName, GameVersion);
+                string FileName = string.Format("Cookbook_{0}_{1}_{2}_*_crc32.diff", SourceProfile.ProfileName, TargetProfile.ProfileName, GameVersion);
                 switch (await Dialog_LocateDownloadedConvertRecipe(Content, FileName))
                 {
                     case ContentDialogResult.Primary:
@@ -468,8 +496,9 @@ namespace CollapseLauncher.Dialogs
 
         public void ApplyConfiguration()
         {
-            PageStatics._GameVersion.GamePreset = TargetProfile;
-            PageStatics._GameVersion.UpdateGamePath(Path.GetFileNameWithoutExtension(TargetProfile.ActualGameDataLocation));
+            CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
+            CurrentGameProperty._GameVersion.Reinitialize();
+            CurrentGameProperty._GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 
             string GameCategory = GetAppConfigValue("GameCategory").ToString();
             SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);

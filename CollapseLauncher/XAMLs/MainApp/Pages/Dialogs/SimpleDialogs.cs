@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Statics;
+﻿using static CollapseLauncher.Statics.GamePropertyVault;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -65,6 +65,16 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.Cancel,
                     Lang._Misc.UseDefaultDir,
                     Lang._Misc.LocateDir
+                );
+
+        public static async Task<ContentDialogResult> Dialog_OpenExecutable(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.LocateExePathTitle,
+                    Lang._Dialogs.LocateExePathSubtitle,
+                    Content,
+                    null,
+                    Lang._Misc.LocateExecutable,
+                    Lang._Misc.OpenDownloadPage
                 );
 
         public static async Task<ContentDialogResult> Dialog_InsufficientWritePermission(UIElement Content, string path) =>
@@ -160,10 +170,10 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement Content, string actualLocation) =>
             await SpawnDialog(
                     Lang._Dialogs.ExistingInstallTitle,
-                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, PageStatics._GameVersion.GamePreset.ActualGameDataLocation),
+                    string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
                     Content,
                     Lang._Misc.Cancel,
                     Lang._Misc.YesMigrateIt,
@@ -240,6 +250,17 @@ namespace CollapseLauncher.Dialogs
                     Lang._StartupPage.ChooseFolderDialogSecondary
             );
 
+        public static async Task<ContentDialogResult> Dialog_CannotUseAppLocationForGameDir(UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.CannotUseAppLocationForGameDirTitle,
+                    Lang._Dialogs.CannotUseAppLocationForGameDirSubtitle,
+                    Content,
+                    Lang._Misc.Okay,
+                    null,
+                    null,
+                    ContentDialogButton.Close
+            );
+
         public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement Content, long partialLength, long contentLength) =>
             await SpawnDialog(
                     Lang._Dialogs.InstallDataDownloadResumeTitle,
@@ -306,6 +327,43 @@ namespace CollapseLauncher.Dialogs
                     Lang._Misc.OkayBackToMenu,
                     null
                 );
+
+        public static async Task<ContentDialogResult> Dialog_ChangePlaytime (UIElement Content) =>
+            await SpawnDialog(
+                    Lang._Dialogs.ChangePlaytimeTitle,
+                    Lang._Dialogs.ChangePlaytimeSubtitle,
+                    Content,
+                    Lang._Misc.NoCancel,
+                    Lang._Misc.Yes,
+                    null
+            );
+
+        public static async Task<ContentDialogResult> Dialog_StopGame(UIElement Content) =>
+            await SpawnDialog(
+                Lang._Dialogs.StopGameTitle,
+                Lang._Dialogs.StopGameSubtitle,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null
+                );
+        
+        public static async Task<ContentDialogResult> Dialog_ResetPlaytime (UIElement Content)
+        {
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle2, FontWeight = FontWeights.Bold });
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle3 });
+            
+            return await SpawnDialog(
+                    Lang._Dialogs.ResetPlaytimeTitle,
+                    texts,
+                    Content,
+                    Lang._Misc.NoCancel,
+                    Lang._Misc.Yes,
+                    null
+            );
+        }
 
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,

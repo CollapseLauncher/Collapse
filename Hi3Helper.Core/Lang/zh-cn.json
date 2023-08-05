@@ -1,12 +1,12 @@
 {
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
-  "Author": "misaka10843, imgradeone",
+  "Author": "misaka10843, imgradeone, SatoSouta, xTaiwanPingLord",
   "_StartupPage": {
     "ChooseFolderBtn": "选择文件夹",
     "ChooseFolderDialogCancel": "不想选",
     "ChooseFolderDialogPrimary": "是的！",
-    "ChooseFolderDialogSecondary": "我想自己选择文件夹",
+    "ChooseFolderDialogSecondary": "我想选择别的文件夹",
     "ChooseFolderDialogSubtitle": "默认安装目录设置为：\n\n{0}\n\n您想要使用此目录吗？",
     "ChooseFolderDialogTitle": "选择文件夹",
     "FolderInsufficientPermission": "无权限! 请选择另一个文件夹.",
@@ -30,10 +30,10 @@
     "Pg2Subtitle2_3": "的游戏。请在下方选择您的游戏以开始使用",
     "Pg2Subtitle2_4": "Collapse启动器 (您可以在下一个页面中安装更多信息).",
     "Pg2Subtitle2_5": "",
-    "Pg2Title": "准备起飞~嗷！",
+    "Pg2Title": "准备好了吗~",
     "Subtitle1": "嗨！",
     "Subtitle2": "看来你是第一次使用这个启动器.",
-    "Subtitle3": "感谢您尝试这个项目！为了完成设置，请选择一个位置来存储启动器数据。",
+    "Subtitle3": "感谢您尝试这个项目！为了完成所有设置，请选择一个位置来存储启动器数据。",
     "Subtitle4_1": "如需开始，请点击下方的",
     "Subtitle4_2": "\"选择文件夹\"",
     "Subtitle4_3": "按钮来选择你要安装游戏的地方。",
@@ -72,7 +72,8 @@
     "RegionLoadingSubtitleTimeOut": "加载区服{0}已经超时（>{1}秒）.正在重新尝试...",
     "RegionLoadingSubtitleTooLong": "重试的时间比预期的长一些.请确保你的网络连接稳定!",
     "NavCtrlTitleSettings": "程序设置",
-    "NotifNeverAsk": "不再显示"
+    "NotifNeverAsk": "不再显示",
+    "NotifNoNewNotifs": "没有新的通知"
   },
   "_HomePage": {
     "PageTitle": "启动器",
@@ -85,7 +86,7 @@
     "PreloadNotifCompleteSubtitle": "您已经成功预下载了v{0} 的更新包!",
     "PreloadNotifIntegrityCheckBtn": "验证包的完整性",
     "StartBtn": "开始游戏",
-    "StartBtnRunning": "游戏正在运行!",
+    "StartBtnRunning": "游戏正在运行！",
     "VerifyingPkgTitle": "验证软件包",
     "PreloadDownloadNotifbarTitle": "正在下载预载包",
     "PreloadDownloadNotifbarVerifyTitle": "正在验证预载包",
@@ -114,7 +115,11 @@
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
     "PostPanel_Info": "资讯",
-    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?"
+    "PostPanel_NoNews": "什么?\n今天似乎没啥东西?",
+    "CommunityToolsBtn": "社区工具",
+    "CommunityToolsBtn_OfficialText": "官方工具",
+    "CommunityToolsBtn_CommunityText": "社区工具",
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "选择程序文件：{0}"
   },
   "_GameRepairPage": {
     "PageTitle": "游戏修复",
@@ -270,7 +275,9 @@
     "Debug": "调试",
     "Debug_Console": "显示控制台",
     "Debug_MultipleInstance": "允许开启多个Collapse",
-    "DiscordRPC_Toggle": "显示 Discord 状态",
+    "DiscordRPC": "Discord 游戏状态",
+    "DiscordRPC_Toggle": "显示 Discord 游戏状态",
+    "DiscordRPC_GameStatusToggle": "显示当前的游戏于 Discord 游戏状态",
     "ChangeRegionWarning_Toggle": "显示区域更改警告",
     "ChangeRegionWarning_Warning": "*您需要重新启动应用程序使此设置生效.",
     "Language": "语言设置",
@@ -322,6 +329,7 @@
     "Disclaimer3": "并完全开放源代码.我们欢迎任何贡献.",
     "DiscordBtn1": "加入我们的Armada Discord(大陆无法正常访问)",
     "DiscordBtn2": "访问崩坏3 Discord(大陆无法正常访问)",
+    "DiscordBtn3": "Collapse 的官方 Discord！",
     "AppChangeReleaseChannel": "更改为 {0} 发布频道"
   },
   "_Misc": {
@@ -393,7 +401,8 @@
     "BuildChannelStable": "正式版",
     "CDNDescription_Github": "启动器的官方(主) 存储库.",
     "CDNDescription_Statically": "官方(主) 存储库的镜像，由static提供。如果你住在一个无法访问GitHub的地方，可以使用这个。",
-    "CDNDescription_jsDelivr": "jsDelivr使用多个CDN提供商，如CloudFlare、Fastly和Quantil，从而获得最佳的正常运行时间和性能。"
+    "CDNDescription_jsDelivr": "jsDelivr使用多个CDN提供商，如CloudFlare、Fastly和Quantil，从而获得最佳的正常运行时间和性能。",
+    "LocateExecutable": "查找程序文件"
   },
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "警告.检测到Delta补丁更新!",
@@ -469,7 +478,9 @@
     "ReleaseChannelChangeTitle": "更改发布频道",
     "ReleaseChannelChangeSubtitle1": "您将要更改您的发行频道为：",
     "ReleaseChannelChangeSubtitle2": "注:",
-    "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。 我们不应对与您的游戏相关的任何数据丢失或损坏负责。"
+    "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改和/或导致您当前的设置中断。 我们不应对与您的游戏相关的任何数据丢失或损坏负责。",
+    "LocateExePathTitle": "查找程序文件的安装路径",
+    "LocateExePathSubtitle": "请为 Collapse 定位应用程序文件的位置："
   },
   "_InstallMgmt": {
     "IntegrityCheckTitle": "完整性检查",
@@ -643,6 +654,91 @@
     "Audio_BGM": "音乐音量",
     "Audio_SFX": "音效音量",
     "Audio_VO": "语音音量",
-    "Audio_Mute": "静音"
+    "Audio_Mute": "静音",
+    "Language": "语言设置",
+    "Language_Help1": "目前 Collapse 无法直接下载音频包。",
+    "Language_Help2": "下次启动游戏时，音频包将会在游戏中下载。",
+    "LanguageAudio": "音频",
+    "LanguageText": "文本",
+    "VO_en": "英语",
+    "VO_cn": "汉语",
+    "VO_jp": "日语",
+    "VO_kr": "韩语"
+  },
+  "_GenshinGameSettingsPage": {
+    "PageTitle": "游戏设置",
+
+    "Graphics_Title": "图像设置",
+    "Graphics_ResolutionPanel": "游戏分辨率",
+    "Graphics_Fullscreen": "全屏",
+    "Graphics_ExclusiveFullscreen": "使用独占全屏",
+    "Graphics_ExclusiveFullscreen_Help": "独占全屏有概率导致游戏本体冻结",
+    "Graphics_ResSelectPlaceholder": "选择",
+    "Graphics_ResCustom": "使用自定义分辨率",
+    "Graphics_ResCustomW": "宽",
+    "Graphics_ResCustomH": "高",
+
+    "Graphics_Gamma": "亮度",
+    "Graphics_FPS": "帧率",
+    "Graphics_RenderScale": "渲染精度",
+    "Graphics_ShadowQuality": "阴影质量",
+    "Graphics_VisualFX": "后期效果",
+    "Graphics_SFXQuality": "特效质量",
+    "Graphics_EnvDetailQuality": "场景细节",
+    "Graphics_VSync": "垂直同步（VSync）",
+    "Graphics_AAMode": "抗锯齿模式",
+    "Graphics_VolFogs": "体积雾",
+    "Graphics_ReflectionQuality": "反射",
+    "Graphics_MotionBlur": "动态模糊",
+    "Graphics_BloomQuality": "泛光效果（Bloom）",
+    "Graphics_CrowdDensity": "人群密度",
+    "Graphics_SubsurfaceScattering": "次表面散射",
+    "Graphics_TeammateFX": "多人游戏队友特效",
+    "Graphics_AnisotropicFiltering": "各向异性采样",
+
+    "Graphics_SpecPanel": "全局图形设置",
+    "SpecEnabled": "启用",
+    "SpecDisabled": "禁用",
+    "SpecVeryLow": "非常低",
+    "SpecLow": "低",
+    "SpecMedium": "中",
+    "SpecHigh": "高",
+    "SpecVeryHigh": "非常高",
+    "SpecPartiallyOff": "部分关闭",
+
+    "ApplyBtn": "应用设置",
+    "SettingsApplied": "已保存更改！",
+
+    "OverlayNotInstalledTitle": "由于该区服尚未安装或需要更新，您无法使用此功能！",
+    "OverlayNotInstalledSubtitle": "请先前往游戏启动器页面下载 / 更新游戏！",
+    "OverlayGameRunningTitle": "游戏正在运行中！",
+    "OverlayGameRunningSubtitle": "使用此功能前，请先关闭游戏！",
+    "OverlayFirstTimeTitle": "您还未曾游玩过该游戏！",
+    "OverlayFirstTimeSubtitle": "请首先运行游戏，以生成必要文件；此后您可以返回这里，以使用该功能。",
+
+    "CustomArgs_Title": "自定义启动参数（高级）",
+    "CustomArgs_Subtitle": "启动参数",
+    "CustomArgs_Footer1": "关于启动参数的更多详情，请查阅",
+    "CustomArgs_Footer2": "Unity 独立平台 Player 命令行参数文档",
+    "CustomArgs_Footer3": "以了解更多命令行参数。",
+
+    "Audio_Title": "声音设置",
+    "Audio_Master": "总音量",
+    "Audio_BGM": "音乐音量",
+    "Audio_SFX": "音效音量",
+    "Audio_VO": "语音音量",
+
+    "Audio_Output_Surround": "使用环绕声",
+    "Audio_DynamicRange": "完整动态范围",
+
+    "Language": "语言设置",
+    "Language_Help1": "目前 Collapse 无法直接下载音频包。",
+    "Language_Help2": "下次启动游戏时，音频包将会在游戏中下载。",
+    "LanguageAudio": "音频",
+    "LanguageText": "文本",
+    "VO_en": "英语",
+    "VO_cn": "汉语",
+    "VO_jp": "日语",
+    "VO_kr": "韩语"
   }
 }

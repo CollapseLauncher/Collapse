@@ -6,7 +6,7 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 
 | Version   | Supported          |
 | -------   | ------------------ |
-| >=1.69.0  | :white_check_mark: |
+| >=1.70.0  | :white_check_mark: |
 | < 1.0.69  | :x:                |
 
 
@@ -14,8 +14,9 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 Please report any vulnerability regarding Collapse Launcher here on Issues with the tag **[VULNERABILITY]** in the issue title. If you believe that the issue is severe enough to warrant anonymity, please directly contact any of the maintainer(s) over at Discord.
 ### List of Active Maintainers
 
- - @neon-nyan(`DreadCode#9025`) 
- - @Cryotechnic(`Cry0#0002`)
- - @bagusnl(`bagusnl#2938`)
+ - @neon-nyan(`neonnyann`) 
+ - @Cryotechnic(`cry0`)
+ - @bagusnl(`bagusnl`)
+ - @muscularcandy67(`muscularcandy67`)
 
 Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time in such that its bound to any IRL situations we face.

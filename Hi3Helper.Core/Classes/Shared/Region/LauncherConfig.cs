@@ -6,6 +6,7 @@ using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -19,6 +20,7 @@ namespace Hi3Helper.Shared.Region
         public string URLPrefix { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool PartialDownloadSupport { get; set; }
         public bool Equals(CDNURLProperty other) => URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
     }
 
@@ -30,19 +32,35 @@ namespace Hi3Helper.Shared.Region
             {
                 Name = "GitHub",
                 URLPrefix = "https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/raw/main",
-                Description = Lang._Misc.CDNDescription_Github
+                Description = Lang._Misc.CDNDescription_Github,
+                PartialDownloadSupport = true
+            },
+            new CDNURLProperty
+            {
+                Name = "Cloudflare",
+                URLPrefix = "https://r2-render.bagelnl.my.id/cl-cdn",
+                Description = Lang._Misc.CDNDescription_Cloudflare,
+                PartialDownloadSupport = true
+            },
+            new CDNURLProperty
+            {
+                Name = "Bitbucket",
+                URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
+                Description = Lang._Misc.CDNDescription_Bitbucket
             },
             new CDNURLProperty
             {
                 Name = "Statically",
                 URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
-                Description = Lang._Misc.CDNDescription_Statically
+                Description = Lang._Misc.CDNDescription_Statically,
+                PartialDownloadSupport = true
             },
             new CDNURLProperty
             {
                 Name = "jsDelivr",
                 URLPrefix = "https://cdn.jsdelivr.net/gh/neon-nyan/CollapseLauncher-ReleaseRepo@latest",
-                Description = Lang._Misc.CDNDescription_jsDelivr
+                Description = Lang._Misc.CDNDescription_jsDelivr,
+                PartialDownloadSupport = true
             }
         };
 
@@ -61,7 +79,7 @@ namespace Hi3Helper.Shared.Region
         public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();
-        public static string AppFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public static string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
         public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
@@ -75,19 +93,26 @@ namespace Hi3Helper.Shared.Region
         {
             get
             {
-                string execName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
+                string execName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
                 string dirPath = AppFolder;
                 return Path.Combine(dirPath, execName + ".exe");
             }
         }
+        public static string AppExecutableName { get => Path.GetFileName(AppExecutablePath); }
         public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
         public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
         public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
         public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
         public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+        public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
 
         public const long AppDiscordApplicationID = 1089467141096484955;
+        public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
+        public const long AppDiscordApplicationID_GI = 1124137436650426509;
+        public const long AppDiscordApplicationID_HSR = 1124153902959431780;
+        //public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
+      
         public const string AppNotifURLPrefix = "/notification_{0}.json";
         public const string AppGameConfigV2URLPrefix = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
@@ -160,8 +185,11 @@ namespace Hi3Helper.Shared.Region
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", true },
 #if !DISABLEDISCORD
-            { "EnableDiscordRPC", false }
+            { "EnableDiscordRPC", false },
 #endif
+            { "EnableAcrylicEffect", true },
+            { "IncludeGameLogs", false },
+            { "UseDownloadChunksMerging", false }
         };
 
         public static void LoadGamePreset()

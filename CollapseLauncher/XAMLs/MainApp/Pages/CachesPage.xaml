@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
     <Grid>
-        <Grid Margin="32,80,32,18" x:Name="PageContent">
+        <Grid Margin="32,40,32,18" x:Name="PageContent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition/>
@@ -32,7 +32,7 @@
                     IsReadOnly="True"
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
-                    ItemsSource="{x:Bind statics:PageStatics._GameCache.AssetEntry}">
+                    ItemsSource="{x:Bind CurrentGameProperty._GameCache.AssetEntry}">
                     <control:DataGrid.Columns>
                         <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding Name}" Tag="CacheName" Width="296" FontSize="13"/>
                         <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding AssetType}" Tag="CacheType" FontSize="13"/>

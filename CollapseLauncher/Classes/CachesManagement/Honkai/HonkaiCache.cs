@@ -2,6 +2,7 @@
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
+using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -18,16 +19,18 @@ namespace CollapseLauncher
         private byte[] _gameSalt { get; set; }
         private KianaDispatch _gameGateway { get; set; }
         private List<CacheAsset> _updateAssetIndex { get; set; }
+        private int _luckyNumber { get; set; }
         #endregion
 
-        public HonkaiCache(UIElement parentUI)
+        public HonkaiCache(UIElement parentUI, IGameVersionCheck GameVersionManager)
             : base(
                   parentUI,
-                  PageStatics._GameVersion.GameDirAppDataPath,
+                  GameVersionManager,
+                  GameVersionManager.GameDirAppDataPath,
                   null,
-                  PageStatics._GameVersion.GetGameVersionAPI().VersionString)
+                  GameVersionManager.GetGameVersionAPI().VersionString)
         {
-            _gameLang = _gamePreset.GetGameLanguage() ?? "en";
+            _gameLang = _gameVersionManager.GamePreset.GetGameLanguage() ?? "en";
         }
 
         ~HonkaiCache() => Dispose();

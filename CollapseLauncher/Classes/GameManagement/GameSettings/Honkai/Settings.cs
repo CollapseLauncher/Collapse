@@ -2,18 +2,16 @@
 using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Preset;
 using Microsoft.Win32;
 using System.IO;
-using static CollapseLauncher.GameSettings.Statics;
 
 namespace CollapseLauncher.GameSettings.Honkai
 {
-    internal class HonkaiSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
+    internal class HonkaiSettings : SettingsBase, IGameSettings, IGameSettingsUniversal
     {
         #region PresetProperties
-        public Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context> Preset_SettingsGraphics { get; set; }
+        public Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext> Preset_SettingsGraphics { get; set; }
         #endregion
 
         #region SettingProperties
@@ -24,10 +22,11 @@ namespace CollapseLauncher.GameSettings.Honkai
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
         #endregion
 
-        public HonkaiSettings()
+        public HonkaiSettings(IGameVersionCheck GameVersionManager)
+            : base(GameVersionManager)
         {
             // Init Root Registry Key
-            RegistryPath = Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig);
+            RegistryPath = Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
             // If the Root Registry Key is null (not exist), then create a new one.
@@ -50,10 +49,10 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCollapseScreen = CollapseScreenSetting.Load();
 
             // Load Preset
-            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, D_PersonalGraphicsSettingV2Context>.LoadPreset(GameType.Honkai, D_PersonalGraphicsSettingV2Context.Default);
+            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameType.Honkai, HonkaiSettingsJSONContext.Default);
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {

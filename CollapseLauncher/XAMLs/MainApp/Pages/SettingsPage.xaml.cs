@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
@@ -27,6 +27,7 @@ namespace CollapseLauncher.Pages
     {
         public SettingsPage()
         {
+            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
             LoadAppConfig();
             this.DataContext = this;
@@ -242,6 +243,17 @@ namespace CollapseLauncher.Pages
                 else
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
 
+                if (IsEnabled)
+                {
+                    AppBGCustomizer.Visibility = Visibility.Visible;
+                    AppBGCustomizerNote.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    AppBGCustomizer.Visibility = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                }
+
                 BGSelector.IsEnabled = IsEnabled;
                 return IsEnabled;
             }
@@ -253,6 +265,8 @@ namespace CollapseLauncher.Pages
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
                     BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, false);
+                    AppBGCustomizer.Visibility = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
@@ -274,6 +288,8 @@ namespace CollapseLauncher.Pages
                     }
                     BGPathDisplay.Text = regionBackgroundProp.imgLocalPath;
                     BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath);
+                    AppBGCustomizer.Visibility = Visibility.Visible;
+                    AppBGCustomizerNote.Visibility = Visibility.Visible;
                 }
                 BGSelector.IsEnabled = value;
             }
@@ -281,15 +297,32 @@ namespace CollapseLauncher.Pages
 
         private bool IsConsoleEnabled
         {
-            get => GetAppConfigValue("EnableConsole").ToBool();
+            get
+            {
+                bool isEnabled = GetAppConfigValue("EnableConsole").ToBool();
+                if (isEnabled)
+                {
+                    ToggleIncludeGameLogs.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
+                }
+                return isEnabled;
+            }
             set
             {
                 _log.Dispose();
                 if (value)
+                {
                     _log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                    ToggleIncludeGameLogs.Visibility = Visibility.Visible;
+                }
                 else
+                {
                     _log = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
-
+                    ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
+                }
                 SetAndSaveConfigValue("EnableConsole", value);
             }
         }
@@ -303,19 +336,65 @@ namespace CollapseLauncher.Pages
 #if !DISABLEDISCORD
         private bool IsDiscordRPCEnabled
         {
-            get => GetAppConfigValue("EnableDiscordRPC").ToBool();
+            get
+            {
+                bool IsEnabled = GetAppConfigValue("EnableDiscordRPC").ToBool();
+                ToggleDiscordGameStatus.IsEnabled = IsEnabled;
+                if (IsEnabled)
+                {
+                    ToggleDiscordGameStatus.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
+                }
+                return IsEnabled;
+            }
             set
             {
                 if (value)
-                    AppDiscordPresence.EnablePresence();
+                {
+                    AppDiscordPresence.SetupPresence();
+                    ToggleDiscordGameStatus.Visibility = Visibility.Visible;
+                }
                 else
+                {
                     AppDiscordPresence.DisablePresence();
-
+                    ToggleDiscordGameStatus.Visibility = Visibility.Collapsed;
+                }
                 SetAndSaveConfigValue("EnableDiscordRPC", value);
+                ToggleDiscordGameStatus.IsEnabled = value;
             }
         }
+
+        private bool IsDiscordGameStatusEnabled
+        {
+            get => GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableDiscordGameStatus", value);
+                AppDiscordPresence.SetupPresence();
+            }
+        }
+
+        private bool IsAcrylicEffectEnabled
+        {
+            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableAcrylicEffect", value);
+                App.ToggleBlurBackdrop(value);
+            }
+        }
+
 #else
         private bool IsDiscordRPCEnabled
+        {
+            get => false;
+            set => _ = value;
+        }
+
+        private bool IsDiscordGameStatusEnabled
         {
             get => false;
             set => _ = value;
@@ -420,6 +499,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsIncludeGameLogs
+        {
+            get => GetAppConfigValue("IncludeGameLogs").ToBool();
+            set => SetAndSaveConfigValue("IncludeGameLogs", value);
+        }
+
         private bool IsShowRegionChangeWarning
         {
             get => LauncherConfig.IsShowRegionChangeWarning;
@@ -431,6 +516,11 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.IsShowRegionChangeWarning = value;
             }
         }
+
+        private bool IsUseDownloadChunksMerging
+        {
+            get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
+            set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
 
         private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 

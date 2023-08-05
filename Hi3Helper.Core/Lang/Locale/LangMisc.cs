@@ -75,8 +75,23 @@
                 public string BuildChannelPreview { get; set; } = LangFallback?._Misc.BuildChannelPreview;
                 public string BuildChannelStable { get; set; } = LangFallback?._Misc.BuildChannelStable;
                 public string CDNDescription_Github { get; set; } = LangFallback?._Misc.CDNDescription_Github;
+                public string CDNDescription_Cloudflare { get; set; } = LangFallback?._Misc.CDNDescription_Cloudflare;
+                public string CDNDescription_Bitbucket { get; set; } = LangFallback?._Misc.CDNDescription_Bitbucket;
                 public string CDNDescription_Statically { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
                 public string CDNDescription_jsDelivr { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
+                public string LocateExecutable { get; set; } = LangFallback?._Misc.LocateExecutable;
+                public string OpenDownloadPage { get; set; } = LangFallback?._Misc.OpenDownloadPage;
+                public string DiscordRP_Play { get; set; } = LangFallback?._Misc.DiscordRP_Play;
+                public string DiscordRP_InGame { get; set; } = LangFallback?._Misc.DiscordRP_InGame;
+                public string DiscordRP_Update { get; set; } = LangFallback?._Misc.DiscordRP_Update;
+                public string DiscordRP_Repair { get; set; } = LangFallback?._Misc.DiscordRP_Repair;
+                public string DiscordRP_Cache { get; set; } = LangFallback?._Misc.DiscordRP_Cache;
+                public string DiscordRP_GameSettings { get; set; } = LangFallback?._Misc.DiscordRP_GameSettings;
+                public string DiscordRP_AppSettings { get; set; } = LangFallback?._Misc.DiscordRP_AppSettings;
+                public string DiscordRP_Idle { get; set; } = LangFallback?._Misc.DiscordRP_Idle;
+                public string DiscordRP_Default { get; set; } = LangFallback?._Misc.DiscordRP_Default;
+                public string DiscordRP_Ad { get; set; } = LangFallback?._Misc.DiscordRP_Ad;
+                public string DiscordRP_Region { get; set; } = LangFallback?._Misc.DiscordRP_Region;
             }
         }
         #endregion

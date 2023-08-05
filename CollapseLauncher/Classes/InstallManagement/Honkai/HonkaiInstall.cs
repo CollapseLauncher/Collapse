@@ -2,10 +2,9 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
-using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -27,19 +26,21 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Private Properties
+        private HonkaiCache _gameCacheManager { get; set; }
         private bool _forceIgnoreDeltaPatch = false;
-        private FileSystemWatcher _deltaPatchWatcher;
         #endregion
 
-        public HonkaiInstall(UIElement parentUI)
-            : base(parentUI)
+        public HonkaiInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings)
+            : base(parentUI, GameVersionManager)
         {
-
+            _gameSettings = GameSettings;
+            _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 
         #region Public Methods
         public override async ValueTask<int> StartPackageVerification()
         {
+            IsRunning = true;
             DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
 
             // Check if the game has delta patch and in NeedsUpdate status. If true, then
@@ -58,8 +59,11 @@ namespace CollapseLauncher.InstallManager.Honkai
                         return -1;
                 }
 
+                // Always reset the token
+                ResetToken();
+
                 // Initialize repair tool
-                _gameRepairTool = new HonkaiRepair(_parentUI, true, patchProperty.SourceVer);
+                _gameRepairTool = new HonkaiRepair(_parentUI, _gameVersionManager, _gameCacheManager, _gameSettings, true, patchProperty.SourceVer);
                 try
                 {
                     // Set the activity
@@ -83,7 +87,11 @@ namespace CollapseLauncher.InstallManager.Honkai
                         await _gameRepairTool.StartRepairRoutine(true);
                     }
                 }
-                catch { throw; }
+                catch
+                {
+                    IsRunning = false;
+                    throw;
+                }
                 finally
                 {
                     // Unsubscribe the progress event
@@ -98,7 +106,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             return await base.StartPackageVerification();
         }
 
-        public override async Task StartPackageInstallation()
+        protected override async Task StartPackageInstallationInner()
         {
             if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
             {
@@ -107,19 +115,9 @@ namespace CollapseLauncher.InstallManager.Honkai
                 string previousPath = _gamePath;
                 string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
 
-                // Initialize the filesystem watcher to check file changes on event
-                _deltaPatchWatcher = new FileSystemWatcher()
-                {
-                    Path = previousPath,
-                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName
-                             | NotifyFilters.Size,
-                    IncludeSubdirectories = true,
-                    EnableRaisingEvents = true
-                };
-
                 try
                 {
-                    List<FilePropertiesRemote> localAssetIndex = (_gameRepairTool as HonkaiRepair).GetAssetIndex();
+                    List<FilePropertiesRemote> localAssetIndex = ((HonkaiRepair)_gameRepairTool).GetAssetIndex();
                     MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath);
 
                     // Get the sum of uncompressed size and
@@ -128,13 +126,19 @@ namespace CollapseLauncher.InstallManager.Honkai
                     _progressTotalSizeCurrent = 0;
                     _progressTotalCountCurrent = 1;
                     _status.IsIncludePerFileIndicator = false;
+                    _status.IsProgressTotalIndetermined = true;
                     _status.ActivityStatus = Lang._Misc.ApplyingPatch;
                     UpdateStatus();
                     RestartStopwatch();
 
                     // Start the patching process
-                    _deltaPatchWatcher.Created += DeltaPatchWatcherProgress;
-                    await Task.Run(() => new HPatchUtil().HPatchDir(ingredientPath, patchProperty.PatchPath, previousPath));
+                    EventListener.PatchEvent += DeltaPatchCheckProgress;
+                    await Task.Run(() =>
+                    {
+                        HDiffPatch patch = new HDiffPatch();
+                        patch.Initialize(patchProperty.PatchPath);
+                        patch.Patch(ingredientPath, previousPath, false, _token.Token);
+                    });
 
                     // Remove ingredient folder
                     Directory.Delete(ingredientPath, true);
@@ -154,13 +158,12 @@ namespace CollapseLauncher.InstallManager.Honkai
                 }
                 finally
                 {
-                    _deltaPatchWatcher.Created -= DeltaPatchWatcherProgress;
-                    _deltaPatchWatcher?.Dispose();
+                    EventListener.PatchEvent -= DeltaPatchCheckProgress;
                 }
             }
 
             // If no delta patch is happening, then do the base installation
-            await base.StartPackageInstallation();
+            await base.StartPackageInstallationInner();
         }
 
         public override async ValueTask<bool> TryShowFailedDeltaPatchState()
@@ -171,7 +174,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             // If path doesn't exist, then return false
             if (!Directory.Exists(GamePathIngredients)) return false;
 
-            LogWriteLine($"Previous failed delta patch has been detected on Game {_gamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
+            LogWriteLine($"Previous failed delta patch has been detected on Game {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousDeltaPatchInstallFailed(_parentUI))
             {
@@ -199,7 +202,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
             if (FileSize < 1 << 20) return false;
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {_gamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})", LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousGameConversionFailed(_parentUI))
             {
@@ -281,6 +284,24 @@ namespace CollapseLauncher.InstallManager.Honkai
         #endregion
 
         #region Event Methods
+        private async void DeltaPatchCheckProgress(object sender, PatchEvent e)
+        {
+            _progress.ProgressTotalPercentage = e.ProgressPercentage;
+
+            _progress.ProgressTotalTimeLeft = e.TimeLeft;
+            _progress.ProgressTotalSpeed = e.Speed;
+
+            _progress.ProgressTotalSizeToDownload = e.TotalSizeToBePatched;
+            _progress.ProgressTotalDownload = e.CurrentSizePatched;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                _status.IsProgressTotalIndetermined = false;
+                UpdateProgressBase();
+                UpdateStatus();
+            }
+        }
+
         private async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
         {
             _progress.ProgressTotalPercentage = e.ProgressTotalPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressTotalPercentage;
@@ -298,32 +319,6 @@ namespace CollapseLauncher.InstallManager.Honkai
                 UpdateStatus();
             }
         }
-
-        string lastName = null;
-        private void DeltaPatchWatcherProgress(object sender, FileSystemEventArgs e)
-        {
-            if (!Directory.Exists(e.FullPath))
-            {
-                if (lastName != null)
-                    _progressTotalSizeCurrent += new FileInfo(lastName).Length;
-                lastName = e.FullPath;
-
-                // Assign local sizes to progress
-                _progress.ProgressTotalDownload = _progressTotalSizeCurrent;
-                _progress.ProgressTotalSizeToDownload = _progressTotalSize;
-
-                // Calculate the speed
-                _progress.ProgressTotalSpeed = _progressTotalSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
-
-                // Calculate percentage
-                _progress.ProgressTotalPercentage = Math.Round(((double)_progressTotalSizeCurrent / _progressTotalSize) * 100, 2);
-
-                // Calculate the timelapse
-                _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progressTotalSize - _progressTotalSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
-
-                UpdateProgress();
-            }
-        }
         #endregion
 
         #region Private Methods - Utilities
@@ -334,7 +329,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 // Step back once from the game directory
                 string ParentPath = Path.GetDirectoryName(basepath);
                 // Get the ingredient path
-                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{PageStatics._GameVersion.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
+                string IngredientPath = Directory.EnumerateDirectories(ParentPath, $"{_gameVersionManager.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients", SearchOption.TopDirectoryOnly)
                     .FirstOrDefault();
                 // If the path is not null, then return
                 if (IngredientPath is not null) return IngredientPath;

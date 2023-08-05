@@ -34,15 +34,18 @@ namespace CollapseLauncher
         [STAThreadAttribute]
         public static void Main(params string[] args)
         {
+#if PREVIEW
+            IsPreview = true;
+#endif
+            AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
+            AppCurrentVersionString = AppCurrentVersion.VersionString;
+
             try
             {
+
                 StartSquirrelHook();
 
                 AppCurrentArgument = args;
-#if PREVIEW
-                IsPreview = true;
-#endif
-                AppCurrentVersion = new GameVersion(Assembly.GetExecutingAssembly().GetName().Version);
 
                 InitAppPreset();
                 string logPath = AppGameLogsFolder;

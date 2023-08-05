@@ -58,6 +58,7 @@ namespace CollapseLauncher
         public static Color SystemAppTheme;
         public static NotificationPush NotificationData;
         public static bool IsCustomBG = false;
+        public static bool IsSkippingUpdateCheck = false;
         public static GameVersion AppCurrentVersion;
 
         public static ApplicationTheme GetAppTheme()
@@ -141,7 +142,7 @@ namespace CollapseLauncher
                 RegionPushIgnoreMsgIds = NotificationData.RegionPushIgnoreMsgIds
             };
             File.WriteAllText(AppNotifIgnoreFile,
-                JsonSerializer.Serialize(LocalNotificationData, typeof(NotificationPush), NotificationPushContext.Default));
+                JsonSerializer.Serialize(LocalNotificationData, typeof(NotificationPush), InternalAppJSONContext.Default));
         }
 
         public static void LoadLocalNotificationData()
@@ -150,10 +151,10 @@ namespace CollapseLauncher
                 File.WriteAllText(AppNotifIgnoreFile,
                     JsonSerializer.Serialize(new NotificationPush(),
                     typeof(NotificationPush),
-                    NotificationPushContext.Default));
+                    InternalAppJSONContext.Default));
 
             string Data = File.ReadAllText(AppNotifIgnoreFile);
-            NotificationPush LocalNotificationData = (NotificationPush)JsonSerializer.Deserialize(Data, typeof(NotificationPush), NotificationPushContext.Default);
+            NotificationPush LocalNotificationData = (NotificationPush)JsonSerializer.Deserialize(Data, typeof(NotificationPush), InternalAppJSONContext.Default);
             NotificationData.AppPushIgnoreMsgIds = LocalNotificationData.AppPushIgnoreMsgIds;
             NotificationData.RegionPushIgnoreMsgIds = LocalNotificationData.RegionPushIgnoreMsgIds;
             NotificationData.CurrentShowMsgIds = LocalNotificationData.CurrentShowMsgIds;
@@ -171,7 +172,12 @@ namespace CollapseLauncher
                 {
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
                     s.Position = 0;
-                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), StampContext.Default);
+                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), CoreLibraryJSONContext.Default);
+#if DEBUG
+                    LogWriteLine($"Checking for metadata update...\r\n" +
+                        $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
+                        $"  RemoteStamp : {ConfigStamp?.LastUpdated}", LogType.Warning, true);
+#endif
                 }
             }
             catch (Exception ex)
@@ -180,7 +186,7 @@ namespace CollapseLauncher
                 return false;
             }
 
-            return ConfigV2LastUpdate != ConfigStamp?.LastUpdated;
+            return ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
         }
 
         public static async Task DownloadConfigV2Files(bool Stamp, bool Content)

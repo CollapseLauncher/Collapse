@@ -36,6 +36,15 @@
                 public string Audio_SFX { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_SFX;
                 public string Audio_VO { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_VO;
                 public string Audio_Mute { get; set; } = LangFallback?._StarRailGameSettingsPage.Audio_Mute;
+                public string Language { get; set; } = LangFallback?._StarRailGameSettingsPage.Language;
+                public string Language_Help1 { get; set; } = LangFallback?._StarRailGameSettingsPage.Language_Help1;
+                public string Language_Help2 { get; set; } = LangFallback?._StarRailGameSettingsPage.Language_Help2;
+                public string LanguageAudio { get; set; } = LangFallback?._StarRailGameSettingsPage.LanguageAudio;
+                public string LanguageText { get; set; } = LangFallback?._StarRailGameSettingsPage.LanguageText;
+                public string VO_en { get; set; } = LangFallback?._StarRailGameSettingsPage.VO_en;
+                public string VO_cn { get; set; } = LangFallback?._StarRailGameSettingsPage.VO_cn;
+                public string VO_jp { get; set; } = LangFallback?._StarRailGameSettingsPage.VO_jp;
+                public string VO_kr { get; set; } = LangFallback?._StarRailGameSettingsPage.VO_kr;
                 public string Graphics_FPS { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS;
                 public string Graphics_FPS_Help { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS_Help;
                 public string Graphics_FPS_Help2 { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_FPS_Help2;
@@ -48,6 +57,7 @@
                 public string Graphics_EnvDetailQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_EnvDetailQuality;
                 public string Graphics_ReflectionQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_ReflectionQuality;
                 public string Graphics_BloomQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_BloomQuality;
+                public string Graphics_SFXQuality { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SFXQuality;
                 public string Graphics_AAMode { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_AAMode;
                 public string Graphics_SpecPanel { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SpecPanel;
                 public string SpecEnabled { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecEnabled;

@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,35 +9,33 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <ScrollViewer>
-        <Grid Margin="32,80,32,32">
+        <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
             <StackPanel HorizontalAlignment="Left" Grid.Column="0">
                 <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.PageTitle}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                <StackPanel x:Name="AppSettings" Margin="0,16" HorizontalAlignment="Left">
+                <StackPanel x:Name="AppSettings" Margin="0,8" HorizontalAlignment="Left">
                     <StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}"/>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}"/>
-                        <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
-                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsShowRegionChangeWarning, Mode=TwoWay}"/>
-                        <TextBlock x:Name="ChangeRegionToggleWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}" Margin="0,0,0,8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                        <StackPanel.ChildrenTransitions>
+                            <RepositionThemeTransition/>
+                        </StackPanel.ChildrenTransitions>
                         <StackPanel Margin="0,0,0,16">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" ItemsSource="{x:Bind LanguageList}" SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"/>
-                            <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Language}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                            <ComboBox x:Name="LanguageSelector" MinWidth="256" CornerRadius="14" ItemsSource="{x:Bind LanguageList}" SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" MaxDropDownHeight="200"/>
+                            <TextBlock x:Name="AppLangSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}" Margin="0,12,0,0"/>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Margin="0,-8,0,16">
-                            <RadioButtons x:Name="AppThemeSelection" SelectedIndex="{x:Bind CurrentThemeSelection, Mode=TwoWay}">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,10,0,16"/>
+                        <StackPanel Margin="0,-8,0,8">
+                            <RadioButtons x:Name="AppThemeSelection" SelectedIndex="{x:Bind CurrentThemeSelection, Mode=TwoWay}" Margin="0,0,0,8">
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Default}"/>
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Light}"/>
                                 <RadioButton Content="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_Dark}"/>
                             </RadioButtons>
-                            <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" Margin="0,16,0,0" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                            <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}" Margin="0,4"/>
                         </StackPanel>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"/>
                         <TextBlock Text="Keyboard Shortcuts" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                         <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"/>
                         <Button Margin="-32,8,0,8" Height="38" CornerRadius="0,17,17,0" Click="ShowKeybind_Click" Style="{ThemeResource AccentButtonStyle}">
@@ -47,20 +45,41 @@
                             </StackPanel>
                         </Button>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Margin="0,-8,0,16">
+                        <StackPanel Margin="0,4,0,8" HorizontalAlignment="Left">
+                            <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
+                            <StackPanel x:Name="AppBGCustomizer" Orientation="Horizontal" Margin="-2,8,0,0" Visibility="Collapsed">
+                                <Button x:Name="BGSelector" IsEnabled="False" Margin="-40,0,0,0" Height="35" CornerRadius="0,16,16,0" Click="SelectBackgroundImg" Style="{ThemeResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                        <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#xF03E;" FontSize="22"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock x:Name="BGPathDisplay" Text="" VerticalAlignment="Center" Width="384" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <TextBlock x:Name="AppBGCustomizerNote" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note}" Visibility="Collapsed"
+                                Width="368" TextWrapping="Wrap"
+                                HorizontalAlignment="Left"
+                                Margin="0,16,0,0" FontSize="12"
+                                FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                        </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <StackPanel Margin="0,0,0,8">
                             <RadioButtons x:Name="WindowSizeSelection" SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" MaxColumns="2">
                                 <StackPanel Orientation="Horizontal" Margin="0,-1,0,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf065;" FontSize="22"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}" FontWeight="Medium" VerticalAlignment="Center" Margin="10,0,0,0"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,-1,0,0">
                                     <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf066;" FontSize="22"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}" FontWeight="Medium" VerticalAlignment="Center" Margin="10,0,0,0"/>
                                 </StackPanel>
                             </RadioButtons>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Margin="0,-8,0,16">
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
+                        <ToggleSwitch x:Name="ToggleDiscordGameStatus" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_GameStatusToggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsEnabled="False" IsOn="{x:Bind IsDiscordGameStatusEnabled, Mode=TwoWay}" Visibility="Collapsed"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppCDNRepository}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <StackPanel Margin="0,0,0,16">
                             <RadioButtons x:Name="AppCDNSelection" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" MaxColumns="3" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}">
                                 <RadioButtons.ItemTemplate>
                                     <DataTemplate x:DataType="innerConfig:CDNURLProperty">
@@ -74,27 +93,9 @@
                                 </RadioButtons.ItemTemplate>
                             </RadioButtons>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Margin="0,0,0,16" HorizontalAlignment="Left">
-                            <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
-                            <StackPanel Orientation="Horizontal" Margin="-2,8,0,0">
-                                <Button x:Name="BGSelector" IsEnabled="False" Margin="-32,0,0,0" CornerRadius="0,16,16,0" Click="SelectBackgroundImg" Style="{ThemeResource AccentButtonStyle}">
-                                    <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                        <TextBlock FontFamily="{ThemeResource FontAwesome}" Text="&#xF03E;" FontSize="22"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Select}" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                                <TextBlock x:Name="BGPathDisplay" Text="" VerticalAlignment="Center" Width="384" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Note}"
-                                   Width="368" TextWrapping="Wrap"
-                                   HorizontalAlignment="Left"
-                                   Margin="0,16,0,0" FontSize="12"
-                                   FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
-                        </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                            <Button Margin="16,0">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
+                            <Button Margin="8,-12,0,0">
                                 <Button.Content>
                                     <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#x3f;" FontSize="12"/>
                                 </Button.Content>
@@ -127,73 +128,17 @@
                                 </Button.Flyout>
                             </Button>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,16" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal" HorizontalAlignment="Left">
                             <NumberBox x:Name="DownloadThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}" Width="128" Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" Minimum="2" Maximum="8" SpinButtonPlacementMode="Compact"/>
                             <NumberBox x:Name="ExtractionThreadsNumBox" Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}" Margin="16,0,0,0" Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" Minimum="0" Maximum="128" Width="128" SpinButtonPlacementMode="Compact"/>
                         </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Orientation="Vertical" Margin="0,0,0,16">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock VerticalAlignment="Center" Margin="0,0,0,16">
-                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CurVer}"/>
-                                <Run x:Name="CurrentVersion" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
-                                </TextBlock>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Button x:Name="CheckUpdateBtn" Margin="-32,0,0,0" Height="38" CornerRadius="0,17,17,0" Click="CheckUpdate" Style="{ThemeResource AccentButtonStyle}">
-                                    <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                        <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf105;" FontSize="22"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                                <StackPanel x:Name="UpdateLoadingStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
-                                    <ProgressRing Width="20" Height="20" IsIndeterminate="True"/>
-                                </StackPanel>
-                                <StackPanel x:Name="UpdateAvailableStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,-3,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="😆" FontSize="20"/>
-                                    <TextBlock Margin="8,0,0,0" VerticalAlignment="Center">
-                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}"/>
-                                    <Run x:Name="UpdateAvailableLabel" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
-                                    <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer2}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                                <StackPanel x:Name="UpToDateStatus" Visibility="Collapsed" Orientation="Horizontal" Margin="16,-3,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="✅" FontSize="20"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <Button x:Name="ForceUpdateBtn" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="ForceUpdate" Style="{ThemeResource AccentButtonStyle}">
-                                <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                            <Button x:Name="ChangeReleaseBtn" Margin="-32,16,0,0" Height="38" CornerRadius="0,17,17,0" Click="ChangeRelease" Style="{ThemeResource AccentButtonStyle}">
-                                <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
-                                    <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf0ec;" FontSize="22"/>
-                                    <TextBlock x:Name="ChangeReleaseBtnText" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
-                        <StackPanel Orientation="Horizontal"  Margin="0,0,0,16">
-                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Margin="0,0,16,0" Click="OpenAppDataFolder">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" FontWeight="Medium"/>
-                                </StackPanel>
-                            </Button>
-                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="RelocateFolder">
-                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" FontWeight="Medium"/>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Margin="0,0,16,0" Click="ClearLogsFolder">
-                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" FontWeight="Medium"/>
-                            </Button>
-                            <Button CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearImgFolder">
-                                <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" FontWeight="Medium"/>
-                            </Button>
-                        </StackPanel>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableDownloadChunksMerging}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsUseDownloadChunksMerging, Mode=TwoWay}"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}" Margin="0,4"/>
+                        <ToggleSwitch x:Name="ToggleIncludeGameLogs" Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_IncludeGameLogs}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsIncludeGameLogs, Mode=TwoWay}" Margin="0,4" Visibility="Collapsed"/>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}" Margin="0,4"/>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsShowRegionChangeWarning, Mode=TwoWay}" Margin="0,4"/>
+                        <TextBlock x:Name="ChangeRegionToggleWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}" Margin="8,0,0,8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -204,8 +149,8 @@
                     <Grid>
                         <StackPanel Grid.Column="1">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Collapse Launcher" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock x:Name="AppVersionTextBlock" Text=" 1.0.0" Style="{ThemeResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="Collapse Launcher" Style="{ThemeResource BodyStrongTextBlockStyle}" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="AppVersionTextBlock" Text=" 1.0.0" Style="{ThemeResource BodyTextBlockStyle}" TextWrapping="Wrap"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright1}" Style="{ThemeResource BodyTextBlockStyle}"/>
@@ -221,16 +166,19 @@
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
-                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,4" HorizontalAlignment="Left">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/issues" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/></Hyperlink>
                         </TextBlock>
-                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,4,0,8" HorizontalAlignment="Left">
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
+                            <Hyperlink NavigateUri="https://github.com/neon-nyan/Collapse/graphs/contributors" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}"/></Hyperlink>
+                        </TextBlock>
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
                             <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/pulls" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/></Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Margin="0,8">
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
+                <StackPanel Margin="0,16,0,16">
+                    <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
                     <TextBlock TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}">
                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Disclaimer1}"/>
                             <Hyperlink NavigateUri="https://www.mihoyo.com" UnderlineStyle="None" FontWeight="Bold"><Run Text="miHoYo"/></Hyperlink>
@@ -273,18 +221,25 @@
                         <Run Text="~neon-nyan"/>
                     </TextBlock>
                 </StackPanel>
-                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/NAYQ8TT2Ge" Click="ClickButtonLinkFromTag">
+                <Button Style="{ThemeResource AccentButtonStyle}" Height="50" Width="300" CornerRadius="25" Margin="0,8,0,8" Tag="https://discord.gg/vJd2exaS7j" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
                         <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn3}" FontSize="14" VerticalAlignment="Center" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
-                <Button CornerRadius="25" Style="{ThemeResource AccentButtonStyle}" Height="50" Margin="0,8,0,8" Tag="https://discord.gg/hi3" Click="ClickButtonLinkFromTag">
+                <Button Style="{ThemeResource AccentButtonStyle}" Height="50" Width="300" CornerRadius="25" Margin="0,8,0,8" Tag="https://discord.gg/NAYQ8TT2Ge" Click="ClickButtonLinkFromTag">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
-                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="0,-1,12,0"
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="-4,-1,12,0"
                                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" FontSize="14" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn1}" FontSize="14" VerticalAlignment="Center" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{ThemeResource AccentButtonStyle}" Height="50" Width="300" CornerRadius="25" Margin="0,8,0,8" Tag="https://discord.gg/hi3" Click="ClickButtonLinkFromTag">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,0,12,0">
+                        <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Text="&#xF392;" FontSize="24" PointerPressed="ClickTextLinkFromTag" Margin="1,-1,12,0"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordBtn2}" FontSize="14" VerticalAlignment="Center" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Left">
@@ -300,6 +255,67 @@
                                Tag="https://instagram.com/neonnyann/"/>
                     <TextBlock FontFamily="{ThemeResource FontAwesomeBrand}" Foreground="{ThemeResource AccentColor}" Text="&#xE499;" FontSize="24" PointerPressed="Egg" Margin="6,0,6,0"/>
                 </StackPanel>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,32,0,8"/>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,0,16">
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CurVer}"/>
+                            <Run x:Name="CurrentVersion" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </StackPanel>
+                    <Button x:Name="CheckUpdateBtn" Margin="0,0,0,0" Height="40" Width="300" CornerRadius="20" Click="CheckUpdate" Style="{ThemeResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf105;" FontSize="20"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_CheckBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Grid x:Name="UpdateLoadingStatus" Visibility="Collapsed" Width="300" Margin="0,14,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <ProgressRing Width="20" Height="20" IsIndeterminate="True" HorizontalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="UpdateAvailableStatus" Visibility="Collapsed" Width="300" Margin="0,12,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="😆" FontSize="20"/>
+                            <TextBlock Margin="8,2,0,0" VerticalAlignment="Center">
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer1}"/>
+                            <Run x:Name="UpdateAvailableLabel" Text="0.0.0.0" Foreground="{ThemeResource AccentColor}" FontWeight="Bold"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_NewVer2}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid x:Name="UpToDateStatus" Visibility="Collapsed" Width="300" Margin="0,12,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="✅" FontSize="20"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_LatestVer}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <Button x:Name="ForceUpdateBtn" Margin="0,16,0,0" Height="40" Width="300" CornerRadius="20" Click="ForceUpdate" Style="{ThemeResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf101;" FontSize="20"/>
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Update_ForceBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ChangeReleaseBtn" Margin="0,16,0,0" Height="40" Width="300" CornerRadius="20" Click="ChangeRelease" Style="{ThemeResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Glyph="&#xf0ec;" FontSize="20"/>
+                            <TextBlock x:Name="ChangeReleaseBtnText" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,16"/>
+                <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="RelocateFolder">
+                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_RelocateDataFolderBtn}" FontWeight="Medium"/>
+                </Button>
+                <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="OpenAppDataFolder">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_OpenDataFolderBtn}" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearImgFolder">
+                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" FontWeight="Medium"/>
+                </Button>
+                <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearLogsFolder">
+                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" FontWeight="Medium"/>
+                </Button>
             </StackPanel>
         </Grid>
     </ScrollViewer>

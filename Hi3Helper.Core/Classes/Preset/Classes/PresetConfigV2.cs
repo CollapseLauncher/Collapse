@@ -16,12 +16,14 @@ namespace Hi3Helper.Preset
 {
 #nullable enable
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum ServerRegionID
+    public enum ServerRegionID : int
     {
         os_usa = 0,
         os_euro = 1,
         os_asia = 2,
-        os_cht = 3
+        os_cht = 3,
+        cn_gf01 = 4,
+        cn_qd01 = 5
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -102,9 +104,26 @@ namespace Hi3Helper.Preset
                 }
             }
         }
+
+        public void GenerateHashID()
+        {
+            foreach (KeyValuePair<string, Dictionary<string, PresetConfigV2>> game in MetadataV2)
+            {
+                foreach (KeyValuePair<string, PresetConfigV2> region in game.Value)
+                {
+                    string HashComposition = $"{ConverterTool.GetUnixTimestamp(true)} - {game.Key} - {region.Value.ZoneName}";
+                    int HashID = ConverterTool.BytesToCRC32Int(HashComposition);
+                    region.Value.HashID = HashID;
+                    region.Value.GameName = game.Key;
+
+                    LogWriteLine($"Cur. Session Region Hash: {HashID} ({HashComposition})", LogType.Default, true);
+                }
+            }
+        }
 #nullable enable
     }
 
+    [Serializable]
     public sealed class PresetConfigV2
     {
         private const string PrefixRegInstallLocation = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
@@ -224,7 +243,7 @@ namespace Hi3Helper.Preset
                 }
 
                 regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-                GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default);
+                GeneralDataProp? RegValues = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), CoreLibraryJSONContext.Default);
                 return RegValues?.deviceVoiceLanguageType ?? 2;
             }
             catch (JsonException ex)
@@ -272,13 +291,13 @@ namespace Hi3Helper.Preset
                     result = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
                     if (result is null) return;
                     regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), GeneralDataPropContext.Default) ?? initValue;
+                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp), CoreLibraryJSONContext.Default) ?? initValue;
                 }
 
                 initValue.deviceVoiceLanguageType = LangID;
                 keys.SetValue("GENERAL_DATA_h2389025596",
                     Encoding.UTF8.GetBytes(
-                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), GeneralDataPropContext.Default) + '\0'));
+                        JsonSerializer.Serialize(initValue, typeof(GeneralDataProp), CoreLibraryJSONContext.Default) + '\0'));
             }
             catch (Exception ex)
             {
@@ -323,7 +342,7 @@ namespace Hi3Helper.Preset
 
             try
             {
-                return (int?)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), GeneralDataPropContext.Default))?.selectedServerName) ?? 0;
+                return (int?)(((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp), CoreLibraryJSONContext.Default))?.selectedServerName) ?? 0;
             }
             catch (Exception ex)
             {
@@ -451,6 +470,8 @@ namespace Hi3Helper.Preset
             return File.Exists(Path.Combine(ActualGameDataLocation, "config.ini")) && File.Exists(Path.Combine(ActualGameDataLocation, GameExecutableName));
         }
 
+        public string? GameName { get; set; }
+        public int HashID { get; set; }
         private string? SystemDriveLetter { get => Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System)); }
         public string? ProfileName { get; set; }
         public GameChannel GameChannel { get; set; } = GameChannel.Stable;
@@ -500,8 +521,13 @@ namespace Hi3Helper.Preset
         public string? LauncherResourceURL { get; set; }
         public string? DispatcherKey { get; set; }
         public int? DispatcherKeyBitLength { get; set; }
+#if DEBUG
+        public bool? IsRepairEnabled = true;
+        public bool? IsCacheUpdateEnabled = true;
+#else
         public bool? IsRepairEnabled { get; set; }
         public bool? IsCacheUpdateEnabled { get; set; }
+#endif
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
     }

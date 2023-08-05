@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.StarRail
@@ -88,8 +88,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// </summary>
         public override bool isfullScreen { get; set; } = true;
         #endregion
-#nullable enable
+
         #region Methods
+#nullable enable
         public static PCResolution Load()
         {
             try
@@ -101,7 +102,10 @@ namespace CollapseLauncher.GameSettings.StarRail
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), PCResolutionContext.Default) ?? new PCResolution();
+#if DEBUG
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
+                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), StarRailSettingsJSONContext.Default) ?? new PCResolution();
                 }
             }
             catch (Exception ex)
@@ -118,11 +122,13 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PCResolution), PCResolutionContext.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(PCResolution), StarRailSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-
+#if DEBUG
+                LogWriteLine($"Saved StarRail Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
                 SaveIndividualRegistry();
             }
             catch (Exception ex)
@@ -133,23 +139,17 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         private void SaveIndividualRegistry()
         {
-            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 0, RegistryValueKind.DWord);
+            RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, isfullScreen ? 1 : 3, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+#if DEBUG
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
+            LogWriteLine($"Saved StarRail Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+#endif
         }
 
-        public bool Equals(PCResolution? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.sizeRes == this.sizeRes &&
-                comparedTo.height == this.height &&
-                comparedTo.width == this.width &&
-                comparedTo.isfullScreen == this.isfullScreen;
-        }
+        public bool Equals(PCResolution? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
-#nullable disable
-
     }
 }

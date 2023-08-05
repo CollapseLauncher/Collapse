@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Statics;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Honkai
@@ -158,7 +158,10 @@ namespace CollapseLauncher.GameSettings.Honkai
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-                    return (PersonalGraphicsSettingV2?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) ?? new PersonalGraphicsSettingV2();
+#if DEBUG
+                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+#endif
+                    return (PersonalGraphicsSettingV2?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) ?? new PersonalGraphicsSettingV2();
                 }
             }
             catch (Exception ex)
@@ -175,10 +178,13 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), PersonalGraphicsSettingV2Context.Default) + '\0';
+                string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+#if DEBUG
+                LogWriteLine($"Saved HI3 Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+#endif
             }
             catch (Exception ex)
             {
@@ -186,28 +192,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(PersonalGraphicsSettingV2? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.UseHDR == this.UseHDR &&
-                comparedTo.UseFXAA == this.UseFXAA &&
-                comparedTo.UsePostFX == this.UsePostFX &&
-                comparedTo.ResolutionQuality == this.ResolutionQuality &&
-                comparedTo.ReflectionQuality == this.ReflectionQuality &&
-                comparedTo.ShadowLevel == this.ShadowLevel &&
-                comparedTo.AmbientOcclusion == this.AmbientOcclusion &&
-                comparedTo.GlobalIllumination == this.GlobalIllumination &&
-                comparedTo.LodGrade == this.LodGrade &&
-                comparedTo.PostFXGrade == this.PostFXGrade &&
-                comparedTo.TargetFrameRateForInLevel == this.TargetFrameRateForInLevel &&
-                comparedTo.TargetFrameRateForOthers == this.TargetFrameRateForOthers &&
-                comparedTo.UseDistortion == this.UseDistortion &&
-                comparedTo.UseDynamicBone == this.UseDynamicBone &&
-                comparedTo.VolumetricLight == this.VolumetricLight;
-        }
-#nullable disable
+        public bool Equals(PersonalGraphicsSettingV2? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
         #endregion
     }
 }

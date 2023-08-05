@@ -11,8 +11,8 @@
                 public string PageTitle { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug { get; set; } = LangFallback?._SettingsPage.Debug;
                 public string Debug_Console { get; set; } = LangFallback?._SettingsPage.Debug_Console;
+                public string Debug_IncludeGameLogs { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_MultipleInstance { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
-                public string DiscordRPC_Toggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string ChangeRegionWarning_Toggle { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
                 public string ChangeRegionWarning_Warning { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Warning;
                 public string Language { get; set; } = LangFallback?._SettingsPage.Language;
@@ -39,6 +39,9 @@
                 public string AppThreads_Help4 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help4;
                 public string AppThreads_Help5 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help5;
                 public string AppThreads_Help6 { get; set; } = LangFallback?._SettingsPage.AppThreads_Help6;
+                public string DiscordRPC { get; set; } = LangFallback?._SettingsPage.DiscordRPC;
+                public string DiscordRPC_Toggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
+                public string DiscordRPC_GameStatusToggle { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;
                 public string Update { get; set; } = LangFallback?._SettingsPage.Update;
                 public string Update_CurVer { get; set; } = LangFallback?._SettingsPage.Update_CurVer;
                 public string Update_CheckBtn { get; set; } = LangFallback?._SettingsPage.Update_CheckBtn;
@@ -53,6 +56,7 @@
                 public string AppFiles_ClearImgCachesBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearImgCachesBtn;
                 public string ReportIssueBtn { get; set; } = LangFallback?._SettingsPage.ReportIssueBtn;
                 public string ContributePRBtn { get; set; } = LangFallback?._SettingsPage.ContributePRBtn;
+                public string ContributorListBtn { get; set; } = LangFallback?._SettingsPage.ContributorListBtn;
                 public string About { get; set; } = LangFallback?._SettingsPage.About;
                 public string About_Copyright1 { get; set; } = LangFallback?._SettingsPage.About_Copyright1;
                 public string About_Copyright2 { get; set; } = LangFallback?._SettingsPage.About_Copyright2;
@@ -64,7 +68,10 @@
                 public string Disclaimer3 { get; set; } = LangFallback?._SettingsPage.Disclaimer3;
                 public string DiscordBtn1 { get; set; } = LangFallback?._SettingsPage.DiscordBtn1;
                 public string DiscordBtn2 { get; set; } = LangFallback?._SettingsPage.DiscordBtn2;
+                public string DiscordBtn3 { get; set; } = LangFallback?._SettingsPage.DiscordBtn3;
                 public string AppChangeReleaseChannel { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
+                public string EnableAcrylicEffect { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
+                public string EnableDownloadChunksMerging { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
             }
         }
         #endregion

@@ -1,14 +1,12 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Universal;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Microsoft.Win32;
 using System.IO;
-using static CollapseLauncher.GameSettings.Statics;
 
 namespace CollapseLauncher.GameSettings.StarRail
 {
-    internal class StarRailSettings : ImportExportBase, IGameSettings, IGameSettingsUniversal
+    internal class StarRailSettings : SettingsBase, IGameSettings, IGameSettingsUniversal
     {
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
@@ -18,11 +16,14 @@ namespace CollapseLauncher.GameSettings.StarRail
         public MasterVolume AudioSettings_Master { get; set; }
         public SFXVolume AudioSettings_SFX { get; set; }
         public VOVolume AudioSettings_VO { get; set; }
+        public LocalAudioLanguage AudioLanguage { get; set; }
+        public LocalTextLanguage TextLanguage { get; set; }
 
-        public StarRailSettings()
+        public StarRailSettings(IGameVersionCheck GameVersionManager)
+            : base(GameVersionManager)
         {
             // Init Root Registry Key
-            RegistryPath = Path.Combine(RegistryRootPath, PageStatics._GameVersion.GamePreset.InternalGameNameInConfig);
+            RegistryPath = Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
             RegistryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
             // If the Root Registry Key is null (not exist), then create a new one.
@@ -46,9 +47,11 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioSettings_Master = MasterVolume.Load();
             AudioSettings_SFX = SFXVolume.Load();
             AudioSettings_VO = VOVolume.Load();
+            AudioLanguage = LocalAudioLanguage.Load();
+            TextLanguage = LocalTextLanguage.Load();
         }
 
-        public void RevertSettings() => InitializeSettings();
+        public void ReloadSettings() => InitializeSettings();
 
         public void SaveSettings()
         {
@@ -61,6 +64,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             AudioSettings_Master.Save();
             AudioSettings_SFX.Save();
             AudioSettings_VO.Save();
+            AudioLanguage.Save();
+            TextLanguage.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;
