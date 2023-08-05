@@ -488,20 +488,19 @@ namespace CollapseLauncher.InstallManager.Base
                 case ContentDialogResult.Primary:
                     try
                     {
-                        string gameDataFolderName = ""; // ExecutableName_Data
-                        string[] filesToDelete = { }; // Put whatever files it needs to delete in the root of GameFolder
-                        string[] foldersToDelete = { }; // Put whatever folders it needs to delete in the root of GameFolder
-                        string[] foldersToKeepInData = { }; // Excluded folders to delete inside gameDataFolderName
+                        var gameDataFolderName = ""; // ExecutableName_Data
+                        var filesToDelete = Array.Empty<string>(); // Put whatever files it needs to delete in the root of GameFolder | ONLY THIS VARIABLE SUPPORTS REGEX!
+                        var foldersToDelete = Array.Empty<string>(); // Put whatever folders it needs to delete in the root of GameFolder
+                        var foldersToKeepInData = Array.Empty<string>(); // Excluded folders to delete inside gameDataFolderName
                         // NOTES!!!
                         // If there is a folder inside gameDataFolderName that you want to keep, do NOT put gameDataFolderName inside foldersToDelete !
-                        LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {ConfigV2Store.CurrentConfigV2GameRegion}", LogType.Warning, true);
                         switch (_gameVersionManager.GameType)
                         {
                             case GameType.Honkai:
                                 gameDataFolderName = "BH3_Data";
                                 foldersToDelete = new string[] { "BH3_Data", "AntiCheatExpert" };
                                 filesToDelete = new string[] { "ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini" };
-                                foldersToKeepInData = null;
+                                foldersToKeepInData = Array.Empty<string>();
                                 break;
 
                             case GameType.StarRail:
@@ -518,14 +517,14 @@ namespace CollapseLauncher.InstallManager.Base
                                         gameDataFolderName = "GenshinImpact_Data";
                                         foldersToDelete = new string[] { "GenshinImpact_Data" };
                                         filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", "GenshinImpact.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" };
-                                        foldersToKeepInData = null;
+                                        foldersToKeepInData = Array.Empty<string>();
                                         break;
 
                                     case "Mainland China":
                                         gameDataFolderName = "YuanShen_Data";
                                         foldersToDelete = new string[] { "YuanShen_Data" };
                                         filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", "YuanShen.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" };
-                                        foldersToKeepInData = null;
+                                        foldersToKeepInData = Array.Empty<string>();
                                         break;
 
                                     default:
@@ -543,18 +542,38 @@ namespace CollapseLauncher.InstallManager.Base
                                 return false;
                         }
 
+                        //Preparing paths
+                        var _DataFolderFullPath = Path.Combine(GameFolder, gameDataFolderName);
+
+                        var foldersToKeepInDataFullPath = new string[foldersToKeepInData.Length]; // Just in case mhy put more not-to-be-deleted folders in _Data
+                        for (int i = 0; i < foldersToKeepInData.Length; i++) // yes i'm still salty about it
+                        {
+                            foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, foldersToKeepInData[i]);
+                        }
+                        
+                        LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {ConfigV2Store.CurrentConfigV2GameRegion}\r\n" +
+                            $"  GameFolder          : {GameFolder}\r\n" +
+                            $"  gameDataFolderName  : {gameDataFolderName}\r\n" +
+                            $"  foldersToDelete     : {string.Join(", ", foldersToDelete)}\r\n" +
+                            $"  filesToDelete       : {string.Join(", ", filesToDelete)}\r\n" +
+                            $"  foldersToKeepInData : {string.Join(", ", foldersToKeepInData)}\r\n" +
+                            $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
+                            $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}", LogType.Warning, true);
+
                         // Cleanup Game_Data folder while keeping whatever specified in foldersToKeepInData
-                        foreach (string folderGameData in Directory.GetDirectories(Path.Combine(GameFolder, gameDataFolderName)))
+                        foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
                         {
                             try
                             {
-                                if (foldersToKeepInData != null && !foldersToKeepInData.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
+                                if (foldersToKeepInData.Length != 0 && !foldersToKeepInDataFullPath.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
                                 {
+                                    // Delete directories inside gameDataFolderName that is not included in foldersToKeepInData
                                     if (File.GetAttributes(folderGameData).HasFlag(FileAttributes.Directory))
                                     {
                                         Directory.Delete(folderGameData, true);
-                                        LogWriteLine($"Deleted folder: {folderGameData}", LogType.Warning, true);
+                                        LogWriteLine($"Deleted folder: {folderGameData}", LogType.Default, true);
                                     }
+                                    // Delete files inside gameDataFolderName that is not included in foldersToKeepInData
                                     else
                                     {
                                         File.Delete(folderGameData);
@@ -562,51 +581,51 @@ namespace CollapseLauncher.InstallManager.Base
                                     }
                                     continue;
                                 }
-                                // Do check if the folder empty after cleaning up 
-                                if (Directory.Exists(folderGameData) && !Directory.EnumerateFileSystemEntries(folderGameData).Any())
-                                {
-                                    Directory.Delete(folderGameData);
-                                    LogWriteLine($"Deleted empty game folder: {folderGameData}", LogType.Default, true);
-                                }
-                            }
+                            } 
                             catch (Exception ex)
                             {
                                 LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error, true);
                             }
                         }
-
-                        // Cleanup any folders in foldersToDelete
-                        foreach (string folderName in Directory.GetDirectories(GameFolder))
+                        // Check if _DataFolderPath folder empty after cleaning up 
+                        if (!Directory.EnumerateFileSystemEntries(_DataFolderFullPath).Any())
                         {
-                            if (foldersToDelete != null && foldersToDelete.Contains(Path.GetFileName(folderName)))
+                            Directory.Delete(_DataFolderFullPath);
+                            LogWriteLine($"Deleted empty game folder: {_DataFolderFullPath}", LogType.Default, true);
+                        }
+                        
+                        // Cleanup any folders in foldersToDelete
+                        foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
+                        {
+                            if (foldersToDelete.Length != 0 && foldersToDelete.Contains(Path.GetFileName(folderNames)))
                             {
                                 try
                                 {
-                                    Directory.Delete(folderName, true);
-                                    LogWriteLine($"Deleted {folderName}", LogType.Default, true);
+                                    Directory.Delete(folderNames, true);
+                                    LogWriteLine($"Deleted {folderNames}", LogType.Default, true);
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogWriteLine($"An error occurred while deleting folder {folderName}\r\n{ex}", LogType.Error, true);
+                                    LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}", LogType.Error, true);
                                 }
                                 continue;
                             }
                         }
 
                         // Cleanup any files in filesToDelete
-                        foreach (string fileName in Directory.GetFiles(GameFolder))
+                        foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                         {
-                            if (filesToDelete != null && filesToDelete.Contains(Path.GetFileName(fileName)) ||
-                                filesToDelete != null && filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileName), pattern)))
+                            if (filesToDelete.Length != 0 && filesToDelete.Contains(Path.GetFileName(fileNames)) ||
+                                filesToDelete.Length != 0 && filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern)))
                             {
                                 try
                                 {
-                                    File.Delete(fileName);
-                                    LogWriteLine($"Deleted {fileName}", LogType.Default, true);
+                                    File.Delete(fileNames);
+                                    LogWriteLine($"Deleted {fileNames}", LogType.Default, true);
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogWriteLine($"An error occurred while deleting file {fileName}\r\n{ex}", LogType.Error, true);
+                                    LogWriteLine($"An error occurred while deleting file {fileNames}\r\n{ex}", LogType.Error, true);
                                 }
                                 continue;
                             }
@@ -623,7 +642,7 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             LogWriteLine($"An error occurred while deleting game AppData folder: {_gameVersionManager.GameDirAppDataPath}\r\n{ex}", LogType.Error, true);
                         }
-
+                        
                         // Remove the entire folder if nothing is there
                         if (Directory.Exists(GameFolder) && !Directory.EnumerateFileSystemEntries(GameFolder).Any())
                         {
