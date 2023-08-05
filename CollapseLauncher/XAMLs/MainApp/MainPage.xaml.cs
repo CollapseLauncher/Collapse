@@ -1376,7 +1376,7 @@ namespace CollapseLauncher
         {
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-            Navigate(typeof(HomePage), false, new NavigationViewItem() { Tag = "launcher" });
+            Navigate(typeof(HomePage), "launcher");
         }
 
         private bool AreShortcutsEnabled
