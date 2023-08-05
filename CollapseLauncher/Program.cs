@@ -23,6 +23,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.IO;
 
 namespace CollapseLauncher
 {
@@ -42,7 +43,6 @@ namespace CollapseLauncher
 
             try
             {
-
                 StartSquirrelHook();
 
                 AppCurrentArgument = args;
@@ -50,6 +50,11 @@ namespace CollapseLauncher
                 InitAppPreset();
                 string logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled ? new LoggerConsole(logPath, Encoding.UTF8) : new LoggerNull(logPath, Encoding.UTF8);
+                if (Directory.GetCurrentDirectory() != AppFolder)
+                {
+                    LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!", LogType.Warning, true);
+                    Directory.SetCurrentDirectory(AppFolder);
+                }
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                     AppCurrentVersion.VersionString,
