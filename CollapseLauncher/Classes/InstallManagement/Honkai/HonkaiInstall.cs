@@ -351,5 +351,15 @@ namespace CollapseLauncher.InstallManager.Honkai
             return null;
         }
         #endregion
+
+        #region Override Methods - UninstallGame
+        protected override UninstallGameProperty AssignUninstallFolders() => new UninstallGameProperty()
+        {
+            gameDataFolderName = "BH3_Data",
+            foldersToDelete = new string[] { "BH3_Data", "AntiCheatExpert" },
+            filesToDelete = new string[] { "ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini" },
+            foldersToKeepInData = null
+        };
+        #endregion
     }
 }
