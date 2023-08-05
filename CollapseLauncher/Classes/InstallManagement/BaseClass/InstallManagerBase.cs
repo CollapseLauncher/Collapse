@@ -1400,11 +1400,7 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Virtual Methods - UninstallGame
-        protected virtual UninstallGameProperty AssignUninstallFolders()
-        {
-            LogWriteLine($"Cannot uninstall game: {_gameVersionManager.GamePreset.GameType}. Uninstall method is not yet implemented!", LogType.Error, true);
-            return new UninstallGameProperty();
-        }
+        protected virtual UninstallGameProperty AssignUninstallFolders() => throw new NotSupportedException($"Cannot uninstall game: {_gameVersionManager.GamePreset.GameType}. Uninstall method is not yet implemented!");
         #endregion
 
         #region Event Methods
