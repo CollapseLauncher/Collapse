@@ -116,5 +116,12 @@
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
 		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 	</ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <ItemGroup>
+      <Content Include="Lang\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
+  </Target>
 
 </Project>
