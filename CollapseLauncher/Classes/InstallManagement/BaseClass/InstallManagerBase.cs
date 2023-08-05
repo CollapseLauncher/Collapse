@@ -575,7 +575,7 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
                     if (UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
-                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern)))
+                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern, RegexOptions.Compiled | RegexOptions.NonBacktracking)))
                     {
                         try
                         {
