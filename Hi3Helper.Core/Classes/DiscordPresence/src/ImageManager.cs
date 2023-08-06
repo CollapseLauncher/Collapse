@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Discord
 {
-	public partial struct ImageHandle
+	public struct ImageHandle
     {
         static public ImageHandle User(Int64 id)
         {
@@ -23,6 +23,12 @@ namespace Discord
                 Size = size,
             };
         }
+
+        public ImageType Type;
+
+        public Int64 Id;
+
+        public UInt32 Size;
     }
 
     public partial class ImageManager
