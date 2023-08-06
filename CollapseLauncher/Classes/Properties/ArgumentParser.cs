@@ -46,6 +46,10 @@ namespace CollapseLauncher
                     m_appMode = AppMode.InvokerMoveSteam;
                     ParseMoveSteamArguments(args);
                     break;
+                case "oobesetup":
+                    m_appMode = AppMode.OOBEState;
+                    ParseOOBEArguments(args);
+                    break;
             }
 
             if (rootCommand.Invoke(args) > 0)
@@ -117,6 +121,11 @@ namespace CollapseLauncher
             else
                 rootCommand.AddArgument(new Argument<string>("migratebhi3l", "Migrate Game from BetterHi3Launcher to another location") { HelpName = null });
             AddMigrateOptions(isBHI3L);
+        }
+
+        public static void ParseOOBEArguments(params string[] args)
+        {
+            rootCommand.AddArgument(new Argument<string>("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup") { HelpName = null });
         }
 
         private static void AddMigrateOptions(bool isBHI3L)
