@@ -197,10 +197,10 @@ namespace Hi3Helper.DiscordPresence
                     default:
                         _activity = new Activity
                         {
-                            Details = StrToPtrUtf8(Lang._Misc.DiscordRP_Default),
+                            Details = StrToByteUtf8(Lang._Misc.DiscordRP_Default),
                             Assets = new ActivityAssets
                             {
-                                LargeImage = StrToPtrUtf8($"launcher-logo")
+                                LargeImage = StrToByteUtf8($"launcher-logo")
                             }
                         };
                         break;
@@ -218,14 +218,14 @@ namespace Hi3Helper.DiscordPresence
         {
             _activity = new Activity
             {
-                Details = StrToPtrUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
-                State = StrToPtrUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
+                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToPtrUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
-                    LargeText = StrToPtrUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}"),
-                    SmallImage = StrToPtrUtf8($"launcher-logo"),
-                    SmallText = StrToPtrUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
+                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                    SmallImage = StrToByteUtf8($"launcher-logo"),
+                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
                 },
                 Timestamps = new ActivityTimestamps
                 {
@@ -248,14 +248,14 @@ namespace Hi3Helper.DiscordPresence
         {
             _activity = new Activity
             {
-                Details = StrToPtrUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),
-                State = StrToPtrUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),
+                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToPtrUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
-                    LargeText = StrToPtrUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
-                    SmallImage = StrToPtrUtf8($"launcher-logo"),
-                    SmallText = StrToPtrUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
+                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
+                    SmallImage = StrToByteUtf8($"launcher-logo"),
+                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
                 },
             };
         }
@@ -288,7 +288,7 @@ namespace Hi3Helper.DiscordPresence
             }, _clientToken.Token);
         }
 
-        private static byte[] StrToPtrUtf8(string s)
+        private static byte[] StrToByteUtf8(string s)
         {
             // Use fixed width (128 bytes) as defined in field's SizeConst
             byte[] bufferOut = new byte[128];
