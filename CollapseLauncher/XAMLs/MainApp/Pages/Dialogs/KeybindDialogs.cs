@@ -183,12 +183,35 @@ namespace CollapseLauncher.Dialogs
             StackPanel mainSwitchKeyContent = new StackPanel()
             {
                 Orientation = Orientation.Vertical,
+                MaxWidth = 300
             };
-            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = "Input a valid key combination to change the shortcut.", Margin = new Thickness(0, 0, 0, 20) });
-            mainSwitchKeyContent.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
-            mainSwitchKeyContent.Children.Add(new FontIcon() { Glyph = "", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(0, 10, 0, 10) });
-            TextBlock keysPressed = new TextBlock() { Text = "...", FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
-            mainSwitchKeyContent.Children.Add(keysPressed);
+            mainSwitchKeyContent.Children.Add(new TextBlock() { 
+                Text = "Please type the new combination for this shortcut by choosing one option from each category.\nThe available options are the following:",
+                Margin = new Thickness(0, 8, 0, 8),
+                TextWrapping = TextWrapping.Wrap
+            });
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = "・ Modifiers - Shift, Control or Alt/Menu",
+                Margin = new Thickness(5, 4, 0, 4)
+            });
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = "・ Keys - A to Z or Tab",
+                Margin = new Thickness(5, 4, 0, 15)
+            });
+
+            StackPanel keysPanel = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center, 
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            keysPanel.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
+            keysPanel.Children.Add(new FontIcon() { Glyph = "arrow-right", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(10 , 0, 10, 0) });
+            TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
+            keysPanel.Children.Add(keysPressed);
+            mainSwitchKeyContent.Children.Add(keysPanel);
 
             ContentDialog result = new ContentDialog
             {
