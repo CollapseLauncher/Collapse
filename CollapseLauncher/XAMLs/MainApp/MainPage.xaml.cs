@@ -924,7 +924,7 @@ namespace CollapseLauncher
 
             if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
 
                 if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {

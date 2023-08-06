@@ -23,7 +23,7 @@
             IsBackButtonVisible="Visible"
             IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
             IsSettingsVisible="true"
-            PaneTitle="Menu"
+            PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
             PaneDisplayMode="LeftCompact"
             Visibility="Visible" IsPaneOpen="False"
             Background="{ThemeResource NavigationBarBrush}"
