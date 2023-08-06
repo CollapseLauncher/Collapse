@@ -262,7 +262,7 @@ namespace Hi3Helper.DiscordPresence
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
         {
-            Logger.LogWriteLine($"Activity updated! => {_activity.Details} - {_activity.State}");
+            Logger.LogWriteLine($"Activity updated! => {ReadUtf8Byte(_activity.Details)} - {ReadUtf8Byte(_activity.State)}");
         });
 
         private void UpdateCallbacksRoutine()
@@ -288,7 +288,9 @@ namespace Hi3Helper.DiscordPresence
             }, _clientToken.Token);
         }
 
-        private static byte[] StrToByteUtf8(string s)
+        private string ReadUtf8Byte(byte[] input) => input == null || input.Length == 0 ? string.Empty : Encoding.UTF8.GetString(input);
+
+        private byte[] StrToByteUtf8(string s)
         {
             // Use fixed width (128 bytes) as defined in field's SizeConst
             byte[] bufferOut = new byte[128];
