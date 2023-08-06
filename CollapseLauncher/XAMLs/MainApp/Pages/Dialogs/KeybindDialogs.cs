@@ -130,7 +130,14 @@ namespace CollapseLauncher.Dialogs
             foreach (string key in kbKeys)
             {
                 shortcutButtons.Children.Add(CreateKeyBoardButton(key));
-                shortcutButtons.Children.Add(new TextBlock() { Text = "+", FontWeight = FontWeights.Bold, FontSize = 20, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Right });
+                shortcutButtons.Children.Add(new TextBlock()
+                {
+                    Text = "+",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 20,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Right
+                });
             }
 
             shortcut.Children.Add(shortcutButtons);
@@ -160,6 +167,7 @@ namespace CollapseLauncher.Dialogs
             TextBlock keybox = new TextBlock()
             {
                 Text = key,
+                Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Microsoft.UI.Colors.Black : Microsoft.UI.Colors.White),
                 FontWeight = FontWeights.Medium,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
@@ -199,25 +207,22 @@ namespace CollapseLauncher.Dialogs
             result.KeyDown += (e, s) =>
             {
                 VirtualKey inputKey = s.Key;
-                if (keyCount != 1)
+                keyCount = 0;
+                result.IsPrimaryButtonEnabled = false;
+                switch (s.Key)
                 {
-                    keyCount = 0;
-                    result.IsPrimaryButtonEnabled = false;
-                    switch (s.Key)
-                    {
-                        case VirtualKey.Control:
-                            keyCount++;
-                            keysPressed.Text = "Ctrl" + " + ";
-                            break;
-                        case VirtualKey.Shift:
-                            keyCount++;
-                            keysPressed.Text = "Shift" + " + ";
-                            break;
-                        case VirtualKey.Menu:
-                            keyCount++;
-                            keysPressed.Text = "Alt" + " + ";
-                            break;
-                    }
+                    case VirtualKey.Control:
+                        keyCount++;
+                        keysPressed.Text = "Ctrl" + " + ";
+                        break;
+                    case VirtualKey.Shift:
+                        keyCount++;
+                        keysPressed.Text = "Shift" + " + ";
+                        break;
+                    case VirtualKey.Menu:
+                        keyCount++;
+                        keysPressed.Text = "Alt" + " + ";
+                        break;
                 }
             };
 
