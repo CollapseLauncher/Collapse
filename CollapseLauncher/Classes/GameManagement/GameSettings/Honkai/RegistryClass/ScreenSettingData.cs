@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;

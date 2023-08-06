@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Honkai.Enums;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Text;
