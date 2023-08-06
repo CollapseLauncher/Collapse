@@ -1,0 +1,6 @@
+version: "1.0"
+linter: jetbrains/qodana-dotnet:2023.2-eap
+exclude:
+  - name: All
+    paths:
+      - Hi3Helper.EncTool.Test
