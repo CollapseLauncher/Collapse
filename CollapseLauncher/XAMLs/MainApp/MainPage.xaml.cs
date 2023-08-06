@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Pages;
+using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Http;
@@ -151,11 +151,17 @@ namespace CollapseLauncher
                     Application.Current.Exit();
                     return;
                 }
-
+#if !DEBUG
                 LauncherUpdateWatcher.StartCheckUpdate();
-
+#endif
                 LoadGamePreset();
                 SetThemeParameters();
+
+                VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
+#if DEBUG
+                VersionNumberIndicator.Text += "d";
+#endif
+                if (IsPreview)VersionNumberIndicator.Text +=  "-PRE";
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
@@ -924,7 +930,7 @@ namespace CollapseLauncher
 
             if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
 
                 if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {

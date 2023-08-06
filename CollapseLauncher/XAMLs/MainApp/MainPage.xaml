@@ -23,7 +23,7 @@
             IsBackButtonVisible="Visible"
             IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
             IsSettingsVisible="true"
-            PaneTitle="Menu"
+            PaneTitle="{x:Bind helper:Locale.Lang._MainPage.NavigationMenu}"
             PaneDisplayMode="LeftCompact"
             Visibility="Visible" IsPaneOpen="False"
             Background="{ThemeResource NavigationBarBrush}"
@@ -173,7 +173,7 @@
                         Margin="-16,-12,0,0" Grid.Column="4" Grid.ColumnSpan="2"
                         Background="{ThemeResource AccentColor}" HorizontalAlignment="Right"
                         VerticalAlignment="Center" CornerRadius="3" Visibility="Visible">
-                    <TextBlock Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
+                    <TextBlock x:Name="VersionNumberIndicator" Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
                 </StackPanel>
             </StackPanel>
         </Button>

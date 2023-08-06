@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Hi3Helper.EncTool;
 
 namespace Discord
 {
@@ -210,124 +211,114 @@ namespace Discord
         PushToTalk,
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct User
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct User
     {
         public Int64 Id;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Username;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Username;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
-        public string Discriminator;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] Discriminator;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Avatar;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Avatar;
 
         public bool Bot;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct OAuth2Token
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct OAuth2Token
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string AccessToken;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] AccessToken;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1024)]
-        public string Scopes;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+        public byte[] Scopes;
 
         public Int64 Expires;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ImageHandle
-    {
-        public ImageType Type;
-
-        public Int64 Id;
-
-        public UInt32 Size;
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ImageDimensions
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ImageDimensions
     {
         public UInt32 Width;
 
         public UInt32 Height;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ActivityTimestamps
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ActivityTimestamps
     {
         public Int64 Start;
 
         public Int64 End;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ActivityAssets
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ActivityAssets
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string LargeImage;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] LargeImage;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string LargeText;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] LargeText;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string SmallImage;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] SmallImage;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string SmallText;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] SmallText;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct PartySize
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct PartySize
     {
         public Int32 CurrentSize;
 
         public Int32 MaxSize;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ActivityParty
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ActivityParty
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Id;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Id;
 
         public PartySize Size;
 
         public ActivityPartyPrivacy Privacy;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ActivitySecrets
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ActivitySecrets
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Match;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Match;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Join;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Join;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Spectate;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Spectate;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Activity : IEquatable<Activity>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Activity : IEquatable<Activity>
     {
         public ActivityType Type;
 
         public Int64 ApplicationId;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Name;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string State;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] State;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Details;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Details;
 
         public ActivityTimestamps Timestamps;
 
@@ -341,25 +332,29 @@ namespace Discord
 
         public UInt32 SupportedPlatforms;
 
-        public bool Equals(Activity to)
-        {
-            return to.Type == Type && to.ApplicationId == ApplicationId && to.Name == Name &&
-                to.State == State && to.Details == Details && to.Assets.Equals(Assets) &&
-                to.Party.Equals(Party) && to.Secrets.Equals(Secrets) && to.Instance == Instance &&
-                to.SupportedPlatforms == SupportedPlatforms;
-        }
+        public bool Equals(Activity to) => 
+            to.Type == Type
+         && to.ApplicationId == ApplicationId
+         && to.Name.AsSpan().SequenceEqual(Name)
+         && to.State.AsSpan().SequenceEqual(State)
+         && to.Details.AsSpan().SequenceEqual(Details)
+         && TypeExtensions.IsInstancePropertyEqual(Assets, to.Assets)
+         && TypeExtensions.IsInstancePropertyEqual(Party, to.Party)
+         && TypeExtensions.IsInstancePropertyEqual(Secrets, to.Secrets)
+         && to.Instance == Instance
+         && to.SupportedPlatforms == SupportedPlatforms;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Presence
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Presence
     {
         public Status Status;
 
         public Activity Activity;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Relationship
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Relationship
     {
         public RelationshipType Type;
 
@@ -368,8 +363,8 @@ namespace Discord
         public Presence Presence;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Lobby
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Lobby
     {
         public Int64 Id;
 
@@ -377,16 +372,16 @@ namespace Discord
 
         public Int64 OwnerId;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string Secret;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] Secret;
 
         public UInt32 Capacity;
 
         public bool Locked;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct ImeUnderline
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ImeUnderline
     {
         public Int32 From;
 
@@ -399,8 +394,8 @@ namespace Discord
         public bool Thick;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Rect
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Rect
     {
         public Int32 Left;
 
@@ -411,19 +406,19 @@ namespace Discord
         public Int32 Bottom;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct FileStat
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct FileStat
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string Filename;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
+        public byte[] Filename;
 
         public UInt64 Size;
 
         public UInt64 LastModified;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Entitlement
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Entitlement
     {
         public Int64 Id;
 
@@ -432,39 +427,39 @@ namespace Discord
         public Int64 SkuId;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct SkuPrice
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct SkuPrice
     {
         public UInt32 Amount;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string Currency;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] Currency;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct Sku
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct Sku
     {
         public Int64 Id;
 
         public SkuType Type;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Name;
 
         public SkuPrice Price;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct InputMode
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct InputMode
     {
         public InputModeType Type;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string Shortcut;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] Shortcut;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct UserAchievement
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct UserAchievement
     {
         public Int64 UserId;
 
@@ -472,12 +467,12 @@ namespace Discord
 
         public byte PercentComplete;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string UnlockedAt;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] UnlockedAt;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct LobbyTransaction
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct LobbyTransaction
     {
         [StructLayout(LayoutKind.Sequential)]
         internal partial struct FFIMethods
@@ -492,10 +487,10 @@ namespace Discord
             internal delegate Result SetCapacityMethod(IntPtr methodsPtr, UInt32 capacity);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result SetMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key, [MarshalAs(UnmanagedType.LPStr)]string value);
+            internal delegate Result SetMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key, [MarshalAs(UnmanagedType.LPStr)] string value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result DeleteMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key);
+            internal delegate Result DeleteMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result SetLockedMethod(IntPtr methodsPtr, bool locked);
@@ -603,17 +598,17 @@ namespace Discord
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct LobbyMemberTransaction
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct LobbyMemberTransaction
     {
         [StructLayout(LayoutKind.Sequential)]
         internal partial struct FFIMethods
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result SetMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key, [MarshalAs(UnmanagedType.LPStr)]string value);
+            internal delegate Result SetMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key, [MarshalAs(UnmanagedType.LPStr)] string value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result DeleteMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key);
+            internal delegate Result DeleteMetadataMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key);
 
             internal SetMetadataMethod SetMetadata;
 
@@ -662,17 +657,17 @@ namespace Discord
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public partial struct LobbySearchQuery
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct LobbySearchQuery
     {
         [StructLayout(LayoutKind.Sequential)]
         internal partial struct FFIMethods
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result FilterMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key, LobbySearchComparison comparison, LobbySearchCast cast, [MarshalAs(UnmanagedType.LPStr)]string value);
+            internal delegate Result FilterMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key, LobbySearchComparison comparison, LobbySearchCast cast, [MarshalAs(UnmanagedType.LPStr)] string value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result SortMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string key, LobbySearchCast cast, [MarshalAs(UnmanagedType.LPStr)]string value);
+            internal delegate Result SortMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string key, LobbySearchCast cast, [MarshalAs(UnmanagedType.LPStr)] string value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result LimitMethod(IntPtr methodsPtr, UInt32 limit);
@@ -782,7 +777,7 @@ namespace Discord
             internal delegate Result RunCallbacksMethod(IntPtr methodsPtr);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void SetLogHookCallback(IntPtr ptr, LogLevel level, [MarshalAs(UnmanagedType.LPStr)]string message);
+            internal delegate void SetLogHookCallback(IntPtr ptr, LogLevel level, [MarshalAs(UnmanagedType.LPStr)] string message);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void SetLogHookMethod(IntPtr methodsPtr, LogLevel minLevel, IntPtr callbackData, SetLogHookCallback callback);
@@ -1108,8 +1103,9 @@ namespace Discord
             Marshal.FreeHGlobal(StoreEventsPtr);
             Marshal.FreeHGlobal(VoiceEventsPtr);
             Marshal.FreeHGlobal(AchievementEventsPtr);
-            if (setLogHook.HasValue) {
-               setLogHook.Value.Free();
+            if (setLogHook.HasValue)
+            {
+                setLogHook.Value.Free();
             }
         }
 
@@ -1138,16 +1134,18 @@ namespace Discord
 
         public void SetLogHook(LogLevel minLevel, SetLogHookHandler callback)
         {
-            if (setLogHook.HasValue) {
-               setLogHook.Value.Free();
+            if (setLogHook.HasValue)
+            {
+                setLogHook.Value.Free();
             }
-             setLogHook = GCHandle.Alloc(callback);
+            setLogHook = GCHandle.Alloc(callback);
             Methods.SetLogHook(MethodsPtr, minLevel, GCHandle.ToIntPtr(setLogHook.Value), SetLogHookCallbackImpl);
         }
 
         public ApplicationManager GetApplicationManager()
         {
-            if (ApplicationManagerInstance == null) {
+            if (ApplicationManagerInstance == null)
+            {
                 ApplicationManagerInstance = new ApplicationManager(
                   Methods.GetApplicationManager(MethodsPtr),
                   ApplicationEventsPtr,
@@ -1159,7 +1157,8 @@ namespace Discord
 
         public UserManager GetUserManager()
         {
-            if (UserManagerInstance == null) {
+            if (UserManagerInstance == null)
+            {
                 UserManagerInstance = new UserManager(
                   Methods.GetUserManager(MethodsPtr),
                   UserEventsPtr,
@@ -1171,7 +1170,8 @@ namespace Discord
 
         public ImageManager GetImageManager()
         {
-            if (ImageManagerInstance == null) {
+            if (ImageManagerInstance == null)
+            {
                 ImageManagerInstance = new ImageManager(
                   Methods.GetImageManager(MethodsPtr),
                   ImageEventsPtr,
@@ -1183,7 +1183,8 @@ namespace Discord
 
         public ActivityManager GetActivityManager()
         {
-            if (ActivityManagerInstance == null) {
+            if (ActivityManagerInstance == null)
+            {
                 ActivityManagerInstance = new ActivityManager(
                   Methods.GetActivityManager(MethodsPtr),
                   ActivityEventsPtr,
@@ -1195,7 +1196,8 @@ namespace Discord
 
         public RelationshipManager GetRelationshipManager()
         {
-            if (RelationshipManagerInstance == null) {
+            if (RelationshipManagerInstance == null)
+            {
                 RelationshipManagerInstance = new RelationshipManager(
                   Methods.GetRelationshipManager(MethodsPtr),
                   RelationshipEventsPtr,
@@ -1207,7 +1209,8 @@ namespace Discord
 
         public LobbyManager GetLobbyManager()
         {
-            if (LobbyManagerInstance == null) {
+            if (LobbyManagerInstance == null)
+            {
                 LobbyManagerInstance = new LobbyManager(
                   Methods.GetLobbyManager(MethodsPtr),
                   LobbyEventsPtr,
@@ -1219,7 +1222,8 @@ namespace Discord
 
         public NetworkManager GetNetworkManager()
         {
-            if (NetworkManagerInstance == null) {
+            if (NetworkManagerInstance == null)
+            {
                 NetworkManagerInstance = new NetworkManager(
                   Methods.GetNetworkManager(MethodsPtr),
                   NetworkEventsPtr,
@@ -1231,7 +1235,8 @@ namespace Discord
 
         public OverlayManager GetOverlayManager()
         {
-            if (OverlayManagerInstance == null) {
+            if (OverlayManagerInstance == null)
+            {
                 OverlayManagerInstance = new OverlayManager(
                   Methods.GetOverlayManager(MethodsPtr),
                   OverlayEventsPtr,
@@ -1243,7 +1248,8 @@ namespace Discord
 
         public StorageManager GetStorageManager()
         {
-            if (StorageManagerInstance == null) {
+            if (StorageManagerInstance == null)
+            {
                 StorageManagerInstance = new StorageManager(
                   Methods.GetStorageManager(MethodsPtr),
                   StorageEventsPtr,
@@ -1255,7 +1261,8 @@ namespace Discord
 
         public StoreManager GetStoreManager()
         {
-            if (StoreManagerInstance == null) {
+            if (StoreManagerInstance == null)
+            {
                 StoreManagerInstance = new StoreManager(
                   Methods.GetStoreManager(MethodsPtr),
                   StoreEventsPtr,
@@ -1267,7 +1274,8 @@ namespace Discord
 
         public VoiceManager GetVoiceManager()
         {
-            if (VoiceManagerInstance == null) {
+            if (VoiceManagerInstance == null)
+            {
                 VoiceManagerInstance = new VoiceManager(
                   Methods.GetVoiceManager(MethodsPtr),
                   VoiceEventsPtr,
@@ -1279,7 +1287,8 @@ namespace Discord
 
         public AchievementManager GetAchievementManager()
         {
-            if (AchievementManagerInstance == null) {
+            if (AchievementManagerInstance == null)
+            {
                 AchievementManagerInstance = new AchievementManager(
                   Methods.GetAchievementManager(MethodsPtr),
                   AchievementEventsPtr,
@@ -1325,7 +1334,7 @@ namespace Discord
             internal delegate void GetOAuth2TokenMethod(IntPtr methodsPtr, IntPtr callbackData, GetOAuth2TokenCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void GetTicketCallback(IntPtr ptr, Result result, [MarshalAs(UnmanagedType.LPStr)]ref string data);
+            internal delegate void GetTicketCallback(IntPtr ptr, Result result, [MarshalAs(UnmanagedType.LPStr)] ref string data);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void GetTicketMethod(IntPtr methodsPtr, IntPtr callbackData, GetTicketCallback callback);
@@ -1366,12 +1375,14 @@ namespace Discord
 
         internal ApplicationManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -1504,12 +1515,14 @@ namespace Discord
 
         internal UserManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -1631,12 +1644,14 @@ namespace Discord
 
         internal ImageManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -1688,10 +1703,10 @@ namespace Discord
         internal partial struct FFIEvents
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ActivityJoinHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string secret);
+            internal delegate void ActivityJoinHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] string secret);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ActivitySpectateHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string secret);
+            internal delegate void ActivitySpectateHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] string secret);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void ActivityJoinRequestHandler(IntPtr ptr, ref User user);
@@ -1712,7 +1727,7 @@ namespace Discord
         internal partial struct FFIMethods
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result RegisterCommandMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string command);
+            internal delegate Result RegisterCommandMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string command);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result RegisterSteamMethod(IntPtr methodsPtr, UInt32 steamId);
@@ -1739,7 +1754,7 @@ namespace Discord
             internal delegate void SendInviteCallback(IntPtr ptr, Result result);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void SendInviteMethod(IntPtr methodsPtr, Int64 userId, ActivityActionType type, [MarshalAs(UnmanagedType.LPStr)]string content, IntPtr callbackData, SendInviteCallback callback);
+            internal delegate void SendInviteMethod(IntPtr methodsPtr, Int64 userId, ActivityActionType type, [MarshalAs(UnmanagedType.LPStr)] string content, IntPtr callbackData, SendInviteCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void AcceptInviteCallback(IntPtr ptr, Result result);
@@ -1807,12 +1822,14 @@ namespace Discord
 
         internal ActivityManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -2036,12 +2053,14 @@ namespace Discord
 
         internal RelationshipManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -2204,13 +2223,13 @@ namespace Discord
             internal delegate void ConnectLobbyCallback(IntPtr ptr, Result result, ref Lobby lobby);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ConnectLobbyMethod(IntPtr methodsPtr, Int64 lobbyId, [MarshalAs(UnmanagedType.LPStr)]string secret, IntPtr callbackData, ConnectLobbyCallback callback);
+            internal delegate void ConnectLobbyMethod(IntPtr methodsPtr, Int64 lobbyId, [MarshalAs(UnmanagedType.LPStr)] string secret, IntPtr callbackData, ConnectLobbyCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void ConnectLobbyWithActivitySecretCallback(IntPtr ptr, Result result, ref Lobby lobby);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ConnectLobbyWithActivitySecretMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string activitySecret, IntPtr callbackData, ConnectLobbyWithActivitySecretCallback callback);
+            internal delegate void ConnectLobbyWithActivitySecretMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string activitySecret, IntPtr callbackData, ConnectLobbyWithActivitySecretCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void DisconnectLobbyCallback(IntPtr ptr, Result result);
@@ -2225,7 +2244,7 @@ namespace Discord
             internal delegate Result GetLobbyActivitySecretMethod(IntPtr methodsPtr, Int64 lobbyId, StringBuilder secret);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result GetLobbyMetadataValueMethod(IntPtr methodsPtr, Int64 lobbyId, [MarshalAs(UnmanagedType.LPStr)]string key, StringBuilder value);
+            internal delegate Result GetLobbyMetadataValueMethod(IntPtr methodsPtr, Int64 lobbyId, [MarshalAs(UnmanagedType.LPStr)] string key, StringBuilder value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result GetLobbyMetadataKeyMethod(IntPtr methodsPtr, Int64 lobbyId, Int32 index, StringBuilder key);
@@ -2243,7 +2262,7 @@ namespace Discord
             internal delegate Result GetMemberUserMethod(IntPtr methodsPtr, Int64 lobbyId, Int64 userId, ref User user);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result GetMemberMetadataValueMethod(IntPtr methodsPtr, Int64 lobbyId, Int64 userId, [MarshalAs(UnmanagedType.LPStr)]string key, StringBuilder value);
+            internal delegate Result GetMemberMetadataValueMethod(IntPtr methodsPtr, Int64 lobbyId, Int64 userId, [MarshalAs(UnmanagedType.LPStr)] string key, StringBuilder value);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result GetMemberMetadataKeyMethod(IntPtr methodsPtr, Int64 lobbyId, Int64 userId, Int32 index, StringBuilder key);
@@ -2445,12 +2464,14 @@ namespace Discord
 
         internal LobbyManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -2967,7 +2988,7 @@ namespace Discord
             internal delegate void MessageHandler(IntPtr ptr, UInt64 peerId, byte channelId, IntPtr dataPtr, Int32 dataLen);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void RouteUpdateHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string routeData);
+            internal delegate void RouteUpdateHandler(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] string routeData);
 
             internal MessageHandler OnMessage;
 
@@ -2984,10 +3005,10 @@ namespace Discord
             internal delegate Result FlushMethod(IntPtr methodsPtr);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result OpenPeerMethod(IntPtr methodsPtr, UInt64 peerId, [MarshalAs(UnmanagedType.LPStr)]string routeData);
+            internal delegate Result OpenPeerMethod(IntPtr methodsPtr, UInt64 peerId, [MarshalAs(UnmanagedType.LPStr)] string routeData);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result UpdatePeerMethod(IntPtr methodsPtr, UInt64 peerId, [MarshalAs(UnmanagedType.LPStr)]string routeData);
+            internal delegate Result UpdatePeerMethod(IntPtr methodsPtr, UInt64 peerId, [MarshalAs(UnmanagedType.LPStr)] string routeData);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result ClosePeerMethod(IntPtr methodsPtr, UInt64 peerId);
@@ -3045,12 +3066,14 @@ namespace Discord
 
         internal NetworkManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -3217,7 +3240,7 @@ namespace Discord
             internal delegate void OpenGuildInviteCallback(IntPtr ptr, Result result);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void OpenGuildInviteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string code, IntPtr callbackData, OpenGuildInviteCallback callback);
+            internal delegate void OpenGuildInviteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string code, IntPtr callbackData, OpenGuildInviteCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void OpenVoiceSettingsCallback(IntPtr ptr, Result result);
@@ -3235,10 +3258,10 @@ namespace Discord
             internal delegate void ForwardMessageMethod(IntPtr methodsPtr, IntPtr message);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void KeyEventMethod(IntPtr methodsPtr, bool down, [MarshalAs(UnmanagedType.LPStr)]string keyCode, KeyVariant variant);
+            internal delegate void KeyEventMethod(IntPtr methodsPtr, bool down, [MarshalAs(UnmanagedType.LPStr)] string keyCode, KeyVariant variant);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void CharEventMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string character);
+            internal delegate void CharEventMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string character);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void MouseButtonEventMethod(IntPtr methodsPtr, byte down, Int32 clickCount, MouseButton which, Int32 x, Int32 y);
@@ -3247,10 +3270,10 @@ namespace Discord
             internal delegate void MouseMotionEventMethod(IntPtr methodsPtr, Int32 x, Int32 y);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ImeCommitTextMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string text);
+            internal delegate void ImeCommitTextMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string text);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ImeSetCompositionMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string text, ref ImeUnderline underlines, Int32 from, Int32 to);
+            internal delegate void ImeSetCompositionMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string text, ref ImeUnderline underlines, Int32 from, Int32 to);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void ImeCancelCompositionMethod(IntPtr methodsPtr);
@@ -3344,12 +3367,14 @@ namespace Discord
 
         internal OverlayManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -3547,40 +3572,40 @@ namespace Discord
         internal partial struct FFIMethods
         {
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result ReadMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, byte[] data, Int32 dataLen, ref UInt32 read);
+            internal delegate Result ReadMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, byte[] data, Int32 dataLen, ref UInt32 read);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void ReadAsyncCallback(IntPtr ptr, Result result, IntPtr dataPtr, Int32 dataLen);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ReadAsyncMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, IntPtr callbackData, ReadAsyncCallback callback);
+            internal delegate void ReadAsyncMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr callbackData, ReadAsyncCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void ReadAsyncPartialCallback(IntPtr ptr, Result result, IntPtr dataPtr, Int32 dataLen);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void ReadAsyncPartialMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, UInt64 offset, UInt64 length, IntPtr callbackData, ReadAsyncPartialCallback callback);
+            internal delegate void ReadAsyncPartialMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, UInt64 offset, UInt64 length, IntPtr callbackData, ReadAsyncPartialCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result WriteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, byte[] data, Int32 dataLen);
+            internal delegate Result WriteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, byte[] data, Int32 dataLen);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void WriteAsyncCallback(IntPtr ptr, Result result);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate void WriteAsyncMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, byte[] data, Int32 dataLen, IntPtr callbackData, WriteAsyncCallback callback);
+            internal delegate void WriteAsyncMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, byte[] data, Int32 dataLen, IntPtr callbackData, WriteAsyncCallback callback);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result DeleteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name);
+            internal delegate Result DeleteMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result ExistsMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, ref bool exists);
+            internal delegate Result ExistsMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, ref bool exists);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate void CountMethod(IntPtr methodsPtr, ref Int32 count);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-            internal delegate Result StatMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)]string name, ref FileStat stat);
+            internal delegate Result StatMethod(IntPtr methodsPtr, [MarshalAs(UnmanagedType.LPStr)] string name, ref FileStat stat);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi)]
             internal delegate Result StatAtMethod(IntPtr methodsPtr, Int32 index, ref FileStat stat);
@@ -3636,12 +3661,14 @@ namespace Discord
 
         internal StorageManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -3893,12 +3920,14 @@ namespace Discord
 
         internal StoreManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -4140,12 +4169,14 @@ namespace Discord
 
         internal VoiceManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }
@@ -4347,12 +4378,14 @@ namespace Discord
 
         internal AchievementManager(IntPtr ptr, IntPtr eventsPtr, ref FFIEvents events)
         {
-            if (eventsPtr == IntPtr.Zero) {
+            if (eventsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
             InitEvents(eventsPtr, ref events);
             MethodsPtr = ptr;
-            if (MethodsPtr == IntPtr.Zero) {
+            if (MethodsPtr == IntPtr.Zero)
+            {
                 throw new ResultException(Result.InternalError);
             }
         }

@@ -32,14 +32,14 @@ namespace CollapseLauncher
             }
         }
 
-        public void InitializeWindowProperties()
+        public void InitializeWindowProperties(bool startOOBE = false)
         {
             try
             {
                 InitializeWindowSettings();
                 if (m_appWindow.TitleBar.ExtendsContentIntoTitleBar) m_appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-                if (IsFirstInstall)
+                if (IsFirstInstall || startOOBE == true)
                 {
                     ExtendsContentIntoTitleBar = false;
                     SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);

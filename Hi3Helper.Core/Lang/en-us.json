@@ -77,7 +77,9 @@
     "RegionLoadingSubtitleTooLong": "This is taking a bit longer than expected... Please ensure that your Internet connection is stable!",
     "NavCtrlTitleSettings": "App Settings",
     "NotifNeverAsk": "Never show again",
-    "NotifNoNewNotifs": "No new notifications"
+    "NotifNoNewNotifs": "No new notifications",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities":  "Utilities"
   },
 
   "_HomePage": {
@@ -217,7 +219,7 @@
 
     "Graphics_Title": "Graphics Settings",
     "Graphics_ResolutionPanel": "Game Resolution",
-    "Graphics_Borderless": "Borderless Screen",
+    "Graphics_Borderless": "Use Borderless Windowed Mode",
     "Graphics_Fullscreen": "Fullscreen",
     "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
     "Graphics_ResSelectPlaceholder": "Select",

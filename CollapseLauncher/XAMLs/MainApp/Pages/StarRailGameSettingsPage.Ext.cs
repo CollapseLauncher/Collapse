@@ -17,17 +17,28 @@ namespace CollapseLauncher.Pages
                 if (value)
                 {
                     GameResolutionFullscreenExclusive.IsEnabled = !IsCustomResolutionEnabled;
+                    GameResolutionBorderless.IsChecked = false;
                     return;
                 }
                 GameResolutionFullscreenExclusive.IsEnabled = false;
                 GameResolutionFullscreenExclusive.IsChecked = false;
+                GameResolutionBorderless.IsEnabled = true;
             }
         }
 
         public bool IsBorderlessEnabled
         {
             get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
-            set => Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+            set 
+            {
+                Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
+                if (value)
+                {
+                    GameResolutionFullscreen.IsEnabled = false;
+                    GameResolutionFullscreen.IsChecked = false;
+                }
+                GameResolutionFullscreen.IsEnabled = true;
+            }
         }
 
         public bool IsCustomResolutionEnabled
