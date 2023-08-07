@@ -53,43 +53,25 @@ namespace Hi3Helper.Preset
 
         public static void LoadConfigV2()
         {
-            string stamp = File.ReadAllText(AppGameConfigV2StampPath); //this will be useless once we fully implement this
-
-            string other = null, buildMetadata = "\"MetadataV2\":{"; //initialize two strings, one that will contain other info, one games metadata
-            foreach (string s in AppGameConfigV2MetadataPath) 
+            string stamp = File.ReadAllText(AppGameConfigV2StampPath);
+            ConfigV2GameCategory = new();
+            foreach (string s in AppGameConfigV2MetadataPath)
             {
-                string[] temp = File.ReadAllText(s).Split("#"); //read the output and split it in x parts divided by # 
-                //Split 0 is empty
-                //Split 1 contains timestamp
-                //Split 2 contains MetadataV2 or anything else
-                //Split 3 actual JSON content
-                if (temp[2].Contains("MetadataV2"))
-                {
-                    //if it's metadata add it to buildMetada
-                    buildMetadata = $"{buildMetadata}{temp[3]},"; 
-                }
-                else
-                {
-                    //else add it to other info
-                    other =$"{other}{temp[3]},";
-                }
+                string content = File.ReadAllText(s);
+                if (string.IsNullOrEmpty(content))
+                    throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
+                Metadata tempConfig = (Metadata)JsonSerializer
+                    .Deserialize(content, typeof(Metadata), CoreLibraryJSONContext.Default);
+                if (tempConfig is null) throw new NullReferenceException("Metadata config is broken");
+                ConfigV2GameCategory.AddRange(tempConfig.MetadataV2.Keys.ToList());
+                ConfigV2.AddStrings(tempConfig);
             }
-            //build complete string to deserialize
-            string content = "{\n" + buildMetadata.Remove(buildMetadata.LastIndexOf(",")) +"\n}," + other.Remove(other.LastIndexOf(",")) + "\n}";
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
-            if (string.IsNullOrEmpty(content)) throw new NullReferenceException($"{AppGameConfigV2MetadataPath} file seems to be empty. Please remove it and restart the launcher!");
-
-            ConfigV2 = (Metadata)JsonSerializer
-                .Deserialize(content, typeof(Metadata), CoreLibraryJSONContext.Default);
-
-            if (ConfigV2 is null) throw new NullReferenceException("Metadata config is broken");
-
-            ConfigV2GameCategory = ConfigV2.MetadataV2.Keys.ToList();
 
             ConfigV2LastUpdate = ((Stamp)JsonSerializer
                 .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)).LastUpdated;
 
-            ConfigV2.DecryptStrings();
+            //ConfigV2.DecryptStrings();//
             ConfigV2.GenerateHashID();
         }
 
