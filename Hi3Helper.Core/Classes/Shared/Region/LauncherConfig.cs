@@ -108,7 +108,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
 
-        public const long AppDiscordApplicationID = 1089467141096484955;
+        public const long AppDiscordApplicationID = 1138126643592970251;
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
         public const long AppDiscordApplicationID_GI = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;

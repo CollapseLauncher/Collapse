@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "다시 시도하는 데 예상보다 시간이 더 걸리고 있어요. 연결 상태가 안정적인지 확인해 주세요!",
     "NavCtrlTitleSettings": "앱 설정",
     "NotifNeverAsk": "다시 표시하지 않기",
-    "NotifNoNewNotifs": "No new notifications"
+    "NotifNoNewNotifs": "No new notifications",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "런처",

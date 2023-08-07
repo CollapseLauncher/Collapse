@@ -24,15 +24,15 @@
 
 <p align="center">
     <a href="https://crowdin.com/project/collapse-launcher" target="_blank">
-       <img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Collapse Launcher Localization at Crowdin" Height=76/>
+       <img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Collapse Launcher Localization at Crowdin" Height=68/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
-        <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server"/>
+        <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server" Width=280/>
     </a>
     &nbsp;
     <a href="https://trello.com/b/rsqrnn15/collapse-launcher-tracker" target="_blank">
-        <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Collapse Launcher Trello board" Height=76/>
+        <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Collapse Launcher Trello board" Height=66/>
     </a>
 </p>
 
