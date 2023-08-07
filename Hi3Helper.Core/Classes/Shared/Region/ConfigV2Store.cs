@@ -63,7 +63,7 @@ namespace Hi3Helper.Preset
                 Metadata tempConfig = (Metadata)JsonSerializer
                     .Deserialize(content, typeof(Metadata), CoreLibraryJSONContext.Default);
                 if (tempConfig is null) throw new NullReferenceException("Metadata config is broken");
-                ConfigV2GameCategory.AddRange(tempConfig.MetadataV2.Keys.ToList());
+                if(content.Contains("MetadataV2")) ConfigV2GameCategory.AddRange(tempConfig.MetadataV2.Keys.ToList());
                 ConfigV2.AddStrings(tempConfig);
             }
             if (string.IsNullOrEmpty(stamp)) throw new NullReferenceException($"{AppGameConfigV2StampPath} file seems to be empty. Please remove it and restart the launcher!");
@@ -71,6 +71,7 @@ namespace Hi3Helper.Preset
             ConfigV2LastUpdate = ((Stamp)JsonSerializer
                 .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)).LastUpdated;
 
+            ConfigV2.DecryptStrings();
             ConfigV2.GenerateHashID();
         }
 
