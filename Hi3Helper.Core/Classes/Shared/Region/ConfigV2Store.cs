@@ -71,7 +71,6 @@ namespace Hi3Helper.Preset
             ConfigV2LastUpdate = ((Stamp)JsonSerializer
                 .Deserialize(stamp, typeof(Stamp), CoreLibraryJSONContext.Default)).LastUpdated;
 
-            //ConfigV2.DecryptStrings();//
             ConfigV2.GenerateHashID();
         }
 
