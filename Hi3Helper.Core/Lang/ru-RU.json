@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "Это занимает немного больше времени, чем ожидалось... Пожалуйста, убедитесь, что Ваше подключение к интернету стабильно!",
     "NavCtrlTitleSettings": "Настройки приложения",
     "NotifNeverAsk": "Больше не показывать",
-    "NotifNoNewNotifs": "No new notifications"
+    "NotifNoNewNotifs": "No new notifications",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "Лаунчер",

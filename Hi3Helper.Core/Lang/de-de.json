@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "Das dauert etwas länger als erwartet... Bitte stelle sicher, dass deine Internetverbindung stabil ist!",
     "NavCtrlTitleSettings": "App Einstellungen",
     "NotifNeverAsk": "Nicht mehr anzeigen",
-    "NotifNoNewNotifs": "No new notifications"
+    "NotifNoNewNotifs": "No new notifications",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "Launcher",

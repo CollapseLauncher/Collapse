@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "這比預期中的還要久… 請確認你的網際網路連線是穩定的！",
     "NavCtrlTitleSettings": "應用設定",
     "NotifNeverAsk": "不再顯示",
-    "NotifNoNewNotifs": "沒有新的通知"
+    "NotifNoNewNotifs": "沒有新的通知",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "啟動器",
@@ -140,7 +142,7 @@
     "ListCol6": "R.CRC",
     "Status1": "點擊「快速檢查」或「完整檢查」來驗證遊戲檔案的完整性。",
     "Status2": "正在載入索引…",
-    "Status3": "{0} 個檔案可能已損壞（共 {1} 個）。點擊「修復遊戲」以開始修復作業。",
+    "Status3": "{0} 個檔案可能已損壞（共 {1} ）。點擊「修復遊戲」以開始修復作業。",
     "Status4": "沒有檢測到已損壞的文件！",
     "Status5": "正在檢查 Blk：{0}",
     "Status6": "正在檢查：{0}",

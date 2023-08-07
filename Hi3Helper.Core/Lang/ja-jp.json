@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "再試行に時間がかかっています...インターネット接続の安定を確認してください！",
     "NavCtrlTitleSettings": "ランチャー設定",
     "NotifNeverAsk": "次回から表示しない",
-    "NotifNoNewNotifs": "通知はありません"
+    "NotifNoNewNotifs": "通知はありません",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "ランチャー",

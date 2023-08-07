@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "Proses memakan waktu lebih lama dari perkiraan. Pastikan bahwa koneksimu stabil.",
     "NavCtrlTitleSettings": "Pengaturan App",
     "NotifNeverAsk": "Jangan munculkan ini lagi",
-    "NotifNoNewNotifs": "Tidak ada notifikasi baru"
+    "NotifNoNewNotifs": "Tidak ada notifikasi baru",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Perkakas"
   },
   "_HomePage": {
     "PageTitle": "Launcher",

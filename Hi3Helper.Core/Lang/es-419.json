@@ -73,7 +73,9 @@
     "RegionLoadingSubtitleTooLong": "Esto está tardando un poco más de lo esperado... ¡Por favor asegúrate de que tu conexión a Internet es estable!",
     "NavCtrlTitleSettings": "Ajustes de la Aplicación",
     "NotifNeverAsk": "No mostrar de nuevo",
-    "NotifNoNewNotifs": "No new notifications"
+    "NotifNoNewNotifs": "No new notifications",
+    "NavigationMenu": "Menu",
+    "NavigationUtilities": "Utilities"
   },
   "_HomePage": {
     "PageTitle": "Lanzador",
