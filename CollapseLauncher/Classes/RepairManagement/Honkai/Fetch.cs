@@ -245,7 +245,7 @@ namespace CollapseLauncher
         {
             // Initialize keyTool
             mhyEncTool keyTool = new mhyEncTool();
-            keyTool.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+            keyTool.InitMasterKey(ConfigV2.MasterKey, (int)ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
             // Return the key
             return keyTool.GetMasterKey();

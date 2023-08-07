@@ -91,7 +91,7 @@ namespace CollapseLauncher
                     if (_gameVersionManager.GamePreset.DispatcherKey != null)
                     {
                         mhyEncTool Decryptor = new mhyEncTool();
-                        Decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+                        Decryptor.InitMasterKey(ConfigV2.MasterKey, (int)ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
                         key = _gameVersionManager.GamePreset.DispatcherKey;
                         Decryptor.DecryptStringWithMasterKey(ref key);

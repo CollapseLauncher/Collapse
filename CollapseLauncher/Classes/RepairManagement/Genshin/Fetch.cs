@@ -331,7 +331,7 @@ namespace CollapseLauncher
             YSDispatchDec decryptor = new YSDispatchDec();
 
             // Initialize the master key
-            decryptor.InitMasterKey(ConfigV2.MasterKey, ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
+            decryptor.InitMasterKey(ConfigV2.MasterKey, (int)ConfigV2.MasterKeyBitLength, RSAEncryptionPadding.Pkcs1);
 
             // Return the decryptor
             return decryptor;
