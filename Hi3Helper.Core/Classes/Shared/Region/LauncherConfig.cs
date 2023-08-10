@@ -38,7 +38,7 @@ namespace Hi3Helper.Shared.Region
             new CDNURLProperty
             {
                 Name = "Cloudflare",
-                URLPrefix = "https://r2-render.bagelnl.my.id/cl-cdn",
+                URLPrefix = "https://r2.bagelnl.my.id/cl-cdn",
                 Description = Lang._Misc.CDNDescription_Cloudflare,
                 PartialDownloadSupport = true
             },
@@ -50,14 +50,14 @@ namespace Hi3Helper.Shared.Region
             },
             new CDNURLProperty
             {
-                Name = "Statically",
+                Name = "Statically (Deprecated)",
                 URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
                 Description = Lang._Misc.CDNDescription_Statically,
                 PartialDownloadSupport = true
             },
             new CDNURLProperty
             {
-                Name = "jsDelivr",
+                Name = "jsDelivr (Deprecated)",
                 URLPrefix = "https://cdn.jsdelivr.net/gh/neon-nyan/CollapseLauncher-ReleaseRepo@latest",
                 Description = Lang._Misc.CDNDescription_jsDelivr,
                 PartialDownloadSupport = true
