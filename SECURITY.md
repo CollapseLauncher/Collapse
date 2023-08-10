@@ -19,4 +19,4 @@ Please report any vulnerability regarding Collapse Launcher here on Issues with 
  - @bagusnl(`bagusnl`)
  - @muscularcandy67(`muscularcandy67`)
 
-Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time in such that its bound to any IRL situations we face.
+Please allow some time for us to process your report and get back to you at timely manner. We are volunteers and maintain this project in our free time and as such, real life situations take priority over this project.
