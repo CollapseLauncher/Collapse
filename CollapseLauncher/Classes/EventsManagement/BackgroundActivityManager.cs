@@ -108,6 +108,7 @@ namespace CollapseLauncher
                 Width = 64,
                 Height = 64
             };
+            progressLogoContainer.Children.Add(processLogo);
 
             StackPanel progressStatusContainer = new StackPanel()
             {
