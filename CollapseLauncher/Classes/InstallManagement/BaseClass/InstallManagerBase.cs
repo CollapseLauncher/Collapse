@@ -454,10 +454,8 @@ namespace CollapseLauncher.InstallManager.Base
                         // Check if the read stream exist
                         if (segment.IsReadStreamExist(_downloadThreadCount))
                         {
-                            // Get the stream of the segment and using (and auto dispose) it
-                            using Stream segmentStream = segment.GetReadStream(_downloadThreadCount);
-                            // Return the size/length of the stream
-                            return segmentStream.Length;
+                            // Return the size/length of the chunk stream
+                            return segment.GetStreamLength(_downloadThreadCount);
                         }
                         // If not, then return 0
                         return 0;
@@ -467,10 +465,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // If segment is none, check if the single stream exist
                 if (asset.IsReadStreamExist(_downloadThreadCount))
                 {
-                    // If yes, then using single stream
-                    using Stream singleStream = asset.GetReadStream(_downloadThreadCount);
-                    // Return the size of the stream
-                    return singleStream.Length;
+                    // If yes, then return the size of the single stream
+                    return asset.GetStreamLength(_downloadThreadCount);
                 }
 
                 // If neither of both exist, then return 0
