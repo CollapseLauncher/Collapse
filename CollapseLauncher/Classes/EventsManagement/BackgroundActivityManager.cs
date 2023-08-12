@@ -99,11 +99,11 @@ namespace CollapseLauncher
             {
                 Source = new BitmapImage(new Uri(CurrentGameProperty._GameVersion.GameType switch
                 {
-                    GameType.Honkai => "ms-appx:///XAMLs/Prototype/honkai-logo.png",
-                    GameType.Genshin => "ms-appx:///XAMLs/Prototype/genshin-logo.png",
-                    GameType.StarRail => "ms-appx:///XAMLs/Prototype/zenless-logo.png",
-                    GameType.Zenless => "ms-appx:///XAMLs/Prototype/honkai-logo.png",
-                    _ => "ms-appx:///XAMLs/Prototype/unknown-logo.png"
+                    GameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                    GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
+                    GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
+                    GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
+                    _ => "ms-appx:///Assets/Images/GameLogo/unknown-logo.png"
                 })),
                 Width = 64,
                 Height = 64
