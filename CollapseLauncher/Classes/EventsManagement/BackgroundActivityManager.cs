@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -9,8 +11,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using CollapseLauncher.Statics;
-using Hi3Helper.Preset;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
@@ -22,7 +22,7 @@ namespace CollapseLauncher
         public static Dictionary<int, IBackgroundActivity> BackgroundActivities = new Dictionary<int, IBackgroundActivity>();
 
         private static GamePresetProperty CurrentGameProperty;
-        
+
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
             if (!BackgroundActivities.ContainsKey(hashID))
@@ -93,7 +93,7 @@ namespace CollapseLauncher
             };
             _parentGrid.Children.Add(progressLogoContainer);
             Grid.SetColumn(progressLogoContainer, 0);
-            
+
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             switch (CurrentGameProperty._GameVersion.GameType)
             {
@@ -239,7 +239,7 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
-            activity.ProgressChanged += async (_, args) => activity.Dispatch(() =>
+            EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = async (_, args) => activity.Dispatch(() =>
             {
                 progressBar.Value = args.ProgressTotalPercentage;
                 progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
@@ -247,7 +247,7 @@ namespace CollapseLauncher
                 progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
             });
 
-            activity.StatusChanged += async (_, args) => activity.Dispatch(() =>
+            EventHandler<TotalPerfileStatus> StatusChangedEventHandler = async (_, args) => activity.Dispatch(() =>
             {
                 progressLeftTitle.Text = args.ActivityStatus;
                 if (args.IsCanceled)
@@ -279,7 +279,15 @@ namespace CollapseLauncher
                 }
             });
 
-            _parentNotifUI.Closing += (_, _) => Detach(hashID);
+            activity.ProgressChanged += (obj, sender) => ProgressChangedEventHandler(obj, sender);
+            activity.StatusChanged += (obj, sender) => StatusChangedEventHandler(obj, sender);
+
+            _parentNotifUI.Closing += (_, _) =>
+            {
+                activity.ProgressChanged -= (obj, sender) => ProgressChangedEventHandler(obj, sender);
+                activity.StatusChanged -= (obj, sender) => StatusChangedEventHandler(obj, sender);
+                Detach(hashID);
+            };
             _parentContainer.Children.Add(cancelButton);
 
             NotificationSender.SendCustomNotification(hashID, _parentNotifUI);
