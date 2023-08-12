@@ -95,54 +95,19 @@ namespace CollapseLauncher
             Grid.SetColumn(progressLogoContainer, 0);
 
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            switch (CurrentGameProperty._GameVersion.GameType)
+            Image processLogo = new Image()
             {
-                case GameType.Honkai:
-                    Image progressLogoHonkai = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/honkai-logo.png")),
-                        Width = 64,
-                        Height = 64
-                    };
-                    progressLogoContainer.Children.Add(progressLogoHonkai);
-                    break;
-                case GameType.Genshin:
-                    Image progressLogoGenshin = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/genshin-logo.png")),
-                        Width = 64,
-                        Height = 64
-                    };
-                    progressLogoContainer.Children.Add(progressLogoGenshin);
-                    break;
-                case GameType.StarRail:
-                    Image progressLogoStarRail = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/starrail-logo.png")),
-                        Width = 64,
-                        Height = 64
-                    };
-                    progressLogoContainer.Children.Add(progressLogoStarRail);
-                    break;
-                case GameType.Zenless:
-                    Image progressLogoZenless = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/zenless-logo.png")),
-                        Width = 64,
-                        Height = 64
-                    };
-                    progressLogoContainer.Children.Add(progressLogoZenless);
-                    break;
-                case GameType.Unknown:
-                    Image progressLogoUnknown = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("ms-appx:///XAMLs/Prototype/honkai-logo.png")),
-                        Width = 64,
-                        Height = 64
-                    };
-                    progressLogoContainer.Children.Add(progressLogoUnknown);
-                    break;
-            }
+                Source = new BitmapImage(new Uri(CurrentGameProperty._GameVersion.GameType switch
+                {
+                    GameType.Honkai => "ms-appx:///XAMLs/Prototype/honkai-logo.png",
+                    GameType.Genshin => "ms-appx:///XAMLs/Prototype/genshin-logo.png",
+                    GameType.StarRail => "ms-appx:///XAMLs/Prototype/zenless-logo.png",
+                    GameType.Zenless => "ms-appx:///XAMLs/Prototype/honkai-logo.png",
+                    _ => "ms-appx:///XAMLs/Prototype/unknown-logo.png"
+                })),
+                Width = 64,
+                Height = 64
+            };
 
             StackPanel progressStatusContainer = new StackPanel()
             {
