@@ -581,10 +581,6 @@ namespace CollapseLauncher.Pages
                     return;
             }
 
-            if (GameInstallationState == GameInstallStateEnum.InstalledHavePreload)
-            {
-                // TODO
-            }
             if ((GameInstallationState == GameInstallStateEnum.NeedsUpdate
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
@@ -697,6 +693,27 @@ namespace CollapseLauncher.Pages
         #region Preload
         private async void SpawnPreloadBox()
         {
+            if (CurrentGameProperty._GameInstall.IsRunning)
+            {
+                // TODO
+                PauseDownloadPreBtn.Visibility = Visibility.Visible;
+                ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
+                PreloadDialogBox.IsClosable = false;
+                PreloadDialogBox.Margin = new Thickness(0, 16, 0, -32);
+
+                IsSkippingUpdateCheck = true;
+                DownloadPreBtn.Visibility = Visibility.Collapsed;
+                ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                ProgressPreButtonGrid.Visibility = Visibility.Visible;
+                PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+
+                CurrentGameProperty._GameInstall.ProgressChanged += PreloadDownloadProgress;
+                CurrentGameProperty._GameInstall.StatusChanged += PreloadDownloadStatus;
+                PreloadDialogBox.IsOpen = true;
+                return;
+            }
+
             PreloadDialogBox.Translation += Shadow48;
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
 
