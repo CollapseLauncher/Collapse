@@ -700,7 +700,7 @@ namespace CollapseLauncher.Pages
                 PauseDownloadPreBtn.Visibility = Visibility.Visible;
                 ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
                 PreloadDialogBox.IsClosable = false;
-                PreloadDialogBox.Margin = new Thickness(0, 16, 0, -32);
+                PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
 
                 IsSkippingUpdateCheck = true;
                 DownloadPreBtn.Visibility = Visibility.Collapsed;
