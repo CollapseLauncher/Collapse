@@ -38,7 +38,6 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
-        private string PreviousTag = string.Empty;
         private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
 
         private uint MaxRetry = 5; // Max 5 times of retry attempt
@@ -48,6 +47,7 @@ namespace CollapseLauncher
         private string RegionToChangeName;
         private IList<object> LastNavigationItem;
         private HomeMenuPanel LastRegionNewsProp;
+        public static string PreviousTag = string.Empty;
 
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {

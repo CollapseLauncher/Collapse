@@ -66,6 +66,7 @@ namespace CollapseLauncher.Pages
             if (!IsPageUnload
              || GamePropertyVault.GetCurrentGameProperty()._GamePreset.HashID == CurrentGameProperty._GamePreset.HashID)
             {
+                MainPage.PreviousTagString.Add(MainPage.PreviousTag);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
         }

@@ -34,6 +34,7 @@ namespace CollapseLauncher
         private bool LockRegionChangeBtn;
         private bool IsLoadFrameCompleted = true;
         public static bool IsChangeDragArea = true;
+        public static List<string> PreviousTagString = new List<string>();
 
         private RectInt32[] DragAreaMode_Normal
         {
@@ -1024,8 +1025,6 @@ namespace CollapseLauncher
                     break;
             }
         }
-
-        private List<string> PreviousTagString = new List<string>();
 
         void Navigate(Type sourceType, string tagStr)
         {
