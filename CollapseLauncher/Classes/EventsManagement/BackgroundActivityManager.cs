@@ -248,7 +248,7 @@ namespace CollapseLauncher
 
             activity.ProgressChanged += (obj, sender) => ProgressChangedEventHandler(obj, sender);
             activity.StatusChanged += (obj, sender) => StatusChangedEventHandler(obj, sender);
-            activity.DisposingTrigger += (obj, sender) =>
+            activity.FlushingTrigger += (obj, sender) =>
             {
                 activity.ProgressChanged -= (obj, sender) => ProgressChangedEventHandler(obj, sender);
                 activity.StatusChanged -= (obj, sender) => StatusChangedEventHandler(obj, sender);
