@@ -33,9 +33,6 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="XAMLs\Prototype\honkai-logo.png" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
