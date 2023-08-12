@@ -64,22 +64,6 @@
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
-		<Content Include="XAMLs\Prototype\honkai-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\genshin-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\starrail-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\zenless-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		
 		<None Include="..\.editorconfig" Link=".editorconfig" />
     
@@ -93,6 +77,22 @@
     
 		<Content Update="Assets\Images\default.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\genshin-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\honkai-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\starrail-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\zenless-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
 		<Content Update="Assets\Images\PaimonSleep.png">
