@@ -490,7 +490,10 @@
 
     "CategoryTitle_Downloading": "Downloading game: {0}",
     "CategoryTitle_DownloadingPreload": "Downloading preload: {0}",
-    "CategoryTitle_Updating": "Updating game: {0}"
+    "CategoryTitle_Updating": "Updating game: {0}",
+
+    "NotifBadge_Completed": "[Completed] {0}",
+    "NotifBadge_Error": "[Error/Canceled] {0}"
   },
 
   "_Dialogs": {

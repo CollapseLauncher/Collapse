@@ -256,7 +256,7 @@ namespace CollapseLauncher
                     cancelButton.IsEnabled = false;
                     cancelButton.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Error;
-                    _parentNotifUI.Title = "[Error] " + activityTitle;
+                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Error, activityTitle);
                     _parentNotifUI.IsClosable = true;
                     _parentContainer.Margin = containerClosableMargin;
                 }
@@ -265,7 +265,7 @@ namespace CollapseLauncher
                     cancelButton.IsEnabled = false;
                     cancelButton.Visibility = Visibility.Collapsed;
                     _parentNotifUI.Severity = InfoBarSeverity.Success;
-                    _parentNotifUI.Title = "[Completed] " + activityTitle;
+                    _parentNotifUI.Title = string.Format(Lang._BackgroundNotification.NotifBadge_Completed, activityTitle);
                     _parentNotifUI.IsClosable = true;
                     _parentContainer.Margin = containerClosableMargin;
                 }
