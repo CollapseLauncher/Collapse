@@ -239,7 +239,7 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
-            activity.ProgressChanged += (_, args) => activity.Dispatch(() =>
+            activity.ProgressChanged += async (_, args) => activity.Dispatch(() =>
             {
                 progressBar.Value = args.ProgressTotalPercentage;
                 progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
@@ -247,7 +247,7 @@ namespace CollapseLauncher
                 progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
             });
 
-            activity.StatusChanged += (_, args) => activity.Dispatch(() =>
+            activity.StatusChanged += async (_, args) => activity.Dispatch(() =>
             {
                 progressLeftTitle.Text = args.ActivityStatus;
                 if (args.IsCanceled)

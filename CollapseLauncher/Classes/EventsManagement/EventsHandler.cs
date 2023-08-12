@@ -5,14 +5,12 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -120,7 +118,7 @@ namespace CollapseLauncher
         public GameVersion NewVersionName { get; set; }
         public bool QuitFromUpdateMenu { get; set; } = false;
     }
-#endregion
+    #endregion
     #region ThemeChangeRegion
     internal static class ThemeChanger
     {

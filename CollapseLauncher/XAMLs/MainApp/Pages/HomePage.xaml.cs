@@ -58,12 +58,13 @@ namespace CollapseLauncher.Pages
             this.Loaded += StartLoadedRoutine;
         }
 
-        private bool IsPageUnload = false;
+        private bool IsPageUnload { get; set; }
         private bool NeedShowEventIcon = true;
 
         private void ReturnToHomePage()
         {
-            if (!IsPageUnload)
+            if (!IsPageUnload
+             || GamePropertyVault.GetCurrentGameProperty()._GamePreset.HashID == CurrentGameProperty._GamePreset.HashID)
             {
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
@@ -610,7 +611,6 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
-
         }
 
         private async void CheckRunningGameInstance(CancellationToken Token)

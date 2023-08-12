@@ -649,7 +649,7 @@ namespace CollapseLauncher
                     NewNotificationCountBadge.Value--;
                 }
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                NewNotificationCountBadge.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
             Container.Children.Add(Notification);
