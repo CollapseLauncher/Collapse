@@ -484,6 +484,15 @@
     "DiscordRP_Region": "Region:"
   },
 
+  "_BackgroundNotification": {
+    "LoadingTitle": "Loading activity...",
+    "Placeholder": "-",
+
+    "CategoryTitle_Downloading": "Downloading game: {0}",
+    "CategoryTitle_DownloadingPreload": "Downloading preload: {0}",
+    "CategoryTitle_Updating": "Updating game: {0}"
+  },
+
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "Warning: Delta Patch Update is Detected!",
     "DeltaPatchDetectedSubtitle": "Delta patch will be used to update your game from {0} to {1}.\r\nRemember that you may still need to download some files in-game.\r\n\r\nDo you wish to proceed?",

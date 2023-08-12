@@ -171,24 +171,24 @@ namespace CollapseLauncher
             TextBlock progressLeftTitle = new TextBlock()
             {
                 Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
-                Text = "Downloading Package: 1 / 3"
+                Text = Lang._BackgroundNotification.LoadingTitle,
             };
             TextBlock progressLeftSubtitle = new TextBlock()
             {
                 Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
-                Text = "Speed: 69.42 MB/s"
+                Text = Lang._BackgroundNotification.Placeholder,
             };
 
             TextBlock progressRightTitle = new TextBlock()
             {
                 Style = Application.Current.Resources["BodyStrongTextBlockStyle"] as Style,
-                Text = "Estimated Time: 0h 32m left",
+                Text = Lang._BackgroundNotification.Placeholder,
                 HorizontalAlignment = HorizontalAlignment.Right
             };
             TextBlock progressRightSubtitle = new TextBlock()
             {
                 Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
-                Text = "Progress: 69.42%",
+                Text = Lang._BackgroundNotification.Placeholder,
                 HorizontalAlignment = HorizontalAlignment.Right
             };
             progressStatusGrid.Children.Add(progressLeftTitle);
@@ -200,7 +200,7 @@ namespace CollapseLauncher
             Grid.SetColumn(progressRightTitle, 1); Grid.SetRow(progressRightTitle, 0);
             Grid.SetColumn(progressRightSubtitle, 1); Grid.SetRow(progressRightSubtitle, 1);
 
-            ProgressBar progressBar = new ProgressBar() { Minimum = 0, Maximum = 100, Value = 69.42 };
+            ProgressBar progressBar = new ProgressBar() { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true };
             progressStatusContainer.Children.Add(progressBar);
 
             Button cancelButton = new Button()
@@ -249,6 +249,7 @@ namespace CollapseLauncher
 
             EventHandler<TotalPerfileStatus> StatusChangedEventHandler = async (_, args) => activity.Dispatch(() =>
             {
+                progressBar.IsIndeterminate = args.IsProgressTotalIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;
                 if (args.IsCanceled)
                 {

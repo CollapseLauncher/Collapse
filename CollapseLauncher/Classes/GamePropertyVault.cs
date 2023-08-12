@@ -217,7 +217,13 @@ namespace CollapseLauncher.Statics
             GamePresetProperty GameProperty = Vault[HashID];
             if (GameProperty._GameInstall.IsRunning)
             {
-                string actTitle = $"Downloading game: {GameProperty._GameVersion.GamePreset.GameName}";
+                string actTitle = string.Format(GameProperty._GameVersion.GetGameState() switch
+                {
+                    GameInstallStateEnum.InstalledHavePreload => Locale.Lang._BackgroundNotification.CategoryTitle_DownloadingPreload,
+                    GameInstallStateEnum.NeedsUpdate => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
+                    _ => Locale.Lang._BackgroundNotification.CategoryTitle_Downloading
+                }, GameProperty._GameVersion.GamePreset.GameName);
+
                 string actSubtitle = GameProperty._GameVersion.GamePreset.ZoneName;
                 BackgroundActivityManager.Attach(HashID, GameProperty._GameInstall, actTitle, actSubtitle);
             }
