@@ -208,6 +208,27 @@ namespace CollapseLauncher
             if (_gameAPIProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
             if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
 #endif
+
+#if SIMULATEPRELOAD
+            if (_gameAPIProp.data.pre_download_game == null)
+            {
+                LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
+                RegionResourceVersion simDataLatest = _gameAPIProp.data.game.latest.Copy();
+                List<RegionResourceVersion> simDataDiff = _gameAPIProp.data.game.diffs.Copy();
+
+                simDataLatest.version = new GameVersion(simDataLatest.version).GetIncrementedVersion().ToString();
+                _gameAPIProp.data.pre_download_game = new RegionResourceLatest() { latest = simDataLatest };
+
+                if (simDataDiff == null || simDataDiff.Count == 0) return;
+                foreach (RegionResourceVersion diff in simDataDiff)
+                {
+                    diff.version = new GameVersion(diff.version)
+                        .GetIncrementedVersion()
+                        .ToString();
+                }
+                _gameAPIProp.data.pre_download_game.diffs = simDataDiff;
+            }
+#endif
         }
 
         private async ValueTask<RegionResourceProp> TryGetMultiLangResourceProp(CancellationToken Token, PresetConfigV2 Preset)
