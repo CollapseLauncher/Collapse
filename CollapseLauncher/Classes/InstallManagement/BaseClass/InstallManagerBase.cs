@@ -63,7 +63,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Public Properties
         public bool IsRunning { get; protected set; }
-        public event EventHandler DisposingTrigger;
+        public event EventHandler FlushingTrigger;
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
@@ -82,7 +82,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         public void Dispose()
         {
-            DisposingTrigger?.Invoke(this, EventArgs.Empty);
             _httpClient?.Dispose();
             _gameRepairTool?.Dispose();
             _token?.Cancel();
@@ -92,6 +91,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual void Flush()
         {
+            FlushingTrigger?.Invoke(this, EventArgs.Empty);
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
             UpdateCompletenessStatus(CompletenessStatus.Idle);
