@@ -113,33 +113,19 @@ namespace CollapseLauncher.InstallManager
             return GetCombinedStreamFromPackageAsset(count);
         }
 
-        public void DeleteFile(int count)
+        public long GetStreamLength(int count)
         {
-            string lastFile = PathOutput;
-            try
+            // Get the file info of the single file
+            FileInfo fileInfo = new FileInfo(PathOutput);
+            // Check if the file exist and the length is equal to the size
+            if (fileInfo.Exists && fileInfo.Length == Size)
             {
-                FileInfo fileInfo = new FileInfo(PathOutput);
-                if (fileInfo.Exists && fileInfo.Length == Size)
-                {
-                    fileInfo.Delete();
-                }
+                // Return the stream for read
+                return fileInfo.Length;
+            }
 
-                for (int i = 0; i < count; i++)
-                {
-                    long ID = Http.GetHashNumber(count, i);
-                    string path = $"{PathOutput}.{ID}";
-                    lastFile = path;
-                    fileInfo = new FileInfo(path);
-                    if (fileInfo.Exists)
-                    {
-                        fileInfo.Delete();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"Failed while deleting file: {lastFile}. Skipping!\r\n{ex}", LogType.Warning, true);
-            }
+            // If the single file doesn't exist, then try getting chunk stream
+            return GetCombinedLengthFromPackageAsset(count);
         }
 
         private CombinedStream GetCombinedStreamFromPackageAsset(int count)
@@ -176,6 +162,61 @@ namespace CollapseLauncher.InstallManager
 
             // Assign the array and initiate it as a combined stream
             return new CombinedStream(streamList);
+        }
+
+        private long GetCombinedLengthFromPackageAsset(int count)
+        {
+            // Initialize length
+            long length = 0;
+            // Enumerate the ID
+            for (int i = 0; i < count; i++)
+            {
+                // Get the hash ID
+                long ID = Http.GetHashNumber(count, i);
+                // Append hash ID to the path
+                string path = $"{PathOutput}.{ID}";
+                // Get the file info and check if the file exist
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Exists)
+                {
+                    // Add length to the existing one
+                    length += fileInfo.Length;
+                    // Then go back to the loop routine
+                    continue;
+                }
+            }
+
+            // Return the length
+            return length;
+        }
+
+        public void DeleteFile(int count)
+        {
+            string lastFile = PathOutput;
+            try
+            {
+                FileInfo fileInfo = new FileInfo(PathOutput);
+                if (fileInfo.Exists && fileInfo.Length == Size)
+                {
+                    fileInfo.Delete();
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    long ID = Http.GetHashNumber(count, i);
+                    string path = $"{PathOutput}.{ID}";
+                    lastFile = path;
+                    fileInfo = new FileInfo(path);
+                    if (fileInfo.Exists)
+                    {
+                        fileInfo.Delete();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Failed while deleting file: {lastFile}. Skipping!\r\n{ex}", LogType.Warning, true);
+            }
         }
 
         public string PrintSummary() => $"File [T: {PackageType}]: {URL}\t{ConverterTool.SummarizeSizeSimple(Size)} ({Size} bytes)";

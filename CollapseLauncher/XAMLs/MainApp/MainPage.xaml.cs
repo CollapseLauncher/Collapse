@@ -34,6 +34,7 @@ namespace CollapseLauncher
         private bool LockRegionChangeBtn;
         private bool IsLoadFrameCompleted = true;
         public static bool IsChangeDragArea = true;
+        public static List<string> PreviousTagString = new List<string>();
 
         private RectInt32[] DragAreaMode_Normal
         {
@@ -649,7 +650,7 @@ namespace CollapseLauncher
                     NewNotificationCountBadge.Value--;
                 }
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                NewNotificationCountBadge.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
             Container.Children.Add(Notification);
@@ -1024,8 +1025,6 @@ namespace CollapseLauncher
                     break;
             }
         }
-
-        private List<string> PreviousTagString = new List<string>();
 
         void Navigate(Type sourceType, string tagStr)
         {

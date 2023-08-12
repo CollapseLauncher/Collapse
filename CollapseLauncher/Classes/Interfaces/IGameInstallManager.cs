@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameInstallManager : IBackgroundActivity
+    internal interface IGameInstallManager : IBackgroundActivity, IDisposable
     {
         ValueTask<int> GetInstallationPath();
         Task StartPackageDownload(bool skipDialog = false);
