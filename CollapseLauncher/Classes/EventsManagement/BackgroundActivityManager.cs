@@ -18,10 +18,7 @@ namespace CollapseLauncher
     internal class BackgroundActivityManager
     {
         private static ThemeShadow _infoBarShadow = new ThemeShadow();
-
         public static Dictionary<int, IBackgroundActivity> BackgroundActivities = new Dictionary<int, IBackgroundActivity>();
-
-        private static GamePresetProperty CurrentGameProperty;
 
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
@@ -94,7 +91,7 @@ namespace CollapseLauncher
             _parentGrid.Children.Add(progressLogoContainer);
             Grid.SetColumn(progressLogoContainer, 0);
 
-            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            GamePresetProperty CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             Image processLogo = new Image()
             {
                 Source = new BitmapImage(new Uri(CurrentGameProperty._GameVersion.GameType switch
@@ -103,7 +100,7 @@ namespace CollapseLauncher
                     GameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
                     GameType.StarRail => "ms-appx:///Assets/Images/GameLogo/zenless-logo.png",
                     GameType.Zenless => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
-                    _ => "ms-appx:///Assets/Images/GameLogo/unknown-logo.png"
+                    _ => "ms-appx:///Assets/Images/PaimonWhat.png"
                 })),
                 Width = 64,
                 Height = 64
@@ -205,7 +202,7 @@ namespace CollapseLauncher
                 _parentNotifUI.IsOpen = false;
             };
 
-            EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = async (_, args) => activity.Dispatch(() =>
+            EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args.ProgressTotalPercentage;
                 progressLeftSubtitle.Text = string.Format(Lang._Misc.Speed, ConverterTool.SummarizeSizeSimple(args.ProgressTotalSpeed));
@@ -213,7 +210,7 @@ namespace CollapseLauncher
                 progressRightSubtitle.Text = string.Format(Lang._UpdatePage.UpdateHeader1 + " {0}%", args.ProgressTotalPercentage);
             });
 
-            EventHandler<TotalPerfileStatus> StatusChangedEventHandler = async (_, args) => activity.Dispatch(() =>
+            EventHandler<TotalPerfileStatus> StatusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.IsIndeterminate = args.IsProgressTotalIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;
@@ -246,18 +243,19 @@ namespace CollapseLauncher
                 }
             });
 
-            activity.ProgressChanged += (obj, sender) => ProgressChangedEventHandler(obj, sender);
-            activity.StatusChanged += (obj, sender) => StatusChangedEventHandler(obj, sender);
+            activity.ProgressChanged += ProgressChangedEventHandler;
+            activity.StatusChanged += StatusChangedEventHandler;
+
             activity.FlushingTrigger += (obj, sender) =>
             {
-                activity.ProgressChanged -= (obj, sender) => ProgressChangedEventHandler(obj, sender);
-                activity.StatusChanged -= (obj, sender) => StatusChangedEventHandler(obj, sender);
+                activity.ProgressChanged -= ProgressChangedEventHandler;
+                activity.StatusChanged -= StatusChangedEventHandler;
             };
 
             _parentNotifUI.Closing += (_, _) =>
             {
-                activity.ProgressChanged -= (obj, sender) => ProgressChangedEventHandler(obj, sender);
-                activity.StatusChanged -= (obj, sender) => StatusChangedEventHandler(obj, sender);
+                activity.ProgressChanged -= ProgressChangedEventHandler;
+                activity.StatusChanged -= StatusChangedEventHandler;
                 Detach(hashID);
             };
             _parentContainer.Children.Add(cancelButton);

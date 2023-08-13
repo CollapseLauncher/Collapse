@@ -76,7 +76,13 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
-        ~InstallManagerBase() => Dispose();
+        ~InstallManagerBase()
+        {
+#if DEBUG
+            LogWriteLine($"[~InstallManagerBase()] Deconstructor getting called in {_gameVersionManager}", LogType.Warning, true);
+#endif
+            Dispose();
+        }
 
         protected void ResetToken() => _token = new CancellationTokenSource();
 
@@ -91,10 +97,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual void Flush()
         {
-            FlushingTrigger?.Invoke(this, EventArgs.Empty);
+            UpdateCompletenessStatus(CompletenessStatus.Idle);
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
-            UpdateCompletenessStatus(CompletenessStatus.Idle);
+            FlushingTrigger?.Invoke(this, EventArgs.Empty);
         }
 
         #region Public Methods
@@ -1357,6 +1363,9 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled = false;
+                    // HACK: Fix the progress not achieving 100% while completed
+                    _progress.ProgressTotalPercentage = 100f;
+                    _progress.ProgressPerFilePercentage = 100f;
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning = false;
@@ -1371,7 +1380,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsCanceled = false;
                     break;
             }
-            UpdateStatus();
+            UpdateAll();
         }
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
