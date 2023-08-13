@@ -133,6 +133,14 @@ namespace CollapseLauncher.Statics
         internal IGameInstallManager _GameInstall { get; set; }
         internal bool IsGameRunning => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName)).Length > 0;
 
+        ~GamePresetProperty()
+        {
+#if DEBUG
+            Logger.LogWriteLine($"[~GamePresetProperty()] Deconstructor getting called in GamePresetProperty for Hash ID: {_GamePreset.HashID}", LogType.Warning, true);
+#endif
+            Dispose();
+        }
+
         public void Dispose()
         {
             _GameRepair?.CancelRoutine();
@@ -201,7 +209,6 @@ namespace CollapseLauncher.Statics
 #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Cleaning up unused game property by Hash ID: {key}", LogType.Debug, true);
 #endif
-                Vault[key]?.Dispose();
                 Vault.Remove(key);
             }
         }

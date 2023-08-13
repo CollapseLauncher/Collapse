@@ -76,7 +76,13 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
-        ~InstallManagerBase() => Dispose();
+        ~InstallManagerBase()
+        {
+#if DEBUG
+            LogWriteLine($"[~InstallManagerBase()] Deconstructor getting called in {_gameVersionManager}", LogType.Warning, true);
+#endif
+            Dispose();
+        }
 
         protected void ResetToken() => _token = new CancellationTokenSource();
 
@@ -91,10 +97,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual void Flush()
         {
-            FlushingTrigger?.Invoke(this, EventArgs.Empty);
+            UpdateCompletenessStatus(CompletenessStatus.Idle);
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
-            UpdateCompletenessStatus(CompletenessStatus.Idle);
+            FlushingTrigger?.Invoke(this, EventArgs.Empty);
         }
 
         #region Public Methods
