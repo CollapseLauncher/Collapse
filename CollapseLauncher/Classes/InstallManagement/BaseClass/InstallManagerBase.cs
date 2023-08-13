@@ -63,6 +63,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Public Properties
         public bool IsRunning { get; protected set; }
+        public event EventHandler FlushingTrigger;
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
@@ -75,7 +76,13 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
-        ~InstallManagerBase() => Dispose();
+        ~InstallManagerBase()
+        {
+#if DEBUG
+            LogWriteLine($"[~InstallManagerBase()] Deconstructor getting called in {_gameVersionManager}", LogType.Warning, true);
+#endif
+            Dispose();
+        }
 
         protected void ResetToken() => _token = new CancellationTokenSource();
 
@@ -90,9 +97,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual void Flush()
         {
+            UpdateCompletenessStatus(CompletenessStatus.Idle);
             _gameRepairTool?.Dispose();
             _assetIndex.Clear();
-            UpdateCompletenessStatus(CompletenessStatus.Idle);
+            FlushingTrigger?.Invoke(this, EventArgs.Empty);
         }
 
         #region Public Methods
@@ -454,10 +462,8 @@ namespace CollapseLauncher.InstallManager.Base
                         // Check if the read stream exist
                         if (segment.IsReadStreamExist(_downloadThreadCount))
                         {
-                            // Get the stream of the segment and using (and auto dispose) it
-                            using Stream segmentStream = segment.GetReadStream(_downloadThreadCount);
-                            // Return the size/length of the stream
-                            return segmentStream.Length;
+                            // Return the size/length of the chunk stream
+                            return segment.GetStreamLength(_downloadThreadCount);
                         }
                         // If not, then return 0
                         return 0;
@@ -467,10 +473,8 @@ namespace CollapseLauncher.InstallManager.Base
                 // If segment is none, check if the single stream exist
                 if (asset.IsReadStreamExist(_downloadThreadCount))
                 {
-                    // If yes, then using single stream
-                    using Stream singleStream = asset.GetReadStream(_downloadThreadCount);
-                    // Return the size of the stream
-                    return singleStream.Length;
+                    // If yes, then return the size of the single stream
+                    return asset.GetStreamLength(_downloadThreadCount);
                 }
 
                 // If neither of both exist, then return 0
@@ -1359,6 +1363,9 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled = false;
+                    // HACK: Fix the progress not achieving 100% while completed
+                    _progress.ProgressTotalPercentage = 100f;
+                    _progress.ProgressPerFilePercentage = 100f;
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning = false;
@@ -1373,7 +1380,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsCanceled = false;
                     break;
             }
-            UpdateStatus();
+            UpdateAll();
         }
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)

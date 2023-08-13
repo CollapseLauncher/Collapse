@@ -16,6 +16,7 @@ namespace Hi3Helper.Shared.ClassStruct
             where T : IRegionResourceCopyable<T>
         {
             if (source == null) return null;
+            if (source.Count == 0) return new List<T>();
             return new List<T>(source);
         }
     }

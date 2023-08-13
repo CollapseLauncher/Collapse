@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -39,6 +39,10 @@ namespace CollapseLauncher
                     case AppMode.Launcher:
                         m_window = new MainWindow();
                         ((MainWindow)m_window).InitializeWindowProperties();
+                        break;
+                    case AppMode.OOBEState:
+                        m_window = new MainWindow();
+                        ((MainWindow)m_window).InitializeWindowProperties(true);
                         break;
                 }
 

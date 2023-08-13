@@ -1,6 +1,7 @@
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;

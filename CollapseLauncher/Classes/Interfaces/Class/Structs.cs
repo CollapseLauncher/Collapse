@@ -128,7 +128,23 @@ namespace CollapseLauncher
 
         public bool IsMatch(GameVersion versionToCompare) => Major == versionToCompare.Major && Minor == versionToCompare.Minor && Build == versionToCompare.Build && Revision == versionToCompare.Revision;
 
+        public GameVersion GetIncrementedVersion()
+        {
+            int NextMajor = Major;
+            int NextMinor = Minor;
+
+            NextMinor++;
+            if (NextMinor >= 10)
+            {
+                NextMinor = 0;
+                NextMajor++;
+            }
+
+            return new GameVersion(new int[] { NextMajor, NextMinor, Build, Revision });
+        }
+
         public Version ToVersion() => new Version(Major, Minor, Build, Revision);
+        public override string ToString() => $"{Major}.{Minor}.{Build}";
 
         public string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
         public string VersionString { get => string.Join('.', VersionArray); }

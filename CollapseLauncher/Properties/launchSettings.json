@@ -4,6 +4,11 @@
       "commandName": "Project",
       "nativeDebugging": false
     },
+    "OOBE Setup": {
+      "commandName": "Project",
+      "commandLineArgs": "oobesetup",
+      "nativeDebugging": false
+    },
     "Updater": {
       "commandName": "Project",
       "commandLineArgs": "update --input \"C:\\Program Files\\Collapse Launcher\" --channel Preview",

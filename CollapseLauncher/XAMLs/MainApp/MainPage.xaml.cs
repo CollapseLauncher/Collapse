@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Pages;
+using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Http;
@@ -34,6 +34,7 @@ namespace CollapseLauncher
         private bool LockRegionChangeBtn;
         private bool IsLoadFrameCompleted = true;
         public static bool IsChangeDragArea = true;
+        public static List<string> PreviousTagString = new List<string>();
 
         private RectInt32[] DragAreaMode_Normal
         {
@@ -156,6 +157,12 @@ namespace CollapseLauncher
 #endif
                 LoadGamePreset();
                 SetThemeParameters();
+
+                VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
+#if DEBUG
+                VersionNumberIndicator.Text += "d";
+#endif
+                if (IsPreview)VersionNumberIndicator.Text +=  "-PRE";
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
@@ -643,7 +650,7 @@ namespace CollapseLauncher
                     NewNotificationCountBadge.Value--;
                 }
                 NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-                NewNotificationCountBadge.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
             };
 
             Container.Children.Add(Notification);
@@ -924,7 +931,7 @@ namespace CollapseLauncher
 
             if ((GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false) || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = "Utilities" });
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader() { Content = Lang._MainPage.NavigationUtilities });
 
                 if (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false)
                 {
@@ -1018,8 +1025,6 @@ namespace CollapseLauncher
                     break;
             }
         }
-
-        private List<string> PreviousTagString = new List<string>();
 
         void Navigate(Type sourceType, string tagStr)
         {

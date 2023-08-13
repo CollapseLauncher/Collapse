@@ -1,5 +1,6 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;

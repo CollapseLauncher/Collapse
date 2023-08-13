@@ -12,11 +12,13 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace CollapseLauncher.Statics
 {
-    internal class GamePresetProperty
+    internal class GamePresetProperty : IDisposable
     {
         internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, PresetConfigV2 GamePreset)
         {
@@ -120,7 +122,7 @@ namespace CollapseLauncher.Statics
             ZonePosterURL = GamePreset.ZonePosterURL,
             ZoneURL = GamePreset.ZoneURL,
         };
-#endregion
+        #endregion
 
         internal RegionResourceProp _APIResouceProp { get; set; }
         internal PresetConfigV2 _GamePreset { get; set; }
@@ -129,6 +131,34 @@ namespace CollapseLauncher.Statics
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
         internal IGameInstallManager _GameInstall { get; set; }
+        internal bool IsGameRunning => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName)).Length > 0;
+
+        ~GamePresetProperty()
+        {
+#if DEBUG
+            Logger.LogWriteLine($"[~GamePresetProperty()] Deconstructor getting called in GamePresetProperty for Hash ID: {_GamePreset.HashID}", LogType.Warning, true);
+#endif
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            _GameRepair?.CancelRoutine();
+            _GameCache?.CancelRoutine();
+            _GameInstall?.CancelRoutine();
+
+            _GameRepair?.Dispose();
+            _GameCache?.Dispose();
+            _GameInstall?.Dispose();
+
+            _APIResouceProp = null;
+            _GamePreset = null;
+            _GameSettings = null;
+            _GameRepair = null;
+            _GameCache = null;
+            _GameVersion = null;
+            _GameInstall = null;
+        }
     }
 
     internal static class GamePropertyVault
@@ -163,12 +193,14 @@ namespace CollapseLauncher.Statics
 #endif
         }
 
-        private static void CleanupUnusedGameProperty()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private static async void CleanupUnusedGameProperty()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (Vault.Count == 0) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
-                .Where(x => !x._GameInstall.IsRunning && x._GamePreset.HashID != CurrentGameHashID)?
+                .Where(x => !x._GameInstall.IsRunning && !x.IsGameRunning && x._GamePreset.HashID != CurrentGameHashID)?
                 .Select(x => x._GamePreset.HashID)?
                 .ToArray();
 
@@ -192,7 +224,13 @@ namespace CollapseLauncher.Statics
             GamePresetProperty GameProperty = Vault[HashID];
             if (GameProperty._GameInstall.IsRunning)
             {
-                string actTitle = $"Downloading game: {GameProperty._GameVersion.GamePreset.GameName}";
+                string actTitle = string.Format(GameProperty._GameVersion.GetGameState() switch
+                {
+                    GameInstallStateEnum.InstalledHavePreload => Locale.Lang._BackgroundNotification.CategoryTitle_DownloadingPreload,
+                    GameInstallStateEnum.NeedsUpdate => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
+                    _ => Locale.Lang._BackgroundNotification.CategoryTitle_Downloading
+                }, GameProperty._GameVersion.GamePreset.GameName);
+
                 string actSubtitle = GameProperty._GameVersion.GamePreset.ZoneName;
                 BackgroundActivityManager.Attach(HashID, GameProperty._GameInstall, actTitle, actSubtitle);
             }

@@ -4,10 +4,11 @@ using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 using static Hi3Helper.Locale;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 #pragma warning disable CA2007
 namespace Hi3Helper.DiscordPresence
@@ -196,10 +197,10 @@ namespace Hi3Helper.DiscordPresence
                     default:
                         _activity = new Activity
                         {
-                            Details = Lang._Misc.DiscordRP_Default,
+                            Details = StrToByteUtf8(Lang._Misc.DiscordRP_Default),
                             Assets = new ActivityAssets
                             {
-                                LargeImage = $"launcher-logo"
+                                LargeImage = StrToByteUtf8($"launcher-logo")
                             }
                         };
                         break;
@@ -217,14 +218,14 @@ namespace Hi3Helper.DiscordPresence
         {
             _activity = new Activity
             {
-                Details = $"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}",
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? ConfigV2Store.CurrentConfigV2GameCategory : Lang._Misc.DiscordRP_Ad)}"),
+                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}",
-                    SmallImage = $"launcher-logo",
-                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory} - {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                    SmallImage = StrToByteUtf8($"launcher-logo"),
+                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
                 },
                 Timestamps = new ActivityTimestamps
                 {
@@ -247,21 +248,21 @@ namespace Hi3Helper.DiscordPresence
         {
             _activity = new Activity
             {
-                Details = $"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}",
-                State = $"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}",
+                Details = StrToByteUtf8($"{activityName} {(!isGameStatusEnabled ? string.Empty : Lang._Misc.DiscordRP_Ad)}"),
+                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo",
-                    LargeText = $"{ConfigV2Store.CurrentConfigV2GameCategory}",
-                    SmallImage = $"launcher-logo",
-                    SmallText = $"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}"
+                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
+                    SmallImage = StrToByteUtf8($"launcher-logo"),
+                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
                 },
             };
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
         {
-            Logger.LogWriteLine($"Activity updated! => {_activity.Details} - {_activity.State}");
+            Logger.LogWriteLine($"Activity updated! => {ReadUtf8Byte(_activity.Details)} - {ReadUtf8Byte(_activity.State)}");
         });
 
         private void UpdateCallbacksRoutine()
@@ -285,6 +286,18 @@ namespace Hi3Helper.DiscordPresence
                     await Task.Delay(_updateInterval);
                 }
             }, _clientToken.Token);
+        }
+
+        private string ReadUtf8Byte(byte[] input) => input == null || input.Length == 0 ? string.Empty : Encoding.UTF8.GetString(input);
+
+        private byte[] StrToByteUtf8(string s)
+        {
+            // Use fixed width (128 bytes) as defined in field's SizeConst
+            byte[] bufferOut = new byte[128];
+            // Get the UTF-8 bytes (converting 16-bit (UTF-16) to 8-bit (UTF-8) char (as byte))
+            Encoding.UTF8.GetBytes(s, bufferOut);
+            // return the buffer
+            return bufferOut;
         }
     }
 }

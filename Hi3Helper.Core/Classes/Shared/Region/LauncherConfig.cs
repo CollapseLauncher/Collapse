@@ -38,7 +38,7 @@ namespace Hi3Helper.Shared.Region
             new CDNURLProperty
             {
                 Name = "Cloudflare",
-                URLPrefix = "https://r2-render.bagelnl.my.id/cl-cdn",
+                URLPrefix = "https://r2.bagelnl.my.id/cl-cdn",
                 Description = Lang._Misc.CDNDescription_Cloudflare,
                 PartialDownloadSupport = true
             },
@@ -50,14 +50,14 @@ namespace Hi3Helper.Shared.Region
             },
             new CDNURLProperty
             {
-                Name = "Statically",
+                Name = "Statically (Deprecated)",
                 URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
                 Description = Lang._Misc.CDNDescription_Statically,
                 PartialDownloadSupport = true
             },
             new CDNURLProperty
             {
-                Name = "jsDelivr",
+                Name = "jsDelivr (Deprecated)",
                 URLPrefix = "https://cdn.jsdelivr.net/gh/neon-nyan/CollapseLauncher-ReleaseRepo@latest",
                 Description = Lang._Misc.CDNDescription_jsDelivr,
                 PartialDownloadSupport = true
@@ -80,7 +80,7 @@ namespace Hi3Helper.Shared.Region
 
         public static AppIniStruct appIni = new AppIniStruct();
         public static string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-        public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "BG", "default.png");
+        public static string AppDefaultBG = Path.Combine(AppFolder, "Assets", "Images", "default.png");
         public static string AppLangFolder = Path.Combine(AppFolder, "Lang");
         public static string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static string AppGameFolder
@@ -107,7 +107,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
 
-        public const long AppDiscordApplicationID = 1089467141096484955;
+        public const long AppDiscordApplicationID = 1138126643592970251;
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
         public const long AppDiscordApplicationID_GI = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
@@ -163,7 +163,7 @@ namespace Hi3Helper.Shared.Region
 
         public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
         {
-            { "CurrentBackground", "ms-appx:///Assets/BG/default.png" },
+            { "CurrentBackground", "ms-appx:///Assets/Images/default.png" },
             { "DownloadThread", 4 },
             { "ExtractionThread", 0 },
             { "GameFolder", Path.Combine(AppDataFolder, "GameFolder") },

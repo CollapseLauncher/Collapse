@@ -8,6 +8,8 @@ namespace CollapseLauncher.Interfaces
     {
         event EventHandler<TotalPerfileProgress> ProgressChanged;
         event EventHandler<TotalPerfileStatus> StatusChanged;
+        event EventHandler FlushingTrigger;
+
         bool IsRunning { get; }
         UIElement _parentUI { get; }
         void CancelRoutine();

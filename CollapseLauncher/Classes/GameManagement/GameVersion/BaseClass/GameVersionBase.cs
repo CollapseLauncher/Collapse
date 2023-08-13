@@ -185,7 +185,7 @@ namespace CollapseLauncher.GameVersioning
             if (GameAPIProp.data.pre_download_game == null) return null;
 
             // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.pre_download_game.diffs
+            RegionResourceVersion diff = GameAPIProp.data.pre_download_game?.diffs?
                 .Where(x => x.version == GameVersionInstalled?.VersionString)
                 .FirstOrDefault();
 

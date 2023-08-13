@@ -10,7 +10,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.5</Version>
+		<Version>1.71.6</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
@@ -24,7 +24,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;SIMULATEPRELOAD</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
@@ -34,9 +34,6 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="XAMLs\Prototype\honkai-logo.png" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
@@ -68,22 +65,6 @@
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
-		<Content Include="XAMLs\Prototype\honkai-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\genshin-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\starrail-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-
-		<Content Include="XAMLs\Prototype\zenless-logo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		
 		<None Include="..\.editorconfig" Link=".editorconfig" />
     
@@ -97,6 +78,22 @@
     
 		<Content Update="Assets\Images\default.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\genshin-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\honkai-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\starrail-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+    
+		<Content Update="Assets\Images\GameLogo\zenless-logo.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
     
 		<Content Update="Assets\Images\PaimonSleep.png">

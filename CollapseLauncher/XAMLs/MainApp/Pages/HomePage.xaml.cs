@@ -58,13 +58,15 @@ namespace CollapseLauncher.Pages
             this.Loaded += StartLoadedRoutine;
         }
 
-        private bool IsPageUnload = false;
+        private bool IsPageUnload { get; set; }
         private bool NeedShowEventIcon = true;
 
         private void ReturnToHomePage()
         {
-            if (!IsPageUnload)
+            if (!IsPageUnload
+             || GamePropertyVault.GetCurrentGameProperty()._GamePreset.HashID == CurrentGameProperty._GamePreset.HashID)
             {
+                MainPage.PreviousTagString.Add(MainPage.PreviousTag);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
         }
@@ -580,10 +582,6 @@ namespace CollapseLauncher.Pages
                     return;
             }
 
-            if (GameInstallationState == GameInstallStateEnum.InstalledHavePreload)
-            {
-                // TODO
-            }
             if ((GameInstallationState == GameInstallStateEnum.NeedsUpdate
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
@@ -610,7 +608,6 @@ namespace CollapseLauncher.Pages
             ConvertVersionButton.IsEnabled = false;
             CustomArgsTextBox.IsEnabled = false;
             OpenScreenshotFolderButton.IsEnabled = false;
-
         }
 
         private async void CheckRunningGameInstance(CancellationToken Token)
@@ -697,6 +694,27 @@ namespace CollapseLauncher.Pages
         #region Preload
         private async void SpawnPreloadBox()
         {
+            if (CurrentGameProperty._GameInstall.IsRunning)
+            {
+                // TODO
+                PauseDownloadPreBtn.Visibility = Visibility.Visible;
+                ResumeDownloadPreBtn.Visibility = Visibility.Collapsed;
+                PreloadDialogBox.IsClosable = false;
+                PreloadDialogBox.Margin = new Thickness(0, 0, 0, -32);
+
+                IsSkippingUpdateCheck = true;
+                DownloadPreBtn.Visibility = Visibility.Collapsed;
+                ProgressPreStatusGrid.Visibility = Visibility.Visible;
+                ProgressPreButtonGrid.Visibility = Visibility.Visible;
+                PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarTitle;
+                PreloadDialogBox.Message = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
+
+                CurrentGameProperty._GameInstall.ProgressChanged += PreloadDownloadProgress;
+                CurrentGameProperty._GameInstall.StatusChanged += PreloadDownloadStatus;
+                PreloadDialogBox.IsOpen = true;
+                return;
+            }
+
             PreloadDialogBox.Translation += Shadow48;
             PreloadDialogBox.Closed += PreloadDialogBox_Closed;
 
@@ -1236,7 +1254,7 @@ namespace CollapseLauncher.Pages
 
             string line;
             int barwidth = ((consoleWidth - 22) / 2) - 1;
-            LogWriteLine($"Is Game logs gets saved to Collapse's logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
+            LogWriteLine($"Are Game logs getting saved to Collapse logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
             {
