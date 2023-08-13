@@ -1363,6 +1363,9 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled = false;
+                    // HACK: Fix the progress not achieving 100% while completed
+                    _progress.ProgressTotalPercentage = 100f;
+                    _progress.ProgressPerFilePercentage = 100f;
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning = false;
@@ -1377,7 +1380,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsCanceled = false;
                     break;
             }
-            UpdateStatus();
+            UpdateAll();
         }
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
