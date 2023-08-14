@@ -88,7 +88,19 @@ namespace Hi3Helper.DiscordPresence
                     {
                         // Initialize Discord Presence client and Activity property
                         _client = new Discord.Discord(applicationId, (ulong)CreateFlags.NoRequireDiscord);
-                        if (isInitialStart) _activity = new Activity();
+                        if (isInitialStart) _activity = new Activity
+                        {
+                            Details = StrToByteUtf8($"{Lang._Misc.DiscordRP_Default}"),
+                            Assets = new ActivityAssets
+                            {
+                                LargeImage = StrToByteUtf8($"launcher-logo"),
+#if DEBUG
+                                LargeText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString}d {(IsPreview ? " -PRE" : string.Empty)}")
+#else
+                                LargeText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? " -PRE" : string.Empty)}");
+#endif
+                            }
+                        };
                         else SetActivity(_activityType);
 
                         // Initialize the Activity Manager instance
@@ -173,10 +185,12 @@ namespace Hi3Helper.DiscordPresence
                 switch (activity)
                 {
                     case ActivityType.Play:
-                        BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
+                        BuildActivityAppStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled, isGameRunning:true);
+                        //BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
                         break;
                     case ActivityType.Update:
-                        BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled, isGameRunning:true);
+                        //BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
                         break;
                     case ActivityType.Repair:
                         BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
@@ -244,7 +258,7 @@ namespace Hi3Helper.DiscordPresence
             return _lastUnixTimestamp ?? 0;
         }
 
-        private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled, bool appSettings = false)
+        private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled, bool appSettings = false, bool isGameRunning=false)
         {
 #if DEBUG
             byte[] version = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString}d {(IsPreview ? " -PRE" : string.Empty)}");
@@ -261,8 +275,15 @@ namespace Hi3Helper.DiscordPresence
                     LargeText = isGameStatusEnabled ? StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}") : (appSettings ? version : StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}")),
                     SmallImage = isGameStatusEnabled ? StrToByteUtf8($"launcher-logo") : (appSettings ? null : StrToByteUtf8($"launcher-logo")),
                     SmallText = isGameStatusEnabled ? version : (appSettings ? null : version)
-                }
+                },
             };
+            if (isGameRunning)
+            {
+                _activity.Timestamps = new ActivityTimestamps
+                {
+                    Start = GetCachedUnixTimestamp()
+                };
+            }
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
