@@ -1,4 +1,4 @@
-﻿#if !DISABLEDISCORD
+#if !DISABLEDISCORD
 using Discord;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -188,7 +188,7 @@ namespace Hi3Helper.DiscordPresence
                         BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
                         break;
                     case ActivityType.AppSettings:
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
+                        BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled, true);
                         break;
                     case ActivityType.Idle:
                         _lastUnixTimestamp = null;
@@ -244,18 +244,18 @@ namespace Hi3Helper.DiscordPresence
             return _lastUnixTimestamp ?? 0;
         }
 
-        private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled)
+        private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled, bool appSettings = false)
         {
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{activityName} {(isGameStatusEnabled ? Lang._Misc.DiscordRP_Ad : string.Empty)}"),
-                State = StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = StrToByteUtf8($"{(!appSettings ? ConfigV2Store.CurrentConfigV2GameCategory + " - " : string.Empty)} {activityName} {(isGameStatusEnabled ? Lang._Misc.DiscordRP_Ad : string.Empty)}"),
+                State = appSettings ? null : StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeImage = StrToByteUtf8(appSettings ? $"launcher-logo" : $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
                     LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
-                    SmallImage = StrToByteUtf8($"launcher-logo"),
-                    SmallText = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
+                    SmallImage = appSettings ? null:StrToByteUtf8($"launcher-logo"),
+                    SmallText = appSettings ? null:StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
                 },
             };
         }
