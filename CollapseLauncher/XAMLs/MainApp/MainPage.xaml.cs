@@ -220,7 +220,7 @@ namespace CollapseLauncher
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
-            Dialogs.KeybindDialogs.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeybindDialogs.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
@@ -1265,6 +1265,7 @@ namespace CollapseLauncher
             }
         }
 
+        #region Keyboard Shortcuts
         private void CreateKeyboardShortcutHandlers()
         {
             try
@@ -1316,6 +1317,7 @@ namespace CollapseLauncher
                     KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
+                // General
                 KeyboardAccelerator kbshow = new KeyboardAccelerator()
                 {
                     Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
@@ -1331,9 +1333,35 @@ namespace CollapseLauncher
                 };
                 kbhome.Invoked += GoHome_Invoked;
                 KeyboardHandler.KeyboardAccelerators.Add(kbhome);
+
+                KeyboardAccelerator kbsettings = new KeyboardAccelerator()
+                {
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                    Key = StrToVKey(keys[keysIndex++][1]),
+                };
+                kbsettings.Invoked += GoSettings_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(kbsettings);
+
+                KeyboardAccelerator kbnotify = new KeyboardAccelerator()
+                {
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                    Key = StrToVKey(keys[keysIndex++][1]),
+                };
+                kbnotify.Invoked += OpenNotify_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(kbnotify);
+
+                // Game related
+                KeyboardAccelerator kbscreenshot = new KeyboardAccelerator()
+                {
+                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
+                    Key = StrToVKey(keys[keysIndex++][1]),
+                };
+                kbscreenshot.Invoked += OpenScreenshot_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(kbscreenshot);
             }
-            catch
+            catch (Exception error)
             {
+                LogWriteLine(error.ToString());
                 KeyList = null;
                 CreateKeyboardShortcutHandlers();
             }
@@ -1376,7 +1404,26 @@ namespace CollapseLauncher
         {
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-            Navigate(typeof(HomePage), "launcher");
+            Navigate(typeof(HomePage), PreviousTag);
+        }
+
+        private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
+            NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
+            Navigate(typeof(SettingsPage), PreviousTag);
+        }
+
+        private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            ToggleNotificationPanelBtnClick(null, null);
+        }
+
+        public event EventHandler<string> HomeKeyboardShortcuts;
+
+        private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            
         }
 
         private bool AreShortcutsEnabled
@@ -1400,5 +1447,6 @@ namespace CollapseLauncher
                     break;                
             }
         }
+        #endregion
     }
 }

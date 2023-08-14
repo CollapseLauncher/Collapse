@@ -26,7 +26,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -1626,6 +1625,25 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+            }
+        }
+        #endregion
+
+        #region Keybind Methods
+
+        private void KbOpen(string option)
+        {
+            switch (option)
+            {
+                case "ScreenshotFolder":
+                    OpenScreenshotFolderButton_Click(null, null);
+                    break;
+                case "CacheFolder":
+                    OpenCacheFolderButton_Click(null, null);
+                    break;
+                case "GameFolder":
+                    OpenGameFolderButton_Click(null, null);
+                    break;
             }
         }
         #endregion

@@ -22,17 +22,23 @@ namespace CollapseLauncher.Dialogs
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
 
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content)
-        {
-            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
+        {   
+            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness (0, 0, 15, 0) };
 
             List<List<string>> keys = KeyList;
-
+            
+            // General shortcuts
             stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
             stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page", "Instantly travel to the Home page from any page"));
+            
+            stack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray", null));
+
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
+            // Region/Game Shortcuts
             stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
 
@@ -65,9 +71,20 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
+            // Game shorcuts
+            stack.Children.Add(new TextBlock { Text = "Game related", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            stack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder", "If the functionality is supported for that game/region."));
+            stack.Children.Add(GenerateShortcutBlock(keys[9], "Go to the Repair page", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Game Settings page", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Caches page", "If the functionality is supported for that game/region."));
+            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+
             return await SpawnDialog(
                     "Keyboard Shortcuts",
-                    stack,
+                    new ScrollViewer() { Content = stack, MaxHeight = 370 },
                     Content,
                     Lang._Misc.Close,
                     null,
@@ -360,10 +377,21 @@ namespace CollapseLauncher.Dialogs
 
         private readonly static List<List<string>> defaultKeyList = new List<List<string>>
                 {
-                    new List<string> { "Ctrl", "1 - 3" },
-                    new List<string> { "Shift", "1 - 6" },
-                    new List<string> { "Ctrl", "Tab" },
-                    new List<string> { "Ctrl", "H" }
+                    new List<string> { "Ctrl", "1 - 3" },   // Game selection
+                    new List<string> { "Shift", "1 - 6" },  // Region selection
+
+                    new List<string> { "Ctrl", "Tab" },     // Keybind menu
+                    new List<string> { "Ctrl", "H" },       // Home page
+                    new List<string> { "Ctrl", "S" },       // Settings page
+                    new List<string> { "Ctrl", "N" },       // Notification panel
+
+                    new List<string> { "Shift", "X" },      // Screenshot folder
+                    new List<string> { "Shift", "F" },      // Game folder
+                    new List<string> { "Shift", "G" },      // Cache folder
+                    new List<string> { "Shift", "R" },      // Repair page
+                    new List<string> { "Shift", "S" },      // Game settings page
+                    new List<string> { "Shift", "C" }       // Caches page
+
                 };
 
         public static List<List<string>> KeyList
