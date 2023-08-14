@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameVersioning;
@@ -100,7 +100,8 @@ namespace CollapseLauncher.Statics
             IsHideSocMedDesc = GamePreset.IsHideSocMedDesc,
 #if DEBUG
             IsRepairEnabled = true,
-            IsCacheUpdateEnabled = true,
+            IsCacheUpdateEnabled = GamePreset.GameType.Equals(GameType.Genshin)
+                                   || GamePreset.GameType.Equals(GameType.Zenless) ? false : true,
 #else
             IsRepairEnabled = GamePreset.IsRepairEnabled,
             IsCacheUpdateEnabled = GamePreset.IsCacheUpdateEnabled,
