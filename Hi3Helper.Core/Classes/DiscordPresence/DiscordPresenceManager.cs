@@ -246,24 +246,29 @@ namespace Hi3Helper.DiscordPresence
 
         private void BuildActivityAppStatus(string activityName, bool isGameStatusEnabled, bool appSettings = false)
         {
+#if DEBUG
+            byte[] version = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString}d {(IsPreview ? " -PRE" : string.Empty)}");
+#else
+            byte[] version = StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? " -PRE" : string.Empty)}");
+#endif
             _activity = new Activity
             {
-                Details = StrToByteUtf8($"{(!appSettings ? ConfigV2Store.CurrentConfigV2GameCategory + " - " : string.Empty)} {activityName} {(isGameStatusEnabled ? Lang._Misc.DiscordRP_Ad : string.Empty)}"),
-                State = appSettings ? null : StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}"),
+                Details = isGameStatusEnabled ? StrToByteUtf8($"{activityName} {Lang._Misc.DiscordRP_Ad}") : StrToByteUtf8($"{(appSettings ? string.Empty : ConfigV2Store.CurrentConfigV2GameCategory + " - " + ConfigV2Store.CurrentConfigV2GameRegion)}"),
+                State = isGameStatusEnabled ? (appSettings ? null : StrToByteUtf8($"{Lang._Misc.DiscordRP_Region} {ConfigV2Store.CurrentConfigV2GameRegion}")) : StrToByteUtf8($"{activityName}"),
                 Assets = new ActivityAssets
                 {
-                    LargeImage = StrToByteUtf8(appSettings ? $"launcher-logo" : $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
-                    LargeText = StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}"),
-                    SmallImage = appSettings ? null:StrToByteUtf8($"launcher-logo"),
-                    SmallText = appSettings ? null:StrToByteUtf8($"Collapse Launcher v{AppCurrentVersionString} {(IsPreview ? "Preview" : "Stable")}")
-                },
+                    LargeImage = isGameStatusEnabled ? StrToByteUtf8($"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo") : StrToByteUtf8(appSettings ? $"launcher-logo" : $"game-{ConfigV2Store.CurrentConfigV2.GameType.ToString().ToLower()}-logo"),
+                    LargeText = isGameStatusEnabled ? StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}") : (appSettings ? version : StrToByteUtf8($"{ConfigV2Store.CurrentConfigV2GameCategory}")),
+                    SmallImage = isGameStatusEnabled ? StrToByteUtf8($"launcher-logo") : (appSettings ? null : StrToByteUtf8($"launcher-logo")),
+                    SmallText = isGameStatusEnabled ? version : (appSettings ? null : version)
+                }
             };
         }
 
         private void UpdateActivity() => _activityManager?.UpdateActivity(_activity, (a) =>
-        {
-            Logger.LogWriteLine($"Activity updated! => {ReadUtf8Byte(_activity.Details)} - {ReadUtf8Byte(_activity.State)}");
-        });
+    {
+        Logger.LogWriteLine($"Activity updated! => {ReadUtf8Byte(_activity.Details)} - {ReadUtf8Byte(_activity.State)}");
+    });
 
         private void UpdateCallbacksRoutine()
         {
