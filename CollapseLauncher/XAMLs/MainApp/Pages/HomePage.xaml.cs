@@ -738,7 +738,7 @@ namespace CollapseLauncher.Pages
 
             if (!await CurrentGameProperty._GameInstall.IsPreloadCompleted())
             {
-                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifSubtitle, ver);
+                PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifTitle, ver);
             }
             else
             {
