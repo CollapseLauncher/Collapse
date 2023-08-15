@@ -133,6 +133,7 @@ namespace CollapseLauncher.Statics
         internal IGameInstallManager _GameInstall { get; set; }
         internal bool IsGameRunning => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName)).Length > 0;
 
+        /*
         ~GamePresetProperty()
         {
 #if DEBUG
@@ -140,6 +141,7 @@ namespace CollapseLauncher.Statics
 #endif
             Dispose();
         }
+        */
 
         public void Dispose()
         {

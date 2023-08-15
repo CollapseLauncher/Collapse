@@ -76,6 +76,7 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
+        /*
         ~InstallManagerBase()
         {
 #if DEBUG
@@ -83,6 +84,7 @@ namespace CollapseLauncher.InstallManager.Base
 #endif
             Dispose();
         }
+        */
 
         protected void ResetToken() => _token = new CancellationTokenSource();
 
