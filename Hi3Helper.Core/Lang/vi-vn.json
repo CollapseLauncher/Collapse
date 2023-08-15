@@ -75,7 +75,7 @@
     "NotifNeverAsk": "Không hiển thị lại",
     "NotifNoNewNotifs": "Không có thông báo mới",
     "NavigationMenu": "Menu",
-    "NavigationUtilities": "Utilities"
+    "NavigationUtilities": "Tiện ích"
   },
   "_HomePage": {
     "PageTitle": "Trình khởi chạy",
@@ -421,9 +421,9 @@
     "CDNDescription_Statically": "Một nhánh khác của kho lưu trữ chính thức, được cung cấp bởi Statically. Sử dụng nó nếu nơi ở của bạn không thể truy cập vào Github.",
     "CDNDescription_jsDelivr": "jsDelivr sử dụng nhiều CDN được cung cấp sẵn như CloudFlare, Fastly và Quantil, dẫn đến thời gian hoạt động và hiệu suất tốt nhất có thể.",
     "LocateExecutable": "Chọn vị trí chương trình có thể thực thi",
-    "OpenDownloadPage": "Mở trang tải xuống",
+    "OpenDownloadPage": "Mở trang Tải xuống",
     "DiscordRP_Play": "Đang chơi",
-    "DiscordRP_InGame": "Đang trong game",
+    "DiscordRP_InGame": "Đang trong trò chơi",
     "DiscordRP_Update": "Đang cập nhật",
     "DiscordRP_Repair": "Đang sửa trò chơi",
     "DiscordRP_Cache": "Đang cập nhật bộ nhớ cache",
