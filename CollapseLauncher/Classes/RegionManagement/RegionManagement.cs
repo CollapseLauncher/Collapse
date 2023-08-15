@@ -209,7 +209,7 @@ namespace CollapseLauncher
             if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
 #endif
 
-#if SIMULATEPRELOAD
+#if SIMULATEPRELOAD && !SIMULATEAPPLYPRELOAD
             if (_gameAPIProp.data.pre_download_game == null)
             {
                 LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
@@ -227,6 +227,12 @@ namespace CollapseLauncher
                         .ToString();
                 }
                 _gameAPIProp.data.pre_download_game.diffs = simDataDiff;
+            }
+#endif
+#if !SIMULATEPRELOAD && SIMULATEAPPLYPRELOAD
+            if (_gameAPIProp.data.pre_download_game != null)
+            {
+                _gameAPIProp.data.game = _gameAPIProp.data.pre_download_game;
             }
 #endif
         }
