@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -90,23 +90,12 @@ namespace CollapseLauncher.GameVersioning
             {
                 GameVersion? currentInstalled = GameVersionInstalled;
 
-                // Check if the pre_download_game property has value. If not, then return null
-                if (GameAPIProp.data.pre_download_game == null) return null;
                 // If no installation installed, then return null
                 if (currentInstalled == null) return null;
+                // Check if the pre_download_game property has value. If not, then return null
+                if (GameAPIProp.data.pre_download_game == null) return null;
 
-                // If has it, then check if the pre_download_game has diff.
-                // If null or no data, then return the latest one.
-                if (GameAPIProp.data.pre_download_game.diffs == null
-                 || GameAPIProp.data.pre_download_game.diffs.Count == 0) return TryGetNextVersionFromPkgFileName(GameAPIProp.data.pre_download_game.latest);
-
-                // Try get the diff version
-                RegionResourceVersion diffVersion = GameAPIProp.data.pre_download_game.diffs.Where(x => x.version == currentInstalled?.VersionString).FirstOrDefault();
-                // If diff is not found for current version, then return the latest one
-                if (diffVersion == null) return TryGetNextVersionFromPkgFileName(GameAPIProp.data.pre_download_game.latest);
-
-                // If all passes, then return diff version
-                return TryGetNextVersionFromPkgFileName(diffVersion);
+                return new GameVersion(GameAPIProp.data.pre_download_game.latest.version);
             }
         }
 
