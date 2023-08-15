@@ -130,7 +130,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             // Get the secondary file check
             bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
 
-            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted();
+            return (primaryAsset && secondaryAsset);
         }
 
         public override void ApplyGameConfig(bool forceUpdateToLatest = false)
