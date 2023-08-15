@@ -729,7 +729,7 @@ namespace CollapseLauncher.InstallManager.Base
                         await Task.Run(() =>
                         {
                             patcher.Initialize(patchPath);
-                            patcher.Patch(sourceBasePath, destPath, false, _token.Token);
+                            patcher.Patch(sourceBasePath, destPath, true, _token.Token);
                         }, _token.Token);
 
                         File.Move(destPath, sourceBasePath, true);
