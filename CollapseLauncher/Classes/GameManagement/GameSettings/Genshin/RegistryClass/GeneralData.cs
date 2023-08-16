@@ -307,7 +307,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public List<string> _customDataValueList { get; set; }
         public List<int> _serializedCodeSwitches { get; set; }
         public bool urlCheckCached { get; set; } = false;
-        public bool urlCheckIsOpen { get; set; } = false;
+        public bool urlCheckIsOpen { get; set; } = true;
         public bool urlCheckAllIP { get; set; } = false;
         public int urlCheckTimeOut { get; set; } = 5000;
         public int urlCheckSueecssTraceCount { get; set; } = 5;
