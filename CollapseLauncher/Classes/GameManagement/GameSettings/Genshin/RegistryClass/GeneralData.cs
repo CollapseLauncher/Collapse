@@ -247,7 +247,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public bool gyroHorReverse { get; set; } = false;
         public bool gyroVerReverse { get; set; } = false;
         public int gyroRotateType { get; set; } = 0;
-        public bool gyroExcludeRightStickVerInput = false;
+        public bool gyroExcludeRightStickVerInput { get; set; } = false;
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
         public bool firstHDRSetting { get; set; } = true;
