@@ -73,6 +73,7 @@
                 public string Graphics_SubsurfaceScattering { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_SubsurfaceScattering;
                 public string Graphics_TeammateFX { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_TeammateFX;
                 public string Graphics_AnisotropicFiltering { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_AnisotropicFiltering;
+                public string Graphics_DisableTeamPageBackground { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_DisableTeamPageBackground;
                 #endregion
 
                 #region Specs

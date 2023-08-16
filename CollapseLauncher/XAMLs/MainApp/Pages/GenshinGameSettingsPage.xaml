@@ -230,6 +230,19 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
+                            <StackPanel Margin="0,8,0,8">
+                                <Grid>
+                                    <!--
+                                    Unused for now
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    -->
+                                    <StackPanel Grid.Column="0">
+                                        <CheckBox x:Name="TeamPageBackgroundDisableToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_DisableTeamPageBackground}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind DisableTeamPageBackground, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>

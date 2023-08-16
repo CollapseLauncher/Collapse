@@ -820,6 +820,7 @@
     "Graphics_SubsurfaceScattering": "Subsurface Scattering",
     "Graphics_TeammateFX": "Teammate Effects",
     "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
+    "Graphics_DisableTeamPageBackground": "Disable Team Page Background",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
