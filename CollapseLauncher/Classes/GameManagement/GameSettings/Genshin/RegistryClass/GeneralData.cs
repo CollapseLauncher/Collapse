@@ -334,9 +334,16 @@ namespace CollapseLauncher.GameSettings.Genshin
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
                     // If you want to debug GeneralData, Append this to the LogWriteLine:
-                    // '\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)'
+                    // \r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}
                     // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                    //LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                    JsonSerializerOptions options_debug = new JsonSerializerOptions()
+                    {
+                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        WriteIndented = true
+                    };
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
 #endif
                     JsonSerializerOptions options = new JsonSerializerOptions()
                     {
@@ -376,19 +383,25 @@ namespace CollapseLauncher.GameSettings.Genshin
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 // Only tracking actually used items (besides GlobalPerfData and GraphicsData)
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
-                    $"\r\n      Text Language        : {deviceLanguageType}" +
-                    $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
-                    $"\r\n      Audio - Master Volume: {volumeGlobal}" +
-                    $"\r\n      Audio - Music Volume : {volumeMusic}" +
-                    $"\r\n      Audio - SFX Volume   : {volumeSFX}" +
-                    $"\r\n      Audio - Voice Volume : {volumeVoice}" +
-                    $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
-                    $"\r\n      Audio - Surround     : {audioOutput}" +
-                    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
+                //LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
+                //    $"\r\n      Text Language        : {deviceLanguageType}" +
+                //    $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
+                //    $"\r\n      Audio - Master Volume: {volumeGlobal}" +
+                //    $"\r\n      Audio - Music Volume : {volumeMusic}" +
+                //    $"\r\n      Audio - SFX Volume   : {volumeSFX}" +
+                //    $"\r\n      Audio - Voice Volume : {volumeVoice}" +
+                //    $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
+                //    $"\r\n      Audio - Surround     : {audioOutput}" +
+                //    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
                 // If you want to debug GeneralData, uncomment this LogWriteLine
                 // WARNING: VERY EXPENSIVE CPU TIME WILL BE USED
-                // LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)", LogType.Debug, true);
+                JsonSerializerOptions options_debug = new JsonSerializerOptions()
+                {
+                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                };
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
