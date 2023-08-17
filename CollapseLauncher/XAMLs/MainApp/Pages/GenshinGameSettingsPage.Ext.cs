@@ -264,6 +264,12 @@ namespace CollapseLauncher.Pages
             get => (bool)Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
             set => Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch = value;
         }
+
+        public int GlobalIllumination
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.GlobalIllumination - 1;
+            set => Settings.SettingsGeneralData.graphicsData.GlobalIllumination = (GlobalIlluminationOption)(value + 1);
+        }
         #endregion
 
         #region Audio

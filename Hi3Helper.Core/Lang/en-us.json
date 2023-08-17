@@ -821,6 +821,7 @@
     "Graphics_TeammateFX": "Teammate Effects",
     "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
     "Graphics_DisableTeamPageBackground": "Disable Team Page Background",
+    "Graphics_GlobalIllumination": "Global Illumination",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
@@ -830,6 +831,7 @@
     "SpecMedium": "Medium",
     "SpecHigh": "High",
     "SpecVeryHigh": "Very High",
+    "SpecExtreme": "Extreme",
     "SpecPartiallyOff": "Partially Off",
 
     "ApplyBtn": "Apply Settings",

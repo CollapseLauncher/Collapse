@@ -147,6 +147,13 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Default: 8x [4]
         /// </summary>
         public AnisotropicFilteringOption AnisotropicFiltering = AnisotropicFilteringOption.x8;
+
+        /// <summary>
+        /// This defines "<c>Anisotropic Filtering</c>" combobox In-game settings. <br/>
+        /// Options: 1x, 2x, 4x, 8x, 16x
+        /// Default: 8x [4]
+        /// </summary>
+        public GlobalIlluminationOption GlobalIllumination = GlobalIlluminationOption.Off;
         #endregion
 
         #region Methods
@@ -272,6 +279,13 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                         graphics.AnisotropicFiltering = (AnisotropicFilteringOption)setting.value;
                         break;
+
+                    case 19:
+#if DEBUG
+                        LogWriteLine($"Loaded Genshin Settings: Graphics - Global Illumination: {setting.value}", LogType.Debug, true);
+#endif
+                        graphics.GlobalIllumination = (GlobalIlluminationOption)setting.value;
+                        break;
                 }
             }
             return graphics;
@@ -296,7 +310,8 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new GenshinKeyValuePair(13, (int)CrowdDensity),
                 new GenshinKeyValuePair(16, (int)CoOpTeammateEffects),
                 new GenshinKeyValuePair(15, (int)SubsurfaceScattering),
-                new GenshinKeyValuePair(17, (int)AnisotropicFiltering)
+                new GenshinKeyValuePair(17, (int)AnisotropicFiltering),
+                new GenshinKeyValuePair(19, (int)GlobalIllumination)
                 };
 
             JsonSerializerOptions options = new JsonSerializerOptions()

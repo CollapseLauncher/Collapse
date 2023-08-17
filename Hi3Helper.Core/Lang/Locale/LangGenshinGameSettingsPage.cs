@@ -74,6 +74,7 @@
                 public string Graphics_TeammateFX { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_TeammateFX;
                 public string Graphics_AnisotropicFiltering { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_AnisotropicFiltering;
                 public string Graphics_DisableTeamPageBackground { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_DisableTeamPageBackground;
+                public string Graphics_GlobalIllumination { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination;
                 #endregion
 
                 #region Specs
@@ -84,6 +85,7 @@
                 public string SpecMedium { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecMedium;
                 public string SpecHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecHigh;
                 public string SpecVeryHigh { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecVeryHigh;
+                public string SpecExtreme { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecExtreme;
                 public string SpecPartiallyOff { get; set; } = LangFallback?._GenshinGameSettingsPage.SpecPartiallyOff;
                 #endregion
 
