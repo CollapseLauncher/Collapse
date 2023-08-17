@@ -389,8 +389,8 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
                                     <StackPanel>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageAudio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="16,0,0,8"/>
-                                        <ComboBox x:Name="AudioLangSelector" Margin="16,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageAudio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                        <ComboBox x:Name="AudioLangSelector" Margin="0,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_cn}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_en}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_jp}"/>
