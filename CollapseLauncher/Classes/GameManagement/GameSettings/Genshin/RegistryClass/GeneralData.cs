@@ -24,17 +24,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         //Using guide from https://github.com/Myp3a/GenshinConfigurator/wiki/Config-format
         //Thanks Myp3a!
 
-        /// <summary>
-        /// deviceUUID<br/>
-        /// This is supposed to be empty
-        /// </summary>
         public string deviceUUID { get; set; } = "";
-
-        /// <summary>
-        /// userLocalDataVersionId<br/>
-        /// This should be static<br/>
-        /// Value: 0.0.1
-        /// </summary>
         public string userLocalDataVersionId { get; set; } = "0.0.1";
 
         /// <summary>
@@ -106,7 +96,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This is a dict that keeps track of graphics settings changes.<br/>
-        /// Save to ignore (?)
+        /// Always port graphicsData to this also, if not then settings are not applied.
         /// </summary>
         // Temporary for fallback before the implementation is made
         [JsonIgnore]
@@ -115,9 +105,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         [JsonPropertyName("globalPerfData")]
         public string _globalPerfData { get; set; }
 
-        /// <summary>
-        /// Something about minimap config ?
-        /// </summary>
+
         public int miniMapConfig { get; set; } = 1;
 
         /// <summary>
