@@ -821,7 +821,7 @@
     "Graphics_SubsurfaceScattering": "Subsurface Scattering",
     "Graphics_TeammateFX": "Teammate Effects",
     "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
-    "Graphics_DisableTeamPageBackground": "Disable Team Page Background",
+    "Graphics_TeamPageBackground": "Regional Party Setup Background",
     "Graphics_GlobalIllumination": "Global Illumination",
     "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
     "Graphics_GlobalIllumination_Help2": "More information (en)",

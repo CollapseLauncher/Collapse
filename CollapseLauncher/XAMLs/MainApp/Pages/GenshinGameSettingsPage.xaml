@@ -276,7 +276,7 @@
                                     </Grid.ColumnDefinitions>
                                     -->
                                     <StackPanel Grid.Column="0">
-                                        <CheckBox x:Name="TeamPageBackgroundDisableToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_DisableTeamPageBackground}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind DisableTeamPageBackground, Mode=TwoWay}"/>
+                                        <CheckBox x:Name="TeamPageBackgroundToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_TeamPageBackground}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind TeamPageBackground, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>

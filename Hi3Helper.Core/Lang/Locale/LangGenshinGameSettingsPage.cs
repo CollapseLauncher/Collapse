@@ -74,7 +74,7 @@
                 public string Graphics_SubsurfaceScattering { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_SubsurfaceScattering;
                 public string Graphics_TeammateFX { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_TeammateFX;
                 public string Graphics_AnisotropicFiltering { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_AnisotropicFiltering;
-                public string Graphics_DisableTeamPageBackground { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_DisableTeamPageBackground;
+                public string Graphics_TeamPageBackground { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_TeamPageBackground;
                 public string Graphics_GlobalIllumination { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination;
                 public string Graphics_GlobalIllumination_Help1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help1;
                 public string Graphics_GlobalIllumination_Help2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help2;

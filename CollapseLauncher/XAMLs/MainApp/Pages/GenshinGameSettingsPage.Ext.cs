@@ -288,10 +288,10 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGeneralData.graphicsData.Antialiasing = (AntialiasingOption)(value + 1);
         }
 
-        public bool DisableTeamPageBackground
+        public bool TeamPageBackground
         {
-            get => (bool)Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
-            set => Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch = value;
+            get => (bool)!Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
+            set => Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch = !value;
         }
 
         public int GlobalIllumination
