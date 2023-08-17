@@ -17,6 +17,7 @@
         <ThemeShadow x:Name="SharedShadow"/>
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
         <f:DecimalFormatter x:Key="DecimalFormatter" SignificantDigits="5"/>
+        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -212,12 +213,31 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8"/>
-                                        <ComboBox x:Name="GlobalIlluminationSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind GlobalIllumination, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecDisabled}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecMedium}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}"/>
-                                        </ComboBox>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ComboBox x:Name="GlobalIlluminationSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind GlobalIllumination, Mode=TwoWay}">
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecDisabled}"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecMedium}"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}"/>
+                                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}"/>
+                                            </ComboBox>
+                                            <Button Margin="4,-10,0,0" HorizontalAlignment="Center" Height="30" Width="15" CornerRadius="4" Padding="0">
+                                                <Button.Content>
+                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#x3f;" FontSize="10"/>
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout>
+                                                        <StackPanel>
+                                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" TextAlignment="Center">
+                                                                <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help1}"/><LineBreak/>
+                                                                <Hyperlink NavigateUri="https://genshin.hoyoverse.com/en/news/detail/112690#:~:text=Minimum%20Specifications%20for%20Global%20Illumination">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination_Help2}"/>
+                                                                </Hyperlink>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -229,7 +249,15 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <CheckBox x:Name="VolumetricFogToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}"/>
+                                        <Grid>
+                                            <!--
+                                            A workaround for the tooltip not appearing when the checkbox is disabled.
+                                            -->
+                                            <CheckBox x:Name="VolumetricFogToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}">
+                                            </CheckBox>
+                                            <Border x:Name="VolumetricFogTooltipEnforcer" Background="Transparent" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}" Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            </Border>
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
                                         <CheckBox x:Name="ReflectionsToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Reflections, Mode=TwoWay}"/>
@@ -239,7 +267,7 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
-                            <StackPanel Margin="0,8,0,8">
+                            <StackPanel Margin="0,0,0,8">
                                 <Grid>
                                     <!--
                                     Unused for now

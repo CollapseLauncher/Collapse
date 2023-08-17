@@ -211,7 +211,10 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsChecked = false;
                     VolumetricFogToggle.IsEnabled = false;
                 }
-                else VolumetricFogToggle.IsEnabled = true;
+                else 
+                {
+                    VolumetricFogToggle.IsEnabled = true; 
+                }
 
                 return curValue;
             }
@@ -222,7 +225,10 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsChecked = false;
                     VolumetricFogToggle.IsEnabled = false;
                 }
-                else VolumetricFogToggle.IsEnabled = true;
+                else 
+                {
+                    VolumetricFogToggle.IsEnabled = true; 
+                }
 
                 Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
             } 

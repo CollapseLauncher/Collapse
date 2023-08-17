@@ -813,6 +813,7 @@
     "Graphics_VSync": "VSync",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_VolFogs": "Volumetric Fogs",
+    "Graphics_VolFogs_ToolTip": "Requires Shadow Quality to be set at Medium or higher!",
     "Graphics_ReflectionQuality": "Reflection",
     "Graphics_MotionBlur": "Motion Blur",
     "Graphics_BloomQuality": "Bloom",
@@ -822,6 +823,8 @@
     "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
     "Graphics_DisableTeamPageBackground": "Disable Team Page Background",
     "Graphics_GlobalIllumination": "Global Illumination",
+    "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
+    "Graphics_GlobalIllumination_Help2": "More information (en)",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
