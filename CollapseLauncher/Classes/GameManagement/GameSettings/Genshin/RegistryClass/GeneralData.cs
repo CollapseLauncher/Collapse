@@ -75,9 +75,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public string selectedServerName { get; set; } = "os_usa";
 
-        /// <summary>
-        /// I don't know what this do
-        /// </summary>
         public int localLevelIndex { get; set; } = 0;
         public string deviceID { get; set; } = "";
         public string targetUID { get; set; } = "";
@@ -118,9 +115,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         [JsonPropertyName("globalPerfData")]
         public string _globalPerfData { get; set; }
 
-        //[JsonIgnore]
-        //public globalPerfData globalPerfData { get; set; }
-
         /// <summary>
         /// Something about minimap config ?
         /// </summary>
@@ -132,31 +126,11 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public bool enableCameraSlope { get; set; } = true;
 
-        /// <summary>
-        /// This defines "<c>Smart combat camera</c>" whatever that is.<br/>
-        /// Default: true
-        /// </summary>
         public bool enableCameraCombatLock { get; set; } = true;
-
-        /// <summary>
-        /// not sure either what these does.
-        /// </summary>
         public bool completionPkg { get; set; } = false;
         public bool completionPlayGoPkg { get; set; } = false;
-
-        /// <summary>
-        /// Could be for PlayStation multiplayer stuff
-        /// </summary>
         public bool onlyPlayWithPSPlayer { get; set; } = false;
-
-        /// <summary>
-        /// Mysterious~
-        /// </summary>
         public bool needPlayGoFullPkgPatch { get; set; } = false;
-
-        /// <summary>
-        /// Mobile notification stuff
-        /// </summary>
         public bool resinNotification { get; set; } = true;
         public bool exploreNotification { get; set; } = true;
 
@@ -207,9 +181,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public int audioOutput { get; set; } = 0;
 
-        /// <summary>
-        /// Audio related stuff...
-        /// </summary>
         public bool _audioSuccessInit { get; set; } = true;
         public bool enableAudioChangeAndroidMinimumBufferCapacity { get; set; } = true;
         public int audioAndroidMiniumBufferCapacity { get; set; } = 2048;
@@ -228,18 +199,15 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public int vibrationIntensity { get; set; } = 5;
 
-        /// <summary>
-        /// Some vibration related stuff ?
-        /// </summary>
         public bool usingNewVibrationSetting { get; set; } = true;
 
         /// <summary>
-        /// Is not an actual blur setting
+        /// Is not an actual blur setting, look at GraphicsData for the real deal.
         /// </summary>
         public bool motionBlur { get; set; } = true;
 
         /// <summary>
-        /// Gyro Aiming stuff, most likely not used in PC.
+        /// Gyro Aiming controls, used for those who use controller that has Gyro control.
         /// </summary>
         public bool gyroAiming { get; set; } = false;
         public int gyroHorMoveSpeedIndex { get; set; } = 2;
@@ -250,6 +218,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public bool gyroExcludeRightStickVerInput { get; set; } = false;
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
+        //also doesn't seem to be tied into any actual game settings as Genshin doesn't have a native HDR
         public bool firstHDRSetting { get; set; } = true;
         public decimal maxLuminosity { get; set; } = 0.0m;
         public decimal uiPaperWhite { get; set; } = 0.0m;
@@ -257,6 +226,8 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
+        /// Accepted values : 1.4f - 3.0f <br/>
+        /// <c>WARNING:</c> Value is inverted
         /// </summary>
         public double gammaValue { get; set; } = 2.2f;
 
@@ -278,8 +249,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         //[JsonIgnore]
         //public Controllers _overrideControllerMapValueList { get; set; }
 
-        //misc values
-        //just, idk, ignore?
         public bool rewiredDisableKeyboard { get; set; } = false;
         public bool rewiredEnableKeyboard { get; set; } = false;
         public bool rewiredEnableEDS { get; set; } = false;
@@ -290,7 +259,10 @@ namespace CollapseLauncher.GameSettings.Genshin
         public bool forceDisableQuestResourceManagement { get; set; } = false;
         public bool needReportQuestResourceDeleteStatusFiles { get; set; } = false;
 
-        // disableTeamPageBackgroundSwitch (bool false)
+        /// <summary>
+        /// This defines "<c>The background of the Party Setup screen will change based on your current region</c>" in-game combo box <br/>
+        /// Default: true
+        /// </summary>
         public bool disableTeamPageBackgroundSwitch { get; set; } = false;
 
         public bool mtrCached { get; set; } = true;
