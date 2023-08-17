@@ -71,7 +71,7 @@ namespace CollapseLauncher
                 string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.localName));
 
                 // Delete the file
-                File.Delete(assetPath);
+                TryDeleteReadOnlyFile(assetPath);
             }
             else
             {

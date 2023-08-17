@@ -88,11 +88,13 @@ namespace CollapseLauncher
             // Build basic file entry.
             string ManifestPath = Path.Combine(_gamePath, "pkg_version");
 
-            // If the basic package version doesn't exist, then download it.
-            if (!File.Exists(ManifestPath))
-            {
-                await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), ManifestPath, true, null, null, token);
-            }
+            // Download basic package version list
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), ManifestPath, true, null, null, token);
+            // Download additional package lists
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), true, null, null, token);
 
             // Parse basic package version.
             ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL);
@@ -109,11 +111,11 @@ namespace CollapseLauncher
         private void TryDeleteDownloadPref()
         {
             // Get the paths
-            string downloadPrefPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\DownloadPref");
+            // string downloadPrefPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\DownloadPref");
             string ctablePersistPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\ctable.dat");
 
             // Check the file existence and delete it
-            if (File.Exists(downloadPrefPath)) TryDeleteReadOnlyFile(downloadPrefPath);
+            // if (File.Exists(downloadPrefPath)) TryDeleteReadOnlyFile(downloadPrefPath);
             if (File.Exists(ctablePersistPath)) TryDeleteReadOnlyFile(ctablePersistPath);
         }
         #endregion
@@ -153,12 +155,12 @@ namespace CollapseLauncher
             // Parse data_versions
             primaryParentURL = queryProperty.ClientDesignDataURL;
             await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+                "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
 
             // Parse data_versions (silence)
             primaryParentURL = queryProperty.ClientDesignDataSilURL;
             await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+                "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
 
             // Save persistent manifest numbers
             SavePersistentRevision(queryProperty);
@@ -168,7 +170,7 @@ namespace CollapseLauncher
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            CancellationToken token)
+            CancellationToken token, bool forceStoreInPersistent = false)
         {
             try
             {
@@ -190,7 +192,7 @@ namespace CollapseLauncher
                 ParsePersistentManifest(manifestPath,
                     persistentPath, streamingAssetsPath,
                     primaryParentURL, secondaryParentURL,
-                    assetIndex, hashtable);
+                    assetIndex, hashtable, forceStoreInPersistent);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -203,7 +205,8 @@ namespace CollapseLauncher
         private void ParsePersistentManifest(string localManifestPath,
             string persistentPath, string streamingAssetPath,
             string primaryParentURL, string secondaryParentURL,
-            List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable)
+            List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
+            bool forceStoreInPersistent)
         {
             persistentPath = persistentPath.Replace('\\', '/');
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
@@ -247,8 +250,10 @@ namespace CollapseLauncher
 
                     // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
                     manifestEntry.remoteURL = remoteURL;
-                    manifestEntry.remoteName = manifestEntry.isPatch ? assetPersistentPath : assetStreamingAssetPath;
+                    manifestEntry.remoteName = assetStreamingAssetPath;
                     manifestEntry.remoteNamePersistent = assetPersistentPath;
+                    // Decide if the file is forced to be in persistent or not
+                    manifestEntry.isForceStoreInPersistent = forceStoreInPersistent;
 
                     // Check if the hashtable has the value
                     bool IsHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
@@ -258,7 +263,8 @@ namespace CollapseLauncher
                         PkgVersionProperties reference = hashtable[assetStreamingAssetPath];
                         int indexID = assetIndex.IndexOf(reference);
 
-                        // If the index is found (!= -1), then continue overriding its value
+                        // If the index is not found (== -1), then skip it.
+                        // Otherwise, continue overriding its value
                         if (indexID == -1) continue;
 
                         // Start overriding the value
