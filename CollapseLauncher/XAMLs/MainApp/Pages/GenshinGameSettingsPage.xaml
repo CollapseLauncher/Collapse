@@ -253,10 +253,9 @@
                                             <!--
                                             A workaround for the tooltip not appearing when the checkbox is disabled.
                                             -->
+                                            <Border x:Name="VolumetricFogTooltipEnforcer" Background="Transparent" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}" Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                             <CheckBox x:Name="VolumetricFogToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}">
                                             </CheckBox>
-                                            <Border x:Name="VolumetricFogTooltipEnforcer" Background="Transparent" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}" Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            </Border>
                                         </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
