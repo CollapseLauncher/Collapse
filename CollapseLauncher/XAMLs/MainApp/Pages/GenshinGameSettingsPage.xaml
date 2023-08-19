@@ -17,7 +17,7 @@
         <ThemeShadow x:Name="SharedShadow"/>
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
         <f:DecimalFormatter x:Key="DecimalFormatter" SignificantDigits="5"/>
-        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -253,7 +253,7 @@
                                             <!--
                                             A workaround for the tooltip not appearing when the checkbox is disabled.
                                             -->
-                                            <Border x:Name="VolumetricFogTooltipEnforcer" Background="Transparent" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}" Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <Border x:Name="VolumetricFogTooltipEnforcer" Background="Transparent" ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs_ToolTip}" Visibility="{x:Bind VolumetricFogToggle.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}}"/>
                                             <CheckBox x:Name="VolumetricFogToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}">
                                             </CheckBox>
                                         </Grid>
