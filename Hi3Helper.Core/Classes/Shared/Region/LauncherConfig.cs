@@ -47,20 +47,6 @@ namespace Hi3Helper.Shared.Region
                 Name = "Bitbucket",
                 URLPrefix = "https://bitbucket.org/neon-nyan/collapselauncher-releaserepo/raw/main",
                 Description = Lang._Misc.CDNDescription_Bitbucket
-            },
-            new CDNURLProperty
-            {
-                Name = "Statically (Deprecated)",
-                URLPrefix = "https://cdn.statically.io/gh/neon-nyan/CollapseLauncher-ReleaseRepo/main",
-                Description = Lang._Misc.CDNDescription_Statically,
-                PartialDownloadSupport = true
-            },
-            new CDNURLProperty
-            {
-                Name = "jsDelivr (Deprecated)",
-                URLPrefix = "https://cdn.jsdelivr.net/gh/neon-nyan/CollapseLauncher-ReleaseRepo@latest",
-                Description = Lang._Misc.CDNDescription_jsDelivr,
-                PartialDownloadSupport = true
             }
         };
 

@@ -247,7 +247,11 @@ namespace CollapseLauncher
             int cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
 
             // Fallback to the first CDN if index < 0 or > length of the list
-            if (cdnIndex < 0 || cdnIndex > CDNList.Count - 1) cdnIndex = 0;
+            if (cdnIndex < 0 || cdnIndex > CDNList.Count - 1)
+            {
+                cdnIndex = 0;
+                SetAndSaveConfigValue("CurrentCDN", 0);
+            }
 
             // Return the CDN property as per index
             return CDNList[cdnIndex];
