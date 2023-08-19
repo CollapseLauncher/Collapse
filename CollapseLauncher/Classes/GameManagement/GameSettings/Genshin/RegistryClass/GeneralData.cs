@@ -226,7 +226,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
 
         /// <summary>
-        /// This holds said override for those controllers.
+        /// This holds controller mapping override for controller ID in _overrideControllerMapKeyList.
         /// </summary>
         // Temporary for fallback before the implementation is made
         public List<string> _overrideControllerMapValueList { get; set; }
@@ -282,12 +282,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         #region Methods
 #nullable enable
-#if DEBUG
-        // Set this to true if you want to dump the entire JSON of Genshin Settings to console
-        // Warning: Resource intensive!
-        private static bool DumpJSON = false;
-#endif
-
         public static GeneralData Load()
         {
             try
@@ -298,21 +292,24 @@ namespace CollapseLauncher.GameSettings.Genshin
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
-#if DEBUG
-                    if (DumpJSON)
-                    {
-                        LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
-                            $"{Encoding.UTF8.GetString((byte[])value)}", LogType.Debug, true);
+#if DUMPGIJSON
+                    // Dump GeneralData as raw string
+                    LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
+                        $"{Encoding.UTF8.GetString((byte[])value)}", LogType.Debug, true);
 
-                        JsonSerializerOptions options_debug = new JsonSerializerOptions()
-                        {
-                            TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                            WriteIndented = true
-                        };
-                        LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
-                    }
-                    else LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                    // Dump GeneralData as indented JSON output using GeneralData properties
+                    JsonSerializerOptions options_debug = new JsonSerializerOptions()
+                    {
+                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        WriteIndented = true
+                    };
+                    LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
+#endif
+#if DEBUG
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug,true);
+#else
+                    LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
                     JsonSerializerOptions options = new JsonSerializerOptions()
                     {
@@ -350,30 +347,29 @@ namespace CollapseLauncher.GameSettings.Genshin
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
-#if DEBUG
-                if (DumpJSON)
-                {
-                    JsonSerializerOptions options_debug = new JsonSerializerOptions()
+#if DUMPGIJSON
+                //Dump saved GeneralData JSON from Collapse as indented output
+                JsonSerializerOptions options_debug = new JsonSerializerOptions()
                     {
                         TypeInfoResolver = GenshinSettingsJSONContext.Default,
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                         WriteIndented = true
                     };
-                    LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
-                }
-                else
-                {
-                    LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
-                        $"\r\n      Text Language        : {deviceLanguageType}" +
-                        $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
-                        $"\r\n      Audio - Master Volume: {volumeGlobal}" +
-                        $"\r\n      Audio - Music Volume : {volumeMusic}" +
-                        $"\r\n      Audio - SFX Volume   : {volumeSFX}" +
-                        $"\r\n      Audio - Voice Volume : {volumeVoice}" +
-                        $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
-                        $"\r\n      Audio - Surround     : {audioOutput}" +
-                        $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
-                }
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
+#endif
+#if DEBUG
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
+                    $"\r\n      Text Language        : {deviceLanguageType}" +
+                    $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
+                    $"\r\n      Audio - Master Volume: {volumeGlobal}" +
+                    $"\r\n      Audio - Music Volume : {volumeMusic}" +
+                    $"\r\n      Audio - SFX Volume   : {volumeSFX}" +
+                    $"\r\n      Audio - Voice Volume : {volumeVoice}" +
+                    $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
+                    $"\r\n      Audio - Surround     : {audioOutput}" +
+                    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
+#else
+                LogWriteLine($"Saved Genshin Game Settings", LogType.Default, true);
 #endif
             }
             catch (Exception ex)
@@ -384,6 +380,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
-        #endregion
+#endregion
     }
 }
