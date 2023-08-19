@@ -61,7 +61,7 @@
 
                             <AcrylicBrush x:Key="LoadingBrush" TintColor="{ThemeResource SystemAccentColorLight1}" TintOpacity="1" FallbackColor="{ThemeResource SystemAccentColorLight1}"/>
 
-                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.85" FallbackColor="#DD222222"/>
+                            <AcrylicBrush x:Key="NavigationBarBrush" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.85" FallbackColor="#FF222222"/>
                             <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80" FallbackColor="#EE1D1D1D"/>
                             <AcrylicBrush x:Key="NavigationViewExpandedPaneBackground" TintColor="#222222" TintOpacity="0.0" TintLuminosityOpacity="0.80"/>
                             <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
