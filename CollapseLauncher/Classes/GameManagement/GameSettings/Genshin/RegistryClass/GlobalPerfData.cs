@@ -69,6 +69,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (16,(int) graphics.CoOpTeammateEffects - 1, version),
                 new PerfDataItem (15,(int) graphics.SubsurfaceScattering - 1, version),
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
+                new PerfDataItem (19,(int) graphics.GlobalIllumination - 1, version)
             };
             string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GenshinSettingsJSONContext.Default);
 #if DEBUG

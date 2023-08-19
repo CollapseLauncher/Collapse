@@ -464,6 +464,9 @@ namespace CollapseLauncher.Pages
                         case ContentDialogResult.Secondary:
                             // If the main dialog is getting cancelled, then return false (as cancel and fallback to URL [if enabled]).
                             return false;
+                        case ContentDialogResult.None:
+                            // Return true when cancelled
+                            return true;
                     }
 
                     // If the file variable is not null anymore, then break from the loop and continue

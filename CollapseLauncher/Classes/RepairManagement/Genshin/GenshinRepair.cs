@@ -65,7 +65,7 @@ namespace CollapseLauncher
             _assetIndex.Clear();
 
             // Step 1: Ensure that every files are not read-only
-            TryUnassignReadOnlyFiles();
+            TryUnassignReadOnlyFiles(_gamePath);
 
             // Step 2: Fetch asset index
             _assetIndex = await Fetch(_assetIndex, _token.Token);

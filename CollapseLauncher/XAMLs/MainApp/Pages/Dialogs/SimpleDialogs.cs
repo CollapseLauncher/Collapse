@@ -72,7 +72,7 @@ namespace CollapseLauncher.Dialogs
                     Lang._Dialogs.LocateExePathTitle,
                     Lang._Dialogs.LocateExePathSubtitle,
                     Content,
-                    null,
+                    Lang._Misc.Cancel,
                     Lang._Misc.LocateExecutable,
                     Lang._Misc.OpenDownloadPage
                 );

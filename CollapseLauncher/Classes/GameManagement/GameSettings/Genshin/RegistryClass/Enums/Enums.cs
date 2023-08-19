@@ -119,5 +119,13 @@
         x8 = 4,
         x16 = 5
     }
+
+    enum GlobalIlluminationOption
+    {
+        Off = 1,
+        Medium = 2,
+        High = 3,
+        Extreme = 4
+    }
 }
 

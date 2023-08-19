@@ -382,20 +382,6 @@ namespace CollapseLauncher
             _progressTotalCount = assetIndex.Count;
         }
 
-        private void TryDeleteReadOnlyFile(string path)
-        {
-            try
-            {
-                FileInfo file = new FileInfo(path);
-                file.IsReadOnly = false;
-                file.Delete();
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed to delete file: {path}\r\n{ex}", LogType.Error, true);
-            }
-        }
-
         private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "")
         {
             // Iterate files inside the desired path based on filter.

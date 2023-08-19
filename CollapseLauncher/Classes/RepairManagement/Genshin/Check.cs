@@ -322,18 +322,5 @@ namespace CollapseLauncher
             }
         }
         #endregion
-
-        #region Tools
-        private void TryUnassignReadOnlyFiles()
-        {
-            // Iterate every files and set the read-only flag to false
-            foreach (string file in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
-            {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo.IsReadOnly)
-                    fileInfo.IsReadOnly = false;
-            }
-        }
-        #endregion
     }
 }
