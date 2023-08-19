@@ -5,7 +5,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.Intrinsics.X86;
+using System.Runtime.Intrinsics;
 using System.Threading;
+using SharpCompress.Compressors.BZip2;
 
 namespace Hi3Helper.Data
 {
@@ -39,7 +42,7 @@ namespace Hi3Helper.Data
 	*/
     public sealed class BinaryPatchUtility
     {
-        private const int c_bufferSize = 0x1000;
+        private const int c_bufferSize = 16 << 10;
         private Stream _inputStream { get; set; }
         private Stream _outputStream { get; set; }
         private Func<Stream> _patchStream { get; set; }
@@ -156,13 +159,74 @@ namespace Hi3Helper.Data
             }
         }
 
+        private Stream TryGetCompressionStream(Stream source, long startPosition)
+        {
+            // Check if the stream is seekable and readable
+            if (!source.CanRead) throw new InvalidOperationException("Stream is not readable!");
+            if (!source.CanSeek) throw new InvalidOperationException("Stream is not seekable!");
+
+            // Initialize the delegate function to return compressed stream
+            Func<Stream>[] streams = new Func<Stream>[]
+            {
+                () => new CBZip2InputStream(source, true, true), // Commonly used compression in BZip2
+                () => new GZipStream(source, CompressionMode.Decompress, true) // GZip compressed BSDiff used in miHoYo Games (like Honkai Impact 3rd)
+            };
+            Stream tempStream = null;
+
+            // Try finding the compressed stream
+            for (int i = 0; i < streams.Length; i++)
+            {
+                try
+                {
+                    source.Position = startPosition;
+                    tempStream = streams[i]();
+                    tempStream.ReadByte();
+                    source.Position = startPosition;
+                    return streams[i]();
+                }
+                catch { }
+                finally
+                {
+                    tempStream?.Dispose();
+                    tempStream = null;
+                }
+            }
+
+            throw new FormatException("The diff file has unsupported compression format or the file is damaged/invalid!");
+        }
+
+        private long[] ReadControlNumbers(Stream source, long newPosition, long newSize)
+        {
+            Span<byte> buffer = stackalloc byte[8];
+            long[] controls = new long[3];
+
+            source.ReadExactly(buffer);
+            controls[0] = ReadInt64Sanity(buffer); // Copy data control number
+
+            source.ReadExactly(buffer);
+            controls[1] = ReadInt64Sanity(buffer); // Additional/new data control number
+
+            source.ReadExactly(buffer);
+            controls[2] = ReadInt64Sanity(buffer); // Offset data control number
+
+            // SANITY CHECK: If the new position + Copy data control number > new size, then throw.
+            if (newPosition + controls[0] > _newSize)
+                throw new InvalidDataException($"The patch file is corrupted! newPosition + control[0]/Copy control number ({newPosition} + {controls[0]}) > newSize ({_newSize})");
+
+            // SANITY CHECK: If the copy control or new data control returns negative number, then throw.
+            if (controls[0] < 0 || controls[1] < 0)
+                throw new InvalidDataException($"The patch file is corrupted! control[0] ({controls[0]}) or control[1] ({controls[1]}) cannot be < 0!");
+
+            return controls;
+        }
+
         /// <summary>
         /// Applies a binary patch (in <a href="http://www.daemonology.net/bsdiff/">bsdiff</a> format) to the data in
         /// input stream and writes the results of patching to output stream defined after initialization.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        public void Apply(CancellationToken token = default)
+        public unsafe void Apply(CancellationToken token = default)
         {
             // check if the apply can be proceed
             if (!_canContinueApply)
@@ -181,65 +245,65 @@ namespace Hi3Helper.Data
             Span<byte> newData = stackalloc byte[c_bufferSize];
             Span<byte> oldData = stackalloc byte[c_bufferSize];
 
-            // prepare to read three parts of the patch in parallel
-            using (Stream compressedControlStream = _patchStream())
-            using (Stream compressedDiffStream = _patchStream())
-            using (Stream compressedExtraStream = _patchStream())
+            // decompress each part (to read it)
+            using (Stream controlCompStream = _patchStream())
+            using (Stream diffCompStream = _patchStream())
+            using (Stream extraCompStream = _patchStream())
+            using (Stream controlStream = TryGetCompressionStream(controlCompStream, c_headerSize))
+            using (Stream diffStream = TryGetCompressionStream(diffCompStream, c_headerSize + _controlLength))
+            using (Stream extraStream = TryGetCompressionStream(extraCompStream, c_headerSize + _controlLength + _diffLength))
             {
-                // seek to the start of each part
-                compressedControlStream.Position += c_headerSize;
-                compressedDiffStream.Position += c_headerSize + _controlLength;
-                compressedExtraStream.Position += c_headerSize + _controlLength + _diffLength;
+                Span<long> control = stackalloc long[3];
+                Span<byte> buffer = stackalloc byte[8];
 
-                // decompress each part (to read it)
-                using (GZipStream controlStream = new GZipStream(compressedControlStream, CompressionMode.Decompress))
-                using (GZipStream diffStream = new GZipStream(compressedDiffStream, CompressionMode.Decompress))
-                using (GZipStream extraStream = new GZipStream(compressedExtraStream, CompressionMode.Decompress))
+                long oldPosition = 0;
+                long newPosition = 0;
+                while (newPosition < _newSize)
                 {
-                    Span<long> control = stackalloc long[3];
-                    Span<byte> buffer = stackalloc byte[8];
+                    // Get the control array
+                    control = ReadControlNumbers(controlStream, newPosition, _newSize);
 
-                    int oldPosition = 0;
-                    int newPosition = 0;
-                    while (newPosition < _newSize)
+                    // Get the size to copy
+                    long bytesToCopy = control[0];
+
+                    // Start the copy process
+                    while (bytesToCopy > 0)
                     {
-                        // read control data
-                        for (int i = 0; i < 3; i++)
+                        // Throw if cancelation is called
+                        token.ThrowIfCancellationRequested();
+
+                        // Get minimum size to copy
+                        int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
+                        // Get the minimum size from old data to copy
+                        int availableInputBytes = (int)Math.Min(actualBytesToCopy, _inputStream.Length - _inputStream.Position);
+
+                        // Read diff and old data
+                        diffStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
+                        _inputStream.ReadExactly(oldData.Slice(0, availableInputBytes));
+
+                        // Add the old with new data in vectors
+                        fixed (byte* newDataPtr = newData)
+                        fixed (byte* oldDataPtr = oldData)
                         {
-                            controlStream.ReadExactly(buffer);
-                            control[i] = ReadInt64Sanity(buffer);
-                        }
+                            // Get the offset and remained offset
+                            int offset;
+                            long offsetRemained = c_bufferSize % Vector128<byte>.Count;
+                            for (offset = 0; offset < c_bufferSize - offsetRemained; offset += Vector128<byte>.Count)
+                            {
+                                Vector128<byte> newVector = Sse2.LoadVector128(newDataPtr + offset);
+                                Vector128<byte> oldVector = Sse2.LoadVector128(oldDataPtr + offset);
+                                Vector128<byte> resultVector = Sse2.Add(newVector, oldVector);
 
-                        // sanity-check
-                        if (newPosition + control[0] > _newSize)
-                        {
-                            throw new InvalidDataException($"The patch file is corrupted! newPosition + control[0] ({newPosition} + {control[0]}) > newSize ({_newSize})");
-                        }
+                                Sse2.Store(newDataPtr + offset, resultVector);
+                            }
 
-                        // seek old file to the position that the new data is diffed against
-                        _inputStream.Position = oldPosition;
+                            // Process the remained data by the last offset
+                            while (offset < c_bufferSize) *(newDataPtr + offset) += *(oldDataPtr + offset++);
 
-                        int bytesToCopy = (int)control[0];
-                        while (bytesToCopy > 0)
-                        {
-                            // Throw if cancelation is called
-                            token.ThrowIfCancellationRequested();
-
-                            int actualBytesToCopy = Math.Min(bytesToCopy, c_bufferSize);
-
-                            // read diff string
-                            diffStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
-
-                            // add old data to diff string
-                            int availableInputBytes = Math.Min(actualBytesToCopy, (int)(_inputStream.Length - _inputStream.Position));
-                            _inputStream.ReadExactly(oldData.Slice(0, availableInputBytes));
-
-                            for (int index = 0; index < availableInputBytes; index++)
-                                newData[index] += oldData[index];
-
+                            // Write the data into the output
                             _outputStream.Write(newData.Slice(0, actualBytesToCopy));
 
-                            // adjust counters
+                            // Adjust counters
                             newPosition += actualBytesToCopy;
                             oldPosition += actualBytesToCopy;
                             bytesToCopy -= actualBytesToCopy;
@@ -247,35 +311,38 @@ namespace Hi3Helper.Data
                             // Update progress
                             UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
                         }
-
-                        // sanity-check
-                        if (newPosition + control[1] > _newSize)
-                        {
-                            throw new InvalidDataException($"The patch file is corrupted! newPosition + control[1] ({newPosition} + {control[1]}) > newSize ({_newSize})");
-                        }
-
-                        // read extra string
-                        bytesToCopy = (int)control[1];
-                        while (bytesToCopy > 0)
-                        {
-                            // Throw if cancelation is called
-                            token.ThrowIfCancellationRequested();
-
-                            int actualBytesToCopy = Math.Min(bytesToCopy, c_bufferSize);
-
-                            extraStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
-                            _outputStream.Write(newData.Slice(0, actualBytesToCopy));
-
-                            newPosition += actualBytesToCopy;
-                            bytesToCopy -= actualBytesToCopy;
-
-                            // Update progress
-                            UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
-                        }
-
-                        // adjust position
-                        oldPosition = (int)(oldPosition + control[2]);
                     }
+
+                    // SANITY CHECK: Check if the new position + Additional/new data has more size than _newSize.
+                    //               If yes, then throw.
+                    if (newPosition + control[1] > _newSize)
+                    {
+                        throw new InvalidDataException($"The patch file is corrupted! newPosition + control[1] ({newPosition} + {control[1]}) > newSize ({_newSize})");
+                    }
+
+                    // Get the bytes to copy for the additional data (new data)
+                    bytesToCopy = (int)control[1];
+                    while (bytesToCopy > 0)
+                    {
+                        // Throw if cancelation is called
+                        token.ThrowIfCancellationRequested();
+
+                        // Get the size of the additional data to copy
+                        int actualBytesToCopy = (int)Math.Min(bytesToCopy, c_bufferSize);
+
+                        // Read the new data from extra stream and write it to output
+                        extraStream.ReadExactly(newData.Slice(0, actualBytesToCopy));
+                        _outputStream.Write(newData.Slice(0, actualBytesToCopy));
+
+                        newPosition += actualBytesToCopy;
+                        bytesToCopy -= actualBytesToCopy;
+
+                        // Update progress
+                        UpdateProgress(_outputStream.Length, _newSize, actualBytesToCopy);
+                    }
+
+                    // Adjust the position (either move it towards or behind the current position)
+                    oldPosition = oldPosition + control[2];
                 }
             }
 
