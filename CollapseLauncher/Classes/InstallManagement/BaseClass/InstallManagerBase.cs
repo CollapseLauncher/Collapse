@@ -630,6 +630,8 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
             }
+
+            _gameVersionManager.UpdateGamePath("", true);
             _gameVersionManager.Reinitialize();
             return true;
         }
