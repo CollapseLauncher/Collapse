@@ -1368,7 +1368,7 @@ namespace CollapseLauncher.Pages
         #region Game Management Buttons
         private void RepairGameButton_Click(object sender, RoutedEventArgs e)
         {
-            m_mainPage.InvokeMainPageNavigateByTag("repair");
+            MainFrameChanger.ChangeMainFrame(typeof(RepairPage));
         }
 
         private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
