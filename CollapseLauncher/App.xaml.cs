@@ -23,10 +23,6 @@ namespace CollapseLauncher
         {
             try
             {
-                bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
-
-                if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
-
                 this.InitializeComponent();
                 RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
 
@@ -47,6 +43,8 @@ namespace CollapseLauncher
                 }
 
                 m_window.Activate();
+                bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
+                if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
             }
             catch (Exception ex)
             {
@@ -56,19 +54,8 @@ namespace CollapseLauncher
             }
         }
 
-        public static async void ToggleBlurBackdrop(bool useBackdrop = true)
+        public static void ToggleBlurBackdrop(bool useBackdrop = true)
         {
-            // Always wait for the resources to load up
-            while (true)
-            {
-                try
-                {
-                    await Task.Delay(250);
-                    if (Current.Resources.Count != 0) break;
-                }
-                catch { }
-            }
-
             // Enumerate the dictionary (MergedDictionaries)
             foreach (ResourceDictionary resource in Current
                 .Resources
