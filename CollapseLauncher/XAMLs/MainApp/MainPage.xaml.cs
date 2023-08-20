@@ -1208,14 +1208,14 @@ namespace CollapseLauncher
             if (!hide)
             {
                 GridBG_IconTitle.Width = double.NaN;
-                if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
-                    GridBG_IconTitle.Visibility = Visibility.Visible;
+                GridBG_IconTitle.Opacity = 1d;
+                GridBG_IconImg.Opacity = 1d;
                 return;
             }
 
-            GridBG_IconTitle.Width = 0;
-            if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
-                GridBG_IconTitle.Visibility = Visibility.Collapsed;
+            GridBG_IconTitle.Width = 0d;
+            GridBG_IconTitle.Opacity = 0d;
+            GridBG_IconImg.Opacity = 0.8d;
         }
 
         private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

@@ -152,20 +152,19 @@
                 <RepositionThemeTransition/>
             </Button.ContentTransitions>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <StackPanel.ChildrenTransitions>
-                    <RepositionThemeTransition/>
-                </StackPanel.ChildrenTransitions>
-                <Image x:Name="GridBG_IconImg" Margin="0,-1,0,0" Source="ms-appx:///Assets/CollapseLauncherLogo.png" Opacity="1" Width="24" Height="24"/>
-                <StackPanel Name="GridBG_IconTitle" Margin="8,-8,0,0" Width="0" VerticalAlignment="Center">
+                <Image x:Name="GridBG_IconImg" Margin="0,-1,0,0" Source="ms-appx:///Assets/CollapseLauncherLogo.png" Opacity="0.8" Width="24" Height="24">
+                    <Image.OpacityTransition>
+                        <ScalarTransition/>
+                    </Image.OpacityTransition>
+                </Image>
+                <StackPanel Name="GridBG_IconTitle" Margin="8,-8,0,0" Width="0" Opacity="0" VerticalAlignment="Center">
                     <StackPanel.OpacityTransition>
                         <ScalarTransition/>
                     </StackPanel.OpacityTransition>
-                    <TextBlock Text="Collapse" FontWeight="Medium" FontSize="10"
-                        Opacity="0.8" Margin="-6,0,0,0" HorizontalAlignment="Left"
+                    <TextBlock Text="Collapse" FontWeight="Medium" FontSize="10" Margin="-6,0,0,0" HorizontalAlignment="Left"
                         Visibility="Visible">
                     </TextBlock>
-                    <TextBlock Text="Launcher" FontWeight="Bold" FontSize="12"
-                        Opacity="0.8" Margin="0,-3,0,-8" Foreground="{ThemeResource AccentColor}"
+                    <TextBlock Text="Launcher" FontWeight="Bold" FontSize="12" Margin="0,-3,0,-8" Foreground="{ThemeResource AccentColor}"
                         HorizontalAlignment="Left" Visibility="Visible">
                     </TextBlock>
                 </StackPanel>
@@ -173,6 +172,9 @@
                         Margin="-16,-12,0,0" Grid.Column="4" Grid.ColumnSpan="2"
                         Background="{ThemeResource AccentColor}" HorizontalAlignment="Right"
                         VerticalAlignment="Center" CornerRadius="3" Visibility="Visible">
+                    <StackPanel.Transitions>
+                        <RepositionThemeTransition/>
+                    </StackPanel.Transitions>
                     <TextBlock x:Name="VersionNumberIndicator" Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
                 </StackPanel>
             </StackPanel>
