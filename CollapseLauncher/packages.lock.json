@@ -58,6 +58,12 @@
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
       },
+      "PhotoSauce.MagicScaler": {
+        "type": "Direct",
+        "requested": "[0.13.2, )",
+        "resolved": "0.13.2",
+        "contentHash": "MSFwTRbK9NwBsaDDupMvMfzI+27Ns4eilkcR0lni3LTx9cQVgZbxJJSq5Qg3Y2LbkeYiVbLWWj7T8BHYeif6MA=="
+      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta3.22114.1, )",
@@ -173,8 +179,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.1",
+        "contentHash": "vl5vsx0SDm1yPePPHypepp8vNJMVorYMIrPZohTOGAKP0Br8pwMvp3cUHBsANMjFxuULaEfQdBfytDn88DgZ1w=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -1116,7 +1122,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
@@ -1185,6 +1191,12 @@
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
       },
+      "PhotoSauce.MagicScaler": {
+        "type": "Direct",
+        "requested": "[0.13.2, )",
+        "resolved": "0.13.2",
+        "contentHash": "MSFwTRbK9NwBsaDDupMvMfzI+27Ns4eilkcR0lni3LTx9cQVgZbxJJSq5Qg3Y2LbkeYiVbLWWj7T8BHYeif6MA=="
+      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta3.22114.1, )",
@@ -1300,8 +1312,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.1",
+        "contentHash": "vl5vsx0SDm1yPePPHypepp8vNJMVorYMIrPZohTOGAKP0Br8pwMvp3cUHBsANMjFxuULaEfQdBfytDn88DgZ1w=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -2243,7 +2255,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
