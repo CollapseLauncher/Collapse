@@ -173,8 +173,8 @@ namespace CollapseLauncher
                 ));
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
-
+                string remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+                LogWriteLine($"File [T: {RepairAssetType.General}]: {(string.IsNullOrEmpty(remoteName) ? asset.localName : remoteName)} is not found or has unmatched size", LogType.Warning, true);
                 return;
             }
 
