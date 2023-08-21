@@ -1,13 +1,13 @@
-﻿using CommunityToolkit.WinUI.UI;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.System;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Windows.System;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -18,12 +18,10 @@ namespace CollapseLauncher.Dialogs
     public static class KeybindDialogs
     {
         public static event EventHandler<int> KeyboardShortcutsEvent;
-
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
-
         private static int pageNum = 0;
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
-        {   
+        {
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
 
             List<List<string>> keys = KeyList;
@@ -35,7 +33,7 @@ namespace CollapseLauncher.Dialogs
             genStack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
             genStack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page"));
             genStack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
-            genStack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray"));
+            genStack.Children.Add(GenerateShortcutBlock(keys[5], "Open the Notification Tray"));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -96,13 +94,13 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum = 0;
 
-            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
+            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
 
             Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0), IsEnabled = false };
             Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "2" }, Margin = new Thickness(5, 0, 5, 0) };
             Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "3" }, Margin = new Thickness(5, 0, 5, 0) };
             Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "4" }, Margin = new Thickness(5, 0, 5, 0) };
-            
+
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
 
@@ -184,6 +182,7 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal
             };
 
+            kbKeys.Add(description);
             kbKeys.Add(pageNum.ToString());
             if (enableSwapButton)
             {
@@ -198,7 +197,7 @@ namespace CollapseLauncher.Dialogs
                 shortcutSwap.Click += Swap_Click;
             }
 
-            foreach (string key in kbKeys.SkipLast(1))
+            foreach (string key in kbKeys.SkipLast(2))
             {
                 shortcutButtons.Children.Add(CreateKeyBoardButton(key));
                 shortcutButtons.Children.Add(new TextBlock()
@@ -254,11 +253,30 @@ namespace CollapseLauncher.Dialogs
             StackPanel mainSwitchKeyContent = new StackPanel()
             {
                 Orientation = Orientation.Vertical,
-                MaxWidth = 300
+                MaxWidth = 320
             };
-            mainSwitchKeyContent.Children.Add(new TextBlock() { 
-                Text = "Please type the new combination for this shortcut by choosing one option from each category.\nThe available options are the following:",
-                Margin = new Thickness(0, 8, 0, 8),
+
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = "Type the new combination for the shortcut",
+                Margin = new Thickness(0, 8, 0, 2),
+                TextWrapping = TextWrapping.Wrap,
+                HorizontalAlignment = HorizontalAlignment.Center
+            });
+
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = oldKeys.Last(),
+                Margin = new Thickness(5, 6, 0, 8),
+                TextWrapping = TextWrapping.Wrap,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                FontWeight = FontWeights.Bold
+            });
+
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = "You can use to following keys:",
+                Margin = new Thickness(0, 2, 0, 8),
                 TextWrapping = TextWrapping.Wrap
             });
             mainSwitchKeyContent.Children.Add(new TextBlock()
@@ -269,18 +287,24 @@ namespace CollapseLauncher.Dialogs
             mainSwitchKeyContent.Children.Add(new TextBlock()
             {
                 Text = "・ Keys - A to Z or Tab",
-                Margin = new Thickness(5, 4, 0, 15)
+                Margin = new Thickness(5, 4, 0, 8)
+            });
+            mainSwitchKeyContent.Children.Add(new TextBlock()
+            {
+                Text = "Note: Combinations already defined by the operating system cannot be used.",
+                Margin = new Thickness(5, 4, 0, 10),
+                TextWrapping = TextWrapping.Wrap
             });
 
             StackPanel keysPanel = new StackPanel()
             {
                 Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Center, 
+                VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-            keysPanel.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
-            keysPanel.Children.Add(new FontIcon() { Glyph = "arrow-right", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(10 , 0, 10, 0) });
-            TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
+            keysPanel.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys.SkipLast(1)), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
+            keysPanel.Children.Add(new FontIcon() { Glyph = "arrow-right", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(10, 0, 10, 0) });
+            TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys.SkipLast(1)), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
             keysPanel.Children.Add(keysPressed);
             mainSwitchKeyContent.Children.Add(keysPanel);
 
@@ -296,6 +320,8 @@ namespace CollapseLauncher.Dialogs
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
                 XamlRoot = content.XamlRoot
             };
+
+            oldKeys = oldKeys.SkipLast(1).ToList();
 
             int keyCount = 0;
             result.KeyDown += (e, s) =>
@@ -334,7 +360,7 @@ namespace CollapseLauncher.Dialogs
                     keysPressed.Text += keyStr;
 
                     newKeys = keysPressed.Text.Split(" + ").ToList();
-                    result.IsPrimaryButtonEnabled = KeyList.FindIndex(i => i.Contains(newKeys[0]) && i.Contains(newKeys[1])) == -1;
+                    result.IsPrimaryButtonEnabled = ValidKeyCombination(newKeys);
                 }
             };
 
@@ -361,7 +387,7 @@ namespace CollapseLauncher.Dialogs
                 try
                 {
                     (sender as Button).FindParent<ContentDialog>().Hide();
-                    await Dialog_SwitchKey(sender as UIElement, keys);
+                    await Dialog_SwitchKey(sender as UIElement, keys.SkipLast(1).ToList());
                     await Dialog_ShowKeybinds(sender as UIElement, int.Parse(keys.Last()));
                 }
                 catch (Exception ex)
@@ -429,6 +455,12 @@ namespace CollapseLauncher.Dialogs
             return (VirtualKeyModifiers)Enum.Parse(typeof(VirtualKeyModifiers), key);
         }
 
+        private static bool ValidKeyCombination(List<string> keys)
+        {
+            return KeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1 
+                && forbiddenKeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1;
+        }
+
         private readonly static List<List<string>> defaultKeyList = new List<List<string>>
                 {
                     new List<string> { "Ctrl", "1 - 3" },   // Game selection
@@ -448,6 +480,14 @@ namespace CollapseLauncher.Dialogs
                     new List<string> { "Shift", "S" },      // Game settings page
                     new List<string> { "Shift", "C" }       // Caches page
 
+                };
+
+        private readonly static List<List<string>> forbiddenKeyList = new List<List<string>>
+                {
+                    new List<string> { "Ctrl", "A" },
+                    new List<string> { "Ctrl", "X" },
+                    new List<string> { "Ctrl", "C" },
+                    new List<string> { "Ctrl", "V" }
                 };
 
         public static List<List<string>> KeyList
