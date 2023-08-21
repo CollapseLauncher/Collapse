@@ -26,21 +26,28 @@ namespace CollapseLauncher.Dialogs
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness (0, 0, 15, 0) };
 
             List<List<string>> keys = KeyList;
-            
-            // General shortcuts
-            stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
-            stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page"));
-            
-            stack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
-            stack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray"));
 
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            // General shortcuts
+
+            StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness (0, 5, 0, 5) };
+            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0) });
+            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Region Change" }, Margin = new Thickness(5, 0, 5, 0) });
+            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Game Folder" }, Margin = new Thickness(5, 0, 5, 0) });
+            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Game Tools" }, Margin = new Thickness(5, 0, 5, 0) });
+
+            StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical };
+            genStack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            genStack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
+            genStack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page"));
+            genStack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
+            genStack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray"));
+            genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             // Region/Game Shortcuts
-            stack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
-            stack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
+            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            changeStack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
+            changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
 
             string gameMod = keys[0][0];
             string regionMod = keys[1][0];
@@ -64,29 +71,38 @@ namespace CollapseLauncher.Dialogs
                 Margin = new Thickness(0, -30, 0, 0)
             };
             modifierSwap.Click += Swap_Click;
-            stack.Children.Add(modifierSwap);
+            changeStack.Children.Add(modifierSwap);
 
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
-            stack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            changeStack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
+            changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
-            // Game shorcuts
-            stack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
-            stack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
-            stack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
-            stack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            // Game folder
+            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            gameFolderStack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
+            gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
-            stack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
-            stack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Repair page"));
-            stack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
-            stack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
-            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            // Game management
+            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            gameManageStack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameManageStack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
+            gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Repair page"));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
+            gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+
+            stack.Children.Add(buttonStack);
+            stack.Children.Add(genStack);
+            stack.Children.Add(changeStack);
+            stack.Children.Add(gameFolderStack);
+            stack.Children.Add(gameManageStack);
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
