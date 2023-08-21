@@ -1303,7 +1303,7 @@ namespace CollapseLauncher
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
                         Modifiers = keyModifier,
-                        Key = VirtualKey.Number1 + numIndex,
+                        Key = VirtualKey.Number1 + numIndex++,
                     };
                     keystroke.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
@@ -1382,13 +1382,15 @@ namespace CollapseLauncher
 
         private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 
+        private System.Timers.Timer ChangeTimer = new System.Timers.Timer(500) { AutoReset = false };
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             try
             {
-                if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
+                if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0] || ChangeTimer.Enabled) return;
                 NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-                Navigate(typeof(HomePage), PreviousTag);
+                NavigateInnerSwitch("launcher");
+                ChangeTimer.Start();
             }
             catch
             {
@@ -1401,14 +1403,16 @@ namespace CollapseLauncher
         {
             try
             {
-                if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
+                if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem || ChangeTimer.Enabled) return;
                 NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
-                Navigate(typeof(SettingsPage), PreviousTag);
+                Navigate(typeof(SettingsPage), "settings");
+                ChangeTimer.Start();
             }
             catch
             {
                 LogWriteLine("Can't find the settings page.", LogType.Error);
-                Navigate(typeof(SettingsPage), PreviousTag);
+                Navigate(typeof(SettingsPage), "settings");
+                ChangeTimer.Start();
             }
         }
 
