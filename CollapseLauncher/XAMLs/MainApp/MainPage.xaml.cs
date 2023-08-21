@@ -32,6 +32,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
+    using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs>;
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
@@ -1286,14 +1287,6 @@ namespace CollapseLauncher
                     };
                     keystroke.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
-
-                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
-                    {
-                        Modifiers = keyModifier,
-                        Key = VirtualKey.NumberPad1 + numIndex++,
-                    };
-                    keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
-                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
                 numIndex = 0;
@@ -1307,57 +1300,31 @@ namespace CollapseLauncher
                     };
                     keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
-
-                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
-                    {
-                        Modifiers = keyModifier,
-                        Key = VirtualKey.NumberPad1 + numIndex++,
-                    };
-                    keystrokeNP.Invoked += KeyboardGameRegionShortcut_Invoked;
-                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
-                // General
-                KeyboardAccelerator kbshow = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1])
-                };
-                kbshow.Invoked += ShowKeybinds_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbshow);
+                List<KeybindAction> actions = new() 
+                    {
+                        // General
+                        ShowKeybinds_Invoked,
+                        GoHome_Invoked,
+                        GoSettings_Invoked,
+                        OpenNotify_Invoked,
 
-                KeyboardAccelerator kbhome = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1]),
-                };
-                kbhome.Invoked += GoHome_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbhome);
+                        // Game Related
+                        OpenScreenshot_Invoked
+                    };
 
-                KeyboardAccelerator kbsettings = new KeyboardAccelerator()
+                int i = 0;
+                foreach (KeybindAction func in actions)
                 {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1]),
-                };
-                kbsettings.Invoked += GoSettings_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbsettings);
-
-                KeyboardAccelerator kbnotify = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1]),
-                };
-                kbnotify.Invoked += OpenNotify_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbnotify);
-
-                // Game related
-                KeyboardAccelerator kbscreenshot = new KeyboardAccelerator()
-                {
-                    Modifiers = StrToVKeyModifier(keys[keysIndex][0]),
-                    Key = StrToVKey(keys[keysIndex++][1]),
-                };
-                kbscreenshot.Invoked += OpenScreenshot_Invoked;
-                KeyboardHandler.KeyboardAccelerators.Add(kbscreenshot);
+                    KeyboardAccelerator kbfunc = new KeyboardAccelerator()
+                    {
+                        Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
+                        Key = StrToVKey(keys[keysIndex][1])
+                    };
+                    kbfunc.Invoked += actions[i++];
+                    KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
+                }
             }
             catch (Exception error)
             {
@@ -1418,8 +1385,6 @@ namespace CollapseLauncher
         {
             ToggleNotificationPanelBtnClick(null, null);
         }
-
-        public event EventHandler<string> HomeKeyboardShortcuts;
 
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
