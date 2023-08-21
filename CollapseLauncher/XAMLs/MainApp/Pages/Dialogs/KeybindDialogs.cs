@@ -20,6 +20,8 @@ namespace CollapseLauncher.Dialogs
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
         private static int pageNum = 0;
+
+        #region UI Methods
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
         {
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
@@ -128,22 +130,6 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
-        {
-            foreach (Button button in buttons)
-            {
-                button.IsEnabled = true;
-            }
-
-            foreach (StackPanel stack in stacks)
-            {
-                stack.Visibility = Visibility.Collapsed;
-            }
-
-            ((Button)buttons[sender]).IsEnabled = false;
-            ((StackPanel)stacks[sender]).Visibility = Visibility.Visible;
-
-        }
         private static Grid GenerateShortcutBlock(List<string> kbKeys, string description, string example = null, bool enableSwapButton = true)
         {
             Grid shortcut = new Grid()
@@ -248,6 +234,25 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
+        private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
+        {
+            foreach (Button button in buttons)
+            {
+                button.IsEnabled = true;
+            }
+
+            foreach (StackPanel stack in stacks)
+            {
+                stack.Visibility = Visibility.Collapsed;
+            }
+
+            ((Button)buttons[sender]).IsEnabled = false;
+            ((StackPanel)stacks[sender]).Visibility = Visibility.Visible;
+
+        }
+        #endregion
+
+        #region Change Shortcut Methods
         private static async Task Dialog_SwitchKey(UIElement content, List<string> oldKeys)
         {
             StackPanel mainSwitchKeyContent = new StackPanel()
@@ -310,7 +315,7 @@ namespace CollapseLauncher.Dialogs
 
             ContentDialog result = new ContentDialog
             {
-                Title = "Change Keybind",
+                Title = "Change Shortcut",
                 Content = mainSwitchKeyContent,
                 CloseButtonText = Lang._Misc.Cancel,
                 PrimaryButtonText = Lang._Misc.Change,
@@ -434,6 +439,13 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
+        public static void ResetKeyboardShortcuts()
+        {
+            KeyList = null;
+        }
+        #endregion
+
+        #region Conversion and Validation Methods
         public static VirtualKey StrToVKey(string key)
         {
             if (key.Contains("Num")) key = "NumberPad" + key[3];
@@ -460,7 +472,9 @@ namespace CollapseLauncher.Dialogs
             return KeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1 
                 && forbiddenKeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1;
         }
+        #endregion
 
+        #region Key Lists
         private readonly static List<List<string>> defaultKeyList = new List<List<string>>
                 {
                     new List<string> { "Ctrl", "1 - 3" },   // Game selection
@@ -469,7 +483,7 @@ namespace CollapseLauncher.Dialogs
                     new List<string> { "Ctrl", "Tab" },     // Keybind menu
                     new List<string> { "Ctrl", "H" },       // Home page
                     new List<string> { "Ctrl", "S" },       // Settings page
-                    new List<string> { "Ctrl", "N" },       // Notification panel
+                    new List<string> { "Ctrl", "Q" },       // Notification panel
 
                     new List<string> { "Shift", "X" },      // Screenshot folder
                     new List<string> { "Shift", "F" },      // Game folder
@@ -525,5 +539,6 @@ namespace CollapseLauncher.Dialogs
                 SetAndSaveConfigValue("KbShortcutList", res.Remove(res.Length - 1));
             }
         }
+        #endregion
     }
 }

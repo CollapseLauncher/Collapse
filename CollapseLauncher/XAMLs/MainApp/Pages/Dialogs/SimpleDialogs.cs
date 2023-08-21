@@ -365,6 +365,18 @@ namespace CollapseLauncher.Dialogs
             );
         }
 
+        public static async Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement Content)
+        {
+            return await SpawnDialog(
+                "are u sure msg",
+                "warning msg",
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null
+                );
+        }
+
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,

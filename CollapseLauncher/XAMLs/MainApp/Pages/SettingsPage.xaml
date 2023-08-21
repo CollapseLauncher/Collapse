@@ -68,10 +68,16 @@
                         </StackPanel>
                         <TextBlock Text="Keyboard Shortcuts" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                         <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"/>
-                        <Button Margin="-32,8,0,8" Height="38" CornerRadius="0,17,17,0" Click="ShowKeybind_Click" Style="{ThemeResource AccentButtonStyle}">
-                            <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                        <Button Margin="0,8,0,8" Height="38" CornerRadius="17" Click="ShowKeybind_Click" Style="{ThemeResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
-                                <TextBlock Text="Show Keybinds" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                                <TextBlock Text="Show Shortcuts" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Margin="0,8,0,8" Height="38" CornerRadius="17" Click="ResetKeylist_Click" Style="{ThemeResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="" FontSize="22"/>
+                                <TextBlock Text="Reset Shortcuts to Default" Margin="8,0,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>

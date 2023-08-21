@@ -525,6 +525,15 @@ namespace CollapseLauncher.Pages
 
 		private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 
+        private async void ResetKeylist_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialogs.SimpleDialogs.Dialog_ResetKeyboardShortcuts(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                Dialogs.KeybindDialogs.ResetKeyboardShortcuts();
+                KeyboardShortcutsEvent(null, AreShortcutsEnabled ? 1 : 2);
+            }
+        }
+
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private bool AreShortcutsEnabled
         {

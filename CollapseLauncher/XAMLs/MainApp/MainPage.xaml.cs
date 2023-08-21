@@ -1429,7 +1429,8 @@ namespace CollapseLauncher
 
         private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            ToggleNotificationPanelBtnClick(ToggleNotificationPanelBtn, null);
+            ToggleNotificationPanelBtn.IsChecked = !ToggleNotificationPanelBtn.IsChecked;
+            ToggleNotificationPanelBtnClick(null, null);
         }
 
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
