@@ -31,10 +31,10 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             stack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
-            stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page", "Instantly travel to the Home page from any page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page"));
             
-            stack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page", null));
-            stack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray"));
 
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
@@ -72,13 +72,17 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             // Game shorcuts
-            stack.Children.Add(new TextBlock { Text = "Game related", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            stack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder", null));
-            stack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder", null));
-            stack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder", "If the functionality is supported for that game/region."));
-            stack.Children.Add(GenerateShortcutBlock(keys[9], "Go to the Repair page", null));
-            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Game Settings page", null));
+            stack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
+            stack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
+            stack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
+            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+
+            stack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            stack.Children.Add(GenerateShortcutBlock(keys[9], "Go to the Repair page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Game Settings page"));
             stack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Caches page", "If the functionality is supported for that game/region."));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 

@@ -27,12 +27,13 @@ using static CollapseLauncher.Dialogs.KeybindDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Windows.System;
 
 namespace CollapseLauncher
 {
-	using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs>;
+    using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs>;
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
@@ -167,7 +168,7 @@ namespace CollapseLauncher
 #if DEBUG
                 VersionNumberIndicator.Text += "d";
 #endif
-                if (IsPreview)VersionNumberIndicator.Text +=  "-PRE";
+                if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
@@ -212,9 +213,9 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
-			SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
-			Dialogs.KeybindDialogs.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
-		}
+            SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeybindDialogs.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+        }
 
         private void BackgroundImg_IsImageHideEvent(object sender, bool e) => HideBackgroundImage(e);
 
@@ -228,9 +229,9 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
-			SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
+            SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeybindDialogs.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
-		}
+        }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
@@ -1287,7 +1288,7 @@ namespace CollapseLauncher
             }
         }
 
-		 #region Keyboard Shortcuts
+        #region Keyboard Shortcuts
         private void CreateKeyboardShortcutHandlers()
         {
             try
@@ -1322,17 +1323,19 @@ namespace CollapseLauncher
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
                 }
 
-                List<KeybindAction> actions = new() 
-                    {
-                        // General
-                        ShowKeybinds_Invoked,
-                        GoHome_Invoked,
-                        GoSettings_Invoked,
-                        OpenNotify_Invoked,
+                List<KeybindAction> actions = new()
+                {
+                    // General
+                    ShowKeybinds_Invoked,
+                    GoHome_Invoked,
+                    GoSettings_Invoked,
+                    OpenNotify_Invoked,
 
-                        // Game Related
-                        OpenScreenshot_Invoked
-                    };
+                    // Game Related
+                    OpenScreenshot_Invoked,
+                    OpenGameFolder_Invoked,
+                    OpenGameCacheFolder_Invoked
+                };
 
                 foreach (KeybindAction func in actions)
                 {
@@ -1396,7 +1399,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine("No active home page.", LogType.Error);
             }
-            
+
         }
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1421,9 +1424,65 @@ namespace CollapseLauncher
             ToggleNotificationPanelBtnClick(ToggleNotificationPanelBtn, null);
         }
 
+        string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            
+            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
+            {
+                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                _ => "ScreenShot"
+            });
+
+            LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
+
+            if (!Directory.Exists(ScreenshotFolder))
+                Directory.CreateDirectory(ScreenshotFolder);
+
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = ScreenshotFolder
+                }
+            }.Start();
+        }
+
+        private void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+
+            string GameFolder = NormalizePath(GameDirPath);
+            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = GameFolder
+                }
+            }.Start();
+        }
+
+        private void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+
+            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = GameFolder
+                }
+            }.Start();
         }
 
         private bool AreShortcutsEnabled
@@ -1433,7 +1492,7 @@ namespace CollapseLauncher
 
         private void SettingsPage_KeyboardShortcutsEvent(object sender, int e)
         {
-            switch(e)
+            switch (e)
             {
                 case 0:
                     CreateKeyboardShortcutHandlers();
@@ -1444,7 +1503,7 @@ namespace CollapseLauncher
                     break;
                 case 2:
                     DeleteKeyboardShortcutHandlers();
-                    break;                
+                    break;
             }
         }
         #endregion
