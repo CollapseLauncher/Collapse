@@ -1388,7 +1388,10 @@ namespace CollapseLauncher
             }
         }
 
-        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
+        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
+        }
 
         private bool CannotChange = true;
         private async void ChangeTimer(int time = 500)

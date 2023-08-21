@@ -28,13 +28,6 @@ namespace CollapseLauncher.Dialogs
             List<List<string>> keys = KeyList;
 
             // General shortcuts
-
-            StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness (0, 5, 0, 5) };
-            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0) });
-            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Region Change" }, Margin = new Thickness(5, 0, 5, 0) });
-            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Game Folder" }, Margin = new Thickness(5, 0, 5, 0) });
-            buttonStack.Children.Add(new Button() { Content = new TextBlock() { Text = "Game Tools" }, Margin = new Thickness(5, 0, 5, 0) });
-
             StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical };
             genStack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
@@ -98,11 +91,26 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
+            StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
             stack.Children.Add(buttonStack);
-            stack.Children.Add(genStack);
-            stack.Children.Add(changeStack);
-            stack.Children.Add(gameFolderStack);
-            stack.Children.Add(gameManageStack);
+
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0), IsEnabled = false };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "Region Change" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "Game Folder" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "Game Tools" }, Margin = new Thickness(5, 0, 5, 0) };
+            
+            List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
+            List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
+
+            foreach (Button button in buttons)
+            {
+                button.Click += (o, e) => { ChangeMenuVisibility((int)((Button)o).DataContext, stacks, buttons); };
+                buttonStack.Children.Add(button);
+            }
+            foreach (object shortcutstack in stacks)
+            {
+                stack.Children.Add((UIElement)shortcutstack);
+            }
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
@@ -115,6 +123,22 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
+        {
+            foreach (object button in buttons)
+            {
+                ((Button)button).IsEnabled = true;
+            }
+
+            foreach (object stack in stacks)
+            {
+                ((StackPanel)stack).Visibility = Visibility.Collapsed;
+            }
+
+            ((Button)buttons[sender]).IsEnabled = false;
+            ((StackPanel)stacks[sender]).Visibility = Visibility.Visible;
+
+        }
         private static Grid GenerateShortcutBlock(List<string> kbKeys, string description, string example = null, bool enableSwapButton = true)
         {
             Grid shortcut = new Grid()
