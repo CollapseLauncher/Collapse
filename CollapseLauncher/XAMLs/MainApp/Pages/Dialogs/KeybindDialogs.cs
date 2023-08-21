@@ -21,9 +21,10 @@ namespace CollapseLauncher.Dialogs
 
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
 
-        public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content)
+        private static int pageNum = 0;
+        public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
         {   
-            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness (0, 0, 15, 0) };
+            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
 
             List<List<string>> keys = KeyList;
 
@@ -36,9 +37,10 @@ namespace CollapseLauncher.Dialogs
             genStack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
             genStack.Children.Add(GenerateShortcutBlock(keys[5], "Opens the Notification Tray"));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            pageNum++;
 
             // Region/Game Shortcuts
-            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical };
             changeStack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
 
@@ -70,9 +72,10 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
             changeStack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            pageNum++;
 
             // Game folder
-            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical };
             gameFolderStack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
@@ -80,9 +83,10 @@ namespace CollapseLauncher.Dialogs
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            pageNum++;
 
             // Game management
-            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
+            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical };
             gameManageStack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
@@ -90,14 +94,14 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
+            pageNum = 0;
 
-            StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
-            stack.Children.Add(buttonStack);
+            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0), IsEnabled = false };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "Region Change" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "Game Folder" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "Game Tools" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0), IsEnabled = false };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "2" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "3" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "4" }, Margin = new Thickness(5, 0, 5, 0) };
             
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
@@ -107,10 +111,13 @@ namespace CollapseLauncher.Dialogs
                 button.Click += (o, e) => { ChangeMenuVisibility((int)((Button)o).DataContext, stacks, buttons); };
                 buttonStack.Children.Add(button);
             }
+
             foreach (object shortcutstack in stacks)
             {
                 stack.Children.Add((UIElement)shortcutstack);
             }
+            stack.Children.Add(buttonStack);
+            ChangeMenuVisibility(page, stacks, buttons);
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
@@ -125,14 +132,14 @@ namespace CollapseLauncher.Dialogs
 
         private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
-            foreach (object button in buttons)
+            foreach (Button button in buttons)
             {
-                ((Button)button).IsEnabled = true;
+                button.IsEnabled = true;
             }
 
-            foreach (object stack in stacks)
+            foreach (StackPanel stack in stacks)
             {
-                ((StackPanel)stack).Visibility = Visibility.Collapsed;
+                stack.Visibility = Visibility.Collapsed;
             }
 
             ((Button)buttons[sender]).IsEnabled = false;
@@ -177,6 +184,7 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal
             };
 
+            kbKeys.Add(pageNum.ToString());
             if (enableSwapButton)
             {
                 Button shortcutSwap = new Button()
@@ -190,7 +198,7 @@ namespace CollapseLauncher.Dialogs
                 shortcutSwap.Click += Swap_Click;
             }
 
-            foreach (string key in kbKeys)
+            foreach (string key in kbKeys.SkipLast(1))
             {
                 shortcutButtons.Children.Add(CreateKeyBoardButton(key));
                 shortcutButtons.Children.Add(new TextBlock()
@@ -346,7 +354,7 @@ namespace CollapseLauncher.Dialogs
             {
                 SwapKeybind();
                 (sender as Button).FindParent<ContentDialog>().Hide();
-                await Dialog_ShowKeybinds(sender as UIElement);
+                await Dialog_ShowKeybinds(sender as UIElement, 1);
             }
             else
             {
@@ -354,7 +362,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     (sender as Button).FindParent<ContentDialog>().Hide();
                     await Dialog_SwitchKey(sender as UIElement, keys);
-                    await Dialog_ShowKeybinds(sender as UIElement);
+                    await Dialog_ShowKeybinds(sender as UIElement, int.Parse(keys.Last()));
                 }
                 catch (Exception ex)
                 {
