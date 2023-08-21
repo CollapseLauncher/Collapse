@@ -99,6 +99,7 @@ namespace CollapseLauncher
 
             // Set IsLoadRegionComplete to false
             IsLoadRegionComplete = true;
+            ChangeTimer(1000);
 
             return true;
         }

@@ -1334,7 +1334,11 @@ namespace CollapseLauncher
                     // Game Related
                     OpenScreenshot_Invoked,
                     OpenGameFolder_Invoked,
-                    OpenGameCacheFolder_Invoked
+                    OpenGameCacheFolder_Invoked,
+
+                    GoGameRepir_Invoked,
+                    GoGameSettings_Invoked,
+                    GoGameCaches_Invoked
                 };
 
                 foreach (KeybindAction func in actions)
@@ -1385,38 +1389,38 @@ namespace CollapseLauncher
 
         private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
 
-        private System.Timers.Timer ChangeTimer = new System.Timers.Timer(500) { AutoReset = false };
-        private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private bool CannotChange = true;
+        private async void ChangeTimer(int time = 500)
         {
             try
             {
-                if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0] || ChangeTimer.Enabled) return;
-                NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-                NavigateInnerSwitch("launcher");
-                ChangeTimer.Start();
+                CannotChange = true;
+                await Task.Delay(time);
+                CannotChange = false;
             }
-            catch
-            {
-                LogWriteLine("No active home page.", LogType.Error);
-            }
+            catch{}
+        }
 
+        private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsLoadRegionComplete || CannotChange)
+               return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
+            NavigateInnerSwitch("launcher");
+            ChangeTimer();
         }
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            try
-            {
-                if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem || ChangeTimer.Enabled) return;
-                NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
-                Navigate(typeof(SettingsPage), "settings");
-                ChangeTimer.Start();
-            }
-            catch
-            {
-                LogWriteLine("Can't find the settings page.", LogType.Error);
-                Navigate(typeof(SettingsPage), "settings");
-                ChangeTimer.Start();
-            }
+            if (!IsLoadRegionComplete || CannotChange)
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
+            NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
+            Navigate(typeof(SettingsPage), "settings");
+            ChangeTimer();
         }
 
         private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1427,7 +1431,7 @@ namespace CollapseLauncher
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+            if (!IsGameInstalled()) return;
 
             string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
             {
@@ -1453,7 +1457,7 @@ namespace CollapseLauncher
 
         private void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+            if (!IsGameInstalled()) return;
 
             string GameFolder = NormalizePath(GameDirPath);
             LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
@@ -1470,7 +1474,7 @@ namespace CollapseLauncher
 
         private void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!CurrentGameProperty._GameVersion.IsGameInstalled()) return;
+            if (!IsGameInstalled()) return;
 
             string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
             LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
@@ -1483,6 +1487,56 @@ namespace CollapseLauncher
                     Arguments = GameFolder
                 }
             }.Start();
+        }
+
+        private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsLoadRegionComplete || CannotChange)
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[1]) return;
+
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[1];
+            NavigateInnerSwitch("repair");
+            ChangeTimer();
+        }
+
+        private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsLoadRegionComplete || CannotChange || (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false))
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
+                return;
+
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
+            NavigateInnerSwitch("caches");
+            ChangeTimer();
+        }
+
+
+        private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsLoadRegionComplete || CannotChange || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 
+                return;
+
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
+            switch (CurrentGameProperty._GamePreset.GameType)
+            {
+                case GameType.Honkai:
+                    Navigate(typeof(GameSettingsPage), "gamesettings");
+                    break;
+                case GameType.Genshin:
+                    Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
+                    break;
+                case GameType.StarRail:
+                    Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
+                    break;
+            }
+            ChangeTimer();
         }
 
         private bool AreShortcutsEnabled
