@@ -168,22 +168,21 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal
             };
 
-            kbKeys.Add(description);
-            kbKeys.Add(pageNum.ToString());
+            List<string> dataKeys = new List<string> { kbKeys[0], kbKeys[1], description, pageNum.ToString() };
             if (enableSwapButton)
             {
                 Button shortcutSwap = new Button()
                 {
                     Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
                     CornerRadius = new CornerRadius(5),
-                    DataContext = kbKeys,
+                    DataContext = dataKeys,
                     Margin = new Thickness(0, 0, 5, 0)
                 };
                 shortcutButtons.Children.Add(shortcutSwap);
                 shortcutSwap.Click += Swap_Click;
             }
 
-            foreach (string key in kbKeys.SkipLast(2))
+            foreach (string key in kbKeys)
             {
                 shortcutButtons.Children.Add(CreateKeyBoardButton(key));
                 shortcutButtons.Children.Add(new TextBlock()
@@ -326,7 +325,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = content.XamlRoot
             };
 
-            oldKeys = oldKeys.SkipLast(1).ToList();
+            oldKeys = oldKeys.Take(2).ToList();
 
             int keyCount = 0;
             result.KeyDown += (e, s) =>
@@ -509,7 +508,11 @@ namespace CollapseLauncher.Dialogs
             get
             {
                 string keyListStr = GetAppConfigValue("KbShortcutList").ToString() ?? null;
-                if (keyListStr == null) return defaultKeyList;
+                if (keyListStr == null)
+                {
+                    KeyList = null;
+                    return KeyList;
+                }
 
                 List<List<string>> resultList = new List<List<string>>();
                 foreach (string combination in keyListStr.Split('|'))
@@ -520,11 +523,6 @@ namespace CollapseLauncher.Dialogs
                 if (resultList.Count < defaultKeyList.Count)
                 {
                     resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, defaultKeyList.Count - resultList.Count));
-                }
-
-                for (int i = resultList.Count; i > defaultKeyList.Count; i--)
-                {
-                    resultList.RemoveAt(i);
                 }
 
                 return resultList;

@@ -1564,7 +1564,7 @@ namespace CollapseLauncher
 
         private bool AreShortcutsEnabled
         {
-            get => GetAppConfigValue("EnableShortcuts").ToBool();
+            get => GetAppConfigValue("EnableShortcuts").ToBool(true);
         }
 
         private void SettingsPage_KeyboardShortcutsEvent(object sender, int e)
