@@ -173,8 +173,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.1",
+        "contentHash": "vl5vsx0SDm1yPePPHypepp8vNJMVorYMIrPZohTOGAKP0Br8pwMvp3cUHBsANMjFxuULaEfQdBfytDn88DgZ1w=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -1116,7 +1116,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
@@ -1300,8 +1300,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.1",
+        "contentHash": "vl5vsx0SDm1yPePPHypepp8vNJMVorYMIrPZohTOGAKP0Br8pwMvp3cUHBsANMjFxuULaEfQdBfytDn88DgZ1w=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -2243,7 +2243,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
