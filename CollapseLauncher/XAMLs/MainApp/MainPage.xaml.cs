@@ -1343,7 +1343,6 @@ namespace CollapseLauncher
                     };
                     kbfunc.Invoked += func;
                     KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
-                    LogWrite("add +1");
                 }
             }
             catch (Exception error)
@@ -1385,21 +1384,37 @@ namespace CollapseLauncher
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
-            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
-            Navigate(typeof(HomePage), PreviousTag);
+            try
+            {
+                if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
+                NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
+                Navigate(typeof(HomePage), PreviousTag);
+            }
+            catch
+            {
+                LogWriteLine("No active home page.", LogType.Error);
+            }
+            
         }
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
-            NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
-            Navigate(typeof(SettingsPage), PreviousTag);
+            try
+            {
+                if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
+                NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
+                Navigate(typeof(SettingsPage), PreviousTag);
+            }
+            catch
+            {
+                LogWriteLine("Can't find the settings page.", LogType.Error);
+                Navigate(typeof(SettingsPage), PreviousTag);
+            }
         }
 
         private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            ToggleNotificationPanelBtnClick(null, null);
+            ToggleNotificationPanelBtnClick(ToggleNotificationPanelBtn, null);
         }
 
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
