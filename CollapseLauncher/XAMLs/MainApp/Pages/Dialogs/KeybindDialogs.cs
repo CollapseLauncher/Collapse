@@ -77,13 +77,15 @@ namespace CollapseLauncher.Dialogs
             stack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
             stack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
             stack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
+            stack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             stack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            stack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            stack.Children.Add(GenerateShortcutBlock(keys[9], "Go to the Repair page"));
-            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Game Settings page"));
-            stack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Caches page", "If the functionality is supported for that game/region."));
+            stack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Repair page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
+            stack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
             stack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
 
             return await SpawnDialog(
@@ -392,6 +394,8 @@ namespace CollapseLauncher.Dialogs
                     new List<string> { "Shift", "X" },      // Screenshot folder
                     new List<string> { "Shift", "F" },      // Game folder
                     new List<string> { "Shift", "G" },      // Cache folder
+                    new List<string> { "Shift", "E" },      // Force close game
+
                     new List<string> { "Shift", "R" },      // Repair page
                     new List<string> { "Shift", "S" },      // Game settings page
                     new List<string> { "Shift", "C" }       // Caches page

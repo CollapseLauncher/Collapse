@@ -1335,6 +1335,7 @@ namespace CollapseLauncher
                     OpenScreenshot_Invoked,
                     OpenGameFolder_Invoked,
                     OpenGameCacheFolder_Invoked,
+                    ForceCloseGame_Invoked,
 
                     GoGameRepir_Invoked,
                     GoGameSettings_Invoked,
@@ -1489,27 +1490,45 @@ namespace CollapseLauncher
             }.Start();
         }
 
+        private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!App.IsGameRunning) return;
+
+            PresetConfigV2 gamePreset = CurrentGameProperty._GameVersion.GamePreset;
+            try
+            {
+                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
+                foreach (var p in gameProcess)
+                {
+                    LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    p.Kill();
+                }
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            }
+        }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange)
+            if (!IsLoadRegionComplete || CannotChange) 
+                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[1]) return;
-
-            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[1];
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
             NavigateInnerSwitch("repair");
             ChangeTimer();
         }
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange || (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false))
+            if (!IsLoadRegionComplete || CannotChange) 
+                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3]) 
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
-                return;
-
-            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
             NavigateInnerSwitch("caches");
             ChangeTimer();
         }
@@ -1517,7 +1536,7 @@ namespace CollapseLauncher
 
         private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange || (GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+            if (!IsLoadRegionComplete || CannotChange)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 
