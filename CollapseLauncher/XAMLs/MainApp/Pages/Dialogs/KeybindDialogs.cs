@@ -119,7 +119,7 @@ namespace CollapseLauncher.Dialogs
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
-                    new ScrollViewer() { Content = stack, MaxHeight = 370 },
+                    stack,
                     Content,
                     Lang._Misc.Close,
                     null,
