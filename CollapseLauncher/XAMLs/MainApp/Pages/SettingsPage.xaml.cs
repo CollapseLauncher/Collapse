@@ -522,5 +522,18 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
             set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
+
+		private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeybindDialogs.Dialog_ShowKeybinds(this);
+
+        public static event EventHandler<int> KeyboardShortcutsEvent;
+        private bool AreShortcutsEnabled
+        {
+            get => GetAppConfigValue("EnableShortcuts").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableShortcuts", value);
+                KeyboardShortcutsEvent(this, value ? 0 : 2);  
+            }
+        }
     }
 }

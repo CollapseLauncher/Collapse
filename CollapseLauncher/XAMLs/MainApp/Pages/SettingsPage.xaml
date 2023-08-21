@@ -36,7 +36,15 @@
                             <TextBlock x:Name="AppThemeSelectionWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes_ApplyNeedRestart}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}" Margin="0,4"/>
                         </StackPanel>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.EnableAcrylicEffect}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsAcrylicEffectEnabled, Mode=TwoWay}"/>
-                        <StackPanel Margin="0,4,0,8" HorizontalAlignment="Left">
+                        <TextBlock Text="Keyboard Shortcuts" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"/>
+                        <Button Margin="-32,8,0,8" Height="38" CornerRadius="0,17,17,0" Click="ShowKeybind_Click" Style="{ThemeResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="22"/>
+                                <TextBlock Text="Show Keybinds" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+						<StackPanel Margin="0,4,0,8" HorizontalAlignment="Left">
                             <CheckBox x:Name="AppBGMode" Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBG_Checkbox}" IsChecked="{x:Bind IsBGCustom, Mode=TwoWay}"/>
                             <StackPanel x:Name="AppBGCustomizer" Orientation="Horizontal" Margin="-2,8,0,0" Visibility="Collapsed">
                                 <Button x:Name="BGSelector" IsEnabled="False" Margin="-40,0,0,0" Height="35" CornerRadius="0,16,16,0" Click="SelectBackgroundImg" Style="{ThemeResource AccentButtonStyle}">
