@@ -797,6 +797,9 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
+
+            if (AreShortcutsEnabled) CreateKeyboardShortcutHandlers();
+
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -1289,7 +1292,6 @@ namespace CollapseLauncher
         {
             try
             {
-
                 List<List<string>> keys = KeyList;
 
                 int keysIndex = 0;
@@ -1314,7 +1316,7 @@ namespace CollapseLauncher
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
                         Modifiers = keyModifier,
-                        Key = VirtualKey.Number1 + numIndex,
+                        Key = VirtualKey.Number1 + numIndex++,
                     };
                     keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
@@ -1332,7 +1334,6 @@ namespace CollapseLauncher
                         OpenScreenshot_Invoked
                     };
 
-                int i = 0;
                 foreach (KeybindAction func in actions)
                 {
                     KeyboardAccelerator kbfunc = new KeyboardAccelerator()
@@ -1340,8 +1341,9 @@ namespace CollapseLauncher
                         Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
                         Key = StrToVKey(keys[keysIndex][1])
                     };
-                    kbfunc.Invoked += actions[i++];
+                    kbfunc.Invoked += func;
                     KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
+                    LogWrite("add +1");
                 }
             }
             catch (Exception error)
@@ -1352,11 +1354,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void DeleteKeyboardShortcutHandlers()
-        {
-            KeyboardHandler.KeyboardAccelerators.Clear();
-            LogWriteLine(KeyboardHandler.KeyboardAccelerators.Count.ToString());
-        }
+        private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
