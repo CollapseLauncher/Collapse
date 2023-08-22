@@ -1288,7 +1288,7 @@ namespace CollapseLauncher
             }
         }
 
-        #region Keyboard Shortcuts
+        #region Keyboard Shortcuts Methods
         private void CreateKeyboardShortcutHandlers()
         {
             try
@@ -1304,10 +1304,17 @@ namespace CollapseLauncher
                     KeyboardAccelerator keystroke = new KeyboardAccelerator()
                     {
                         Modifiers = keyModifier,
-                        Key = VirtualKey.Number1 + numIndex++,
+                        Key = VirtualKey.Number1 + numIndex,
                     };
                     keystroke.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+
+                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                    {
+                        Key = VirtualKey.NumberPad1 + numIndex++,
+                    };
+                    keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
                 }
 
                 numIndex = 0;

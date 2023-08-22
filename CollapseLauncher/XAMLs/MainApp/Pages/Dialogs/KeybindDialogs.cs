@@ -48,7 +48,7 @@ namespace CollapseLauncher.Dialogs
             // Region/Game Shortcuts
             StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             changeStack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
-            changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
+            changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order.", FontSize = 11.5 });
 
             string gameMod = keys[0][0];
             string regionMod = keys[1][0];
@@ -75,7 +75,7 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(modifierSwap);
 
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            changeStack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("E.g. {0}+1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
             changeStack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
