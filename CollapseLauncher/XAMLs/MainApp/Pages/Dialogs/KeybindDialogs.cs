@@ -7,14 +7,12 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using CommunityToolkit.WinUI.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using Microsoft.UI.Composition;
-using Microsoft.UI.Xaml.Media.Animation;
-using Windows.UI.Core.AnimationMetrics;
 
 namespace CollapseLauncher.Dialogs
 {
