@@ -13,7 +13,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-
+using Microsoft.UI.Xaml.Media.Animation;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -27,7 +27,7 @@ namespace CollapseLauncher.Dialogs
         #region UI Methods
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
         {
-            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, -7) };
 
             StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
             mainStack.Children.Add(mainStackContent);
@@ -103,7 +103,7 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum = 0;
 
-            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
 
             Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0) };
             Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "2" }, Margin = new Thickness(5, 0, 5, 0) };
@@ -121,7 +121,7 @@ namespace CollapseLauncher.Dialogs
 
             foreach (StackPanel stk in stacks)
             {
-                stk.TranslationTransition = new Vector3Transition() { Duration = TimeSpan.FromMilliseconds(200) };
+                stk.Width = 500;
                 mainStackContent.Children.Add(stk);
             }
             mainStack.Children.Add(buttonStack);
@@ -259,15 +259,36 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
 
-                int val = oldSender < sender ? -40 : 40;
                 oldSender = sender;
-                oldStack.Translation = new Vector3(val, 0, 0);
-                newStack.Translation = new Vector3(-val, 0, 0);
+
+                Storyboard storyboard = new Storyboard();
+                DoubleAnimation OpacityAnimation = new DoubleAnimation();
+                OpacityAnimation.From = 1;
+                OpacityAnimation.To = 0;
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.2));
+
+                Storyboard.SetTarget(OpacityAnimation, oldStack);
+                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+                storyboard.Children.Add(OpacityAnimation);
+
+                storyboard.Begin();
+
                 await Task.Delay(200);
-                oldStack.Visibility = Visibility.Collapsed;
-                oldStack.Translation = new Vector3(0, 0, 0);
                 newStack.Visibility = Visibility.Visible;
-                newStack.Translation = new Vector3(0, 0, 0);
+                oldStack.Visibility = Visibility.Collapsed;
+
+                Storyboard storyboard2 = new Storyboard();
+                DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
+                OpacityAnimation2.From = 0;
+                OpacityAnimation2.To = 1;
+                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.2));
+
+                Storyboard.SetTarget(OpacityAnimation2, newStack);
+                Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
+                storyboard2.Children.Add(OpacityAnimation2);
+
+                storyboard2.Begin();
+
             }
             catch
             {
