@@ -6,7 +6,7 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
     internal static class DictionaryCategory
     {
         // HoYoooooooo :wogreeee:
-        internal static ImmutableDictionary<double, int> RenderResolutionOption = new Dictionary<double, int>
+        internal static Dictionary<double, int> RenderResolutionOption = new Dictionary<double, int>
         {
             { 0.6d, 1 },
             { 0.8d, 2 },
@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
             { 1.3d, 6 },
             { 1.4d, 7 },
             { 1.5d, 8 }
-        }.ToImmutableDictionary();
+        };
     }
 
     enum FPSOption : int
