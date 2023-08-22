@@ -46,7 +46,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Render Resolution</c>" combobox In-game settings. <br/>
-        /// Options: 0.6, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 <br/>
+        /// Options: 0.6 [0], 0.8 [1], 0.9 [9], 1.0 [3], 1.1 [4], 1.2 [5], 1.3 [6], 1.4 [7], 1.5 [8]<br/>
         /// Default: 1.0 [3]
         /// </summary>
         public int RenderResolution = 3;
