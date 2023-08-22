@@ -12,6 +12,9 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml.Media.Animation;
+using Windows.UI.Core.AnimationMetrics;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -25,7 +28,10 @@ namespace CollapseLauncher.Dialogs
         #region UI Methods
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
         {
-            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical };
+
+            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
+            mainStack.Children.Add(mainStackContent);
 
             List<List<string>> keys = KeyList;
             oldSender = page;
@@ -116,14 +122,14 @@ namespace CollapseLauncher.Dialogs
 
             foreach (object shortcutstack in stacks)
             {
-                stack.Children.Add((UIElement)shortcutstack);
+                mainStackContent.Children.Add((UIElement)shortcutstack);
             }
-            stack.Children.Add(buttonStack);
+            mainStack.Children.Add(buttonStack);
             ChangeMenuVisibility(page, stacks, buttons);
 
             return await SpawnDialog(
                     "Keyboard Shortcuts",
-                    stack,
+                    mainStack,
                     Content,
                     Lang._Misc.Close,
                     null,
@@ -235,22 +241,59 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
-        private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
+        private static async void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
             try
             {
                 (buttons[oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style;
-                (stacks[oldSender] as StackPanel).Visibility = Visibility.Collapsed;
-                oldSender = sender;
+                StackPanel oldStack = (stacks[oldSender] as StackPanel);
                 (buttons[sender] as Button).Style = Application.Current.Resources["AccentButtonStyle"] as Style;
-                (stacks[sender] as StackPanel).Visibility = Visibility.Visible;
+                StackPanel newStack = (stacks[sender] as StackPanel);
+
+                if (sender == oldSender)
+                {
+                    oldStack.Visibility = Visibility.Collapsed;
+                    newStack.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                oldSender = sender;
+
+                Storyboard storyboard = new Storyboard();
+                DoubleAnimation OpacityAnimation = new DoubleAnimation();
+                OpacityAnimation.From = 1;
+                OpacityAnimation.To = 0;
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.30));
+
+                Storyboard.SetTarget(OpacityAnimation, oldStack);
+                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+                storyboard.Children.Add(OpacityAnimation);
+
+                storyboard.Begin();
+
+                await Task.Delay(200);
+                newStack.Visibility = Visibility.Visible;
+                oldStack.Visibility = Visibility.Collapsed;
+
+                Storyboard storyboard2 = new Storyboard();
+                DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
+                OpacityAnimation2.From = 0;
+                OpacityAnimation2.To = 1;
+                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.30));
+
+                Storyboard.SetTarget(OpacityAnimation2, newStack);
+                Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
+                storyboard2.Children.Add(OpacityAnimation2);
+
+                storyboard2.Begin();
+
             }
             catch (Exception e)
             {
                 LogWriteLine(e.ToString(), Hi3Helper.LogType.Error);
             }
         }
-        #endregion
+#endregion
 
         #region Change Shortcut Methods
         private static async Task Dialog_SwitchKey(UIElement content, List<string> oldKeys)
