@@ -19,7 +19,7 @@ namespace CollapseLauncher.Dialogs
     public static class KeybindDialogs
     {
         public static event EventHandler<int> KeyboardShortcutsEvent;
-        private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
+        private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight1" : "SystemAccentColorDark1";
         private static int pageNum = 0;
         private static int oldSender = 0;
 
