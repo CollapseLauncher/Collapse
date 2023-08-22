@@ -118,9 +118,9 @@ namespace CollapseLauncher.Dialogs
                 buttonStack.Children.Add(button);
             }
 
-            foreach (object shortcutstack in stacks)
+            foreach (StackPanel stk in stacks)
             {
-                mainStackContent.Children.Add((UIElement)shortcutstack);
+                mainStackContent.Children.Add(stk);
             }
             mainStack.Children.Add(buttonStack);
             ChangeMenuVisibility(page, stacks, buttons);
@@ -270,9 +270,10 @@ namespace CollapseLauncher.Dialogs
                 storyboard.Begin();
 
                 await Task.Delay(200);
+
                 newStack.Visibility = Visibility.Visible;
                 oldStack.Visibility = Visibility.Collapsed;
-
+                
                 Storyboard storyboard2 = new Storyboard();
                 DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
                 OpacityAnimation2.From = 0;
