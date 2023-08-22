@@ -13,6 +13,7 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using System.Numerics;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -28,7 +29,7 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical };
 
-            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
+            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal, MinHeight = 200 };
             mainStack.Children.Add(mainStackContent);
 
             List<List<string>> keys = KeyList;
@@ -120,6 +121,7 @@ namespace CollapseLauncher.Dialogs
 
             foreach (StackPanel stk in stacks)
             {
+                stk.TranslationTransition = new Vector3Transition() { Duration = TimeSpan.FromMilliseconds(200) };
                 mainStackContent.Children.Add(stk);
             }
             mainStack.Children.Add(buttonStack);
@@ -255,37 +257,15 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
 
+                int val = oldSender < sender ? -40 : 40;
                 oldSender = sender;
-
-                Storyboard storyboard = new Storyboard();
-                DoubleAnimation OpacityAnimation = new DoubleAnimation();
-                OpacityAnimation.From = 1;
-                OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.2));
-
-                Storyboard.SetTarget(OpacityAnimation, oldStack);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboard.Children.Add(OpacityAnimation);
-
-                storyboard.Begin();
-
+                oldStack.Translation = new Vector3(val, 0, 0);
+                newStack.Translation = new Vector3(-val, 0, 0);
                 await Task.Delay(200);
-
-                newStack.Visibility = Visibility.Visible;
                 oldStack.Visibility = Visibility.Collapsed;
-                
-                Storyboard storyboard2 = new Storyboard();
-                DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
-                OpacityAnimation2.From = 0;
-                OpacityAnimation2.To = 1;
-                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.2));
-
-                Storyboard.SetTarget(OpacityAnimation2, newStack);
-                Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
-                storyboard2.Children.Add(OpacityAnimation2);
-
-                storyboard2.Begin();
-
+                oldStack.Translation = new Vector3(0, 0, 0);
+                newStack.Visibility = Visibility.Visible;
+                newStack.Translation = new Vector3(0, 0, 0);
             }
             catch (Exception e)
             {
