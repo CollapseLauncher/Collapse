@@ -261,7 +261,7 @@ namespace CollapseLauncher.Dialogs
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 1;
                 OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.30));
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.2));
 
                 Storyboard.SetTarget(OpacityAnimation, oldStack);
                 Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
@@ -277,7 +277,7 @@ namespace CollapseLauncher.Dialogs
                 DoubleAnimation OpacityAnimation2 = new DoubleAnimation();
                 OpacityAnimation2.From = 0;
                 OpacityAnimation2.To = 1;
-                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.30));
+                OpacityAnimation2.Duration = new Duration(TimeSpan.FromSeconds(0.2));
 
                 Storyboard.SetTarget(OpacityAnimation2, newStack);
                 Storyboard.SetTargetProperty(OpacityAnimation2, "Opacity");
