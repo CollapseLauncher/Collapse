@@ -30,7 +30,6 @@ namespace CollapseLauncher.Dialogs
             StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, -7) };
 
             StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
-            mainStack.Children.Add(mainStackContent);
 
             List<List<string>> keys = KeyList;
             oldSender = page;
@@ -119,12 +118,14 @@ namespace CollapseLauncher.Dialogs
                 buttonStack.Children.Add(button);
             }
 
+            mainStack.Children.Add(mainStackContent);
+            mainStack.Children.Add(buttonStack);
+
             foreach (StackPanel stk in stacks)
             {
                 stk.Width = 500;
                 mainStackContent.Children.Add(stk);
             }
-            mainStack.Children.Add(buttonStack);
             ChangeMenuVisibility(page, stacks, buttons);
 
             return await SpawnDialog(
