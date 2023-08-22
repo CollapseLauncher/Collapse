@@ -28,7 +28,9 @@ namespace CollapseLauncher.GameSettings.Genshin
             return number;
         }
 
-        public static readonly decimal[] RenderScaleIndex = new decimal[] { 0.6m, 0.8m, 1.0m, 1.1m, 1.2m, 1.3m, 1.4m, 1.5m };
+        public static readonly string[] RenderScaleValuesStr = DictionaryCategory.RenderResolutionOption.Keys.Select(x => x.ToString("0.0")).ToArray();
+        public static readonly List<double> RenderScaleValues = DictionaryCategory.RenderResolutionOption.Keys.ToList();
+        public static readonly List<int> RenderScaleIndex = DictionaryCategory.RenderResolutionOption.Values.ToList();
         public int currentVolatielGrade { get; set; } = -1;
         public List<GenshinKeyValuePair> customVolatileGrades { get; set; } = new();
         public string volatileVersion { get; set; } = "";
@@ -44,10 +46,10 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         /// <summary>
         /// This defines "<c>Render Resolution</c>" combobox In-game settings. <br/>
-        /// Options: 0.6, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 <br/>
+        /// Options: 0.6 [0], 0.8 [1], 0.9 [9], 1.0 [3], 1.1 [4], 1.2 [5], 1.3 [6], 1.4 [7], 1.5 [8]<br/>
         /// Default: 1.0 [3]
         /// </summary>
-        public RenderResolutionOption RenderResolution = RenderResolutionOption.x10;
+        public int RenderResolution = 3;
 
         /// <summary>
         /// This defines "<c>Shadow Quality</c>" combobox In-game settings. <br/>
@@ -178,7 +180,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #if DEBUG
                         LogWriteLine($"Loaded Genshin Settings: Graphics - Render Resolution: {setting.value}", LogType.Debug, true);
 #endif
-                        graphics.RenderResolution = (RenderResolutionOption)setting.value;
+                        graphics.RenderResolution = setting.value;
                         break;
 
                     case 3:

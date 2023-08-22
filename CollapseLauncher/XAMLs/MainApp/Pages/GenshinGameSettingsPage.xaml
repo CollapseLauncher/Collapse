@@ -96,7 +96,7 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_RenderScale}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                            <ComboBox x:Name="RenderScaleSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind RenderScale, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.RenderScaleIndex}"/>
+                                            <ComboBox x:Name="RenderScaleSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind RenderScale, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.RenderScaleValuesStr}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_AAMode}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
