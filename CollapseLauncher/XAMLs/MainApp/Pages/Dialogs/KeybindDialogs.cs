@@ -29,7 +29,7 @@ namespace CollapseLauncher.Dialogs
         {
             StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical };
 
-            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal, MinHeight = 200 };
+            StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
             mainStack.Children.Add(mainStackContent);
 
             List<List<string>> keys = KeyList;
@@ -241,14 +241,16 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
+        private static Style DefaultStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        private static Style AccentStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
         private static async void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
             try
             {
-                (buttons[oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style;
-                StackPanel oldStack = (stacks[oldSender] as StackPanel);
-                (buttons[sender] as Button).Style = Application.Current.Resources["AccentButtonStyle"] as Style;
-                StackPanel newStack = (stacks[sender] as StackPanel);
+                (buttons[oldSender] as Button).Style = DefaultStyle;
+                StackPanel oldStack = stacks[oldSender] as StackPanel;
+                (buttons[sender] as Button).Style = AccentStyle;
+                StackPanel newStack = stacks[sender] as StackPanel;
 
                 if (sender == oldSender)
                 {
