@@ -20,6 +20,7 @@ namespace CollapseLauncher.Dialogs
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark2";
         private static int pageNum = 0;
+        private static int oldSender = 0;
 
         #region UI Methods
         public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
@@ -27,9 +28,10 @@ namespace CollapseLauncher.Dialogs
             StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
 
             List<List<string>> keys = KeyList;
+            oldSender = page;
 
             // General shortcuts
-            StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             genStack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             genStack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
@@ -40,7 +42,7 @@ namespace CollapseLauncher.Dialogs
             pageNum++;
 
             // Region/Game Shortcuts
-            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             changeStack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
             changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order", FontSize = 11.5 });
 
@@ -75,7 +77,7 @@ namespace CollapseLauncher.Dialogs
             pageNum++;
 
             // Game folder
-            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             gameFolderStack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
@@ -86,7 +88,7 @@ namespace CollapseLauncher.Dialogs
             pageNum++;
 
             // Game management
-            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical };
+            StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             gameManageStack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
@@ -98,7 +100,7 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0), IsEnabled = false };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0) };
             Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "2" }, Margin = new Thickness(5, 0, 5, 0) };
             Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "3" }, Margin = new Thickness(5, 0, 5, 0) };
             Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "4" }, Margin = new Thickness(5, 0, 5, 0) };
@@ -235,19 +237,18 @@ namespace CollapseLauncher.Dialogs
 
         private static void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
-            foreach (Button button in buttons)
+            try
             {
-                button.IsEnabled = true;
+                (buttons[oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style;
+                (stacks[oldSender] as StackPanel).Visibility = Visibility.Collapsed;
+                oldSender = sender;
+                (buttons[sender] as Button).Style = Application.Current.Resources["AccentButtonStyle"] as Style;
+                (stacks[sender] as StackPanel).Visibility = Visibility.Visible;
             }
-
-            foreach (StackPanel stack in stacks)
+            catch (Exception e)
             {
-                stack.Visibility = Visibility.Collapsed;
+                LogWriteLine(e.ToString(), Hi3Helper.LogType.Error);
             }
-
-            ((Button)buttons[sender]).IsEnabled = false;
-            ((StackPanel)stacks[sender]).Visibility = Visibility.Visible;
-
         }
         #endregion
 
