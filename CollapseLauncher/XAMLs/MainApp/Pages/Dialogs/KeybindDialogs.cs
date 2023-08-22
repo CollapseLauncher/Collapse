@@ -83,20 +83,20 @@ namespace CollapseLauncher.Dialogs
 
             // Game folder
             StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameFolderStack.Children.Add(new TextBlock { Text = "Game folders", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameFolderStack.Children.Add(new TextBlock { Text = "Game Folder Access", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
-            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
             // Game management
             StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameManageStack.Children.Add(new TextBlock { Text = "Game management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameManageStack.Children.Add(new TextBlock { Text = "Game Management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Repair page"));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
@@ -105,10 +105,10 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "1" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "2" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "3" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "4" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "Quick Switch" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "Folder Access" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "Game Management" }, Margin = new Thickness(5, 0, 5, 0) };
 
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
