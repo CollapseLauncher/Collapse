@@ -18,6 +18,12 @@
                 "IconGlyph": "",
                 "Text": "Honkai Impact 3rd Wiki",
                 "URL": "https://honkaiimpact3.fandom.com/wiki/"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Battle Chronicle",
+                "URL": "https://act.hoyolab.com/app/community-game-records-sea/index.html?gid=1"
             }
         ],
         "Genshin": [
@@ -44,6 +50,12 @@
                 "IconGlyph": "",
                 "Text": "Redeem Codes",
                 "URL": "https://genshin.hoyoverse.com/gift"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Battle Chronicle",
+                "URL": "https://act.hoyolab.com/app/community-game-records-sea/index.html?gid=2"
             }
         ],
         "StarRail": [
@@ -70,6 +82,12 @@
                 "IconGlyph": "",
                 "Text": "Redeem Codes",
                 "URL": "https://hsr.hoyoverse.com/gift"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "",
+                "Text": "Battle Chronicle",
+                "URL": "https://act.hoyolab.com/app/community-game-records-sea/index.html?gid=6"
             }
         ]
     },
