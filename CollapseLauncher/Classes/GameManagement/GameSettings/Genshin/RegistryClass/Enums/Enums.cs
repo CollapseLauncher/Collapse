@@ -1,22 +1,30 @@
-﻿namespace CollapseLauncher.GameSettings.Genshin.Enums
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+
+namespace CollapseLauncher.GameSettings.Genshin.Enums
 {
+    internal static class DictionaryCategory
+    {
+        // HoYoooooooo :wogreeee:
+        internal static Dictionary<double, int> RenderResolutionOption = new Dictionary<double, int>
+        {
+            { 0.6d, 1 },
+            { 0.8d, 2 },
+            { 0.9d, 9 },
+            { 1.0d, 3 },
+            { 1.1d, 4 },
+            { 1.2d, 5 },
+            { 1.3d, 6 },
+            { 1.4d, 7 },
+            { 1.5d, 8 }
+        };
+    }
+
     enum FPSOption : int
     {
         f30 = 1,
         f60 = 2,
         f45 = 3
-    }
-
-    enum RenderResolutionOption
-    {
-        x06 = 1,
-        x08 = 2,
-        x10 = 3,
-        x11 = 4,
-        x12 = 5,
-        x13 = 6,
-        x14 = 7,
-        x15 = 8
     }
 
     enum ShadowQualityOption

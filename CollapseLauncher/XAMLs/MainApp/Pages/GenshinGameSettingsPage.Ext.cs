@@ -195,8 +195,19 @@ namespace CollapseLauncher.Pages
 
         public int RenderScale
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1;
-            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (RenderResolutionOption)(value + 1);
+            get
+            {
+                int enumIndex = Settings.SettingsGeneralData.graphicsData.RenderResolution;
+                int valueIndex = GraphicsData.RenderScaleIndex.IndexOf(enumIndex);
+                double enumValue = GraphicsData.RenderScaleValues[valueIndex];
+                return GraphicsData.RenderScaleValues.IndexOf(enumValue);
+            }
+            set
+            {
+                double enumValue = GraphicsData.RenderScaleValues[value];
+                int enumIndex = DictionaryCategory.RenderResolutionOption[enumValue];
+                Settings.SettingsGeneralData.graphicsData.RenderResolution = enumIndex;
+            }
         }
 
         public int ShadowQuality
