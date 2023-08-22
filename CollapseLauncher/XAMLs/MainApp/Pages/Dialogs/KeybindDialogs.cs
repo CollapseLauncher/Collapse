@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Windows.System;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using CommunityToolkit.WinUI.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using System.Numerics;
+
 
 namespace CollapseLauncher.Dialogs
 {
@@ -241,8 +241,8 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
-        private static Style DefaultStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        private static Style AccentStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
+        private static readonly Style DefaultStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        private static readonly Style AccentStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
         private static async void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
             try
@@ -269,9 +269,8 @@ namespace CollapseLauncher.Dialogs
                 newStack.Visibility = Visibility.Visible;
                 newStack.Translation = new Vector3(0, 0, 0);
             }
-            catch (Exception e)
+            catch
             {
-                LogWriteLine(e.ToString(), Hi3Helper.LogType.Error);
             }
         }
 #endregion
