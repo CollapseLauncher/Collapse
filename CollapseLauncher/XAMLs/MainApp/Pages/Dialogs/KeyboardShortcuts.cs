@@ -403,13 +403,12 @@ namespace CollapseLauncher.Dialogs
             result.KeyUp += (e, s) =>
             {
                 int keyValue = (int)s.Key;
-                if (keyCount == 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || /*(keyValue >= 0x60 && keyValue <= 0x69) ||*/ keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
+                if (keyCount >= 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || /*(keyValue >= 0x60 && keyValue <= 0x69) ||*/ keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
                 {
                     string keyStr = s.Key.ToString();
                     //if (keyStr.Contains("NumberPad")) keyStr = string.Concat("Num", keyStr.Substring(9, 1));
 
-                    keyCount++;
-                    keysPressed.Text += keyStr;
+                    keysPressed.Text = keysPressed.Text.Split(" + ").First() + " + " + keyStr;
 
                     newKeys = keysPressed.Text.Split(" + ").ToList();
                     result.IsPrimaryButtonEnabled = ValidKeyCombination(newKeys);
