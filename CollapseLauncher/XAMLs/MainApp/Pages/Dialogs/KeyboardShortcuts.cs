@@ -17,7 +17,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 
 namespace CollapseLauncher.Dialogs
 {
-    public static class KeybindDialogs
+    public static class KeyboardShortcuts
     {
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark1";
@@ -25,7 +25,7 @@ namespace CollapseLauncher.Dialogs
         private static int oldSender = 0;
 
         #region UI Methods
-        public static async Task<ContentDialogResult> Dialog_ShowKeybinds(UIElement Content, int page = 0)
+        public static async Task<ContentDialogResult> Dialog_ShowKbShortcuts(UIElement Content, int page = 0)
         {
             StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, -7) };
 
@@ -432,7 +432,7 @@ namespace CollapseLauncher.Dialogs
             {
                 SwapKeybind();
                 (sender as Button).FindParent<ContentDialog>().Hide();
-                await Dialog_ShowKeybinds(sender as UIElement, 1);
+                await Dialog_ShowKbShortcuts(sender as UIElement, 1);
             }
             else
             {
@@ -440,7 +440,7 @@ namespace CollapseLauncher.Dialogs
                 {
                     (sender as Button).FindParent<ContentDialog>().Hide();
                     await Dialog_SwitchKey(sender as UIElement, keys.SkipLast(1).ToList());
-                    await Dialog_ShowKeybinds(sender as UIElement, int.Parse(keys.Last()));
+                    await Dialog_ShowKbShortcuts(sender as UIElement, int.Parse(keys.Last()));
                 }
                 catch (Exception ex)
                 {
