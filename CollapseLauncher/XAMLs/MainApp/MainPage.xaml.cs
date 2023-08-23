@@ -79,10 +79,6 @@ namespace CollapseLauncher
                 LoadingCancelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
-                if (!IsPreview)
-                {
-                    PreviewBuildIndicator.Visibility = Visibility.Collapsed;
-                }
             }
             catch (Exception ex)
             {
@@ -163,7 +159,7 @@ namespace CollapseLauncher
 #endif
                 LoadGamePreset();
                 SetThemeParameters();
-
+                
                 VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
 #if DEBUG
                 VersionNumberIndicator.Text += "d";

@@ -26,6 +26,7 @@
       "hi3helper.sharphdiffpatch": {
         "type": "Project"
       }
-    }
+    },
+    "net7.0/win-x64": {}
   }
 }
