@@ -427,7 +427,7 @@ namespace CollapseLauncher.Dialogs
         {
             List<string> keys = (List<string>)(sender as Button).DataContext;
 
-            if (keys.Any(x => x.StartsWith("1 - ")))
+            if (keys[1].StartsWith("1 - "))
             {
                 SwapKeybind();
                 (sender as Button).FindParent<ContentDialog>().Hide();
