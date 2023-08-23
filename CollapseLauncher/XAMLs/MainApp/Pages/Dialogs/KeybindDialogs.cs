@@ -69,7 +69,7 @@ namespace CollapseLauncher.Dialogs
                 CornerRadius = new CornerRadius(5),
                 DataContext = new List<string> { "Ctrl", "1 - X" },
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, -30, 0, 0)
+                Margin = new Thickness(0, -30, 2, 0)
             };
             modifierSwap.Click += Swap_Click;
             changeStack.Children.Add(modifierSwap);
@@ -158,14 +158,16 @@ namespace CollapseLauncher.Dialogs
                 VerticalAlignment = VerticalAlignment.Center
             };
 
+            int MaxLen = enableSwapButton ? 320 : 370; 
+
             if (example != null)
             {
-                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 2, 0, 1) });
-                shortcutDesc.Children.Add(new TextBlock() { Text = example, FontSize = 11, Margin = new Thickness(5, 1, 0, 2) });
+                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 2, 0, 1), TextWrapping = TextWrapping.Wrap, MaxWidth = MaxLen });
+                shortcutDesc.Children.Add(new TextBlock() { Text = example, FontSize = 11, Margin = new Thickness(5, 1, 0, 2), TextWrapping = TextWrapping.Wrap, MaxWidth = MaxLen });
             }
             else
             {
-                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 1, 5, 1) });
+                shortcutDesc.Children.Add(new TextBlock() { Text = description, FontSize = 14, Margin = new Thickness(5, 1, 5, 1), TextWrapping = TextWrapping.Wrap, MaxWidth = MaxLen });
             }
 
             shortcut.Children.Add(shortcutDesc);
