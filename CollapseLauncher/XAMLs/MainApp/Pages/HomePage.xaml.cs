@@ -1048,6 +1048,9 @@ namespace CollapseLauncher.Pages
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
+                
+                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+                    CollapsePrioControl(proc);
 
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -1648,6 +1651,35 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }
+        }
+        #endregion
+
+        #region Collapse Priority Control
+        private static async void CollapsePrioControl(Process proc)
+        {
+            try
+            {
+                using (Process collapseProcess = Process.GetCurrentProcess())
+                {
+                    collapseProcess.PriorityBoostEnabled = false;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, PriorityBoost is off", LogType.Default, true);
+                }
+
+                await proc.WaitForExitAsync();
+
+                using (Process collapseProcess = Process.GetCurrentProcess())
+                {
+                    collapseProcess.PriorityBoostEnabled = true;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, PriorityBoost is on", LogType.Default, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
+            }
+
         }
         #endregion
     }
