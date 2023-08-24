@@ -385,7 +385,8 @@
     "AppChangeReleaseChannel": "Change to {0} Release Channel",
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
 
   "_Misc": {
