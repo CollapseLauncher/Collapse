@@ -504,17 +504,23 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
+#nullable enable
                 // Assign UninstallProperty from each overrides
                 UninstallGameProperty UninstallProperty = AssignUninstallFolders();
 
                 //Preparing paths
                 var _DataFolderFullPath = Path.Combine(GameFolder, UninstallProperty.gameDataFolderName);
 
-                var foldersToKeepInDataFullPath = new string[UninstallProperty.foldersToKeepInData.Length]; // Just in case mhy put more not-to-be-deleted folders in _Data
-                for (int i = 0; i < UninstallProperty.foldersToKeepInData.Length; i++) // yes i'm still salty about it
+                string[]? foldersToKeepInDataFullPath = null;
+                if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0)
                 {
-                    foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
+                    foldersToKeepInDataFullPath = new string[UninstallProperty.foldersToKeepInData.Length];
+                    for (int i = 0; i < UninstallProperty.foldersToKeepInData.Length; i++)
+                    {
+                        foldersToKeepInDataFullPath[i] = Path.Combine(_DataFolderFullPath, UninstallProperty.foldersToKeepInData[i]);
+                    }
                 }
+                else foldersToKeepInDataFullPath = Array.Empty<string>();
 
                 LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n" +
                     $"  GameFolder          : {GameFolder}\r\n" +
@@ -530,7 +536,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     try
                     {
-                        if (UninstallProperty.foldersToKeepInData.Length != 0 && !foldersToKeepInDataFullPath.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
+                        if (UninstallProperty.foldersToKeepInData != null && UninstallProperty.foldersToKeepInData.Length != 0 && !foldersToKeepInDataFullPath.Contains(folderGameData)) // Skip this entire process if foldersToKeepInData is null
                         {
                             // Delete directories inside gameDataFolderName that is not included in foldersToKeepInData
                             if (File.GetAttributes(folderGameData).HasFlag(FileAttributes.Directory))
@@ -622,12 +628,13 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}", LogType.Error, true);
             }
 
             _gameVersionManager.UpdateGamePath("", true);
             _gameVersionManager.Reinitialize();
             return true;
+#nullable disable
         }
 
         public void CancelRoutine()
