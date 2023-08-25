@@ -1425,7 +1425,7 @@ namespace CollapseLauncher.Pages
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
             SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
-            LogWriteLine($"Playtime counter changed to 0h 0m 0s. (Previous value: {PlaytimeMainBtn.Text})");
+            LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, 0);
             PlaytimeFlyout.Hide();
         }
@@ -1526,7 +1526,7 @@ namespace CollapseLauncher.Pages
                 }
             }
             SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 60}m {elapsedSeconds % 60}s] seconds to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
+            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
             inGameTimer.Stop();
         }
 
