@@ -395,11 +395,8 @@ namespace CollapseLauncher
                     await netStream.CopyToAsync(fs, token);
 
 #if DEBUG
-                LogWriteLine
-#else
-            LogWrite
+                LogWriteLine($"\n\rDownloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
 #endif
-                ($"Downloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
             }
             catch (Exception ex)
             {

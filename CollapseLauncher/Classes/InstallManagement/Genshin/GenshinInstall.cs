@@ -292,7 +292,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 gameDataFolderName = $"{execName}_Data",
                 foldersToDelete = new string[] { $"{execName}_Data" },
                 filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" },
-                foldersToKeepInData = new string[] { "ScreenShot" }
+                foldersToKeepInData = Array.Empty<string>()
             };
         }
         #endregion
