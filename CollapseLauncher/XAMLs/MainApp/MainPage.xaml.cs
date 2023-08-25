@@ -732,6 +732,7 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
+            InitKeyboardShortcuts();
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
@@ -794,8 +795,6 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
-
-            if (AreShortcutsEnabled) CreateKeyboardShortcutHandlers();
 
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
@@ -1285,6 +1284,33 @@ namespace CollapseLauncher
         }
 
         #region Keyboard Shortcuts Methods
+        private void InitKeyboardShortcuts()
+        {
+            if (GetAppConfigValue("EnableShortcuts").ToBoolNullable() == null)
+            {
+                SetAndSaveConfigValue("EnableShortcuts", true);
+                KeyList = null;
+
+                SpawnNotificationPush(
+                    "A new feature has arrived!",
+                    "We are introducing a new way to navigate aroud Collapse, Keyboard Shortcuts." +
+                    "\nYou can now use your keyboard to have faster access to some functionalities!" +
+                    "\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+                    NotifSeverity.Informational,
+                    -20,
+                    true,
+                    false,
+                    null,
+                    NotificationPush.GenerateNotificationButton("", "Show all shortcuts", (o, e) => ShowKeybinds_Invoked(null, null)),
+                    true,
+                    true,
+                    false
+                    );
+            }
+
+            if (AreShortcutsEnabled) CreateKeyboardShortcutHandlers();
+        }
+
         private void CreateKeyboardShortcutHandlers()
         {
             try
