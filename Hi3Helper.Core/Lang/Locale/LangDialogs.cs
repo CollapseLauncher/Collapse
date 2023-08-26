@@ -94,6 +94,9 @@
                 public string LocateExePathSubtitle { get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
                 public string StopGameTitle { get; set; } = LangFallback?._Dialogs.StopGameTitle;
                 public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
+
+                public string ResetKbShortcutsTitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsTitle;
+                public string ResetKbShortcutsSubtitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsSubtitle;
             }
         }
         #endregion

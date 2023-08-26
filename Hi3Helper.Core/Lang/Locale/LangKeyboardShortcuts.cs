@@ -17,7 +17,35 @@
 
                 public string General_Title { get; set; } = LangFallback?._KbShortcuts.General_Title;
                 public string General_OpenMenu { get; set; } = LangFallback?._KbShortcuts.General_OpenMenu;
+                public string General_OpenMenu_Desc { get; set; } = LangFallback?._KbShortcuts.General_OpenMenu_Desc;
                 public string General_GoHome { get; set; } = LangFallback?._KbShortcuts.General_GoHome;
+                public string General_GoSettings { get; set; } = LangFallback?._KbShortcuts.General_GoSettings;
+                public string General_OpenNotifTray { get; set; } = LangFallback?._KbShortcuts.General_OpenNotifTray;
+
+                public string Switch_Title { get; set; } = LangFallback?._KbShortcuts.Switch_Title;
+                public string Switch_Subtitle { get; set; } = LangFallback?._KbShortcuts.Switch_Subtitle;
+                public string Switch_SwapBtn { get; set; } = LangFallback?._KbShortcuts.Switch_SwapBtn;
+                public string Switch_ChangeGame { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeGame;
+                public string Switch_ChangeGame_Desc { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeGame_Desc;
+                public string Switch_ChangeRegion { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeRegion;
+                public string Switch_ChangeRegion_Desc { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeRegion_Desc;
+
+                public string GameFolder_Title { get; set; } = LangFallback?._KbShortcuts.GameFolder_Title;
+                public string GameFolder_Screenshots { get; set; } = LangFallback?._KbShortcuts.GameFolder_Screenshots;
+                public string GameFolder_MainFolder { get; set; } = LangFallback?._KbShortcuts.GameFolder_MainFolder;
+                public string GameFolder_CacheFolder { get; set; } = LangFallback?._KbShortcuts.GameFolder_CacheFolder;
+
+                public string GameManagement_Title { get; set; } = LangFallback?._KbShortcuts.GameManagement_Title;
+                public string GameManagement_Subtitle { get; set; } = LangFallback?._KbShortcuts.GameManagement_Subtitle;
+                public string GameManagement_ForceCloseGame { get; set; } = LangFallback?._KbShortcuts.GameManagement_ForceCloseGame;
+                public string GameManagement_GoRepair { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoRepair;
+                public string GameManagement_GoSettings { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoSettings;
+                public string GameManagement_GoCaches { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoCaches;
+
+                public string ChangeShortcut_Title { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Title;
+                public string ChangeShortcut_Text1 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text1;
+                public string ChangeShortcut_Text2 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text2;
+                public string ChangeShortcut_Text3 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text3;
             }
         }
         #endregion
