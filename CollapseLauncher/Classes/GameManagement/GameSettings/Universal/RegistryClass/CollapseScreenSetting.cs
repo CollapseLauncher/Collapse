@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Text;
@@ -93,15 +94,7 @@ namespace CollapseLauncher.GameSettings.Universal
             }
         }
 
-        public bool Equals(CollapseScreenSetting? comparedTo)
-        {
-            if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
-
-            return comparedTo.UseCustomResolution == this.UseCustomResolution &&
-                comparedTo.UseExclusiveFullscreen == this.UseExclusiveFullscreen &&
-                comparedTo.GameGraphicsAPI == this.GameGraphicsAPI;
-        }
+        public bool Equals(CollapseScreenSetting? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
         #endregion
     }

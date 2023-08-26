@@ -1026,6 +1026,8 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
+
                 bool IsContinue = await CheckMediaPackInstalled();
 
                 if (!IsContinue) return;
@@ -1052,6 +1054,18 @@ namespace CollapseLauncher.Pages
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
                     CollapsePrioControl(proc);
 
+                // Set game process priority to Above Normal when GameBoost is on
+                if (_Settings.SettingsCollapseMisc.UseGameBoost)
+                {
+                    await Task.Delay(20000); // wait for possible other process to spawn
+                    Process gameProcess = new Process();
+                    var gameProcessName = Process.GetProcessesByName(proc.ProcessName.Split('.')[0]);
+                    foreach (var p in gameProcessName)
+                    {
+                        proc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                        LogWriteLine($"Game process {proc.ProcessName} [{proc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+                    }
+                }
             }
             catch (System.ComponentModel.Win32Exception ex)
             {

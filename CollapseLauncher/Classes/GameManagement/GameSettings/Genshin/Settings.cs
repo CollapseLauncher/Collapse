@@ -11,6 +11,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
         public GeneralData SettingsGeneralData { get; set; }
 
         public GenshinSettings(IGameVersionCheck GameVersionManager)
@@ -35,6 +36,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             // Load Settings
             SettingsCustomArgument = CustomArgs.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsCollapseMisc = CollapseMiscSetting.Load();
             SettingsScreen = ScreenManager.Load();
             SettingsGeneralData = GeneralData.Load();
         }
@@ -46,6 +48,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             // Save Settings
             SettingsCustomArgument.Save();
             SettingsCollapseScreen.Save();
+            SettingsCollapseMisc.Save();
             SettingsScreen.Save();
             SettingsGeneralData.Save();
         }

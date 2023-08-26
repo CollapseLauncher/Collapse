@@ -20,6 +20,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         public PersonalAudioSetting SettingsAudio { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
         #endregion
 
         public HonkaiSettings(IGameVersionCheck GameVersionManager)
@@ -47,6 +48,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCustomArgument = CustomArgs.Load();
             SettingsScreen = ScreenSettingData.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsCollapseMisc = CollapseMiscSetting.Load();
 
             // Load Preset
             Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameType.Honkai, HonkaiSettingsJSONContext.Default);
@@ -62,6 +64,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             SettingsCustomArgument.Save();
             SettingsScreen.Save();
             SettingsCollapseScreen.Save();
+            SettingsCollapseMisc.Save();
 
             // Save Preset
             Preset_SettingsGraphics.SaveChanges();

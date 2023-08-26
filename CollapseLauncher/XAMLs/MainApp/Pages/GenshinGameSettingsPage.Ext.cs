@@ -363,5 +363,13 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGeneralData.deviceLanguageType = value + 1;
         }
         #endregion
+
+        #region Misc
+        public bool IsGameBoost
+        {
+            get => Settings.SettingsCollapseMisc.UseGameBoost;
+            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+        }
+        #endregion
     }
 }

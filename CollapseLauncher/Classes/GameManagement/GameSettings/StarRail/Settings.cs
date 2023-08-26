@@ -11,6 +11,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         public CustomArgs SettingsCustomArgument { get; set; }
         public BaseScreenSettingData SettingsScreen { get; set; }
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
+        public CollapseMiscSetting SettingsCollapseMisc { get; set; }
         public Model GraphicsSettings { get; set; }
         public BGMVolume AudioSettings_BGM { get; set; }
         public MasterVolume AudioSettings_Master { get; set; }
@@ -42,6 +43,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             SettingsCustomArgument = CustomArgs.Load();
             GraphicsSettings = Model.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
+            SettingsCollapseMisc = CollapseMiscSetting.Load();
             SettingsScreen = PCResolution.Load();
             AudioSettings_BGM = BGMVolume.Load();
             AudioSettings_Master = MasterVolume.Load();
@@ -59,6 +61,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             SettingsCustomArgument.Save();
             GraphicsSettings.Save();
             SettingsCollapseScreen.Save();
+            SettingsCollapseMisc.Save();
             SettingsScreen.Save();
             AudioSettings_BGM.Save();
             AudioSettings_Master.Save();
