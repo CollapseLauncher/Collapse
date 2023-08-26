@@ -146,29 +146,52 @@ namespace CollapseLauncher.Pages
         #region EventPanel
         private async void TryLoadEventPanelImage()
         {
+            // If the region event panel property is null, then return
             if (regionNewsProp.eventPanel == null) return;
 
-            FileStream input = new FileStream(regionNewsProp.eventPanel.icon, FileMode.Open, FileAccess.Read);
-            MemoryStream output = new MemoryStream();
-            Bitmap bitmap = new Bitmap(input);
+            // Get the event icon file info
+            FileInfo iconFileInfo = new FileInfo(regionNewsProp.eventPanel.icon);
+            if (!iconFileInfo.Exists) return; // Return if the event icon file doesn't exist
 
-            int width = (int)(bitmap.Width * m_appDPIScale);
-            int height = (int)(bitmap.Height * m_appDPIScale);
+            // Get the cached filename and path
+            string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon + iconFileInfo.Length);
+            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
 
-            ProcessImageSettings settings = new ProcessImageSettings
-            {
-                Width = width,
-                Height = height,
-                HybridMode = HybridScaleMode.Off,
-                Interpolation = InterpolationSettings.Cubic
-            };
-            input.Position = 0;
-            await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
-            output.Position = 0;
-
+            // Init BitmapImage to load the image and the info for cached event icon file
             BitmapImage source = new BitmapImage();
-            source.SetSource(output.AsRandomAccessStream());
+            FileInfo cachedIconFileInfo = new FileInfo(cachedFilePath);
 
+            // Determine if the cache icon exist and the file is completed (more than 1kB in size)
+            bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
+
+            // Using the original icon file and cached icon file streams
+            using (FileStream iconFileStream = iconFileInfo.OpenRead())
+            using (FileStream cachedIconFileStream = isCacheIconExist ? cachedIconFileInfo.OpenRead() : cachedIconFileInfo.Create())
+            {
+                if (!isCacheIconExist)
+                {
+                    // Get the icon image information and set the resized frame size
+                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(iconFileStream));
+                    int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
+                    int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
+                    ProcessImageSettings settings = new ProcessImageSettings
+                    {
+                        Width = width,
+                        Height = height,
+                        HybridMode = HybridScaleMode.Off,
+                        Interpolation = InterpolationSettings.Cubic
+                    };
+
+                    iconFileStream.Position = 0; // Reset the original icon stream position
+                    await Task.Run(() => MagicImageProcessor.ProcessImage(iconFileStream, cachedIconFileStream, settings)); // Start resizing
+                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                }
+
+                // Set the source from cached icon stream
+                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+            }
+
+            // Set event icon props
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
             ImageEventImg.Source = source;
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
