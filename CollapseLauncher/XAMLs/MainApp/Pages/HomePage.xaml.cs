@@ -1655,7 +1655,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Collapse Priority Control
-        private static async void CollapsePrioControl(Process proc)
+        private async void CollapsePrioControl(Process proc)
         {
             try
             {
@@ -1663,23 +1663,24 @@ namespace CollapseLauncher.Pages
                 {
                     collapseProcess.PriorityBoostEnabled = false;
                     collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
-                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, PriorityBoost is off", LogType.Default, true);
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
 
+                CarouselStopScroll(null, null);
                 await proc.WaitForExitAsync();
 
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = true;
                     collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
-                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, PriorityBoost is on", LogType.Default, true);
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
+                CarouselRestartScroll(null, null);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
-
         }
         #endregion
     }
