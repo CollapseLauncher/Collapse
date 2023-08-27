@@ -336,7 +336,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
             introPanel.Children.Add(new TextBlock()
             {
-                Text = "Type the new combination for the shortcut",
+                Text = "Type the new combination for this shortcut!",
                 Margin = new Thickness(0, 0, 0, 2),
                 TextWrapping = TextWrapping.Wrap,
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -356,7 +356,7 @@ namespace CollapseLauncher.Dialogs
             mainSwitchKeyContent.Children.Add(new TextBlock()
             {
                 Text = oldKeys.Last(),
-                Margin = new Thickness(5, 6, 0, 8),
+                Margin = new Thickness(5, 6, 0, 10),
                 TextWrapping = TextWrapping.Wrap,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 FontWeight = FontWeights.Bold
@@ -367,7 +367,7 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 7, 0, -5)
+                Margin = new Thickness(0, 8, 0, -5)
             };
 
             oldKeys = oldKeys.Take(2).ToList();
