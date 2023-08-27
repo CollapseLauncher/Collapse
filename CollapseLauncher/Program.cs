@@ -65,8 +65,7 @@ namespace CollapseLauncher
                 FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
                 LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
 
-                using (Process collapseProcess = Process.GetCurrentProcess())
-                    collapseProcess.PriorityBoostEnabled = true;
+                Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
                 InitializeAppSettings();
                 ParseArguments(args);
