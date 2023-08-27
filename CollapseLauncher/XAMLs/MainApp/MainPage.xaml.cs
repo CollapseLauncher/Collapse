@@ -1392,36 +1392,6 @@ namespace CollapseLauncher
 
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
-        private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
-            if (IsLoadRegionComplete && ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index] && index < ComboBoxGameCategory.Items.Count)
-            {
-                ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
-                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(ComboBoxGameCategory.SelectedValue.ToString());
-                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
-                ChangeRegionConfirmBtn.IsEnabled = false;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-            }
-        }
-
-        private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
-            if (IsLoadRegionComplete && ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
-            {
-                ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
-                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
-                ChangeRegionConfirmBtn.IsEnabled = false;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
-            }
-        }
-
-        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-        {
-            await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
-        }
-
         private bool CannotChange = true;
         private async void ChangeTimer(int time = 500)
         {
@@ -1431,7 +1401,45 @@ namespace CollapseLauncher
                 await Task.Delay(time);
                 CannotChange = false;
             }
-            catch{}
+            catch { }
+        }
+
+        private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (CannotChange || !IsLoadRegionComplete)
+                return;
+
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+            if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
+            {
+                ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
+                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(ComboBoxGameCategory.SelectedValue.ToString());
+                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                CannotChange = true;
+            }
+        }
+
+        private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (CannotChange || !IsLoadRegionComplete)
+                return;
+            
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+            if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
+            {
+                ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
+                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                CannotChange = true;
+            }
+        }
+
+        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
         }
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1439,10 +1447,13 @@ namespace CollapseLauncher
             if (!IsLoadRegionComplete || CannotChange)
                return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) 
+                return;
+
+            ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
             NavigateInnerSwitch("launcher");
-            ChangeTimer();
+            
         }
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1450,10 +1461,12 @@ namespace CollapseLauncher
             if (!IsLoadRegionComplete || CannotChange)
                 return;
 
-            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) 
+                return;
+
+            ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
             Navigate(typeof(SettingsPage), "settings");
-            ChangeTimer();
         }
 
         private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1546,12 +1559,13 @@ namespace CollapseLauncher
         {
             if (!IsLoadRegionComplete || CannotChange) 
                 return;
+
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
                 return;
 
+            ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
             NavigateInnerSwitch("repair");
-            ChangeTimer();
         }
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -1561,9 +1575,9 @@ namespace CollapseLauncher
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3]) 
                 return;
 
+            ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
             NavigateInnerSwitch("caches");
-            ChangeTimer();
         }
 
 
@@ -1575,6 +1589,7 @@ namespace CollapseLauncher
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 
                 return;
 
+            ChangeTimer();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
             switch (CurrentGameProperty._GamePreset.GameType)
             {
@@ -1588,7 +1603,6 @@ namespace CollapseLauncher
                     Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
                     break;
             }
-            ChangeTimer();
         }
 
         private bool AreShortcutsEnabled
