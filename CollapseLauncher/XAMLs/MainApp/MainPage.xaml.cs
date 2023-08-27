@@ -732,7 +732,6 @@ namespace CollapseLauncher
         private async Task InitializeStartup()
         {
             RunBackgroundCheck();
-            InitKeyboardShortcuts();
 
             // Load community tools properties
             PageStatics._CommunityToolsProperty = CommunityToolsProperty.LoadCommunityTools();
@@ -765,6 +764,7 @@ namespace CollapseLauncher
 
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
+            InitKeyboardShortcuts();
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {

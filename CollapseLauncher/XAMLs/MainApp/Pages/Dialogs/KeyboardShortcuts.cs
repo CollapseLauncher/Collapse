@@ -453,12 +453,10 @@ namespace CollapseLauncher.Dialogs
             try
             {
                 List<List<string>> keys = KeyList;
+                keys[keys.FindIndex(i => i.SequenceEqual(oldKeys))] = newKeys;
 
-                if (keys.FindIndex(i => i.Contains(newKeys[0]) && i.Contains(newKeys[1])) == -1)
-                {
-                    keys[keys.FindIndex(i => i.Contains(oldKeys[0]) && i.Contains(oldKeys[1]))] = newKeys;
-                    KeyList = keys;
-                }
+                LogWriteLine($"Swapped {string.Join("+", oldKeys)} with {string.Join("+", newKeys)}");
+                KeyList = keys;
                 KeyboardShortcutsEvent(null, 1);
             }
             catch (Exception ex)
@@ -493,7 +491,7 @@ namespace CollapseLauncher.Dialogs
         #region Conversion and Validation Methods
         public static VirtualKey StrToVKey(string key)
         {
-            if (key.Contains("Num")) key = "NumberPad" + key[3];
+            //if (key.Contains("Num")) key = "NumberPad" + key[3];
             return (VirtualKey)Enum.Parse(typeof(VirtualKey), key);
         }
 
@@ -511,11 +509,10 @@ namespace CollapseLauncher.Dialogs
 
             return (VirtualKeyModifiers)Enum.Parse(typeof(VirtualKeyModifiers), key);
         }
-
         private static bool ValidKeyCombination(List<string> keys)
         {
-            return KeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1 
-                && forbiddenKeyList.FindIndex(i => i.Contains(keys[0]) && i.Contains(keys[1])) == -1;
+            return !KeyList.Any(i => i.SequenceEqual(keys)) 
+                && !forbiddenKeyList.Any(i => i.SequenceEqual(keys));
         }
         #endregion
 
@@ -553,14 +550,18 @@ namespace CollapseLauncher.Dialogs
         {
             get
             {
-                string keyListStr = GetAppConfigValue("KbShortcutList").ToString() ?? null;
+                string keyListStr = GetAppConfigValue("KbShortcutList").ToString();
+                List<List<string>> resultList = new List<List<string>>();
+
                 if (keyListStr == null)
                 {
-                    KeyList = null;
-                    return KeyList;
+                    foreach (List<string> list in defaultKeyList)
+                    {
+                        resultList.Add(list);
+                    }
+                    return resultList;
                 }
 
-                List<List<string>> resultList = new List<List<string>>();
                 foreach (string combination in keyListStr.Split('|'))
                 {
                     resultList.Add(combination.Split(",").ToList());
@@ -578,9 +579,13 @@ namespace CollapseLauncher.Dialogs
             {
                 value ??= defaultKeyList;
                 string res = "";
-                foreach (List<string> key in value) res = res + string.Join(",", key.ToArray()) + "|";
-                LogWriteLine("Keybinds list was updated to: " + res.Remove(res.Length - 1));
-                SetAndSaveConfigValue("KbShortcutList", res.Remove(res.Length - 1));
+                foreach (List<string> key in value)
+                {
+                    res += string.Join(",", key) + "|";
+                }
+                res = res.Remove(res.Length - 1);
+                LogWriteLine("KeyList was updated to: " + res);
+                SetAndSaveConfigValue("KbShortcutList", res);
             }
         }
         #endregion
