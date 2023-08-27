@@ -385,7 +385,11 @@
     "AppChangeReleaseChannel": "Change to {0} Release Channel",
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_ShowBtn": "Show Shortcuts",
+    "KbShortcuts_ResetBtn": "Reset to Default"
   },
 
   "_Misc": {
