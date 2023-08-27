@@ -21,6 +21,10 @@
                 public string NotifPreviewBuildUsedTitle { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedTitle;
                 public string NotifPreviewBuildUsedSubtitle { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedSubtitle;
                 public string NotifPreviewBuildUsedBtn { get; set; } = LangFallback?._AppNotification.NotifPreviewBuildUsedBtn;
+
+                public string NotifKbShortcutTitle { get; set; } = LangFallback?._AppNotification.NotifKbShortcutTitle;
+                public string NotifKbShortcutSubtitle { get; set; } = LangFallback?._AppNotification.NotifKbShortcutSubtitle;
+                public string NotifKbShortcutBtn { get; set; } = LangFallback?._AppNotification.NotifKbShortcutBtn;
             }
         }
         #endregion
