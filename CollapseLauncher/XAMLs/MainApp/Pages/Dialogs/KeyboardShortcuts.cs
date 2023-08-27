@@ -292,8 +292,9 @@ namespace CollapseLauncher.Dialogs
                 storyboard2.Begin();
 
             }
-            catch
+            catch (Exception e)
             {
+                LogWriteLine(e.ToString());
             }
         }
 #endregion

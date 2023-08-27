@@ -68,7 +68,7 @@
                         </StackPanel>
                         <TextBlock Text="Keyboard Shortcuts" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                         <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"/>
-                        <Button Margin="0,8,0,8" Height="40" Width="170" Click="ShowKeybind_Click" CornerRadius="20" Style="{ThemeResource AccentButtonStyle}">
+                        <Button Margin="0,8,0,8" Height="40" Width="170" Click="ShowKbScList_Click" CornerRadius="20" Style="{ThemeResource AccentButtonStyle}">
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                                 <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="20"/>
                                 <TextBlock Text="Show Shortcuts" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>

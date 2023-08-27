@@ -523,7 +523,8 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
 
-		private async void ShowKeybind_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
+        #region Keyboard Shortcuts
+        private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
 
         private async void ResetKeylist_Click(object sender, RoutedEventArgs e)
         {
@@ -544,5 +545,6 @@ namespace CollapseLauncher.Pages
                 KeyboardShortcutsEvent(this, value ? 0 : 2);  
             }
         }
+        #endregion
     }
 }
