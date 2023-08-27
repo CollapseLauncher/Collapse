@@ -7,12 +7,12 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using CommunityToolkit.WinUI.UI;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using Microsoft.UI.Xaml.Media.Animation;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -311,7 +311,7 @@ namespace CollapseLauncher.Dialogs
             mainSwitchKeyContent.Children.Add(new TextBlock()
             {
                 Text = "Type the new combination for the shortcut",
-                Margin = new Thickness(0, 8, 0, 2),
+                Margin = new Thickness(0, 0, 0, 2),
                 TextWrapping = TextWrapping.Wrap,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
@@ -325,40 +325,62 @@ namespace CollapseLauncher.Dialogs
                 FontWeight = FontWeights.Bold
             });
 
-            mainSwitchKeyContent.Children.Add(new TextBlock()
-            {
-                Text = "You can use to following keys:",
-                Margin = new Thickness(0, 2, 0, 8),
-                TextWrapping = TextWrapping.Wrap
-            });
-            mainSwitchKeyContent.Children.Add(new TextBlock()
-            {
-                Text = "・ Modifiers - Shift, Control or Alt/Menu",
-                Margin = new Thickness(5, 4, 0, 4)
-            });
-            mainSwitchKeyContent.Children.Add(new TextBlock()
-            {
-                Text = "・ Keys - A to Z or Tab",
-                Margin = new Thickness(5, 4, 0, 8)
-            });
-            mainSwitchKeyContent.Children.Add(new TextBlock()
-            {
-                Text = "Note: Combinations already defined by the operating system cannot be used.",
-                Margin = new Thickness(5, 4, 0, 10),
-                TextWrapping = TextWrapping.Wrap
-            });
-
             StackPanel keysPanel = new StackPanel()
             {
                 Orientation = Orientation.Horizontal,
                 VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 7, 0, -5)
             };
-            keysPanel.Children.Add(new TextBlock() { Text = string.Join(" + ", oldKeys.SkipLast(1)), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center });
+
+            oldKeys = oldKeys.Take(2).ToList();
+
+            keysPanel.Children.Add(CreateKeyBoardButton(oldKeys[0]));
+            keysPanel.Children.Add(new TextBlock() { Text = "+", FontSize = 20, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
+            keysPanel.Children.Add(CreateKeyBoardButton(oldKeys[1]));
             keysPanel.Children.Add(new FontIcon() { Glyph = "arrow-right", FontSize = 15, FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, Margin = new Thickness(10, 0, 10, 0) });
-            TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys.SkipLast(1)), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
-            keysPanel.Children.Add(keysPressed);
+            Border newKey1 = CreateKeyBoardButton("?");
+            keysPanel.Children.Add(newKey1);
+            keysPanel.Children.Add(new TextBlock() { Text = "+", FontSize = 20, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
+            Border newKey2 = CreateKeyBoardButton("?");
+            keysPanel.Children.Add(newKey2);
+            /*TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
+            keysPanel.Children.Add(keysPressed);*/
             mainSwitchKeyContent.Children.Add(keysPanel);
+
+            StackPanel HelpStack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth = 260 };
+            Flyout HelpFlyout = new Flyout() { Content = HelpStack, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop };
+            keysPanel.Children.Add(new Button()
+            {
+                Content = new TextBlock() { Text = "question", FontFamily = Application.Current.Resources["FontAwesome"] as FontFamily, FontSize = 12, Margin = new Thickness(-4, 0, -5, 0) },
+                Flyout = HelpFlyout,
+                CornerRadius = new CornerRadius(5),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(5, 0, 0, 0)
+            });
+
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "A shortcut is composed by 2 parts:",
+                Margin = new Thickness(0, 2, 0, 4),
+                TextWrapping = TextWrapping.Wrap
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "・ Modifier - Shift, Control or Alt/Menu",
+                Margin = new Thickness(5, 4, 0, 4)
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "・ Key - Alphabetical (A to Z) or Tab",
+                Margin = new Thickness(5, 4, 0, 8)
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used.",
+                Margin = new Thickness(0, 4, 0, 0),
+                TextWrapping = TextWrapping.Wrap
+            });
 
             ContentDialog result = new ContentDialog
             {
@@ -373,44 +395,54 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = content.XamlRoot
             };
 
-            oldKeys = oldKeys.Take(2).ToList();
-
             int keyCount = 0;
+            TextBlock text1 = newKey1.Child as TextBlock;
+            TextBlock text2 = newKey2.Child as TextBlock;
             result.KeyDown += (e, s) =>
             {
                 VirtualKey inputKey = s.Key;
+                
                 keyCount = 0;
                 result.IsPrimaryButtonEnabled = false;
                 switch (s.Key)
                 {
                     case VirtualKey.Control:
                         keyCount++;
-                        keysPressed.Text = "Ctrl" + " + ";
+                        text1.Text = "Ctrl";
+                        text2.Text = "?";
+                        //keysPressed.Text = "Ctrl" + " + ";
                         break;
                     case VirtualKey.Shift:
                         keyCount++;
-                        keysPressed.Text = "Shift" + " + ";
+                        text1.Text = "Shift";
+                        text2.Text = "?";
+                        //keysPressed.Text = "Shift" + " + ";
                         break;
                     case VirtualKey.Menu:
                         keyCount++;
-                        keysPressed.Text = "Alt" + " + ";
+                        text1.Text = "Alt";
+                        text2.Text = "?";
+                        //keysPressed.Text = "Alt" + " + ";
                         break;
                 }
             };
 
-            List<string> newKeys = new List<string>();
+            List<string> newKeys = null;
 
             result.KeyUp += (e, s) =>
             {
                 int keyValue = (int)s.Key;
+                
                 if (keyCount >= 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || /*(keyValue >= 0x60 && keyValue <= 0x69) ||*/ keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
                 {
                     string keyStr = s.Key.ToString();
+                    text2.Text = keyStr;
                     //if (keyStr.Contains("NumberPad")) keyStr = string.Concat("Num", keyStr.Substring(9, 1));
 
-                    keysPressed.Text = keysPressed.Text.Split(" + ").First() + " + " + keyStr;
+                    /*keysPressed.Text = keysPressed.Text.Split(" + ").First() + " + " + keyStr;
 
-                    newKeys = keysPressed.Text.Split(" + ").ToList();
+                    newKeys = keysPressed.Text.Split(" + ").ToList();*/
+                    newKeys = new List<string> { text1.Text, text2.Text };
                     result.IsPrimaryButtonEnabled = ValidKeyCombination(newKeys);
                 }
             };
