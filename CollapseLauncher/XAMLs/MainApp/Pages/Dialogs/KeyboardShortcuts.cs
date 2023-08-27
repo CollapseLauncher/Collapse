@@ -305,16 +305,53 @@ namespace CollapseLauncher.Dialogs
             StackPanel mainSwitchKeyContent = new StackPanel()
             {
                 Orientation = Orientation.Vertical,
-                MaxWidth = 320
+                Width = 350
             };
 
-            mainSwitchKeyContent.Children.Add(new TextBlock()
+            StackPanel HelpStack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth = 260 };
+            Flyout HelpFlyout = new Flyout() { Content = HelpStack, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop };
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "A shortcut is composed by 2 parts:",
+                Margin = new Thickness(0, 2, 0, 4),
+                TextWrapping = TextWrapping.Wrap
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "・ Modifier - Shift, Control or Alt/Menu",
+                Margin = new Thickness(5, 4, 0, 4)
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "・ Key - Alphabetical (A to Z) or Tab",
+                Margin = new Thickness(5, 4, 0, 8)
+            });
+            HelpStack.Children.Add(new TextBlock()
+            {
+                Text = "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used.",
+                Margin = new Thickness(0, 4, 0, 0),
+                TextWrapping = TextWrapping.Wrap
+            });
+
+            StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
+            introPanel.Children.Add(new TextBlock()
             {
                 Text = "Type the new combination for the shortcut",
                 Margin = new Thickness(0, 0, 0, 2),
                 TextWrapping = TextWrapping.Wrap,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
+
+            Button HelpButton = new Button()
+            {
+                Content = new TextBlock() { Text = "info", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, FontSize = 10 },
+                Flyout = HelpFlyout,
+                CornerRadius = new CornerRadius(5),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(8, 0, 0, 2)
+            };
+            introPanel.Children.Add(HelpButton);
+            mainSwitchKeyContent.Children.Add(introPanel);
 
             mainSwitchKeyContent.Children.Add(new TextBlock()
             {
@@ -347,40 +384,6 @@ namespace CollapseLauncher.Dialogs
             /*TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
             keysPanel.Children.Add(keysPressed);*/
             mainSwitchKeyContent.Children.Add(keysPanel);
-
-            StackPanel HelpStack = new StackPanel() { Orientation = Orientation.Vertical, MaxWidth = 260 };
-            Flyout HelpFlyout = new Flyout() { Content = HelpStack, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop };
-            keysPanel.Children.Add(new Button()
-            {
-                Content = new TextBlock() { Text = "question", FontFamily = Application.Current.Resources["FontAwesome"] as FontFamily, FontSize = 12, Margin = new Thickness(-4, 0, -5, 0) },
-                Flyout = HelpFlyout,
-                CornerRadius = new CornerRadius(5),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(5, 0, 0, 0)
-            });
-
-            HelpStack.Children.Add(new TextBlock()
-            {
-                Text = "A shortcut is composed by 2 parts:",
-                Margin = new Thickness(0, 2, 0, 4),
-                TextWrapping = TextWrapping.Wrap
-            });
-            HelpStack.Children.Add(new TextBlock()
-            {
-                Text = "・ Modifier - Shift, Control or Alt/Menu",
-                Margin = new Thickness(5, 4, 0, 4)
-            });
-            HelpStack.Children.Add(new TextBlock()
-            {
-                Text = "・ Key - Alphabetical (A to Z) or Tab",
-                Margin = new Thickness(5, 4, 0, 8)
-            });
-            HelpStack.Children.Add(new TextBlock()
-            {
-                Text = "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used.",
-                Margin = new Thickness(0, 4, 0, 0),
-                TextWrapping = TextWrapping.Wrap
-            });
 
             ContentDialog result = new ContentDialog
             {
