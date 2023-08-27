@@ -466,6 +466,7 @@ namespace CollapseLauncher.Dialogs
             {
                 SwapKeybind();
                 (sender as Button).FindParent<ContentDialog>().Hide();
+                await Task.Delay(200);
                 await Dialog_ShowKbShortcuts(sender as UIElement, 1);
             }
             else
@@ -473,6 +474,7 @@ namespace CollapseLauncher.Dialogs
                 try
                 {
                     (sender as Button).FindParent<ContentDialog>().Hide();
+                    await Task.Delay(200);
                     await Dialog_SwitchKey(sender as UIElement, keys.SkipLast(1).ToList());
                     await Dialog_ShowKbShortcuts(sender as UIElement, int.Parse(keys.Last()));
                 }
