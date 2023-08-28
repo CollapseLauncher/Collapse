@@ -421,6 +421,11 @@ namespace CollapseLauncher.Dialogs
                         text1.Text = "Alt";
                         text2.Text = "?";
                         break;
+                    default:
+                        keyCount = 0;
+                        text1.Text = "?";
+                        text2.Text = "?";
+                        break;
                 }
             };
 
