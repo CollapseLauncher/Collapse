@@ -346,9 +346,8 @@ namespace CollapseLauncher.Dialogs
             {
                 Content = new TextBlock() { Text = "info", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, FontSize = 10 },
                 Flyout = HelpFlyout,
-                CornerRadius = new CornerRadius(5),
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(8, 0, 0, 2)
+                Margin = new Thickness(8, -2, 0, 2)
             };
             introPanel.Children.Add(HelpButton);
             mainSwitchKeyContent.Children.Add(introPanel);
@@ -381,8 +380,6 @@ namespace CollapseLauncher.Dialogs
             keysPanel.Children.Add(new TextBlock() { Text = "+", FontSize = 20, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
             Border newKey2 = CreateKeyBoardButton("?");
             keysPanel.Children.Add(newKey2);
-            /*TextBlock keysPressed = new TextBlock() { Text = string.Join(" + ", oldKeys), FontSize = 18, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, };
-            keysPanel.Children.Add(keysPressed);*/
             mainSwitchKeyContent.Children.Add(keysPanel);
 
             ContentDialog result = new ContentDialog
@@ -413,19 +410,16 @@ namespace CollapseLauncher.Dialogs
                         keyCount++;
                         text1.Text = "Ctrl";
                         text2.Text = "?";
-                        //keysPressed.Text = "Ctrl" + " + ";
                         break;
                     case VirtualKey.Shift:
                         keyCount++;
                         text1.Text = "Shift";
                         text2.Text = "?";
-                        //keysPressed.Text = "Shift" + " + ";
                         break;
                     case VirtualKey.Menu:
                         keyCount++;
                         text1.Text = "Alt";
                         text2.Text = "?";
-                        //keysPressed.Text = "Alt" + " + ";
                         break;
                 }
             };
@@ -436,15 +430,11 @@ namespace CollapseLauncher.Dialogs
             {
                 int keyValue = (int)s.Key;
                 
-                if (keyCount >= 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) || /*(keyValue >= 0x60 && keyValue <= 0x69) ||*/ keyValue == 9)) // Virtual-Key codes for NumPad, Letters and Tab
+                if (keyCount >= 1 && ((keyValue >= 0x41 && keyValue <= 0x5A) ||  keyValue == 9)) // Virtual-Key codes for Letters and Tab
                 {
                     string keyStr = s.Key.ToString();
                     text2.Text = keyStr;
-                    //if (keyStr.Contains("NumberPad")) keyStr = string.Concat("Num", keyStr.Substring(9, 1));
 
-                    /*keysPressed.Text = keysPressed.Text.Split(" + ").First() + " + " + keyStr;
-
-                    newKeys = keysPressed.Text.Split(" + ").ToList();*/
                     newKeys = new List<string> { text1.Text, text2.Text };
                     result.IsPrimaryButtonEnabled = ValidKeyCombination(newKeys);
                 }
