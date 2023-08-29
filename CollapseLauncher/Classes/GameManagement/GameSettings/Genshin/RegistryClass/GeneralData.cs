@@ -321,6 +321,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                     data.globalPerfData = new();
                     return data;
                 }
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                GraphicsData.Load(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+                return new GeneralData();
             }
             catch (Exception ex)
             {
