@@ -74,30 +74,30 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(modifierSwap);
 
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            changeStack.Children.Add(GenerateShortcutBlock(keys[0], Lang._KbShortcuts.Switch_ChangeGame, string.Format("You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
-            changeStack.Children.Add(GenerateShortcutBlock(keys[1], Lang._KbShortcuts.Switch_ChangeRegion, string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[0], Lang._KbShortcuts.Switch_ChangeGame, string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc, gameMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[1], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
             // Game folder
             StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameFolderStack.Children.Add(new TextBlock { Text = "Game Folder Access", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameFolderStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], "Open the Screenshot folder"));
-            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[7], "Open the Game folder"));
-            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[8], "Open the Cache folder"));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], Lang._KbShortcuts.GameFolder_ScreenshotFolder));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[7], Lang._KbShortcuts.GameFolder_MainFolder));
+            gameFolderStack.Children.Add(GenerateShortcutBlock(keys[8], Lang._KbShortcuts.GameFolder_CacheFolder));
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
             // Game management
             StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameManageStack.Children.Add(new TextBlock { Text = "Game Management", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
-            gameManageStack.Children.Add(new TextBlock { Text = "Note: These keybinds only work if such feature is supported in the region", FontSize = 11.5 });
+            gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], "Close the game forcefully"));
-            gameManageStack.Children.Add(GenerateShortcutBlock(keys[10], "Go to the Repair page"));
-            gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], "Go to the Game Settings page"));
-            gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], "Go to the Caches page"));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], Lang._KbShortcuts.GameManagement_ForceCloseGame));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[10], Lang._KbShortcuts.GameManagement_GoRepair));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], Lang._KbShortcuts.GameManagement_GoSettings));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], Lang._KbShortcuts.GameManagement_GoCaches));
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum = 0;
 

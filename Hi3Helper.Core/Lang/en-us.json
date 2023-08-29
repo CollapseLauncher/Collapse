@@ -897,6 +897,18 @@
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region",
 
+    "GameFolder_Title": "Game Folder Access",
+    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
+    "GameFolder_MainFolder": "Open the Game folder",
+    "GameFolder_CacheFolder": "Open the Cache folder",
+
+    "GameManagement_Title": "Game Management",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region",
+    "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_GoRepair": "Go to the Repair page",
+    "GameManagement_GoSettings": "Go to the Game Settings page",
+    "GameManagement_GoCaches": "Go to the Caches page",
+
     "ChangeShortcut_Title": "Change Shortcut",
     "ChangeShortcut_Text": "Type the new combination for this shortcut!",
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
