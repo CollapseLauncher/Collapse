@@ -1292,16 +1292,14 @@ namespace CollapseLauncher
                 KeyList = null;
 
                 SpawnNotificationPush(
-                    "A new feature has arrived!",
-                    "We are introducing a new way to navigate aroud Collapse, Keyboard Shortcuts." +
-                    "\nYou can now use your keyboard to have faster access to some functionalities!" +
-                    "\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+                    Lang._AppNotification.NotifKbShortcutTitle,
+                    Lang._AppNotification.NotifKbShortcutSubtitle,
                     NotifSeverity.Informational,
                     -20,
                     true,
                     false,
                     null,
-                    NotificationPush.GenerateNotificationButton("", "Show all shortcuts", (o, e) => ShowKeybinds_Invoked(null, null)),
+                    NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (o, e) => ShowKeybinds_Invoked(null, null)),
                     true,
                     true,
                     false
