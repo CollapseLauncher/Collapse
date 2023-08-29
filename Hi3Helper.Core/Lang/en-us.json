@@ -912,6 +912,7 @@
     "GameManagement_Title": "Game Management",
     "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region",
     "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game is immediatly closed without any type of confirmation.",
     "GameManagement_GoRepair": "Go to the Repair page",
     "GameManagement_GoSettings": "Go to the Game Settings page",
     "GameManagement_GoCaches": "Go to the Caches page",

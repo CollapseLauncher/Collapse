@@ -94,7 +94,7 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], Lang._KbShortcuts.GameManagement_ForceCloseGame));
+            gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[10], Lang._KbShortcuts.GameManagement_GoRepair));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[11], Lang._KbShortcuts.GameManagement_GoSettings));
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[12], Lang._KbShortcuts.GameManagement_GoCaches));

@@ -38,6 +38,7 @@
                 public string GameManagement_Title { get; set; } = LangFallback?._KbShortcuts.GameManagement_Title;
                 public string GameManagement_Subtitle { get; set; } = LangFallback?._KbShortcuts.GameManagement_Subtitle;
                 public string GameManagement_ForceCloseGame { get; set; } = LangFallback?._KbShortcuts.GameManagement_ForceCloseGame;
+                public string GameManagement_ForceCloseGame_Desc { get; set; } = LangFallback?._KbShortcuts.GameManagement_ForceCloseGame_Desc;
                 public string GameManagement_GoRepair { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoRepair;
                 public string GameManagement_GoSettings { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoSettings;
                 public string GameManagement_GoCaches { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoCaches;
