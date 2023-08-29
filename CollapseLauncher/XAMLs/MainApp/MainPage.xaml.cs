@@ -1404,10 +1404,11 @@ namespace CollapseLauncher
 
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (CannotChange || !IsLoadRegionComplete)
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+
+            if (CannotChange || !IsLoadRegionComplete || index >= ComboBoxGameCategory.Items.Count)
                 return;
 
-            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
             if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
             {
                 ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
@@ -1421,11 +1422,12 @@ namespace CollapseLauncher
 
         private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (CannotChange || !IsLoadRegionComplete)
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+
+            if (CannotChange || !IsLoadRegionComplete || index >= ComboBoxGameRegion.Items.Count)
                 return;
             
-            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
-            if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index] && index < ComboBoxGameRegion.Items.Count)
+            if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
             {
                 ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
                 ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
