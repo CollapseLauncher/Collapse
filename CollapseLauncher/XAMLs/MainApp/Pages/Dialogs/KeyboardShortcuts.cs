@@ -35,19 +35,19 @@ namespace CollapseLauncher.Dialogs
 
             // General shortcuts
             StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            genStack.Children.Add(new TextBlock { Text = "General", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            genStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.General_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            genStack.Children.Add(GenerateShortcutBlock(keys[2], "Open this menu", "It can also be accessed through the App Settings"));
-            genStack.Children.Add(GenerateShortcutBlock(keys[3], "Go to the Home page"));
-            genStack.Children.Add(GenerateShortcutBlock(keys[4], "Go to the Settings page"));
-            genStack.Children.Add(GenerateShortcutBlock(keys[5], "Open the Notification Tray"));
+            genStack.Children.Add(GenerateShortcutBlock(keys[2], Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc));
+            genStack.Children.Add(GenerateShortcutBlock(keys[3], Lang._KbShortcuts.General_GoHome));
+            genStack.Children.Add(GenerateShortcutBlock(keys[4], Lang._KbShortcuts.General_GoSettings));
+            genStack.Children.Add(GenerateShortcutBlock(keys[5], Lang._KbShortcuts.General_OpenNotifTray));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
             // Region/Game Shortcuts
             StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            changeStack.Children.Add(new TextBlock { Text = "Quick Game/Region change", FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
-            changeStack.Children.Add(new TextBlock { Text = "Note: The keybinds follow the selector order.", FontSize = 11.5 });
+            changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
+            changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5 });
 
             string gameMod = keys[0][0];
             string regionMod = keys[1][0];
@@ -60,7 +60,7 @@ namespace CollapseLauncher.Dialogs
                 VerticalAlignment = VerticalAlignment.Center,
                 FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily,
             });
-            textBlock.Children.Add(new TextBlock() { Text = string.Format("Swap {0} and {1}", gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
+            textBlock.Children.Add(new TextBlock() { Text = string.Format(Lang._KbShortcuts.Switch_SwapBtn, gameMod, regionMod), Margin = new Thickness(8, 0, 0, 0) });
 
             Button modifierSwap = new Button()
             {
@@ -74,8 +74,8 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(modifierSwap);
 
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
-            changeStack.Children.Add(GenerateShortcutBlock(keys[0], "Change game", string.Format("You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
-            changeStack.Children.Add(GenerateShortcutBlock(keys[1], "Change region", string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[0], Lang._KbShortcuts.Switch_ChangeGame, string.Format("You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)", gameMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(keys[1], Lang._KbShortcuts.Switch_ChangeRegion, string.Format("E.g. For Genshin Impact, {0}+1 leads to the Global region", regionMod), false));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -103,10 +103,10 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = "General" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = "Quick Switch" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = "Folder Access" }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = "Game Management" }, Margin = new Thickness(5, 0, 5, 0) };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab }, Margin = new Thickness(5, 0, 5, 0) };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab }, Margin = new Thickness(5, 0, 5, 0) };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab }, Margin = new Thickness(5, 0, 5, 0) };
 
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
@@ -128,7 +128,7 @@ namespace CollapseLauncher.Dialogs
             ChangeMenuVisibility(page, stacks, buttons);
 
             return await SpawnDialog(
-                    "Keyboard Shortcuts",
+                    Lang._KbShortcuts.DialogTitle,
                     mainStack,
                     Content,
                     Lang._Misc.Close,
@@ -312,23 +312,23 @@ namespace CollapseLauncher.Dialogs
             Flyout HelpFlyout = new Flyout() { Content = HelpStack, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.RightEdgeAlignedTop };
             HelpStack.Children.Add(new TextBlock()
             {
-                Text = "A shortcut is composed by 2 parts:",
+                Text = Lang._KbShortcuts.ChangeShortcut_Help1,
                 Margin = new Thickness(0, 2, 0, 4),
                 TextWrapping = TextWrapping.Wrap
             });
             HelpStack.Children.Add(new TextBlock()
             {
-                Text = "・ Modifier - Shift, Control or Alt/Menu",
+                Text = Lang._KbShortcuts.ChangeShortcut_Help2,
                 Margin = new Thickness(5, 4, 0, 4)
             });
             HelpStack.Children.Add(new TextBlock()
             {
-                Text = "・ Key - Alphabetical (A to Z) or Tab",
+                Text = Lang._KbShortcuts.ChangeShortcut_Help3,
                 Margin = new Thickness(5, 4, 0, 8)
             });
             HelpStack.Children.Add(new TextBlock()
             {
-                Text = "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used.",
+                Text = Lang._KbShortcuts.ChangeShortcut_Help4,
                 Margin = new Thickness(0, 4, 0, 0),
                 TextWrapping = TextWrapping.Wrap
             });
@@ -336,7 +336,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
             introPanel.Children.Add(new TextBlock()
             {
-                Text = "Type the new combination for this shortcut!",
+                Text = Lang._KbShortcuts.ChangeShortcut_Text,
                 Margin = new Thickness(0, 0, 0, 2),
                 TextWrapping = TextWrapping.Wrap,
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -384,7 +384,7 @@ namespace CollapseLauncher.Dialogs
 
             ContentDialog result = new ContentDialog
             {
-                Title = "Change Shortcut",
+                Title = Lang._KbShortcuts.ChangeShortcut_Title,
                 Content = mainSwitchKeyContent,
                 CloseButtonText = Lang._Misc.Cancel,
                 PrimaryButtonText = Lang._Misc.Change,

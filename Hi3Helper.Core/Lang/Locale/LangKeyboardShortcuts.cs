@@ -43,9 +43,11 @@
                 public string GameManagement_GoCaches { get; set; } = LangFallback?._KbShortcuts.GameManagement_GoCaches;
 
                 public string ChangeShortcut_Title { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Title;
-                public string ChangeShortcut_Text1 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text1;
-                public string ChangeShortcut_Text2 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text2;
-                public string ChangeShortcut_Text3 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text3;
+                public string ChangeShortcut_Text { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Text;
+                public string ChangeShortcut_Help1 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help1;
+                public string ChangeShortcut_Help2 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help2;
+                public string ChangeShortcut_Help3 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help3;
+                public string ChangeShortcut_Help4 { get; set; } = LangFallback?._KbShortcuts.ChangeShortcut_Help4;
             }
         }
         #endregion

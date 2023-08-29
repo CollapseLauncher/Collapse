@@ -873,5 +873,35 @@
     "VO_cn": "Chinese",
     "VO_jp": "Japanese",
     "VO_kr": "Korean"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Keyboard Shortcuts",
+    "GeneralTab": "General",
+    "SwitchTab": "Quick Switch",
+    "GameFolderTab": "Folder Access",
+    "GameManagementTab": "Game Management",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Open the Keyboard Shortcuts dialog",
+    "General_OpenMenu_Desc": "It can also be accessed through the App Settings",
+    "General_GoHome": "Go to the Home page",
+    "General_GoSettings": "Go to the Settings page",
+    "General_OpenNotifTray": "Open the Notification Tray",
+
+    "Switch_Title": "Quick Game/Region change",
+    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_SwapBtn": "Swap {0} and {1}",
+    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame_Desc": "You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)",
+    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region",
+
+    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
+    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
+    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
+    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used."
   }
 }
