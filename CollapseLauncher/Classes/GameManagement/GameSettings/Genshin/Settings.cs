@@ -36,10 +36,13 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsCustomArgument = CustomArgs.Load();
             SettingsCollapseScreen = CollapseScreenSetting.Load();
             SettingsScreen = ScreenManager.Load();
-            SettingsGeneralData = GeneralData.Load();
         }
 
-        public void ReloadSettings() => InitializeSettings();
+        public void ReloadSettings()
+        {
+            SettingsGeneralData = GeneralData.Load();
+            InitializeSettings();
+        } 
 
         public void SaveSettings()
         {
