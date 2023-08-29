@@ -1302,7 +1302,7 @@ namespace CollapseLauncher
                     NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (o, e) => ShowKeybinds_Invoked(null, null)),
                     true,
                     true,
-                    false
+                    true
                     );
             }
 
