@@ -1406,7 +1406,7 @@ namespace CollapseLauncher
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
-            if (CannotChange || !IsLoadRegionComplete || index >= ComboBoxGameCategory.Items.Count)
+            if (CannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
                 return;
 
             if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
@@ -1424,7 +1424,7 @@ namespace CollapseLauncher
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
-            if (CannotChange || !IsLoadRegionComplete || index >= ComboBoxGameRegion.Items.Count)
+            if (CannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
                 return;
             
             if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
@@ -1444,7 +1444,7 @@ namespace CollapseLauncher
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
                return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) 
@@ -1458,7 +1458,7 @@ namespace CollapseLauncher
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) 
@@ -1557,7 +1557,7 @@ namespace CollapseLauncher
         }
         private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange) 
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange) 
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
@@ -1570,7 +1570,7 @@ namespace CollapseLauncher
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange) 
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange) 
                 return;
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3]) 
                 return;
@@ -1583,7 +1583,7 @@ namespace CollapseLauncher
 
         private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsLoadRegionComplete || CannotChange)
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 

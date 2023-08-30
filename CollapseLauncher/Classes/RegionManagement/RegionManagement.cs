@@ -437,6 +437,7 @@ namespace CollapseLauncher
             if (!IsLoadRegionComplete)
             {
                 TokenSource.Cancel();
+                ChangeTimer();
             }
         }
 
@@ -609,6 +610,7 @@ namespace CollapseLauncher
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
 
             (sender as Button).Visibility = Visibility.Collapsed;
+            ChangeTimer();
         }
 
         private async void DelayedLoadingRegionPageTask()
