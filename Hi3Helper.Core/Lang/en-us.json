@@ -683,7 +683,7 @@
     "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}",
 
     "UpdateHeader1": "Progress:",
-    "UpdateHeader2": "Time Elapsed:",
+    "UpdateHeader2": "Time Remaining:",
     "UpdateHeader3": "Download Size:",
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
