@@ -1034,7 +1034,7 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = GetLaunchArguments();
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(NormalizePath(GameDirPath));
+                proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
