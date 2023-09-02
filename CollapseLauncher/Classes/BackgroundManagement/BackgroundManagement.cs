@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.GameSettings;
-using ColorThiefDotNet;
+﻿using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -84,7 +83,9 @@ namespace CollapseLauncher
 
         private static async ValueTask<Windows.UI.Color[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
         {
-            string cachedPalettePath = bitmapPath + ".palette";
+            string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
+            string cachedFileHash = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
+            cachedPalettePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
             if (File.Exists(cachedPalettePath))
             {
                 byte[] data = await File.ReadAllBytesAsync(cachedPalettePath);
@@ -102,6 +103,7 @@ namespace CollapseLauncher
         private static async ValueTask<Windows.UI.Color[]> TryGenerateNewCachedPalette(Bitmap bitmapInput, bool IsLight, string cachedPalettePath)
         {
             byte[] buffer = new byte[1 << 10];
+
             string cachedPaletteDirPath = Path.GetDirectoryName(cachedPalettePath);
             if (!Directory.Exists(cachedPaletteDirPath)) Directory.CreateDirectory(cachedPaletteDirPath);
 
