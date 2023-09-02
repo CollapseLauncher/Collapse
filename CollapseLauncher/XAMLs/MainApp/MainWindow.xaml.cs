@@ -14,6 +14,7 @@ using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using SizeN = System.Drawing.Size;
 
 namespace CollapseLauncher
 {
@@ -68,7 +69,7 @@ namespace CollapseLauncher
         {
             SetWindowSize(m_windowHandle, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
-            // rootFrame.Navigate(typeof(MainPageNew), null, new DrillInNavigationTransitionInfo());
+            // rootFrame.Navigate(typeof(Prototype.MainPageNew), null, new DrillInNavigationTransitionInfo());
         }
 
         private void InitializeAppWindowAndIntPtr()
@@ -127,6 +128,7 @@ namespace CollapseLauncher
             {
                 SetInitialDragArea();
                 m_appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+                m_appWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
 
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
@@ -200,24 +202,86 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
+        private TypedEventHandler<AppWindow, AppWindowChangedEventArgs> _eventWindowPosChange;
+        private int _lastWindowWidth;
+        private int _lastWindowHeight;
+        private WindowRect _windowPosAndSize = new WindowRect();
+
         public void SetWindowSize(IntPtr hwnd, int width = 1028, int height = 634, int x = 0, int y = 0)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 
             var dpi = GetDpiForWindow(hwnd);
             float scalingFactor = (float)dpi / 96;
-            width = (int)(width * scalingFactor);
-            height = (int)(height * scalingFactor);
+            _lastWindowWidth = (int)(width * scalingFactor);
+            _lastWindowHeight = (int)(height * scalingFactor);
 
-            Size desktopSize = Hi3Helper.Screen.ScreenProp.GetScreenSize();
+            SizeN desktopSize = Hi3Helper.Screen.ScreenProp.GetScreenSize();
             int xOff = (desktopSize.Width - width) / 2;
-            int hOff = (desktopSize.Height - height) / 2;
+            int yOff = (desktopSize.Height - height) / 2;
 
-            SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
-                                        xOff, hOff, width, height,
-                                        SetWindowPosFlags.SWP_SHOWWINDOW);
+            // Old Interop ver. Call
+            // SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
+            //                             xOff, yOff, width, height,
+            //                             SetWindowPosFlags.SWP_SHOWWINDOW);
 
-            m_windowPosSize = this.Bounds;
+            // New m_appWindow built-in Move and Resize
+            m_appWindow.MoveAndResize(new RectInt32
+            {
+                Width = width,
+                Height = height,
+                X = xOff,
+                Y = yOff
+            });
+            AssignCurrentWindowPosition(hwnd);
+
+            // TODO: Apply to force disable the "double-click to maximize" feature.
+            //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+            //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
+            //       
+            //       Issues have been described here:
+            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
+            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
+            //       
+            // Also TODO: If a fix hasn't been applied yet, then find the way to disable the
+            //            "double-click 2 maximize" feature via Native Methods/PInvoke.
+            // AssignWinAppSDK14WindowSizeFix(hwnd);
+        }
+
+        private void AssignWinAppSDK14WindowSizeFix(IntPtr hwnd)
+        {
+            if (_eventWindowPosChange != null) m_appWindow.Changed -= _eventWindowPosChange;
+            _eventWindowPosChange = (sender, args) =>
+            {
+                if (args.DidSizeChange && args.DidPositionChange)
+                {
+                    lock (this)
+                    {
+                        // m_presenter.Restore();
+                        AssignCurrentWindowPosition(hwnd);
+                        sender.MoveAndResize(new RectInt32
+                        {
+                            Width = _lastWindowWidth,
+                            Height = _lastWindowHeight,
+                            X = (int)m_windowPosSize.X,
+                            Y = (int)m_windowPosSize.Y
+                        });
+                    }
+                }
+            };
+
+            m_appWindow.Changed += _eventWindowPosChange;
+        }
+
+        private void AssignCurrentWindowPosition(IntPtr hwnd)
+        {
+            GetWindowRect(hwnd, ref _windowPosAndSize);
+            Rect lastRect = this.Bounds;
+
+            lastRect.X = _windowPosAndSize.Left;
+            lastRect.Y = _windowPosAndSize.Top;
+
+            m_windowPosSize = lastRect;
         }
 
         public static void SetInitialDragArea()
