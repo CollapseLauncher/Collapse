@@ -131,11 +131,11 @@ namespace CollapseLauncher
 
         private static void SetDarkColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
         {
-            Application.Current.Resources["SystemAccentColor"] = palette[0];
+            Application.Current.Resources["SystemAccentColor"] = palette[1];
             Application.Current.Resources["SystemAccentColorLight1"] = palette[1];
             Application.Current.Resources["SystemAccentColorLight2"] = palette[0];
             Application.Current.Resources["SystemAccentColorLight3"] = palette[1];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
         }
 
 
