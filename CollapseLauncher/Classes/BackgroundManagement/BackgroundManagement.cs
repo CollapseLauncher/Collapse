@@ -1,6 +1,8 @@
-﻿using ColorThiefDotNet;
+﻿using CollapseLauncher.GameSettings;
+using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -30,16 +32,27 @@ namespace CollapseLauncher
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        private async Task ChangeBackgroundImageAsRegion()
+        private async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
+
+        private async Task ChangeBackgroundImageAsRegion(bool DoNotShowLoadingMsg = true)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
                 if (string.IsNullOrEmpty(BGPath))
+                {
                     regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                }
                 else
                     regionBackgroundProp.imgLocalPath = BGPath;
+            }
+            else
+            {
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, ConfigV2Store.CurrentConfigV2, DoNotShowLoadingMsg))
+                {
+                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
+                }
             }
 
             if (!IsCustomBG || IsFirstStartup)

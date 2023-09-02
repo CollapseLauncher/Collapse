@@ -756,7 +756,7 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            if (await LoadRegionFromCurrentConfigV2(Preset))
+            if (await LoadRegionFromCurrentConfigV2(Preset, true))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);

@@ -11,7 +11,7 @@ namespace Hi3Helper.Preset
     public static class ConfigV2Store
     {
         public static Metadata ConfigV2 = new Metadata();
-        internal static PresetConfigV2 CurrentConfigV2;
+        public static PresetConfigV2 CurrentConfigV2;
         public static string CurrentConfigV2GameCategory;
         public static string CurrentConfigV2GameRegion;
 
