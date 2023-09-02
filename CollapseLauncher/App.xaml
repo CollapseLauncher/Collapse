@@ -16,7 +16,7 @@
                             <Color x:Key="SystemAccentColorLight1">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight3">#ffd52a</Color>
-                            <AcrylicBrush x:Key="DialogTitleBrush" TintColor="{ThemeResource DialogTitleColor}"/>
+                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
                             <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#FFFFFF"/>
@@ -75,7 +75,7 @@
                             <Color x:Key="SystemAccentColorDark1">#693758</Color>
                             <Color x:Key="SystemAccentColorDark2">#693758</Color>
                             <Color x:Key="SystemAccentColorDark3">#693758</Color>
-                            <AcrylicBrush x:Key="DialogTitleBrush" TintColor="{ThemeResource DialogTitleColor}"/>
+                            <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
                             <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#000000"/>
