@@ -1,5 +1,4 @@
-﻿using static CollapseLauncher.Statics.GamePropertyVault;
-using Microsoft.UI.Text;
+﻿using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
@@ -328,7 +327,7 @@ namespace CollapseLauncher.Dialogs
                     null
                 );
 
-        public static async Task<ContentDialogResult> Dialog_ChangePlaytime (UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ChangePlaytime(UIElement Content) =>
             await SpawnDialog(
                     Lang._Dialogs.ChangePlaytimeTitle,
                     Lang._Dialogs.ChangePlaytimeSubtitle,
@@ -347,14 +346,14 @@ namespace CollapseLauncher.Dialogs
                 Lang._Misc.Yes,
                 null
                 );
-        
-        public static async Task<ContentDialogResult> Dialog_ResetPlaytime (UIElement Content)
+
+        public static async Task<ContentDialogResult> Dialog_ResetPlaytime(UIElement Content)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle2, FontWeight = FontWeights.Bold });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle3 });
-            
+
             return await SpawnDialog(
                     Lang._Dialogs.ResetPlaytimeTitle,
                     texts,

@@ -42,7 +42,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             SettingsGeneralData = GeneralData.Load();
             InitializeSettings();
-        } 
+        }
 
         public void SaveSettings()
         {

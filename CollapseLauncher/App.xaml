@@ -410,6 +410,7 @@
                         </Setter>
                     </Style>
                 </ResourceDictionary>
+                <ResourceDictionary Source="ms-appx:///DataGrid.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

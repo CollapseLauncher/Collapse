@@ -1,14 +1,10 @@
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.Storage;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 

@@ -29,7 +29,7 @@ namespace CollapseLauncher.Pages
         public bool IsBorderlessEnabled
         {
             get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
-            set 
+            set
             {
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)

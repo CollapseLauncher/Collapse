@@ -307,7 +307,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug,true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #else
                     LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
@@ -360,11 +360,11 @@ namespace CollapseLauncher.GameSettings.Genshin
 #if DUMPGIJSON
                 //Dump saved GeneralData JSON from Collapse as indented output
                 JsonSerializerOptions options_debug = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        WriteIndented = true
-                    };
+                {
+                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                };
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
 #endif
 #if DEBUG
@@ -390,6 +390,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
-#endregion
+        #endregion
     }
 }

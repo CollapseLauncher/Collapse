@@ -1,5 +1,4 @@
 ﻿using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;

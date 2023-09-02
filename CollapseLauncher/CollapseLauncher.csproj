@@ -142,4 +142,10 @@
 			</ManagedAssemblyToLink>
 		</ItemGroup>
 	</Target>
+	
+	<ItemGroup>
+	  <Page Update="DataGrid.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
 </Project>

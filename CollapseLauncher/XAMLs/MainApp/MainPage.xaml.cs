@@ -154,12 +154,12 @@ namespace CollapseLauncher
 #endif
                 LoadGamePreset();
                 SetThemeParameters();
-                
+
                 VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
 #if DEBUG
                 VersionNumberIndicator.Text += "d";
 #endif
-                if (IsPreview)VersionNumberIndicator.Text +=  "-PRE";
+                if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 

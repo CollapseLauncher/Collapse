@@ -1,10 +1,7 @@
-﻿using CollapseLauncher.Statics;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
-
-using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages

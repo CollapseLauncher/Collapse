@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace CollapseLauncher.GameSettings.Genshin.Enums
 {
