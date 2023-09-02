@@ -65,45 +65,75 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        public static async void ApplyAccentColor(Page page, Bitmap bitmapinput)
+        public static async void ApplyAccentColor(Page page, Bitmap bitmapInput, string bitmapPath)
         {
-            switch (CurrentAppTheme)
+            bool IsLight = CurrentAppTheme switch
             {
-                case AppThemeMode.Light:
-                    await SetLightColors(bitmapinput);
-                    break;
-                case AppThemeMode.Dark:
-                    await SetDarkColors(bitmapinput);
-                    break;
-                default:
-                    if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        await SetLightColors(bitmapinput);
-                    else
-                        await SetDarkColors(bitmapinput);
-                    break;
-            }
+                AppThemeMode.Dark => false,
+                AppThemeMode.Light => true,
+                _ => SystemAppTheme.ToString() == "#FFFFFFFF"
+            };
+
+            Windows.UI.Color[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
+
+            if (IsLight) SetLightColors(bitmapInput, _colors);
+            else SetDarkColors(bitmapInput, _colors);
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private static async Task SetLightColors(Bitmap bitmapinput)
+        private static async ValueTask<Windows.UI.Color[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, true, 1);
-            Application.Current.Resources["SystemAccentColor"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorDark1"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorDark2"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorDark3"] = _colors[1];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[1]);
+            string cachedPalettePath = bitmapPath + ".palette";
+            if (File.Exists(cachedPalettePath))
+            {
+                byte[] data = await File.ReadAllBytesAsync(cachedPalettePath);
+                if (!ConverterTool.TryDeserializeStruct(data, 4, out Windows.UI.Color[] output))
+                {
+                    return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
+                }
+
+                return output;
+            }
+
+            return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
         }
 
-        private static async Task SetDarkColors(Bitmap bitmapinput)
+        private static async ValueTask<Windows.UI.Color[]> TryGenerateNewCachedPalette(Bitmap bitmapInput, bool IsLight, string cachedPalettePath)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, false, 1);
-            Application.Current.Resources["SystemAccentColor"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorLight1"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorLight2"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorLight3"] = _colors[0];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
+            byte[] buffer = new byte[1 << 10];
+            string cachedPaletteDirPath = Path.GetDirectoryName(cachedPalettePath);
+            if (!Directory.Exists(cachedPaletteDirPath)) Directory.CreateDirectory(cachedPaletteDirPath);
+
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapInput, 10, IsLight, 1);
+
+            if (!ConverterTool.TrySerializeStruct(_colors, buffer, out int read))
+            {
+                byte DefVal = (byte)(IsLight ? 80 : 255);
+                Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
+                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
+            }
+
+            File.WriteAllBytes(cachedPalettePath, buffer[..read]);
+            return _colors;
+        }
+
+        private static void SetLightColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
+        {
+            Application.Current.Resources["SystemAccentColor"] = palette[0];
+            Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
+            Application.Current.Resources["SystemAccentColorDark2"] = palette[1];
+            Application.Current.Resources["SystemAccentColorDark3"] = palette[1];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
+        }
+
+        private static void SetDarkColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
+        {
+            Application.Current.Resources["SystemAccentColor"] = palette[0];
+            Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
+            Application.Current.Resources["SystemAccentColorLight2"] = palette[1];
+            Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
         }
 
 
@@ -156,7 +186,7 @@ namespace CollapseLauncher
 
                     return EnsureLengthCopyLast(_generatedColors
                         .Select(DrawingColorToColor)
-                        .ToArray(), 2);
+                        .ToArray(), 4);
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -313,7 +343,7 @@ namespace CollapseLauncher
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
-            ApplyAccentColor(this, PaletteBitmap);
+            ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 
             FadeOutFrontBg();
             FadeOutBackBg();
