@@ -9,7 +9,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.8</Version>
+		<Version>1.71.9</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
@@ -36,7 +36,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
-		<PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
