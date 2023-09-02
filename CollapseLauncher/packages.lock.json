@@ -11,16 +11,6 @@
           "SharpCompress": "0.31.0"
         }
       },
-      "CommunityToolkit.WinUI.UI": {
-        "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
-        "dependencies": {
-          "CommunityToolkit.WinUI": "7.1.2",
-          "Microsoft.WindowsAppSDK": "1.0.0"
-        }
-      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -101,6 +91,15 @@
         "contentHash": "0O6hCHy+/adJygcROD3r3yA41gRq972i/r6uGUfo8lfEbr/I1YGePTClAh1P9JYT7DdoI2IqeUhX05lq+rwrHg==",
         "dependencies": {
           "CommunityToolkit.Common": "7.1.2",
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
+      "CommunityToolkit.WinUI.UI": {
+        "type": "Transitive",
+        "resolved": "7.1.2",
+        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
+        "dependencies": {
+          "CommunityToolkit.WinUI": "7.1.2",
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
@@ -1138,16 +1137,6 @@
           "SharpCompress": "0.31.0"
         }
       },
-      "CommunityToolkit.WinUI.UI": {
-        "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
-        "dependencies": {
-          "CommunityToolkit.WinUI": "7.1.2",
-          "Microsoft.WindowsAppSDK": "1.0.0"
-        }
-      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -1228,6 +1217,15 @@
         "contentHash": "0O6hCHy+/adJygcROD3r3yA41gRq972i/r6uGUfo8lfEbr/I1YGePTClAh1P9JYT7DdoI2IqeUhX05lq+rwrHg==",
         "dependencies": {
           "CommunityToolkit.Common": "7.1.2",
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
+      "CommunityToolkit.WinUI.UI": {
+        "type": "Transitive",
+        "resolved": "7.1.2",
+        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
+        "dependencies": {
+          "CommunityToolkit.WinUI": "7.1.2",
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
