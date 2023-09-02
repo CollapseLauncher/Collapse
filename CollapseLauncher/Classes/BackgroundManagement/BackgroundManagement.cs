@@ -114,7 +114,7 @@ namespace CollapseLauncher
                 return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
             }
 
-            File.WriteAllBytes(cachedPalettePath, buffer[..read]);
+            await File.WriteAllBytesAsync(cachedPalettePath, buffer[..read]);
             return _colors;
         }
 
