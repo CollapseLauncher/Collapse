@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
@@ -19,6 +20,10 @@ namespace CollapseLauncher
         {
             try
             {
+                DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] {args.Message}", LogType.Error, true); };
+                DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] {args.Message}", LogType.Error, true); };
+                UnhandledException += (sender, e) => { if (Debugger.IsAttached) LogWriteLine($"[XAML_OTHER] {e.Exception}", LogType.Error, true); };
+
                 this.InitializeComponent();
                 RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
 

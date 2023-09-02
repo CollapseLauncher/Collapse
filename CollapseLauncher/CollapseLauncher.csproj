@@ -23,14 +23,14 @@
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE;SIMULATEAPPLYPRELOAD;DUMPGIJSON</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;DISABLETRANSPARENT;DISABLEMOVEMIGRATE</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 

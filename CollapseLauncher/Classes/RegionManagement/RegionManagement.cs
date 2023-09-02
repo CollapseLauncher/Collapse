@@ -7,9 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.IO;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,7 +81,7 @@ namespace CollapseLauncher
             }
 
             // Finalize Region Load
-            if (IsInitialStartUp) 
+            if (IsInitialStartUp)
                 await ChangeBackgroundImageAsRegion(false);
             else
                 ChangeBackgroundImageAsRegionAsync();
