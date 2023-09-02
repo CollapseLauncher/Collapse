@@ -148,4 +148,10 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Page Update="XAMLs\Theme\ContentDialog.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
 </Project>

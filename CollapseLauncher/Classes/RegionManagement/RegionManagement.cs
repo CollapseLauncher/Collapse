@@ -345,7 +345,7 @@ namespace CollapseLauncher
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!fInfo.Exists || fInfo.Length < (4 << 10))
+            if (!fInfo.Exists || fInfo.Length < (1 << 10))
             {
                 TryDownloadSpriteToCache(fInfo, URL, token);
                 return URL;

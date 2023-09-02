@@ -377,6 +377,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = secondaryText,
                 DefaultButton = defaultButton,
                 Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
+                Style = (Style)Application.Current.Resources["CollapseContentDialogStyle"],
                 XamlRoot = Content.XamlRoot
             }.ShowAsync();
     }

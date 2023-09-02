@@ -11,10 +11,13 @@
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default">
+                            <Color x:Key="DialogTitleColor">#ffd52a</Color>
                             <Color x:Key="SystemAccentColor">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight1">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight3">#ffd52a</Color>
+                            <AcrylicBrush x:Key="DialogTitleBrush" TintColor="{ThemeResource DialogTitleColor}"/>
+                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#FFFFFF"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#000000"/>
@@ -67,10 +70,13 @@
                             <AcrylicBrush x:Key="WebView2GridBackground" TintColor="#222222" TintOpacity="0.75" TintLuminosityOpacity="0.75" FallbackColor="#EE1D1D1D"/>
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="Light">
+                            <Color x:Key="DialogTitleColor">#693758</Color>
                             <Color x:Key="SystemAccentColor">#693758</Color>
                             <Color x:Key="SystemAccentColorDark1">#693758</Color>
                             <Color x:Key="SystemAccentColorDark2">#693758</Color>
                             <Color x:Key="SystemAccentColorDark3">#693758</Color>
+                            <AcrylicBrush x:Key="DialogTitleBrush" TintColor="{ThemeResource DialogTitleColor}"/>
+                            <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccent" Color="#000000"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccent" Color="#FFFFFF"/>
@@ -180,7 +186,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="PointerOver"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="PointerOver"/>
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -197,7 +203,7 @@
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                     <VisualState.Setters>
-                                                        <Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="Pressed"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Pressed"/>
                                                     </VisualState.Setters>
                                                 </VisualState>
 
@@ -213,9 +219,10 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundDisabled}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
+
                                                     <VisualState.Setters>
                                                         <!-- DisabledVisual Should be handled by the control, not the animated icon. -->
-                                                        <Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="Normal"/>
+                                                        <Setter Target="ContentPresenter.(localUI:AnimatedIcon.State)" Value="Normal"/>
                                                     </VisualState.Setters>
                                                 </VisualState>
                                             </VisualStateGroup>
@@ -245,18 +252,18 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
                                     <ContentPresenter
-                                x:Name="ContentPresenter"
-                                BackgroundSizing="{TemplateBinding BackgroundSizing}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                                CornerRadius="{ThemeResource ControlCornerRadius}"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                AutomationProperties.AccessibilityView="Raw"
-                                localUI:AnimatedIcon.State="Normal">
+                                        x:Name="ContentPresenter"
+                                        BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        ContentTransitions="{TemplateBinding ContentTransitions}"
+                                        CornerRadius="{TemplateBinding CornerRadius}"
+                                        Padding="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        localUI:AnimatedIcon.State="Normal">
 
                                         <ContentPresenter.BackgroundTransition>
                                             <BrushTransition Duration="0:0:0.083" />
@@ -410,7 +417,8 @@
                         </Setter>
                     </Style>
                 </ResourceDictionary>
-                <ResourceDictionary Source="ms-appx:///DataGrid.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
