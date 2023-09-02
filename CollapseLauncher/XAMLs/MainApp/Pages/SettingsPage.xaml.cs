@@ -264,7 +264,8 @@ namespace CollapseLauncher.Pages
                 {
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, false);
+
+                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
                     AppBGCustomizer.Visibility = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility = Visibility.Collapsed;
                 }

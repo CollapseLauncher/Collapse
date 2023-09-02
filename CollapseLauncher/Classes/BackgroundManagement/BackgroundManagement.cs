@@ -32,7 +32,7 @@ namespace CollapseLauncher
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        private async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
+        internal async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
 
         private async Task ChangeBackgroundImageAsRegion(bool DoNotShowLoadingMsg = true)
         {
