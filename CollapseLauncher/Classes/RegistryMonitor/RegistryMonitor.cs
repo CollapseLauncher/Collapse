@@ -9,12 +9,12 @@
  * https://www.codeproject.com/info/cpol10.aspx
  */
 
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Threading;
 using static Hi3Helper.Logger;
 
 namespace RegistryUtils
@@ -168,7 +168,7 @@ namespace RegistryUtils
         /// <summary>
         /// Gets or sets the <see cref="RegChangeNotifyFilter">RegChangeNotifyFilter</see>.
         /// </summary>
-        public RegChangeNotifyFilter RegChangeNotifyFilter
+        public RegChangeNotifyFilter RegChangeNotifyType
         {
             get { return _regFilter; }
             set
@@ -340,7 +340,8 @@ namespace RegistryUtils
                     if (result != 0)
                         throw new Win32Exception(result);
 
-                    if (WaitHandle.WaitAny(waitHandles) == 0)
+                    if (WaitHandle.WaitAny(waitHandles) == 0
+                     && _regFilter == RegChangeNotifyFilter.Value)
                     {
 #if DEBUG
                         LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +

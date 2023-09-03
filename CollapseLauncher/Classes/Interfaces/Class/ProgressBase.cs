@@ -148,6 +148,31 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region BaseTools
+        protected void TryUnassignReadOnlyFiles(string path)
+        {
+            // Iterate every files and set the read-only flag to false
+            foreach (string file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+            {
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.IsReadOnly)
+                    fileInfo.IsReadOnly = false;
+            }
+        }
+
+        protected void TryDeleteReadOnlyFile(string path)
+        {
+            try
+            {
+                FileInfo file = new FileInfo(path);
+                file.IsReadOnly = false;
+                file.Delete();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to delete file: {path}\r\n{ex}", LogType.Error, true);
+            }
+        }
+
         protected void MoveFolderContent(string SourcePath, string DestPath)
         {
             // Get the source folder path length + 1

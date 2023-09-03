@@ -195,14 +195,54 @@ namespace CollapseLauncher.Pages
 
         public int RenderScale
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1;
-            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (RenderResolutionOption)(value + 1);
+            get
+            {
+                int enumIndex = Settings.SettingsGeneralData.graphicsData.RenderResolution;
+                int valueIndex = GraphicsData.RenderScaleIndex.IndexOf(enumIndex);
+                double enumValue = GraphicsData.RenderScaleValues[valueIndex];
+                return GraphicsData.RenderScaleValues.IndexOf(enumValue);
+            }
+            set
+            {
+                double enumValue = GraphicsData.RenderScaleValues[value];
+                int enumIndex = DictionaryCategory.RenderResolutionOption[enumValue];
+                Settings.SettingsGeneralData.graphicsData.RenderResolution = enumIndex;
+            }
         }
 
         public int ShadowQuality
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.ShadowQuality - 1;
-            set => Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
+            get
+            {
+                int curValue = (int)Settings.SettingsGeneralData.graphicsData.ShadowQuality - 1;
+
+                // Disable Volumetric Fog when ShadowQuality is not Medium or higher
+                if (curValue < 2)
+                {
+                    VolumetricFogToggle.IsChecked = false;
+                    VolumetricFogToggle.IsEnabled = false;
+                }
+                else 
+                {
+                    VolumetricFogToggle.IsEnabled = true; 
+                }
+
+                return curValue;
+            }
+            set
+            {
+                if (value < 2)
+                {
+                    VolumetricFogToggle.IsChecked = false;
+                    VolumetricFogToggle.IsEnabled = false;
+                }
+                else 
+                {
+                    VolumetricFogToggle.IsEnabled = true; 
+                }
+
+                Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
+            } 
         }
 
         public int VisualEffects
@@ -258,6 +298,18 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.SettingsGeneralData.graphicsData.Antialiasing - 1;
             set => Settings.SettingsGeneralData.graphicsData.Antialiasing = (AntialiasingOption)(value + 1);
         }
+
+        public bool TeamPageBackground
+        {
+            get => (bool)!Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch;
+            set => Settings.SettingsGeneralData.disableTeamPageBackgroundSwitch = !value;
+        }
+
+        public int GlobalIllumination
+        {
+            get => (int)Settings.SettingsGeneralData.graphicsData.GlobalIllumination - 1;
+            set => Settings.SettingsGeneralData.graphicsData.GlobalIllumination = (GlobalIlluminationOption)(value + 1);
+        }
         #endregion
 
         #region Audio
@@ -309,6 +361,14 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.SettingsGeneralData.deviceLanguageType - 1;
             set => Settings.SettingsGeneralData.deviceLanguageType = value + 1;
+        }
+        #endregion
+
+        #region Misc
+        public bool IsGameBoost
+        {
+            get => Settings.SettingsCollapseMisc.UseGameBoost;
+            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
         }
         #endregion
     }

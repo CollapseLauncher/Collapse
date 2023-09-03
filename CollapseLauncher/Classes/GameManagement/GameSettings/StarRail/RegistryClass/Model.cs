@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -152,7 +153,13 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), StarRailSettingsJSONContext.Default) ?? new Model();
+                    JsonSerializerOptions options = new JsonSerializerOptions()
+                    {
+                        TypeInfoResolver = StarRailSettingsJSONContext.Default,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+
+                    return (Model?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(Model), options) ?? new Model();
                 }
             }
             catch (Exception ex)
@@ -168,8 +175,12 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-
-                string data = JsonSerializer.Serialize(this, typeof(Model), StarRailSettingsJSONContext.Default) + '\0';
+                JsonSerializerOptions options = new JsonSerializerOptions()
+                {
+                    TypeInfoResolver = StarRailSettingsJSONContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                string data = JsonSerializer.Serialize(this, typeof(Model), options) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG

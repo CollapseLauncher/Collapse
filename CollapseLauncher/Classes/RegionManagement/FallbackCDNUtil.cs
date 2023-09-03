@@ -6,9 +6,9 @@ using Squirrel.Sources;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -81,7 +81,11 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static HttpClient _client = new HttpClient();
+        private static HttpClient _client = new HttpClient()
+        {
+            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
+            DefaultRequestVersion = HttpVersion.Version20
+        };
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
         public static async Task DownloadCDNFallbackContent(Http httpInstance, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
@@ -247,19 +251,23 @@ namespace CollapseLauncher
             int cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
 
             // Fallback to the first CDN if index < 0 or > length of the list
-            if (cdnIndex < 0 || cdnIndex > CDNList.Count - 1) cdnIndex = 0;
+            if (cdnIndex < 0 || cdnIndex > CDNList.Count - 1)
+            {
+                cdnIndex = 0;
+                SetAndSaveConfigValue("CurrentCDN", 0);
+            }
 
             // Return the CDN property as per index
             return CDNList[cdnIndex];
         }
 
-        public static async ValueTask<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token) =>
+        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token) =>
             await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
             {
                 TypeInfoResolver = context
             }, token);
 
-        public static async ValueTask<Stream> DownloadAsStream(string URL, CancellationToken token) => await _client.GetStreamAsync(URL, token);
+        public static async Task<Stream> DownloadAsStream(string URL, CancellationToken token) => await _client.GetStreamAsync(URL, token);
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);

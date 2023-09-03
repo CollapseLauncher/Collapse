@@ -54,7 +54,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             saveItems = new()
             {
                 new PerfDataItem (1, (int)graphics.FPS - 1, version),
-                new PerfDataItem (2, (int)graphics.RenderResolution - 1, version),
+                new PerfDataItem (2, graphics.RenderResolution - 1, version),
                 new PerfDataItem (3,(int) graphics.ShadowQuality - 1, version),
                 new PerfDataItem (4,(int) graphics.VisualEffects - 1, version),
                 new PerfDataItem (5,(int) graphics.SFXQuality - 1, version),
@@ -69,6 +69,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (16,(int) graphics.CoOpTeammateEffects - 1, version),
                 new PerfDataItem (15,(int) graphics.SubsurfaceScattering - 1, version),
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
+                new PerfDataItem (19,(int) graphics.GlobalIllumination - 1, version)
             };
             string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GenshinSettingsJSONContext.Default);
 #if DEBUG

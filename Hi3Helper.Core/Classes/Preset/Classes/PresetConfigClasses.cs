@@ -25,7 +25,8 @@ namespace Hi3Helper.Preset
         public long fileSize { get; set; }
         public bool isPatch { get; set; } = false;
         public string type { get; set; }
-
+        public bool isForceStoreInPersistent { get; set; }
+        public bool isForceStoreInStreaming { get; set; }
         public FilePropertiesRemote AsFilePropertiesRemote() => new FilePropertiesRemote
         {
             N = remoteName,

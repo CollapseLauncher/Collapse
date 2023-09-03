@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
@@ -111,34 +110,70 @@ namespace CollapseLauncher
 
             // Get file path
             string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
-            FileInfo file = new FileInfo(filePath);
 
-            // If file doesn't exist or the file size doesn't match, then skip and update the progress
-            if (!file.Exists || (file.Exists && file.Length != asset.fileSize))
+            // Get persistent and streaming paths
+            FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ? null : new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)));
+            FileInfo fileInfoStreaming = new FileInfo(filePath);
+
+            bool UsePersistent = (asset.isForceStoreInPersistent && fileInfoPersistent != null && !fileInfoPersistent.Exists) || asset.isPatch || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
+            bool IsPersistentExist = fileInfoPersistent != null && fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.fileSize;
+            bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.fileSize;
+
+            // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
+            asset.remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+
+            // Check if the file exist on both persistent and streaming path, then mark the
+            // streaming path as redundant (unused)
+            if (IsPersistentExist && IsStreamingExist && !asset.isPatch)
             {
-                _progressTotalSizeCurrent += asset.fileSize;
-                _progressTotalSizeFound += asset.fileSize;
+                // Add the count and asset. Mark the type as "RepairAssetType.Unused"
                 _progressTotalCountFound++;
-
-                _progressPerFileSizeCurrent = asset.fileSize;
-
-                asset.type = RepairAssetType.General.ToString();
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(asset.remoteName),
+                        Path.GetFileName(fileInfoStreaming.FullName),
+                        RepairAssetType.Unused,
+                        Path.GetDirectoryName(fileInfoStreaming.FullName),
+                        asset.fileSize,
+                        null,
+                        null
+                    )
+                ));
+
+                asset.type = "Unused";
+                asset.localName = fileInfoStreaming.FullName;
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.type}]: {fileInfoStreaming.FullName} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
+            }
+
+            // Check if the persistent or streaming file doesn't exist
+            if ((UsePersistent && !IsPersistentExist) || (!IsStreamingExist && !IsPersistentExist))
+            {
+                // Update the total progress and found counter
+                _progressTotalSizeFound += asset.fileSize;
+                _progressTotalCountFound++;
+
+                // Set the per size progress
+                _progressPerFileSizeCurrent = asset.fileSize;
+
+                // Increment the total current progress
+                _progressTotalSizeCurrent += asset.fileSize;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
                         RepairAssetType.General,
-                        Path.GetDirectoryName(asset.remoteName),
+                        Path.GetDirectoryName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
                         asset.fileSize,
                         null,
                         HexTool.HexToBytesUnsafe(asset.md5)
                     )
                 ));
-
-                // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
 
-                LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is not found or has unmatched size", LogType.Warning, true);
+                string remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+                LogWriteLine($"File [T: {RepairAssetType.General}]: {(string.IsNullOrEmpty(remoteName) ? asset.localName : remoteName)} is not found or has unmatched size", LogType.Warning, true);
                 return;
             }
 
@@ -149,19 +184,29 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
+            using (FileStream filefs = new FileStream(UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.None,
+                _bufferBigLength))
             {
                 // If pass the check above, then do CRC calculation
+                // Additional: the total file size progress is disabled and will be incremented after this
                 byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
                 if (!IsArrayMatch(localCRC, remoteCRC))
                 {
+                    // Update the total progress and found counter
                     _progressTotalSizeFound += asset.fileSize;
                     _progressTotalCountFound++;
 
-                    asset.type = RepairAssetType.General.ToString();
+                    // Set the per size progress
+                    _progressPerFileSizeCurrent = asset.fileSize;
+
+                    // Increment the total current progress
+                    _progressTotalSizeCurrent += asset.fileSize;
 
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
@@ -173,11 +218,9 @@ namespace CollapseLauncher
                             remoteCRC
                         )
                     ));
-
-                    // Add asset for unmatched CRC
                     targetAssetIndex.Add(asset);
 
-                    LogWriteLine($"File [T: {asset.type}]: {asset.remoteName} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                    LogWriteLine($"File [T: {asset.type}]: {filefs.Name} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
                 }
             }
         }
@@ -275,19 +318,6 @@ namespace CollapseLauncher
                 // Add the asset into targetAssetIndex
                 targetAssetIndex.Add(asset);
                 LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
-            }
-        }
-        #endregion
-
-        #region Tools
-        private void TryUnassignReadOnlyFiles()
-        {
-            // Iterate every files and set the read-only flag to false
-            foreach (string file in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
-            {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo.IsReadOnly)
-                    fileInfo.IsReadOnly = false;
             }
         }
         #endregion

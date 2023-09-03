@@ -61,6 +61,7 @@ namespace CollapseLauncher
         public static bool IsCustomBG = false;
         public static bool IsSkippingUpdateCheck = false;
         public static GameVersion AppCurrentVersion;
+        public static MainPage m_mainPage;
 
         public static ApplicationTheme GetAppTheme()
         {

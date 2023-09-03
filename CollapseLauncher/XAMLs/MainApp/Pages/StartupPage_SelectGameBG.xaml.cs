@@ -105,8 +105,8 @@ namespace CollapseLauncher.Pages
                 _gameDescription = config.ZoneDescription;
 
                 // TODO: Use FallbackCDNUtil to get the sprites
-                _gamePosterPath = await GetCachedSprites(config.ZonePosterURL);
-                _gameLogoPath = await GetCachedSprites(config.ZoneLogoURL);
+                _gamePosterPath = await MainPage.GetCachedSpritesAsync(config.ZonePosterURL, default);
+                _gameLogoPath = await MainPage.GetCachedSpritesAsync(config.ZoneLogoURL, default);
 
                 using (FileStream fs1 = new FileStream(_gamePosterPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())
@@ -128,21 +128,6 @@ namespace CollapseLauncher.Pages
             }
 
             return IsSuccess = true;
-        }
-
-        private static async Task<string> GetCachedSprites(string URL)
-        {
-            using (Http _client = new Http())
-            {
-                string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-                string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-                if (!Directory.Exists(cacheFolder))
-                    Directory.CreateDirectory(cacheFolder);
-
-                if (!File.Exists(cachePath)) await _client.Download(URL, cachePath, true, null, null, new CancellationToken());
-
-                return cachePath;
-            }
         }
     }
 }

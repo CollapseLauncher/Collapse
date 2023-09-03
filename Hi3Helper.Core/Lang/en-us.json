@@ -301,7 +301,9 @@
     "CustomArgs_Subtitle": "Start-up Arguments",
     "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
-    "CustomArgs_Footer3": "to see more parameters."
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
 
   "_SettingsPage": {
@@ -385,7 +387,8 @@
     "AppChangeReleaseChannel": "Change to {0} Release Channel",
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
 
   "_Misc": {
@@ -465,10 +468,8 @@
     "CDNDescription_Github": "The official (main) repository for the launcher.",
     "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
-    "CDNDescription_Statically": "A mirror of the official (main) repository, provided by Statically. Use this if you're living in a place where GitHub is inaccessible.",
-    "CDNDescription_jsDelivr": "jsDelivr uses multiple CDN providers like CloudFlare, Fastly and Quantil, resulting in the best possible uptime and performance.",
 
-    "LocateExecutable": "Locate Program Executable",
+    "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",
 
     "DiscordRP_Play": "Playing",
@@ -685,7 +686,7 @@
     "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}",
 
     "UpdateHeader1": "Progress:",
-    "UpdateHeader2": "Time Elapsed:",
+    "UpdateHeader2": "Time Remaining:",
     "UpdateHeader3": "Download Size:",
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",
@@ -813,6 +814,7 @@
     "Graphics_VSync": "VSync",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_VolFogs": "Volumetric Fogs",
+    "Graphics_VolFogs_ToolTip": "Requires Shadow Quality to be set at Medium or higher!",
     "Graphics_ReflectionQuality": "Reflection",
     "Graphics_MotionBlur": "Motion Blur",
     "Graphics_BloomQuality": "Bloom",
@@ -820,6 +822,10 @@
     "Graphics_SubsurfaceScattering": "Subsurface Scattering",
     "Graphics_TeammateFX": "Teammate Effects",
     "Graphics_AnisotropicFiltering": "Anisotropic Filtering",
+    "Graphics_TeamPageBackground": "Regional Party Setup Background",
+    "Graphics_GlobalIllumination": "Global Illumination",
+    "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
+    "Graphics_GlobalIllumination_Help2": "More information (en)",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
@@ -829,6 +835,7 @@
     "SpecMedium": "Medium",
     "SpecHigh": "High",
     "SpecVeryHigh": "Very High",
+    "SpecExtreme": "Extreme",
     "SpecPartiallyOff": "Partially Off",
 
     "ApplyBtn": "Apply Settings",

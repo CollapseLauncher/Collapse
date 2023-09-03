@@ -11,16 +11,6 @@
           "SharpCompress": "0.31.0"
         }
       },
-      "CommunityToolkit.WinUI.UI": {
-        "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
-        "dependencies": {
-          "CommunityToolkit.WinUI": "7.1.2",
-          "Microsoft.WindowsAppSDK": "1.0.0"
-        }
-      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -104,6 +94,15 @@
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
+      "CommunityToolkit.WinUI.UI": {
+        "type": "Transitive",
+        "resolved": "7.1.2",
+        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
+        "dependencies": {
+          "CommunityToolkit.WinUI": "7.1.2",
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
       "CommunityToolkit.WinUI.UI.Controls.Core": {
         "type": "Transitive",
         "resolved": "7.1.2",
@@ -173,8 +172,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.2",
+        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -1116,7 +1115,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.2, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
@@ -1138,16 +1137,6 @@
           "SharpCompress": "0.31.0"
         }
       },
-      "CommunityToolkit.WinUI.UI": {
-        "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
-        "dependencies": {
-          "CommunityToolkit.WinUI": "7.1.2",
-          "Microsoft.WindowsAppSDK": "1.0.0"
-        }
-      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -1231,6 +1220,15 @@
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
+      "CommunityToolkit.WinUI.UI": {
+        "type": "Transitive",
+        "resolved": "7.1.2",
+        "contentHash": "jF1GdEJsZX5o81ZfLjSjgC5RuYwQneuW2mdFIb7FDFzITsgqCn7mfn7BglpNiXvjExkocmAKbBgmCcbp0Nypmw==",
+        "dependencies": {
+          "CommunityToolkit.WinUI": "7.1.2",
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
       "CommunityToolkit.WinUI.UI.Controls.Core": {
         "type": "Transitive",
         "resolved": "7.1.2",
@@ -1300,8 +1298,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.23.4",
-        "contentHash": "DF+mB+Fwan5Hm5dnbKbrIl7C5ypMr8tJJheutkYgFXCoM88HfBNo2qYO60CEf6fvEe/fhCGtvfEBCoCIhIn7dQ=="
+        "resolved": "3.24.2",
+        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -2243,7 +2241,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.23.4, )",
+          "Google.Protobuf": "[3.24.2, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
