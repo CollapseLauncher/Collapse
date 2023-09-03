@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:system="using:System"
     xmlns:localUI="using:Microsoft.UI.Xaml.Controls">
     <Application.Resources>
         <ResourceDictionary>
@@ -418,7 +419,7 @@
                     </Style>
                 </ResourceDictionary>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
-                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialogCollapse.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

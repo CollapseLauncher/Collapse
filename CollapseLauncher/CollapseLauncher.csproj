@@ -156,7 +156,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Page Update="XAMLs\Theme\ContentDialog.xaml">
+	  <Page Update="XAMLs\Theme\ContentDialogCollapse.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>
