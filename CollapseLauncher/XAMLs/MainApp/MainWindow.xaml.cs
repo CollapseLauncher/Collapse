@@ -217,8 +217,8 @@ namespace CollapseLauncher
             _lastWindowHeight = (int)(height * scalingFactor);
 
             SizeN desktopSize = Hi3Helper.Screen.ScreenProp.GetScreenSize();
-            int xOff = (desktopSize.Width - width) / 2;
-            int yOff = (desktopSize.Height - height) / 2;
+            int xOff = (desktopSize.Width - _lastWindowWidth) / 2;
+            int yOff = (desktopSize.Height - _lastWindowHeight) / 2;
 
             // Old Interop ver. Call
             // SetWindowPos(hwnd, (IntPtr)SpecialWindowHandles.HWND_TOP,
@@ -228,8 +228,8 @@ namespace CollapseLauncher
             // New m_appWindow built-in Move and Resize
             m_appWindow.MoveAndResize(new RectInt32
             {
-                Width = width,
-                Height = height,
+                Width = _lastWindowWidth,
+                Height = _lastWindowHeight,
                 X = xOff,
                 Y = yOff
             });
@@ -245,7 +245,7 @@ namespace CollapseLauncher
             //       
             // Also TODO: If a fix hasn't been applied yet, then find the way to disable the
             //            "double-click 2 maximize" feature via Native Methods/PInvoke.
-            // AssignWinAppSDK14WindowSizeFix(hwnd);
+            AssignWinAppSDK14WindowSizeFix(hwnd);
         }
 
         private void AssignWinAppSDK14WindowSizeFix(IntPtr hwnd)
