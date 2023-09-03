@@ -144,6 +144,12 @@
 	</Target>
 	
 	<ItemGroup>
+	  <Page Update="XAMLs\Theme\FlipView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+	
+	<ItemGroup>
 	  <Page Update="DataGrid.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>

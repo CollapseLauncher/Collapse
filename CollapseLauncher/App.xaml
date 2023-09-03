@@ -419,6 +419,7 @@
                 </ResourceDictionary>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/ContentDialog.xaml"/>
+                <ResourceDictionary Source="ms-appx:///XAMLs/Theme/FlipView.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

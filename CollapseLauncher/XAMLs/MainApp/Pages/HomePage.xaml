@@ -301,6 +301,7 @@
                                 <FlipView x:Name="ImageCarousel" Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
                                   MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
+                                  Style="{ThemeResource CollapseFlipViewStyle}"
                                   HorizontalAlignment="Center"
                                   PointerEntered="CarouselStopScroll"
                                   PointerExited="CarouselRestartScroll">
@@ -314,7 +315,7 @@
                                   Padding="4,4" Margin="10,-15,10,0" CornerRadius="14"
                                   Shadow="{ThemeResource SharedShadow}"
                                   Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                                  HorizontalAlignment="Right" Visibility="Collapsed"
+                                  HorizontalAlignment="Center" Visibility="Collapsed"
                                   VerticalAlignment="Center">
                                     <PipsPager
                                       VerticalAlignment="Center"
