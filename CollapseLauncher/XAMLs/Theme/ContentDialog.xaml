@@ -334,27 +334,42 @@
                                         <Button
                                             x:Name="PrimaryButton"
                                             IsTabStop="False"
-                                            Content="{TemplateBinding PrimaryButtonText}"
                                             IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"
                                             Style="{TemplateBinding PrimaryButtonStyle}"
                                             ElementSoundMode="FocusOnly"
-                                            HorizontalAlignment="Stretch" CornerRadius="14" />
+                                            HorizontalAlignment="Stretch" CornerRadius="14">
+                                            <ContentPresenter
+                                                FontWeight="SemiBold"
+                                                Content="{TemplateBinding PrimaryButtonText}"
+                                                MaxLines="2"
+                                                TextWrapping="Wrap"/>
+                                        </Button>
                                         <Button
                                             x:Name="SecondaryButton"
                                             IsTabStop="False"
-                                            Content="{TemplateBinding SecondaryButtonText}"
                                             IsEnabled="{TemplateBinding IsSecondaryButtonEnabled}"
                                             Style="{TemplateBinding SecondaryButtonStyle}"
                                             ElementSoundMode="FocusOnly"
-                                            HorizontalAlignment="Stretch" CornerRadius="14" />
+                                            HorizontalAlignment="Stretch" CornerRadius="14">
+                                            <ContentPresenter
+                                                FontWeight="SemiBold"
+                                                Content="{TemplateBinding SecondaryButtonText}"
+                                                MaxLines="2"
+                                                TextWrapping="Wrap"/>
+                                        </Button>
                                         <Button
                                             x:Name="CloseButton"
                                             IsTabStop="False"
-                                            Grid.Column="4" 
-                                            Content="{TemplateBinding CloseButtonText}"
+                                            Grid.Column="4"
                                             Style="{TemplateBinding CloseButtonStyle}"
                                             ElementSoundMode="FocusOnly"
-                                            HorizontalAlignment="Stretch" CornerRadius="14" />
+                                            HorizontalAlignment="Stretch" CornerRadius="14">
+                                            <ContentPresenter
+                                                FontWeight="SemiBold"
+                                                Content="{TemplateBinding CloseButtonText}"
+                                                MaxLines="2"
+                                                TextWrapping="Wrap"/>
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Border>
