@@ -33,7 +33,6 @@ namespace CollapseLauncher.Dialogs
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
-        Dictionary<string, PresetConfigV2> ConvertibleRegions { get; set; }
         private GamePresetProperty CurrentGameProperty { get; set; }
 
         public InstallationConvert()
@@ -45,7 +44,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
