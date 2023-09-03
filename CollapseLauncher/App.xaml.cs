@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;

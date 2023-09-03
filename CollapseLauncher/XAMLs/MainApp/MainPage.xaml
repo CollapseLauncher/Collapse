@@ -128,10 +128,8 @@
             <Grid Name="GridBG_NotifBtn" Grid.Column="6" Height="32" Width="32"
                       VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="0,1,0,0"
                       CornerRadius="0,0,0,0">
-                <ToggleButton x:Name="ToggleNotificationPanelBtn" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="ToggleNotificationPanelBtnClick" Padding="0">
-                    <Grid>
-                        <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#xf0f3;" FontSize="18"/>
-                    </Grid>
+                <ToggleButton x:Name="ToggleNotificationPanelBtn" Shadow="{ThemeResource SharedShadow}" Style="{ThemeResource DefaultToggleButtonStyle}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="ToggleNotificationPanelBtnClick" Padding="0">
+                    <FontIcon FontFamily="{ThemeResource FontAwesome}" Glyph="&#xf0f3;" FontSize="18"/>
                 </ToggleButton>
                 <InfoBadge x:Name="NewNotificationCountBadge" Style="{StaticResource AttentionValueInfoBadgeStyle}"
                                    Visibility="Collapsed" Margin="0,-4,-4,0" HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -193,12 +191,18 @@
                 <RepositionThemeTransition/>
             </ScrollViewer.Transitions>
             <Grid MinHeight="200" MinWidth="608">
-                <StackPanel x:Name="NoNotificationIndicator" VerticalAlignment="Center" Margin="0,-47,0,0">
+                <StackPanel x:Name="NoNotificationIndicator" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-47,0,0">
                     <StackPanel.OpacityTransition>
                         <ScalarTransition/>
                     </StackPanel.OpacityTransition>
-                    <Image Margin="0,0,0,16" Source="ms-appx:///Assets/Images/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-                    <TextBlock Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}" FontSize="20" FontWeight="Medium" TextAlignment="Center" Opacity="0.3"/>
+                    <Image Margin="0,0,0,16" Source="ms-appx:///Assets/Images/PaimonSleep.png" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1"/>
+                    <Grid Padding="24,8" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="2" Text="{x:Bind helper: Locale.Lang._MainPage.NotifNoNewNotifs}" VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" Opacity="0.50"/>
+                    </Grid>
                 </StackPanel>
                 <StackPanel x:Name="NotificationContainer" Margin="0,0,0,7">
                     <StackPanel.ChildrenTransitions>
