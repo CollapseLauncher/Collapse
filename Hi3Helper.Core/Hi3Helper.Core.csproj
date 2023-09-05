@@ -73,11 +73,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Lang\de-de.json" />
-	  <None Remove="Lang\th-TH.json" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Content Include="Lang\de-de.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
