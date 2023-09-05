@@ -523,5 +523,11 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
             set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
+
+        private bool IsLowerCollapsePriorityOnGameLaunch
+        {
+            get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
+            set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
+        }
     }
 }

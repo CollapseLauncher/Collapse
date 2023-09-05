@@ -255,5 +255,13 @@ namespace CollapseLauncher.Pages
             set => Settings.TextLanguage.LocalTextLangInt = value;
         }
         #endregion
+
+        #region Misc
+        public bool IsGameBoost
+        {
+            get => Settings.SettingsCollapseMisc.UseGameBoost;
+            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
+        }
+        #endregion
     }
 }

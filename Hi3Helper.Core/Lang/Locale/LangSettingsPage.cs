@@ -72,6 +72,7 @@
                 public string AppChangeReleaseChannel { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
                 public string EnableAcrylicEffect { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
+                public string LowerCollapsePrioOnGameLaunch { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
             }
         }
         #endregion

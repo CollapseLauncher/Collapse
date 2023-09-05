@@ -301,7 +301,9 @@
     "CustomArgs_Subtitle": "Start-up Arguments",
     "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
-    "CustomArgs_Footer3": "to see more parameters."
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
 
   "_SettingsPage": {
@@ -385,7 +387,8 @@
     "AppChangeReleaseChannel": "Change to {0} Release Channel",
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
 
   "_Misc": {

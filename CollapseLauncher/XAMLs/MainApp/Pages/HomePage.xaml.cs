@@ -1026,6 +1026,8 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
+
                 bool IsContinue = await CheckMediaPackInstalled();
 
                 if (!IsContinue) return;
@@ -1048,7 +1050,22 @@ namespace CollapseLauncher.Pages
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
+                
+                if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+                    CollapsePrioControl(proc);
 
+                // Set game process priority to Above Normal when GameBoost is on
+                if (_Settings.SettingsCollapseMisc.UseGameBoost)
+                {
+                    await Task.Delay(20000); // wait for possible other process to spawn
+                    Process gameProcess = new Process();
+                    var gameProcessName = Process.GetProcessesByName(proc.ProcessName.Split('.')[0]);
+                    foreach (var p in gameProcessName)
+                    {
+                        proc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                        LogWriteLine($"Game process {proc.ProcessName} [{proc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+                    }
+                }
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
@@ -1647,6 +1664,36 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StatusChanged -= GameInstall_StatusChanged;
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
+            }
+        }
+        #endregion
+
+        #region Collapse Priority Control
+        private async void CollapsePrioControl(Process proc)
+        {
+            try
+            {
+                using (Process collapseProcess = Process.GetCurrentProcess())
+                {
+                    collapseProcess.PriorityBoostEnabled = false;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
+                }
+
+                CarouselStopScroll(null, null);
+                await proc.WaitForExitAsync();
+
+                using (Process collapseProcess = Process.GetCurrentProcess())
+                {
+                    collapseProcess.PriorityBoostEnabled = true;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
+                    LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, PriorityBoost is on, carousel is started", LogType.Default, true);
+                }
+                CarouselRestartScroll(null, null);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion
