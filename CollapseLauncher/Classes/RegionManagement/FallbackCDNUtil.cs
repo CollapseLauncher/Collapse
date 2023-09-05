@@ -82,7 +82,13 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static HttpClient _client = new HttpClient()
+        private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = true,
+            UseCookies = true,
+            MaxConnectionsPerServer = 16,
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
+        })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
             DefaultRequestVersion = HttpVersion.Version20
