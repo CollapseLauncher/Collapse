@@ -301,7 +301,9 @@
     "CustomArgs_Subtitle": "Start-up Arguments",
     "CustomArgs_Footer1": "For more information about the Start-up Argument, please check the",
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
-    "CustomArgs_Footer3": "to see more parameters."
+    "CustomArgs_Footer3": "to see more parameters.",
+
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
 
   "_SettingsPage": {
@@ -387,9 +389,12 @@
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+	
+	"KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
     "KbShortcuts_ResetBtn": "Reset to Default"
+
   },
 
   "_Misc": {
@@ -690,7 +695,7 @@
     "LoadingReleaseFailed": "Error while fetching Release Notes.\r\n{0}",
 
     "UpdateHeader1": "Progress:",
-    "UpdateHeader2": "Time Elapsed:",
+    "UpdateHeader2": "Time Remaining:",
     "UpdateHeader3": "Download Size:",
     "UpdateHeader4": "Speed:",
     "UpdateHeader5PlaceHolder": "Downloading Update [- / -]:",

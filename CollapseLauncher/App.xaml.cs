@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -23,6 +24,9 @@ namespace CollapseLauncher
         {
             try
             {
+                DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] {args.Message}", LogType.Error, true); };
+                DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] {args.Message}", LogType.Error, true); };
+                UnhandledException += (sender, e) => { if (Debugger.IsAttached) LogWriteLine($"[XAML_OTHER] {e.Exception}", LogType.Error, true); };
                 this.InitializeComponent();
                 RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
 

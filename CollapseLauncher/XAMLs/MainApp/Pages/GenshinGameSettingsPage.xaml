@@ -76,6 +76,9 @@
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_FPS}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,8,0"/>
                                 <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
                             </StackPanel>
+                            <StackPanel x:Name="GameBoostPanel" Orientation="Horizontal">
+                                <ToggleSwitch Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsGameBoost, Mode=TwoWay}" Margin="4,8,0,8"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel x:Name="StarRailGameGraphicsPanel" Margin="0,0" Grid.Column="1">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>

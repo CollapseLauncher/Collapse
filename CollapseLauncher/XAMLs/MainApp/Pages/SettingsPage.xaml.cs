@@ -523,6 +523,12 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
 
+        private bool IsLowerCollapsePriorityOnGameLaunch
+        {
+            get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
+            set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
+        }
+		
         #region Keyboard Shortcuts
         private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
 
