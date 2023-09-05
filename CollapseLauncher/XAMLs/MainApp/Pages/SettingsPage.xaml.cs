@@ -20,6 +20,7 @@ using static Hi3Helper.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 
 namespace CollapseLauncher.Pages
 {
@@ -58,7 +59,7 @@ namespace CollapseLauncher.Pages
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialogs.SimpleDialogs.Dialog_RelocateFolder(Content))
+            switch (await Dialog_RelocateFolder(Content))
             {
                 case ContentDialogResult.Primary:
                     IsFirstInstall = true;
@@ -70,6 +71,28 @@ namespace CollapseLauncher.Pages
                     }
                     catch { }
                     MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async void ClearMetadataFolder(object sender, RoutedEventArgs e)
+        {
+            switch (await Dialog_ClearMetadata(Content))
+            {
+                case ContentDialogResult.Primary:
+                    try
+                    {
+                        Directory.Delete(AppGameConfigMetadataFolder, true);
+                        var collapsePath = Process.GetCurrentProcess().MainModule.FileName;
+                        Process.Start(collapsePath);
+                        App.Current.Exit();
+                    }
+                    catch (Exception ex) 
+                    {
+                        LogWriteLine($"An error occurred!\r\n{ex}", LogType.Error, true);
+                    }
                     break;
                 default:
                     break;

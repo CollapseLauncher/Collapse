@@ -412,6 +412,18 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Error
                 );
 
+        public static async Task<ContentDialogResult> Dialog_ClearMetadata(UIElement Content) =>
+            await SpawnDialog(
+                    string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialog),
+                    string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialogHelp),
+                    Content,
+                    null,
+                    Lang._Misc.Yes,
+                    Lang._Misc.Cancel,
+                    ContentDialogButton.Secondary,
+                    ContentDialogTheme.Warning
+                );
+
         public static async Task<ContentDialogResult> Dialog_NeedInstallMediaPackage(UIElement Content) =>
             await SpawnDialog(
                         Lang._Dialogs.NeedInstallMediaPackTitle,

@@ -365,6 +365,10 @@
     "AppFiles_ClearLogBtn": "Clear Log Files",
     "AppFiles_ClearImgCachesBtn": "Clear Image Files",
 
+    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
+    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
+    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+
     "ReportIssueBtn": "Report an Issue",
     "ContributePRBtn": "Contribute with a Pull Request",
     "ContributorListBtn": "Open Source Contributors",
