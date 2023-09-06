@@ -84,6 +84,7 @@
                 public string CustomArgs_Footer1 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer1;
                 public string CustomArgs_Footer2 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer2;
                 public string CustomArgs_Footer3 { get; set; } = LangFallback?._GameSettingsPage.CustomArgs_Footer3;
+                public string GameBoost { get; set; } = LangFallback?._GameSettingsPage.GameBoost;
             }
         }
         #endregion

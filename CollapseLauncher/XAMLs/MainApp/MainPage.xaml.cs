@@ -69,14 +69,11 @@ namespace CollapseLauncher
                 LogWriteLine($"Welcome to Collapse Launcher v{AppCurrentVersion.VersionString} - {MainEntryPoint.GetVersionString()}", LogType.Default, false);
                 LogWriteLine($"Application Data Location:\r\n\t{AppDataFolder}", LogType.Default);
                 InitializeComponent();
+                m_mainPage = this;
                 LoadingPopupPill.Translation += Shadow32;
                 LoadingCancelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
-                if (!IsPreview)
-                {
-                    PreviewBuildIndicator.Visibility = Visibility.Collapsed;
-                }
             }
             catch (Exception ex)
             {
@@ -157,7 +154,7 @@ namespace CollapseLauncher
 #endif
                 LoadGamePreset();
                 SetThemeParameters();
-
+                
                 VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
 #if DEBUG
                 VersionNumberIndicator.Text += "d";
@@ -990,8 +987,13 @@ namespace CollapseLauncher
             if (item == null) return;
 
             string itemTag = (string)item.Tag;
-            if (itemTag == PreviousTag) return;
 
+            NavigateInnerSwitch(itemTag);
+        }
+
+        void NavigateInnerSwitch(string itemTag)
+        {
+            if (itemTag == PreviousTag) return;
             switch (itemTag)
             {
                 case "launcher":
@@ -1032,6 +1034,17 @@ namespace CollapseLauncher
             PreviousTag = tagStr;
             PreviousTagString.Add(tagStr);
             LogWriteLine($"Page changed to {sourceType.Name} with Tag: {tagStr}", LogType.Scheme);
+        }
+
+        internal void InvokeMainPageNavigateByTag(string tagStr)
+        {
+            NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()?.Where(x => x.Tag.GetType() == typeof(string) && (string)x.Tag == tagStr)?.FirstOrDefault();
+            if (item != null)
+            {
+                NavigationViewControl.SelectedItem = item;
+                string tag = (string)item.Tag;
+                NavigateInnerSwitch(tag);
+            }
         }
 
         private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
@@ -1208,14 +1221,14 @@ namespace CollapseLauncher
             if (!hide)
             {
                 GridBG_IconTitle.Width = double.NaN;
-                if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
-                    GridBG_IconTitle.Visibility = Visibility.Visible;
+                GridBG_IconTitle.Opacity = 1d;
+                GridBG_IconImg.Opacity = 1d;
                 return;
             }
 
-            GridBG_IconTitle.Width = 0;
-            if (PreviewBuildIndicator.Visibility == Visibility.Collapsed)
-                GridBG_IconTitle.Visibility = Visibility.Collapsed;
+            GridBG_IconTitle.Width = 0d;
+            GridBG_IconTitle.Opacity = 0d;
+            GridBG_IconImg.Opacity = 0.8d;
         }
 
         private void GridBG_Icon_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

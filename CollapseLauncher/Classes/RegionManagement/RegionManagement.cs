@@ -1,14 +1,6 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
-using CollapseLauncher.GameSettings.Honkai;
-using CollapseLauncher.GameSettings.StarRail;
-using CollapseLauncher.GameVersioning;
-using CollapseLauncher.InstallManager.Genshin;
-using CollapseLauncher.InstallManager.Honkai;
-using CollapseLauncher.InstallManager.StarRail;
-using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -55,7 +47,7 @@ namespace CollapseLauncher
         {
             IsExplicitCancel = false;
             RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
-            LogWriteLine($"Initializing {RegionToChangeName}...", Hi3Helper.LogType.Scheme, true);
+            LogWriteLine($"Initializing {RegionToChangeName}...", LogType.Scheme, true);
 
             // Set IsLoadRegionComplete to false
             IsLoadRegionComplete = false;
@@ -115,6 +107,7 @@ namespace CollapseLauncher
             PreviousTagString.Clear();
             PreviousTagString.Add(PreviousTag);
             LauncherFrame.BackStack.Clear();
+            InnerTokenSource.Cancel();
             ResetRegionProp();
         }
 
@@ -177,9 +170,9 @@ namespace CollapseLauncher
 
             await DownloadBackgroundImage(Token);
 
-            await GetLauncherAdvInfo(Token, Preset);
-            await GetLauncherCarouselInfo(Token);
-            await GetLauncherEventInfo(Token);
+            GetLauncherAdvInfo(Token, Preset);
+            GetLauncherCarouselInfo(Token);
+            GetLauncherEventInfo(Token);
             GetLauncherPostInfo();
         }
 
@@ -194,10 +187,16 @@ namespace CollapseLauncher
             FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
             if (fI.Exists) return;
 
-            using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(regionBackgroundProp.data.adv.background, Token))
-            using (Stream outStream = fI.Create())
+            await using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(regionBackgroundProp.data.adv.background, Token))
+            using (Stream outStream = fI.Open(new FileStreamOptions()
             {
-                netStream.CopyTo(outStream);
+                Access = FileAccess.Write,
+                Mode = FileMode.Create,
+                Share = FileShare.ReadWrite,
+                Options = FileOptions.Asynchronous
+            }))
+            {
+                await netStream.CopyToAsync(outStream, Token);
             }
         }
 
@@ -269,7 +268,7 @@ namespace CollapseLauncher
             };
         }
 
-        private async ValueTask GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
+        private void GetLauncherAdvInfo(CancellationToken Token, PresetConfigV2 Preset)
         {
             if (regionBackgroundProp.data.icon.Count == 0) return;
 
@@ -322,7 +321,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask GetLauncherCarouselInfo(CancellationToken Token)
+        private void GetLauncherCarouselInfo(CancellationToken Token)
         {
             if (regionBackgroundProp.data.banner.Count == 0) return;
 
@@ -338,14 +337,14 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask GetLauncherEventInfo(CancellationToken Token)
+        private void GetLauncherEventInfo(CancellationToken Token)
         {
             if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
 
             regionNewsProp.eventPanel = new RegionBackgroundProp
             {
                 url = regionBackgroundProp.data.adv.url,
-                icon = await GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
+                icon = GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
             };
         }
 
@@ -371,25 +370,73 @@ namespace CollapseLauncher
             }
         }
 
-        public async ValueTask<string> GetCachedSprites(string URL, CancellationToken token)
+        public static string GetCachedSprites(string URL, CancellationToken token)
         {
-            string cacheFolder = Path.Combine(AppGameImgFolder, "cache");
-            string cachePath = Path.Combine(cacheFolder, Path.GetFileNameWithoutExtension(URL));
-            if (!Directory.Exists(cacheFolder))
-                Directory.CreateDirectory(cacheFolder);
+            string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(AppGameImgCachedFolder))
+                Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-
             if (!fInfo.Exists || fInfo.Length < (1 << 10))
             {
-                using (FileStream fs = fInfo.Create())
-                using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(URL, token))
-                {
-                    netStream.CopyTo(fs);
-                }
+                TryDownloadSpriteToCache(fInfo, URL, token);
+                return URL;
             }
 
             return cachePath;
+        }
+
+        public static async ValueTask<string> GetCachedSpritesAsync(string URL, CancellationToken token)
+        {
+            string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(URL));
+            if (!Directory.Exists(AppGameImgCachedFolder))
+                Directory.CreateDirectory(AppGameImgCachedFolder);
+
+            FileInfo fInfo = new FileInfo(cachePath);
+            if (!fInfo.Exists || fInfo.Length < (1 << 10))
+            {
+                using (FileStream fs = fInfo.Open(new FileStreamOptions()
+                {
+                    Access = FileAccess.Write,
+                    Mode = FileMode.Create,
+                    Share = FileShare.ReadWrite,
+                    Options = FileOptions.Asynchronous
+                }))
+                await using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(URL, token))
+                    await netStream.CopyToAsync(fs, token);
+            }
+
+            return cachePath;
+        }
+
+        public static async void TryDownloadSpriteToCache(FileInfo fInfo, string URL, CancellationToken token)
+        {
+            await Task.Delay(5000); // Ensure if it's only running in background
+            // Check back if the file has exist, has a proper size and the token isn't cancelled.
+            // If the condition doesn't meet, then return.
+            if (fInfo.Exists && fInfo.Length >= (1 << 10) && !token.IsCancellationRequested) return;
+
+            try
+            {
+                // Start downloading the file in background
+                using (FileStream fs = fInfo.Open(new FileStreamOptions()
+                {
+                    Access = FileAccess.Write,
+                    Mode = FileMode.Create,
+                    Share = FileShare.ReadWrite,
+                    Options = FileOptions.Asynchronous
+                }))
+                await using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(URL, token))
+                    await netStream.CopyToAsync(fs, token);
+
+#if DEBUG
+                LogWriteLine($"\n\rDownloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
+#endif
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while trying to cache asset from: {URL}\r\n{ex}", LogType.Error, true);
+            }
         }
 
         private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout)

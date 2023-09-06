@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
@@ -106,7 +107,13 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), StarRailSettingsJSONContext.Default) ?? new PCResolution();
+                    JsonSerializerOptions options = new JsonSerializerOptions()
+                    {
+                        TypeInfoResolver = StarRailSettingsJSONContext.Default,
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+
+                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), options) ?? new PCResolution();
                 }
             }
             catch (Exception ex)
@@ -122,8 +129,12 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-
-                string data = JsonSerializer.Serialize(this, typeof(PCResolution), StarRailSettingsJSONContext.Default) + '\0';
+                JsonSerializerOptions options = new JsonSerializerOptions()
+                {
+                    TypeInfoResolver = StarRailSettingsJSONContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                string data = JsonSerializer.Serialize(this, typeof(PCResolution), options) + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

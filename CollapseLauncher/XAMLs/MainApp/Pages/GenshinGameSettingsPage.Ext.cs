@@ -195,8 +195,19 @@ namespace CollapseLauncher.Pages
 
         public int RenderScale
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.RenderResolution - 1;
-            set => Settings.SettingsGeneralData.graphicsData.RenderResolution = (RenderResolutionOption)(value + 1);
+            get
+            {
+                int enumIndex = Settings.SettingsGeneralData.graphicsData.RenderResolution;
+                int valueIndex = GraphicsData.RenderScaleIndex.IndexOf(enumIndex);
+                double enumValue = GraphicsData.RenderScaleValues[valueIndex];
+                return GraphicsData.RenderScaleValues.IndexOf(enumValue);
+            }
+            set
+            {
+                double enumValue = GraphicsData.RenderScaleValues[value];
+                int enumIndex = DictionaryCategory.RenderResolutionOption[enumValue];
+                Settings.SettingsGeneralData.graphicsData.RenderResolution = enumIndex;
+            }
         }
 
         public int ShadowQuality
@@ -350,6 +361,14 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.SettingsGeneralData.deviceLanguageType - 1;
             set => Settings.SettingsGeneralData.deviceLanguageType = value + 1;
+        }
+        #endregion
+
+        #region Misc
+        public bool IsGameBoost
+        {
+            get => Settings.SettingsCollapseMisc.UseGameBoost;
+            set => Settings.SettingsCollapseMisc.UseGameBoost = value;
         }
         #endregion
     }

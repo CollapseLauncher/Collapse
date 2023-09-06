@@ -54,7 +54,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             saveItems = new()
             {
                 new PerfDataItem (1, (int)graphics.FPS - 1, version),
-                new PerfDataItem (2, (int)graphics.RenderResolution - 1, version),
+                new PerfDataItem (2, graphics.RenderResolution - 1, version),
                 new PerfDataItem (3,(int) graphics.ShadowQuality - 1, version),
                 new PerfDataItem (4,(int) graphics.VisualEffects - 1, version),
                 new PerfDataItem (5,(int) graphics.SFXQuality - 1, version),

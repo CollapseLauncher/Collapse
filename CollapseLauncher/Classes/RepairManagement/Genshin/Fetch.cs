@@ -97,7 +97,7 @@ namespace CollapseLauncher
             await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), true, null, null, token);
 
             // Parse basic package version.
-            ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL);
+            ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
 
             // Build additional blks entry.
             EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL);
@@ -400,7 +400,7 @@ namespace CollapseLauncher
         /// <param name="parentPath"></param>
         /// <param name="acceptedExtension"></param>
         /// <param name="parentURL"></param>
-        private void ParseManifestToAssetIndex(string manifestPath, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath, string acceptedExtension, string parentURL)
+        private void ParseManifestToAssetIndex(string manifestPath, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath, string acceptedExtension, string parentURL, bool forceStoreInStreaming = false)
         {
             // Initialize local entry.
             PkgVersionProperties entry;
@@ -420,6 +420,7 @@ namespace CollapseLauncher
 
                 // Append remote URL for download later.
                 entry.remoteURL = CombineURLFromString(parentURL, entry.remoteName);
+                entry.isForceStoreInStreaming = forceStoreInStreaming;
 
                 // Check if the entry is duplicated. If not, then add to asset index.
                 isHashHasValue = hashtable.ContainsKey(entry.remoteName);

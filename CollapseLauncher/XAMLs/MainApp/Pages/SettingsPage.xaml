@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="CollapseLauncher.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -128,6 +128,7 @@
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_Console}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsConsoleEnabled, Mode=TwoWay}" Margin="0,4"/>
                         <ToggleSwitch x:Name="ToggleIncludeGameLogs" Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_IncludeGameLogs}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsIncludeGameLogs, Mode=TwoWay}" Margin="0,4" Visibility="Collapsed"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}" Margin="0,4"/>
+                        <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.LowerCollapsePrioOnGameLaunch}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsLowerCollapsePriorityOnGameLaunch,Mode=TwoWay}" Margin="0,4"/>
                         <ToggleSwitch Header="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsShowRegionChangeWarning, Mode=TwoWay}" Margin="0,4"/>
                         <TextBlock x:Name="ChangeRegionToggleWarning" Visibility="Collapsed" Text="{x:Bind helper:Locale.Lang._SettingsPage.ChangeRegionWarning_Warning}" Margin="8,0,0,8" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                     </StackPanel>
