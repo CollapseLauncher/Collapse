@@ -60,7 +60,7 @@ namespace CollapseLauncher
         public static bool IsSkippingUpdateCheck = false;
         public static GameVersion AppCurrentVersion;
         public static Color SystemAppTheme { get; set; }
-        public static AppThemeMode CurrentAppTheme { get; set; }
+        public static AppThemeMode CurrentAppTheme;
         public static bool IsAppThemeLight
         {
             get => CurrentAppTheme switch

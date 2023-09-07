@@ -213,7 +213,12 @@ namespace CollapseLauncher
             }
 
             SystemAppTheme = new UISettings().GetColorValue(UIColorType.Background);
-            CurrentAppTheme = Enum.Parse<AppThemeMode>(GetAppConfigValue("ThemeMode").ToString());
+            string themeValue = GetAppConfigValue("ThemeMode").ToString();
+            if (!Enum.TryParse(themeValue, true, out CurrentAppTheme))
+            {
+                CurrentAppTheme = AppThemeMode.Dark;
+                LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})", LogType.Warning, true);
+            }
 #if !DISABLEDISCORD
             bool isInitialStart = GetAppConfigValue("EnableDiscordRPC").ToBool();
             AppDiscordPresence = new DiscordPresenceManager(isInitialStart);
