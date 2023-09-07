@@ -638,7 +638,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRow">
-                    <localprimitives:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5" Margin="0,1.5">
+                    <!-- TODO: Apply Margin and Fix the vertical scroll issue
+                    <localprimitives:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5" Margin="0,1.5">-->
+                    <localprimitives:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
