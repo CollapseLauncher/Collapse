@@ -61,12 +61,7 @@ namespace CollapseLauncher
 
         public static async void ApplyAccentColor(Page page, Bitmap bitmapInput, string bitmapPath)
         {
-            bool IsLight = CurrentAppTheme switch
-            {
-                AppThemeMode.Dark => false,
-                AppThemeMode.Light => true,
-                _ => SystemAppTheme.ToString() == "#FFFFFFFF"
-            };
+            bool IsLight = IsAppThemeLight; 
 
             Windows.UI.Color[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
 

@@ -25,7 +25,7 @@ namespace CollapseLauncher
                 UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] {e.Exception} {e.Exception.InnerException}", LogType.Error, true); };
                 
                 this.InitializeComponent();
-                RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
+                RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
 
                 switch (m_appMode)
                 {
