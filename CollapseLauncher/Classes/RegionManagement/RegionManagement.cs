@@ -111,7 +111,7 @@ namespace CollapseLauncher
             ResetRegionProp();
         }
 
-        private async ValueTask<bool> TryLoadResourceInfo(ResourceLoadingType resourceType, PresetConfigV2 preset, bool DoNotShowLoadingMsg = false)
+        private async ValueTask<bool> TryLoadResourceInfo(ResourceLoadingType resourceType, PresetConfigV2 preset, bool ShowLoadingMsg = true)
         {
             uint CurrentTimeout = resourceType == ResourceLoadingType.DownloadBackground ? BackgroundImageLoadTimeout : LoadTimeout;
             uint RetryCount = 0;
@@ -142,11 +142,11 @@ namespace CollapseLauncher
                 }
                 catch (OperationCanceledException)
                 {
-                    CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, DoNotShowLoadingMsg);
+                    CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
                 }
                 catch (Exception ex)
                 {
-                    CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, DoNotShowLoadingMsg);
+                    CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
                 }
 
                 // If explicit cancel was triggered, then return false
@@ -405,11 +405,11 @@ namespace CollapseLauncher
             }
         }
 
-        private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout, bool DoNotShowLoadingMsg)
+        private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout, bool ShowLoadingMsg)
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (!DoNotShowLoadingMsg)
+                if (ShowLoadingMsg)
                 {
                     // Send the message to loading status
                     LoadingCancelBtn.Visibility = Visibility.Visible;

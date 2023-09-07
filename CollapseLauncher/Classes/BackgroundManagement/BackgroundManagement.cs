@@ -33,7 +33,7 @@ namespace CollapseLauncher
 
         internal async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
 
-        private async Task ChangeBackgroundImageAsRegion(bool DoNotShowLoadingMsg = true)
+        private async Task ChangeBackgroundImageAsRegion(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             if (IsCustomBG)
@@ -48,7 +48,7 @@ namespace CollapseLauncher
             }
             else
             {
-                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, ConfigV2Store.CurrentConfigV2, DoNotShowLoadingMsg))
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, ConfigV2Store.CurrentConfigV2, ShowLoadingMsg))
                 {
                     regionBackgroundProp.imgLocalPath = AppDefaultBG;
                 }
