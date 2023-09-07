@@ -1,4 +1,4 @@
-﻿ <Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>net7.0-windows10.0.19041.0;net7.0-windows10.0.22000.0</TargetFrameworks>
@@ -10,7 +10,7 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<Version>1.71.9</Version>
-		<DebugType>portable</DebugType>
+		<DebugType>embedded</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
@@ -55,86 +55,22 @@
 		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
+
 		<Content Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
+
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		
+
+		<Content Update="Assets\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
 		<None Include="..\.editorconfig" Link=".editorconfig" />
-    
-		<Content Update="Assets\Images\AiHappy.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\AponiaFly.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\default.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\genshin-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\honkai-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\starrail-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\zenless-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\PaimonSleep.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\PaimonWhat.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\StartupBackground.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\StartupBackground2.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\CollapseLauncherLogo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeRegular6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeSolid6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Presets\CommunityTools.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 	</ItemGroup>
-	
+
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
 			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WindowsAppSDK'">
@@ -142,22 +78,4 @@
 			</ManagedAssemblyToLink>
 		</ItemGroup>
 	</Target>
-	
-	<ItemGroup>
-	  <Page Update="XAMLs\Theme\FlipView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <Page Update="DataGrid.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <Page Update="XAMLs\Theme\ContentDialogCollapse.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
 </Project>
