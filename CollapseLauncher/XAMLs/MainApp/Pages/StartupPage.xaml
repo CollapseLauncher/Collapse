@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource PagesSolidAcrylicBrush}">
+    Background="{ThemeResource PageBackgroundAcrylicBrush}">
     <Grid>
         <Image Grid.Column="0" Grid.ColumnSpan="2" Source="ms-appx:///Assets/Images/StartupBackground2.png" Stretch="UniformToFill" VerticalAlignment="Center" Opacity="0.50"/>
         <Grid x:Name="Bg" Margin="32">

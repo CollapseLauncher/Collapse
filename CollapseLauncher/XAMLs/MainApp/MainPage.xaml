@@ -18,7 +18,7 @@
             <Image x:Name="BackgroundBack" Source="ms-appx:///Assets/Images/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
             <Image x:Name="BackgroundBackBuffer" Source="ms-appx:///Assets/Images/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
         </Grid>
-        <Grid x:Name="BackgroundAcrylicMask" Background="{ThemeResource BackgroundMaskAcrylicBrush}" Visibility="Collapsed"/>
+        <Grid x:Name="BackgroundAcrylicMask" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}" Visibility="Collapsed"/>
         <NavigationView x:Name="NavigationViewControl"
             IsBackButtonVisible="Visible"
             IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
@@ -42,27 +42,27 @@
                 </Frame>
                 <Grid x:Name="LoadingPopup" Margin="0,0,0,0"
                       Visibility="Collapsed" Opacity="0" Background="{ThemeResource LoadingGradientBG}">
-                    <Grid x:Name="LoadingPopupPill" Background="{ThemeResource LoadingBrush}" Margin="28" CornerRadius="8"
+                    <Grid x:Name="LoadingPopupPill" Background="{ThemeResource LoadingPopupGridBrush}" Margin="28" CornerRadius="8"
                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="47" Shadow="{ThemeResource SharedShadow}">
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="8" HorizontalAlignment="Center">
                             <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="16,-2,16,0">
-                                <TextBlock x:Name="LoadingTitle" Text="Loading Region" Margin="0,0,8,0" Foreground="{ThemeResource DefaultFGColorAccent}"
+                                <TextBlock x:Name="LoadingTitle" Text="Loading Region" Margin="0,0,8,0" Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                                    FontSize="14" FontWeight="Bold" Opacity="1"/>
-                                <TextBlock x:Name="LoadingSubtitle" Text="Honkai Impact 3rd - Global" Foreground="{ThemeResource DefaultFGColorAccent}"
+                                <TextBlock x:Name="LoadingSubtitle" Text="Honkai Impact 3rd - Global" Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                                    FontSize="14" FontWeight="Normal" Opacity="1"/>
                             </StackPanel>
                             <Button x:Name="LoadingCancelBtn" Style="{ThemeResource ButtonRevealStyle}"
                                     Visibility="Collapsed" Shadow="{ThemeResource SharedShadow}" Click="CancelLoadRegion">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
-                                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Foreground="{ThemeResource DefaultFGColorAccent}" Glyph="&#xf00d;" FontSize="16" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" Foreground="{ThemeResource DefaultFGColorAccent}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
+                                        <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}" Foreground="{ThemeResource DefaultFGColorAccentBrush}" Glyph="&#xf00d;" FontSize="16" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._Misc.Cancel}" Foreground="{ThemeResource DefaultFGColorAccentBrush}" VerticalAlignment="Center" Margin="8,-1,0,0"  FontWeight="Medium"/>
                                     </StackPanel>
                                 </Button.Content>
                             </Button>
                         </StackPanel>
                         <ProgressBar x:Name="LoadingRing" IsIndeterminate="True" Value="100" Margin="0,0,0,0" Opacity="0.8"
-                                 Maximum="100" VerticalAlignment="Bottom" Foreground="{ThemeResource DefaultFGColorAccent}"/>
+                                 Maximum="100" VerticalAlignment="Bottom" Foreground="{ThemeResource DefaultFGColorAccentBrush}"/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -173,7 +173,7 @@
                     <StackPanel.Transitions>
                         <RepositionThemeTransition/>
                     </StackPanel.Transitions>
-                    <TextBlock x:Name="VersionNumberIndicator" Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
+                    <TextBlock x:Name="VersionNumberIndicator" Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccentBrush}"/>
                 </StackPanel>
             </StackPanel>
         </Button>
@@ -182,8 +182,8 @@
             <Grid.OpacityTransition>
                 <ScalarTransition/>
             </Grid.OpacityTransition>
-            <Grid Background="{ThemeResource NotificationLostFocusGradientBG}" Opacity="0.00000001"/>
-            <Grid Margin="0,47,0,0" Background="{ThemeResource NotificationLostFocusGradientBG}"/>
+            <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" Opacity="0.00000001"/>
+            <Grid Margin="0,47,0,0" Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
         </Grid>
         <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
                               Margin="0,48,-700,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">

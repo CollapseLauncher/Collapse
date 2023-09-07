@@ -55,7 +55,7 @@ namespace CollapseLauncher.CustomControls
                 titleStack.Children.Add(new FontIcon
                 {
                     Glyph = ThemeTitleGlyph,
-                    Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccent"],
+                    Foreground = (SolidColorBrush)Application.Current.Resources["DefaultFGColorAccentBrush"],
                     Margin = new Thickness(0, 0, 10, 0),
                     FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
                     FontSize = 22

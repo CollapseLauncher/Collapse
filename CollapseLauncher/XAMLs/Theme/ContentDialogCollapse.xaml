@@ -282,7 +282,7 @@
                                                         FontSize="16"
                                                         FontFamily="{StaticResource ContentControlThemeFontFamily}"
                                                         FontWeight="SemiBold"
-                                                        Foreground="{ThemeResource DefaultFGColorAccent}"
+                                                        Foreground="{ThemeResource DefaultFGColorAccentBrush}"
                                                         HorizontalAlignment="Left"
                                                         Margin="0,-2,0,0"
                                                         VerticalAlignment="Center"

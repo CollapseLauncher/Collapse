@@ -474,13 +474,13 @@
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
-                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
+                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
                             <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Maximum="100"/>
                             <Grid x:Name="progressPerFile" Visibility="Collapsed">
                                 <ProgressRing x:Name="progressRingAcrBG2"  Value="{Binding Value, ElementName=progressRingPerFile}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="194" Height="194" Maximum="{Binding Maximum, ElementName=progressRingPerFile}"/>
-                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
+                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
                                 <ProgressRing x:Name="progressRingPerFile" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="214" Height="214" Maximum="100"/>
                             </Grid>
                         </Grid>

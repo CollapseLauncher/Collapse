@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource PagesSolidAcrylicBrush}">
+    Background="{ThemeResource PageBackgroundAcrylicBrush}">
     <Grid>
         <Frame x:Name="BackgroundFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
         <Button x:Name="NextPage" Style="{ThemeResource AccentButtonStyle}"
