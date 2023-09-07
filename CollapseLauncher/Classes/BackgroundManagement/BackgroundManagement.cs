@@ -39,12 +39,7 @@ namespace CollapseLauncher
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                if (string.IsNullOrEmpty(BGPath))
-                {
-                    regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                }
-                else
-                    regionBackgroundProp.imgLocalPath = BGPath;
+                regionBackgroundProp.imgLocalPath = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
             }
             else
             {
