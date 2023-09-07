@@ -91,7 +91,7 @@ namespace CollapseLauncher.Pages
                     }
                     catch (Exception ex) 
                     {
-                        LogWriteLine($"An error occurred!\r\n{ex}", LogType.Error, true);
+                        LogWriteLine($"An error occurred while attempting to clear metadata folder. Exception stacktrace below:\r\n{ex}", LogType.Error, true);
                     }
                     break;
                 default:
@@ -287,7 +287,6 @@ namespace CollapseLauncher.Pages
                 {
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
-
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
                     AppBGCustomizer.Visibility = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility = Visibility.Collapsed;
