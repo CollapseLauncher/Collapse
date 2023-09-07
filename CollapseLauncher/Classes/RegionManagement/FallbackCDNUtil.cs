@@ -85,7 +85,6 @@ namespace CollapseLauncher
         private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
         {
             AllowAutoRedirect = true,
-            UseCookies = true,
             MaxConnectionsPerServer = 16,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
         })
