@@ -1,6 +1,3 @@
-using CollapseLauncher.GameSettings.Genshin.Context;
-using Hi3Helper;
-using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,6 +5,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Hi3Helper;
+using Hi3Helper.EncTool;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
