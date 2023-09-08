@@ -345,7 +345,7 @@
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
                                                                     <Button.Template>
                                                                         <ControlTemplate>
-                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2"
+                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2" Background="Transparent"
                                                                                 PointerEntered="HyperLink_OnPointerEntered" PointerExited="HyperLink_OnPointerExited">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                                    HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
@@ -389,7 +389,7 @@
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
                                                                     <Button.Template>
                                                                         <ControlTemplate>
-                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2"
+                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2" Background="Transparent"
                                                                                 PointerEntered="HyperLink_OnPointerEntered" PointerExited="HyperLink_OnPointerExited">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                                    HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"
@@ -433,7 +433,7 @@
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
                                                                     <Button.Template>
                                                                         <ControlTemplate>
-                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2"
+                                                                            <Grid ToolTipService.ToolTip="{Binding title}" HorizontalAlignment="Stretch" Margin="0,2" Background="Transparent"
                                                                                 PointerEntered="HyperLink_OnPointerEntered" PointerExited="HyperLink_OnPointerExited">
                                                                                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding title}"
                                                                                    HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,56,0"

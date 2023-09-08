@@ -250,7 +250,7 @@ namespace CollapseLauncher
                 HybridMode = HybridScaleMode.Off,
                 Interpolation = InterpolationSettings.CubicSmoother
             };
-
+            
             await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
         }
 
