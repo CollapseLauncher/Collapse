@@ -8,9 +8,11 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -171,7 +173,7 @@ namespace CollapseLauncher
 
             GetLauncherAdvInfo(Token, Preset);
             GetLauncherCarouselInfo(Token);
-            GetLauncherEventInfo(Token);
+            GetLauncherEventInfo();
             GetLauncherPostInfo();
         }
 
@@ -275,14 +277,48 @@ namespace CollapseLauncher
             regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
             {
+                string url = item.url;
+                if (string.IsNullOrEmpty(url) && item.links.Count != 0 && !string.IsNullOrEmpty(item.links[0].url))
+                {
+                    url = item.links[0].url;
+                }
+                if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(Preset.LauncherSpriteURL))
+                {
+                    if (new Uri(url).Segments.Last() == "qq")
+                    {
+                        var query = HttpUtility.ParseQueryString(new Uri(Preset.LauncherSpriteURL).Query);
+                        string key = query.Get("key");
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            url += "&key=" + key;
+                        }
+                    }
+                }
+
+                string desc = item.url;
+                if (!Preset.IsHideSocMedDesc)
+                {
+                    if (!string.IsNullOrEmpty(item.title))
+                    {
+                        desc = item.title;
+                    }
+                    else
+                    {
+                        if (item.links.Count != 0 && !string.IsNullOrEmpty(item.links[0].title))
+                        {
+                            desc = item.links[0].title;
+                        }
+                    }
+                }
+
                 regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
                 {
-                    URL = item.url,
+                    URL = url,
                     Icon = GetCachedSprites(item.img, Token),
                     IconHover = GetCachedSprites(item.img_hover, Token),
                     QR = string.IsNullOrEmpty(item.qr_img) ? null : GetCachedSprites(item.qr_img, Token),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = string.IsNullOrEmpty(item.title) || Preset.IsHideSocMedDesc ? item.url : item.title
+                    Description = desc
                 });
             }
         }
@@ -298,19 +334,19 @@ namespace CollapseLauncher
                 {
                     URL = item.url,
                     Icon = GetCachedSprites(item.img, Token),
-                    Description = string.IsNullOrEmpty(item.name) ? item.url : item.name
+                    Description = item.name == "" ? null : item.name
                 });
             }
         }
 
-        private void GetLauncherEventInfo(CancellationToken Token)
+        private void GetLauncherEventInfo()
         {
             if (string.IsNullOrEmpty(regionBackgroundProp.data.adv.icon)) return;
 
             regionNewsProp.eventPanel = new RegionBackgroundProp
             {
                 url = regionBackgroundProp.data.adv.url,
-                icon = GetCachedSprites(regionBackgroundProp.data.adv.icon, Token)
+                icon = regionBackgroundProp.data.adv.icon
             };
         }
 

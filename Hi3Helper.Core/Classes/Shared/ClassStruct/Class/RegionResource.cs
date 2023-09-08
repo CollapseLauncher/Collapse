@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Hi3Helper.Shared.ClassStruct
@@ -176,6 +177,7 @@ namespace Hi3Helper.Shared.ClassStruct
     public class RegionSocMedProp : IRegionResourceCopyable<RegionSocMedProp>
     {
         private string _url;
+        private List<RegionSocMedProp> _links;
 
         public string icon_id { get; set; }
         public string icon_link { get; set; }
@@ -192,6 +194,19 @@ namespace Hi3Helper.Shared.ClassStruct
         public string title { get; set; }
         public string show_time { get; set; }
         public PostCarouselType type { get; set; }
+
+        public List<RegionSocMedProp> links
+        {
+            get => _links;
+            set
+            {
+                _links = new List<RegionSocMedProp>();
+                foreach (var link in value.Where(link => !string.IsNullOrEmpty(link.title) || !string.IsNullOrEmpty(link.url)))
+                {
+                    _links.Add(link);
+                }
+            }
+        }
 
         private unsafe string StripTabsAndNewlines(ReadOnlySpan<char> s)
         {
@@ -221,7 +236,8 @@ namespace Hi3Helper.Shared.ClassStruct
             name = name,
             title = title,
             show_time = show_time,
-            type = type
+            type = type,
+            links = links
         };
     }
 
