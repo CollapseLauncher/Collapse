@@ -7,13 +7,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using PhotoSauce.MagicScaler;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
@@ -208,58 +208,14 @@ namespace CollapseLauncher
 
         private static async Task GetResizedImageStream(FileStream input, FileStream output, uint ToWidth, uint ToHeight)
         {
-            uint ResizedSizeW;
-            uint ResizedSizeH;
-
-            IRandomAccessStream inputRandomStream = input.AsRandomAccessStream();
-            IRandomAccessStream outputRandomStream = output.AsRandomAccessStream();
-
-            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(inputRandomStream);
-            BitmapPixelFormat pixFmt = decoder.BitmapPixelFormat;
-            Guid decoderCodecID = decoder.DecoderInformation.CodecId;
-            BitmapAlphaMode alpMod = decoderCodecID != BitmapDecoder.PngDecoderId ?
-                BitmapAlphaMode.Ignore :
-                BitmapAlphaMode.Straight;
-
-            (ResizedSizeW, ResizedSizeH) = GetPreservedImageRatio(ToWidth, ToHeight, decoder.PixelWidth, decoder.PixelHeight);
-
-            if (decoder.PixelWidth < ResizedSizeW
-             && decoder.PixelHeight < ResizedSizeH)
+            ProcessImageSettings settings = new ProcessImageSettings
             {
-                input.Seek(0, SeekOrigin.Begin);
-                input.CopyTo(output);
-                return;
-            }
-
-            BitmapTransform transform = new BitmapTransform()
-            {
-                ScaledWidth = ResizedSizeW,
-                ScaledHeight = ResizedSizeH,
-                InterpolationMode = BitmapInterpolationMode.Fant
+                Width = (int)ToWidth,
+                Height = (int)ToHeight,
+                HybridMode = HybridScaleMode.Off,
+                Interpolation = InterpolationSettings.CubicSmoother
             };
-
-            PixelDataProvider pixelData = await decoder.GetPixelDataAsync(
-                                                pixFmt,
-                                                alpMod,
-                                                transform,
-                                                ExifOrientationMode.RespectExifOrientation,
-                                                ColorManagementMode.DoNotColorManage);
-
-            if (decoder.PixelWidth != decoder.OrientedPixelWidth) FlipSize(ref ResizedSizeW, ref ResizedSizeH);
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(alpMod == BitmapAlphaMode.Straight ? BitmapEncoder.PngEncoderId : BitmapEncoder.BmpEncoderId, outputRandomStream);
-            byte[] pixelDataBytes = pixelData.DetachPixelData();
-            encoder.SetPixelData(pixFmt, alpMod, ResizedSizeW, ResizedSizeH, m_appDPIScale, m_appDPIScale, pixelDataBytes);
-
-            await encoder.FlushAsync();
-            outputRandomStream.Seek(0);
-        }
-
-        private static void FlipSize(ref uint w, ref uint h)
-        {
-            uint _w = w;
-            uint _h = h;
-            w = _h;
-            h = _w;
+            await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
         }
 
         public static async Task<BitmapImage> Stream2BitmapImage(IRandomAccessStream image)
@@ -274,17 +230,6 @@ namespace CollapseLauncher
         {
             image.Seek(0);
             return new Bitmap(image.AsStream());
-        }
-
-        // Reference:
-        // https://stackoverflow.com/questions/1940581/c-sharp-image-resizing-to-different-size-while-preserving-aspect-ratio
-        private static (uint, uint) GetPreservedImageRatio(uint canvasWidth, uint canvasHeight, uint imgWidth, uint imgHeight)
-        {
-            double ratioX = (double)canvasWidth / imgWidth;
-            double ratioY = (double)canvasHeight / imgHeight;
-            double ratio = ratioX < ratioY ? ratioX : ratioY;
-
-            return ((uint)(imgWidth * ratio), (uint)(imgHeight * ratio));
         }
 
         private async void ApplyBackgroundAsync() => await ApplyBackground();

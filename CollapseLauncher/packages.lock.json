@@ -48,6 +48,12 @@
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
       },
+      "PhotoSauce.MagicScaler": {
+        "type": "Direct",
+        "requested": "[0.13.2, )",
+        "resolved": "0.13.2",
+        "contentHash": "MSFwTRbK9NwBsaDDupMvMfzI+27Ns4eilkcR0lni3LTx9cQVgZbxJJSq5Qg3Y2LbkeYiVbLWWj7T8BHYeif6MA=="
+      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta3.22114.1, )",
@@ -1173,6 +1179,12 @@
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
+      },
+      "PhotoSauce.MagicScaler": {
+        "type": "Direct",
+        "requested": "[0.13.2, )",
+        "resolved": "0.13.2",
+        "contentHash": "MSFwTRbK9NwBsaDDupMvMfzI+27Ns4eilkcR0lni3LTx9cQVgZbxJJSq5Qg3Y2LbkeYiVbLWWj7T8BHYeif6MA=="
       },
       "System.CommandLine": {
         "type": "Direct",
