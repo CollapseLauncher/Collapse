@@ -1740,6 +1740,9 @@ namespace CollapseLauncher.Pages
         private void HyperLink_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
             ((TextBlock)((Grid)sender).Children[0]).Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+        }
+        #endregion
+
         #region Collapse Priority Control
         private async void CollapsePrioControl(Process proc)
         {

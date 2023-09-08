@@ -312,9 +312,9 @@ namespace CollapseLauncher
                 regionNewsProp.sideMenuPanel.Add(new MenuPanelProp
                 {
                     URL = url,
-                    Icon = await GetCachedSprites(item.img, Token),
-                    IconHover = await GetCachedSprites(item.img_hover, Token),
-                    QR = string.IsNullOrEmpty(item.qr_img) ? null : await GetCachedSprites(item.qr_img, Token),
+                    Icon = GetCachedSprites(item.img, Token),
+                    IconHover = GetCachedSprites(item.img_hover, Token),
+                    QR = string.IsNullOrEmpty(item.qr_img) ? null : GetCachedSprites(item.qr_img, Token),
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
                     Description = desc
                 });
@@ -331,7 +331,7 @@ namespace CollapseLauncher
                 regionNewsProp.imageCarouselPanel.Add(new MenuPanelProp
                 {
                     URL = item.url,
-                    Icon = await GetCachedSprites(item.img, Token),
+                    Icon = GetCachedSprites(item.img, Token),
                     Description = item.name == "" ? null : item.name
                 });
             }
