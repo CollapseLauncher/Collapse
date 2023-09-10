@@ -197,7 +197,7 @@ namespace CollapseLauncher
         private int _lastWindowHeight;
         private WindowRect _windowPosAndSize = new WindowRect();
 
-        public void SetWindowSize(IntPtr hwnd, int width = 1028, int height = 634, int x = 0, int y = 0)
+        public void SetWindowSize(IntPtr hwnd, int width = 1028, int height = 634)
         {
             if (hwnd == IntPtr.Zero) hwnd = m_windowHandle;
 
