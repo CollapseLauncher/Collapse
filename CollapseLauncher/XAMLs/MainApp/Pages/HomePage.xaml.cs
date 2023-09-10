@@ -697,7 +697,7 @@ namespace CollapseLauncher.Pages
             {
                 while (!Token.IsCancellationRequested)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
@@ -1119,14 +1119,21 @@ namespace CollapseLauncher.Pages
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc.UseGameBoost)
                 {
-                    await Task.Delay(20000); // wait for possible other process to spawn
-                    Process gameProcess = new Process();
-                    var gameProcessName = Process.GetProcessesByName(proc.ProcessName.Split('.')[0]);
-                    foreach (var p in gameProcessName)
+                    // Init new target process
+                    Process toTargetProc;
+
+                    // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
+                    while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
                     {
-                        proc.PriorityClass = ProcessPriorityClass.AboveNormal;
-                        LogWriteLine($"Game process {proc.ProcessName} [{proc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+                        await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
+                                                // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                                                // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                                                // which it will break the loop and execute the next code below it.
                     }
+
+                    // Assign the priority to the process and write a log (just for displaying any info)
+                    toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                    LogWriteLine($"Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
                 }
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -1383,7 +1390,7 @@ namespace CollapseLauncher.Pages
         private async void GameLogWatcher()
         {
             await Task.Delay(5000);
-            while (App.IsGameRunning)
+            while (CurrentGameProperty.IsGameRunning)
             {
                 await Task.Delay(3000);
             }
@@ -1477,7 +1484,7 @@ namespace CollapseLauncher.Pages
         #region Playtime Buttons
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!App.IsGameRunning)
+            if (!CurrentGameProperty.IsGameRunning)
             {
                 UpdatePlaytime();
             }
@@ -1627,7 +1634,7 @@ namespace CollapseLauncher.Pages
 
                 if (!dynamicUpdate)
                 {
-                    while (App.IsGameRunning) { }
+                    while (CurrentGameProperty.IsGameRunning) { }
                     UpdatePlaytime();
                     return;
                 }
@@ -1636,7 +1643,7 @@ namespace CollapseLauncher.Pages
 
                 if (bootByCollapse)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         await Task.Delay(60000, token);
                         elapsedSeconds += 60;
@@ -1646,7 +1653,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (App.IsGameRunning)
+                if (CurrentGameProperty.IsGameRunning)
                 {
                     await Task.Delay(60000, token);
                     int newTime = ReadPlaytimeFromRegistry(regionKey);
@@ -1656,7 +1663,7 @@ namespace CollapseLauncher.Pages
 
                 }
 
-                while (App.IsGameRunning)
+                while (CurrentGameProperty.IsGameRunning)
                 {
                     UpdatePlaytime(false, oldTime + elapsedSeconds);
                     elapsedSeconds += 60;

@@ -210,7 +210,7 @@ namespace CollapseLauncher.Pages
                 OverlayTitle.Text = Lang._GameRepairPage.OverlayNotInstalledTitle;
                 OverlaySubtitle.Text = Lang._GameRepairPage.OverlayNotInstalledSubtitle;
             }
-            else if (App.IsGameRunning)
+            else if (CurrentGameProperty.IsGameRunning)
             {
                 Overlay.Visibility = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;

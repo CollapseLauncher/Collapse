@@ -287,16 +287,6 @@ namespace CollapseLauncher
                 ApplyBackgroundAsync();
         }
 
-        private async void CheckRunningGameInstance()
-        {
-            while (true && !App.IsAppKilled)
-            {
-                string execName = Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
-                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(500);
-            }
-        }
-
         private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
         {
             if (e.IsCustomNotif)
@@ -761,7 +751,6 @@ namespace CollapseLauncher
             {
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-                CheckRunningGameInstance();
             }
 
             // Unlock ChangeBtn for first start

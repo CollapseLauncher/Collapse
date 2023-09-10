@@ -131,7 +131,26 @@ namespace CollapseLauncher.Statics
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
         internal IGameInstallManager _GameInstall { get; set; }
-        internal bool IsGameRunning => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName)).Length > 0;
+        internal bool IsGameRunning
+        {
+            get
+            {
+                string name = Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName);
+                Process[] processes = Process.GetProcessesByName(name);
+                return processes.Length > 0;
+            }
+        }
+
+#nullable enable
+        // Translation:
+        // The Process.GetProcessesByName(procName) will get an array of the process list. The output is piped into null-break operator "?" which will
+        // returns a null if something goes wrong. If not, then pass it to .Where(x) method which will select the given value with the certain logic.
+        // (in this case, we need to ensure that the MainWindowHandle is not a non-zero pointer) and then piped into null-break operator.
+        internal Process? GetGameProcessWithActiveWindow() =>
+            Process.GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset.GameExecutableName))?
+                .Where(x => x.MainWindowHandle != IntPtr.Zero)?
+                .FirstOrDefault();
+#nullable disable
 
         /*
         ~GamePresetProperty()
