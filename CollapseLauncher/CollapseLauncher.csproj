@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>net6.0-windows10.0.19041.0;net7.0-windows10.0.19041.0;net7.0-windows10.0.22000.0</TargetFrameworks>
+		<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
@@ -10,11 +10,12 @@
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<Version>1.71.9</Version>
-		<DebugType>embedded</DebugType>
+		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<ResourceLanguages>en</ResourceLanguages>
+		<SatelliteResourceLanguages>en-US;en</SatelliteResourceLanguages>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
@@ -22,9 +23,7 @@
 		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0-windows10.0.19041.0' ">
-		<DebugType>portable</DebugType>
-	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON</DefineConstants>
 	</PropertyGroup>
@@ -46,10 +45,6 @@
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.13.2" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-	</ItemGroup>
-	
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0-windows10.0.19041.0' ">
-		<PackageReference Include="System.Text.Json" Version="7.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
