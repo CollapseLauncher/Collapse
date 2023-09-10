@@ -166,7 +166,11 @@ namespace Hi3Helper.Shared.ClassStruct
         };
     }
 
+#if NET8_0_OR_GREATER
+    [JsonConverter(typeof(JsonStringEnumConverter<PostCarouselType>))]
+#else
     [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
     public enum PostCarouselType
     {
         POST_TYPE_INFO,

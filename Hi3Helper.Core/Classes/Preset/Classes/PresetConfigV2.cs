@@ -15,7 +15,11 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Preset
 {
 #nullable enable
+#if NET8_0_OR_GREATER
+    [JsonConverter(typeof(JsonStringEnumConverter<ServerRegionID>))]
+#else
     [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
     public enum ServerRegionID : int
     {
         os_usa = 0,
@@ -26,7 +30,11 @@ namespace Hi3Helper.Preset
         cn_qd01 = 5
     }
 
+#if NET8_0_OR_GREATER
+    [JsonConverter(typeof(JsonStringEnumConverter<GameChannel>))]
+#else
     [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
     public enum GameChannel
     {
         Beta = 0,
@@ -34,7 +42,11 @@ namespace Hi3Helper.Preset
         DevRelease = 2
     }
 
+#if NET8_0_OR_GREATER
+    [JsonConverter(typeof(JsonStringEnumConverter<GameType>))]
+#else
     [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
     public enum GameType
     {
         Honkai = 0,
@@ -44,7 +56,11 @@ namespace Hi3Helper.Preset
         Unknown = int.MinValue
     }
 
+#if NET8_0_OR_GREATER
+    [JsonConverter(typeof(JsonStringEnumConverter<GameVendorType>))]
+#else
     [JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
     public enum GameVendorType
     {
         miHoYo,
@@ -504,7 +520,6 @@ namespace Hi3Helper.Preset
         public string? GameDispatchURLTemplate { get; set; }
         public string? GameGatewayURLTemplate { get; set; }
         public string? GameGatewayDefault { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AudioLanguageType GameDefaultCVLanguage { get; set; }
         public string? ProtoDispatchKey { get; set; }
         public bool? IsGenshin { get; set; }
