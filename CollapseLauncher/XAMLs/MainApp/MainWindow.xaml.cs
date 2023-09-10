@@ -247,7 +247,7 @@ namespace CollapseLauncher
                 {
                     lock (this)
                     {
-                        // m_presenter.Restore();
+                        m_presenter.Restore();
                         AssignCurrentWindowPosition(hwnd);
                         sender.MoveAndResize(new RectInt32
                         {
