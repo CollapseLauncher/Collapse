@@ -90,7 +90,8 @@ namespace CollapseLauncher
         })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version20
+            DefaultRequestVersion = HttpVersion.Version20,
+            Timeout = TimeSpan.FromSeconds(5)
         };
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
