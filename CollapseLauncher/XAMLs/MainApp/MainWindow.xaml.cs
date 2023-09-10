@@ -243,19 +243,24 @@ namespace CollapseLauncher
             if (_eventWindowPosChange != null) m_appWindow.Changed -= _eventWindowPosChange;
             _eventWindowPosChange = (sender, args) =>
             {
-                if (args.DidSizeChange && args.DidPositionChange)
+                if (args.DidSizeChange && args.DidPositionChange
+                && !args.DidPresenterChange)
                 {
                     lock (this)
                     {
-                        m_presenter.Restore();
                         AssignCurrentWindowPosition(hwnd);
-                        sender.MoveAndResize(new RectInt32
+                        if (m_windowPosSize.X > (_lastWindowWidth * -1)
+                         && m_windowPosSize.Y > (_lastWindowHeight * -1))
                         {
-                            Width = _lastWindowWidth,
-                            Height = _lastWindowHeight,
-                            X = (int)m_windowPosSize.X,
-                            Y = (int)m_windowPosSize.Y
-                        });
+                            m_presenter.Restore();
+                            sender.MoveAndResize(new RectInt32
+                            {
+                                Width = _lastWindowWidth,
+                                Height = _lastWindowHeight,
+                                X = (int)m_windowPosSize.X,
+                                Y = (int)m_windowPosSize.Y
+                            });
+                        }
                     }
                 }
             };
