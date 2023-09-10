@@ -588,7 +588,13 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
                     if (UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
-                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern, RegexOptions.Compiled | RegexOptions.NonBacktracking)))
+                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern,
+#if NET7_0_OR_GREATER
+                        RegexOptions.Compiled | RegexOptions.NonBacktracking
+#else
+                        RegexOptions.Compiled
+#endif
+                    )))
                     {
                         TryDeleteReadOnlyFile(fileNames);
                         LogWriteLine($"Deleted {fileNames}", LogType.Default, true);
@@ -836,7 +842,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-        #endregion
+#endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()

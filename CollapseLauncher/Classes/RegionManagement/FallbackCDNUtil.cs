@@ -268,11 +268,20 @@ namespace CollapseLauncher
             return CDNList[cdnIndex];
         }
 
-        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token) =>
-            await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
+        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
+#if NET7_0_OR_GREATER
+            => await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
             {
                 TypeInfoResolver = context
             }, token);
+#else
+        {
+            using (BridgedNetworkStream content = await GetHttpStreamFromResponse(URL, token))
+            {
+                return (T)await JsonSerializer.DeserializeAsync(content, typeof(T), context, token);
+            }
+        }
+#endif
 
         public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token)
         {
