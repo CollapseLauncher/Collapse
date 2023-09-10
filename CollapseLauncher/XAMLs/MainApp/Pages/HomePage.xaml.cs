@@ -9,23 +9,26 @@ using Hi3Helper.Shared.ClassStruct;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
+using PhotoSauce.MagicScaler;
 using System;
 using System.IO;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Drawing;
 using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -33,6 +36,10 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
+using FontFamily = Microsoft.UI.Xaml.Media.FontFamily;
+using Image = Microsoft.UI.Xaml.Controls.Image;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 
 namespace CollapseLauncher.Pages
 {
@@ -137,12 +144,56 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region EventPanel
-        private void TryLoadEventPanelImage()
+        private async void TryLoadEventPanelImage()
         {
+            // If the region event panel property is null, then return
             if (regionNewsProp.eventPanel == null) return;
 
+            // Get the event icon file info
+            FileInfo iconFileInfo = new FileInfo(regionNewsProp.eventPanel.icon);
+            if (!iconFileInfo.Exists) return; // Return if the event icon file doesn't exist
+
+            // Get the cached filename and path
+            string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon + iconFileInfo.Length);
+            string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+
+            // Init BitmapImage to load the image and the info for cached event icon file
+            BitmapImage source = new BitmapImage();
+            FileInfo cachedIconFileInfo = new FileInfo(cachedFilePath);
+
+            // Determine if the cache icon exist and the file is completed (more than 1kB in size)
+            bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
+
+            // Using the original icon file and cached icon file streams
+            using (FileStream iconFileStream = iconFileInfo.OpenRead())
+            using (FileStream cachedIconFileStream = isCacheIconExist ? cachedIconFileInfo.OpenRead() : cachedIconFileInfo.Create())
+            {
+                if (!isCacheIconExist)
+                {
+                    // Get the icon image information and set the resized frame size
+                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(iconFileStream));
+                    int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
+                    int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
+                    ProcessImageSettings settings = new ProcessImageSettings
+                    {
+                        Width = width,
+                        Height = height,
+                        HybridMode = HybridScaleMode.Off,
+                        Interpolation = InterpolationSettings.Cubic
+                    };
+
+                    iconFileStream.Position = 0; // Reset the original icon stream position
+                    await Task.Run(() => MagicImageProcessor.ProcessImage(iconFileStream, cachedIconFileStream, settings)); // Start resizing
+                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                }
+
+                // Set the source from cached icon stream
+                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+            }
+
+            // Set event icon props
             ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-            ImageEventImg.Source = new BitmapImage(new Uri(regionNewsProp.eventPanel.icon));
+            ImageEventImg.Source = source;
             ImageEventImg.Tag = regionNewsProp.eventPanel.url;
 
             if (IsCustomBG)
@@ -1665,6 +1716,30 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
                 ReturnToHomePage();
             }
+        }
+        #endregion
+
+        #region Set Hand Cursor
+        public static void ChangeCursor(UIElement element, InputCursor cursor)
+        {
+            typeof(UIElement).InvokeMember("ProtectedCursor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, element, new object[] { cursor });
+        }
+
+        private void SetHandCursor(object sender, RoutedEventArgs e = null)
+        {
+            ChangeCursor((UIElement)sender, InputSystemCursor.Create(InputSystemCursorShape.Hand));
+        }
+        #endregion
+
+        #region Hyper Link Color
+        private void HyperLink_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            ((TextBlock)((Grid)sender).Children[0]).Foreground = (Brush)Application.Current.Resources["AccentColor"];
+        }
+
+        private void HyperLink_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            ((TextBlock)((Grid)sender).Children[0]).Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
         }
         #endregion
 
