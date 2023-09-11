@@ -4,8 +4,8 @@
     "net6.0": {
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.24.3",
-        "contentHash": "HX8KHRTJPUcC4KOvEobKBNlMpHGYmK+3X73xPq+OUE2M5dLYvpGhp9qQQWt2jASgTUbxI1yHaGeBqFYiECBupw=="
+        "resolved": "3.24.2",
+        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
@@ -15,7 +15,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.24.3, )",
+          "Google.Protobuf": "[3.24.2, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
@@ -25,14 +25,16 @@
       },
       "hi3helper.sharphdiffpatch": {
         "type": "Project"
+      },
+      "sevenzipextractor": {
+        "type": "Project"
       }
     },
-    "net6.0/win-x64": {},
     "net7.0": {
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.24.3",
-        "contentHash": "HX8KHRTJPUcC4KOvEobKBNlMpHGYmK+3X73xPq+OUE2M5dLYvpGhp9qQQWt2jASgTUbxI1yHaGeBqFYiECBupw=="
+        "resolved": "3.24.2",
+        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
@@ -42,7 +44,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.24.3, )",
+          "Google.Protobuf": "[3.24.2, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }
@@ -52,8 +54,10 @@
       },
       "hi3helper.sharphdiffpatch": {
         "type": "Project"
+      },
+      "sevenzipextractor": {
+        "type": "Project"
       }
-    },
-    "net7.0/win-x64": {}
+    }
   }
 }
