@@ -2,7 +2,6 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -17,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -250,7 +250,7 @@ namespace CollapseLauncher
                 HybridMode = HybridScaleMode.Off,
                 Interpolation = InterpolationSettings.CubicSmoother
             };
-            
+
             await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
         }
 

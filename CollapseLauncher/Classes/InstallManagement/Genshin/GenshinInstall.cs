@@ -232,7 +232,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
         };
 
-        private void TryAddOtherInstalledVoicePacks(List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
+        private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
         {
             // If not found (null), then return
             if (_gameAudioLangListPath == null) return;
