@@ -33,7 +33,6 @@ namespace CollapseLauncher.Dialogs
         GameConversionManagement Converter;
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
-        Dictionary<string, PresetConfigV2> ConvertibleRegions;
         private GamePresetProperty CurrentGameProperty { get; set; }
 
         public InstallationConvert()
@@ -45,7 +44,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                LogWriteLine($"{ex}", Hi3Helper.LogType.Error, true);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 ErrorSender.SendException(ex);
             }
         }
@@ -237,71 +236,11 @@ namespace CollapseLauncher.Dialogs
 
         public async Task<(PresetConfigV2, PresetConfigV2)> AskConvertionDestination()
         {
-            ConvertibleRegions = new Dictionary<string, PresetConfigV2>();
-            foreach (KeyValuePair<string, PresetConfigV2> Config in ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Where(x => x.Value.IsConvertible ?? false))
-                ConvertibleRegions.Add(Config.Key, Config.Value);
-
-            ComboBox SourceGame = new ComboBox();
-            ComboBox TargetGame = new ComboBox();
-            ContentDialog Dialog = new ContentDialog();
-
-            SelectionChangedEventHandler SourceGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
-            {
-                TargetGame.IsEnabled = true;
-                Dialog.IsSecondaryButtonEnabled = false;
-                TargetGame.ItemsSource = GetConvertibleNameList((sender as ComboBox).SelectedItem.ToString());
-            });
-            SelectionChangedEventHandler TargetGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
-            {
-                if ((sender as ComboBox).SelectedIndex != -1)
-                    Dialog.IsSecondaryButtonEnabled = true;
-            });
-
-            SourceGame = new ComboBox
-            {
-                Width = 200,
-                ItemsSource = new List<string>(ConvertibleRegions.Keys),
-                PlaceholderText = Lang._InstallConvert.SelectDialogSource
-            };
-            SourceGame.SelectionChanged += SourceGameChangedArgs;
-            TargetGame = new ComboBox
-            {
-                Width = 200,
-                PlaceholderText = Lang._InstallConvert.SelectDialogTarget,
-                IsEnabled = false
-            };
-            TargetGame.SelectionChanged += TargetGameChangedArgs;
-
-            StackPanel DialogContainer = new StackPanel() { Orientation = Orientation.Vertical };
-            StackPanel ComboBoxContainer = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
-            ComboBoxContainer.Children.Add(SourceGame);
-            ComboBoxContainer.Children.Add(new FontIcon() { Glyph = "", FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(16, 0, 16, 0), Opacity = 0.5f });
-            ComboBoxContainer.Children.Add(TargetGame);
-            DialogContainer.Children.Add(new TextBlock
-            {
-                Text = Lang._InstallConvert.SelectDialogSubtitle,
-                Margin = new Thickness(0, 0, 0, 16),
-                TextWrapping = TextWrapping.Wrap,
-            });
-            DialogContainer.Children.Add(ComboBoxContainer);
-
-            Dialog = new ContentDialog
-            {
-                Title = Lang._InstallConvert.SelectDialogTitle,
-                Content = DialogContainer,
-                CloseButtonText = null,
-                PrimaryButtonText = Lang._Misc.Cancel,
-                SecondaryButtonText = Lang._Misc.Next,
-                IsSecondaryButtonEnabled = false,
-                DefaultButton = ContentDialogButton.Secondary,
-                Background = (Brush)Application.Current.Resources["DialogAcrylicBrush"],
-                XamlRoot = Content.XamlRoot
-            };
-
+            (ContentDialogResult Result, ComboBox SourceGame, ComboBox TargetGame) = await Dialog_SelectGameConvertRecipe(Content);
             PresetConfigV2 SourceRet = null;
             PresetConfigV2 TargetRet = null;
 
-            switch (await Dialog.ShowAsync())
+            switch (Result)
             {
                 case ContentDialogResult.Secondary:
                     SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
@@ -315,7 +254,7 @@ namespace CollapseLauncher.Dialogs
             return (SourceRet, TargetRet);
         }
 
-        private List<string> GetConvertibleNameList(string ZoneName)
+        public static List<string> GetConvertibleNameList(string ZoneName)
         {
             List<string> _out = new List<string>();
             List<string> GameTargetProfileName = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].Values

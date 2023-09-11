@@ -2,7 +2,6 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -233,7 +232,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             _ => throw new KeyNotFoundException($"ID: {id} is not supported!")
         };
 
-        private void TryAddOtherInstalledVoicePacks(List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
+        private void TryAddOtherInstalledVoicePacks(IList<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
         {
             // If not found (null), then return
             if (_gameAudioLangListPath == null) return;
@@ -292,7 +291,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                 gameDataFolderName = $"{execName}_Data",
                 foldersToDelete = new string[] { $"{execName}_Data" },
                 filesToDelete = new string[] { "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*", "^Audio.*" },
-                foldersToKeepInData = new string[] { "ScreenShot" }
+                foldersToKeepInData = Array.Empty<string>()
             };
         }
         #endregion

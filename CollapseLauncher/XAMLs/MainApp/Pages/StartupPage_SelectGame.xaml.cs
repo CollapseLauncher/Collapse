@@ -55,7 +55,7 @@ namespace CollapseLauncher.Pages
 
                 if (_gamePosterBitmap != null && IsSuccess)
                 {
-                    MainPage.ApplyAccentColor(this, _gamePosterBitmap);
+                    MainPage.ApplyAccentColor(this, _gamePosterBitmap, _gamePosterPath);
                 }
 
                 NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();

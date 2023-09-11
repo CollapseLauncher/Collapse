@@ -126,7 +126,14 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading Genshin Impact ScreenManager Values\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while reading Genshin ScreenManager Data" +
+                             $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
+                             $"\r\n  If the issue persist, please report it on GitHub" +
+                             $"\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception(
+                    $"Failed when reading Genshin ScreenManager Data\r\n" +
+                    $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"{ex}", ex));
             }
 
             return new ScreenManager();

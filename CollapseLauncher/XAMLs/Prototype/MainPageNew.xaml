@@ -103,7 +103,7 @@
                         Margin="-16,-12,0,0" Grid.Column="4" Grid.ColumnSpan="2"
                         Background="{ThemeResource AccentColor}" HorizontalAlignment="Right"
                         VerticalAlignment="Center" CornerRadius="3" Visibility="Visible">
-                        <TextBlock Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccent}"/>
+                        <TextBlock Padding="3,0,3,0" FontSize="8" Text="PRE" VerticalAlignment="Center" FontWeight="Bold" Foreground="{ThemeResource DefaultFGColorAccentBrush}"/>
                     </StackPanel>
                 </StackPanel>
             </Button>
@@ -113,8 +113,8 @@
             <Grid.OpacityTransition>
                 <ScalarTransition/>
             </Grid.OpacityTransition>
-            <Grid Background="{ThemeResource NotificationLostFocusGradientBG}" Opacity="0.00000001"/>
-            <Grid Margin="0,48,0,0" Background="{ThemeResource NotificationLostFocusGradientBG}"/>
+            <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" Opacity="0.00000001"/>
+            <Grid Margin="0,48,0,0" Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
         </Grid>
         <ScrollViewer x:Name="NotificationPanel" HorizontalScrollBarVisibility="Disabled" CornerRadius="0,0,0,16"
                               Margin="0,48,0,0" HorizontalAlignment="Right" Background="{ThemeResource NotificationPanelBrush}" Shadow="{ThemeResource SharedShadow}">

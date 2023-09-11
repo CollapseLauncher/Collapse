@@ -7,7 +7,7 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="{ThemeResource PagesSolidAcrylicBrush}"
+    Background="{ThemeResource PageBackgroundAcrylicBrush}"
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow"/>
@@ -105,7 +105,7 @@
             </StackPanel>
         </StackPanel>
         <TextBlock Grid.Column="1" Margin="8" VerticalAlignment="Bottom" TextAlignment="Right"
-                   HorizontalAlignment="Right" Opacity="0.50" Foreground="{ThemeResource DefaultFGColorAccent}">
+                   HorizontalAlignment="Right" Opacity="0.50" Foreground="{ThemeResource DefaultFGColorAccentBrush}">
             <Run Text="The splash art is a property of"/><LineBreak/>
             <Run Text="miHoYo / HoYoverse" FontSize="18" FontWeight="Medium"/>
         </TextBlock>

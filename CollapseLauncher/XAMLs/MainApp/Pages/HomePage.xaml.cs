@@ -20,18 +20,18 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
 using PhotoSauce.MagicScaler;
 using System;
-using System.IO;
-using System.Text;
-using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Drawing;
 using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -149,13 +149,13 @@ namespace CollapseLauncher.Pages
             // If the region event panel property is null, then return
             if (regionNewsProp.eventPanel == null) return;
 
-            // Get the event icon file info
-            FileInfo iconFileInfo = new FileInfo(regionNewsProp.eventPanel.icon);
-            if (!iconFileInfo.Exists) return; // Return if the event icon file doesn't exist
-
             // Get the cached filename and path
-            string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon + iconFileInfo.Length);
+            string cachedFileHash = BytesToCRC32Simple(regionNewsProp.eventPanel.icon);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+
+            // Create a cached image folder if not exist
+            if (!Directory.Exists(AppGameImgCachedFolder))
+                Directory.CreateDirectory(AppGameImgCachedFolder);
 
             // Init BitmapImage to load the image and the info for cached event icon file
             BitmapImage source = new BitmapImage();
@@ -165,13 +165,17 @@ namespace CollapseLauncher.Pages
             bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
 
             // Using the original icon file and cached icon file streams
-            using (FileStream iconFileStream = iconFileInfo.OpenRead())
-            using (FileStream cachedIconFileStream = isCacheIconExist ? cachedIconFileInfo.OpenRead() : cachedIconFileInfo.Create())
+            if (!isCacheIconExist)
             {
-                if (!isCacheIconExist)
+                using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
+                using (Stream copyIconFileStream = new MemoryStream())
+                await using (Stream iconFileStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionNewsProp.eventPanel.icon, PageToken.Token))
                 {
+                    // Copy remote stream to memory stream
+                    await iconFileStream.CopyToAsync(copyIconFileStream);
+                    copyIconFileStream.Position = 0;
                     // Get the icon image information and set the resized frame size
-                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(iconFileStream));
+                    ImageFileInfo iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
                     int width = (int)(iconImageInfo.Frames[0].Width * m_appDPIScale);
                     int height = (int)(iconImageInfo.Frames[0].Height * m_appDPIScale);
                     ProcessImageSettings settings = new ProcessImageSettings
@@ -182,13 +186,21 @@ namespace CollapseLauncher.Pages
                         Interpolation = InterpolationSettings.Cubic
                     };
 
-                    iconFileStream.Position = 0; // Reset the original icon stream position
-                    await Task.Run(() => MagicImageProcessor.ProcessImage(iconFileStream, cachedIconFileStream, settings)); // Start resizing
+                    copyIconFileStream.Position = 0; // Reset the original icon stream position
+                    await Task.Run(() => MagicImageProcessor.ProcessImage(copyIconFileStream, cachedIconFileStream, settings)); // Start resizing
                     cachedIconFileStream.Position = 0; // Reset the cached icon stream position
-                }
 
-                // Set the source from cached icon stream
-                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                }
+            }
+            else
+            {
+                using (Stream cachedIconFileStream = cachedIconFileInfo.OpenRead())
+                {
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                }
             }
 
             // Set event icon props
@@ -686,7 +698,7 @@ namespace CollapseLauncher.Pages
             {
                 while (!Token.IsCancellationRequested)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
@@ -1101,21 +1113,28 @@ namespace CollapseLauncher.Pages
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
-                
+
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
                     CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc.UseGameBoost)
                 {
-                    await Task.Delay(20000); // wait for possible other process to spawn
-                    Process gameProcess = new Process();
-                    var gameProcessName = Process.GetProcessesByName(proc.ProcessName.Split('.')[0]);
-                    foreach (var p in gameProcessName)
+                    // Init new target process
+                    Process toTargetProc;
+
+                    // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
+                    while ((toTargetProc = CurrentGameProperty.GetGameProcessWithActiveWindow()) == null)
                     {
-                        proc.PriorityClass = ProcessPriorityClass.AboveNormal;
-                        LogWriteLine($"Game process {proc.ProcessName} [{proc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+                        await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
+                                                // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
+                                                // it will instead returns a non-null value and assign it to "toTargetProc" variable,
+                                                // which it will break the loop and execute the next code below it.
                     }
+
+                    // Assign the priority to the process and write a log (just for displaying any info)
+                    toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                    LogWriteLine($"Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
                 }
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -1342,7 +1361,11 @@ namespace CollapseLauncher.Pages
                     {
                         while (!reader.EndOfStream)
                         {
+#if NET7_0_OR_GREATER
                             line = await reader.ReadLineAsync(WatchOutputLog.Token);
+#else
+                            line = await reader.ReadLineAsync();
+#endif
                             if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
                                 StartExclusiveWindowPayload();
@@ -1368,14 +1391,14 @@ namespace CollapseLauncher.Pages
         private async void GameLogWatcher()
         {
             await Task.Delay(5000);
-            while (App.IsGameRunning)
+            while (CurrentGameProperty.IsGameRunning)
             {
                 await Task.Delay(3000);
             }
 
             WatchOutputLog.Cancel();
         }
-        #endregion
+#endregion
 
         #region Open Button Method
         private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
@@ -1454,15 +1477,15 @@ namespace CollapseLauncher.Pages
 
         private async void StopGameButton_Click(object sender, RoutedEventArgs e)
         {
-           if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
-           StopGame(CurrentGameProperty._GameVersion.GamePreset);
+            if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
+            StopGame(CurrentGameProperty._GameVersion.GamePreset);
         }
         #endregion
 
         #region Playtime Buttons
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!App.IsGameRunning)
+            if (!CurrentGameProperty.IsGameRunning)
             {
                 UpdatePlaytime();
             }
@@ -1493,7 +1516,7 @@ namespace CollapseLauncher.Pages
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
             SavePlaytimetoRegistry(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
-            LogWriteLine($"Playtime counter changed to 0h 0m 0s. (Previous value: {PlaytimeMainBtn.Text})");
+            LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
             UpdatePlaytime(false, 0);
             PlaytimeFlyout.Hide();
         }
@@ -1594,7 +1617,7 @@ namespace CollapseLauncher.Pages
                 }
             }
             SavePlaytimetoRegistry(oldRegionRegistryKey, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 60}m {elapsedSeconds % 60}s] seconds to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
+            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] to {oldRegionRegistryKey.Split('\\')[2]} playtime.", LogType.Default, true);
             inGameTimer.Stop();
         }
 
@@ -1612,7 +1635,7 @@ namespace CollapseLauncher.Pages
 
                 if (!dynamicUpdate)
                 {
-                    while (App.IsGameRunning) { }
+                    while (CurrentGameProperty.IsGameRunning) { }
                     UpdatePlaytime();
                     return;
                 }
@@ -1621,7 +1644,7 @@ namespace CollapseLauncher.Pages
 
                 if (bootByCollapse)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         await Task.Delay(60000, token);
                         elapsedSeconds += 60;
@@ -1631,7 +1654,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (App.IsGameRunning)
+                if (CurrentGameProperty.IsGameRunning)
                 {
                     await Task.Delay(60000, token);
                     int newTime = ReadPlaytimeFromRegistry(regionKey);
@@ -1641,7 +1664,7 @@ namespace CollapseLauncher.Pages
 
                 }
 
-                while (App.IsGameRunning)
+                while (CurrentGameProperty.IsGameRunning)
                 {
                     UpdatePlaytime(false, oldTime + elapsedSeconds);
                     elapsedSeconds += 60;

@@ -1,11 +1,11 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
 using CollapseLauncher.GameSettings.Genshin.Enums;
+using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Hi3Helper;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin

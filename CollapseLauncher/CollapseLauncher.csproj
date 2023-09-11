@@ -1,7 +1,7 @@
-﻿ <Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>net7.0-windows10.0.19041.0;net7.0-windows10.0.22000.0</TargetFrameworks>
+		<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<Platforms>x64</Platforms>
 		<UseWinUI>true</UseWinUI>
@@ -9,12 +9,13 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.9</Version>
+		<Version>1.72.0</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<ResourceLanguages>en</ResourceLanguages>
+		<SatelliteResourceLanguages>en-US;en</SatelliteResourceLanguages>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
@@ -22,6 +23,7 @@
 		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON</DefineConstants>
 	</PropertyGroup>
@@ -39,7 +41,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.230822000" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.13.2" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
@@ -56,91 +58,62 @@
 		<Content Include="CollapseLauncher.Hi3CacheUpdater.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
+
 		<Content Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-    
+
 		<Content Include="Misc\InstallMediaPack.cmd">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		
+
+		<Content Update="Assets\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
 		<None Include="..\.editorconfig" Link=".editorconfig" />
-    
-		<Content Update="Assets\Images\AiHappy.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\AponiaFly.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\default.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\genshin-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\honkai-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\starrail-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\GameLogo\zenless-logo.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\PaimonSleep.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\PaimonWhat.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\StartupBackground.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Images\StartupBackground2.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\CollapseLauncherLogo.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeBrand6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeRegular6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Fonts\FontAwesomeSolid6.otf">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Presets\CommunityTools.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-    
-		<Content Update="Assets\Presets\Honkai\PersonalGraphicsSettingV2.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 	</ItemGroup>
-	
+
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
-			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WindowsAppSDK'">
-				<IsTrimmable>true</IsTrimmable>
-			</ManagedAssemblyToLink>
+			<TrimmableAssembly Include="Hi3Helper.Core" />
+			<TrimmableAssembly Include="Hi3Helper.EncTool" />
+			<TrimmableAssembly Include="Hi3Helper.Http" />
+			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
+			<TrimmableAssembly Include="Google.Protobuf" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
+			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
+			<TrimmableAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.System.Power.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.System.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppSDK" />
+			<TrimmableAssembly Include="Microsoft.WinUI" />
+			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+			<TrimmableAssembly Include="SquirrelLib" />
+			<TrimmableAssembly Include="SharpCompress" />
+			<TrimmableAssembly Include="System.Drawing" />
+			<TrimmableAssembly Include="System.Drawing.Common" />
+			<TrimmableAssembly Include="System.Drawing.Primitives" />
+			<TrimmableAssembly Include="System.IO.Compression.Brotli" />
+			<TrimmableAssembly Include="System.IO.Compression" />
+			<TrimmableAssembly Include="WinRT.Runtime" />
 		</ItemGroup>
 	</Target>
 </Project>

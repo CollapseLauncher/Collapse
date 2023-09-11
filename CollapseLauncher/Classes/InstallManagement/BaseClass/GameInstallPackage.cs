@@ -1,13 +1,13 @@
-﻿using Hi3Helper.Http;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Hi3Helper;
 
 namespace CollapseLauncher.InstallManager
 {

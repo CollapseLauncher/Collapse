@@ -339,7 +339,7 @@
                     </TextBlock>
                 </StackPanel>
             </ScrollViewer>
-            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource MyAcrylicBrush}"
+            <Grid x:Name="GameSettingsApplyGrid" VerticalAlignment="Bottom" Background="{ThemeResource GameSettingsApplyGridBrush}"
                   HorizontalAlignment="Stretch" CornerRadius="8" Margin="16" Padding="16,16"
                   Shadow="{ThemeResource SharedShadow}">
                 <Grid.ColumnDefinitions>

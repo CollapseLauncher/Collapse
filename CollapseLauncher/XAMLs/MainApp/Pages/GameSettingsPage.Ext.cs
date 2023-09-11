@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class GameSettingsPage : Page, INotifyPropertyChanged
+    public partial class GameSettingsPage : Page, INotifyPropertyChanged
     {
         #region Fields
         private int prevGraphSelect;
@@ -105,7 +105,7 @@ namespace CollapseLauncher.Pages
         public bool IsBorderlessEnabled
         {
             get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
-            set 
+            set
             {
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)

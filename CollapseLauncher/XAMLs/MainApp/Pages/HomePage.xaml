@@ -7,7 +7,6 @@
     xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
-    xmlns:regionShared="using:Hi3Helper.Shared.Region"
     xmlns:s="using:CommunityToolkit.WinUI.UI"
     xmlns:c="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -256,9 +255,9 @@
                                             <ToolTipService.ToolTip>
                                                 <StackPanel>
                                                     <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                        <Border Background="White" Margin="0,0,0,8">
+                                                        <Grid Background="White" Margin="0,0,0,8" CornerRadius="5">
                                                             <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center"/>
-                                                        </Border>
+                                                        </Grid>
                                                         <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"
                                                                Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
                                                     </StackPanel>
@@ -303,6 +302,7 @@
                                 <FlipView x:Name="ImageCarousel" Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
                                   MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
+                                  Style="{ThemeResource CollapseFlipViewStyle}"
                                   HorizontalAlignment="Center"
                                   PointerEntered="CarouselStopScroll"
                                   PointerExited="CarouselRestartScroll">
@@ -316,7 +316,7 @@
                                   Padding="4,4" Margin="10,-15,10,0" CornerRadius="14"
                                   Shadow="{ThemeResource SharedShadow}"
                                   Background="{ThemeResource CarouselPipsAcrylicBrush}"
-                                  HorizontalAlignment="Right" Visibility="Collapsed"
+                                  HorizontalAlignment="Center" Visibility="Collapsed"
                                   VerticalAlignment="Center">
                                     <PipsPager
                                       VerticalAlignment="Center"
@@ -338,7 +338,7 @@
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostEventPanelVisible}">
                                                 <StackPanel Margin="0,0,16,10">
-                                                    <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Events}">
+                                                    <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Events}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
@@ -382,7 +382,7 @@
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostNoticePanelVisible}">
                                                 <StackPanel Margin="0,0,16,10">
-                                                    <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Notices}">
+                                                    <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Notices}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
@@ -426,7 +426,7 @@
                                         <Grid>
                                             <ScrollViewer VerticalScrollMode="Auto" Margin="0,8,0,0" Visibility="{x:Bind IsPostInfoPanelVisible}">
                                                 <StackPanel Margin="0,0,16,10">
-                                                    <ItemsControl ItemsSource="{x:Bind regionShared:LauncherConfig.regionNewsProp.articlePanel.Info}">
+                                                    <ItemsControl ItemsSource="{x:Bind local:RegionResourceListHelper.regionNewsProp.articlePanel.Info}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
                                                                 <Button HorizontalAlignment="Stretch" Tag="{Binding url}" Click="OpenButtonLinkFromTag" Loaded="SetHandCursor">
@@ -478,13 +478,13 @@
                             <ProgressRing x:Name="progressRingAcrBG" Value="{Binding Value, ElementName=progressRing}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="250" Height="250" Maximum="{Binding Maximum, ElementName=progressRing}"/>
-                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
+                            <Ellipse x:Name="progressRingBG" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" VerticalAlignment="Stretch" Margin="4"/>
                             <ProgressRing x:Name="progressRing" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="250" Maximum="100"/>
                             <Grid x:Name="progressPerFile" Visibility="Collapsed">
                                 <ProgressRing x:Name="progressRingAcrBG2"  Value="{Binding Value, ElementName=progressRingPerFile}"
                                           IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" Width="194" Height="194" Maximum="{Binding Maximum, ElementName=progressRingPerFile}"/>
-                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
+                                <Ellipse x:Name="progressRingBG2" HorizontalAlignment="Stretch" Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" VerticalAlignment="Stretch" Margin="4" Width="220" Height="220"/>
                                 <ProgressRing x:Name="progressRingPerFile" Value="0" IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center" Width="214" Height="214" Maximum="100"/>
                             </Grid>
                         </Grid>

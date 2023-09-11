@@ -1,7 +1,7 @@
 ﻿using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -30,16 +31,22 @@ namespace CollapseLauncher
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        private async Task ChangeBackgroundImageAsRegion()
+        internal async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
+
+        private async Task ChangeBackgroundImageAsRegion(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             if (IsCustomBG)
             {
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                if (string.IsNullOrEmpty(BGPath))
+                regionBackgroundProp.imgLocalPath = string.IsNullOrEmpty(BGPath) ? AppDefaultBG : BGPath;
+            }
+            else
+            {
+                if (!await TryLoadResourceInfo(ResourceLoadingType.DownloadBackground, ConfigV2Store.CurrentConfigV2, ShowLoadingMsg))
+                {
                     regionBackgroundProp.imgLocalPath = AppDefaultBG;
-                else
-                    regionBackgroundProp.imgLocalPath = BGPath;
+                }
             }
 
             if (!IsCustomBG || IsFirstStartup)
@@ -52,45 +59,73 @@ namespace CollapseLauncher
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        public static async void ApplyAccentColor(Page page, Bitmap bitmapinput)
+        public static async void ApplyAccentColor(Page page, Bitmap bitmapInput, string bitmapPath)
         {
-            switch (CurrentAppTheme)
-            {
-                case AppThemeMode.Light:
-                    await SetLightColors(bitmapinput);
-                    break;
-                case AppThemeMode.Dark:
-                    await SetDarkColors(bitmapinput);
-                    break;
-                default:
-                    if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        await SetLightColors(bitmapinput);
-                    else
-                        await SetDarkColors(bitmapinput);
-                    break;
-            }
+            bool IsLight = IsAppThemeLight;
+
+            Windows.UI.Color[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
+
+            if (IsLight) SetLightColors(bitmapInput, _colors);
+            else SetDarkColors(bitmapInput, _colors);
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
 
-        private static async Task SetLightColors(Bitmap bitmapinput)
+        private static async ValueTask<Windows.UI.Color[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, true, 1);
-            Application.Current.Resources["SystemAccentColor"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorDark1"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorDark2"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorDark3"] = _colors[1];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[1]);
+            string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
+            string cachedFileHash = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
+            cachedPalettePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
+            if (File.Exists(cachedPalettePath))
+            {
+                byte[] data = await File.ReadAllBytesAsync(cachedPalettePath);
+                if (!ConverterTool.TryDeserializeStruct(data, 4, out Windows.UI.Color[] output))
+                {
+                    return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
+                }
+
+                return output;
+            }
+
+            return await TryGenerateNewCachedPalette(bitmapInput, isLight, cachedPalettePath);
         }
 
-        private static async Task SetDarkColors(Bitmap bitmapinput)
+        private static async ValueTask<Windows.UI.Color[]> TryGenerateNewCachedPalette(Bitmap bitmapInput, bool IsLight, string cachedPalettePath)
         {
-            Windows.UI.Color[] _colors = await GetPaletteList(bitmapinput, 10, false, 1);
-            Application.Current.Resources["SystemAccentColor"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorLight1"] = _colors[0];
-            Application.Current.Resources["SystemAccentColorLight2"] = _colors[1];
-            Application.Current.Resources["SystemAccentColorLight3"] = _colors[0];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(_colors[0]);
+            byte[] buffer = new byte[1 << 10];
+
+            string cachedPaletteDirPath = Path.GetDirectoryName(cachedPalettePath);
+            if (!Directory.Exists(cachedPaletteDirPath)) Directory.CreateDirectory(cachedPaletteDirPath);
+
+            Windows.UI.Color[] _colors = await GetPaletteList(bitmapInput, 10, IsLight, 1);
+
+            if (!ConverterTool.TrySerializeStruct(_colors, buffer, out int read))
+            {
+                byte DefVal = (byte)(IsLight ? 80 : 255);
+                Windows.UI.Color defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, DefVal, DefVal, DefVal), 1));
+                return new Windows.UI.Color[] { defColor, defColor, defColor, defColor };
+            }
+
+            await File.WriteAllBytesAsync(cachedPalettePath, buffer[..read]);
+            return _colors;
+        }
+
+        private static void SetLightColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
+        {
+            Application.Current.Resources["SystemAccentColor"] = palette[0];
+            Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
+            Application.Current.Resources["SystemAccentColorDark2"] = palette[1];
+            Application.Current.Resources["SystemAccentColorDark3"] = palette[1];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
+        }
+
+        private static void SetDarkColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
+        {
+            Application.Current.Resources["SystemAccentColor"] = palette[0];
+            Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
+            Application.Current.Resources["SystemAccentColorLight2"] = palette[1];
+            Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
+            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
         }
 
 
@@ -143,7 +178,7 @@ namespace CollapseLauncher
 
                     return EnsureLengthCopyLast(_generatedColors
                         .Select(DrawingColorToColor)
-                        .ToArray(), 2);
+                        .ToArray(), 4);
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -215,6 +250,7 @@ namespace CollapseLauncher
                 HybridMode = HybridScaleMode.Off,
                 Interpolation = InterpolationSettings.CubicSmoother
             };
+
             await Task.Run(() => MagicImageProcessor.ProcessImage(input, output, settings));
         }
 
@@ -245,7 +281,7 @@ namespace CollapseLauncher
 
             (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
 
-            ApplyAccentColor(this, PaletteBitmap);
+            ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 
             FadeOutFrontBg();
             FadeOutBackBg();

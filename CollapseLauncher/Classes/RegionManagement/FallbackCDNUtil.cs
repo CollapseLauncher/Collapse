@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -81,10 +82,16 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static HttpClient _client = new HttpClient()
+        private static readonly HttpClient _client = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = true,
+            MaxConnectionsPerServer = 16,
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
+        })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
-            DefaultRequestVersion = HttpVersion.Version20
+            DefaultRequestVersion = HttpVersion.Version20,
+            Timeout = TimeSpan.FromSeconds(5)
         };
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
@@ -261,13 +268,45 @@ namespace CollapseLauncher
             return CDNList[cdnIndex];
         }
 
-        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token) =>
-            await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
+        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
+#if NET7_0_OR_GREATER
+            => await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
             {
                 TypeInfoResolver = context
             }, token);
+#else
+        {
+            using (BridgedNetworkStream content = await GetHttpStreamFromResponse(URL, token))
+            {
+                return (T)await JsonSerializer.DeserializeAsync(content, typeof(T), context, token);
+            }
+        }
+#endif
 
-        public static async Task<Stream> DownloadAsStream(string URL, CancellationToken token) => await _client.GetStreamAsync(URL, token);
+        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token)
+        {
+            HttpRequestMessage requestMsg = new HttpRequestMessage()
+            {
+                RequestUri = new Uri(URL),
+                Method = HttpMethod.Get
+            };
+            requestMsg.Headers.Range = new RangeHeaderValue(0, null);
+
+            return await _client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
+        }
+
+        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
+        {
+            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
+            return await GetHttpStreamFromResponse(responseMsg, token);
+        }
+
+        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
+        {
+            long networkLength = responseMsg?.Content?.Headers?.ContentLength ?? 0;
+
+            return new BridgedNetworkStream(await responseMsg.Content.ReadAsStreamAsync(token), networkLength);
+        }
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);

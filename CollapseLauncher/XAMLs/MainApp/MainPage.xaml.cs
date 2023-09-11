@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -72,6 +73,7 @@ namespace CollapseLauncher
                 m_mainPage = this;
                 LoadingPopupPill.Translation += Shadow32;
                 LoadingCancelBtn.Translation += Shadow16;
+                ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
             }
@@ -154,12 +156,12 @@ namespace CollapseLauncher
 #endif
                 LoadGamePreset();
                 SetThemeParameters();
-                
+
                 VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
 #if DEBUG
                 VersionNumberIndicator.Text += "d";
 #endif
-                if (IsPreview)VersionNumberIndicator.Text +=  "-PRE";
+                if (IsPreview) VersionNumberIndicator.Text += "-PRE";
 
                 m_actualMainFrameSize = new Size((m_window as MainWindow).Bounds.Width, (m_window as MainWindow).Bounds.Height);
 
@@ -284,16 +286,6 @@ namespace CollapseLauncher
                 await ApplyBackground();
             else
                 ApplyBackgroundAsync();
-        }
-
-        private async void CheckRunningGameInstance()
-        {
-            while (true && !App.IsAppKilled)
-            {
-                string execName = Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
-                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(500);
-            }
         }
 
         private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
@@ -756,11 +748,10 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            if (await LoadRegionFromCurrentConfigV2(Preset))
+            if (await LoadRegionFromCurrentConfigV2(Preset, true))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-                CheckRunningGameInstance();
             }
 
             // Unlock ChangeBtn for first start
@@ -1146,11 +1137,15 @@ namespace CollapseLauncher
                 NotificationLostFocusBackground.Visibility = Visibility.Visible;
                 NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
+                ToggleNotificationPanelBtn.Translation -= Shadow16;
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"];
             }
             else
             {
                 NotificationLostFocusBackground.Opacity = 0;
                 NotificationPanel.Translation -= Shadow48;
+                ToggleNotificationPanelBtn.Translation += Shadow16;
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesome"];
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }

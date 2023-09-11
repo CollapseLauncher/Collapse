@@ -1,6 +1,3 @@
-using CollapseLauncher.GameSettings.Genshin.Context;
-using Hi3Helper;
-using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,6 +5,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Hi3Helper;
+using Hi3Helper.EncTool;
+using CollapseLauncher.GameSettings.Genshin.Context;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
@@ -307,7 +307,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug,true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #else
                     LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
@@ -328,7 +328,14 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while reading {_ValueName}" +
+                             $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
+                             $"\r\n  If the issue persist, please report it on GitHub" +
+                             $"\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception(
+                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"{ex}", ex));
             }
 
             return new GeneralData();
@@ -354,11 +361,11 @@ namespace CollapseLauncher.GameSettings.Genshin
 #if DUMPGIJSON
                 //Dump saved GeneralData JSON from Collapse as indented output
                 JsonSerializerOptions options_debug = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        WriteIndented = true
-                    };
+                {
+                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                };
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
 #endif
 #if DEBUG
@@ -384,6 +391,6 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
 #nullable disable
-#endregion
+        #endregion
     }
 }

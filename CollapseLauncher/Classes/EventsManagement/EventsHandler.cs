@@ -127,19 +127,19 @@ namespace CollapseLauncher
     internal static class ThemeChanger
     {
         static ThemeChangerInvoker invoker = new ThemeChangerInvoker();
-        public static void ChangeTheme(ApplicationTheme e) => invoker.ChangeTheme(e);
+        public static void ChangeTheme(ElementTheme e) => invoker.ChangeTheme(e);
     }
 
     internal class ThemeChangerInvoker
     {
         public static event EventHandler<ThemeProperty> ThemeEvent;
-        public void ChangeTheme(ApplicationTheme e) => ThemeEvent?.Invoke(this, new ThemeProperty(e));
+        public void ChangeTheme(ElementTheme e) => ThemeEvent?.Invoke(this, new ThemeProperty(e));
     }
 
     internal class ThemeProperty
     {
-        internal ThemeProperty(ApplicationTheme e) => Theme = e;
-        public ApplicationTheme Theme { get; private set; }
+        internal ThemeProperty(ElementTheme e) => Theme = e;
+        public ElementTheme Theme { get; private set; }
     }
     #endregion
     #region ErrorSenderRegion

@@ -5,7 +5,8 @@
     xmlns:local="using:CollapseLauncher"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" >
+    xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+    mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
@@ -25,6 +26,7 @@
                 </TransitionCollection>
             </Frame.ContentTransitions>
         </Frame>
+        <customcontrol:ContentDialogCollapse x:Name="ContentDialog" x:FieldModifier="internal"/>
         <Button x:Name="MinimizeButton" Width="48" Height="48"
                 Margin="0,0,48,0" HorizontalAlignment="Right"
                 Style="{StaticResource WindowCaptionButton}"
