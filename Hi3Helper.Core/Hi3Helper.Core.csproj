@@ -7,9 +7,6 @@
 		<WarningLevel>6</WarningLevel>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<IsTrimmable>false</IsTrimmable>
-		<PublishTrimmed>false</PublishTrimmed>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<DebugType>portable</DebugType>
 		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

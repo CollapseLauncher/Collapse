@@ -9,7 +9,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.9</Version>
+		<Version>1.72.0</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
@@ -76,9 +76,44 @@
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
-			<ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.WindowsAppSDK'">
-				<IsTrimmable>true</IsTrimmable>
-			</ManagedAssemblyToLink>
+			<TrimmableAssembly Include="Hi3Helper.Core" />
+			<TrimmableAssembly Include="Hi3Helper.EncTool" />
+			<TrimmableAssembly Include="Hi3Helper.Http" />
+			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
+			<TrimmableAssembly Include="Google.Protobuf" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
+			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
+			<TrimmableAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.System.Power.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.System.Projection" />
+			<TrimmableAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppSDK" />
+			<TrimmableAssembly Include="Microsoft.WinUI" />
+			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+			<TrimmableAssembly Include="SquirrelLib" />
+			<TrimmableAssembly Include="SharpCompress" />
+			<TrimmableAssembly Include="System.Drawing" />
+			<TrimmableAssembly Include="System.Drawing.Common" />
+			<TrimmableAssembly Include="System.Drawing.Primitives" />
+			<TrimmableAssembly Include="System.IO.Compression.Brotli" />
+			<TrimmableAssembly Include="System.IO.Compression" />
+			<TrimmableAssembly Include="WinRT.Runtime" />
 		</ItemGroup>
 	</Target>
 </Project>
