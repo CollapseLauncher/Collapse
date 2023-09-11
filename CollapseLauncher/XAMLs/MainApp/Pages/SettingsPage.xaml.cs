@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.FileDialogNative;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
