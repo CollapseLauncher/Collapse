@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;

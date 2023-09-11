@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
 using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Locale;
