@@ -25,48 +25,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
-		<Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
-		<Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
-		<Compile Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\test\**" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\benchmark\**" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\samples\**" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\**\AssemblyInfo.cs" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\GZip\*" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Lzw\*" />
-		<Compile Remove="Classes\Data\Tools\SharpZipLib\src\ICSharpCode.SharpZipLib\Tar\*" />
-		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Benchmarks\**" />
-		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Tests\**" />
-		<Compile Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET\Properties\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\test\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\tools\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\samples\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\docs\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\benchmark\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SharpZipLib\samples\**" />
-		<None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Benchmark\**" />
-		<None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\ExampleExtract\**" />
-		<None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\Example\**" />
-		<None Remove="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor.Tests\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\test\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\tools\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\samples\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\docs\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\benchmark\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\assets\**" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\*.y*ml*" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\*.md" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\*.xml" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\*.txt" />
-		<None Remove="Classes\Data\Tools\SharpZipLib\.*" />
-		<None Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Benchmarks\**" />
-		<None Remove="Classes\Data\Tools\Crc32.NET\Crc32.NET.Tests\**" />
-		<None Remove="Classes\Data\Tools\Crc32.NET\*.*" />
+		<Compile Remove="Classes\Data\Tools\SevenZipTool\**" />
+		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\**" />
+		<None Remove="Classes\Data\Tools\SevenZipTool\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -118,6 +79,7 @@
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
 		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
+		<ProjectReference Include="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
 	</ItemGroup>
   
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
