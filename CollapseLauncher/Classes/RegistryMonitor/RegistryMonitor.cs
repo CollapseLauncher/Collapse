@@ -152,6 +152,8 @@ namespace RegistryUtils
 #endif
         }
 
+        ~RegistryMonitor() => Dispose();
+
         /// <summary>
         /// Disposes this object.
         /// </summary>
@@ -159,7 +161,7 @@ namespace RegistryUtils
         {
             Stop();
             _disposed = true;
-            GC.SuppressFinalize(this);
+            // GC.SuppressFinalize(this);
 #if DEBUG
             LogWriteLine($"RegistryMonitor Disposed!", Hi3Helper.LogType.Debug, true);
 #endif
@@ -334,6 +336,7 @@ namespace RegistryUtils
                 waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
                 while (!_eventTerminate.WaitOne(0, true))
                 {
+                    if (_disposed) break;
 #pragma warning disable CS0618 // Type or member is obsolete
                     result = RegNotifyChangeKeyValue(registryKey, true, _regFilter, _eventNotify.Handle, true);
 #pragma warning restore CS0618 // Type or member is obsolete

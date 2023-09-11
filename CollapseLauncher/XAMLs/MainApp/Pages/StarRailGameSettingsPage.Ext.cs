@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class StarRailGameSettingsPage : Page
+    public partial class StarRailGameSettingsPage : Page
     {
         #region GameResolution
         public bool IsFullscreenEnabled

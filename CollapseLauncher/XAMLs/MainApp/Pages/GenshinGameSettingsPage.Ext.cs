@@ -1,12 +1,11 @@
 ﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Genshin.Enums;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Drawing;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class GenshinGameSettingsPage : Page
+    public partial class GenshinGameSettingsPage
     {
         #region GameResolution
         public bool IsFullscreenEnabled
@@ -30,7 +29,7 @@ namespace CollapseLauncher.Pages
         public bool IsBorderlessEnabled
         {
             get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
-            set 
+            set
             {
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)
@@ -138,8 +137,8 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings
         public double Gamma
         {
-            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue*-1+4.4, 5);
-            set => Settings.SettingsGeneralData.gammaValue = Math.Round(value*-1+4.4, 5);  
+            get => (double)Math.Round(Settings.SettingsGeneralData.gammaValue * -1 + 4.4, 5);
+            set => Settings.SettingsGeneralData.gammaValue = Math.Round(value * -1 + 4.4, 5);
             // This should belong in programmer horror stories, *DO NOT EVER DO THIS*
             // Basically, calculate the stepper function which amounts to y = -x + 4.4, so we inverse the value and add 4.4
             // DON'T ASK HOW WE DID THIS, IT'S a 4AM THING :)
@@ -222,9 +221,9 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsChecked = false;
                     VolumetricFogToggle.IsEnabled = false;
                 }
-                else 
+                else
                 {
-                    VolumetricFogToggle.IsEnabled = true; 
+                    VolumetricFogToggle.IsEnabled = true;
                 }
 
                 return curValue;
@@ -236,13 +235,13 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsChecked = false;
                     VolumetricFogToggle.IsEnabled = false;
                 }
-                else 
+                else
                 {
-                    VolumetricFogToggle.IsEnabled = true; 
+                    VolumetricFogToggle.IsEnabled = true;
                 }
 
                 Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
-            } 
+            }
         }
 
         public int VisualEffects

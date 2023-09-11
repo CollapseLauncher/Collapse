@@ -30,13 +30,12 @@ namespace CollapseLauncher.Pages
         private bool IsNoReload = false;
         public GameSettingsPage()
         {
-            CurrentGameProperty = GetCurrentGameProperty();
             try
             {
+                CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
-                    RegistryWatcher.Start();
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -94,7 +93,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Error has occured while exporting registry!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Error has occurred while exporting registry!\r\n{ex}", LogType.Error, true);
                 ApplyText.Foreground = new SolidColorBrush(new Windows.UI.Color { A = 255, R = 255, B = 0, G = 0 });
                 ApplyText.Text = ex.Message;
                 ApplyText.Visibility = Visibility.Visible;
@@ -206,7 +205,6 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 ToggleRegistrySubscribe(false);
-                RegistryWatcher?.Stop();
                 RegistryWatcher?.Dispose();
             });
         }
