@@ -27,7 +27,7 @@ namespace CollapseLauncher.Pages
         private HonkaiSettings Settings { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
-        private bool IsNoReload = false;
+        private bool IsNoReload { get; set; }
         public GameSettingsPage()
         {
             try
