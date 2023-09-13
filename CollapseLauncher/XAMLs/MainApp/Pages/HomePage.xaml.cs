@@ -796,43 +796,43 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.IsOpen = true;
                     return;
                 }
+
+                if (!await CurrentGameProperty._GameInstall.IsPreloadCompleted(PageToken.Token))
+                {
+                    PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifTitle, ver);
+                }
+                else
+                {
+                    PreloadDialogBox.Title = Lang._HomePage.PreloadNotifCompleteTitle;
+                    PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, ver);
+                    PreloadDialogBox.IsClosable = true;
+
+                    StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
+                    Text.Children.Add(
+                        new FontIcon
+                        {
+                            Glyph = "",
+                            FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
+                            FontSize = 16
+                        });
+
+                    Text.Children.Add(
+                        new TextBlock
+                        {
+                            Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
+                            FontWeight = FontWeights.Medium,
+                            Margin = new Thickness(8, 0, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
+                        });
+
+                    DownloadPreBtn.Content = Text;
+                }
+                PreloadDialogBox.IsOpen = true;
             }
             catch (Exception ex)
             {
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
-
-            if (!await CurrentGameProperty._GameInstall.IsPreloadCompleted())
-            {
-                PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifTitle, ver);
-            }
-            else
-            {
-                PreloadDialogBox.Title = Lang._HomePage.PreloadNotifCompleteTitle;
-                PreloadDialogBox.Message = string.Format(Lang._HomePage.PreloadNotifCompleteSubtitle, ver);
-                PreloadDialogBox.IsClosable = true;
-
-                StackPanel Text = new StackPanel { Orientation = Orientation.Horizontal };
-                Text.Children.Add(
-                    new FontIcon
-                    {
-                        Glyph = "",
-                        FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"],
-                        FontSize = 16
-                    });
-
-                Text.Children.Add(
-                    new TextBlock
-                    {
-                        Text = Lang._HomePage.PreloadNotifIntegrityCheckBtn,
-                        FontWeight = FontWeights.Medium,
-                        Margin = new Thickness(8, 0, 0, 0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-
-                DownloadPreBtn.Content = Text;
-            }
-            PreloadDialogBox.IsOpen = true;
         }
 
         private async void PredownloadDialog(object sender, RoutedEventArgs e)

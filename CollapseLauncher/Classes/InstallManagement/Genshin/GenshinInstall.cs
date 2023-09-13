@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
@@ -105,7 +106,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
         }
 
-        public override async ValueTask<bool> IsPreloadCompleted()
+        public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
             // Get the primary file first check
             List<RegionResourceVersion> resource = _gameVersionManager.GetGamePreloadZip();
@@ -130,7 +131,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             // Get the secondary file check
             bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
 
-            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted();
+            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
         }
 
         public override void ApplyGameConfig(bool forceUpdateToLatest = false)
