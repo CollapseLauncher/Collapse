@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -272,15 +273,19 @@ namespace CollapseLauncher.Pages
         #region SocMed Buttons
         private void FadeInSocMedButton(object sender, PointerRoutedEventArgs e)
         {
-            Storyboard sb = ((Button)sender).Resources["EnterStoryboard"] as Storyboard;
-            ((Button)sender).Translation += Shadow16;
+            Button btn = (Button)sender;
+            if (btn.Translation != Vector3.Zero || e.OriginalSource is Image) return;
+            Storyboard sb = btn.Resources["EnterStoryboard"] as Storyboard;
+            btn.Translation += Shadow16;
             sb.Begin();
         }
 
         private void FadeOutSocMedButton(object sender, PointerRoutedEventArgs e)
         {
-            Storyboard sb = ((Button)sender).Resources["ExitStoryboard"] as Storyboard;
-            ((Button)sender).Translation -= Shadow16;
+            Button btn = (Button)sender;
+            if (btn.Translation == Vector3.Zero || e.OriginalSource is Image) return;
+            Storyboard sb = btn.Resources["ExitStoryboard"] as Storyboard;
+            btn.Translation -= Shadow16;
             sb.Begin();
         }
 
