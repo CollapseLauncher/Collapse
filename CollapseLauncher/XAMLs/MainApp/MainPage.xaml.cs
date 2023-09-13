@@ -155,6 +155,8 @@ namespace CollapseLauncher
                 }
 #if !DEBUG
                 LauncherUpdateWatcher.StartCheckUpdate();
+#else
+                LogWriteLine("Cannot update debug build!", LogType.Error, true);
 #endif
                 LoadGamePreset();
                 SetThemeParameters();

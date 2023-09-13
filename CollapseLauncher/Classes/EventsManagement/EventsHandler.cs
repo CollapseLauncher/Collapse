@@ -11,10 +11,8 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
-#if !DEBUG
 using Squirrel;
 using static CollapseLauncher.InnerLauncherConfig;
-#endif
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -28,20 +26,10 @@ namespace CollapseLauncher
         public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
-#if DEBUG
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-#endif
+
         public static async void StartCheckUpdate()
-#if DEBUG
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-#endif
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
-
-#if DEBUG
-
-            LogWriteLine($"This is a DEBUG build, can't update.\r\n", LogType.Error, true);
-#else
             while (true)
             {
                 if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate) && !IsSkippingUpdateCheck)
@@ -72,7 +60,6 @@ namespace CollapseLauncher
                 // Delay for 15 minutes
                 await Task.Delay(900 * 1000);
             }
-#endif
         }
 
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
