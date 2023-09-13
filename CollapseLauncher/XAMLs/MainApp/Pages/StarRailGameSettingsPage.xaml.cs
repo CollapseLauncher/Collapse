@@ -27,7 +27,7 @@ namespace CollapseLauncher.Pages
         private StarRailSettings Settings { get; set; }
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
-        private bool IsNoReload = false;
+        private bool IsNoReload { get; set; }
         public StarRailGameSettingsPage()
         {
             try
@@ -38,7 +38,6 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
-                    RegistryWatcher.Start();
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -139,7 +138,7 @@ namespace CollapseLauncher.Pages
             {
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
-                if (App.IsGameRunning)
+                if (CurrentGameProperty.IsGameRunning)
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
@@ -208,7 +207,6 @@ namespace CollapseLauncher.Pages
             DispatcherQueue.TryEnqueue(() =>
             {
                 ToggleRegistrySubscribe(false);
-                RegistryWatcher?.Stop();
                 RegistryWatcher?.Dispose();
             });
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -163,6 +164,17 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
+
+        public struct WindowRect
+        {
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Right { get; set; }
+            public int Bottom { get; set; }
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref WindowRect rectangle);
 
         [DllImport("user32.dll")]
         public extern static uint GetWindowLong(IntPtr hwnd, int index);

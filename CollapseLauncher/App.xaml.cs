@@ -1,15 +1,10 @@
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Resources;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.Storage;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -18,7 +13,6 @@ namespace CollapseLauncher
     public partial class App : Application
     {
         public static bool IsAppKilled = false;
-        public static bool IsGameRunning = false;
 
         public App()
         {
@@ -26,9 +20,10 @@ namespace CollapseLauncher
             {
                 DebugSettings.XamlResourceReferenceFailed += (sender, args) => { LogWriteLine($"[XAML_RES_REFERENCE] {args.Message}", LogType.Error, true); };
                 DebugSettings.BindingFailed += (sender, args) => { LogWriteLine($"[XAML_BINDING] {args.Message}", LogType.Error, true); };
-                UnhandledException += (sender, e) => { if (Debugger.IsAttached) LogWriteLine($"[XAML_OTHER] {e.Exception}", LogType.Error, true); };
+                UnhandledException += (sender, e) => { LogWriteLine($"[XAML_OTHER] {e.Exception} {e.Exception.InnerException}", LogType.Error, true); };
+
                 this.InitializeComponent();
-                RequestedTheme = CurrentRequestedAppTheme = GetAppTheme();
+                RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
 
                 switch (m_appMode)
                 {

@@ -204,7 +204,13 @@ namespace CollapseLauncher
                 }
 
                 // Get the lucky number if it does so 👀
-                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
+                if (isNeedReadLuckyNumber &&
+#if NET7_0_OR_GREATER
+                    int.TryParse(line, null, out int luckyNumber)
+#else
+                    int.TryParse(line, out int luckyNumber)
+#endif
+                )
                 {
                     _luckyNumber = luckyNumber;
                     isNeedReadLuckyNumber = false;

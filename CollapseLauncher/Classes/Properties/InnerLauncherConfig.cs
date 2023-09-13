@@ -45,40 +45,30 @@ namespace CollapseLauncher
         public static Arguments m_arguments = new Arguments();
         public static ushort[] w_windowsVersionNumbers;
         public static Window m_window;
-        public static bool m_windowSupportCustomTitle = false;
-        public static IntPtr m_windowHandle;
-        public static Rect m_windowPosSize;
         public static Microsoft.UI.WindowId m_windowID;
+        public static Rect m_windowPosSize;
+        public static IntPtr m_windowHandle;
         public static AppWindow m_appWindow;
         public static OverlappedPresenter m_presenter;
+        public static MainPage m_mainPage;
+        public static bool m_windowSupportCustomTitle = false;
         public static Size m_actualMainFrameSize;
         public static double m_appDPIScale;
         public static string m_appCurrentFrameName;
-        public static ApplicationTheme CurrentRequestedAppTheme;
-        public static AppThemeMode CurrentAppTheme;
-        public static Color SystemAppTheme;
         public static NotificationPush NotificationData;
         public static bool IsCustomBG = false;
         public static bool IsSkippingUpdateCheck = false;
         public static GameVersion AppCurrentVersion;
-        public static MainPage m_mainPage;
-
-        public static ApplicationTheme GetAppTheme()
+        public static Color SystemAppTheme { get; set; }
+        public static AppThemeMode CurrentAppTheme;
+        public static bool IsAppThemeLight
         {
-            AppThemeMode AppTheme = CurrentAppTheme;
-
-            switch (AppTheme)
+            get => CurrentAppTheme switch
             {
-                case AppThemeMode.Light:
-                    return ApplicationTheme.Light;
-                case AppThemeMode.Dark:
-                    return ApplicationTheme.Dark;
-                default:
-                    if (SystemAppTheme.ToString() == "#FFFFFFFF")
-                        return ApplicationTheme.Light;
-                    else
-                        return ApplicationTheme.Dark;
-            }
+                AppThemeMode.Dark => false,
+                AppThemeMode.Light => true,
+                _ => SystemAppTheme.ToString() == "#FFFFFFFF"
+            };
         }
 
         public static string GetComboBoxGameRegionValue(object obj)
@@ -105,7 +95,7 @@ namespace CollapseLauncher
                         HorizontalAlignment = HorizontalAlignment.Left,
                         VerticalAlignment = VerticalAlignment.Stretch,
                         CornerRadius = new CornerRadius(4),
-                        Background = new SolidColorBrush(GetAppTheme() == ApplicationTheme.Dark ?
+                        Background = new SolidColorBrush(!IsAppThemeLight ?
                             Color.FromArgb(255, 255, 255, 255) :
                             Color.FromArgb(255, 40, 40, 40))
                     };
@@ -116,7 +106,7 @@ namespace CollapseLauncher
                         VerticalAlignment = VerticalAlignment.Center,
                         FontSize = 10,
                         Margin = new Thickness(0, -2, 0, 0),
-                        Foreground = new SolidColorBrush(GetAppTheme() == ApplicationTheme.Dark ?
+                        Foreground = new SolidColorBrush(!IsAppThemeLight ?
                             Color.FromArgb(255, 40, 40, 40) :
                             Color.FromArgb(255, 255, 255, 255)),
                         FontWeight = FontWeights.Bold
@@ -175,11 +165,6 @@ namespace CollapseLauncher
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
                     s.Position = 0;
                     ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), CoreLibraryJSONContext.Default);
-#if DEBUG
-                    LogWriteLine($"Checking for metadata update...\r\n" +
-                        $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
-                        $"  RemoteStamp : {ConfigStamp?.LastUpdated}", LogType.Warning, true);
-#endif
                 }
             }
             catch (Exception ex)
@@ -188,7 +173,12 @@ namespace CollapseLauncher
                 return false;
             }
 
-            return ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
+            bool isMetadataOutdated = ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
+            LogWriteLine($"Checking for metadata update...\r\n" +
+                         $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
+                         $"  RemoteStamp : {ConfigStamp?.LastUpdated}\r\n" +
+                         $"  Out of date?: {isMetadataOutdated}", LogType.Warning, true);
+            return isMetadataOutdated;
         }
 
         public static async Task DownloadConfigV2Files(bool Stamp, bool Content)

@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.WinUI.UI;
 using Hi3Helper;
-using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -10,13 +9,11 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.StartupPage_SelectGameBGProp;
 using static Hi3Helper.Logger;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -31,7 +28,7 @@ namespace CollapseLauncher.Pages
         {
             this.InitializeComponent();
 
-            if (!IsDarkTheme)
+            if (IsAppThemeLight)
             {
                 (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.25;
                 (this.Resources["DetailsTextShadowController"] as AttachedDropShadow).Opacity = 0.25;
@@ -56,13 +53,6 @@ namespace CollapseLauncher.Pages
             Process proc = new Process() { StartInfo = new ProcessStartInfo(link) { UseShellExecute = true } };
 
             proc.Start();
-        }
-
-        private bool IsDarkTheme
-        {
-            get => CurrentAppTheme == AppThemeMode.Light
-                ? false : CurrentAppTheme == AppThemeMode.Default && SystemAppTheme.ToString() == "#FFFFFFFF"
-                ? false : true;
         }
 
         private string GameDetailsHomepageLink { get => _gameHomepageLink; }

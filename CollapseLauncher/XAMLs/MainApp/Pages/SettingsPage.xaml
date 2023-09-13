@@ -319,6 +319,9 @@
                 <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearImgFolder">
                     <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearImgCachesBtn}" FontWeight="Medium"/>
                 </Button>
+                <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearMetadataFolder">
+                    <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearMetadataBtn}" FontWeight="Medium"/>
+                </Button>
                 <Button Margin="0,0,0,8" Width="292" CornerRadius="15" Style="{ThemeResource AccentButtonStyle}" Click="ClearLogsFolder">
                     <TextBlock Margin="8,0" Text="{x:Bind helper:Locale.Lang._SettingsPage.AppFiles_ClearLogBtn}" FontWeight="Medium"/>
                 </Button>

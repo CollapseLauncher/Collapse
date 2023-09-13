@@ -54,6 +54,9 @@
                 public string AppFiles_RelocateDataFolderBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_RelocateDataFolderBtn;
                 public string AppFiles_ClearLogBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearLogBtn;
                 public string AppFiles_ClearImgCachesBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearImgCachesBtn;
+                public string AppFiles_ClearMetadataBtn { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearMetadataBtn;
+                public string AppFiles_ClearMetadataDialog { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearMetadataDialog;
+                public string AppFiles_ClearMetadataDialogHelp { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearMetadataDialogHelp;
                 public string ReportIssueBtn { get; set; } = LangFallback?._SettingsPage.ReportIssueBtn;
                 public string ContributePRBtn { get; set; } = LangFallback?._SettingsPage.ContributePRBtn;
                 public string ContributorListBtn { get; set; } = LangFallback?._SettingsPage.ContributorListBtn;

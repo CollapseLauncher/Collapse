@@ -15,11 +15,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static Hi3Helper.FileDialogNative;
+using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 
 namespace CollapseLauncher.Pages
 {
@@ -58,7 +60,7 @@ namespace CollapseLauncher.Pages
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialogs.SimpleDialogs.Dialog_RelocateFolder(Content))
+            switch (await Dialog_RelocateFolder(Content))
             {
                 case ContentDialogResult.Primary:
                     IsFirstInstall = true;
@@ -70,6 +72,28 @@ namespace CollapseLauncher.Pages
                     }
                     catch { }
                     MainFrameChanger.ChangeWindowFrame(typeof(StartupPage));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async void ClearMetadataFolder(object sender, RoutedEventArgs e)
+        {
+            switch (await Dialog_ClearMetadata(Content))
+            {
+                case ContentDialogResult.Primary:
+                    try
+                    {
+                        Directory.Delete(AppGameConfigMetadataFolder, true);
+                        var collapsePath = Process.GetCurrentProcess().MainModule.FileName;
+                        Process.Start(collapsePath);
+                        App.Current.Exit();
+                    }
+                    catch (Exception ex) 
+                    {
+                        LogWriteLine($"An error occurred while attempting to clear metadata folder. Exception stacktrace below:\r\n{ex}", LogType.Error, true);
+                    }
                     break;
                 default:
                     break;
@@ -163,7 +187,7 @@ namespace CollapseLauncher.Pages
             ForceInvokeUpdate = true;
 
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-            LauncherUpdateWatcher.StartCheckUpdate();
+            LauncherUpdateWatcher.StartCheckUpdate(true);
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
@@ -264,7 +288,7 @@ namespace CollapseLauncher.Pages
                 {
                     BGPathDisplay.Text = Lang._Misc.NotSelected;
                     regionBackgroundProp.imgLocalPath = GetAppConfigValue("CurrentBackground").ToString();
-                    BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, false);
+                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
                     AppBGCustomizer.Visibility = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility = Visibility.Collapsed;
                 }

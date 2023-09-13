@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class StarRailGameSettingsPage : Page
+    public partial class StarRailGameSettingsPage : Page
     {
         #region GameResolution
         public bool IsFullscreenEnabled
@@ -29,7 +29,7 @@ namespace CollapseLauncher.Pages
         public bool IsBorderlessEnabled
         {
             get => Settings.SettingsCollapseScreen.UseBorderlessScreen;
-            set 
+            set
             {
                 Settings.SettingsCollapseScreen.UseBorderlessScreen = value;
                 if (value)

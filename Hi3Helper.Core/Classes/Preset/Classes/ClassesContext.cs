@@ -14,7 +14,6 @@ namespace Hi3Helper
     [JsonSerializable(typeof(DataProperties))]
     [JsonSerializable(typeof(YSDispatchInfo))]
     [JsonSerializable(typeof(GeneralDataProp))]
-    [JsonSerializable(typeof(RegionResourceProp))]
     [JsonSerializable(typeof(PkgVersionProperties))]
     [JsonSerializable(typeof(DataPropertiesContent))]
     [JsonSerializable(typeof(FilePropertiesRemote[]))]

@@ -444,12 +444,12 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
 
-        public virtual async ValueTask<bool> IsPreloadCompleted()
+        public virtual async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
             // Get the latest package list and await
             await GetLatestPackageList(_assetIndex, GameInstallStateEnum.InstalledHavePreload, true);
             // Get the total size of the packages
-            await GetPackagesRemoteSize(_assetIndex, _token.Token);
+            await GetPackagesRemoteSize(_assetIndex, token);
             long totalPackageSize = _assetIndex.Sum(x => x.Size);
 
             // Get the sum of the total size of the single or segmented packages
@@ -588,7 +588,13 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
                     if (UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Contains(Path.GetFileName(fileNames)) ||
-                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern, RegexOptions.Compiled | RegexOptions.NonBacktracking)))
+                        UninstallProperty.filesToDelete.Length != 0 && UninstallProperty.filesToDelete.Any(pattern => Regex.IsMatch(Path.GetFileName(fileNames), pattern,
+#if NET7_0_OR_GREATER
+                        RegexOptions.Compiled | RegexOptions.NonBacktracking
+#else
+                        RegexOptions.Compiled
+#endif
+                    )))
                     {
                         TryDeleteReadOnlyFile(fileNames);
                         LogWriteLine($"Deleted {fileNames}", LogType.Default, true);
@@ -836,7 +842,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-        #endregion
+#endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()
@@ -1390,7 +1396,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async Task TryGetPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
         {
-            asset.Size = await _httpClient.TryGetContentLengthAsync(asset.URL, token) ?? 0;
+            asset.Size = await _httpClient.TryGetContentLength(asset.URL, token) ?? 0;
 
             LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required", LogType.Default, true);
         }
@@ -1400,7 +1406,7 @@ namespace CollapseLauncher.InstallManager.Base
             long totalSize = 0;
             for (int i = 0; i < asset.Segments.Count; i++)
             {
-                long segmentSize = await _httpClient.TryGetContentLengthAsync(asset.Segments[i].URL, token) ?? 0;
+                long segmentSize = await _httpClient.TryGetContentLength(asset.Segments[i].URL, token) ?? 0;
                 totalSize += segmentSize;
                 asset.Segments[i].Size = segmentSize;
                 LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size", LogType.Default, true);

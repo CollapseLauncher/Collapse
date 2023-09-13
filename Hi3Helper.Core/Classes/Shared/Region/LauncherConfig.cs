@@ -60,8 +60,6 @@ namespace Hi3Helper.Shared.Region
 
         const string SectionName = "app";
         public static string startupBackgroundPath;
-        public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
-        public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
         public static List<string> ScreenResolutionsList = new List<string>();
 
         public static AppIniStruct appIni = new AppIniStruct();

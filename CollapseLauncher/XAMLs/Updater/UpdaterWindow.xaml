@@ -8,7 +8,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid x:Name="DragArea" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="320"/>
-        <Page Background="{ThemeResource PagesSolidAcrylicBrush}">
+        <Page Background="{ThemeResource PageBackgroundAcrylicBrush}">
             <Grid Margin="24">
                 <Grid.RowDefinitions>
                     <RowDefinition/>

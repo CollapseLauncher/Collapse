@@ -1,6 +1,35 @@
 {
   "version": 1,
   "dependencies": {
+    "net6.0": {
+      "Google.Protobuf": {
+        "type": "Transitive",
+        "resolved": "3.24.2",
+        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
+      },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "sDnWM0N3AMCa86LrKTWeF3BZLD2sgWyYUc7HL6z4+xyDZNQRwzmxbo4qP2rX2MqC+Sy1/gOSRDah5ltxY5jPxw=="
+      },
+      "hi3helper.enctool": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Protobuf": "[3.24.2, )",
+          "Hi3Helper.Http": "[1.0.0, )",
+          "System.IO.Hashing": "[7.0.0, )"
+        }
+      },
+      "hi3helper.http": {
+        "type": "Project"
+      },
+      "hi3helper.sharphdiffpatch": {
+        "type": "Project"
+      },
+      "sevenzipextractor": {
+        "type": "Project"
+      }
+    },
     "net7.0": {
       "Google.Protobuf": {
         "type": "Transitive",
@@ -24,6 +53,9 @@
         "type": "Project"
       },
       "hi3helper.sharphdiffpatch": {
+        "type": "Project"
+      },
+      "sevenzipextractor": {
         "type": "Project"
       }
     }

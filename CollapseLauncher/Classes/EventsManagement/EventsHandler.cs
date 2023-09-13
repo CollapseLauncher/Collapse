@@ -11,10 +11,8 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
-#if !DEBUG
 using Squirrel;
 using static CollapseLauncher.InnerLauncherConfig;
-#endif
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -28,41 +26,40 @@ namespace CollapseLauncher
         public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
-#if DEBUG
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-#endif
-        public static async void StartCheckUpdate()
-#if DEBUG
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-#endif
+        public static bool isUpdateCooldownActive;
+
+        public static async void StartCheckUpdate(bool forceUpdate)
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
-
-#if DEBUG
-
-            LogWriteLine($"This is a DEBUG build, can't update.\r\n", LogType.Error, true);
-#else
             while (true)
             {
                 if ((!(GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? true) || ForceInvokeUpdate) && !IsSkippingUpdateCheck)
                 {
                     try
                     {
-                        using (Updater updater = new Updater(UpdateChannelName))
+                        // Force disable cooldown when its being forcefully updated
+                        if (forceUpdate)
+                            isUpdateCooldownActive = false;
+                        // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
+                        if (!isUpdateCooldownActive)
                         {
-                            UpdateInfo info = await updater.StartCheck();
-                            GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
+                            isUpdateCooldownActive = true;
+                            using (Updater updater = new Updater(UpdateChannelName))
+                            {
+                                UpdateInfo info = await updater.StartCheck();
+                                GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
-                            AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                            UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
+                                AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
+                                UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
 
-                            if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                            else
-                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                if (CompareVersion(AppCurrentVersion, RemoteVersion))
+                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
+                                else
+                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                            }
+                            ForceInvokeUpdate = false;
                         }
-
-                        ForceInvokeUpdate = false;
+                        else LogWriteLine("Update was recently invoked! Stopping auto update until it resets in 15 minutes", LogType.Error, true);
                     }
                     catch (Exception ex)
                     {
@@ -71,8 +68,9 @@ namespace CollapseLauncher
                 }
                 // Delay for 15 minutes
                 await Task.Delay(900 * 1000);
+                // Reset isUpdateRecentlyInvoked to release the lock
+                isUpdateCooldownActive = false;
             }
-#endif
         }
 
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
@@ -127,19 +125,19 @@ namespace CollapseLauncher
     internal static class ThemeChanger
     {
         static ThemeChangerInvoker invoker = new ThemeChangerInvoker();
-        public static void ChangeTheme(ApplicationTheme e) => invoker.ChangeTheme(e);
+        public static void ChangeTheme(ElementTheme e) => invoker.ChangeTheme(e);
     }
 
     internal class ThemeChangerInvoker
     {
         public static event EventHandler<ThemeProperty> ThemeEvent;
-        public void ChangeTheme(ApplicationTheme e) => ThemeEvent?.Invoke(this, new ThemeProperty(e));
+        public void ChangeTheme(ElementTheme e) => ThemeEvent?.Invoke(this, new ThemeProperty(e));
     }
 
     internal class ThemeProperty
     {
-        internal ThemeProperty(ApplicationTheme e) => Theme = e;
-        public ApplicationTheme Theme { get; private set; }
+        internal ThemeProperty(ElementTheme e) => Theme = e;
+        public ElementTheme Theme { get; private set; }
     }
     #endregion
     #region ErrorSenderRegion

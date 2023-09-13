@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.Statics.GamePropertyVault;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static Hi3Helper.Locale;
@@ -38,6 +39,8 @@ namespace CollapseLauncher
     {
         private bool LockRegionChangeBtn;
         private bool IsLoadFrameCompleted = true;
+        private int CurrentGameCategory = -1;
+        private int CurrentGameRegion = -1;
         public static bool IsChangeDragArea = true;
         public static List<string> PreviousTagString = new List<string>();
 
@@ -77,6 +80,7 @@ namespace CollapseLauncher
                 m_mainPage = this;
                 LoadingPopupPill.Translation += Shadow32;
                 LoadingCancelBtn.Translation += Shadow16;
+                ToggleNotificationPanelBtn.Translation += Shadow16;
                 WebView2Frame.Navigate(typeof(BlankPage));
                 Loaded += StartRoutine;
             }
@@ -155,11 +159,14 @@ namespace CollapseLauncher
                     return;
                 }
 #if !DEBUG
-                LauncherUpdateWatcher.StartCheckUpdate();
+                LauncherUpdateWatcher.StartCheckUpdate(false);
+#else 
+                LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
 #endif
+
                 LoadGamePreset();
                 SetThemeParameters();
-                
+
                 VersionNumberIndicator.Text = AppCurrentVersion.VersionString;
 #if DEBUG
                 VersionNumberIndicator.Text += "d";
@@ -293,16 +300,6 @@ namespace CollapseLauncher
                 await ApplyBackground();
             else
                 ApplyBackgroundAsync();
-        }
-
-        private async void CheckRunningGameInstance()
-        {
-            while (true && !App.IsAppKilled)
-            {
-                string execName = Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
-                App.IsGameRunning = Process.GetProcessesByName(execName).Length != 0 && !App.IsAppKilled;
-                await Task.Delay(500);
-            }
         }
 
         private void NotificationInvoker_EventInvoker(object sender, NotificationInvokerProp e)
@@ -766,11 +763,10 @@ namespace CollapseLauncher
 
             InitKeyboardShortcuts();
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            if (await LoadRegionFromCurrentConfigV2(Preset))
+            if (await LoadRegionFromCurrentConfigV2(Preset, true))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-                CheckRunningGameInstance();
             }
 
             // Unlock ChangeBtn for first start
@@ -795,7 +791,8 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
-
+            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -870,8 +867,8 @@ namespace CollapseLauncher
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
 
-                    // Put 5 seconds delay before updating
-                    int i = 5;
+                    // Put 2 seconds delay before updating
+                    int i = 2;
                     while (i != 0)
                     {
                         Text.Text = string.Format(Lang._AppNotification.NotifMetadataUpdateBtnCountdown, i);
@@ -1064,6 +1061,13 @@ namespace CollapseLauncher
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
+            if (ComboBoxGameCategory.SelectedIndex == CurrentGameCategory && ComboBoxGameRegion.SelectedIndex == CurrentGameRegion)
+            {
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                return;
+            }
+
             object selValue = ((ComboBox)sender).SelectedValue;
             if (selValue != null)
             {
@@ -1157,11 +1161,15 @@ namespace CollapseLauncher
                 NotificationLostFocusBackground.Visibility = Visibility.Visible;
                 NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
+                ToggleNotificationPanelBtn.Translation -= Shadow16;
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"];
             }
             else
             {
                 NotificationLostFocusBackground.Opacity = 0;
                 NotificationPanel.Translation -= Shadow48;
+                ToggleNotificationPanelBtn.Translation += Shadow16;
+                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesome"];
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }
