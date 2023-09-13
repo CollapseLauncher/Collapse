@@ -178,8 +178,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.24.2",
-        "contentHash": "rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g=="
+        "resolved": "3.24.3",
+        "contentHash": "HX8KHRTJPUcC4KOvEobKBNlMpHGYmK+3X73xPq+OUE2M5dLYvpGhp9qQQWt2jASgTUbxI1yHaGeBqFYiECBupw=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Transitive",
@@ -1122,7 +1122,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.24.2, )",
+          "Google.Protobuf": "[3.24.3, )",
           "Hi3Helper.Http": "[1.0.0, )",
           "System.IO.Hashing": "[7.0.0, )"
         }

@@ -26,8 +26,9 @@ namespace CollapseLauncher
         public static AppUpdateVersionProp UpdateProperty;
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
+        public static bool isUpdateCooldownActive;
 
-        public static async void StartCheckUpdate()
+        public static async void StartCheckUpdate(bool forceUpdate)
         {
             UpdateChannelName = IsPreview ? "preview" : "stable";
             while (true)
@@ -36,21 +37,29 @@ namespace CollapseLauncher
                 {
                     try
                     {
-                        using (Updater updater = new Updater(UpdateChannelName))
+                        // Force disable cooldown when its being forcefully updated
+                        if (forceUpdate)
+                            isUpdateCooldownActive = false;
+                        // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
+                        if (!isUpdateCooldownActive)
                         {
-                            UpdateInfo info = await updater.StartCheck();
-                            GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
+                            isUpdateCooldownActive = true;
+                            using (Updater updater = new Updater(UpdateChannelName))
+                            {
+                                UpdateInfo info = await updater.StartCheck();
+                                GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
-                            AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                            UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
+                                AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
+                                UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
 
-                            if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                            else
-                                GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                if (CompareVersion(AppCurrentVersion, RemoteVersion))
+                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
+                                else
+                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                            }
+                            ForceInvokeUpdate = false;
                         }
-
-                        ForceInvokeUpdate = false;
+                        else LogWriteLine("Update was recently invoked! Stopping auto update until it resets in 15 minutes", LogType.Error, true);
                     }
                     catch (Exception ex)
                     {
@@ -59,6 +68,8 @@ namespace CollapseLauncher
                 }
                 // Delay for 15 minutes
                 await Task.Delay(900 * 1000);
+                // Reset isUpdateRecentlyInvoked to release the lock
+                isUpdateCooldownActive = false;
             }
         }
 

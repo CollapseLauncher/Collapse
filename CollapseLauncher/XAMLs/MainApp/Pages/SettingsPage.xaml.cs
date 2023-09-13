@@ -187,7 +187,7 @@ namespace CollapseLauncher.Pages
             ForceInvokeUpdate = true;
 
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-            LauncherUpdateWatcher.StartCheckUpdate();
+            LauncherUpdateWatcher.StartCheckUpdate(true);
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)

@@ -154,10 +154,11 @@ namespace CollapseLauncher
                     return;
                 }
 #if !DEBUG
-                LauncherUpdateWatcher.StartCheckUpdate();
-#else
-                LogWriteLine("Cannot update debug build!", LogType.Error, true);
+                LauncherUpdateWatcher.StartCheckUpdate(false);
+#else 
+                LogWriteLine("Running debug build, stopping update checks!", LogType.Error, false);
 #endif
+
                 LoadGamePreset();
                 SetThemeParameters();
 
