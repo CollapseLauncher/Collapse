@@ -499,7 +499,9 @@ namespace CollapseLauncher.Dialogs
                 Content,
                 Lang._Misc.NoCancel,
                 Lang._Misc.Yes,
-                null
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
                 );
         }
 

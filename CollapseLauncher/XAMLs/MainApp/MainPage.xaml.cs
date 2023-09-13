@@ -1546,7 +1546,7 @@ namespace CollapseLauncher
 
         private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!App.IsGameRunning) return;
+            if (!CurrentGameProperty.IsGameRunning) return;
 
             PresetConfigV2 gamePreset = CurrentGameProperty._GameVersion.GamePreset;
             try

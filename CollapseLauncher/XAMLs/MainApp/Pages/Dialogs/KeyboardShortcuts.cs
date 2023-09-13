@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using CommunityToolkit.WinUI.UI;
+using CollapseLauncher.CustomControls;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -19,14 +20,13 @@ namespace CollapseLauncher.Dialogs
     public static class KeyboardShortcuts
     {
         public static event EventHandler<int> KeyboardShortcutsEvent;
-        private static string colorSchm = Application.Current.RequestedTheme == ApplicationTheme.Dark ? "SystemAccentColorLight2" : "SystemAccentColorDark1";
         private static int pageNum = 0;
         private static int oldSender = 0;
 
         #region UI Methods
         public static async Task<ContentDialogResult> Dialog_ShowKbShortcuts(UIElement Content, int page = 0)
         {
-            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, -7) };
+            StackPanel mainStack = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(0, 0, 0, 0) };
 
             StackPanel mainStackContent = new StackPanel() { Orientation = Orientation.Horizontal };
 
@@ -35,7 +35,7 @@ namespace CollapseLauncher.Dialogs
 
             // General shortcuts
             StackPanel genStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            genStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.General_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            genStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.General_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             genStack.Children.Add(GenerateShortcutBlock(keys[2], Lang._KbShortcuts.General_OpenMenu, Lang._KbShortcuts.General_OpenMenu_Desc));
             genStack.Children.Add(GenerateShortcutBlock(keys[3], Lang._KbShortcuts.General_GoHome));
@@ -46,7 +46,7 @@ namespace CollapseLauncher.Dialogs
 
             // Region/Game Shortcuts
             StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 16, 0, 2) });
+            changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5 });
 
             string gameMod = keys[0][0];
@@ -81,7 +81,7 @@ namespace CollapseLauncher.Dialogs
 
             // Game folder
             StackPanel gameFolderStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameFolderStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameFolderStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameFolder_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             gameFolderStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[6], Lang._KbShortcuts.GameFolder_ScreenshotFolder));
             gameFolderStack.Children.Add(GenerateShortcutBlock(keys[7], Lang._KbShortcuts.GameFolder_MainFolder));
@@ -91,7 +91,7 @@ namespace CollapseLauncher.Dialogs
 
             // Game management
             StackPanel gameManageStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
-            gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 8, 0, 2) });
+            gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             gameManageStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.GameManagement_Subtitle, FontSize = 11.5 });
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             gameManageStack.Children.Add(GenerateShortcutBlock(keys[9], Lang._KbShortcuts.GameManagement_ForceCloseGame, Lang._KbShortcuts.GameManagement_ForceCloseGame_Desc));
@@ -101,12 +101,12 @@ namespace CollapseLauncher.Dialogs
             gameManageStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum = 0;
 
-            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 7, 0, 0) };
+            StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab }, Margin = new Thickness(5, 0, 5, 0) };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab }, Margin = new Thickness(5, 0, 5, 0) };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab }, Margin = new Thickness(5, 0, 5, 0) };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
 
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
@@ -221,7 +221,7 @@ namespace CollapseLauncher.Dialogs
                 Width = 42,
                 Margin = new Thickness(5, 0, 5, 0),
                 CornerRadius = new CornerRadius(5),
-                Background = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources[colorSchm])
+                Background = Application.Current.Resources["SystemFillColorAttentionBrush"] as SolidColorBrush
             };
 
             ThemeShadow ts = new ThemeShadow();
@@ -243,15 +243,13 @@ namespace CollapseLauncher.Dialogs
             return keyboxBorder;
         }
 
-        private static readonly Style DefaultStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        private static readonly Style AccentStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
         private static async void ChangeMenuVisibility(int sender, List<object> stacks, List<object> buttons)
         {
             try
             {
-                (buttons[oldSender] as Button).Style = DefaultStyle;
+                (buttons[oldSender] as Button).Style = Application.Current.Resources["DefaultButtonStyle"] as Style; ;
                 StackPanel oldStack = stacks[oldSender] as StackPanel;
-                (buttons[sender] as Button).Style = AccentStyle;
+                (buttons[sender] as Button).Style = Application.Current.Resources["AccentButtonStyle"] as Style;
                 StackPanel newStack = stacks[sender] as StackPanel;
 
                 if (sender == oldSender)
@@ -333,7 +331,7 @@ namespace CollapseLauncher.Dialogs
                 TextWrapping = TextWrapping.Wrap
             });
 
-            StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
+            StackPanel introPanel = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, -7, 0, 0) };
             introPanel.Children.Add(new TextBlock()
             {
                 Text = Lang._KbShortcuts.ChangeShortcut_Text,
@@ -382,7 +380,7 @@ namespace CollapseLauncher.Dialogs
             keysPanel.Children.Add(newKey2);
             mainSwitchKeyContent.Children.Add(keysPanel);
 
-            ContentDialog result = new ContentDialog
+            ContentDialogCollapse result = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
                 Title = Lang._KbShortcuts.ChangeShortcut_Title,
                 Content = mainSwitchKeyContent,
@@ -460,7 +458,7 @@ namespace CollapseLauncher.Dialogs
             if (keys[1].StartsWith("1 - "))
             {
                 SwapKeybind();
-                (sender as Button).FindParent<ContentDialog>().Hide();
+                (sender as Button).FindParent<ContentDialogCollapse>().Hide();
                 await Task.Delay(200);
                 await Dialog_ShowKbShortcuts(sender as UIElement, 1);
             }
@@ -468,7 +466,7 @@ namespace CollapseLauncher.Dialogs
             {
                 try
                 {
-                    (sender as Button).FindParent<ContentDialog>().Hide();
+                    (sender as Button).FindParent<ContentDialogCollapse>().Hide();
                     await Task.Delay(200);
                     await Dialog_SwitchKey(sender as UIElement, keys.SkipLast(1).ToList());
                     await Dialog_ShowKbShortcuts(sender as UIElement, int.Parse(keys.Last()));
