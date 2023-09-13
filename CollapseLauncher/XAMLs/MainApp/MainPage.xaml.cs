@@ -854,8 +854,8 @@ namespace CollapseLauncher
                     (a as Button).Content = StackPane;
                     (a as Button).IsEnabled = false;
 
-                    // Put 5 seconds delay before updating
-                    int i = 5;
+                    // Put 2 seconds delay before updating
+                    int i = 2;
                     while (i != 0)
                     {
                         Text.Text = string.Format(Lang._AppNotification.NotifMetadataUpdateBtnCountdown, i);
