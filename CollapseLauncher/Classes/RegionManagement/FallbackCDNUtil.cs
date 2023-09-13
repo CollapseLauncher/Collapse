@@ -91,7 +91,7 @@ namespace CollapseLauncher
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
             DefaultRequestVersion = HttpVersion.Version20,
-            Timeout = TimeSpan.FromSeconds(5)
+            Timeout = TimeSpan.FromMinutes(1)
         };
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
