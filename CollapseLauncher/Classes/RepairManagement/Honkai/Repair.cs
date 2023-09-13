@@ -79,7 +79,7 @@ namespace CollapseLauncher
             }
             else
             {
-                string audioURL = ConverterTool.CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), asset.RN);
+                string audioURL = ConverterTool.CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.RN);
                 await RepairAssetTypeGeneric(asset, _httpClient, token, audioURL);
             }
         }
@@ -90,7 +90,7 @@ namespace CollapseLauncher
             _progressTotalCountCurrent++;
 
             // Declare variables for patch file and URL and new file path
-            string patchURL = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), asset.AudioPatchInfo.Value.PatchFilename);
+            string patchURL = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AudioPatchInfo.Value.PatchFilename);
             string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_audioPatchBaseLocalPath), asset.AudioPatchInfo.Value.PatchFilename);
             string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
             string outputFilePath = inputFilePath + "_tmp";

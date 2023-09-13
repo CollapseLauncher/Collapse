@@ -49,6 +49,7 @@ namespace CollapseLauncher
                 (string, string) gatewayURL;
                 gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
                 _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
+                _gameServer = _cacheUtil?.GetCurrentGateway();
 
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
@@ -159,9 +160,16 @@ namespace CollapseLauncher
         #region AudioIndex
         private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
+            // If the gameServer is null, then just leave
+            if (_gameServer == null)
+            {
+                LogWriteLine("We found that the Dispatch/GameServer has return a null. Please report this issue to Collapse's Contributor or submit an issue!", LogType.Warning, true);
+                return;
+            }
+
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
-            string manifestRemotePath = string.Format(CombineURLFromString(_audioBaseRemotePath, "manifest.m"), $"{_gameVersion.Major}_{_gameVersion.Minor}");
+            string manifestRemotePath = string.Format(CombineURLFromString(_audioBaseRemotePath, _gameServer.Manifest.ManifestAudio.ManifestAudioPlatform.ManifestWindows), $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision);
             KianaAudioManifest manifest;
 
             try
@@ -233,7 +241,7 @@ namespace CollapseLauncher
             UpdateStatus();
 
             // Set the URL and try get the status
-            string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}"), audioInfo.Path);
+            string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), audioInfo.Path);
             (int, bool) urlStatus = await _httpClient.GetURLStatus(audioURL, token);
 
             LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);

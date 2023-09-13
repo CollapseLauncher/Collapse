@@ -6,7 +6,7 @@ using System.IO;
 
 namespace CollapseLauncher
 {
-    internal struct TotalPerfileProgress
+    internal class TotalPerfileProgress
     {
         public double ProgressPerFilePercentage;
         public double ProgressTotalPercentage;
@@ -22,7 +22,7 @@ namespace CollapseLauncher
         public DownloadEvent DownloadEvent;
     }
 
-    internal struct TotalPerfileStatus
+    internal class TotalPerfileStatus
     {
         public string ActivityStatus;
 

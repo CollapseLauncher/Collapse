@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
@@ -15,7 +16,7 @@ namespace CollapseLauncher.Interfaces
         Task MoveGameLocation();
         ValueTask<bool> UninstallGame();
         void Flush();
-        ValueTask<bool> IsPreloadCompleted();
+        ValueTask<bool> IsPreloadCompleted(CancellationToken token = default);
 
         ValueTask<bool> TryShowFailedDeltaPatchState();
         ValueTask<bool> TryShowFailedGameConversionState();

@@ -4,6 +4,7 @@ using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -29,12 +30,13 @@ namespace CollapseLauncher
         private string _blockPatchDiffPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/Patch"); }
         private string _blockBasePath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/"); }
         private bool _isOnlyRecoverMain { get; set; }
+        private KianaDispatch _gameServer { get; set; }
         #endregion
 
         #region ExtensionProperties
         private protected AudioLanguageType _audioLanguage { get; set; }
         private protected string _audioBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Audio/GeneratedSoundBanks/Windows/"); }
-        private protected string _audioBaseRemotePath { get => ConverterTool.CombineURLFromString(_assetBaseURL, "Audio/{0}/Windows/"); }
+        private protected string _audioBaseRemotePath { get => ConverterTool.CombineURLFromString(_assetBaseURL, "Audio/Windows/{0}/{1}/"); }
         private protected string _audioPatchBaseLocalPath { get => ConverterTool.CombineURLFromString(_audioBaseLocalPath, "Patch/"); }
         private protected string _audioPatchBaseRemotePath { get => ConverterTool.CombineURLFromString(_audioBaseRemotePath, "Patch/"); }
         private protected string _videoBaseLocalPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Video/"); }

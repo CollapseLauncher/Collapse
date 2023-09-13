@@ -9,12 +9,12 @@
  * https://www.codeproject.com/info/cpol10.aspx
  */
 
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Threading;
 using static Hi3Helper.Logger;
 
 namespace RegistryUtils
@@ -152,6 +152,8 @@ namespace RegistryUtils
 #endif
         }
 
+        ~RegistryMonitor() => Dispose();
+
         /// <summary>
         /// Disposes this object.
         /// </summary>
@@ -159,7 +161,6 @@ namespace RegistryUtils
         {
             Stop();
             _disposed = true;
-            GC.SuppressFinalize(this);
 #if DEBUG
             LogWriteLine($"RegistryMonitor Disposed!", Hi3Helper.LogType.Debug, true);
 #endif
@@ -168,7 +169,7 @@ namespace RegistryUtils
         /// <summary>
         /// Gets or sets the <see cref="RegChangeNotifyFilter">RegChangeNotifyFilter</see>.
         /// </summary>
-        public RegChangeNotifyFilter RegChangeNotifyFilter
+        public RegChangeNotifyFilter RegChangeNotifyType
         {
             get { return _regFilter; }
             set
@@ -292,8 +293,7 @@ namespace RegistryUtils
         /// </summary>
         public void Stop()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(null, "This instance is already disposed");
+            if (_disposed) return;
 
             lock (_threadLock)
             {
@@ -334,13 +334,15 @@ namespace RegistryUtils
                 waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
                 while (!_eventTerminate.WaitOne(0, true))
                 {
+                    if (_disposed) break;
 #pragma warning disable CS0618 // Type or member is obsolete
                     result = RegNotifyChangeKeyValue(registryKey, true, _regFilter, _eventNotify.Handle, true);
 #pragma warning restore CS0618 // Type or member is obsolete
                     if (result != 0)
                         throw new Win32Exception(result);
 
-                    if (WaitHandle.WaitAny(waitHandles) == 0)
+                    if (WaitHandle.WaitAny(waitHandles) == 0
+                     && _regFilter == RegChangeNotifyFilter.Value)
                     {
 #if DEBUG
                         LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +

@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -64,6 +63,7 @@ namespace CollapseLauncher
         }
 
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(List<PkgVersionProperties> assetIndex)
+        private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
         {
             // Section: Eliminate unused audio files
             List<string> audioLangList = (_gameVersionManager as GameTypeGenshinVersion)._audioVoiceLanguageList;
@@ -89,23 +89,23 @@ namespace CollapseLauncher
             string ManifestPath = Path.Combine(_gamePath, "pkg_version");
 
             // Download basic package version list
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), ManifestPath, true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), EnsureCreationOfDirectory(ManifestPath), true, null, null, token);
             // Download additional package lists
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming")), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming")), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming")), true, null, null, token);
+            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming")), true, null, null, token);
 
             // Parse basic package version.
             ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
 
             // Build additional blks entry.
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL);
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL);
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "res_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", _gameRepoURL);
+            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
+            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
+            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "res_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", _gameRepoURL, true);
 
             // Build cutscenes entry.
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL);
+            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL, true);
         }
 
         private void TryDeleteDownloadPref()
@@ -267,6 +267,9 @@ namespace CollapseLauncher
                         // Otherwise, continue overriding its value
                         if (indexID == -1) continue;
 
+                        // If it has isForceStoreStreamingAssets flag, then continue.
+                        if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming) continue;
+
                         // Start overriding the value
                         hashtable[assetStreamingAssetPath] = manifestEntry;
                         assetIndex[indexID] = manifestEntry;
@@ -376,18 +379,27 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
+        private string EnsureCreationOfDirectory(string str)
+        {
+            string dir = Path.GetDirectoryName(str);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            return str;
+        }
+
         private void CountAssetIndex(List<PkgVersionProperties> assetIndex)
         {
             _progressTotalSize = assetIndex.Sum(x => x.fileSize);
             _progressTotalCount = assetIndex.Count;
         }
 
-        private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "")
+        private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "", bool forceStoreInStreaming = false)
         {
             // Iterate files inside the desired path based on filter.
             foreach (string entry in Directory.EnumerateFiles(Path.Combine(_gamePath, path), filter))
             {
-                ParseManifestToAssetIndex(entry, assetIndex, hashtable, parentPath, acceptedExtension, parentURL);
+                ParseManifestToAssetIndex(entry, assetIndex, hashtable, parentPath, acceptedExtension, parentURL, forceStoreInStreaming);
             }
         }
 
