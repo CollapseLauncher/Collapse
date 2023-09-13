@@ -165,11 +165,6 @@ namespace CollapseLauncher
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
                     s.Position = 0;
                     ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), CoreLibraryJSONContext.Default);
-#if DEBUG
-                    LogWriteLine($"Checking for metadata update...\r\n" +
-                        $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
-                        $"  RemoteStamp : {ConfigStamp?.LastUpdated}", LogType.Warning, true);
-#endif
                 }
             }
             catch (Exception ex)
@@ -178,7 +173,12 @@ namespace CollapseLauncher
                 return false;
             }
 
-            return ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
+            bool isMetadataOutdated = ConfigV2LastUpdate < ConfigStamp?.LastUpdated;
+            LogWriteLine($"Checking for metadata update...\r\n" +
+                         $"  LocalStamp  : {ConfigV2LastUpdate}\r\n" +
+                         $"  RemoteStamp : {ConfigStamp?.LastUpdated}\r\n" +
+                         $"  Out of date?: {isMetadataOutdated}", LogType.Warning, true);
+            return isMetadataOutdated;
         }
 
         public static async Task DownloadConfigV2Files(bool Stamp, bool Content)
