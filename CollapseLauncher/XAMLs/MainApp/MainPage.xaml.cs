@@ -34,6 +34,8 @@ namespace CollapseLauncher
     {
         private bool LockRegionChangeBtn;
         private bool IsLoadFrameCompleted = true;
+        private int CurrentGameCategory = -1;
+        private int CurrentGameRegion = -1;
         public static bool IsChangeDragArea = true;
         public static List<string> PreviousTagString = new List<string>();
 
@@ -776,6 +778,8 @@ namespace CollapseLauncher
 
             ComboBoxGameCategory.SelectedIndex = IndexCategory;
             ComboBoxGameRegion.SelectedIndex = IndexRegion;
+            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
             return LoadCurrentConfigV2((string)ComboBoxGameCategory.SelectedValue, GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue));
         }
 
@@ -1044,6 +1048,13 @@ namespace CollapseLauncher
 
         private void EnableRegionChangeButton(object sender, SelectionChangedEventArgs e)
         {
+            if (ComboBoxGameCategory.SelectedIndex == CurrentGameCategory && ComboBoxGameRegion.SelectedIndex == CurrentGameRegion)
+            {
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                return;
+            }
+
             object selValue = ((ComboBox)sender).SelectedValue;
             if (selValue != null)
             {

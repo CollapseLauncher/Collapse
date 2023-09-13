@@ -574,6 +574,8 @@ namespace CollapseLauncher
         private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
         {
             (sender as Button).IsEnabled = false;
+            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
             await LoadRegionRootButton();
             HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
             MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
@@ -588,6 +590,8 @@ namespace CollapseLauncher
             {
                 // Finalize loading
                 ToggleChangeRegionBtn(sender, false);
+                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
             }
         }
 
