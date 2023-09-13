@@ -103,10 +103,10 @@ namespace CollapseLauncher.Dialogs
 
             StackPanel buttonStack = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center, Orientation = Orientation.Horizontal, Margin = new Thickness(0, 10, 0, 0) };
 
-            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
-            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
-            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
-            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab }, Margin = new Thickness(5, 0, 5, 0), CornerRadius = new CornerRadius(20) };
+            Button genButton = new Button() { DataContext = 0, Content = new TextBlock() { Text = Lang._KbShortcuts.GeneralTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button changeButton = new Button() { DataContext = 1, Content = new TextBlock() { Text = Lang._KbShortcuts.SwitchTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button gameFolderButton = new Button() { DataContext = 2, Content = new TextBlock() { Text = Lang._KbShortcuts.GameFolderTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
+            Button gameManagerButton = new Button() { DataContext = 3, Content = new TextBlock() { Text = Lang._KbShortcuts.GameManagementTab, Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold } };
 
             List<object> stacks = new List<object>() { genStack, changeStack, gameFolderStack, gameManageStack };
             List<object> buttons = new List<object>() { genButton, changeButton, gameFolderButton, gameManagerButton };
@@ -114,6 +114,8 @@ namespace CollapseLauncher.Dialogs
             foreach (Button button in buttons)
             {
                 button.Click += (o, e) => { ChangeMenuVisibility((int)((Button)o).DataContext, stacks, buttons); };
+                button.Margin = new Thickness(3, 0, 3, 0);
+                button.CornerRadius = new CornerRadius(15);
                 buttonStack.Children.Add(button);
             }
 
