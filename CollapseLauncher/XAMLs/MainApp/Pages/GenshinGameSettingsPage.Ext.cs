@@ -314,8 +314,23 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings - HDR
         public bool IsHDR
         {
-            get => (bool)Settings.SettingsWindowsHDR.isHDR;
-            set => Settings.SettingsWindowsHDR.isHDR = value;
+            get
+            {
+                var HDR = (bool)Settings.SettingsWindowsHDR.isHDR;
+                if (HDR)
+                    HDRExpander.IsExpanded = true;
+                else
+                    HDRExpander.IsExpanded = false;
+                return HDR;
+            }
+            set
+            {
+                if (value)
+                    HDRExpander.IsExpanded = true;
+                else
+                    HDRExpander.IsExpanded = false;
+                Settings.SettingsWindowsHDR.isHDR = value;
+            }
         }
 
         public double MaxLuminosity
