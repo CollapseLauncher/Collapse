@@ -206,8 +206,15 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                ToggleRegistrySubscribe(false);
-                RegistryWatcher.Dispose();
+                try
+                {
+                    ToggleRegistrySubscribe(false);
+                    RegistryWatcher.Dispose();
+                }
+                catch(Exception ex)
+                {
+                    LogWriteLine($"[GI GSP Module] Error when disposing RegistryWatcher module!\r\n{ex}", LogType.Error, true);
+                }
             });
         }
 
