@@ -1,13 +1,12 @@
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/NewBannerv2_color.webp"/>
 </p>
 
-##### GI Nahida Background Credit: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
+##### ヘッダー背景画像クレジット: [Rafa](https://www.pixiv.net/artworks/102448848)
 
-[![jp](https://img.shields.io/badge/lang-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/master/README.ja-jp.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/master/README.md)
 
-**Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
+**Collapse**は**崩壊3rd**のために開発されたPC用非公式ランチャーです。プロジェクトは進化を続け、現在は全ての**miHoYo/HoYoverse**のゲームに対応しています.
 
 [![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
 
@@ -38,118 +37,112 @@
     </a>
 </p>
 
-# Why "Collapse"?
-Collapse came from the **Honkai Impact** translation in Chinese and Japanese. The word came from [**崩坏**] or **Bēng huài** in Chinese and also [**崩壊**] or **Houkai** in Japanese, both meaning "**Collapse**" which is why we chose it as our launcher name with the added inspiration that this was supposed to be an alternative (enhanced) launcher for *Honkai Impact 3rd* in the first place.
+READMEとアプリケーションの日本語翻訳者：[Vermilion-Shinsha](https://github.com/Vermilion-Sinsha)
 
-**Collapse** contains advanced features for **Honkai Impact 3rd** that not only provide you with the ability to download and launch the game, but also some additional features that the Official Launcher doesn't have, including:
-* Caches Download (aka "Updating Settings" in-game).
-* Game Data Repair (with less bandwidth required than the *Data Repair* feature in-game).
-* Changing Game Settings (Graphics Settings & Audio Settings) without opening the game.
-* Multi-Region Game Download Support (Allows for downloading and launching different versions of the game).
-* Steam to Global version conversion (without re-downloading the whole game).
-* Global to SEA version (or vice versa) conversion.
-* Multi-session Download for faster Game Download/Installation.
-* Multi-thread Game Extraction for faster installation.
-* Delta-Patch Update Mechanism for smaller updates ([**Click here**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) for more info).
-* Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
+# Collapseって？
+Collapseは崩壊3rdのタイトルの一部である、「**崩壊**」という言葉の英訳から名付けられています。このランチャーは崩壊3rdPC版公式ランチャーの発展（強化）版を目指して開発されたため、このような名前が付いています。
 
-Not only that, this launcher also has some advanced features for **Genshin Impact**, including but not limited to:
-* Choosing your voice-line language during the first installation, so you don't have to download it inside the game.
-* Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
+**Collapse**には**崩壊3rd**をダウンロード・起動する機能に加えて、公式ランチャーにはない高度な機能が搭載されています。
+* キャッシュのダウンロード（ゲーム内では「データ更新」と呼ばれています）
+* ゲームデータ修復（公式ランチャーの「修復」よりも必要な通信量が軽い）
+* ゲームを起動しなくても画質＆音量設定が変更可能
+* 海外版クライアントを簡単にダウンロード＆管理
+* グローバルSteam版クライアントをグローバルPC版クライアントへ変換 **（注意：日本のSteam版は非対応です！！！）**
+* グローバル版をSEA版に変換（逆もOK）
+* マルチセッションダウンロードでダウンロード/インストールを高速化
+* マルチスレッド解凍でインストールを高速化
+* デルタパッチ形式でアップデートパッチを軽量化（詳細は[**こちら**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch)）
+* グラフィックスAPIを選択可能（DirectX 11 (FL: 10.1, 11.0 and 11.1)とDirectX 12 [新しめのステージでゲームがクラッシュする可能性あり]）
 
-# Supported Features 
+さらに、**原神**のための高度な機能も搭載されています。
+* 初回インストール時にボイス言語設定を選択可能、音声パックを後からダウンロードする手間を省きます
+* キャッシュ、ムービー、音声パックや永続ファイルをゲームを起動せずに修復可能
+
+などなど……
+
+# サポートされている機能 
 <table>
   <thead>
     <tr>
-      <th rowspan="2">Game Title</th>
-      <th rowspan="2">Region</th>
-      <th colspan="7">Features</th>
+      <th rowspan="2">タイトル</th>
+      <th rowspan="2">サーバー</th>
+      <th colspan="7">機能</th>
     </tr>
     <tr>
-      <th>Install</th>
-      <th>Pre-load</th>
-      <th>Update</th>
-      <th>Game Repair</th>
-      <th>Cache Update</th>
-      <th>Game Settings</th>
-      <th>Game Region Convert</th>
+      <th>インストール</th>
+      <th>事前ダウンロード</th>
+      <th>アップデート</th>
+      <th>ゲーム修復</th>
+      <th>キャッシュ更新</th>
+      <th>ゲーム設定</th>
+      <th>サーバー移動</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td rowspan="6">Honkai Impact 3rd</td>
-      <td>Southeast Asia</td>
+      <td rowspan="6">崩壊3rd</td>
+      <td>SEA版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark: (通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+      <td>:white_check_mark: <br> (SEA版→グローバル版) </td>
     </tr>
     <tr>
-      <td>Global</td>
+      <td>グローバル版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark: (通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+      <td>:white_check_mark: <br> (Steam版→グローバル版) <br> (グローバル版→SEA版) </td>
     </tr>
     <tr>
-      <td>Mainland China</td>
+      <td>中国大陸版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
+      <td>:white_check_mark:(通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
     <tr>
-      <td>TW/HK/MO</td>
+      <td>台湾/香港/マカオ版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-    </tr>
-    <tr>
-      <td>Japan</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
+      <td>:white_check_mark:(通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
     <tr>
-      <td>Korea</td>
+      <td>日本版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
+      <td>:white_check_mark:(通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
     <tr>
-      <td rowspan="2">Genshin Impact</td>
-      <td>Global</td>
+      <td>韓国版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
+      <td>:white_check_mark:(通常＆デルタパッチ両対応)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>N/A</td>
       <td>:white_check_mark:</td>
       <td>N/A</td>
     </tr>
     <tr>
-      <td>Mainland China</td>
+      <td rowspan="2">原神</td>
+      <td>グローバル版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -159,8 +152,18 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
     </tr>
     <tr>
-      <td rowspan="2">Honkai: Star Rail</td>
-      <td>Global</td>
+      <td>中国大陸版</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td rowspan="2">崩壊：スターレイル</td>
+      <td>グローバル版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -170,7 +173,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
     </tr>
     <tr>
-      <td>Mainland China</td>
+      <td>中国大陸版</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -182,32 +185,26 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
   </tbody>
 </table>
 
-> **Note**:
-> The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released. If you have any issues with any supported features above, checks our GitHub issue tab, report if no active issues for it is found.
-> > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
+> **注意**:
+> 上記の表は、Collapseが現在サポートしている機能の一覧です。Collapseに新機能が追加されたり、新しいゲームがリリースされたりする度に、継続的に更新されます。上記のサポートされている機能に問題が発生した場合、GitHubのissueタブで既に報告されているか確認してください。
+> > サーバー移動機能は英語の崩壊3rd（SEA＆グローバル）にのみ対応しています。その他のサーバーや崩壊3rd以外のmiHoYo/Cognosphere Pte. Ltd.のゲームには、同機能の実装予定はありません。
 
-# Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.9/CL-1.71.9_Installer.exe)
-> **Note**: The version for this build is `1.71.9` (Released on: August 29th, 2023).
+# ダウンロード
+安定版とプレビュー版の2種類が存在します。[**Releases**](https://github.com/neon-nyan/CollapseLauncher/releases)から最新版をチェックしてください。
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.9/CL-1.71.9_Installer.exe)
-> **Note**: The version for this build is `1.71.9` (Released on: August 29th, 2023).
-
-To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
-
-# System Requirements for Ready-to-use build
-- OS: **Windows 10 1809 Update (build 17763)** or later / **Windows 11 (Any builds)**
-- Architecture: **x64/AMD64**
-- Internet Access: **Yes**
+# 動作環境
+- OS: **Windows 10 1809 Update (build 17763)** 以降 / **Windows 11 (全ビルド)**
+- アーキテクチャ: **x64/AMD64**
+- インターネット接続: **オンライン**
 
 ***
 
-# Prerequisites for Building Locally/Development
-> ### More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+# ローカルビルド/開発の条件
+> ### 詳細は[**コントリビューションガイドライン**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)を参照してください。
 
 ***
 
-# Third-party repositories and libraries used in this project
+# 使用されているサードパーティ製リポジトリ・ライブラリ
 - [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
 - [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft
 - [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
@@ -218,15 +215,15 @@ To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLaun
 - [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) by force-net
 - [**UABT**](https://github.com/neon-nyan/UABT) by _unknown_
 
-**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
+**免責事項**：Collapseは[**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/)および[**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us)とは**全く何の関係もない**非公式プロジェクトです。完全にオープンソースです。どんな貢献も歓迎します！😃
 
-# UI Design Overview
+# UIプレビュー
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
-# How can I support this project?
-Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
+# プロジェクトを支援したい時は
+支援は決して義務ではありませんが、いつでも感謝し、プロジェクトへより多くの時間を掛けたり、当プロジェクトや他プロジェクトを存続させるモチベーションになります。私たちを支援したい場合は、これらの方法があります😄
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
 - **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
-Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
+世界中の艦長に❤️を捧げます。美しい世界を守るために戦うよ！
