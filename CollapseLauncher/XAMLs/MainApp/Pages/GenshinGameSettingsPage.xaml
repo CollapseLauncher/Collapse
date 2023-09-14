@@ -77,10 +77,46 @@
                                 <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel" Orientation="Horizontal">
-                                <ToggleSwitch Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsGameBoost, Mode=TwoWay}" Margin="4,8,0,8"/>
+                                <ToggleSwitch Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsGameBoost, Mode=TwoWay}" Margin="4,8,0,0"/>
+                            </StackPanel>
+                            <StackPanel x:Name="HDRSettings" Orientation="Vertical">
+                                <TextBlock Text="HDR" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,8,8,0"/>
+                                <Expander Margin="0,0,0,8" Width="350" MaxWidth="514" HorizontalContentAlignment="Stretch" CornerRadius="8" x:Name="HDRExpander" IsExpanded="{x:Bind IsHDR, Mode=OneWay}">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox x:Name="HDRCheckBox" IsChecked="{x:Bind IsHDR, Mode=TwoWay}">
+                                               <CheckBox.Content>
+                                                   <TextBlock Text="Enable HDR" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                               </CheckBox.Content>
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <Expander.Content>
+                                        <StackPanel>
+                                            <Grid>
+                                                <TextBlock Text="Max Luminosity" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                                <NumberBox Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/> 
+                                            </Grid>
+                                            <Slider x:Name="MaxLuminositySlider" Minimum="300.0" Maximum="2000.0" HorizontalAlignment="Center" Width="350" StepFrequency="50" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind MaxLuminosity,Mode=TwoWay}" ValueChanged="MaxLuminositySlider_ValueChanged"/>
+                                            <Grid>
+                                                <TextBlock Text="UI Brightness" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                                <NumberBox Name="UiPaperWhiteValue" HorizontalAlignment="Right" Minimum="150.0" Maximum="550.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="UiPaperWhiteValue_ValueChanged"/>
+                                            </Grid>
+                                            <Slider x:Name="UiPaperWhiteSlider" Minimum="150.0" Maximum="550.0" HorizontalAlignment="Center" Width="350" StepFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind UiPaperWhite, Mode=TwoWay}" ValueChanged="UiPaperWhiteSlider_ValueChanged"/>
+                                            <Grid>
+                                                <TextBlock Text="Scenery Brightness" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                                <NumberBox Name="ScenePaperWhiteValue" HorizontalAlignment="Right" Minimum="100.0" Maximum="500.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="ScenePaperWhiteValue_ValueChanged"/>
+                                            </Grid>
+                                            <Slider x:Name="ScenePaperWhiteSlider" Minimum="100.0" Maximum="500.0" HorizontalAlignment="Center" Width="350" StepFrequency="25" TickPlacement="Outside" Value="{x:Bind ScenePaperWhite, Mode=TwoWay}"  ValueChanged="ScenePaperWhiteSlider_ValueChanged"/>
+                                        </StackPanel>
+                                    </Expander.Content>
+                                        
+                                        
+                                    
+                                </Expander>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel x:Name="StarRailGameGraphicsPanel" Margin="0,0" Grid.Column="1">
+                        <StackPanel x:Name="GenshinGameGraphicsPanel" Margin="0,0" Grid.Column="1">
                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_SpecPanel}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,0,0,16"/>
                             <StackPanel>
                                 <StackPanel>

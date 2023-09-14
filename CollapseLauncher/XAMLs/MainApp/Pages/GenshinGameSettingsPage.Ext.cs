@@ -318,22 +318,22 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsWindowsHDR.isHDR = value;
         }
 
-        public decimal MaxLuminosity
+        public double MaxLuminosity
         {
-            get => (decimal)Settings.SettingsGeneralData.maxLuminosity;
-            set => Settings.SettingsGeneralData.maxLuminosity = Math.Round(value, 1);
+            get => (double)Settings.SettingsGeneralData.maxLuminosity;
+            set => Settings.SettingsGeneralData.maxLuminosity = (decimal)Math.Round(value, 1);
         }
 
-        public decimal UiPaperWhite
+        public double UiPaperWhite
         {
-            get => (decimal)Settings.SettingsGeneralData.uiPaperWhite;
-            set => Settings.SettingsGeneralData.uiPaperWhite = Math.Round(value, 1);
+            get => (double)Settings.SettingsGeneralData.uiPaperWhite;
+            set => Settings.SettingsGeneralData.uiPaperWhite = (decimal)Math.Round(value, 1);
         }
 
-        public decimal ScenePaperWhite
+        public double ScenePaperWhite
         {
-            get => (decimal)Settings.SettingsGeneralData.scenePaperWhite;
-            set => Settings.SettingsGeneralData.scenePaperWhite = Math.Round(value, 1);
+            get => (double)Settings.SettingsGeneralData.scenePaperWhite;
+            set => Settings.SettingsGeneralData.scenePaperWhite = (decimal)Math.Round(value, 1);
         }
         #endregion
         #region Audio
