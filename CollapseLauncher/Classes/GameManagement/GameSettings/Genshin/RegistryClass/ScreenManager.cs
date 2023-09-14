@@ -17,6 +17,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
         private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
         private const string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
+        private const string _ValueNameWindowsHDR = "WINDOWS_HDR_ON_h3132281285";
         private static Size currentRes = ScreenProp.currentResolution;
         #endregion
 
@@ -96,6 +97,27 @@ namespace CollapseLauncher.GameSettings.Genshin
                 _ => 0,
             };
         }
+
+        /// <summary>
+        /// This defines "<c>HDR</c>" native settings. No in-game switch available yet.<br/><br/>
+        /// Range: 0 - 1
+        /// Default: 0
+        /// </summary>
+        public int HDR { get; set; } = 0;
+
+        public bool isHDR
+        {
+            get => HDR switch
+            {
+                1 => true,
+                _ => false,
+            };
+            set => HDR = value switch
+            {
+                true => 1,
+                _ => 0,
+            };
+        }
         #endregion
 
         #region Methods
@@ -104,24 +126,25 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerWidth} RegistryKey is unexpectedly not initialized!");
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerHeight} RegistryKey is unexpectedly not initialized!");
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerFullscreen} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Genshin Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
                 object? valueWidth = RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null);
                 object? valueHeight = RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null);
                 object? valueFullscreen = RegistryRoot.GetValue(_ValueNameScreenManagerFullscreen, null);
-                if (valueWidth != null && valueHeight != null && valueFullscreen != null)
+                object? valueHDR = RegistryRoot.GetValue(_ValueNameWindowsHDR, null);
+                if (valueWidth != null && valueHeight != null && valueFullscreen != null && valueHDR != null)
                 {
                     int width = (int)valueWidth;
                     int height = (int)valueHeight;
                     int fullscreen = (int)valueFullscreen;
+                    int HDR = (int)valueHDR;
 #if DEBUG
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerWidth} : {width}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueNameWindowsHDR} : {HDR}", LogType.Debug, true);
 #endif
-                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
+                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen, HDR = HDR };
                 }
             }
             catch (Exception ex)
@@ -146,10 +169,12 @@ namespace CollapseLauncher.GameSettings.Genshin
                 RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(_ValueNameWindowsHDR, HDR, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}", LogType.Debug, true);
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(_ValueNameScreenManagerWidth, null)}", LogType.Debug, true);
                 LogWriteLine($"Saved Genshin Settings: {_ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(_ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueNameWindowsHDR} : {RegistryRoot?.GetValue(_ValueNameWindowsHDR, null)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
@@ -159,7 +184,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         }
 
         public bool Equals(ScreenManager? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
-#nullable disable
-        #endregion
     }
+    #endregion
 }
