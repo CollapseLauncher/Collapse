@@ -4,6 +4,8 @@
 
 ##### ヘッダー背景画像クレジット: [Rafa](https://www.pixiv.net/artworks/102448848)
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/master/README.md)
+
 **Collapse**は**崩壊3rd**のために開発されたPC用非公式ランチャーです。プロジェクトは進化を続け、現在は全ての**miHoYo/HoYoverse**のゲームに対応しています.
 
 [![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
@@ -34,6 +36,8 @@
         <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Collapse Launcher Trello board" Height=66/>
     </a>
 </p>
+
+READMEとアプリケーションの日本語翻訳者：[Vermilion-Shinsha](https://github.com/Vermilion-Sinsha)
 
 # Collapseって？
 Collapseは崩壊3rdのタイトルの一部である、「**崩壊**」という言葉の英訳から名付けられています。このランチャーは崩壊3rdPC版公式ランチャーの発展（強化）版を目指して開発されたため、このような名前が付いています。
