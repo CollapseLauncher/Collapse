@@ -311,6 +311,31 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Graphics Settings - HDR
+        public bool IsHDR
+        {
+            get => (bool)Settings.SettingsWindowsHDR.isHDR;
+            set => Settings.SettingsWindowsHDR.isHDR = value;
+        }
+
+        public decimal MaxLuminosity
+        {
+            get => (decimal)Settings.SettingsGeneralData.maxLuminosity;
+            set => Settings.SettingsGeneralData.maxLuminosity = Math.Round(value, 1);
+        }
+
+        public decimal UiPaperWhite
+        {
+            get => (decimal)Settings.SettingsGeneralData.uiPaperWhite;
+            set => Settings.SettingsGeneralData.uiPaperWhite = Math.Round(value, 1);
+        }
+
+        public decimal ScenePaperWhite
+        {
+            get => (decimal)Settings.SettingsGeneralData.scenePaperWhite;
+            set => Settings.SettingsGeneralData.scenePaperWhite = Math.Round(value, 1);
+        }
+        #endregion
         #region Audio
         public int Audio_Global
         {
