@@ -29,6 +29,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Text;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -287,6 +288,13 @@ namespace CollapseLauncher.Pages
             Storyboard sb = btn.Resources["ExitStoryboard"] as Storyboard;
             btn.Translation -= Shadow16;
             sb.Begin();
+
+            Flyout flyout = btn.Resources["SocMedFlyout"] as Flyout;
+            Point pos = e.GetCurrentPoint(btn).Position;
+            if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
+            {
+                flyout.Hide();
+            }
         }
 
         private async void HideSocialMediaPanel(bool hide)
@@ -326,6 +334,34 @@ namespace CollapseLauncher.Pages
                     FileName = ((Button)sender).Tag.ToString()
                 }
             }.Start();
+        }
+
+        private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
+        {
+            ToolTip tooltip = sender as ToolTip;
+            FlyoutBase.ShowAttachedFlyout(tooltip.Tag as FrameworkElement);
+        }
+
+        private void HideSocMedFlyout(object sender, RoutedEventArgs e)
+        {
+            Flyout flyout = ((StackPanel)sender).Tag as Flyout;
+            flyout.Hide();
+        }
+
+        private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
+        {
+            // Prevent the flyout showing when there is no content visible
+            StackPanel stackPanel = sender as StackPanel;
+            bool visible = false;
+            foreach (var child in stackPanel.Children)
+            {
+                if (child.Visibility == Visibility.Visible)
+                    visible = true;
+            }
+            if (!visible)
+            {
+                HideSocMedFlyout(sender, e);
+            }
         }
         #endregion
 
@@ -1762,12 +1798,24 @@ namespace CollapseLauncher.Pages
         #region Hyper Link Color
         private void HyperLink_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            ((TextBlock)((Grid)sender).Children[0]).Foreground = (Brush)Application.Current.Resources["AccentColor"];
+            TextBlock textBlock = null;
+            if (sender is Grid grid)
+                textBlock = ((TextBlock)grid.Children[0]);
+            else if (sender is TextBlock block)
+                textBlock = block;
+            if (textBlock != null)
+                textBlock.Foreground = (Brush)Application.Current.Resources["AccentColor"];
         }
 
         private void HyperLink_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            ((TextBlock)((Grid)sender).Children[0]).Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            TextBlock textBlock = null;
+            if (sender is Grid grid)
+                textBlock = ((TextBlock)grid.Children[0]);
+            else if (sender is TextBlock block)
+                textBlock = block;
+            if (textBlock != null)
+                textBlock.Foreground = (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
         }
         #endregion
 

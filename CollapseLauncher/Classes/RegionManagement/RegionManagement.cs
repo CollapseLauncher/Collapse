@@ -278,11 +278,25 @@ namespace CollapseLauncher
             regionNewsProp.sideMenuPanel = new List<MenuPanelProp>();
             foreach (RegionSocMedProp item in regionBackgroundProp.data.icon)
             {
-                string url = item.url;
-                if (string.IsNullOrEmpty(url) && item.links.Count != 0 && !string.IsNullOrEmpty(item.links[0].url))
+                // Default: links
+                // Fallback: url/title + other_links
+                IList<LinkProp> links = item.links;
+                if (links == null && !string.IsNullOrEmpty(item.url))
                 {
-                    url = item.links[0].url;
+                    links = new List<LinkProp>
+                    {
+                        new() { title = item.title, url = item.url }
+                    };
+                    links = links.Concat(item.other_links).ToList();
                 }
+
+                string url = item.icon_link;
+                if (string.IsNullOrEmpty(url) && links.Any() && !string.IsNullOrEmpty(links[0].url))
+                {
+                    url = links[0].url;
+                }
+
+                // Add missing *key* parameter to QQ group link
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(Preset.LauncherSpriteURL))
                 {
                     if (new Uri(url).Segments.Last() == "qq")
@@ -296,19 +310,13 @@ namespace CollapseLauncher
                     }
                 }
 
-                string desc = item.url;
+                string desc = url;
                 if (!Preset.IsHideSocMedDesc)
                 {
-                    if (!string.IsNullOrEmpty(item.title))
+                    desc = item.tittle;
+                    if (string.IsNullOrEmpty(desc) && links.Any() && !string.IsNullOrEmpty(links[0].title))
                     {
-                        desc = item.title;
-                    }
-                    else
-                    {
-                        if (item.links.Count != 0 && !string.IsNullOrEmpty(item.links[0].title))
-                        {
-                            desc = item.links[0].title;
-                        }
+                        desc = links[0].title;
                     }
                 }
 
@@ -319,7 +327,8 @@ namespace CollapseLauncher
                     IconHover = item.img_hover,
                     QR = string.IsNullOrEmpty(item.qr_img) ? null : item.qr_img,
                     QR_Description = string.IsNullOrEmpty(item.qr_desc) ? null : item.qr_desc,
-                    Description = desc
+                    Description = desc,
+                    Links = links
                 });
             }
         }
