@@ -278,6 +278,8 @@ namespace CollapseLauncher
             return true;
         }
 
+        public KianaDispatch GetCurrentGateway() => _gameGateway;
+
         public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(Http _httpClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
