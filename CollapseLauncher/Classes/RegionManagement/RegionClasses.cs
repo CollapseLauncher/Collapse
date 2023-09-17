@@ -140,6 +140,17 @@ namespace CollapseLauncher
         };
     }
 
+    public class LinkProp : IRegionResourceCopyable<LinkProp>
+    {
+        public string title { get; set; }
+        public string url { get; set; }
+        public LinkProp Copy() => new LinkProp
+        {
+            title = title,
+            url = url
+        };
+    }
+
     public struct MenuPanelProp : IRegionResourceCopyable<MenuPanelProp>
     {
         private string _icon;
@@ -158,6 +169,10 @@ namespace CollapseLauncher
         public string Description { get; set; }
         public bool IsDescriptionExist => !string.IsNullOrEmpty(Description);
         public bool IsQRDescriptionExist => !string.IsNullOrEmpty(QR_Description);
+        public IList<LinkProp> Links { get; set; }
+        public bool IsLinksExist => Links?.Any() == true;
+        public bool ShowLinks => IsLinksExist && Links.Count > 1;
+        public bool ShowDescription => IsDescriptionExist && !ShowLinks;
         public MenuPanelProp Copy() => new MenuPanelProp(_innerToken)
         {
             URL = URL,
@@ -165,8 +180,9 @@ namespace CollapseLauncher
             IconHover = _iconHover,
             QR = _qr,
             QR_Description = QR_Description,
-            Description = Description
-        };
+            Description = Description,
+            Links = Links?.Copy()
+    };
     }
 
     public class RegionBackgroundProp : IRegionResourceCopyable<RegionBackgroundProp>
@@ -191,8 +207,11 @@ namespace CollapseLauncher
     public struct RegionSocMedProp : IRegionResourceCopyable<RegionSocMedProp>
     {
         private string _url;
+        private string _icon_link;
+        private string _tittle;
         private CancellationToken _innerToken;
-        private IList<RegionSocMedProp> _links;
+        private IList<LinkProp> _links;
+        private IList<LinkProp> _other_links;
         private string _img;
         private string _img_hover;
         private string _qr_img;
@@ -200,35 +219,55 @@ namespace CollapseLauncher
         public RegionSocMedProp(CancellationToken token = default)
         {
             _innerToken = token;
-            _links = new List<RegionSocMedProp>();
         }
 
         public string icon_id { get; set; }
-        public string icon_link { get; set; }
+        public string icon_link
+        { 
+            get => StripTabsAndNewlines(string.IsNullOrEmpty(_icon_link) ? url : _icon_link);
+            set => _icon_link = value;
+        }
         public string img { get; set; }
         public string img_hover { get; set; }
         public string qr_img { get; set; }
         public string qr_desc { get; set; }
         public string url
         {
-            get => StripTabsAndNewlines(string.IsNullOrEmpty(_url) ? icon_link : _url);
-            set => _url = value;
+            get => _url;
+            set => _url = StripTabsAndNewlines(value);
         }
         public string name { get; set; }
         public string title { get; set; }
+        public string tittle
+        {
+            get => string.IsNullOrEmpty(_tittle) ? title : _tittle;
+            set => _tittle = value;
+        }
         public string show_time { get; set; }
         public PostCarouselType type { get; set; }
 
-        public IList<RegionSocMedProp> links
+        public IList<LinkProp> links
         {
             get => _links;
             set
             {
-                if (_links == null) _links = new List<RegionSocMedProp>();
-                _links.Clear();
-                foreach (var link in value.Where(link => !string.IsNullOrEmpty(link.title) || !string.IsNullOrEmpty(link.url)))
+                _links = value;
+                foreach (var link in _links)
                 {
-                    _links.Add(link);
+                    link.url = StripTabsAndNewlines(link.url);
+                }
+            }
+        }
+
+        public IList<LinkProp> other_links
+        {
+            get => _other_links;
+            set
+            {
+                _other_links = value;
+                foreach (var link in _other_links)
+                {
+                    link.url = StripTabsAndNewlines(link.url);
                 }
             }
         }
@@ -260,9 +299,11 @@ namespace CollapseLauncher
             url = url,
             name = name,
             title = title,
+            tittle = tittle,
             show_time = show_time,
             type = type,
-            links = links
+            links = links?.Copy(),
+            other_links = other_links?.Copy()
         };
     }
 }

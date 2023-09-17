@@ -249,23 +249,51 @@
                                 </ItemsControl.Transitions>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{ThemeResource EllipsisButtonRevealStyle}"
+                                        <Button x:Name="SocMedButton" Width="48px" Height="48px" Margin="8,4" Padding="8" CornerRadius="8" Style="{ThemeResource EllipsisButtonRevealStyle}"
                                              PointerEntered="FadeInSocMedButton" PointerExited="FadeOutSocMedButton" Tag="{Binding URL}" Click="OpenSocMedLink"
-                                             Shadow="{ThemeResource SharedShadow}">
+                                             Shadow="{ThemeResource SharedShadow}" FlyoutBase.AttachedFlyout="{Binding ElementName=SocMedFlyout}">
                                             <ToolTipService.ToolTip>
-                                                <StackPanel>
-                                                    <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={ThemeResource BooleanToVisibilityConverter}}">
-                                                        <Grid Background="White" Margin="0,0,0,8" CornerRadius="5">
-                                                            <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center"/>
-                                                        </Grid>
-                                                        <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"
-                                                               Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" TextWrapping="Wrap"
-                                                               Visibility="{Binding IsDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
-                                                </StackPanel>
+                                                <ToolTip Visibility="Collapsed" Tag="{Binding ElementName=SocMedButton}" Opened="ShowSocMedFlyout"/>
                                             </ToolTipService.ToolTip>
                                             <Button.Resources>
+                                                <Flyout x:Name="SocMedFlyout" Placement="Left" OverlayInputPassThroughElement="{Binding ElementName=SocMedPanelScrollView}">
+                                                    <StackPanel PointerExited="HideSocMedFlyout" Tag="{Binding ElementName=SocMedFlyout}" Padding="10,6" Background="Transparent" Loaded="OnLoadedSocMedFlyout">
+                                                        <StackPanel Margin="8,8,8,0" Visibility="{Binding IsQRExist, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                            <Grid Background="White" Margin="0,0,0,8" CornerRadius="5">
+                                                                <Image Source="{Binding QR}" Width="160" HorizontalAlignment="Center"/>
+                                                            </Grid>
+                                                            <TextBlock Text="{Binding QR_Description}" HorizontalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,4"
+                                                                       Visibility="{Binding IsQRDescriptionExist, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
+                                                        </StackPanel>
+                                                        <StackPanel Visibility="{Binding ShowLinks, Converter={ThemeResource BooleanToVisibilityConverter}}">
+                                                            <ItemsControl ItemsSource="{Binding Links}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Button Tag="{Binding url}" Click="OpenSocMedLink" HorizontalAlignment="Center">
+                                                                            <Button.Template>
+                                                                                <ControlTemplate>
+                                                                                    <TextBlock Text="{Binding title}" TextWrapping="Wrap" Margin="2,2" Foreground="{ThemeResource TextFillColorPrimary}"
+                                                                                        TextDecorations="Underline" PointerEntered="HyperLink_OnPointerEntered" PointerExited="HyperLink_OnPointerExited" Loaded="SetHandCursor"/>
+                                                                                </ControlTemplate>
+                                                                            </Button.Template>
+                                                                        </Button>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding Description}" HorizontalAlignment="Center" TextWrapping="Wrap"
+                                                                       Visibility="{Binding ShowDescription, Converter={ThemeResource BooleanToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                    <Flyout.FlyoutPresenterStyle>
+                                                        <Style TargetType="FlyoutPresenter">
+                                                            <Setter Property="Margin" Value="3,0,0,0"/>
+                                                            <Setter Property="CornerRadius" Value="5"/>
+                                                            <Setter Property="Padding" Value="0"/>
+                                                            <Setter Property="MinHeight" Value="0"/>
+                                                            <Setter Property="MinWidth" Value="0"/>
+                                                        </Style>
+                                                    </Flyout.FlyoutPresenterStyle>
+                                                </Flyout>
                                                 <Storyboard x:Name="EnterStoryboard">
                                                     <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.1"/>
                                                     <DoubleAnimation Storyboard.TargetName="IconHover" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.1"/>
