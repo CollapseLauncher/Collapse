@@ -14,8 +14,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<ResourceLanguages>en</ResourceLanguages>
-		<SatelliteResourceLanguages>en-US;en</SatelliteResourceLanguages>
+		<InvariantGlobalization>true</InvariantGlobalization>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
