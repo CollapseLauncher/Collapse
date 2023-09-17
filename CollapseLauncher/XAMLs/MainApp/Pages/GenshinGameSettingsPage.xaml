@@ -105,14 +105,26 @@
                                                                     </Hyperlink><LineBreak/>
                                                                 </TextBlock>
                                                                 <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left">
-                                                                    <Paragraph FontWeight="SemiBold">Max Luminosity (nits)</Paragraph>
-                                                                    <Paragraph FontSize="13">Maximum allowed peak brightness for highlights</Paragraph>
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}"/>
+                                                                    </Paragraph>
                                                                     <Paragraph FontSize="2"/>
-                                                                    <Paragraph FontWeight="SemiBold">UI Brightness</Paragraph>
-                                                                    <Paragraph FontSize="13">Controls how bright UI elements should be</Paragraph>
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}"/>
+                                                                    </Paragraph>
                                                                     <Paragraph FontSize="2"/>
-                                                                    <Paragraph FontWeight="SemiBold">Scenery Brightness</Paragraph>
-                                                                    <Paragraph FontSize="13">Controls how bright a scenery should be</Paragraph>
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}"/>
+                                                                    </Paragraph>
                                                                 </RichTextBlock>
                                                             </StackPanel>
                                                         </Flyout>
@@ -415,7 +427,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <StackPanel Margin="0,8,0,0">
+                    <StackPanel Margin="0,0,0,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -440,50 +452,53 @@
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <StackPanel>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language}" Style="{ThemeResource TitleLargeTextBlockStyle}" Margin="0,0,0,16"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help1}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
-                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help2}" Style="{ThemeResource CaptionTextBlockStyle}" Margin="0,4,0,8"/>
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Grid>
+                            <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,16">
+                                <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help1}"/>
+                                <LineBreak/>
+                                <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Language_Help2}"/>
+                            </TextBlock>
+                            <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="200"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" x:Name="LangSettingLeft">
-                                    <StackPanel>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageAudio}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="AudioLangSelector" Margin="0,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_cn}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_en}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_jp}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_kr}"/>
-                                        </ComboBox>
-                                    </StackPanel>
+                                <StackPanel Grid.Column="0" x:Name="LangSettingLeft" Margin="0,0,24,0">
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageAudio}" FontSize="16" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                    <ComboBox x:Name="AudioLangSelector" Margin="-4,0,0,16" CornerRadius="14" HorizontalAlignment="Stretch" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_cn}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_en}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_jp}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.VO_kr}"/>
+                                    </ComboBox>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" x:Name="LangSettingRight">
-                                    <StackPanel>
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageText}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="-80,0,0,8"/>
-                                        <ComboBox x:Name="TextLangSelector" Margin="-80,0,0,16" Width="128" CornerRadius="14" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}" MaxDropDownHeight="200">
-                                            <ComboBoxItem Content="English"/>
-                                            <ComboBoxItem Content="简体中文"/>
-                                            <ComboBoxItem Content="繁體中文"/>
-                                            <ComboBoxItem Content="Français"/>
-                                            <ComboBoxItem Content="Deutsch"/>
-                                            <ComboBoxItem Content="Español"/>
-                                            <ComboBoxItem Content="Português"/>
-                                            <ComboBoxItem Content="Русский"/>
-                                            <ComboBoxItem Content="日本語"/>
-                                            <ComboBoxItem Content="한국어"/>
-                                            <ComboBoxItem Content="ภาษาไทย"/>
-                                            <ComboBoxItem Content="Tiếng Việt"/>
-                                            <ComboBoxItem Content="Bahasa Indonesia"/>
-                                            <ComboBoxItem Content="Türkçe"/>
-                                            <ComboBoxItem Content="Italiano"/>
-                                        </ComboBox>
-                                    </StackPanel>
+                                <StackPanel Grid.Column="1" x:Name="LangSettingRight" Margin="0,0,24,0">
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.LanguageText}" FontSize="16" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
+                                    <ComboBox x:Name="TextLangSelector" Margin="-4,0,0,16" CornerRadius="14" HorizontalAlignment="Stretch" SelectedIndex="{x:Bind TextLang, Mode=TwoWay}" MaxDropDownHeight="200">
+                                        <ComboBoxItem Content="English"/>
+                                        <ComboBoxItem Content="简体中文"/>
+                                        <ComboBoxItem Content="繁體中文"/>
+                                        <ComboBoxItem Content="Français"/>
+                                        <ComboBoxItem Content="Deutsch"/>
+                                        <ComboBoxItem Content="Español"/>
+                                        <ComboBoxItem Content="Português"/>
+                                        <ComboBoxItem Content="Русский"/>
+                                        <ComboBoxItem Content="日本語"/>
+                                        <ComboBoxItem Content="한국어"/>
+                                        <ComboBoxItem Content="ภาษาไทย"/>
+                                        <ComboBoxItem Content="Tiếng Việt"/>
+                                        <ComboBoxItem Content="Bahasa Indonesia"/>
+                                        <ComboBoxItem Content="Türkçe"/>
+                                        <ComboBoxItem Content="Italiano"/>
+                                    </ComboBox>
                                 </StackPanel>
                             </Grid>
                         </Grid>

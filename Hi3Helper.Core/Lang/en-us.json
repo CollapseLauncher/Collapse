@@ -836,8 +836,11 @@
     "Graphics_HDR_Help2": "HDR enabled in Windows Settings!",
     "Graphics_HDR_Help3": "More information (en)",
     "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
     "Graphics_HDR_UiBrightness": "UI Brightness",
+    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
     "Graphics_HDR_SceneBrightness": "Scenery Brightness",
+    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
