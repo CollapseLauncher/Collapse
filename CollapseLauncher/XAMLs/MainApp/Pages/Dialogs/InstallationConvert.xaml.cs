@@ -172,7 +172,7 @@ namespace CollapseLauncher.Dialogs
             {
                 await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 s.Position = 0;
-                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), CoreLibraryJSONContext.Default);
+                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), InternalAppJSONContext.Default);
             }
 
             GameVersion = _Entry.data.game.latest.version;
