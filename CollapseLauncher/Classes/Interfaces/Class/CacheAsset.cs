@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
+using System;
 using System.IO;
 using System.Text.Json.Serialization;
 
@@ -38,5 +39,7 @@ namespace CollapseLauncher.Interfaces
 
         public string PrintSummary() => $"File [T: {DataType}]: {N}\t{ConverterTool.SummarizeSizeSimple(CS)} ({CS} bytes)";
         public long GetAssetSize() => Status == CacheAssetStatus.Unused ? 0 : CS;
+        public string GetRemoteURL() => throw new NotImplementedException();
+        public void SetRemoteURL(string url) => throw new NotImplementedException();
     }
 }

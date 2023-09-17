@@ -26,14 +26,11 @@ namespace CollapseLauncher
 
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
-                await Task.Run(() =>
+                // Iterate the asset index and do update operation
+                foreach (SRAsset asset in updateAssetIndex)
                 {
-                    // Iterate the asset index and do update operation
-                    foreach (SRAsset asset in updateAssetIndex)
-                    {
-                        UpdateCacheAsset(asset, httpClient, token);
-                    }
-                });
+                    await UpdateCacheAsset(asset, httpClient, token);
+                }
 
                 return true;
             }
@@ -52,7 +49,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void UpdateCacheAsset(SRAsset asset, Http httpClient, CancellationToken token)
+        private async Task UpdateCacheAsset(SRAsset asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
             _progressTotalCountCurrent++;
@@ -69,13 +66,13 @@ namespace CollapseLauncher
             // Do multi-session download for asset that has applicable size
             if (asset.Size >= _sizeForMultiDownload)
             {
-                httpClient.DownloadSync(asset.RemoteURL, asset.LocalName, _downloadThreadCount, true, token);
-                httpClient.MergeSync();
+                await httpClient.Download(asset.RemoteURL, asset.LocalName, _downloadThreadCount, true, token);
+                await httpClient.Merge();
             }
             // Do single-session download for others
             else
             {
-                httpClient.DownloadSync(asset.RemoteURL, asset.LocalName, true, null, null, token);
+                await httpClient.Download(asset.RemoteURL, asset.LocalName, true, null, null, token);
             }
 
             LogWriteLine($"Downloaded cache [T: {asset.AssetType}]: {Path.GetFileName(asset.LocalName)}", LogType.Default, true);

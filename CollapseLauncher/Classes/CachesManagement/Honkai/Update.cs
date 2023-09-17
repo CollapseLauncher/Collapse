@@ -26,14 +26,11 @@ namespace CollapseLauncher
 
                 // Subscribe the event listener
                 httpClient.DownloadProgress += _httpClient_UpdateAssetProgress;
-                await Task.Run(() =>
+                // Iterate the asset index and do update operation
+                foreach (CacheAsset asset in updateAssetIndex)
                 {
-                    // Iterate the asset index and do update operation
-                    foreach (CacheAsset asset in updateAssetIndex)
-                    {
-                        UpdateCacheAsset(asset, httpClient, token);
-                    }
-                });
+                    await UpdateCacheAsset(asset, httpClient, token);
+                }
 
                 // Reindex the asset index in Verify.txt
                 UpdateCacheVerifyList(assetIndex);
@@ -76,7 +73,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
+        private async Task UpdateCacheAsset(CacheAsset asset, Http httpClient, CancellationToken token)
         {
             // Increment total count and update the status
             _progressTotalCountCurrent++;
@@ -108,13 +105,13 @@ namespace CollapseLauncher
                 // Do multi-session download for asset that has applicable size
                 if (asset.CS >= _sizeForMultiDownload)
                 {
-                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, token);
-                    httpClient.MergeSync();
+                    await httpClient.Download(asset.ConcatURL, asset.ConcatPath, _downloadThreadCount, true, token);
+                    await httpClient.Merge();
                 }
                 // Do single-session download for others
                 else
                 {
-                    httpClient.DownloadSync(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
+                    await httpClient.Download(asset.ConcatURL, asset.ConcatPath, true, null, null, token);
                 }
 
                 LogWriteLine($"Downloaded cache [T: {asset.DataType}]: {asset.N}", LogType.Default, true);

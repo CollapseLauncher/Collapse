@@ -1,6 +1,7 @@
 ﻿using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
@@ -28,6 +29,8 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
+        public string GetRemoteURL() => throw new NotImplementedException();
+        public void SetRemoteURL(string url) => throw new NotImplementedException();
     }
 
     public class FileProperties
@@ -40,5 +43,7 @@ namespace Hi3Helper.Shared.ClassStruct
         // public long Offset { get; set; }
         public string ExpctCRC { get; set; }
         public string CurrCRC { get; set; }
+        public string GetRemoteURL() => throw new NotImplementedException();
+        public void SetRemoteURL(string url) => throw new NotImplementedException();
     }
 }

@@ -63,7 +63,6 @@ namespace CollapseLauncher
         }
 
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(List<PkgVersionProperties> assetIndex)
-        private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
         {
             // Section: Eliminate unused audio files
             List<string> audioLangList = (_gameVersionManager as GameTypeGenshinVersion)._audioVoiceLanguageList;

@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Data;
+﻿using System;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 
 namespace Hi3Helper.Preset
@@ -37,5 +38,7 @@ namespace Hi3Helper.Preset
 
         public string PrintSummary() => $"File [T: {type}]: {remoteName}\t{ConverterTool.SummarizeSizeSimple(fileSize)} ({fileSize} bytes)";
         public long GetAssetSize() => fileSize;
+        public string GetRemoteURL() => throw new NotImplementedException();
+        public void SetRemoteURL(string url) => throw new NotImplementedException();
     }
 }
