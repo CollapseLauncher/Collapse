@@ -102,8 +102,18 @@
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help2}"/><LineBreak/>
                                                                     <Hyperlink NavigateUri="https://support.microsoft.com/en-us/windows/hdr-settings-in-windows-2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
                                                                         <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help3}"/>
-                                                                    </Hyperlink>
+                                                                    </Hyperlink><LineBreak/>
                                                                 </TextBlock>
+                                                                <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left">
+                                                                    <Paragraph FontWeight="SemiBold">Max Luminosity (nits)</Paragraph>
+                                                                    <Paragraph FontSize="13">Maximum allowed peak brightness for highlights</Paragraph>
+                                                                    <Paragraph FontSize="2"/>
+                                                                    <Paragraph FontWeight="SemiBold">UI Brightness</Paragraph>
+                                                                    <Paragraph FontSize="13">Controls how bright UI elements should be</Paragraph>
+                                                                    <Paragraph FontSize="2"/>
+                                                                    <Paragraph FontWeight="SemiBold">Scenery Brightness</Paragraph>
+                                                                    <Paragraph FontSize="13">Controls how bright a scenery should be</Paragraph>
+                                                                </RichTextBlock>
                                                             </StackPanel>
                                                         </Flyout>
                                                     </Button.Flyout>
