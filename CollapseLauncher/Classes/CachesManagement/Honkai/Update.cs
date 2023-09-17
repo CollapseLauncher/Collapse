@@ -118,7 +118,7 @@ namespace CollapseLauncher
             }
 
             // Remove Asset Entry display
-            Dispatch(() => AssetEntry.RemoveAt(0));
+            Dispatch(() => { if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0); });
         }
 
         private async void _httpClient_UpdateAssetProgress(object sender, DownloadEvent e)
