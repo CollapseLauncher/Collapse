@@ -115,7 +115,7 @@ namespace CollapseLauncher
             FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ? null : new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)));
             FileInfo fileInfoStreaming = new FileInfo(filePath);
 
-            bool UsePersistent = (asset.isForceStoreInPersistent && fileInfoPersistent != null && !fileInfoPersistent.Exists) || asset.isPatch || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
+            bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) || asset.isPatch || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
             bool IsPersistentExist = fileInfoPersistent != null && fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.fileSize;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.fileSize;
 
