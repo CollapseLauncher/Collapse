@@ -159,7 +159,15 @@ namespace RegistryUtils
         /// </summary>
         public void Dispose()
         {
-            Stop();
+            try
+            {
+                Stop();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", Hi3Helper.LogType.Error, true);
+                new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
+            }
             _disposed = true;
 #if DEBUG
             LogWriteLine($"RegistryMonitor Disposed!", Hi3Helper.LogType.Debug, true);

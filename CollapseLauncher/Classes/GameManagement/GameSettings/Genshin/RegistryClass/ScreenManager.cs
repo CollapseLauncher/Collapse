@@ -104,9 +104,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerWidth} RegistryKey is unexpectedly not initialized!");
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerHeight} RegistryKey is unexpectedly not initialized!");
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueNameScreenManagerFullscreen} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Genshin Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
                 object? valueWidth = RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null);
                 object? valueHeight = RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null);
@@ -121,7 +119,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
-                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
+                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen};
                 }
             }
             catch (Exception ex)
@@ -159,7 +157,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         }
 
         public bool Equals(ScreenManager? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
-#nullable disable
-        #endregion
     }
+    #endregion
 }

@@ -13,6 +13,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public CollapseScreenSetting SettingsCollapseScreen { get; set; }
         public CollapseMiscSetting SettingsCollapseMisc { get; set; }
         public GeneralData SettingsGeneralData { get; set; }
+        public WindowsHDR SettingsWindowsHDR { get; set; }
 
         public GenshinSettings(IGameVersionCheck GameVersionManager)
             : base(GameVersionManager)
@@ -43,6 +44,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public void ReloadSettings()
         {
             SettingsGeneralData = GeneralData.Load();
+            SettingsWindowsHDR = WindowsHDR.Load();
             InitializeSettings();
         }
 
@@ -54,6 +56,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsCollapseMisc.Save();
             SettingsScreen.Save();
             SettingsGeneralData.Save();
+            SettingsWindowsHDR.Save();
         }
 
         public IGameSettingsUniversal AsIGameSettingsUniversal() => this;

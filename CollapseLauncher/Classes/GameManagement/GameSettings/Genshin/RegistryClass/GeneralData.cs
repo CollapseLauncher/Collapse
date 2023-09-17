@@ -207,10 +207,34 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
         //also doesn't seem to be tied into any actual game settings as Genshin doesn't have a native HDR
+
+        /// <summary>
+        /// This controls if HDR first-time Wizard in-game will be shown when game first starts. <br/>
+        /// is a boolean, Default: true <br/>
+        /// Reset this every time HDR settings is toggled on.
+        /// </summary>
         public bool firstHDRSetting { get; set; } = true;
-        public decimal maxLuminosity { get; set; } = 0.0m;
-        public decimal uiPaperWhite { get; set; } = 0.0m;
-        public decimal scenePaperWhite { get; set; } = 0.0m;
+
+        /// <summary>
+        /// This controls "<c>Adjust Display Brightness</c>" slider on "Adjust Brightness" settings screen with white logo. Controls maximum Luminosity allowed in nits.<br/>
+        /// Accepted values: 300.0m-2000.0m 
+        /// Default : 300.0m
+        /// </summary>
+        public decimal maxLuminosity { get; set; } = 300.0m;
+
+        /// <summary>
+        /// This controls "<c>Display Brightness</c>" slider in "Adjust Brightness" settings screen with scenery. Controls UI brightness.<br/>
+        /// Accepted values: 150.0m-550.0m
+        /// Default : 175.0m
+        /// </summary>
+        public decimal uiPaperWhite { get; set; } = 175.0m;
+
+        /// <summary>
+        /// This controls "<c>Scenery Brightness</c>" slider in "Adjust Brightness" settings screen with scenery. Controls overall scenery brightness.<br/>
+        /// Accepted values : 100.0m-500.0m
+        /// Default : 200.0m
+        /// </summary>
+        public decimal scenePaperWhite { get; set; } = 200.0m;
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
@@ -378,7 +402,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"\r\n      Audio - Voice Volume : {volumeVoice}" +
                     $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
                     $"\r\n      Audio - Surround     : {audioOutput}" +
-                    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
+                    $"\r\n      Gamma                : {gammaValue}" +
+                    $"\r\n      HDR - MaxLuminosity  : {maxLuminosity}" +
+                    $"\r\n      HDR - UIPaperWhite   : {uiPaperWhite}" +
+                    $"\r\n      HDR - ScenePaperWhite: {scenePaperWhite}", LogType.Debug);
 #else
                 LogWriteLine($"Saved Genshin Game Settings", LogType.Default, true);
 #endif
@@ -390,7 +417,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         }
 
         public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
-#nullable disable
         #endregion
     }
 }

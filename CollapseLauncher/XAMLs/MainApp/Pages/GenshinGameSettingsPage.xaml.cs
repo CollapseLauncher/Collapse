@@ -206,8 +206,15 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                ToggleRegistrySubscribe(false);
-                RegistryWatcher.Dispose();
+                try
+                {
+                    ToggleRegistrySubscribe(false);
+                    RegistryWatcher.Dispose();
+                }
+                catch(Exception ex)
+                {
+                    LogWriteLine($"[GI GSP Module] Error when disposing RegistryWatcher module!\r\n{ex}", LogType.Error, true);
+                }
             });
         }
 
@@ -248,6 +255,93 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private void MaxLuminosityValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            try
+            {
+                if (double.IsNaN(args.NewValue))
+                {
+                    LogWriteLine($"MaxLuminosity value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    MaxLuminosityValue.Value = args.OldValue;
+                }
+                else
+                {
+                    IncrementNumberRounder rounder = new IncrementNumberRounder();
+                    rounder.Increment = 0.1;
+
+                    DecimalFormatter formatter = new DecimalFormatter();
+                    formatter.IntegerDigits = 3;
+                    formatter.FractionDigits = 1;
+                    formatter.NumberRounder = rounder;
+                    MaxLuminosityValue.NumberFormatter = formatter;
+
+                    MaxLuminositySlider.Value = MaxLuminosityValue.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when processing MaxLuminosity NumberBox!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private void UiPaperWhiteValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            try
+            {
+                if (double.IsNaN(args.NewValue))
+                {
+                    LogWriteLine($"UiPaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    UiPaperWhiteValue.Value = args.OldValue;
+                }
+                else
+                {
+                    IncrementNumberRounder rounder = new IncrementNumberRounder();
+                    rounder.Increment = 0.1;
+
+                    DecimalFormatter formatter = new DecimalFormatter();
+                    formatter.IntegerDigits = 3;
+                    formatter.FractionDigits = 1;
+                    formatter.NumberRounder = rounder;
+                    UiPaperWhiteValue.NumberFormatter = formatter;
+
+                    UiPaperWhiteSlider.Value = UiPaperWhiteValue.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when processing UiPaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private void ScenePaperWhiteValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            try
+            {
+                if (double.IsNaN(args.NewValue))
+                {
+                    LogWriteLine($"ScenePaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    ScenePaperWhiteValue.Value = args.OldValue;
+                }
+                else
+                {
+                    IncrementNumberRounder rounder = new IncrementNumberRounder();
+                    rounder.Increment = 0.1;
+
+                    DecimalFormatter formatter = new DecimalFormatter();
+                    formatter.IntegerDigits = 3;
+                    formatter.FractionDigits = 1;
+                    formatter.NumberRounder = rounder;
+                    ScenePaperWhiteValue.NumberFormatter = formatter;
+
+                    ScenePaperWhiteSlider.Value = ScenePaperWhiteValue.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when processing ScenePaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
         /// <summary>
         /// This updates Gamma NumberBox when slider is moved.
         /// no touchy :)
@@ -257,6 +351,21 @@ namespace CollapseLauncher.Pages
         private void GammaSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             GammaValue.Value = Math.Round(e.NewValue, 5);
+        }
+
+        private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            MaxLuminosityValue.Value = Math.Round(e.NewValue, 1);
+        }
+
+        private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            UiPaperWhiteValue.Value = Math.Round(e.NewValue, 1);
+        }
+
+        private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
         }
     }
 }
