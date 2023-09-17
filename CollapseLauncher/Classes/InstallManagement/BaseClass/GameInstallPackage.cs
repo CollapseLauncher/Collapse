@@ -221,5 +221,7 @@ namespace CollapseLauncher.InstallManager
 
         public string PrintSummary() => $"File [T: {PackageType}]: {URL}\t{ConverterTool.SummarizeSizeSimple(Size)} ({Size} bytes)";
         public long GetAssetSize() => Size;
+        public string GetRemoteURL() => URL;
+        public void SetRemoteURL(string url) => URL = url;
     }
 }

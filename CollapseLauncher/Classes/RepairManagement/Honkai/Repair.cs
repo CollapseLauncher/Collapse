@@ -38,7 +38,13 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
 
                 // Iterate repair asset and check it using different method for each type
-                foreach (FilePropertiesRemote asset in repairAssetIndex)
+                foreach (FilePropertiesRemote asset in
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    )
                 {
                     // Assign a task depends on the asset type
                     ConfiguredTaskAwaitable assetTask = (asset.FT switch

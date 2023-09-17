@@ -36,7 +36,13 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
 
                 // Iterate repair asset
-                foreach (PkgVersionProperties asset in repairAssetIndex)
+                foreach (PkgVersionProperties asset in
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    )
                 {
                     await RepairAssetTypeGeneric(asset, _httpClient, token).ConfigureAwait(false);
                 }

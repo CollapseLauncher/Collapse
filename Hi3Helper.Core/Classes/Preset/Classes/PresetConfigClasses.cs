@@ -37,5 +37,7 @@ namespace Hi3Helper.Preset
 
         public string PrintSummary() => $"File [T: {type}]: {remoteName}\t{ConverterTool.SummarizeSizeSimple(fileSize)} ({fileSize} bytes)";
         public long GetAssetSize() => fileSize;
+        public string GetRemoteURL() => remoteURL;
+        public void SetRemoteURL(string url) => remoteURL = url;
     }
 }

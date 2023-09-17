@@ -32,6 +32,8 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
+        public string GetRemoteURL() => RN;
+        public void SetRemoteURL(string url) => RN = url;
     }
 
     public class FileProperties

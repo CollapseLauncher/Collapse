@@ -174,7 +174,8 @@ namespace Hi3Helper.Shared.Region
             { "EnableAcrylicEffect", true },
             { "IncludeGameLogs", false },
             { "UseDownloadChunksMerging", false },
-            { "LowerCollapsePrioOnGameLaunch", false }
+            { "LowerCollapsePrioOnGameLaunch", false },
+            { "EnableHTTPRepairOverride", true }
         };
 
         public static void LoadGamePreset()

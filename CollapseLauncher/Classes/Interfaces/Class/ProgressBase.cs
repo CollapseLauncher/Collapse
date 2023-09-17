@@ -2,6 +2,7 @@
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -344,6 +345,40 @@ namespace CollapseLauncher.Interfaces
             _progressTotalSize = 0;
             _progressPerFileSizeCurrent = 0;
             _progressPerFileSize = 0;
+        }
+
+        protected IEnumerable<T2> EnforceHTTPSchemeToAssetIndex(IEnumerable<T2> assetIndex)
+        {
+            const string HTTPSScheme = "https://";
+            const string HTTPScheme = "http://";
+            // Get the check if HTTP override is enabled
+            bool IsUseHTTPOverride = LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride").ToBool();
+
+            // Iterate the IAssetIndexSummary asset
+            foreach (T2 asset in assetIndex)
+            {
+                // If the HTTP override is enabled, then start override the HTTPS scheme
+                if (IsUseHTTPOverride)
+                {
+                    // Get the remote url as span
+                    ReadOnlySpan<char> url = asset.GetRemoteURL().AsSpan();
+                    // If the url starts with HTTPS scheme, then...
+                    if (url.StartsWith(HTTPSScheme))
+                    {
+                        // Get the trimmed URL without HTTPS scheme as span
+                        ReadOnlySpan<char> trimmedURL = url.TrimStart(HTTPSScheme);
+                        // Set the trimmed URL
+                        asset.SetRemoteURL(string.Concat(HTTPScheme, trimmedURL));
+                    }
+
+                    // Yield it and continue to the next entry
+                    yield return asset;
+                    continue;
+                }
+
+                // If override not enabled, then just return the asset as is
+                yield return asset;
+            }
         }
 
         protected async Task<bool> TryRunExamineThrow(Task<bool> action)

@@ -38,5 +38,7 @@ namespace CollapseLauncher.Interfaces
 
         public string PrintSummary() => $"File [T: {DataType}]: {N}\t{ConverterTool.SummarizeSizeSimple(CS)} ({CS} bytes)";
         public long GetAssetSize() => Status == CacheAssetStatus.Unused ? 0 : CS;
+        public string GetRemoteURL() => BaseURL;
+        public void SetRemoteURL(string url) => BaseURL = url;
     }
 }
