@@ -85,21 +85,6 @@ namespace CollapseLauncher
             });
         }
 
-        //public static void AddUpdaterOptions()
-        //{
-        //    Option o_Input, o_Channel;
-        //    rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true });
-        //    rootCommand.AddOption(o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "Release channel of the app") { IsRequired = true }.FromAmong());
-        //    rootCommand.SetHandler((string Input, AppReleaseChannel ReleaseChannel) =>
-        //    {
-        //        m_arguments.Updater = new ArgumentUpdater
-        //        {
-        //            AppPath = Input,
-        //            UpdateChannel = ReleaseChannel
-        //        };
-        //    }, o_Input, o_Channel);
-        //}
-
         public static void AddUpdaterOptions()
         {
             Option<string> o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true };
@@ -159,7 +144,7 @@ namespace CollapseLauncher
                 var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry in BetterHI3Launcher keys") { IsRequired = true };
                 rootCommand.AddOption(gameVerOption);
                 rootCommand.AddOption(regLocOption);
-                rootCommand.Handler = CommandHandler.Create<string, string, string, string>(
+                rootCommand.Handler = CommandHandler.Create(
                     (string Input, string Output, string GameVer, string RegLoc) =>
                     {
                         m_arguments.Migrate = new ArgumentMigrate
@@ -173,7 +158,7 @@ namespace CollapseLauncher
                     });
                 return;
             }
-            rootCommand.Handler = CommandHandler.Create<string, string>(
+            rootCommand.Handler = CommandHandler.Create(
                 (string Input, string Output) =>
                 {
                     m_arguments.Migrate = new ArgumentMigrate
@@ -198,7 +183,7 @@ namespace CollapseLauncher
             command.AddOption(outputOption);
             command.AddOption(keyNameOption);
             command.AddOption(regLocOption);
-            command.Handler = CommandHandler.Create<string, string, string, string>(
+            command.Handler = CommandHandler.Create(
                 (string Input, string Output, string KeyName, string RegLoc) =>
                 {
                     m_arguments.Migrate = new ArgumentMigrate
@@ -214,7 +199,6 @@ namespace CollapseLauncher
             rootCommand.AddCommand(command);
         }
     }
-}
 
     public class Arguments
     {
@@ -245,3 +229,4 @@ namespace CollapseLauncher
         public string KeyName { get; set; }
         public bool IsBHI3L { get; set; }
     }
+}
