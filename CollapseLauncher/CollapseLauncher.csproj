@@ -57,7 +57,8 @@
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.230822000" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.13.2" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 	</ItemGroup>
 
@@ -122,6 +123,8 @@
 			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
 			<TrimmableAssembly Include="SquirrelLib" />
 			<TrimmableAssembly Include="SharpCompress" />
+      <TrimmableAssembly Include="System.CommandLine" />
+      <TrimmableAssembly Include="System.CommandLine.NamingConventionBinder" />
 			<TrimmableAssembly Include="System.Drawing" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
 			<TrimmableAssembly Include="System.Drawing.Primitives" />
