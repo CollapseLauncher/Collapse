@@ -186,12 +186,12 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released. If you have any issues with any supported features above, checks our GitHub issue tab, report if no active issues for it is found.
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
-# Download Ready-To-Use Build
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.9/CL-1.71.9_Installer.exe)
-> **Note**: The version for this build is `1.71.9` (Released on: August 29th, 2023).
+# Download Ready-To-Use Builds
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.10/CL-1.71.10_Installer.exe)
+> **Note**: The version for this build is `1.71.10` (Released on: September 18th, 2023).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.9/CL-1.71.9_Installer.exe)
-> **Note**: The version for this build is `1.71.9` (Released on: August 29th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.72.0/CL-1.72.0_Installer.exe)
+> **Note**: The version for this build is `1.72.0` (Released on: September 18th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
