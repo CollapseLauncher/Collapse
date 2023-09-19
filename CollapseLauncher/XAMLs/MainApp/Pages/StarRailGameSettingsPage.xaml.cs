@@ -139,7 +139,7 @@ namespace CollapseLauncher.Pages
             {
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
-                if (App.IsGameRunning)
+                if (CurrentGameProperty.IsGameRunning)
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
