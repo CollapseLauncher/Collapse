@@ -63,7 +63,7 @@ namespace Hi3Helper.Data
 
     public sealed class BinaryPatchUtility
     {
-        private const int c_bufferSize = 16 << 10;
+        private const int c_bufferSize = 32 << 10;
         private Stream _inputStream { get; set; }
         private Stream _outputStream { get; set; }
         private Func<Stream> _patchStream { get; set; }
