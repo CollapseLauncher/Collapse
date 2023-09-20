@@ -387,7 +387,7 @@ namespace CollapseLauncher
             BlockPatchManifest? patchConfigInfo = null;
 
             // Fetch only RecoverMain is disabled
-            using (FileStream fs1 = new FileStream(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath, FileMode.Create, FileAccess.ReadWrite))
+            using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath), FileMode.Create, FileAccess.ReadWrite))
             {
                 // Download the secondary XMF into MemoryStream
                 await _httpClient.Download(_isOnlyRecoverMain ? urlPriXMF : urlSecXMF, fs1, null, null, token);

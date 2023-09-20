@@ -224,6 +224,15 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region BaseTools
+        protected string EnsureCreationOfDirectory(string str)
+        {
+            string dir = Path.GetDirectoryName(str);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            return str;
+        }
+
         protected void TryUnassignReadOnlyFiles(string path)
         {
             // Iterate every files and set the read-only flag to false
