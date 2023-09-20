@@ -1,7 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Honkai;
-using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
@@ -26,7 +24,7 @@ namespace CollapseLauncher
         private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
         private string _blockAsbBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/asb"); }
         private string _blockPatchBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/patch"); }
-        private string _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, $"/{string.Join('_', _gameVersion.VersionArrayManifest)}"); }
+        private string _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, "/{0}"); }
         private string _blockPatchDiffPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/Patch"); }
         private string _blockBasePath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/"); }
         private bool _isOnlyRecoverMain { get; set; }
