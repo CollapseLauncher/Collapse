@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -327,6 +328,26 @@ namespace CollapseLauncher
         #endregion
 
         #region BlocksCheck
+        private BlockPatchInfo? TryGetPossibleOldBlockLinkedPatch(string directory, FilePropertiesRemote block)
+        {
+            if (!block.BlockPatchInfo.HasValue) return null;
+
+            BlockOldPatchInfo? existingOldBlockPair = block.BlockPatchInfo
+                .Value.PatchPairs?
+                .Where(x => File.Exists(
+                    Path.Combine(directory, x.OldHashStr) + ".wmv"
+                    ))?.FirstOrDefault();
+
+            if (!existingOldBlockPair.HasValue || string.IsNullOrEmpty(existingOldBlockPair.Value.PatchHashStr)) return null;
+
+            BlockOldPatchInfo oldBlockPairCopy = existingOldBlockPair.Value;
+
+            block.BlockPatchInfo?.PatchPairs.Clear();
+            block.BlockPatchInfo?.PatchPairs.Add(oldBlockPairCopy);
+
+            return block.BlockPatchInfo;
+        }
+
         private void CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
@@ -340,13 +361,16 @@ namespace CollapseLauncher
             _progressPerFileSizeCurrent = 0;
 
             // Get original and old path (for patching)
+            string blockPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath));
             string filePath = Path.Combine(_gamePath, asset.N);
             FileInfo file = new FileInfo(filePath);
-            string filePathOld = asset.BlockPatchInfo.HasValue ? Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.OldBlockName + ".wmv") : null;
-            FileInfo fileOld = asset.BlockPatchInfo.HasValue ? new FileInfo(filePathOld) : null;
+
+            BlockPatchInfo? patchInfo = TryGetPossibleOldBlockLinkedPatch(blockPath, asset);
+            string filePathOld = patchInfo.HasValue ? Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldHashStr + ".wmv") : null;
+            FileInfo fileOld = patchInfo.HasValue ? new FileInfo(filePathOld) : null;
 
             // If old block exist but current block doesn't, check if the hash of the old block matches and patchable
-            if (fileOld?.Exists ?? false && !file.Exists)
+            if ((fileOld?.Exists ?? false) && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
                 using (FileStream fileOldfs = new FileStream(filePathOld, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
@@ -355,10 +379,10 @@ namespace CollapseLauncher
                     byte[] localOldCRC = CheckHash(fileOldfs, MD5.Create(), token, false);
 
                     // If the hash matches, then add the patch
-                    if (IsArrayMatch(localOldCRC, asset.BlockPatchInfo?.OldHash))
+                    if (IsArrayMatch(localOldCRC, patchInfo?.PatchPairs[0].OldHash))
                     {
                         // Update the total progress and found counter
-                        _progressTotalSizeFound += asset.BlockPatchInfo.Value.PatchSize;
+                        _progressTotalSizeFound += (long)patchInfo?.PatchPairs[0].PatchSize;
                         _progressTotalCountFound++;
 
                         // Set the per size progress
@@ -371,8 +395,8 @@ namespace CollapseLauncher
                             new AssetProperty<RepairAssetType>(
                                 Path.GetFileName(asset.N),
                                 RepairAssetType.BlockUpdate,
-                                Path.GetDirectoryName(asset.N),
-                                asset.BlockPatchInfo.Value.PatchSize,
+                                Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo?.PatchPairs[0].OldVersion)})",
+                                (long)patchInfo?.PatchPairs[0].PatchSize,
                                 localOldCRC,
                                 asset.CRCArray
                             )
@@ -498,7 +522,7 @@ namespace CollapseLauncher
                         catalog.Add(path);
                         if (asset.BlockPatchInfo.HasValue)
                         {
-                            string oldBlockPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.OldBlockName + ".wmv");
+                            string oldBlockPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldHashStr + ".wmv");
                             catalog.Add(oldBlockPath);
                         }
                         break;
