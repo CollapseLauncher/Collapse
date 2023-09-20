@@ -109,7 +109,7 @@ namespace CollapseLauncher
 
             // Run patching task
             await RunPatchTask(_httpClient, token, asset.AudioPatchInfo.Value.PatchFileSize, asset.AudioPatchInfo.Value.PatchMD5Array,
-                patchURL, patchPath, inputFilePath, outputFilePath);
+                patchURL, patchPath, inputFilePath, outputFilePath, true);
 
             LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
 
