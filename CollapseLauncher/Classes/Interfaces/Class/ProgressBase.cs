@@ -496,7 +496,7 @@ namespace CollapseLauncher.Interfaces
 
         #region PatchTools
         protected virtual async ValueTask RunPatchTask(Http _httpClient, CancellationToken token, long patchSize, Memory<byte> patchHash,
-            string patchURL, string patchOutputFile, string inputFile, string outputFile)
+            string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
         {
             // Get info about patch file
             FileInfo patchInfo = new FileInfo(patchOutputFile);
@@ -541,6 +541,11 @@ namespace CollapseLauncher.Interfaces
 
                 // Delete old block
                 File.Delete(inputFile);
+                if (isNeedRename)
+                {
+                    // Rename to the original filename
+                    File.Move(outputFile, inputFile, true);
+                }
             }
             catch { throw; }
             finally
