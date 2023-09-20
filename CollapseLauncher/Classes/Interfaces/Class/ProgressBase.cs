@@ -532,8 +532,6 @@ namespace CollapseLauncher.Interfaces
 
                 // Delete old block
                 File.Delete(inputFile);
-                // Rename to the original filename
-                File.Move(outputFile, inputFile, true);
             }
             catch { throw; }
             finally
