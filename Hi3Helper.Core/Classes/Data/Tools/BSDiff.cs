@@ -287,6 +287,9 @@ namespace Hi3Helper.Data
                     // Get the size to copy
                     long bytesToCopy = control[0];
 
+                    // Seek old file to the position that the new data is diffed against
+                    _inputStream.Position = oldPosition;
+
                     // Start the copy process
                     while (bytesToCopy > 0)
                     {
