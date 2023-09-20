@@ -635,7 +635,7 @@ namespace CollapseLauncher.Pages
             {
                 while (!Token.IsCancellationRequested)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
@@ -1300,7 +1300,7 @@ namespace CollapseLauncher.Pages
         private async void GameLogWatcher()
         {
             await Task.Delay(5000);
-            while (App.IsGameRunning)
+            while (CurrentGameProperty.IsGameRunning)
             {
                 await Task.Delay(3000);
             }
@@ -1394,7 +1394,7 @@ namespace CollapseLauncher.Pages
         #region Playtime Buttons
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!App.IsGameRunning)
+            if (!CurrentGameProperty.IsGameRunning)
             {
                 UpdatePlaytime();
             }
@@ -1544,7 +1544,7 @@ namespace CollapseLauncher.Pages
 
                 if (!dynamicUpdate)
                 {
-                    while (App.IsGameRunning) { }
+                    while (CurrentGameProperty.IsGameRunning) { }
                     UpdatePlaytime();
                     return;
                 }
@@ -1553,7 +1553,7 @@ namespace CollapseLauncher.Pages
 
                 if (bootByCollapse)
                 {
-                    while (App.IsGameRunning)
+                    while (CurrentGameProperty.IsGameRunning)
                     {
                         await Task.Delay(60000, token);
                         elapsedSeconds += 60;
@@ -1563,7 +1563,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (App.IsGameRunning)
+                if (CurrentGameProperty.IsGameRunning)
                 {
                     await Task.Delay(60000, token);
                     int newTime = ReadPlaytimeFromRegistry(regionKey);
@@ -1573,7 +1573,7 @@ namespace CollapseLauncher.Pages
 
                 }
 
-                while (App.IsGameRunning)
+                while (CurrentGameProperty.IsGameRunning)
                 {
                     UpdatePlaytime(false, oldTime + elapsedSeconds);
                     elapsedSeconds += 60;
