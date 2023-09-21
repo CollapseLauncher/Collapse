@@ -12,6 +12,9 @@ using Microsoft.Win32;
 using RegistryUtils;
 using System;
 using System.IO;
+using System.Numerics;
+using System.Threading.Tasks;
+using Windows.Foundation;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -19,7 +22,16 @@ using static CollapseLauncher.Statics.GamePropertyVault;
 using Hi3Helper;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Windows.Globalization.NumberFormatting;
+using Windows.Graphics.DirectX;
 using CollapseLauncher.Statics;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.Graphics.Canvas;
+using Microsoft.UI;
+using Windows.Storage.Streams;
+using Windows.Storage;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Effects;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
 
 namespace CollapseLauncher.Pages
 {
@@ -30,6 +42,9 @@ namespace CollapseLauncher.Pages
         private Brush InheritApplyTextColor { get; set; }
         private RegistryMonitor RegistryWatcher { get; set; }
         private bool IsNoReload { get; set; }
+        private CanvasBitmap HDRCalibrationIcon;
+        private CanvasBitmap HDRCalibrationScene;
+        private CanvasBitmap HDRCalibrationUI;
         public GenshinGameSettingsPage()
         {
             try
@@ -356,16 +371,145 @@ namespace CollapseLauncher.Pages
         private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             MaxLuminosityValue.Value = Math.Round(e.NewValue, 1);
+            DrawHDRCalibrationImage1();
         }
 
         private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             UiPaperWhiteValue.Value = Math.Round(e.NewValue, 1);
+            DrawHDRCalibrationImage2();
         }
 
         private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
+            DrawHDRCalibrationImage2();
+        }
+
+        private async Task<StorageFile> GetAppFileAsync(Uri uri)
+        {
+            StorageFile file;
+            try
+            {
+                file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+            }
+            catch (ArgumentException)
+            {
+                file = await StorageFile.GetFileFromPathAsync(Path.GetFullPath("." + uri.LocalPath));
+            }
+            return file;
+        }
+
+        private void DrawHDRCalibrationImage1()
+        {
+            CanvasSwapChainPanel panel = HDRCalibrationPanel1;
+            CanvasSwapChain swapChain = panel.SwapChain;
+            if (swapChain == null) return;
+            float w = (float)panel.Width;
+            float h = (float)panel.Height;
+            float bgGain = (float)MaxLuminosity / 80;
+
+            using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.White))
+            {
+                CanvasSolidColorBrush white = CanvasSolidColorBrush.CreateHdr(swapChain, new Vector4(125, 125, 125, 1));
+                ds.FillRectangle(0, 0, w, h, white);
+
+                LinearTransferEffect bg = new LinearTransferEffect
+                {
+                    Source = HDRCalibrationIcon,
+                    BufferPrecision = CanvasBufferPrecision.Precision16Float,
+                    RedSlope = bgGain,
+                    GreenSlope = bgGain,
+                    BlueSlope = bgGain
+                };
+                ds.DrawImage(bg, new Rect(w * 0.1, h * 0.1, w * 0.8, h * 0.8), HDRCalibrationIcon.Bounds);
+            }
+            swapChain.Present();
+        }
+
+        private async void SwapChainPanel1_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            CanvasSwapChainPanel panel = sender as CanvasSwapChainPanel;
+            CanvasDevice device = CanvasDevice.GetSharedDevice();
+            float w = (float)panel.Width;
+            float h = (float)panel.Height;
+            float dpi = 96 * (float)XamlRoot.RasterizationScale;
+            CanvasSwapChain swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
+            panel.SwapChain = swapChain;
+
+            // Unpacked app failed to open ms-appx uri, so we need to read it manually :(
+            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationSign.png"));
+            using (IRandomAccessStream stream = await bgFile.OpenReadAsync())
+            {
+                HDRCalibrationIcon = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
+            }
+
+            DrawHDRCalibrationImage1();
+        }
+
+        private float GammaCorrection(float val, float max)
+        {
+            return val * MathF.Pow(val / max, 2.2f);
+        }
+
+        private void DrawHDRCalibrationImage2()
+        {
+            CanvasSwapChainPanel panel = HDRCalibrationPanel2;
+            CanvasSwapChain swapChain = panel.SwapChain;
+            if (swapChain == null) return;
+            float w = (float)panel.Width;
+            float h = (float)panel.Height;
+            float bgGain = (float)ScenePaperWhite / 80;
+            float uiGain = (GammaCorrection(((float)UiPaperWhite - (float)ScenePaperWhite + 350) * 2, 1600) + 50) / 80;
+
+            using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.White))
+            {
+                LinearTransferEffect bg = new LinearTransferEffect
+                {
+                    Source = HDRCalibrationScene,
+                    BufferPrecision = CanvasBufferPrecision.Precision16Float,
+                    RedSlope = bgGain,
+                    GreenSlope = bgGain,
+                    BlueSlope = bgGain
+                };
+                ds.DrawImage(bg, new Rect(0, 0, w, h), HDRCalibrationScene.Bounds);
+
+                LinearTransferEffect ui = new LinearTransferEffect
+                {
+                    Source = HDRCalibrationUI,
+                    BufferPrecision = CanvasBufferPrecision.Precision16Float,
+                    RedSlope = uiGain,
+                    GreenSlope = uiGain,
+                    BlueSlope = uiGain
+                };
+                ds.DrawImage(ui, new Rect(0, 0, w, h), HDRCalibrationUI.Bounds);
+            }
+            swapChain.Present();
+        }
+
+        private async void SwapChainPanel2_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            CanvasSwapChainPanel panel = sender as CanvasSwapChainPanel;
+            CanvasDevice device = CanvasDevice.GetSharedDevice();
+            float w = (float)panel.Width;
+            float h = (float)panel.Height;
+            float dpi = 96 * (float) XamlRoot.RasterizationScale;
+            CanvasSwapChain swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
+            panel.SwapChain = swapChain;
+
+            StorageFile bgFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationScene.jxr"));
+            using (IRandomAccessStream stream = await bgFile.OpenReadAsync())
+            {
+                HDRCalibrationScene = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
+            }
+
+            StorageFile uiFile = await GetAppFileAsync(new Uri("ms-appx:///Assets/Images/GenshinHDRCalibrationUI.jxr"));
+            using (IRandomAccessStream stream = await uiFile.OpenReadAsync())
+            {
+                HDRCalibrationUI = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
+            }
+
+            DrawHDRCalibrationImage2();
         }
     }
 }
