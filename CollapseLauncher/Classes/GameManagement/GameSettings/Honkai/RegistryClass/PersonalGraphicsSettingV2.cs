@@ -6,7 +6,6 @@ using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -160,20 +159,20 @@ namespace CollapseLauncher.GameSettings.Honkai
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return (PersonalGraphicsSettingV2?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) ?? new PersonalGraphicsSettingV2();
+                    return byteStr.Deserialize<PersonalGraphicsSettingV2>(HonkaiSettingsJSONContext.Default) ?? new PersonalGraphicsSettingV2();
                 }
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Failed while reading {_ValueName}" +
-                             $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
+                             $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
                     $"Failed when reading game settings {_ValueName}\r\n" +
-                    $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
 
@@ -186,7 +185,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = JsonSerializer.Serialize(this, typeof(PersonalGraphicsSettingV2), HonkaiSettingsJSONContext.Default) + '\0';
+                string data = this.Serialize(HonkaiSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

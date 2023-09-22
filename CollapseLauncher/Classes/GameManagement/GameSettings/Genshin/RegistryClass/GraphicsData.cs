@@ -4,8 +4,6 @@ using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
@@ -164,7 +162,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #nullable enable
         public static GraphicsData Load(string graphicsJson)
         {
-            GraphicsData graphics = (GraphicsData?)JsonSerializer.Deserialize(graphicsJson, typeof(GraphicsData), GenshinSettingsJSONContext.Default) ?? new GraphicsData();
+            GraphicsData graphics = graphicsJson.Deserialize<GraphicsData>(GenshinSettingsJSONContext.Default) ?? new GraphicsData();
             foreach (GenshinKeyValuePair setting in graphics.customVolatileGrades)
             {
                 switch (setting.key)
@@ -318,13 +316,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new GenshinKeyValuePair(19, (int)GlobalIllumination)
                 };
 
-            JsonSerializerOptions options = new JsonSerializerOptions()
-            {
-                TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-
-            string data = JsonSerializer.Serialize(this, typeof(GraphicsData), options);
+            string data = this.Serialize(GenshinSettingsJSONContext.Default, false);
 #if DEBUG
             LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
 #endif
