@@ -119,7 +119,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerHeight} : {height}", LogType.Debug, true);
                     LogWriteLine($"Loaded Genshin Settings: {_ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
-                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen};
+                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
                 }
             }
             catch (Exception ex)
