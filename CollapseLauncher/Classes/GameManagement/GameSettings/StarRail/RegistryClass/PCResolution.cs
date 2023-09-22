@@ -105,7 +105,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
                     JsonSerializerOptions options = new JsonSerializerOptions()
                     {
@@ -113,12 +113,19 @@ namespace CollapseLauncher.GameSettings.StarRail
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                     };
 
-                    return (PCResolution?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(PCResolution), options) ?? new PCResolution();
+                    return byteStr.Deserialize<PCResolution>(StarRailSettingsJSONContext.Default) ?? new PCResolution();
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while reading {_ValueName}" +
+                             $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
+                             $"\r\n  If the issue persist, please report it on GitHub" +
+                             $"\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception(
+                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"{ex}", ex));
             }
 
             return new PCResolution();
@@ -129,12 +136,8 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                JsonSerializerOptions options = new JsonSerializerOptions()
-                {
-                    TypeInfoResolver = StarRailSettingsJSONContext.Default,
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                };
-                string data = JsonSerializer.Serialize(this, typeof(PCResolution), options) + '\0';
+
+                string data = this.Serialize(StarRailSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

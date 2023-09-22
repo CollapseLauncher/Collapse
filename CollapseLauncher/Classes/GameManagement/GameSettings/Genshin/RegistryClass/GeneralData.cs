@@ -5,8 +5,6 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -207,10 +205,34 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         //unsure what these does, probably HDR stuff? doesn't have HDR monitor to test...
         //also doesn't seem to be tied into any actual game settings as Genshin doesn't have a native HDR
+
+        /// <summary>
+        /// This controls if HDR first-time Wizard in-game will be shown when game first starts. <br/>
+        /// is a boolean, Default: true <br/>
+        /// Reset this every time HDR settings is toggled on.
+        /// </summary>
         public bool firstHDRSetting { get; set; } = true;
-        public decimal maxLuminosity { get; set; } = 0.0m;
-        public decimal uiPaperWhite { get; set; } = 0.0m;
-        public decimal scenePaperWhite { get; set; } = 0.0m;
+
+        /// <summary>
+        /// This controls "<c>Adjust Display Brightness</c>" slider on "Adjust Brightness" settings screen with white logo. Controls maximum Luminosity allowed in nits.<br/>
+        /// Accepted values: 300.0m-2000.0m 
+        /// Default : 300.0m
+        /// </summary>
+        public decimal maxLuminosity { get; set; } = 300.0m;
+
+        /// <summary>
+        /// This controls "<c>Display Brightness</c>" slider in "Adjust Brightness" settings screen with scenery. Controls UI brightness.<br/>
+        /// Accepted values: 150.0m-550.0m
+        /// Default : 175.0m
+        /// </summary>
+        public decimal uiPaperWhite { get; set; } = 175.0m;
+
+        /// <summary>
+        /// This controls "<c>Scenery Brightness</c>" slider in "Adjust Brightness" settings screen with scenery. Controls overall scenery brightness.<br/>
+        /// Accepted values : 100.0m-500.0m
+        /// Default : 200.0m
+        /// </summary>
+        public decimal scenePaperWhite { get; set; } = 200.0m;
 
         /// <summary>
         /// This defines "<c>Gamma</c>" slider in-game. <br/>
@@ -295,28 +317,19 @@ namespace CollapseLauncher.GameSettings.Genshin
 #if DUMPGIJSON
                     // Dump GeneralData as raw string
                     LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
-                        $"{Encoding.UTF8.GetString((byte[])value)}", LogType.Debug, true);
+                        $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 
                     // Dump GeneralData as indented JSON output using GeneralData properties
-                    JsonSerializerOptions options_debug = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        WriteIndented = true
-                    };
-                    LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(JsonSerializer.Deserialize<GeneralData>(Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1), options_debug), options_debug)}", LogType.Debug, true);
+                    LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
+                        .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
+                        .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug,true);
+                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #else
                     LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
-                    JsonSerializerOptions options = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    };
-                    GeneralData data = (GeneralData?)JsonSerializer.Deserialize(byteStr.Slice(0, byteStr.Length - 1), typeof(GeneralData), options) ?? new GeneralData();
+                    GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     data.globalPerfData = new();
                     return data;
@@ -328,7 +341,14 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed while reading {_ValueName}" +
+                             $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
+                             $"\r\n  If the issue persist, please report it on GitHub" +
+                             $"\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception(
+                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
+                    $"{ex}", ex));
             }
 
             return new GeneralData();
@@ -342,24 +362,14 @@ namespace CollapseLauncher.GameSettings.Genshin
 
                 _graphicsData = graphicsData.Save();
                 _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
-                JsonSerializerOptions options = new JsonSerializerOptions()
-                {
-                    TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                };
-                string data = JsonSerializer.Serialize(this, typeof(GeneralData), options) + '\0';
+
+                string data = this.Serialize(GenshinSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DUMPGIJSON
                 //Dump saved GeneralData JSON from Collapse as indented output
-                JsonSerializerOptions options_debug = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = GenshinSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                        WriteIndented = true
-                    };
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{JsonSerializer.Serialize(this, typeof(GeneralData), options_debug)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{this.Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
@@ -371,7 +381,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"\r\n      Audio - Voice Volume : {volumeVoice}" +
                     $"\r\n      Audio - Dynamic Range: {audioDynamicRange}" +
                     $"\r\n      Audio - Surround     : {audioOutput}" +
-                    $"\r\n      Gamma                : {gammaValue}", LogType.Debug);
+                    $"\r\n      Gamma                : {gammaValue}" +
+                    $"\r\n      HDR - MaxLuminosity  : {maxLuminosity}" +
+                    $"\r\n      HDR - UIPaperWhite   : {uiPaperWhite}" +
+                    $"\r\n      HDR - ScenePaperWhite: {scenePaperWhite}", LogType.Debug);
 #else
                 LogWriteLine($"Saved Genshin Game Settings", LogType.Default, true);
 #endif
@@ -383,7 +396,6 @@ namespace CollapseLauncher.GameSettings.Genshin
         }
 
         public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
-#nullable disable
-#endregion
+        #endregion
     }
 }
