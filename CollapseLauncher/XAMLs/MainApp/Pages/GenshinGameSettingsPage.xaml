@@ -134,7 +134,7 @@
                                     </Expander.Header>
                                     <Expander.Content>
                                         <StackPanel Padding="10">
-                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel1" Width="128" Height="128" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8">
+                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8">
                                                 <ToolTipService.ToolTip>
                                                     <ToolTip Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}"/>
                                                 </ToolTipService.ToolTip>

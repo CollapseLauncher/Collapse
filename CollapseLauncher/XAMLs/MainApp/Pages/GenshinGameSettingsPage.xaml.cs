@@ -422,7 +422,7 @@ namespace CollapseLauncher.Pages
                     GreenSlope = bgGain,
                     BlueSlope = bgGain
                 };
-                ds.DrawImage(bg, new Rect(w * 0.1, h * 0.1, w * 0.8, h * 0.8), HDRCalibrationIcon.Bounds);
+                ds.DrawImage(bg, new Rect((w - 0.6 * h) / 2, h * 0.2, h * 0.6, h * 0.6), HDRCalibrationIcon.Bounds);
             }
             swapChain.Present();
         }
