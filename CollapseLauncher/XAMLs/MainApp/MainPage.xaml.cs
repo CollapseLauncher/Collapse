@@ -1150,15 +1150,11 @@ namespace CollapseLauncher
                 NotificationLostFocusBackground.Visibility = Visibility.Visible;
                 NotificationLostFocusBackground.Opacity = 0.3;
                 NotificationPanel.Translation += Shadow48;
-                ToggleNotificationPanelBtn.Translation -= Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"];
             }
             else
             {
                 NotificationLostFocusBackground.Opacity = 0;
                 NotificationPanel.Translation -= Shadow48;
-                ToggleNotificationPanelBtn.Translation += Shadow16;
-                (ToggleNotificationPanelBtn.Content as FontIcon).FontFamily = (FontFamily)Application.Current.Resources["FontAwesome"];
                 await Task.Delay(200);
                 NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
             }
