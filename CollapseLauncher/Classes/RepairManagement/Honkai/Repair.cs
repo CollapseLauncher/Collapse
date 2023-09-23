@@ -109,7 +109,7 @@ namespace CollapseLauncher
 
             // Run patching task
             await RunPatchTask(_httpClient, token, asset.AudioPatchInfo.Value.PatchFileSize, asset.AudioPatchInfo.Value.PatchMD5Array,
-                patchURL, patchPath, inputFilePath, outputFilePath);
+                patchURL, patchPath, inputFilePath, outputFilePath, true);
 
             LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
 
@@ -192,9 +192,9 @@ namespace CollapseLauncher
         private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
         {
             // Declare variables for patch file and URL and new file path
-            string patchURL = ConverterTool.CombineURLFromString(_blockPatchDiffBaseURL, asset.BlockPatchInfo.Value.PatchName + ".wmv");
-            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchName + ".wmv");
-            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo.Value.OldBlockName + ".wmv");
+            string patchURL = ConverterTool.CombineURLFromString(string.Format(_blockPatchDiffBaseURL, asset.BlockPatchInfo.Value.PatchPairs[0].OldVersionDir), asset.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
+            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
+            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo.Value.PatchPairs[0].OldHashStr + ".wmv");
             string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
 
             // Set downloading patch status
@@ -204,10 +204,10 @@ namespace CollapseLauncher
                 true);
 
             // Run patching task
-            await RunPatchTask(_httpClient, token, asset.BlockPatchInfo.Value.PatchSize, asset.BlockPatchInfo.Value.PatchHash,
+            await RunPatchTask(_httpClient, token, asset.BlockPatchInfo.Value.PatchPairs[0].PatchSize, asset.BlockPatchInfo.Value.PatchPairs[0].PatchHash,
                 patchURL, patchPath, inputFilePath, outputFilePath);
 
-            LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.OldBlockName} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
+            LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.PatchPairs[0].OldHashStr} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
 
             // Pop repair asset display entry
             PopRepairAssetEntry();

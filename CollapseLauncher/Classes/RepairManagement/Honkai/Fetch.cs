@@ -121,12 +121,12 @@ namespace CollapseLauncher
                 using (CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber))
                 {
                     // Enumerate and iterate the metadata to asset index
-                    BuildAndEnumerateVideoVersioningFile(CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, assetBundleURL);
+                    await BuildAndEnumerateVideoVersioningFile(_httpClient, token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, assetBundleURL);
                 }
             }
         }
 
-        private void BuildAndEnumerateVideoVersioningFile(IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, string assetBundleURL)
+        private async Task BuildAndEnumerateVideoVersioningFile(Http _httpClient, CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, string assetBundleURL)
         {
             // Get the base URL
             string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
@@ -137,8 +137,8 @@ namespace CollapseLauncher
                 // Iterate the metadata to be converted into asset index
                 foreach (CGMetadata metadata in enumEntry)
                 {
-                    // Only add remote available videos (not build-in)
-                    if (!metadata.InStreamingAssets)
+                    // Only add remote available videos (not build-in) and check if the CG file is available in the server
+                    if (!metadata.InStreamingAssets && await IsCGFileAvailable(_httpClient, metadata, baseURL, token))
                     {
                         string name = metadata.CgPath + ".usm";
                         assetIndex.Add(new FilePropertiesRemote
@@ -155,6 +155,27 @@ namespace CollapseLauncher
                 }
             }
         }
+
+        private async ValueTask<bool> IsCGFileAvailable(Http _httpClient, CGMetadata cgInfo, string baseURL, CancellationToken token)
+        {
+            // If the file has no appoinment schedule (like non-birthday CG), then return true
+            if (cgInfo.AppointmentDownloadScheduleID == 0) return true;
+
+            // Update the status
+            _status.ActivityStatus = string.Format("Trying to determine CG asset availability: {0}", cgInfo.CgExtraKey);
+            _status.IsProgressTotalIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
+            UpdateStatus();
+
+            // Set the URL and try get the status
+            string cgURL = CombineURLFromString(baseURL, cgInfo.CgPath + ".usm");
+            (int, bool) urlStatus = await _httpClient.GetURLStatus(cgURL, token);
+
+            LogWriteLine($"The CG asset: {cgInfo.CgPath} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
+
+            return urlStatus.Item2;
+        }
+
         #endregion
 
         #region AudioIndex
@@ -212,6 +233,9 @@ namespace CollapseLauncher
                 // Try get the availability of the audio asset
                 if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
                 {
+                    // Skip AUDIO_Default since it's already been provided by base index
+                    if (audioInfo.Name == "AUDIO_Default") continue;
+
                     // Assign based on each values
                     FilePropertiesRemote audioAsset = new FilePropertiesRemote
                     {
@@ -387,7 +411,7 @@ namespace CollapseLauncher
             BlockPatchManifest? patchConfigInfo = null;
 
             // Fetch only RecoverMain is disabled
-            using (FileStream fs1 = new FileStream(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath, FileMode.Create, FileAccess.ReadWrite))
+            using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(_isOnlyRecoverMain ? xmfPriPath : xmfSecPath), FileMode.Create, FileAccess.ReadWrite))
             {
                 // Download the secondary XMF into MemoryStream
                 await _httpClient.Download(_isOnlyRecoverMain ? urlPriXMF : urlSecXMF, fs1, null, null, token);
@@ -395,14 +419,17 @@ namespace CollapseLauncher
                 // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
                 if (!_isOnlyRecoverMain)
                 {
-                    using (FileStream fs2 = new FileStream(xmfPriPath, FileMode.Create, FileAccess.Write))
+                    using (FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath), FileMode.Create, FileAccess.Write))
                     {
                         fs1.Position = 0;
                         fs1.CopyTo(fs2);
                     }
 
+                    // Reset the secondary XMF stream position
+                    fs1.Position = 0;
+
                     // Fetch for PatchConfig.xmf file (Block patch metadata)
-                    patchConfigInfo = await FetchPatchConfigXMFFile(_httpClient, token);
+                    patchConfigInfo = await FetchPatchConfigXMFFile(fs1, _httpClient, token);
                 }
             }
 
@@ -411,7 +438,7 @@ namespace CollapseLauncher
 #nullable disable
         }
 
-        private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Http _httpClient, CancellationToken token)
+        private async Task<BlockPatchManifest> FetchPatchConfigXMFFile(Stream xmfStream, Http _httpClient, CancellationToken token)
         {
             // Set PatchConfig URL
             string urlPatchXMF = CombineURLFromString(_blockPatchBaseURL, "/PatchConfig.xmf");
@@ -433,8 +460,14 @@ namespace CollapseLauncher
                 // Reset the MemoryStream position
                 mfs.Position = 0;
 
+#nullable enable
+                // Get the version provided by the XMF
+                int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
+                if (gameVersion == null) return null;
+#nullable disable
+
                 // Initialize and parse the manifest, then return the Patch Asset
-                return new BlockPatchManifest(mfs, _gameVersion.VersionArrayManifest);
+                return new BlockPatchManifest(mfs, gameVersion);
             }
         }
 

@@ -378,15 +378,6 @@ namespace CollapseLauncher
         #endregion
 
         #region Tools
-        private string EnsureCreationOfDirectory(string str)
-        {
-            string dir = Path.GetDirectoryName(str);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            return str;
-        }
-
         private void CountAssetIndex(List<PkgVersionProperties> assetIndex)
         {
             _progressTotalSize = assetIndex.Sum(x => x.fileSize);

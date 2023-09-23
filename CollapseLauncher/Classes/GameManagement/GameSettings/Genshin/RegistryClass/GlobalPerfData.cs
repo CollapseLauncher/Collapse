@@ -1,6 +1,5 @@
 using CollapseLauncher.GameSettings.Genshin.Context;
 using System.Collections.Generic;
-using System.Text.Json;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GameSettings.Genshin
@@ -71,7 +70,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem (17,(int) graphics.AnisotropicFiltering - 1, version),
                 new PerfDataItem (19,(int) graphics.GlobalIllumination - 1, version)
             };
-            string data = JsonSerializer.Serialize(this, typeof(GlobalPerfData), GenshinSettingsJSONContext.Default);
+            string data = this.Serialize(GenshinSettingsJSONContext.Default, false);
 #if DEBUG
             LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", Hi3Helper.LogType.Debug, true);
 #endif

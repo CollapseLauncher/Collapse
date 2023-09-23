@@ -63,7 +63,7 @@ namespace Hi3Helper.Data
 
     public sealed class BinaryPatchUtility
     {
-        private const int c_bufferSize = 16 << 10;
+        private const int c_bufferSize = 32 << 10;
         private Stream _inputStream { get; set; }
         private Stream _outputStream { get; set; }
         private Func<Stream> _patchStream { get; set; }
@@ -286,6 +286,9 @@ namespace Hi3Helper.Data
 
                     // Get the size to copy
                     long bytesToCopy = control[0];
+
+                    // Seek old file to the position that the new data is diffed against
+                    _inputStream.Position = oldPosition;
 
                     // Start the copy process
                     while (bytesToCopy > 0)
