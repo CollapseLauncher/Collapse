@@ -392,13 +392,9 @@ namespace CollapseLauncher
                 }))
                 await using (Stream netStream = await FallbackCDNUtil.DownloadAsStream(URL, token))
                     await netStream.CopyToAsync(fs, token);
-
 #if DEBUG
-                LogWriteLine
-#else
-            LogWrite
+                LogWriteLine($"Downloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
 #endif
-                ($"Downloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
             }
             catch (Exception ex)
             {
