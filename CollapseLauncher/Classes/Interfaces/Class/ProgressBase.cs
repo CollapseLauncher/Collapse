@@ -375,7 +375,7 @@ namespace CollapseLauncher.Interfaces
                     if (url.StartsWith(HTTPSScheme))
                     {
                         // Get the trimmed URL without HTTPS scheme as span
-                        ReadOnlySpan<char> trimmedURL = url.TrimStart(HTTPSScheme);
+                        ReadOnlySpan<char> trimmedURL = url.Slice(HTTPSScheme.Length);
                         // Set the trimmed URL
                         asset.SetRemoteURL(string.Concat(HTTPScheme, trimmedURL));
                     }
