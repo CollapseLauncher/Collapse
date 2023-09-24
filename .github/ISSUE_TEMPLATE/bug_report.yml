@@ -2,7 +2,7 @@
 name: Bug Report
 description: Create a report to help us fix Collapse!
 title: "[Bug]: "
-labels: 'Needs Triaging'
+labels: ['Needs Triaging']
 body:
   - type: markdown
     attributes:
