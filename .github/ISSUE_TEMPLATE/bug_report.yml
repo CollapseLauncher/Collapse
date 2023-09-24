@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Hello and thank you for trying to help us make Collapse better for everyone!
+        Thank you for trying to help us make Collapse better for everyone!
         Before filling anything out, please make sure that there **aren't** any open/closed issues for this topic & that this is *reproducible*.
         All text areas support markdown syntax unless explicitly noted otherwise.
 
@@ -16,7 +16,7 @@ body:
     attributes:
       label: Affected Version
       description: Known versions/branches of the project that the bug affects.
-      placeholder: e.g. Collapse 1.69.22
+      placeholder: e.g. Collapse 1.71.10
     validations:
       required: true
   
