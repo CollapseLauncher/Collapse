@@ -1182,9 +1182,10 @@ namespace CollapseLauncher.InstallManager.Base
             if (!packageOutInfo.Exists
               || packageOutInfo.Length != package.SizeDownloaded)
             {
-                // If the package size is less than 10 MB, then forcefully use a single-session download
-                bool isCanMultiSession = false;
-                if (isCanMultiSession = (package.SizeDownloaded < (10 << 20)))
+                // If the package size is more than or equal to 10 MB, then allow to use multi-session.
+                // Otherwise, forcefully use single-session.
+                bool isCanMultiSession;
+                if (isCanMultiSession = (package.SizeDownloaded >= (10 << 20)))
                     await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
                 else
                     await _httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
