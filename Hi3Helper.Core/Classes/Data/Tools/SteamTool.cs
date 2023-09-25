@@ -149,9 +149,18 @@ namespace Hi3Helper.Data
             var steamPath = GetSteamPath();
             var libraries = new List<string>() { steamPath };
 
-            if (steamPath == null) return null;
+            if (steamPath == null)
+            {
+                Logger.LogWriteLine("Steam not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
+                return null;
+            }
 
             var listFile = Path.Combine(steamPath, @"steamapps\libraryfolders.vdf");
+            if (!File.Exists(listFile))
+            {
+                Logger.LogWriteLine("LibraryFolder.vdf not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
+                return null;
+            }
             var lines = File.ReadAllLines(listFile);
             foreach (var line in lines)
             {
@@ -172,6 +181,7 @@ namespace Hi3Helper.Data
         {
             object a = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", "C:/Program Files (x86)/Steam");
             if (a == null) return null;
+            if(!Directory.Exists(a as string)) return null;
             return ((string)a).Replace('\\', '/');
         }
 
