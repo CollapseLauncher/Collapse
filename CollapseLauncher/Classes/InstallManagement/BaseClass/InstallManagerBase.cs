@@ -906,29 +906,37 @@ namespace CollapseLauncher.InstallManager.Base
 
         private bool TryGetExistingSteamPath(ref string OutputPath)
         {
-            // If the game preset doesn't have SteamGameID, then return false
-            if (_gameVersionManager.GamePreset.SteamGameID == null) return false;
-            // Assign Steam ID
-            int steamID = _gameVersionManager.GamePreset.SteamGameID ?? 0;
-
-            // Try get the list of Steam Libs and Apps
-            List<string> steamLibsList = SteamTool.GetSteamLibs();
-            if (steamLibsList == null) return false;
-
-            List<SteamTool.AppInfo> steamAppList = SteamTool.GetSteamApps(steamLibsList);
-#nullable enable
-            SteamTool.AppInfo? steamAppInfo = steamAppList.Where(x => x.Id == steamID).FirstOrDefault();
-
-            // If the app info is not null, then assign OutputPath to the game path
-            if (steamAppInfo != null)
+            try
             {
-                OutputPath = steamAppInfo?.GameRoot;
-                return true;
-            }
+                // If the game preset doesn't have SteamGameID, then return false
+                if (_gameVersionManager.GamePreset.SteamGameID == null) return false;
+                // Assign Steam ID
+                int steamID = _gameVersionManager.GamePreset.SteamGameID ?? 0;
+
+                // Try get the list of Steam Libs and Apps
+                List<string> steamLibsList = SteamTool.GetSteamLibs();
+                if (steamLibsList == null) return false;
+
+                List<SteamTool.AppInfo> steamAppList = SteamTool.GetSteamApps(steamLibsList);
+#nullable enable
+                SteamTool.AppInfo? steamAppInfo = steamAppList.Where(x => x.Id == steamID).FirstOrDefault();
+
+                // If the app info is not null, then assign OutputPath to the game path
+                if (steamAppInfo != null)
+                {
+                    OutputPath = steamAppInfo?.GameRoot;
+                    return true;
+                }
 #nullable disable
 
-            // If none of them has it, then return false
-            return false;
+                // If none of them has it, then return false
+                return false;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failure when checking for Steam game installation! Treating as non-Steam installation\r\n\tPlease report this issue if you think this is not right.\r\n{ex}", LogType.Error, true);
+                return false;
+            }
         }
 
         private bool TryGetExistingBHI3LPath(ref string OutputPath)
