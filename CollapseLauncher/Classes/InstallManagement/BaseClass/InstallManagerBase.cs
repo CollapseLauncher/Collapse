@@ -1165,14 +1165,16 @@ namespace CollapseLauncher.InstallManager.Base
 
             // If the file exist or package size is unmatched,
             // then start downloading
-            FileInfo packageOutInfo = new FileInfo(package.PathOutput);
-            if (!packageOutInfo.Exists
-              || packageOutInfo.Length != package.SizeDownloaded)
+            long existingPackageFileSize = package.GetStreamLength(_downloadThreadCount);
+            bool isExistingPackageFileExist = package.IsReadStreamExist(_downloadThreadCount);
+
+            if (!isExistingPackageFileExist
+              || existingPackageFileSize != package.Size)
             {
                 // If the package size is more than or equal to 10 MB, then allow to use multi-session.
                 // Otherwise, forcefully use single-session.
                 bool isCanMultiSession;
-                if (isCanMultiSession = (package.SizeDownloaded >= (10 << 20)))
+                if (isCanMultiSession = package.Size >= (10 << 20))
                     await _httpClient.Download(package.URL, package.PathOutput, _downloadThreadCount, false, token);
                 else
                     await _httpClient.Download(package.URL, package.PathOutput, false, null, null, token);
