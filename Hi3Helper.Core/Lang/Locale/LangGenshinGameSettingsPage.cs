@@ -81,8 +81,11 @@
 
                 public string Graphics_HDR { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR;
                 public string Graphics_HDR_Enable { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Enable;
-                public string Graphics_HDR_Help1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Help1;
-                public string Graphics_HDR_Help2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Help2;
+                public string Graphics_HDR_NotSupported1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_NotSupported1;
+                public string Graphics_HDR_NotSupported2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_NotSupported2;
+                public string Graphics_HDR_NotEnabled1 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_NotEnabled1;
+                public string Graphics_HDR_NotEnabled2 { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_NotEnabled2;
+                public string Graphics_HDR_Help_Link { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Help_Link;
                 public string Graphics_HDR_MaxLuminosity { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity;
                 public string Graphics_HDR_MaxLuminosity_Help { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help;
                 public string Graphics_HDR_Calibration_Help { get; set; } = LangFallback?._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help;

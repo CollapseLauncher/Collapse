@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -45,6 +46,9 @@ namespace CollapseLauncher.Pages
         private CanvasBitmap HDRCalibrationIcon;
         private CanvasBitmap HDRCalibrationScene;
         private CanvasBitmap HDRCalibrationUI;
+        private bool IsHDREnabled { get; }
+        private bool IsHDRSupported { get; }
+
         public GenshinGameSettingsPage()
         {
             try
@@ -55,6 +59,11 @@ namespace CollapseLauncher.Pages
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig));
                     ToggleRegistrySubscribe(true);
                 });
+
+                DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
+                DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
+                IsHDREnabled = colorInfo.CurrentAdvancedColorKind == DisplayAdvancedColorKind.HighDynamicRange;
+                IsHDRSupported = colorInfo.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange);
 
                 LoadPage();
             }
@@ -510,6 +519,11 @@ namespace CollapseLauncher.Pages
             }
 
             DrawHDRCalibrationImage2();
+        }
+
+        private void HDRExpander_OnExpanding(Expander sender, ExpanderExpandingEventArgs args)
+        {
+            sender.IsExpanded = IsHDREnabled;
         }
     }
 }

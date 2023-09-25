@@ -19,6 +19,7 @@
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
         <f:DecimalFormatter x:Key="DecimalFormatter" SignificantDigits="5"/>
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
+        <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -82,10 +83,10 @@
                             </StackPanel>
                             <StackPanel x:Name="HDRSettings" Orientation="Vertical">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,8,8,8"/>
-                                <Expander Margin="0,0,0,8" MinWidth="400" MaxWidth="700" HorizontalContentAlignment="Stretch" CornerRadius="8" x:Name="HDRExpander">
+                                <Expander Margin="0,0,0,8" MinWidth="400" MaxWidth="700" HorizontalContentAlignment="Stretch" CornerRadius="8" x:Name="HDRExpander" Expanding="HDRExpander_OnExpanding">
                                     <Expander.Header>
                                         <Grid>
-                                            <CheckBox x:Name="HDRCheckBox" IsChecked="{x:Bind IsHDR, Mode=TwoWay}">
+                                            <CheckBox x:Name="HDRCheckBox" IsChecked="{x:Bind IsHDR, Mode=TwoWay}" IsEnabled="{x:Bind IsHDREnabled}">
                                                 <CheckBox.Content>
                                                     <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Enable}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                                 </CheckBox.Content>
@@ -97,35 +98,46 @@
                                                 <Button.Flyout>
                                                     <Flyout>
                                                         <StackPanel>
-                                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" TextAlignment="Center" TextWrapping="WrapWholeWords" MaxWidth="300">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help1}"/><LineBreak/>
-                                                                    <Hyperlink NavigateUri="https://support.microsoft.com/en-us/windows/hdr-settings-in-windows-2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help2}"/>
-                                                                    </Hyperlink><LineBreak/>
-                                                            </TextBlock>
-                                                            <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left">
-                                                                <Paragraph FontWeight="SemiBold">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}"/>
-                                                                </Paragraph>
-                                                                <Paragraph FontSize="13">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}"/><LineBreak/>
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}"/>
-                                                                </Paragraph>
-                                                                <Paragraph FontSize="2"/>
-                                                                <Paragraph FontWeight="SemiBold">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}"/>
-                                                                </Paragraph>
-                                                                <Paragraph FontSize="13">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}"/>
-                                                                </Paragraph>
-                                                                <Paragraph FontSize="2"/>
-                                                                <Paragraph FontWeight="SemiBold">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}"/>
-                                                                </Paragraph>
-                                                                <Paragraph FontSize="13">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}"/>
-                                                                </Paragraph>
-                                                            </RichTextBlock>
+                                                            <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Visibility="{x:Bind IsHDRSupported, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported1}"/><LineBreak/>
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported2}"/><LineBreak/>
+                                                                </TextBlock>
+                                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Visibility="{x:Bind IsHDRSupported, Converter={StaticResource BooleanVisibilityConverter}}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled1}"/><LineBreak/>
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled2}"/><LineBreak/>
+                                                                </TextBlock>
+                                                                <TextBlock>
+                                                                    <Hyperlink NavigateUri="https://support.microsoft.com/windows/2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help_Link}"/>
+                                                                    </Hyperlink>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource BooleanVisibilityConverter}}">
+                                                                <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left" IsTextSelectionEnabled="False">
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}"/><LineBreak/>
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="2"/>
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="2"/>
+                                                                    <Paragraph FontWeight="SemiBold">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}"/>
+                                                                    </Paragraph>
+                                                                    <Paragraph FontSize="13">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}"/>
+                                                                    </Paragraph>
+                                                                </RichTextBlock>
+                                                            </StackPanel>
                                                         </StackPanel>
                                                     </Flyout>
                                                 </Button.Flyout>
