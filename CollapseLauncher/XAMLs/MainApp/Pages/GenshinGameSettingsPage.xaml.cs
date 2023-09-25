@@ -1,11 +1,19 @@
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Statics;
+using Hi3Helper;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
 #endif
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Win32;
@@ -15,22 +23,14 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Globalization.NumberFormatting;
+using Windows.Graphics.DirectX;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
-using Hi3Helper;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Windows.Globalization.NumberFormatting;
-using Windows.Graphics.DirectX;
-using CollapseLauncher.Statics;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using Microsoft.Graphics.Canvas;
-using Microsoft.UI;
-using Windows.Storage.Streams;
-using Windows.Storage;
-using Microsoft.Graphics.Canvas.Brushes;
-using Microsoft.Graphics.Canvas.Effects;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 
 namespace CollapseLauncher.Pages
@@ -90,7 +90,7 @@ namespace CollapseLauncher.Pages
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
-            GameSettingsApplyGrid.Translation = new System.Numerics.Vector3(0, 0, 64);
+            GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
 
             InheritApplyTextColor = ApplyText.Foreground;
         }
