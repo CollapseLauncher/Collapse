@@ -880,6 +880,7 @@
 
     "Audio_Output_Surround": "Use Surround Sound",
     "Audio_DynamicRange": "Full Dynamic Range",
+    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
 
     "Language": "Language Settings",
     "Language_Help1": "Collapse currently cannot download Audio package directly.",

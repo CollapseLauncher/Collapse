@@ -381,6 +381,12 @@ namespace CollapseLauncher.Pages
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.audioOutput);
             set => Settings.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
         }
+
+        public bool Audio_MuteOnMinimized
+        {
+            get => Settings.SettingsGeneralData.muteAudioOnAppMinimized;
+            set => Settings.SettingsGeneralData.muteAudioOnAppMinimized = value;
+        }
         #endregion
 
         #region Language

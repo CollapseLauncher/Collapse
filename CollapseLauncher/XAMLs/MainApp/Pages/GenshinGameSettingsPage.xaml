@@ -12,6 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:f="using:Windows.Globalization.NumberFormatting"
     xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>
@@ -441,26 +442,17 @@
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,0,0,8">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
+                        <controls:UniformGrid Columns="3">
                             <StackPanel Grid.Column="0">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <CheckBox x:Name="AudioDynamicRangeToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_DynamicRange}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <CheckBox x:Name="AudioSurroudToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_Output_Surround}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_Surround, Mode=TwoWay}"/>
-                                    </StackPanel>
-                                </Grid>
+                                <CheckBox x:Name="AudioDynamicRangeToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_DynamicRange}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}"/>
                             </StackPanel>
-                        </Grid>
+                            <StackPanel Grid.Column="1">
+                                <CheckBox x:Name="AudioSurroudToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_Output_Surround}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_Surround, Mode=TwoWay}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <CheckBox x:Name="AudioMuteOnMinimizeToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </controls:UniformGrid>
                     </StackPanel>
                     <MenuFlyoutSeparator Margin="0,4,0,8"/>
                     <StackPanel>
