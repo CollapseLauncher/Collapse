@@ -50,9 +50,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.4.230822000, )",
-        "resolved": "1.4.230822000",
-        "contentHash": "QeR+4u7j0z9RWhVzTbr/5izWmq7k3GkjxCFbXNuYtIHYDm2YcdIH5Kvn+9tpMLweFzDZO7YVzVvvyQGivUtNcw==",
+        "requested": "[1.3.230724000, )",
+        "resolved": "1.3.230724000",
+        "contentHash": "cCw26h8Uh8IjDMOUzHaR7/IKxEVJxuqEOgBlmLj0Pu1wDezZb9J0Wz53Vop10FQUOZaTfnwDcHavyPTxgkwbKQ==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
