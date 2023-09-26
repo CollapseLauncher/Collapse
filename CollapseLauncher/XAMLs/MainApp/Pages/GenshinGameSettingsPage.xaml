@@ -442,7 +442,7 @@
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,0,0,8">
-                        <controls:UniformGrid Columns="3">
+                        <controls:UniformGrid Columns="3" HorizontalAlignment="Left">
                             <StackPanel Grid.Column="0">
                                 <CheckBox x:Name="AudioDynamicRangeToggle" Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_DynamicRange}" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}"/>
                             </StackPanel>
