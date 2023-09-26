@@ -11,6 +11,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:f="using:Windows.Globalization.NumberFormatting"
+    xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d"
     Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>
@@ -18,6 +19,7 @@
         <conv:InverseBooleanConverter x:Key="BooleanInverse"/>
         <f:DecimalFormatter x:Key="DecimalFormatter" SignificantDigits="5"/>
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
+        <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
     </Page.Resources>
     <Grid>
         <Grid x:Name="PageContent">
@@ -81,35 +83,44 @@
                             </StackPanel>
                             <StackPanel x:Name="HDRSettings" Orientation="Vertical">
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,8,8,8"/>
-                                <Expander Margin="0,0,0,8" MinWidth="400" MaxWidth="700" HorizontalContentAlignment="Stretch" CornerRadius="8" x:Name="HDRExpander" IsExpanded="{x:Bind IsHDR, Mode=OneWay}">
+                                <Expander Margin="0,0,0,8" MinWidth="400" MaxWidth="700" HorizontalContentAlignment="Stretch" CornerRadius="8" x:Name="HDRExpander" Expanding="HDRExpander_OnExpanding">
                                     <Expander.Header>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="HDRCheckBox" IsChecked="{x:Bind IsHDR, Mode=TwoWay}">
-                                                    <CheckBox.Content>
-                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Enable}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                                    </CheckBox.Content>
-                                                </CheckBox>
-                                                <Button Margin="300,0,0,0" HorizontalAlignment="Right" Height="30" Width="30" CornerRadius="4" Padding="0">
-                                                    <Button.Content>
-                                                        <FontIcon FontFamily="{ThemeResource FontAwesome}" HorizontalAlignment="Center" Glyph="&#x3f;" FontSize="10"/>
-                                                    </Button.Content>
-                                                    <Button.Flyout>
-                                                        <Flyout>
-                                                            <StackPanel>
-                                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" TextAlignment="Center">
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help1}"/><LineBreak/>
-                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help2}"/><LineBreak/>
-                                                                    <Hyperlink NavigateUri="https://support.microsoft.com/en-us/windows/hdr-settings-in-windows-2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help3}"/>
-                                                                    </Hyperlink><LineBreak/>
+                                        <Grid>
+                                            <CheckBox x:Name="HDRCheckBox" IsChecked="{x:Bind IsHDR, Mode=TwoWay}" IsEnabled="{x:Bind IsHDREnabled}">
+                                                <CheckBox.Content>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Enable}" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                                </CheckBox.Content>
+                                            </CheckBox>
+                                            <Button HorizontalAlignment="Right" Height="30" Width="30" CornerRadius="4" Padding="0">
+                                                <Button.Content>
+                                                    <FontIcon FontFamily="{ThemeResource FontAwesome}" HorizontalAlignment="Center" Glyph="&#x3f;" FontSize="10"/>
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout>
+                                                        <StackPanel>
+                                                            <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Visibility="{x:Bind IsHDRSupported, Converter={StaticResource InverseBooleanVisibilityConverter}}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported1}"/><LineBreak/>
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotSupported2}"/><LineBreak/>
                                                                 </TextBlock>
-                                                                <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left">
+                                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Visibility="{x:Bind IsHDRSupported, Converter={StaticResource BooleanVisibilityConverter}}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled1}"/><LineBreak/>
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_NotEnabled2}"/><LineBreak/>
+                                                                </TextBlock>
+                                                                <TextBlock>
+                                                                    <Hyperlink NavigateUri="https://support.microsoft.com/windows/2d767185-38ec-7fdc-6f97-bbc6c5ef24e6">
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Help_Link}"/>
+                                                                    </Hyperlink>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource BooleanVisibilityConverter}}">
+                                                                <RichTextBlock Style="{ThemeResource BodyRichTextBlockStyle}" TextAlignment="Left" IsTextSelectionEnabled="False">
                                                                     <Paragraph FontWeight="SemiBold">
                                                                         <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}"/>
                                                                     </Paragraph>
                                                                     <Paragraph FontSize="13">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}"/>
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}"/><LineBreak/>
+                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}"/>
                                                                     </Paragraph>
                                                                     <Paragraph FontSize="2"/>
                                                                     <Paragraph FontWeight="SemiBold">
@@ -127,29 +138,31 @@
                                                                     </Paragraph>
                                                                 </RichTextBlock>
                                                             </StackPanel>
-                                                        </Flyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </Grid>
-                                        </StackPanel>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
                                     </Expander.Header>
                                     <Expander.Content>
-                                        <StackPanel>
+                                        <StackPanel Padding="10">
+                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel1" Width="360" Height="203" Loaded="SwapChainPanel1_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                                                <NumberBox Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/> 
+                                                <NumberBox Name="MaxLuminosityValue" HorizontalAlignment="Right" Minimum="300.0" Maximum="2000.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="MaxLuminosityValue_ValueChanged"/>
                                             </Grid>
                                             <Slider x:Name="MaxLuminositySlider" Minimum="300.0" Maximum="2000.0" HorizontalAlignment="Center" MinWidth="350" MaxWidth="514" StepFrequency="50" TickFrequency="100" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind MaxLuminosity,Mode=TwoWay}" ValueChanged="MaxLuminositySlider_ValueChanged" Margin="0,0,0,4"/>
-                                            <Grid>
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                                                <NumberBox Name="UiPaperWhiteValue" HorizontalAlignment="Right" VerticalAlignment="Center" Minimum="150.0" Maximum="550.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" Height="32" ValueChanged="UiPaperWhiteValue_ValueChanged"/>
-                                            </Grid>
-                                            <Slider x:Name="UiPaperWhiteSlider" Minimum="150.0" Maximum="550.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="25" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind UiPaperWhite, Mode=TwoWay}" ValueChanged="UiPaperWhiteSlider_ValueChanged" Margin="0,0,0,4"/>
+                                            <xaml:CanvasSwapChainPanel Name="HDRCalibrationPanel2" Width="360" Height="203" Loaded="SwapChainPanel2_OnLoaded" Margin="0,0,0,8"/>
                                             <Grid>
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
                                                 <NumberBox Name="ScenePaperWhiteValue" HorizontalAlignment="Right" Minimum="100.0" Maximum="500.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" ValueChanged="ScenePaperWhiteValue_ValueChanged"/>
                                             </Grid>
-                                            <Slider x:Name="ScenePaperWhiteSlider" Minimum="100.0" Maximum="500.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="25" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind ScenePaperWhite, Mode=TwoWay}"  ValueChanged="ScenePaperWhiteSlider_ValueChanged"/>
+                                            <Slider x:Name="ScenePaperWhiteSlider" Minimum="100.0" Maximum="500.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="5" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind ScenePaperWhite, Mode=TwoWay}"  ValueChanged="ScenePaperWhiteSlider_ValueChanged"/>
+                                            <Grid>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                                                <NumberBox Name="UiPaperWhiteValue" HorizontalAlignment="Right" VerticalAlignment="Center" Minimum="150.0" Maximum="550.0" NumberFormatter="{StaticResource DecimalFormatter}" CornerRadius="8,8,0,0" Margin="0,0,0,0" Height="32" ValueChanged="UiPaperWhiteValue_ValueChanged"/>
+                                            </Grid>
+                                            <Slider x:Name="UiPaperWhiteSlider" Minimum="150.0" Maximum="550.0" HorizontalAlignment="Center" MinWidth="350" StepFrequency="5" TickFrequency="25" TickPlacement="Outside" IsThumbToolTipEnabled="False" Value="{x:Bind UiPaperWhite, Mode=TwoWay}" ValueChanged="UiPaperWhiteSlider_ValueChanged" Margin="0,0,0,4"/>
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>

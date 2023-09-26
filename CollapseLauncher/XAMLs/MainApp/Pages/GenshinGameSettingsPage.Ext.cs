@@ -314,23 +314,8 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings - HDR
         public bool IsHDR
         {
-            get
-            {
-                var HDR = (bool)Settings.SettingsWindowsHDR.isHDR;
-                if (HDR)
-                    HDRExpander.IsExpanded = true;
-                else
-                    HDRExpander.IsExpanded = false;
-                return HDR;
-            }
-            set
-            {
-                if (value)
-                    HDRExpander.IsExpanded = true;
-                else
-                    HDRExpander.IsExpanded = false;
-                Settings.SettingsWindowsHDR.isHDR = value;
-            }
+            get => Settings.SettingsWindowsHDR.isHDR;
+            set => Settings.SettingsWindowsHDR.isHDR = value;
         }
 
         public double MaxLuminosity
@@ -351,6 +336,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGeneralData.scenePaperWhite = (decimal)Math.Round(value, 1);
         }
         #endregion
+
         #region Audio
         public int Audio_Global
         {

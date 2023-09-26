@@ -25,4 +25,10 @@ namespace CollapseLauncher.Pages
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
+
+    public class InverseBooleanVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string input) => !(bool)value ? Visibility.Visible : Visibility.Collapsed;
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+    }
 }
