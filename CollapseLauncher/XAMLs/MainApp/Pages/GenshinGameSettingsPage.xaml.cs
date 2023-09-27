@@ -62,8 +62,13 @@ namespace CollapseLauncher.Pages
 
                 DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
                 DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
+#if SIMULATEGIHDR
+                IsHDREnabled = true;
+                IsHDRSupported = true;
+#else
                 IsHDREnabled = colorInfo.CurrentAdvancedColorKind == DisplayAdvancedColorKind.HighDynamicRange;
                 IsHDRSupported = colorInfo.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange);
+#endif
 
                 LoadPage();
             }

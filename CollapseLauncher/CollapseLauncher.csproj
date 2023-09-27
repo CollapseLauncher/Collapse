@@ -30,9 +30,10 @@
 		- ENABLEHTTPREPAIR : Override HTTPS download scheme to HTTP while downloading repair files
 		- SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
 		- DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
+    - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
 -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW</DefineConstants>
