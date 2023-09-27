@@ -316,13 +316,14 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                if (Settings.SettingsWindowsHDR.isHDR || Settings.SettingsGeneralData.enableHDR) return true;
+                if (Hi3Helper.Shared.Region.LauncherConfig.GetAppConfigValue("ForceGIHDREnable").ToBool() || Settings.SettingsWindowsHDR.isHDR || Settings.SettingsGeneralData.enableHDR) return true;
                 return false;
             }
             set
             {
                 Settings.SettingsWindowsHDR.isHDR = value;
                 Settings.SettingsGeneralData.enableHDR = value;
+                Hi3Helper.Shared.Region.LauncherConfig.SetAndSaveConfigValue("ForceGIHDREnable", value);
             } 
         }
 
