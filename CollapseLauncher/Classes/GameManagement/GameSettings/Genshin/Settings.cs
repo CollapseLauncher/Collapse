@@ -44,6 +44,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public void ReloadSettings()
         {
+            // To ease up resource and prevent bad JSON locking up launcher
             SettingsGeneralData = GeneralData.Load();
             InitializeSettings();
         } 

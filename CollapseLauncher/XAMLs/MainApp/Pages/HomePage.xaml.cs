@@ -1822,7 +1822,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Collapse Priority Control
+        #region Misc Methods
         private async void CollapsePrioControl(Process proc)
         {
             try
@@ -1850,9 +1850,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
         }
-        #endregion
 
-        #region GenshinHDR
         private void GenshinHDREnforcer()
         {
             GameSettings.Genshin.WindowsHDR GenshinHDR = new GameSettings.Genshin.WindowsHDR();

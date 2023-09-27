@@ -317,6 +317,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
+                // Set IsHDR to true if ANY of these is at least true. This is because behavior in GI 4.1.0 pulling isHDR and enableHDR to false for no reason after game close
                 if (GetAppConfigValue("ForceGIHDREnable").ToBool() || Settings.SettingsWindowsHDR.isHDR || Settings.SettingsGeneralData.enableHDR) return true;
                 return false;
             }
