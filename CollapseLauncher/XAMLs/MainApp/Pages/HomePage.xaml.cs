@@ -1855,12 +1855,12 @@ namespace CollapseLauncher.Pages
         #region GenshinHDR
         private void GenshinHDREnforcer()
         {
-            GameSettings.Genshin.GenshinSettings GenshinSettings = (GameSettings.Genshin.GenshinSettings)CurrentGameProperty._GameSettings;
+            GameSettings.Genshin.WindowsHDR GenshinHDR = new GameSettings.Genshin.WindowsHDR();
             try
             {
-                GenshinSettings.ReloadSettings();
-                GenshinSettings.SettingsWindowsHDR.isHDR = true;
-                GenshinSettings.SaveSettings();
+                GameSettings.Genshin.WindowsHDR.Load();
+                GenshinHDR.isHDR = true;
+                GenshinHDR.Save();
                 LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
             }
             catch (Exception ex)
