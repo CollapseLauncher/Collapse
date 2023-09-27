@@ -779,9 +779,6 @@ namespace CollapseLauncher.Pages
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
 
-                    if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
-                        GenshinHDREnforcer();
-
                     await Task.Delay(100, Token);
 #if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
@@ -1154,6 +1151,9 @@ namespace CollapseLauncher.Pages
                     ReadOutputLog();
                     GameLogWatcher();
                 }
+
+                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
+                    GenshinHDREnforcer();
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
