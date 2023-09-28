@@ -667,7 +667,7 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.Visibility = Visibility.Visible;
                         CustomStartupArgs.Visibility = Visibility.Visible;
                     }
-                    return;
+                    break;
                 case GameInstallStateEnum.InstalledHavePreload:
                     {
                         RepairGameButton.Visibility = RepairGameButtonVisible;
@@ -677,7 +677,7 @@ namespace CollapseLauncher.Pages
                         NeedShowEventIcon = false;
                         SpawnPreloadBox();
                     }
-                    return;
+                    break;
                 case GameInstallStateEnum.NeedsUpdate:
                     {
                         RepairGameButton.Visibility = RepairGameButtonVisible;
@@ -686,13 +686,29 @@ namespace CollapseLauncher.Pages
                         StartGameBtn.Visibility = Visibility.Collapsed;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                     }
-                    return;
+                    break;
+                default:
+                    {
+                        UninstallGameButton.IsEnabled = false;
+                        RepairGameButton.IsEnabled = false;
+                        OpenGameFolderButton.IsEnabled = false;
+                        OpenCacheFolderButton.IsEnabled = false;
+                        ConvertVersionButton.IsEnabled = false;
+                        CustomArgsTextBox.IsEnabled = false;
+                        OpenScreenshotFolderButton.IsEnabled = false;
+                    }
+                    break;
             }
 
-            if ((GameInstallationState == GameInstallStateEnum.NeedsUpdate
+            if (CurrentGameProperty._GameInstall.IsRunning)
+                RaiseBackgroundInstallationStatus(GameInstallationState);
+        }
+
+        private void RaiseBackgroundInstallationStatus(GameInstallStateEnum GameInstallationState)
+        {
+            if (GameInstallationState == GameInstallStateEnum.NeedsUpdate
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
-             && CurrentGameProperty._GameInstall.IsRunning)
             {
                 if (CurrentGameProperty._GameVersion.GamePreset.UseRightSideProgress ?? false)
                     HideImageCarousel(true);
@@ -701,20 +717,13 @@ namespace CollapseLauncher.Pages
                 progressRing.IsIndeterminate = true;
                 ProgressStatusGrid.Visibility = Visibility.Visible;
                 InstallGameBtn.Visibility = Visibility.Collapsed;
+                UpdateGameBtn.Visibility = Visibility.Collapsed;
                 CancelDownloadBtn.Visibility = Visibility.Visible;
                 ProgressTimeLeft.Visibility = Visibility.Visible;
 
                 CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
                 CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
             }
-
-            UninstallGameButton.IsEnabled = false;
-            RepairGameButton.IsEnabled = false;
-            OpenGameFolderButton.IsEnabled = false;
-            OpenCacheFolderButton.IsEnabled = false;
-            ConvertVersionButton.IsEnabled = false;
-            CustomArgsTextBox.IsEnabled = false;
-            OpenScreenshotFolderButton.IsEnabled = false;
         }
 
         private async void CheckRunningGameInstance(CancellationToken Token)
