@@ -38,6 +38,7 @@ namespace CollapseLauncher.Pages
 {
     public partial class GenshinGameSettingsPage : Page
     {
+        #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
         private GenshinSettings Settings { get => (GenshinSettings)CurrentGameProperty._GameSettings; }
         private Brush InheritApplyTextColor { get; set; }
@@ -48,7 +49,9 @@ namespace CollapseLauncher.Pages
         private CanvasBitmap HDRCalibrationUI;
         private bool IsHDREnabled { get; }
         private bool IsHDRSupported { get; }
+        #endregion
 
+        #region Main GSP Methods
         public GenshinGameSettingsPage()
         {
             try
@@ -62,8 +65,13 @@ namespace CollapseLauncher.Pages
 
                 DisplayInformation displayInfo = DisplayInformation.CreateForWindowId(InnerLauncherConfig.m_windowID);
                 DisplayAdvancedColorInfo colorInfo = displayInfo.GetAdvancedColorInfo();
+#if SIMULATEGIHDR
+                IsHDREnabled = true;
+                IsHDRSupported = true;
+#else
                 IsHDREnabled = colorInfo.CurrentAdvancedColorKind == DisplayAdvancedColorKind.HighDynamicRange;
                 IsHDRSupported = colorInfo.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange);
+#endif
 
                 LoadPage();
             }
@@ -241,13 +249,12 @@ namespace CollapseLauncher.Pages
                 }
             });
         }
+        #endregion
 
-        /// <summary>
-        /// This updates Gamma Slider every time GammaNumber is entered.
-        /// Do NOT touch this unless really necessary to do so!
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
+        #region Method - NumberBox to Slider
+        // All methods in this region responsible for too much time wasted because thank you WinUI!
+        // Basically these handle value linking for a slider that has numberbox attached with it. Handles the rounding, and also error fallback when the numberbox is cleared.
+
         private void GammaValue_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
             try
@@ -365,13 +372,11 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Error when processing ScenePaperWhite NumberBox!\r\n{ex}", LogType.Error, true);
             }
         }
+        #endregion
 
-        /// <summary>
-        /// This updates Gamma NumberBox when slider is moved.
-        /// no touchy :)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        #region Method - Slider to Numberbox
+        // Methods to link all slider value to numberbox, for those with one.
+
         private void GammaSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             GammaValue.Value = Math.Round(e.NewValue, 5);
@@ -394,7 +399,9 @@ namespace CollapseLauncher.Pages
             ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
             DrawHDRCalibrationImage2();
         }
+        #endregion
 
+        #region Method - HDR Calibration Panels
         private async Task<StorageFile> GetAppFileAsync(Uri uri)
         {
             StorageFile file;
@@ -525,5 +532,6 @@ namespace CollapseLauncher.Pages
         {
             sender.IsExpanded = IsHDREnabled;
         }
+        #endregion
     }
 }

@@ -1152,6 +1152,9 @@ namespace CollapseLauncher.Pages
                     GameLogWatcher();
                 }
 
+                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
+                    GenshinHDREnforcer();
+
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
 
@@ -1819,7 +1822,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Collapse Priority Control
+        #region Misc Methods
         private async void CollapsePrioControl(Process proc)
         {
             try
@@ -1845,6 +1848,22 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
+        private void GenshinHDREnforcer()
+        {
+            GameSettings.Genshin.WindowsHDR GenshinHDR = new GameSettings.Genshin.WindowsHDR();
+            try
+            {
+                GameSettings.Genshin.WindowsHDR.Load();
+                GenshinHDR.isHDR = true;
+                GenshinHDR.Save();
+                LogWriteLine("Successfully forced Genshin HDR settings on!", LogType.Scheme, true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion

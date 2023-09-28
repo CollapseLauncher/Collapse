@@ -242,6 +242,12 @@ namespace CollapseLauncher.GameSettings.Genshin
         public double gammaValue { get; set; } = 2.2f;
 
         /// <summary>
+        /// This controls if HDR is enabled or not. <br/>
+        /// is a boolean, Default: false <br/>
+        /// </summary>
+        public bool enableHDR { get; set; } = false;
+
+        /// <summary>
         /// This holds value for controllers input that has been customized.
         /// </summary>
         public List<string> _overrideControllerMapKeyList { get; set; }
@@ -300,6 +306,12 @@ namespace CollapseLauncher.GameSettings.Genshin
         public List<object> urlCheckBanReasons { get; set; }
         public bool mtrUseOldWinVersion { get; set; } = false;
         public string greyTestDeviceUniqueId { get; set; } = "";
+
+        /// <summary>
+        /// This controls if game audio should be disabled when main window is minimized. <br/>
+        /// is a boolean, Default: false <br/>
+        /// </summary>
+        public bool muteAudioOnAppMinimized { get; set; } = false;
         #endregion
 
         #region Methods
