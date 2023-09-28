@@ -280,7 +280,8 @@
     "CustomArgs_Subtitle": "Аргументы запуска",
     "CustomArgs_Footer1": "Для получения дополнительной информации об аргументах запуска, пожалуйста, проверьте",
     "CustomArgs_Footer2": "документацию по командной строке Unity Standalone Player",
-    "CustomArgs_Footer3": ", чтобы увидеть больше параметров."
+    "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
   "_SettingsPage": {
     "PageTitle": "Настройки приложения",
@@ -329,6 +330,9 @@
     "AppFiles_RelocateDataFolderBtn": "Переместить папку с данными приложения",
     "AppFiles_ClearLogBtn": "Очистить файлы логов",
     "AppFiles_ClearImgCachesBtn": "Очистить файлы изображений",
+    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
+    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
+    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
     "ReportIssueBtn": "Сообщить о проблеме",
     "ContributePRBtn": "Внести свой вклад, сделав Pull Request",
     "ContributorListBtn": "Open Source Contributors",
@@ -346,7 +350,8 @@
     "DiscordBtn3": "Официальный Discord сервер Collapse!",
     "AppChangeReleaseChannel": "Изменить на {0} канал релиза",
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks"
+    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
   "_Misc": {
     "UpdateCompleteTitle": "Обновление завершено!",
@@ -746,6 +751,20 @@
     "Graphics_GlobalIllumination": "Global Illumination",
     "Graphics_GlobalIllumination_Help1": "Only for supported hardware!",
     "Graphics_GlobalIllumination_Help2": "More information (en)",
+    "Graphics_HDR": "HDR",
+    "Graphics_HDR_Enable": "Enable HDR",
+    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
+    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
+    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
+    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
+    "Graphics_HDR_Help_Link": "More information",
+    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
+    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
+    "Graphics_HDR_UiBrightness": "UI Brightness",
+    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
+    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
+    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",
     "SpecDisabled": "Disabled",
@@ -776,6 +795,7 @@
     "Audio_VO": "Voice Over Volume",
     "Audio_Output_Surround": "Use Surround Sound",
     "Audio_DynamicRange": "Full Dynamic Range",
+    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
     "Language": "Language Settings",
     "Language_Help1": "Collapse currently cannot download Audio package directly.",
     "Language_Help2": "Audio package will be downloaded in-game next time you launch the game.",
