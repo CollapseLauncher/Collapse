@@ -65,10 +65,7 @@ namespace CollapseLauncher
 
             Windows.UI.Color[] _colors = await TryGetCachedPalette(bitmapInput, IsLight, bitmapPath);
 
-            if (IsLight) SetLightColors(bitmapInput, _colors);
-            else SetDarkColors(bitmapInput, _colors);
-
-            ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
+            SetColorPalette(page, _colors);
         }
 
         private static async ValueTask<Windows.UI.Color[]> TryGetCachedPalette(Bitmap bitmapInput, bool isLight, string bitmapPath)
@@ -110,24 +107,30 @@ namespace CollapseLauncher
             return _colors;
         }
 
-        private static void SetLightColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
+        public static void SetColorPalette(Page page, Windows.UI.Color[] palette = null)
         {
-            Application.Current.Resources["SystemAccentColor"] = palette[0];
-            Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
-            Application.Current.Resources["SystemAccentColorDark2"] = palette[1];
-            Application.Current.Resources["SystemAccentColorDark3"] = palette[1];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
-        }
+            if (palette == null || palette?.Length < 2)
+                palette = EnsureLengthCopyLast(palette = [(Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"]], 2);
 
-        private static void SetDarkColors(Bitmap bitmapinput, Windows.UI.Color[] palette)
-        {
-            Application.Current.Resources["SystemAccentColor"] = palette[0];
-            Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
-            Application.Current.Resources["SystemAccentColorLight2"] = palette[1];
-            Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
-            Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
-        }
+            if (IsAppThemeLight)
+            {
+                Application.Current.Resources["SystemAccentColor"] = palette[0];
+                Application.Current.Resources["SystemAccentColorDark1"] = palette[0];
+                Application.Current.Resources["SystemAccentColorDark2"] = palette[1];
+                Application.Current.Resources["SystemAccentColorDark3"] = palette[1];
+                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[1]);
+            }
+            else
+            {
+                Application.Current.Resources["SystemAccentColor"] = palette[0];
+                Application.Current.Resources["SystemAccentColorLight1"] = palette[0];
+                Application.Current.Resources["SystemAccentColorLight2"] = palette[1];
+                Application.Current.Resources["SystemAccentColorLight3"] = palette[0];
+                Application.Current.Resources["AccentColor"] = new SolidColorBrush(palette[0]);
+            }
 
+            ReloadPageTheme(page, ConvertAppThemeToElementTheme(CurrentAppTheme));
+        }
 
         private static List<QuantizedColor> _generatedColors = new List<QuantizedColor>();
         private static async Task<Windows.UI.Color[]> GetPaletteList(Bitmap bitmapinput, int ColorCount, bool IsLight, int quality)
