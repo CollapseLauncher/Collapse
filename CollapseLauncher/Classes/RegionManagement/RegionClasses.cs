@@ -227,9 +227,9 @@ namespace CollapseLauncher
             get => StripTabsAndNewlines(string.IsNullOrEmpty(_icon_link) ? url : _icon_link);
             set => _icon_link = value;
         }
-        public string img { get; set; }
-        public string img_hover { get; set; }
-        public string qr_img { get; set; }
+        public string img { get => MainPage.GetCachedSprites(_img, _innerToken); set => _img = value; }
+        public string img_hover { get => MainPage.GetCachedSprites(_img_hover, _innerToken); set => _img_hover = value; }
+        public string qr_img { get => MainPage.GetCachedSprites(_qr_img, _innerToken); set => _qr_img = value; }
         public string qr_desc { get; set; }
         public string url
         {
