@@ -280,8 +280,7 @@
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
     "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
-    "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม"
   },
   "_SettingsPage": {
     "PageTitle": "การตั้งค่าแอปพลิเคชั่น",
@@ -330,9 +329,6 @@
     "AppFiles_RelocateDataFolderBtn": "ย้ายโฟลเดอร์ติดตั้ง",
     "AppFiles_ClearLogBtn": "ล้างไฟล์ Log",
     "AppFiles_ClearImgCachesBtn": "ล้างไฟล์รูปภาพ",
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
     "ReportIssueBtn": "รายงานปัญหา",
     "ContributePRBtn": "ร่วมสนับสนุนด้วยการ Pull Request",
     "ContributorListBtn": "ผู้ร่วมให้ข้อมูล Open Source",
@@ -350,8 +346,7 @@
     "DiscordBtn3": "Collapse's Official Discord!",
     "AppChangeReleaseChannel": "เปลี่ยนเป็นช่องเผยแพร่ทางการ{0}",
     "EnableAcrylicEffect": "ใช้งานเบลอแบบ Acrylic",
-    "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+    "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด"
   },
   "_Misc": {
     "UpdateCompleteTitle": "อัพเดตเสร็จสมบูรณ์",
@@ -751,20 +746,6 @@
     "Graphics_GlobalIllumination": "แสงสะท้อนทั่วไป",
     "Graphics_GlobalIllumination_Help1": "สำหรับฮาร์ดแวร์ที่รองรับเท่านั้น!",
     "Graphics_GlobalIllumination_Help2": "ข้อมูลเพิ่มเติม (en)",
-    "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
-    "Graphics_HDR_UiBrightness": "UI Brightness",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
     "Graphics_SpecPanel": "การตั้งค่ากราฟิกโดยรวม",
     "SpecEnabled": "เปิดการใช้งาน",
     "SpecDisabled": "ปิดใช้งาน",
@@ -795,7 +776,6 @@
     "Audio_VO": "ระดับเสียงพากย์",
     "Audio_Output_Surround": "ระบบเสียงรอบทิศทาง",
     "Audio_DynamicRange": "ไดนามิกเต็มรูปแบบ",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
     "Language": "การตั้งค่าภาษา",
     "Language_Help1": "Collapse ปัจจุบันไม่สามารถดาวน์โหลดแพ็คเกจเสียงได้โดยตรง",
     "Language_Help2": "แพ็คเกจเสียงจะถูกดาวน์โหลดในเกมครั้งถัดไปที่คุณเปิดเกม.",
