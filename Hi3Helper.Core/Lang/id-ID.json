@@ -280,7 +280,8 @@
     "CustomArgs_Subtitle": "Argumen Pemulaian",
     "CustomArgs_Footer1": "Untuk informasi lebih lanjut mengenai Argumen Pemulaian, silahkan cek dokumentasi",
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
-    "CustomArgs_Footer3": "berikut."
+    "CustomArgs_Footer3": "berikut.",
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
   "_SettingsPage": {
     "PageTitle": "Pengaturan Aplikasi",
@@ -329,6 +330,9 @@
     "AppFiles_RelocateDataFolderBtn": "Ganti Lokasi Folder Data Aplikasi",
     "AppFiles_ClearLogBtn": "Bersihkan Berkas Catatan",
     "AppFiles_ClearImgCachesBtn": "Bersihkan Berkas Gambar",
+    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
+    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
+    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
     "ReportIssueBtn": "Laporkan Isu",
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
@@ -346,7 +350,8 @@
     "DiscordBtn3": "Discord Resmi Collapse!",
     "AppChangeReleaseChannel": "Ubah Kanal Rilis ke {0}",
     "EnableAcrylicEffect": "Gunakan Efek Blur Akrilik",
-    "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package"
+    "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
   "_Misc": {
     "UpdateCompleteTitle": "Pembaruan Selesai!",
@@ -746,6 +751,20 @@
     "Graphics_GlobalIllumination": "Iluminasi Global",
     "Graphics_GlobalIllumination_Help1": "Hanya untuk perangkat keras yang didukung!",
     "Graphics_GlobalIllumination_Help2": "Informasi lebih lanjut (en)",
+    "Graphics_HDR": "HDR",
+    "Graphics_HDR_Enable": "Enable HDR",
+    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
+    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
+    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
+    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
+    "Graphics_HDR_Help_Link": "More information",
+    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
+    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
+    "Graphics_HDR_UiBrightness": "UI Brightness",
+    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
+    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
+    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
     "Graphics_SpecPanel": "Pengaturan Grafis Global",
     "SpecEnabled": "Aktif",
     "SpecDisabled": "Mati",
@@ -776,6 +795,7 @@
     "Audio_VO": "Volume Pengisi Suara",
     "Audio_Output_Surround": "Gunakan Suara Surround",
     "Audio_DynamicRange": "Full Dynamic Range",
+    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
     "Language": "Pengaturan Bahasa",
     "Language_Help1": "Collapse saat ini tidak dapat men-download paket Audio secara langsung.",
     "Language_Help2": "Paket Audio akan di-download di dalam game pada saat game dijalankan.",
