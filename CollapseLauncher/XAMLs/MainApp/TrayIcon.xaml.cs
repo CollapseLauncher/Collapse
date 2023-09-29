@@ -5,9 +5,6 @@ using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
@@ -21,22 +18,22 @@ namespace CollapseLauncher
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool IsWindowVisible(IntPtr hWnd);
 
-
         [RelayCommand]
         public void ToggleVisibility()
         {
             IntPtr mainWindowHandle = m_windowHandle;
             bool isVisible = IsWindowVisible(mainWindowHandle);
 
-
             if (isVisible)
             {
                 WindowExtensions.Hide(m_window);
+                TaskbarToggleText.Text = "Show App from Taskbar";
                 LogWriteLine("Main window is hidden!");
             }
             else
             {
                 WindowExtensions.Show(m_window);
+                TaskbarToggleText.Text = "Hide App to Taskbar";
                 LogWriteLine("Main window is shown!");
             }
         }
@@ -46,6 +43,5 @@ namespace CollapseLauncher
         {
             App.Current.Exit();
         }
-
     }
 }

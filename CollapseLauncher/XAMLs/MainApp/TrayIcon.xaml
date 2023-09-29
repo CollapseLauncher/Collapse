@@ -14,7 +14,7 @@
     >
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem Text="Show/Hide App to Taskbar" Command="{x:Bind ToggleVisibilityCommand}"/>
+                <MenuFlyoutItem x:Name="TaskbarToggleText" Text="Show App from Taskbar" Command="{x:Bind ToggleVisibilityCommand}"/>
                 <MenuFlyoutSeparator/>
                 <MenuFlyoutItem Text="Close" Command="{x:Bind CloseAppCommand}"/>
             </MenuFlyout>
