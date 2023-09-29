@@ -11,6 +11,7 @@
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default"> <!-- For dark theme -->
                             <!-- Base accent color -->
+                            <Color x:Key="TemplateAccentColor">#ffd52a</Color>
                             <Color x:Key="SystemAccentColor">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight1">#ffd52a</Color>
                             <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
@@ -61,6 +62,7 @@
 
                         <ResourceDictionary x:Key="Light"> <!-- For light theme -->
                             <!-- Base accent color -->
+                            <Color x:Key="TemplateAccentColor">#693758</Color>
                             <Color x:Key="SystemAccentColor">#693758</Color>
                             <Color x:Key="SystemAccentColorDark1">#693758</Color>
                             <Color x:Key="SystemAccentColorDark2">#693758</Color>

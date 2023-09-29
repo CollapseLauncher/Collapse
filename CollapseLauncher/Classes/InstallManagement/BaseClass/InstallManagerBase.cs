@@ -1307,7 +1307,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the total free space of the disk
             long DiskSpace = _DriveInfo.TotalFreeSpace;
-            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remained free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
+            LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(RequiredSpace)} with {_DriveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(DiskSpace)}", LogType.Default, true);
 
             // Check if the disk space is insufficient, then show the dialog.
             if (DiskSpace < (RequiredSpace - ExistingPackageSize))

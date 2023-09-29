@@ -2,6 +2,7 @@
 using CollapseLauncher.GameSettings.Genshin.Enums;
 using System;
 using System.Drawing;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
@@ -314,8 +315,13 @@ namespace CollapseLauncher.Pages
         #region Graphics Settings - HDR
         public bool IsHDR
         {
-            get => Settings.SettingsWindowsHDR.isHDR;
-            set => Settings.SettingsWindowsHDR.isHDR = value;
+            get => GetAppConfigValue("ForceGIHDREnable").ToBool() || Settings.SettingsWindowsHDR.isHDR || Settings.SettingsGeneralData.enableHDR;
+            set
+            {
+                Settings.SettingsWindowsHDR.isHDR = value;
+                Settings.SettingsGeneralData.enableHDR = value;
+                SetAndSaveConfigValue("ForceGIHDREnable", value);
+            } 
         }
 
         public double MaxLuminosity
@@ -372,6 +378,12 @@ namespace CollapseLauncher.Pages
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.audioOutput);
             set => Settings.SettingsGeneralData.audioOutput = Convert.ToInt32(value);
+        }
+
+        public bool Audio_MuteOnMinimized
+        {
+            get => Settings.SettingsGeneralData.muteAudioOnAppMinimized;
+            set => Settings.SettingsGeneralData.muteAudioOnAppMinimized = value;
         }
         #endregion
 

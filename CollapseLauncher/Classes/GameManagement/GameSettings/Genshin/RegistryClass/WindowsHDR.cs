@@ -21,6 +21,9 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public int HDR { get; set; } = 0;
 
+        /// <summary>
+        /// Converted value from HDR integer inside WINDOWS_HDR_ON registry to usable boolean.
+        /// </summary>
         public bool isHDR { get => HDR == 1; set => HDR = value ? 1 : 0; }
         #endregion
 

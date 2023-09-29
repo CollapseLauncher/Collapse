@@ -209,17 +209,8 @@ namespace CollapseLauncher
         private string _url;
         private string _icon_link;
         private string _tittle;
-        private CancellationToken _innerToken;
         private IList<LinkProp> _links;
         private IList<LinkProp> _other_links;
-        private string _img;
-        private string _img_hover;
-        private string _qr_img;
-
-        public RegionSocMedProp(CancellationToken token = default)
-        {
-            _innerToken = token;
-        }
 
         public string icon_id { get; set; }
         public string icon_link
@@ -288,13 +279,13 @@ namespace CollapseLauncher
             return new string(newChars, 0, (int)(currentChar - newChars));
         }
 
-        public RegionSocMedProp Copy() => new RegionSocMedProp(_innerToken)
+        public RegionSocMedProp Copy() => new RegionSocMedProp()
         {
             icon_id = icon_id,
             icon_link = icon_link,
-            img = _img,
-            img_hover = _img_hover,
-            qr_img = _qr_img,
+            img = img,
+            img_hover = img_hover,
+            qr_img = qr_img,
             qr_desc = qr_desc,
             url = url,
             name = name,

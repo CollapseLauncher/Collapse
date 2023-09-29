@@ -280,7 +280,8 @@
     "CustomArgs_Subtitle": "啟動參數",
     "CustomArgs_Footer1": "關於啟動參數的更多資訊，請查看",
     "CustomArgs_Footer2": "Unity Standalone Player 命令提示字元文檔",
-    "CustomArgs_Footer3": "來查看更多的參數。"
+    "CustomArgs_Footer3": "來查看更多的參數。",
+    "GameBoost": "Boost Game Priority [Experimental]"
   },
   "_SettingsPage": {
     "PageTitle": "應用設定",
@@ -329,6 +330,9 @@
     "AppFiles_RelocateDataFolderBtn": "重新定位 AppData 資料夾",
     "AppFiles_ClearLogBtn": "清除日誌檔案",
     "AppFiles_ClearImgCachesBtn": "清除圖片檔案",
+    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
+    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
+    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
     "ReportIssueBtn": "回報問題",
     "ContributePRBtn": "透過發起 Pull Request 貢獻",
     "ContributorListBtn": "開源協作者",
@@ -346,7 +350,8 @@
     "DiscordBtn3": "Collapse 的官方 Discord 伺服器！",
     "AppChangeReleaseChannel": "變更為 {0} 發布渠道",
     "EnableAcrylicEffect": "使用壓克力模糊效果",
-    "EnableDownloadChunksMerging": "合併已下載的軟體包區塊"
+    "EnableDownloadChunksMerging": "合併已下載的軟體包區塊",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
   "_Misc": {
     "UpdateCompleteTitle": "更新完成！",
@@ -746,6 +751,20 @@
     "Graphics_GlobalIllumination": "全局光照",
     "Graphics_GlobalIllumination_Help1": "僅適用於受支援的硬體！",
     "Graphics_GlobalIllumination_Help2": "更多資訊 (英文)",
+    "Graphics_HDR": "HDR",
+    "Graphics_HDR_Enable": "Enable HDR",
+    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
+    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
+    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
+    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
+    "Graphics_HDR_Help_Link": "More information",
+    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
+    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
+    "Graphics_HDR_UiBrightness": "UI Brightness",
+    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
+    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
+    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
     "Graphics_SpecPanel": "全局圖像設定",
     "SpecEnabled": "已啟用",
     "SpecDisabled": "已停用",
@@ -776,6 +795,7 @@
     "Audio_VO": "配音音量",
     "Audio_Output_Surround": "使用環繞音效",
     "Audio_DynamicRange": "完整動態範圍",
+    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
     "Language": "語言設定",
     "Language_Help1": "Collapse 目前無法直接下載音訊包。",
     "Language_Help2": "音訊包會在你下次啟動遊戲時在遊戲內下載。",

@@ -39,14 +39,15 @@ namespace CollapseLauncher.GameSettings.Genshin
             SettingsCollapseScreen = CollapseScreenSetting.Load();
             SettingsCollapseMisc = CollapseMiscSetting.Load();
             SettingsScreen = ScreenManager.Load();
+            SettingsWindowsHDR = WindowsHDR.Load();
         }
 
         public void ReloadSettings()
         {
+            // To ease up resource and prevent bad JSON locking up launcher
             SettingsGeneralData = GeneralData.Load();
-            SettingsWindowsHDR = WindowsHDR.Load();
             InitializeSettings();
-        }
+        } 
 
         public void SaveSettings()
         {
