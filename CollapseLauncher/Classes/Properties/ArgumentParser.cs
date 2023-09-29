@@ -50,6 +50,10 @@ namespace CollapseLauncher
                     m_appMode = AppMode.OOBEState;
                     ParseOOBEArguments(args);
                     break;
+                case "tray":
+                    m_appMode = AppMode.StartOnTray;
+                    ParseStartOnTrayArguments(args);
+                    break;
             }
 
             if (rootCommand.Invoke(args) > 0)
@@ -129,6 +133,11 @@ namespace CollapseLauncher
         public static void ParseOOBEArguments(params string[] args)
         {
             rootCommand.AddArgument(new Argument<string>("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup") { HelpName = null });
+        }
+
+        public static void ParseStartOnTrayArguments(params string[] args)
+        {
+            rootCommand.AddArgument(new Argument<string>("tray", "Start Collapse in system tray") { HelpName = null });
         }
 
         private static void AddMigrateOptions(bool isBHI3L)
