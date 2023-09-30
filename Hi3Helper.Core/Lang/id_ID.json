@@ -837,7 +837,7 @@
     "Graphics_HDR_NotEnabled1": "Layar kamu mendukung HDR, tapi tidak dinyalakan.",
     "Graphics_HDR_NotEnabled2": "Opsi \"Gunakan HDR\" harus dinyalakan di Pengaturan Windows.",
     "Graphics_HDR_Help_Link": "Informasi lebih lanjut",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
+    "Graphics_HDR_MaxLuminosity": "Kecerahan maksimum (nits)",
     "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
     "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
     "Graphics_HDR_UiBrightness": "UI Brightness",
