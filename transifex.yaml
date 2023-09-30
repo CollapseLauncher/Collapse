@@ -1,13 +1,11 @@
 git:
-filters:
+ filters:
     - filter_type: file
       file_format: KEYVALUEJSON
       source_language: en-US
       source_file: Hi3Helper.Core/Lang/en-US.json
-    translation_files_expression: 'Hi3Helper.Core/Lang/<lang>.json'
-
+      translation_files_expression: 'Hi3Helper.Core/Lang/<lang>.json'
 ignore_dirs:
-- Hi3Helper.Core/Lang/Locale
-
+    - Hi3Helper.Core/Lang/Locale
 ignore_files:
-- Hi3Helper.Core/Lang/Localization.cs
+    - Hi3Helper.Core/Lang/Localization.cs
