@@ -202,7 +202,7 @@
     "CachesBtn2": "Verificação Rápida",
     "CachesBtn2Full": "Verificação Completa",
     "CachesBtn2FullDesc": "This method checks the cache checksum/integrity, size and availability only. Please use \"Full Check\" if you want to check the integrity of the files",
-    "CachesBtn2Quick": "Verificação Rápida",
+    "CachesBtn2Quick": "Quick Check",
     "CachesBtn2QuickDesc": "This method checks the cache size and availability only. Please use \"Full Check\" if you want to check the integrity of the caches",
     "OverlayNotInstalledTitle": "You cannot use this feature as the region isn't installed or needs to be updated!",
     "OverlayNotInstalledSubtitle": "Please download/update the game first on the game's launcher page!",
