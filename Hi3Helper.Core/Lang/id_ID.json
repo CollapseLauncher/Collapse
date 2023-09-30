@@ -367,7 +367,7 @@
 
     "AppFiles_ClearMetadataBtn": "Bersihkan Metadata dan Mulai Ulang",
     "AppFiles_ClearMetadataDialog": "Membersihkan Metadata Collapse!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataDialogHelp": "Membersihkan metadata Collapse akan menyebabkan Collapse untuk memulai ulang secara paksa. Lakukan ini hanya jika kamu mempunyai masalah dalam pemuatan region.\nApa kamu yakin?",
 
     "ReportIssueBtn": "Laporkan Isu",
     "ContributePRBtn": "Kontribusi ke Pull Request",
