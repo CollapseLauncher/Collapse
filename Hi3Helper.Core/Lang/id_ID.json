@@ -841,7 +841,7 @@
     "Graphics_HDR_MaxLuminosity_Help": "Kecerahan puncak maksimum yang dibolehkan untuk highlight",
     "Graphics_HDR_Calibration_Help": "Atur hingga gambar yang ditunjukkan kusam namun terlihat",
     "Graphics_HDR_UiBrightness": "Kecerahan UI",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
+    "Graphics_HDR_UiBrightness_Help": "Mengatur seberapa cerah elemen UI",
     "Graphics_HDR_SceneBrightness": "Scenery Brightness",
     "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
 
