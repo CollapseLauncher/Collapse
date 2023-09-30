@@ -835,7 +835,7 @@
     "Graphics_HDR_NotSupported1": "Monitor kamu tidak mendukung HDR.",
     "Graphics_HDR_NotSupported2": "Membutuhkan layar dengan fitur HDR!",
     "Graphics_HDR_NotEnabled1": "Layar kamu mendukung HDR, tapi tidak dinyalakan.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
+    "Graphics_HDR_NotEnabled2": "Opsi \"Gunakan HDR\" harus dinyalakan di Pengaturan Windows.",
     "Graphics_HDR_Help_Link": "More information",
     "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
     "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
