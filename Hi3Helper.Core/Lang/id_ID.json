@@ -831,7 +831,7 @@
     "Graphics_GlobalIllumination_Help1": "Hanya untuk perangkat keras yang didukung!",
     "Graphics_GlobalIllumination_Help2": "Informasi lebih lanjut (en)",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
+    "Graphics_HDR_Enable": "Nyalakan HDR",
     "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
     "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
     "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
