@@ -845,7 +845,7 @@
     "Graphics_HDR_SceneBrightness": "Scenery Brightness",
     "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
 
-    "Graphics_SpecPanel": "全局图形设置",
+    "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "打开",
     "SpecDisabled": "关闭",
     "SpecVeryLow": "非常低",
