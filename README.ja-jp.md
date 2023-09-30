@@ -14,8 +14,9 @@
 
 
 [![Localization](https://img.shields.io/badge/Localization-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
-[![KanbanBoard](https://img.shields.io/badge/Kanban_Board-Trello-white)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
-[![Discord](https://img.shields.io/badge/Join_Community-Discord-5865F2)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
+[![Discord](https://img.shields.io/badge/Join_Community-Discord-5865F2)](https://discord.gg/vJd2exaS7j)
+[![KanbanBoard](https://img.shields.io/badge/Kanban_Board-Trello-white)](https://trello.com/b/rsqrnn15/collapse-launcher-tracker)
+
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
