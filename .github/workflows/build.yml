@@ -5,15 +5,15 @@ run-name: Canary Build for ${{ github.ref }}
 on:
   workflow_dispatch:
     inputs:
-      # os:
-      # # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
-      #   type: choice
-      #   description: "Select Runner image to use for this deployment"
-      #   default: "windows-2019"
-      #   options:
-      #     - "windows-latest"
-      #     - "windows-2019"
-      #     - "windows-2022"
+      os:
+      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
+        type: choice
+        description: "Select Runner image to use for this deployment"
+        default: "windows-2019"
+        options:
+          - "windows-latest"
+          - "windows-2019"
+          - "windows-2022"
       framework:
       # Use net7.0-windows10.0.19041.0 to retain compatibility (WindowsAppSDK last supported OS build)
         type: choice
@@ -25,7 +25,8 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux]
+    # runs-on: [self-hosted, linux]
+    runs-on: ${{ github.event.inputs.os }}
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
