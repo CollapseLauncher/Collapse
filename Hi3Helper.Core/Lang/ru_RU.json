@@ -789,10 +789,10 @@
     "Language_Help2": "Аудио пакет будет загружен при следующем запуске во время игры.",
     "LanguageAudio": "Audio",
     "LanguageText": "Text",
-    "VO_en": "Английский",
-    "VO_cn": "Китайский",
-    "VO_jp": "Японский",
-    "VO_kr": "Корейский"
+    "VO_en": "English",
+    "VO_cn": "Chinese",
+    "VO_jp": "Japanese",
+    "VO_kr": "Korean"
   },
 
   "_GenshinGameSettingsPage": {
