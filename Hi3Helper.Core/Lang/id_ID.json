@@ -365,7 +365,7 @@
     "AppFiles_ClearLogBtn": "Bersihkan Berkas Catatan",
     "AppFiles_ClearImgCachesBtn": "Bersihkan Berkas Gambar",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
+    "AppFiles_ClearMetadataBtn": "Bersihkan Metadata dan Mulai Ulang",
     "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
     "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
 
