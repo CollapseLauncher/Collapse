@@ -833,7 +833,7 @@
     "Graphics_HDR": "HDR",
     "Graphics_HDR_Enable": "Nyalakan HDR",
     "Graphics_HDR_NotSupported1": "Monitor kamu tidak mendukung HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
+    "Graphics_HDR_NotSupported2": "Membutuhkan layar dengan fitur HDR!",
     "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
     "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
     "Graphics_HDR_Help_Link": "More information",
