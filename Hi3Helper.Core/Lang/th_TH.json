@@ -2,6 +2,7 @@
   "LanguageName": "ภาษาไทย",
   "LanguageID": "th-TH",
   "Author": "kinodev, armzyaec1234",
+
   "_StartupPage": {
     "ChooseFolderBtn": "สร้างแฟ้มเก็บไฟล์",
     "ChooseFolderDialogCancel": "ยกเลิก",
@@ -40,6 +41,7 @@
     "Title1": "ยินดีต้อนรับ",
     "Title2": "สู่ Collapse Launcher"
   },
+
   "_DisconnectedPage": {
     "PageTitle": "ตัดการเชื่อมต่อแล้ว",
     "Header1": "อินเตอร์เน็ตของคุณได้",
@@ -49,6 +51,7 @@
     "Footer3": "เพื่อลองอีกครั้ง",
     "ShowErrorBtn": "แสดงข้อความข้อผิดพลาด"
   },
+
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "ข้อผิดพลาดที่ไม่ได้จัดการ",
     "UnhandledSubtitle1": "เกิดข้อผิดพลาดที่ไม่ได้รับการจัดการขึ้น พร้อมกับการ Exception ด้านล่าง:",
@@ -60,6 +63,7 @@
     "CopyClipboardBtn2": "คัดลอกไปยังคลิปบอร์ดแล้ว",
     "GoBackPageBtn1": "กลับไปยังหน้าก่อนหน้า"
   },
+
   "_MainPage": {
     "PageTitle": "หน้าหลัก",
     "RegionChangeConfirm": "ภูมิภาคเกมจะถูกเปลี่ยนแปลง คุณต้องการดำเนินการต่อหรือไม่?",
@@ -75,8 +79,9 @@
     "NotifNeverAsk": "ไม่ต้องแสดงอีก",
     "NotifNoNewNotifs": "ไม่มีการแจ้งเตือนใหม่",
     "NavigationMenu": "เมนู",
-    "NavigationUtilities": "ยูทิลิตี้"
+    "NavigationUtilities":  "ยูทิลิตี้"
   },
+
   "_HomePage": {
     "PageTitle": "Launcher",
     "PreloadTitle": "การดาวน์โหลดล่วงหน้าพร้อมใช้งาน",
@@ -127,11 +132,13 @@
     "PostPanel_Notices": "การ​แจ้งเตือน",
     "PostPanel_Info": "ข้อมูล",
     "PostPanel_NoNews": "มีข่าวอะไรไหมสำหรับวันนี้?",
+
     "CommunityToolsBtn": "เครื่องมือคอมมูนิตี้",
     "CommunityToolsBtn_OfficialText": "เครื่องมือออฟฟิเชียล",
     "CommunityToolsBtn_CommunityText": "เครื่องมือคอมมูนิตี้",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "เลือกไฟล์โปรแกรมที่ใช้งาน: {0}"
   },
+
   "_GameRepairPage": {
     "PageTitle": "ซ่อมแซมเกม",
     "ListCol1": "ชื่อ",
@@ -172,6 +179,7 @@
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!"
   },
+
   "_CachesPage": {
     "PageTitle": "อัปเดตแคช",
     "ListCol1": "ชื่อ",
@@ -201,11 +209,14 @@
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!"
   },
+
   "_CutscenesPage": {
     "PageTitle": "Cutscenes"
   },
+
   "_GameSettingsPage": {
     "PageTitle": "ตั้งค่าเกม",
+
     "Graphics_Title": "การตั้งค่ากราฟิก",
     "Graphics_ResolutionPanel": "ความคมชัดของตัวเกม:",
     "Graphics_Borderless": "ใช้โหมดหน้าต่างไม่มีขอบ",
@@ -215,13 +226,16 @@
     "Graphics_ResCustom": "ใช้ความละเอียดที่กำหนดเอง",
     "Graphics_ResCustomW": "กว้าง",
     "Graphics_ResCustomH": "สูง",
+
     "Graphics_FPSPanel": "FPS สูงสุด",
     "Graphics_FPSInCombat": "ในการต่อสู้",
     "Graphics_FPSInMenu": "หน้าหลัก",
+
     "Graphics_APIPanel": "กราฟฟิก API",
     "Graphics_APIHelp1": "มีโหมด API หลายรูปแบบที่มีให้สำหรับเกมนี้ รวมถึง:",
     "Graphics_APIHelp2": "หมายเหตุ:",
     "Graphics_APIHelp3": "การใช้ DirectX 12 อาจทำให้เกิดความผิดพลาดในบางขั้นตอน เนื่องจากเกมไม่ได้ถูกคอมไพล์ด้วย API DirectX 12 ในรูปแบบต้นฉบับ",
+
     "Graphics_SpecPanel": "การตั้งค่ากราฟิก",
     "Graphics_Preset": "พรีเซ็ตกราฟิก",
     "Graphics_Render": "ความแม่นยำในการแสดงผล",
@@ -234,17 +248,20 @@
     "Graphics_FXHQ": "คุณภาพสูง",
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Distortion",
+
     "Graphics_APHO2Panel": "APHO2 และการตั้งค่ากราฟิกตอนใหม่",
     "Graphics_APHO2GI": "แสงสะท้อนทั่วไป",
     "Graphics_APHO2VL": "Volumetric Lighting",
     "Graphics_APHO2AO": "แสงเงาระหว่างวัตถุในฉาก",
     "Graphics_APHO2LOD": "ระดับความละเอียด",
+
     "SpecDisabled": "ปิดใช้งาน",
     "SpecLow": "ตํ่า",
     "SpecMedium": "ปานกลาง",
     "SpecHigh": "สูง",
     "SpecVeryHigh": "สูงมาก",
     "SpecMaximum": "สูงสุด",
+
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
     "Audio_BGM": "ระดับเสียง BGM",
@@ -257,6 +274,7 @@
     "Audio_Elf": "ระดับเสียงพากย์ Elf",
     "Audio_Cutscenes": "ระดับเสียงคัตซีน",
     "Audio_Mute": "ปิดเสียง",
+
     "ApplyBtn": "ยืนยันตั้งค่า",
     "SettingsApplied": "การเปลี่ยนแปลงได้รับการบันทึกแล้ว",
     "SettingsRegExported": "ส่งออกรีจิสทรีแล้ว!",
@@ -265,47 +283,60 @@
     "SettingsRegImportTitle": "เลือกไฟล์ Collapse Registry ไปที่...",
     "SettingsRegErr1": "ไม่ได้เลือกไฟล์",
     "SettingsRegErr2": "ส่วนหัวของไฟล์ Collapse Registry ไม่ถูกต้อง!",
+
     "RegImportExport": "นำเข้า / ส่งออก Registry",
     "RegExportTitle": "ส่งออก",
     "RegExportTooltip": "Export Registry ไปยัง Collapse Registry ไฟล์",
     "RegImportTitle": "นําเข้า",
     "RegImportTooltip": "นำเข้า Registry จากไฟล์ Collapse Registry",
+
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณลักษณะนี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคนี้หรือต้องการอัปเดต!",
     "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้าแรก",
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!",
     "OverlayFirstTimeTitle": "คุณไม่เคยเล่นเกมนี้มาก่อน!",
     "OverlayFirstTimeSubtitle": "โปรดเปิดเกมก่อนเพื่อสร้างไฟล์ที่จำเป็น จากนั้นกลับมาที่นี่เพื่อใช้คุณสมบัตินี้",
+
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
     "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
+
     "GameBoost": "Boost Game Priority [Experimental]"
   },
+
   "_SettingsPage": {
     "PageTitle": "การตั้งค่าแอปพลิเคชั่น",
+
     "Debug": "การดีบัก",
     "Debug_Console": "แสดงคอนโซล",
     "Debug_IncludeGameLogs": "บันทึก Log เกมลงใน Collapse (อาจมีข้อมูลที่ละเอียดอ่อน)",
     "Debug_MultipleInstance": "อนุญาตให้เรียกใช้หลายอินสแตนซ์ของ Collapse",
+
     "ChangeRegionWarning_Toggle": "แสดงคำเตือนเมื่อมีการเปลี่ยนภูมิภาค",
     "ChangeRegionWarning_Warning": "*คุณต้องรีสตาร์ทแอปเพื่อให้การตั้งค่านี้มีผลใช้งาน",
+
     "Language": "ภาษาของแอป",
     "LanguageEntry": "{0} โดย {1}",
     "AppLang_ApplyNeedRestart": "*คุณต้องรีสตาร์ทแอปเพื่อให้การเปลี่ยนภาษามีผลใช้งาน",
+
     "AppThemes": "ธีมของแอพพลิเคชั่น",
     "AppThemes_Default": "ค่าเริ่มต้น (ใช้การตั้งค่าระบบ)",
     "AppThemes_Light": "สว่าง",
     "AppThemes_Dark": "มืด",
     "AppThemes_ApplyNeedRestart": "*คุณต้องรีสตาร์ทแอปเพื่อให้การเปลี่ยนธีมมีผลใช้งาน",
+
     "AppWindowSize": "ขนาดหน้าต่าง",
     "AppWindowSize_Normal": "ปกติ",
     "AppWindowSize_Small": "เล็ก",
+
     "AppCDNRepository": "ที่เก็บ CDN",
+
     "AppBG": "พื้นหลังของแอพ",
     "AppBG_Checkbox": "พื้นหลังแบบกำหนดเอง",
     "AppBG_Note": "หมายเหตุ: รูปภาพต้องอยู่ในรูปแบบ .png, .jpg, .tiff หรือ .bmp และความละเอียดต้องน้อยกว่า 4096x4096",
+
     "AppThreads": "เธรดแอปพลิเคชัน",
     "AppThreads_Download": "เธรดดาวน์โหลด",
     "AppThreads_Extract": "เธรดการแยก",
@@ -315,9 +346,11 @@
     "AppThreads_Help4": "0 (ตรวจจับอัตโนมัติ)",
     "AppThreads_Help5": "หัวข้อนี้จะจัดการกระบวนการแยก/ตรวจสอบขณะติดตั้ง/ซ่อมแซมเกม",
     "AppThreads_Help6": "หมายเหตุ: การตั้งค่านี้จะไม่มีผลอีกต่อไปในขณะที่ติดตั้ง Honkai Impact 3rd",
+
     "DiscordRPC": "แสดงสถานะ Discord Presence",
     "DiscordRPC_Toggle": "แสดง Discord Presence",
     "DiscordRPC_GameStatusToggle": "แสดงเกมปัจจุบันบนสถานะ Discord",
+
     "Update": "ตรวจสอบการอัปเดต",
     "Update_CurVer": "เวอร์ชันปัจจุบัน",
     "Update_CheckBtn": "ตรวจสอบการอัปเดต",
@@ -325,34 +358,43 @@
     "Update_NewVer1": "อัปเดตเป็น",
     "Update_NewVer2": "สามารถใช้ได้!",
     "Update_LatestVer": "คุณกำลังใช้งานเวอร์ชั่นล่าสุด",
+
     "AppFiles": "การจัดการไฟล์โปรแกรม",
     "AppFiles_OpenDataFolderBtn": "เปิดโฟลเดอร์ที่ติดตั้ง",
     "AppFiles_RelocateDataFolderBtn": "ย้ายโฟลเดอร์ติดตั้ง",
     "AppFiles_ClearLogBtn": "ล้างไฟล์ Log",
     "AppFiles_ClearImgCachesBtn": "ล้างไฟล์รูปภาพ",
+
     "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
     "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
     "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+
     "ReportIssueBtn": "รายงานปัญหา",
     "ContributePRBtn": "ร่วมสนับสนุนด้วยการ Pull Request",
     "ContributorListBtn": "ผู้ร่วมให้ข้อมูล Open Source",
+
     "About": "เกี่ยวกับ",
     "About_Copyright1": "© 2022-2023 สร้างโดย",
     "About_Copyright2": " neon-nyan [14372096 SEA]",
     "About_Copyright3": "ต่ำกว่า",
     "About_Copyright4": "สงวนลิขสิทธิ์ทั้งหมด",
+
     "Disclaimer": "สงวนสิทธิ์",
     "Disclaimer1": "แอพนี้ไม่มีส่วนเกี่ยวข้องกับ",
     "Disclaimer2": "ไม่ว่าด้วยวิธีใดก็ตาม",
     "Disclaimer3": "และโอเพ่นซอร์สโดยสมบูรณ์ ยินดีให้การสนับสนุน",
+
     "DiscordBtn1": "เข้าร่วม Armada Discord ของเรา!",
     "DiscordBtn2": "Honkai Impact 3rd Discord",
     "DiscordBtn3": "Collapse's Official Discord!",
+
     "AppChangeReleaseChannel": "เปลี่ยนเป็นช่องเผยแพร่ทางการ{0}",
+
     "EnableAcrylicEffect": "ใช้งานเบลอแบบ Acrylic",
     "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด",
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
   },
+
   "_Misc": {
     "UpdateCompleteTitle": "อัพเดตเสร็จสมบูรณ์",
     "UpdateCompleteSubtitle": "เวอร์ชัน Launcher ใช้งานของคุณได้รับการอัปเดตเป็น {0}! (ช่องทางการเผยแพร่: {1})",
@@ -366,6 +408,7 @@
     "SpeedPlaceholder": "ความเร็ว: - /s",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
+
     "Cancel": "ยกเลิก",
     "Close": "ปิด",
     "UseCurrentDir": "ใช้ไดเรกทอรีปัจจุบัน",
@@ -380,6 +423,7 @@
     "Prev": "ก่อนหน้า",
     "Uninstall": "ถอนการติดตั้ง",
     "Install": "ติดตั้ง",
+
     "Yes": "ยืนยัน",
     "YesRedownload": "ยืนยัน, ดาวน์โหลดใหม่",
     "YesResume": "ยืนยัน, ดำเดินการต่อ",
@@ -388,6 +432,7 @@
     "YesConvertIt": "ยืนยัน, แปลงข้อมูล",
     "YesIHaveBeefyPC": "ยืนยัน, ฉันมีคอมที่โครตแรง! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "ยืนยัน, เปลี่ยนตำแหน่ง",
+
     "No": "ไม่",
     "NoStartFromBeginning": "ไม่, ยกเลิก",
     "NoCancel": "ไม่, ยกเลิก",
@@ -395,10 +440,12 @@
     "NoIgnoreIt": "ละเว้น",
     "NoOtherLocation": "ทำการติดตั้งต่อไป",
     "NotSelected": "ไม่ได้เลือก",
+
     "LangNameENUS": "ภาษาอังกฤษ (สหรัฐฯ)",
     "LangNameJP": "ภาษาญี่ปุ่น",
     "LangNameCN": "ภาษาจีน (ตัวย่อ)",
     "LangNameKR": "ภาษาเกาหลี",
+
     "Downloading": "กำลังดาวน์โหลด",
     "Merging": "การรวม",
     "Idle": "ว่าง",
@@ -418,13 +465,17 @@
     "ApplyingPatch": "กำลังแพทช์",
     "Disabled": "ปิดใช้งาน",
     "Enabled": "เปิดการใช้งาน",
+
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "เสถียร",
+
     "CDNDescription_Github": "พื้นที่เก็บข้อมูล Launcher อย่างเป็นทางการ (หลัก)",
     "CDNDescription_Cloudflare": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Cloudflare R2 bucket",
     "CDNDescription_Bitbucket": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Bitbucket.",
+
     "LocateExecutable": "ค้นหาไฟล์โปรแกรม",
     "OpenDownloadPage": "เปิดหน้าดาวน์โหลด",
+
     "DiscordRP_Play": "กำลังเล่น",
     "DiscordRP_InGame": "ในเกม",
     "DiscordRP_Update": "กำลังอัปเดต",
@@ -437,15 +488,19 @@
     "DiscordRP_Ad": "- สู่ Collapse Launcher",
     "DiscordRP_Region": "ภูมิภาค"
   },
+
   "_BackgroundNotification": {
     "LoadingTitle": "กำลังโหลดกิจกรรม",
     "Placeholder": "-",
+
     "CategoryTitle_Downloading": "กำลังดาวน์โหลดเกม: {0}",
     "CategoryTitle_DownloadingPreload": "กำลังดาวน์โหลดล่วงหน้า: {0}",
     "CategoryTitle_Updating": "กำลังอัปเดตเกม: {0}",
+
     "NotifBadge_Completed": "สำเร็จ {0}",
     "NotifBadge_Error": "[ข้อผิดพลาด/ยกเลิก] {0}"
   },
+
   "_Dialogs": {
     "DeltaPatchDetectedTitle": "คำเตือน: ตรวจพบการอัพเดต Delta Patch!",
     "DeltaPatchDetectedSubtitle": "Delta Patch จะถูกใช้เพื่ออัปเดตเกมของคุณจาก {0} เป็น {1}\nโปรดจำไว้ว่าคุณยังอาจจำเป็นต้องดาวน์โหลดไฟล์บางไฟล์ในเกม\n\nคุณต้องการดำเนินการต่อหรือไม่?",
@@ -534,6 +589,7 @@
     "StopGameTitle": "บังคับปิดเกม",
     "StopGameSubtitle": "คุณแน่ใจหรือไม่ว่าต้องการบังคับให้ปิดเกมที่รันอยู่ในปัจจุบัน?\nคุณอาจสูญเสียความคืบหน้าในเกมบางส่วน"
   },
+
   "_InstallMgmt": {
     "IntegrityCheckTitle": "ตรวจสอบความสมบูรณ์:",
     "PreparePatchTitle": "กำลังเตรียมการแพทช์",
@@ -542,6 +598,7 @@
     "RepairFilesRequiredTitle": "ต้องซ่อมแซมไฟล์ {0}!",
     "RepairFilesRequiredSubtitle": "คุณมีไฟล์อย่างน้อย {0} ({1}) ที่ต้องซ่อมแซมก่อนที่จะอัปเดต!\n\nหมายเหตุ: กระบวนการนี้อาจใช้เวลานานกว่าที่คาดไว้ (ขึ้นอยู่กับความเสถียรและแบนด์วิธของการเชื่อมต่อของคุณ) ลองใช้ VPN หากคุณมีความเร็วในการดาวน์โหลดที่ช้า :)"
   },
+
   "_InstallConvert": {
     "PageTitle": "การแปลงข้ามเวอร์ชั่น",
     "Step1Title": "เลือกเกมและดึงข้อมูล",
@@ -568,11 +625,13 @@
     "ConvertSuccessSubtitle": "การแปลงเกมจาก {0} เป็น {1} เสร็จสมบูรณ์แล้ว!",
     "CookbookDownloadTitle": "กำลังดาวน์โหลด Recipe",
     "CookbookDownloadSubtitle": "กำลังดาวน์โหลด Recipe สำหรับการแปลงจาก {0} เป็น {1}",
+
     "CancelBtn": "ยกเลิกการแปลง",
     "CancelMsgTitle": "กำลังยกเลิกการแปลง",
     "CancelMsgSubtitle1": "คุณกำลังจะยกเลิกกระบวนการแปลง ความคืบหน้าในการแปลงใดๆ จะถูกยกเลิก\n\nคุณแน่ใจไหม?",
     "CancelMsgSubtitle2": "คุณกำลังจะยกเลิกกระบวนการแปลง แต่เกมของคุณได้ถูกแปลงเป็น {0} แล้ว คุณจะข้ามขั้นตอน \"การตวรจสอบความสมบูรณ์หลังการแปลง\"\n\nคุณแน่ใจไหม?"
   },
+
   "_InstallMigrateSteam": {
     "PageTitle": "การแปลง Steam",
     "Step1Title": "กำลังตรวจสอบการอนุญาตโฟลเดอร์",
@@ -604,6 +663,7 @@
     "InnerConvertFile2": "กำลังดาวน์โหลด {0} [{1}/{2}]: {3}",
     "InnerConvertFile3": "กำลังดาวน์โหลด {0} [{1}/{2}]: {3} -> (0x{4} | S: 0x{5})"
   },
+
   "_InstallMigrate": {
     "PageTitle": "การย้ายเกม",
     "Step1Title": "กระบวนการจะเริ่มใน 5 วินาที โปรดยอมรับกล่องโต้ตอบ UAC เพื่อเริ่มกระบวนการย้ายข้อมูล",
@@ -614,6 +674,7 @@
     "PageFooter2": "อย่า",
     "PageFooter3": "สลับไปยังหน้าอื่นหรือปิด Launcher ในขณะกำลังทำงานอยู่"
   },
+
   "_UpdatePage": {
     "PageTitle1": "อัปเดต",
     "PageTitle2": "สามารถใช้ได้!",
@@ -627,11 +688,13 @@
     "UpdateNowBtn": "อัปเดตตอนนี้",
     "LoadingRelease": "กำลังบันทึกประจำเวอร์ชั่น...",
     "LoadingReleaseFailed": "เกิดข้อผิดพลาดขณะดึงบันทึกเวอร์ชั่น\n{0}",
+
     "UpdateHeader1": "ความคืบหน้า:",
     "UpdateHeader2": "เวลาที่ใช้ไป:",
     "UpdateHeader3": "ขนาดดาวน์โหลด:",
     "UpdateHeader4": "ความเร็ว:",
     "UpdateHeader5PlaceHolder": "กำลังดาวน์โหลดอัปเดต [- / -]:",
+
     "UpdateStatus1": "กำลังตรวจสอบการอัปเดต:",
     "UpdateMessage1": "กำลังเชื่อมต่อกับฐานข้อมูลการอัปเดต...",
     "UpdateStatus2": "กำลังตรวจสอบ:",
@@ -640,25 +703,31 @@
     "UpdateMessage4": "กลับสู่ Launcher เกมเร็วๆ นี้...",
     "UpdateStatus5": "เวอร์ชันได้รับการอัปเดตเป็น {0}!",
     "UpdateMessage5": "Launcher ของคุณจะเปิดอีกครั้งในไม่ช้า",
+
     "UpdateCountdownMessage1": "Launcher ของคุณจะได้รับการอัปเดตใน {0}...",
     "UpdateCountdownMessage2": "(คลิก",
     "UpdateCountdownMessage3": "เพื่อยกเลิกนับถอยหลัง)"
   },
+
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "มีการอัปเดตข้อมูลของ Launcher แล้ว!",
     "NotifMetadataUpdateSubtitle": "ข้อมูลเมตาใหม่สำหรับ Launcher พร้อมใช้งานแล้ว! กระบวนการนี้เป็นไปโดยอัตโนมัติและทำเพื่อให้แน่ใจว่าตัวเรียกใช้งานสามารถสื่อสารกับเซิร์ฟเวอร์ miHoYo/HoYoverse ได้อย่างถูกต้อง การอัปเดตจะเริ่มในไม่ช้า!",
     "NotifMetadataUpdateBtn": "อัปเดตข้อมูลเมตา",
     "NotifMetadataUpdateBtnCountdown": "กำลังอัปเดตข้อมูลเมตาใน: {0}",
     "NotifMetadataUpdateBtnUpdating": "กำลังอัปเดตข้อมูลเมตา โปรดรอสักครู่...",
+
     "NotifFirstWelcomeTitle": "ยินดีต้อนรับสู่ Collapse!",
     "NotifFirstWelcomeSubtitle": "ในการเริ่มต้น ให้คลิกปุ่ม \"{0}\" ด้านล่างเพื่อดูวิธีการติดตั้งหรือย้ายเกมที่มีอยู่",
     "NotifFirstWelcomeBtn": "เยี่ยมชม GitHub Wiki",
+
     "NotifPreviewBuildUsedTitle": "คุณกำลังใช้ Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "ขณะนี้คุณกำลังใช้ Build[PREVIEW] ซึ่งยังอยู่ระหว่างการทดสอบ หากคุณพบปัญหาใดๆ โปรดรายงานโดยใช้ปุ่ม \"{0}\" ด้านล่าง ขอบคุณ!",
     "NotifPreviewBuildUsedBtn": "รายงานปัญหา"
   },
+
   "_StarRailGameSettingsPage": {
     "PageTitle": "ตั้งค่าเกม",
+
     "Graphics_Title": "การตั้งค่ากราฟิก",
     "Graphics_ResolutionPanel": "ความคมชัดของตัวเกม:",
     "Graphics_Fullscreen": "เต็มหน้าจอ",
@@ -667,6 +736,7 @@
     "Graphics_ResCustom": "ใช้ความละเอียดที่กำหนดเอง",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS เป็นการทดลอง! โปรดใช้ด้วยความระมัดระวังเนื่องจาก Honkai: Star Rail ไม่รองรับสิ่งนี้อย่างเป็นทางการ!",
     "Graphics_FPS_Help2": "การตั้งค่า FPS เป็น 120 จะทำให้เมนูการตั้งค่ากราฟิกในเกมหยุดทำงาน\nหากเมนูของคุณเสียในเกม ให้ใช้ Collapse เพื่อเปลี่ยนการตั้งค่ากราฟิกเกม",
@@ -681,6 +751,7 @@
     "Graphics_BloomQuality": "คุณภาพ Bloom",
     "Graphics_AAMode": "โหมดลบรอยหยัก",
     "Graphics_SFXQuality": "คุณภาพเอฟเฟค",
+
     "Graphics_SpecPanel": "การตั้งค่ากราฟิกโดยรวม",
     "SpecEnabled": "เปิดการใช้งาน",
     "SpecDisabled": "ปิดใช้งาน",
@@ -689,25 +760,30 @@
     "SpecMedium": "ปานกลาง",
     "SpecHigh": "สูง",
     "SpecVeryHigh": "สูงมาก",
+
     "ApplyBtn": "ยืนยันตั้งค่า",
     "SettingsApplied": "การเปลี่ยนแปลงได้รับการบันทึกแล้ว",
+
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณลักษณะนี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคนี้หรือต้องการอัปเดต!",
     "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้าแรก",
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!",
     "OverlayFirstTimeTitle": "คุณไม่เคยเล่นเกมนี้มาก่อน!",
     "OverlayFirstTimeSubtitle": "โปรดเปิดเกมก่อนเพื่อสร้างไฟล์ที่จำเป็น จากนั้นกลับมาที่นี่เพื่อใช้คุณสมบัตินี้",
+
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
     "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
+
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
     "Audio_BGM": "ระดับเสียง BGM",
     "Audio_SFX": "ระดับเสียงเอฟเฟค",
     "Audio_VO": "ระดับเสียงพากย์",
     "Audio_Mute": "ปิดเสียง",
+
     "Language": "การตั้งค่าภาษา",
     "Language_Help1": "Collapse ปัจจุบันไม่สามารถดาวน์โหลดแพ็คเกจเสียงได้โดยตรง",
     "Language_Help2": "แพ็คเกจเสียงจะถูกดาวน์โหลดในเกมครั้งถัดไปที่คุณเปิดเกม.",
@@ -718,8 +794,10 @@
     "VO_jp": "ญี่ปุ่น",
     "VO_kr": "เกาหลี"
   },
+
   "_GenshinGameSettingsPage": {
     "PageTitle": "ตั้งค่าเกม",
+
     "Graphics_Title": "การตั้งค่ากราฟิก",
     "Graphics_ResolutionPanel": "ขนาดของตัวเกม:",
     "Graphics_Fullscreen": "เต็มหน้าจอ",
@@ -729,6 +807,7 @@
     "Graphics_ResCustom": "ใช้ความละเอียดที่กำหนดเอง",
     "Graphics_ResCustomW": "W",
     "Graphics_ResCustomH": "H",
+
     "Graphics_Gamma": "แกมมา",
     "Graphics_FPS": "FPS",
     "Graphics_RenderScale": "เรนเดอร์สเกล",
@@ -765,6 +844,7 @@
     "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
     "Graphics_HDR_SceneBrightness": "Scenery Brightness",
     "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+
     "Graphics_SpecPanel": "การตั้งค่ากราฟิกโดยรวม",
     "SpecEnabled": "เปิดการใช้งาน",
     "SpecDisabled": "ปิดใช้งาน",
@@ -775,27 +855,33 @@
     "SpecVeryHigh": "สูงมาก",
     "SpecExtreme": "เต็มคาราเบล",
     "SpecPartiallyOff": "ปิดบางส่วน",
+
     "ApplyBtn": "ยืนยันตั้งค่า",
     "SettingsApplied": "การเปลี่ยนแปลงได้รับการบันทึกแล้ว",
+
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณลักษณะนี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคนี้หรือต้องการอัปเดต!",
     "OverlayNotInstalledSubtitle": "กรุณาดาวน์โหลด / อัปเดต เกมก่อนในหน้าแรก",
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!",
     "OverlayFirstTimeTitle": "คุณไม่เคยเล่นเกมนี้มาก่อน!",
     "OverlayFirstTimeSubtitle": "โปรดเปิดเกมก่อนเพื่อสร้างไฟล์ที่จำเป็น จากนั้นกลับมาที่นี่เพื่อใช้คุณสมบัตินี้",
+
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
     "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
+
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
     "Audio_BGM": "ระดับเสียง BGM",
     "Audio_SFX": "ระดับเสียงเอฟเฟค",
     "Audio_VO": "ระดับเสียงพากย์",
+
     "Audio_Output_Surround": "ระบบเสียงรอบทิศทาง",
     "Audio_DynamicRange": "ไดนามิกเต็มรูปแบบ",
     "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+
     "Language": "การตั้งค่าภาษา",
     "Language_Help1": "Collapse ปัจจุบันไม่สามารถดาวน์โหลดแพ็คเกจเสียงได้โดยตรง",
     "Language_Help2": "แพ็คเกจเสียงจะถูกดาวน์โหลดในเกมครั้งถัดไปที่คุณเปิดเกม.",
