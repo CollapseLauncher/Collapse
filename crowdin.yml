@@ -1,3 +1,0 @@
-files:
-  - source: /Hi3Helper.Core/Lang/en-us.json
-    translation: /Hi3Helper.Core/Lang/%locale%.json

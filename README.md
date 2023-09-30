@@ -25,8 +25,8 @@
 ![zh-TW translation](https://img.shields.io/badge/dynamic/json?color=blue&label=zh-TW&style=flat&logo=crowdin&query=%24.progress.10.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15551431-552387.json)
 
 <p align="center">
-    <a href="https://crowdin.com/project/collapse-launcher" target="_blank">
-       <img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Collapse Launcher Localization at Crowdin" Height=68/>
+    <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
+       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
