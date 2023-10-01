@@ -31,7 +31,7 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Try move persistent files to StreamingAssets
-            TryMovePersistentToStreamingAssets();
+            if (_isParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
 
             // Check for any redundant files
             CheckRedundantFiles(brokenAssetIndex);
@@ -59,30 +59,57 @@ namespace CollapseLauncher
             assetIndex.AddRange(brokenAssetIndex);
         }
 
-        private void TryMovePersistentToStreamingAssets()
+        private void TryMovePersistentToStreamingAssets(IEnumerable<PkgVersionProperties> assetIndex)
         {
             if (!Directory.Exists(_gamePersistentPath)) return;
-            TryMoveAudioPersistent();
+            TryMoveAudioPersistent(assetIndex);
             TryMoveVideoPersistent();
         }
 
-        private void TryMoveAudioPersistent()
+        private void TryMoveAudioPersistent(IEnumerable<PkgVersionProperties> assetIndex)
         {
+            // Try get the exclusion list of the audio (language specific) files
+            string[] exclusionList = assetIndex
+                .Where(x => x.isForceStoreInPersistent && x.remoteName
+                    .AsSpan()
+                    .EndsWith(".pck"))
+                .Select(x => x.remoteNamePersistent
+                    .Replace('/', '\\'))
+                .ToArray();
+
+            // Get the audio directory paths and create if doesn't exist
             string audioAsbPath = Path.Combine(_gameStreamingAssetsPath, "AudioAssets");
             string audioPersistentPath = Path.Combine(_gamePersistentPath, "AudioAssets");
             if (!Directory.Exists(audioPersistentPath)) return;
             if (!Directory.Exists(audioAsbPath)) Directory.CreateDirectory(audioAsbPath);
 
+            // Get the list of audio language names from _gameVersionManager
             List<string> audioLangList = ((GameTypeGenshinVersion)_gameVersionManager)._audioVoiceLanguageList;
+
+            // Enumerate the content of audio persistent directory
             foreach (string path in Directory.EnumerateDirectories(audioPersistentPath, "*", SearchOption.TopDirectoryOnly))
             {
+                // Get the last path section as language name to compare
                 string langName = Path.GetFileName(path);
+
+                // If the path section matches the name in language list, then continue
                 if (audioLangList.Contains(langName))
                 {
-                    string oldPath = path;
-                    string newPath = Path.Combine(audioAsbPath, langName);
+                    // Enumerate the files that's being exist in the persistent path of each language
+                    // except the one that's included in the exclusion list
+                    foreach (string filePath in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                        .Where(x => !exclusionList.Any(y => x.AsSpan().EndsWith(y.AsSpan()))))
+                    {
+                        // Trim the path name to get the generic languageName/filename form
+                        string pathName = filePath.AsSpan().Slice(audioPersistentPath.Length + 1).ToString();
+                        // Combine the generic name with audioAsbPath
+                        string newPath = Path.Combine(audioAsbPath, pathName);
+                        string newPathDir = Path.GetDirectoryName(newPath);
 
-                    MoveFolderContent(oldPath, newPath);
+                        // Try move the file to the asb path
+                        if (!Directory.Exists(newPathDir)) Directory.CreateDirectory(newPathDir);
+                        File.Move(filePath, newPath);
+                    }
                 }
             }
         }

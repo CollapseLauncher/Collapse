@@ -121,6 +121,7 @@ namespace CollapseLauncher.Statics
             ZoneName = GamePreset.ZoneName,
             ZonePosterURL = GamePreset.ZonePosterURL,
             ZoneURL = GamePreset.ZoneURL,
+            GameDataTemplates = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates)
         };
         #endregion
 
