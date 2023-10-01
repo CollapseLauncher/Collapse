@@ -31,40 +31,40 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Lang\de-de.json">
+		<Content Include="Lang\de_de.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\en-us.json">
+		<Content Include="Lang\en_us.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\es-419.json">
+		<Content Include="Lang\es_419.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\id-id.json">
+		<Content Include="Lang\id_id.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\th-TH.json">
+		<Content Include="Lang\th_TH.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\zh-cn.json">
+		<Content Include="Lang\zh_cn.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\pt-pt.json">
+		<Content Include="Lang\pt_pt.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\vi-vn.json">
+		<Content Include="Lang\vi_vn.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\ko-kr.json">
+		<Content Include="Lang\ko_kr.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\ja-jp.json">
+		<Content Include="Lang\ja_jp.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\zh-TW.json">
+		<Content Include="Lang\zh_TW.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lang\ru-RU.json">
+		<Content Include="Lang\ru_RU.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">
