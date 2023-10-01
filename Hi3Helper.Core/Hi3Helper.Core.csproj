@@ -9,7 +9,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DebugType>portable</DebugType>
 		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -31,40 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Lang\de_de.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\en_us.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\es_419.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\id_id.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\th_TH.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\zh_cn.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\pt_pt.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\vi_vn.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\ko_kr.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\ja_jp.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\zh_TW.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Lang\ru_RU.json">
+		<Content Include="Lang\*.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Lib\7z.dll">
@@ -81,12 +48,12 @@
 		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 		<ProjectReference Include="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
 	</ItemGroup>
-  
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <ItemGroup>
-      <Content Include="Lang\**" />
-    </ItemGroup>
-    <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
-  </Target>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<ItemGroup>
+			<Content Include="Lang\**" />
+		</ItemGroup>
+		<Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
+	</Target>
 
 </Project>
