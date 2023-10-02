@@ -79,7 +79,7 @@ Tidak hanya itu. Launcher ini juga memiliki beberapa fitur canggih untuk **Gensh
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+      <td>:white_check_mark: <br> (Dari SEA -&gt; Global) </td>
     </tr>
     <tr>
       <td>Global</td>
@@ -181,7 +181,7 @@ Tidak hanya itu. Launcher ini juga memiliki beberapa fitur canggih untuk **Gensh
 > > Mohon diingat bahwa fitur konversi game saat ini hanya didukung untuk Honkai Impact 3rd. Kami saat ini tidak merencanakan dukungan ini untuk game lainnya dari miHoYo/Cognosphere Ptr. Ltd.
 
 # Unduh Collapse Sekarang!
-Untuk mengunduh versi terbaru yang tersedia pada Collapse, silahkan pergi ke halaman [**Releases**](https://github.com/neon-nyan/CollapseLauncher/releases).
+Untuk mengunduh versi terbaru yang tersedia pada Collapse, silahkan pergi ke halaman [**Rilis**](https://github.com/neon-nyan/CollapseLauncher/releases) berikut.
 
 # Persyaratan Sistem yang Dibutuhkan
 - OS: **Windows 10 1809 Update (Build 17763)** atau di atasnya / **Windows 11 (Build apa saja)**
@@ -191,7 +191,7 @@ Untuk mengunduh versi terbaru yang tersedia pada Collapse, silahkan pergi ke hal
 ***
 
 # Persyaratan untuk *Building/Development* secara Local
-### Informasi mengenai hal ini dapat ditemukan pada halaman [**Contribution Guidelines** [Dalam Bahasa Inggris]](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md) berikut.
+### Informasi mengenai hal ini dapat ditemukan pada halaman [**Panduan Kontribusi** [Dalam Bahasa Inggris]](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md) berikut.
 
 ***
 
