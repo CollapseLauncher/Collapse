@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 
@@ -13,18 +14,21 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
+        #region Properties
         private int? lastConsoleStatus;
         private IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+        #endregion
 
-        // Locales
-        private string ShowApp = "Show Collapse Window";
-        private string HideApp = "Hide Collapse to Taskbar";
-        private string ShowConsole = "Show Console";
-        private string HideConsole = "Hide Console to Taskbar";
-        private string ExitApp = "Exit Collapse Launcher";
+        #region Locales
+        private string ShowApp = Lang._Misc.Taskbar_ShowApp;
+        private string HideApp = Lang._Misc.Taskbar_HideApp;
+        private string ShowConsole = Lang._Misc.Taskbar_ShowConsole;
+        private string HideConsole = Lang._Misc.Taskbar_HideConsole;
+        private string ExitApp = Lang._Misc.Taskbar_ExitApp;
 
-        private string Preview = "Preview";
-        private string Stable = "Stable";
+        private string Preview = Lang._Misc.BuildChannelPreview;
+        private string Stable = Lang._Misc.BuildChannelStable;
+        #endregion
 
         public TrayIcon()
         {

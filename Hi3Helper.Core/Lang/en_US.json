@@ -486,7 +486,13 @@
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "No Activity",
     "DiscordRP_Ad": "- With Collapse Launcher",
-    "DiscordRP_Region": "Region:"
+    "DiscordRP_Region": "Region:",
+
+    "Taskbar_ShowApp": "Show Collapse window",
+    "Taskbar_HideApp": "Hide Collapse window to taskbar",
+    "Taskbar_ShowConsole": "Show Collapse console window",
+    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
+    "Taskbar_ExitApp": "Exit Collapse Launcher"
   },
 
   "_BackgroundNotification": {
