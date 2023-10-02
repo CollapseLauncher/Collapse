@@ -9,14 +9,19 @@
     >
     <tb:TaskbarIcon
         ToolTipText="Collapse Launcher"
+        x:Name="CollapseTaskbar"
         IconSource="ms-appx:///icon.ico"
-        MenuActivation="LeftOrRightClick"
+        MenuActivation="RightClick"
+        ContextMenuMode="PopupMenu"
+        DoubleClickCommand="{x:Bind ToggleAllVisibilityCommand}"
+        LeftClickCommand="{x:Bind BringToForegroundCommand}"
     >
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem x:Name="TaskbarToggleText" Text="Show App from Taskbar" Command="{x:Bind ToggleVisibilityCommand}"/>
+                <MenuFlyoutItem x:Name="MainTaskbarToggle" Command="{x:Bind ToggleMainVisibilityCommand}"/>
+                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle" Command="{x:Bind ToggleConsoleVisibilityCommand}" Visibility="Collapsed"/>
                 <MenuFlyoutSeparator/>
-                <MenuFlyoutItem Text="Close" Command="{x:Bind CloseAppCommand}"/>
+                <MenuFlyoutItem x:Name="CloseButton" Command="{x:Bind CloseAppCommand}"/>
             </MenuFlyout>
         </tb:TaskbarIcon.ContextFlyout>
     </tb:TaskbarIcon>
