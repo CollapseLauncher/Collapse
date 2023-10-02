@@ -31,6 +31,10 @@ namespace CollapseLauncher
         private protected GenshinAudioLanguage _audioLanguage { get; init; }
         #endregion
 
+        #region Properties
+        private bool _isParsePersistentManifestSuccess { get; set; }
+        #endregion
+
         public GenshinRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, string gameRepoURL)
             : base(parentUI, GameVersionManager, null, gameRepoURL, null)
         {

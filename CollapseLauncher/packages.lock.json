@@ -33,6 +33,12 @@
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
+      "Dongle.Windows.CsWinRT": {
+        "type": "Direct",
+        "requested": "[3.0.0-wux.2, )",
+        "resolved": "3.0.0-wux.2",
+        "contentHash": "bWi9eF+I2Gb3lDUwGtzGdtyD3epopH0EySDmjxoO1hv1D+XlY56tkIryZVXtxegQchHhL5MqT9HWlTwL3263YQ=="
+      },
       "GitInfo": {
         "type": "Direct",
         "requested": "[3.3.3, )",
@@ -50,6 +56,15 @@
         "dependencies": {
           "H.NotifyIcon": "2.0.115",
           "Microsoft.WindowsAppSDK": "1.3.230724000"
+        }
+      },
+      "Microsoft.Graphics.Win2D": {
+        "type": "Direct",
+        "requested": "[1.0.5.1, )",
+        "resolved": "1.0.5.1",
+        "contentHash": "9DVEVvyQWWz8kqhsFBAx9Zv4KRIAcmxuT7kFpK1Fgh6czSiMB+CQW0DlhZXT44Mtv41FRXG47lhEv+7a2YyiLA==",
+        "dependencies": {
+          "Microsoft.WindowsAppSDK": "1.0.4"
         }
       },
       "Microsoft.Windows.CsWinRT": {
@@ -135,6 +150,15 @@
           "runtime.native.System": "4.3.0",
           "runtime.native.System.Net.Http": "4.3.0",
           "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
+        }
+      },
+      "System.Text.Json": {
+        "type": "Direct",
+        "requested": "[7.0.3, )",
+        "resolved": "7.0.3",
+        "contentHash": "AyjhwXN1zTFeIibHimfJn6eAsZ7rTBib79JQpzg8WAuR/HKDu9JGNHTuu3nbbXQ/bgI+U4z6HtZmCHNXB1QXrQ==",
+        "dependencies": {
+          "System.Text.Encodings.Web": "7.0.0"
         }
       },
       "System.Text.RegularExpressions": {
@@ -278,11 +302,6 @@
         "type": "Transitive",
         "resolved": "4.7.0",
         "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
-      },
-      "Microsoft.Graphics.Win2D": {
-        "type": "Transitive",
-        "resolved": "1.0.0.30",
-        "contentHash": "pEGf7FSx2dRWJuoaSoXk+WYkZfYwhWoJKOyyo0XLRU6V2Ul02MjxRhoxggrzGz6jVFiT7R2NdPdV8M6N1F+QfA=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -1076,10 +1095,10 @@
           "System.Text.Encoding": "4.3.0"
         }
       },
-      "System.Text.Json": {
+      "System.Text.Encodings.Web": {
         "type": "Transitive",
-        "resolved": "5.0.2",
-        "contentHash": "I47dVIGiV6SfAyppphxqupertT/5oZkYLDCX6vC3HpOI4ZLjyoKAreUoem2ie6G0RbRuFrlqz/PcTQjfb2DOfQ=="
+        "resolved": "7.0.0",
+        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg=="
       },
       "System.Threading": {
         "type": "Transitive",

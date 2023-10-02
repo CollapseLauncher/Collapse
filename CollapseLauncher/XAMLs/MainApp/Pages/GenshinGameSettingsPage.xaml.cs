@@ -243,7 +243,7 @@ namespace CollapseLauncher.Pages
                     ToggleRegistrySubscribe(false);
                     RegistryWatcher.Dispose();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LogWriteLine($"[GI GSP Module] Error when disposing RegistryWatcher module!\r\n{ex}", LogType.Error, true);
                 }
@@ -509,7 +509,7 @@ namespace CollapseLauncher.Pages
             CanvasDevice device = CanvasDevice.GetSharedDevice();
             float w = (float)panel.Width;
             float h = (float)panel.Height;
-            float dpi = 96 * (float) XamlRoot.RasterizationScale;
+            float dpi = 96 * (float)XamlRoot.RasterizationScale;
             CanvasSwapChain swapChain = new CanvasSwapChain(device, w, h, dpi, DirectXPixelFormat.R16G16B16A16Float, 2, CanvasAlphaMode.Premultiplied);
             panel.SwapChain = swapChain;
 

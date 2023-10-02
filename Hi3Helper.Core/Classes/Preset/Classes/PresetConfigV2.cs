@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -291,6 +292,24 @@ namespace Hi3Helper.Preset
             }
         }
 
+        public byte[]? GetGameDataTemplate(string key, byte[] gameVersion)
+        {
+            if (GameDataTemplates == null || !GameDataTemplates.ContainsKey(key) || GameDataTemplates[key] == null) return null;
+
+            GameDataTemplate value = GameDataTemplates[key];
+            if (value.DataVersion == null) return null;
+
+            int verInt = GameDataVersion.GetBytesToIntVersion(gameVersion);
+            if (!value.DataVersion.ContainsKey(verInt)) return null;
+
+            GameDataVersion verData = value.DataVersion[verInt];
+            if (!verData.isCompressed) return verData.Data;
+
+            byte[] dataOut = new byte[verData.Length];
+            BrotliDecoder.TryDecompress(verData.Data, dataOut, out _);
+            return dataOut;
+        }
+
         private void SetVoiceLanguageID_Genshin(int LangID)
         {
             try
@@ -545,5 +564,24 @@ namespace Hi3Helper.Preset
 #endif
         public string? InternalGameNameFolder { get; set; }
         public string? InternalGameNameInConfig { get; set; }
+        public Dictionary<string, GameDataTemplate>? GameDataTemplates { get; set; }
+    }
+
+    public class GameDataTemplate
+    {
+        public Dictionary<int, GameDataVersion>? DataVersion { get; set; }
+    }
+
+    public class GameDataVersion
+    {
+        public byte[]? Data { get; set; }
+        public long Length { get; set; }
+        public bool isCompressed { get; set; }
+
+        public static int GetBytesToIntVersion(byte[] version)
+        {
+            if (version.Length != 4) throw new FormatException("Argument: version must have 4 bytes");
+            return version[0] | version[1] << 8 | version[2] << 16 | version[3] << 24;
+        }
     }
 }

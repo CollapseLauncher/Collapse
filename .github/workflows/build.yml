@@ -25,6 +25,7 @@ on:
 
 jobs:
   build:
+    # runs-on: [self-hosted, linux]
     runs-on: ${{ github.event.inputs.os }}
     strategy:
       matrix:

@@ -46,13 +46,13 @@ namespace CollapseLauncher
 
                 // Region: PersistentManifest
                 // Build persistent manifest
-                await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
+                _isParsePersistentManifestSuccess = await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
 
                 // Clear hashtableManifest
                 hashtableManifest.Clear();
 
                 // Eliminate unnecessary asset indexes
-                return EliminateUnnecessaryAssetIndex(assetIndex);
+                return _isParsePersistentManifestSuccess ? EliminateUnnecessaryAssetIndex(assetIndex) : assetIndex;
             }
             finally
             {
@@ -81,30 +81,38 @@ namespace CollapseLauncher
         #region PrimaryManifest
         private async Task BuildPrimaryManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
-            // Try Cleanup Download Profile file
-            TryDeleteDownloadPref();
+            try
+            {
+                // Try Cleanup Download Profile file
+                TryDeleteDownloadPref();
 
-            // Build basic file entry.
-            string ManifestPath = Path.Combine(_gamePath, "pkg_version");
+                // Build basic file entry.
+                string ManifestPath = Path.Combine(_gamePath, "pkg_version");
 
-            // Download basic package version list
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), EnsureCreationOfDirectory(ManifestPath), true, null, null, token);
-            // Download additional package lists
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming")), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming")), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming")), true, null, null, token);
-            await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming")), true, null, null, token);
+                // Download basic package version list
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, "pkg_version"), EnsureCreationOfDirectory(ManifestPath), true, null, null, token);
+                // Download additional package lists
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\data_versions_streaming")), true, null, null, token);
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\silence_versions_streaming")), true, null, null, token);
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming")), true, null, null, token);
+                await _httpClient.Download(CombineURLFromString(_gameRepoURL, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming"), EnsureCreationOfDirectory(Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets\\video_versions_streaming")), true, null, null, token);
 
-            // Parse basic package version.
-            ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
+                // Parse basic package version.
+                ParseManifestToAssetIndex(ManifestPath, assetIndex, hashtableManifest, "", "", _gameRepoURL, true);
 
-            // Build additional blks entry.
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "res_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", _gameRepoURL, true);
+                // Build additional blks entry.
+                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "data_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
+                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "silence_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", "", _gameRepoURL, true);
+                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets", "res_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\AssetBundles", ".blk", _gameRepoURL, true);
 
-            // Build cutscenes entry.
-            EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL, true);
+                // Build cutscenes entry.
+                EnumerateManifestToAssetIndex($"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "*_versions_*", assetIndex, hashtableManifest, $"{_execPrefix}_Data\\StreamingAssets\\VideoAssets", "", _gameRepoURL, true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Parsing primary manifest has failed!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex, ErrorType.Unhandled);
+            }
         }
 
         private void TryDeleteDownloadPref()
@@ -120,56 +128,65 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        private async Task BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
+        private async Task<bool> BuildPersistentManifest(Http _httpClient, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
-            // Get the Dispatcher Query
-            QueryProperty queryProperty = await GetDispatcherQuery(_httpClient, token).ConfigureAwait(false);
-
-            // Initialize persistent folder path and check for the folder existence
-            string basePersistentPath = $"{_execPrefix}_Data\\Persistent";
-            string persistentFolder = Path.Combine(_gamePath, basePersistentPath);
-
-            string baseStreamingAssetsPath = $"{_execPrefix}_Data\\StreamingAssets";
-            string streamingAssetsFolder = Path.Combine(_gamePath, baseStreamingAssetsPath);
-
-            if (!Directory.Exists(persistentFolder))
+            try
             {
-                Directory.CreateDirectory(persistentFolder);
-            }
+                // Get the Dispatcher Query
+                QueryProperty queryProperty = await GetDispatcherQuery(_httpClient, token).ConfigureAwait(false);
 
-            if (!Directory.Exists(streamingAssetsFolder))
+                // Initialize persistent folder path and check for the folder existence
+                string basePersistentPath = $"{_execPrefix}_Data\\Persistent";
+                string persistentFolder = Path.Combine(_gamePath, basePersistentPath);
+
+                string baseStreamingAssetsPath = $"{_execPrefix}_Data\\StreamingAssets";
+                string streamingAssetsFolder = Path.Combine(_gamePath, baseStreamingAssetsPath);
+
+                if (!Directory.Exists(persistentFolder))
+                {
+                    Directory.CreateDirectory(persistentFolder);
+                }
+
+                if (!Directory.Exists(streamingAssetsFolder))
+                {
+                    Directory.CreateDirectory(streamingAssetsFolder);
+                }
+
+                string primaryParentURL;
+                string secondaryParentURL;
+
+                // Parse res_versions_external
+                primaryParentURL = CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
+                secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
+                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "res_versions_external",
+                    "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+
+                // Parse data_versions
+                primaryParentURL = queryProperty.ClientDesignDataURL;
+                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
+                    "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+
+                // Parse data_versions (silence)
+                primaryParentURL = queryProperty.ClientDesignDataSilURL;
+                await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
+                    "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+
+                // Save persistent manifest numbers
+                SavePersistentRevision(queryProperty);
+                return true;
+            }
+            catch (Exception ex)
             {
-                Directory.CreateDirectory(streamingAssetsFolder);
+                LogWriteLine($"Parsing persistent manifest has failed. Ignoring!\r\n{ex}", LogType.Error, true);
+                return false;
             }
-
-            string primaryParentURL;
-            string secondaryParentURL;
-
-            // Parse res_versions_external
-            primaryParentURL = CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
-            secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
-            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, secondaryParentURL, "res_versions_external",
-                "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
-
-            // Parse data_versions
-            primaryParentURL = queryProperty.ClientDesignDataURL;
-            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                "data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
-
-            // Parse data_versions (silence)
-            primaryParentURL = queryProperty.ClientDesignDataSilURL;
-            await ParseManifestToAssetIndex(_httpClient, primaryParentURL, "", CombineURLFromString("AssetBundles", "data_versions"),
-                "silence_data_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
-
-            // Save persistent manifest numbers
-            SavePersistentRevision(queryProperty);
         }
 
         private async ValueTask ParseManifestToAssetIndex(Http _httpClient, string primaryParentURL, string secondaryParentURL,
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            CancellationToken token, bool forceStoreInPersistent = false)
+            CancellationToken token, bool forceStoreInPersistent = false, bool forceOverwrite = false)
         {
             try
             {
@@ -191,7 +208,7 @@ namespace CollapseLauncher
                 ParsePersistentManifest(manifestPath,
                     persistentPath, streamingAssetsPath,
                     primaryParentURL, secondaryParentURL,
-                    assetIndex, hashtable, forceStoreInPersistent);
+                    assetIndex, hashtable, forceStoreInPersistent, forceOverwrite);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -205,7 +222,7 @@ namespace CollapseLauncher
             string persistentPath, string streamingAssetPath,
             string primaryParentURL, string secondaryParentURL,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            bool forceStoreInPersistent)
+            bool forceStoreInPersistent, bool forceOverwrite)
         {
             persistentPath = persistentPath.Replace('\\', '/');
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
@@ -252,7 +269,19 @@ namespace CollapseLauncher
                     manifestEntry.remoteName = assetStreamingAssetPath;
                     manifestEntry.remoteNamePersistent = assetPersistentPath;
                     // Decide if the file is forced to be in persistent or not
-                    manifestEntry.isForceStoreInPersistent = forceStoreInPersistent;
+                    manifestEntry.isForceStoreInPersistent = forceStoreInPersistent || manifestEntry.isPatch;
+
+                    // If forceOverwrite and forceStoreInPwrsistent is true, then
+                    // make it as a patch file and store it to persistent
+                    if (forceOverwrite && forceStoreInPersistent)
+                    {
+                        manifestEntry.isForceStoreInStreaming = false;
+                        manifestEntry.isForceStoreInPersistent = true;
+                        manifestEntry.isPatch = true;
+                    }
+
+                    // If the manifest has isPatch set to true, then set force store in streaming to false
+                    if (manifestEntry.isPatch) manifestEntry.isForceStoreInStreaming = false;
 
                     // Check if the hashtable has the value
                     bool IsHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
@@ -266,8 +295,12 @@ namespace CollapseLauncher
                         // Otherwise, continue overriding its value
                         if (indexID == -1) continue;
 
-                        // If it has isForceStoreStreamingAssets flag, then continue.
-                        if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming) continue;
+                        // Override the force state if isPatch is true
+                        manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
+
+                        // If it has isForceStoreStreamingAssets flag and isPatch is false, then continue.
+                        if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming
+                            && !manifestEntry.isPatch) continue;
 
                         // Start overriding the value
                         hashtable[assetStreamingAssetPath] = manifestEntry;
@@ -275,6 +308,8 @@ namespace CollapseLauncher
                     }
                     else
                     {
+                        manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
+
                         hashtable.Add(manifestEntry.remoteName, manifestEntry);
                         assetIndex.Add(manifestEntry);
                     }
@@ -289,6 +324,15 @@ namespace CollapseLauncher
             // Get base_res_version_hash content
             string FilePath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\StreamingAssets\\res_versions_streaming");
             string Hash = CreateMD5Shared(new FileStream(FilePath, FileMode.Open, FileAccess.Read));
+
+#nullable enable
+            // Write DownloadPref template
+            byte[]? PrefTemplateBytes = (base._gameVersionManager as GameTypeGenshinVersion)?.GamePreset
+                .GetGameDataTemplate("DownloadPref", _gameVersion.VersionArrayManifest.Select(x => (byte)x).ToArray());
+            if (PrefTemplateBytes != null) File.WriteAllBytes(PersistentPath + "\\DownloadPref", PrefTemplateBytes);
+#nullable disable
+
+            // Get base_res_version_hash content
             File.WriteAllText(PersistentPath + "\\base_res_version_hash", Hash);
             // Get data_revision content
             File.WriteAllText(PersistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
