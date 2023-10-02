@@ -388,7 +388,7 @@ namespace CollapseLauncher
                 Message = string.Format(Lang._AppNotification.NotifFirstWelcomeSubtitle, Lang._AppNotification.NotifFirstWelcomeBtn),
                 OtherUIElement = GenerateNotificationButtonStartProcess(
                     "",
-                    "https://github.com/neon-nyan/CollapseLauncher/wiki",
+                    "https://github.com/CollapseLauncher/Collapse/wiki",
                     Lang._AppNotification.NotifFirstWelcomeBtn)
             });
 
@@ -404,7 +404,7 @@ namespace CollapseLauncher
                     Message = string.Format(Lang._AppNotification.NotifPreviewBuildUsedSubtitle, Lang._AppNotification.NotifPreviewBuildUsedBtn),
                     OtherUIElement = GenerateNotificationButtonStartProcess(
                         "",
-                        "https://github.com/neon-nyan/CollapseLauncher/issues",
+                        "https://github.com/CollapseLauncher/Collapse/issues",
                         Lang._AppNotification.NotifPreviewBuildUsedBtn)
                 });
             }

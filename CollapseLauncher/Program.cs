@@ -130,7 +130,7 @@ namespace CollapseLauncher
             {
                 LoggerConsole.AllocateConsole();
                 Console.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL!!!\r\n{ex}");
-                Console.WriteLine("\r\nIf you are sure that this is not intended, please report it to: https://github.com/neon-nyan/CollapseLauncher/issues\r\nPress any key to exit...");
+                Console.WriteLine("\r\nIf you are sure that this is not intended, please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\nPress any key to exit...");
                 Console.ReadLine();
                 return;
             }
