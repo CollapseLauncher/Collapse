@@ -303,7 +303,7 @@
     "CustomArgs_Footer2": "Unity スタンドアロンプレイヤーのコマンドライン引数",
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "ゲームの優先度をブースト [実験的機能]"
   },
 
   "_SettingsPage": {
@@ -365,9 +365,9 @@
     "AppFiles_ClearLogBtn": "ログファイルの削除",
     "AppFiles_ClearImgCachesBtn": "画像ファイルの削除",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataBtn": "メタデータを消去して再起動",
+    "AppFiles_ClearMetadataDialog": "Collapseのメタデータを消去します！",
+    "AppFiles_ClearMetadataDialogHelp": "Collapseのメタデータを消去して強制的に再起動します。サーバー読み込みに不具合がある場合にのみ実行してください。\r\n本当に実行しますか？",
 
     "ReportIssueBtn": "問題を報告",
     "ContributePRBtn": "プルリクエストで貢献",
@@ -392,7 +392,7 @@
 
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+    "LowerCollapsePrioOnGameLaunch": "ゲーム起動中はランチャーのプロセス優先度を下げる"
   },
 
   "_Misc": {
@@ -690,7 +690,7 @@
     "LoadingReleaseFailed": "リリースノートの取得中にエラーが発生しました。\r\n{0}",
 
     "UpdateHeader1": "進捗：",
-    "UpdateHeader2": "Time Remaining:",
+    "UpdateHeader2": "残り時間：",
     "UpdateHeader3": "ダウンロードサイズ:",
     "UpdateHeader4": "速度:",
     "UpdateHeader5PlaceHolder": "アップデートをダウンロードしています [- / -]:",
@@ -831,19 +831,19 @@
     "Graphics_GlobalIllumination_Help1": "一部のデバイスでのみ有効です！",
     "Graphics_GlobalIllumination_Help2": "詳細な情報（英語）",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
-    "Graphics_HDR_UiBrightness": "UI Brightness",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+    "Graphics_HDR_Enable": "HDRを有効化",
+    "Graphics_HDR_NotSupported1": "ディスプレイがHDRに対応していません。",
+    "Graphics_HDR_NotSupported2": "HDR対応モニターが必要です！",
+    "Graphics_HDR_NotEnabled1": "ディスプレイはHDRに対応していますが、有効化されていません。",
+    "Graphics_HDR_NotEnabled2": "Windowsの設定で「HDRを使用する」をオンにしてください。",
+    "Graphics_HDR_Help_Link": "詳細な情報",
+    "Graphics_HDR_MaxLuminosity": "最大輝度（ニト）",
+    "Graphics_HDR_MaxLuminosity_Help": "ハイライトの明るさの最大許容値",
+    "Graphics_HDR_Calibration_Help": "表示されている画像がうっすら見える輝度に調整してください",
+    "Graphics_HDR_UiBrightness": "UIの明るさ",
+    "Graphics_HDR_UiBrightness_Help": "UI部分の明るさの調節",
+    "Graphics_HDR_SceneBrightness": "シーン輝度",
+    "Graphics_HDR_SceneBrightness_Help": "風景の明るさの調節",
 
     "Graphics_SpecPanel": "画質",
     "SpecEnabled": "ON",
@@ -880,7 +880,7 @@
 
     "Audio_Output_Surround": "サラウンド出力をON",
     "Audio_DynamicRange": "フルダイナミックレンジをON",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "最小化時にミュート",
 
     "Language": "言語設定",
     "Language_Help1": "Collapseには音声パッケージを直接ダウンロードする機能がありません。",
