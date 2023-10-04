@@ -210,6 +210,7 @@ namespace CollapseLauncher
             if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
             if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
             if (_gameAPIProp.data.pre_download_game?.latest?.decompressed_path != null) LogWriteLine($"Decompressed Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.decompressed_path}", LogType.Default, true);
+            if (_gameAPIProp.data.sdk?.path != null) LogWriteLine($"SDK found! Path: {_gameAPIProp.data.sdk.path}", LogType.Default, true);
             if (_gameAPIProp.data.pre_download_game?.latest?.path != null) LogWriteLine($"ZIP Path Pre-load: {_gameAPIProp.data.pre_download_game?.latest?.path}", LogType.Default, true);
 #endif
 

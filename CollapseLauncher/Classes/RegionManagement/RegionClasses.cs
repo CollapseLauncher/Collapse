@@ -48,11 +48,35 @@ namespace CollapseLauncher
         };
     }
 
+    public class RegionResourceSdk : IRegionResourceCopyable<RegionResourceSdk>
+    {
+        public RegionResourceSdk version { get; set; }
+        public RegionResourceSdk path { get; set; }
+        public RegionResourceSdk size { get; set; }
+        public RegionResourceSdk md5 { get; set; }
+        public RegionResourceSdk package_size { get; set; }
+        public RegionResourceSdk pkg_version { get; set; }
+        public RegionResourceSdk channel_id { get; set; }
+        public RegionResourceSdk sub_channel_id { get; set; }
+        public RegionResourceSdk Copy() => new RegionResourceSdk()
+        {
+            version = version?.Copy(),
+            path = path?.Copy(),
+            size = size?.Copy(),
+            md5 = md5?.Copy(),
+            package_size = package_size?.Copy(),
+            pkg_version = pkg_version?.Copy(),
+            channel_id = channel_id?.Copy(),
+            sub_channel_id = sub_channel_id?.Copy()
+        };
+    }
+
     public class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
     {
         public RegionResourceLatest game { get; set; }
         public RegionResourceLatest pre_download_game { get; set; }
         public RegionBackgroundProp adv { get; set; }
+        public RegionResourceSdk sdk { get; set; }
         public IList<RegionSocMedProp> banner { get; set; }
         public IList<RegionSocMedProp> icon { get; set; }
         public IList<RegionSocMedProp> post { get; set; }
@@ -61,9 +85,10 @@ namespace CollapseLauncher
             game = game?.Copy(),
             pre_download_game = pre_download_game?.Copy(),
             adv = adv?.Copy(),
+            sdk = sdk?.Copy(),
             banner = banner?.Copy(),
             icon = icon?.Copy(),
-            post = post?.Copy()
+            post = post?.Copy(),
         };
     }
 
