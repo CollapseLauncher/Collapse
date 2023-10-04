@@ -110,7 +110,7 @@ namespace CollapseLauncher
         public static void SetColorPalette(Page page, Windows.UI.Color[] palette = null)
         {
             if (palette == null || palette?.Length < 2)
-                palette = EnsureLengthCopyLast(palette = [(Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"]], 2);
+                palette = EnsureLengthCopyLast(new Windows.UI.Color [] {(Windows.UI.Color)Application.Current.Resources["TemplateAccentColor"]}, 2);
 
             if (IsAppThemeLight)
             {
