@@ -32,6 +32,20 @@ namespace CollapseLauncher.GameVersioning
             };
         }
 
+        private IniSection _defaultIniProfileBilibili
+        {
+            get => new IniSection()
+            {
+                { "cps", new IniValue("bilibili") },
+                { "channel", new IniValue("14") },
+                { "sub_channel", new IniValue("0") },
+                { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
+                { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
+                { "is_first_exit", new IniValue(false) },
+                { "exit_type", new IniValue(2) }
+            };
+        }
+
         private IniSection _defaultIniVersion
         {
             get => new IniSection()
@@ -40,6 +54,18 @@ namespace CollapseLauncher.GameVersioning
                 { "cps", new IniValue() },
                 { "game_version", new IniValue() },
                 { "sub_channel", new IniValue(1) },
+                { "sdk_version", new IniValue() }
+            };
+        }
+
+        private IniSection _defaultIniVersionBilibili
+        {
+            get => new IniSection()
+            {
+                { "channel", new IniValue(14) },
+                { "cps", new IniValue("bilibili") },
+                { "game_version", new IniValue() },
+                { "sub_channel", new IniValue(0) },
                 { "sdk_version", new IniValue() }
             };
         }
@@ -268,9 +294,17 @@ namespace CollapseLauncher.GameVersioning
             GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName);
 
             // Initialize INIs
-            InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
-            InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
-
+            if (GamePreset.ZoneName == "Bilibili")
+            {
+                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfileBilibili, _defaultIniProfileSection);
+                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersionBilibili, _defaultIniVersionSection);
+            }
+            else
+            {
+                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
+                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
+            }
+            
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName), GamePreset.VendorType);
         }
