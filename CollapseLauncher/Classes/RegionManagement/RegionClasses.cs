@@ -50,24 +50,28 @@ namespace CollapseLauncher
 
     public class RegionResourceSdk : IRegionResourceCopyable<RegionResourceSdk>
     {
-        public RegionResourceSdk version { get; set; }
-        public RegionResourceSdk path { get; set; }
-        public RegionResourceSdk size { get; set; }
-        public RegionResourceSdk md5 { get; set; }
-        public RegionResourceSdk package_size { get; set; }
-        public RegionResourceSdk pkg_version { get; set; }
-        public RegionResourceSdk channel_id { get; set; }
-        public RegionResourceSdk sub_channel_id { get; set; }
+        public string version { get; set; }
+        public string path { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public long size { get; set; }
+        public string md5 { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public long package_size { get; set; }
+        public string pkg_version { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? channel_id { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? sub_channel_id { get; set; }
         public RegionResourceSdk Copy() => new RegionResourceSdk()
         {
-            version = version?.Copy(),
-            path = path?.Copy(),
-            size = size?.Copy(),
-            md5 = md5?.Copy(),
-            package_size = package_size?.Copy(),
-            pkg_version = pkg_version?.Copy(),
-            channel_id = channel_id?.Copy(),
-            sub_channel_id = sub_channel_id?.Copy()
+            version = version,
+            path = path,
+            size = size,
+            md5 = md5,
+            package_size = package_size,
+            pkg_version = pkg_version,
+            channel_id = channel_id,
+            sub_channel_id = sub_channel_id
         };
     }
 
