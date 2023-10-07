@@ -48,13 +48,9 @@ namespace CollapseLauncher
 
             // Switch toggle text to see if its started with Start
             MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
-            
+            ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
             // Show visibility toggle for console if the console is enabled
-            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
-            {
-                ConsoleTaskbarToggle.Visibility = Visibility.Visible;
-                ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
-            }
+            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool()) ConsoleTaskbarToggle.Visibility = Visibility.Visible;
         }
         #endregion
 
