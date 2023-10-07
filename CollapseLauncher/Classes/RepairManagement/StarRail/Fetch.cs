@@ -45,6 +45,9 @@ namespace CollapseLauncher
                 // Read Video metadata and convert to FilePropertiesRemote
                 await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
                 ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
+
+                // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+                await FetchBilibiliSDK(token);
             }
             finally
             {

@@ -48,6 +48,9 @@ namespace CollapseLauncher
                 // Build persistent manifest
                 _isParsePersistentManifestSuccess = await BuildPersistentManifest(_httpClient, assetIndex, hashtableManifest, token);
 
+                // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+                await FetchBilibiliSDK(token);
+
                 // Clear hashtableManifest
                 hashtableManifest.Clear();
 

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.IO.Hashing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
@@ -354,6 +356,80 @@ namespace CollapseLauncher.Interfaces
             _progressTotalSize = 0;
             _progressPerFileSizeCurrent = 0;
             _progressPerFileSize = 0;
+        }
+
+        protected async ValueTask FetchBilibiliSDK(CancellationToken token)
+        {
+            // Check whether the sdk is not null, 
+            if (_gameVersionManager.GameAPIProp.data.sdk == null) return;
+
+            // Set the SDK DLL path
+            string sdkDllPath;
+            string sdkDllDir;
+            FileInfo sdkDllFile;
+
+            // Get the URL and get the remote stream of the zip file
+            string url = _gameVersionManager.GameAPIProp.data.sdk.path;
+            await using (Stream HttpResponse = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token))
+            using (ZipArchive zip = new ZipArchive(HttpResponse, ZipArchiveMode.Read, true))
+            {
+                // Iterate the Zip Entry
+                foreach (var entry in zip.Entries)
+                {
+                    // Get the filename of the entry without ext.
+                    string fileName = Path.GetFileNameWithoutExtension(entry.FullName);
+
+                    // If the entry is the "sdk_pkg_version", then override the info to sdk_pkg_version
+                    switch (fileName)
+                    {
+                        case "PCGameSDK":
+                            // Set the SDK DLL path
+                            sdkDllPath = Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
+                            sdkDllDir = Path.GetDirectoryName(sdkDllPath);
+                            sdkDllFile = new FileInfo(sdkDllPath);
+
+                            // Create the folder of the SDK DLL if doesn't exist
+                            if (!Directory.Exists(sdkDllDir)) Directory.CreateDirectory(sdkDllDir);
+                            break;
+                        case "sdk_pkg_version":
+                            // Set the SDK DLL path to be used for sdk_pkg_version
+                            sdkDllPath = Path.Combine(_gamePath, "sdk_pkg_version");
+                            sdkDllFile = new FileInfo(sdkDllPath);
+                            break;
+                        default:
+                            continue;
+                    }
+
+                    // Do check if sdkDllFile is not null
+                    if (sdkDllFile != null)
+                    {
+                        // Try create the file if not exist or open an existing one
+                        await using (Stream sdkDllStream = sdkDllFile.Open(entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate))
+                        {
+                            // Initiate the Crc32 hash
+                            Crc32 hash = new Crc32();
+
+                            // Append the SDK DLL stream to hash and get the result
+                            await hash.AppendAsync(sdkDllStream, token);
+                            byte[] hashByte = hash.GetHashAndReset();
+                            uint hashInt = BitConverter.ToUInt32(hashByte);
+
+                            // If the hash is the same, then skip
+                            if (hashInt == entry.Crc32) continue;
+
+                            // Set total activity string as "Loading Indexes..."
+                            _status.ActivityStatus = Lang._GameRepairPage.Status2;
+                            _status.IsProgressPerFileIndetermined = true;
+                            await using (Stream entryStream = entry.Open())
+                            {
+                                // Reset the SDK DLL stream pos and write the data
+                                sdkDllStream.Position = 0;
+                                await entryStream.CopyToAsync(sdkDllStream, token);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         protected IEnumerable<T2> EnforceHTTPSchemeToAssetIndex(IEnumerable<T2> assetIndex)
