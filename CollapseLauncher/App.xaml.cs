@@ -51,7 +51,14 @@ namespace CollapseLauncher
                 m_window.Activate();
                 bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
                 if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
-                if (m_appMode == AppMode.StartOnTray) WindowExtensions.Hide(m_window);
+                if (m_appMode == AppMode.StartOnTray)
+                {
+                    WindowExtensions.Hide(m_window);
+                    if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
+                    {
+                        LoggerConsole.DisposeConsole();
+                    }
+                }
             }
             catch (Exception ex)
             {
