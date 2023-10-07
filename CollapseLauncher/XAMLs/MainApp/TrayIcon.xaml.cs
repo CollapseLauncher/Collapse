@@ -14,6 +14,16 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
+        #region External Methods
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        #endregion
+
         #region Properties
         private int? lastConsoleStatus;
         private IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
@@ -44,19 +54,11 @@ namespace CollapseLauncher
             }
         }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsWindowVisible(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
         [RelayCommand]
         public void ToggleMainVisibility()
         {
             IntPtr mainWindowHandle = m_windowHandle;
-            bool isVisible = IsWindowVisible(mainWindowHandle);
+            var isVisible = IsWindowVisible(mainWindowHandle);
 
             if (isVisible)
             {
@@ -117,8 +119,23 @@ namespace CollapseLauncher
         [RelayCommand]
         public void ToggleAllVisibility()
         {
-            ToggleConsoleVisibility();
-            ToggleMainVisibility();
+            IntPtr mainWindowHandle = m_windowHandle;
+            bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
+            bool isConsoleVisible = IsWindowVisible(consoleWindowHandle);
+
+            if (isMainWindowVisible && !isConsoleVisible)
+            {
+                ToggleConsoleVisibility();
+            }
+            if (!isMainWindowVisible && isConsoleVisible)
+            {
+                ToggleMainVisibility();
+            }
+            else
+            {
+                ToggleConsoleVisibility();
+                ToggleMainVisibility();
+            }
         }
 
         [RelayCommand]
