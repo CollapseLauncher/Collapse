@@ -67,12 +67,6 @@
           "Microsoft.WindowsAppSDK": "1.0.4"
         }
       },
-      "Microsoft.Windows.CsWinRT": {
-        "type": "Direct",
-        "requested": "[2.0.3, )",
-        "resolved": "2.0.3",
-        "contentHash": "viZIwWVUBp7x9QprOZbvocWasVIAfaXN2BK7tgMijYKe4X+WuU1m4RdqE8P2wv+o3q0Bk8mWsUFaMm36rsCvNg=="
-      },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
         "requested": "[10.0.22621.756, )",
