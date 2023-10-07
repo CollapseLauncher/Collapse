@@ -22,10 +22,10 @@ namespace CollapseLauncher
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
-        #endregion
 
-        #region Properties
-        private IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         #endregion
 
         #region Locales
@@ -89,19 +89,23 @@ namespace CollapseLauncher
         [RelayCommand]
         public void ToggleConsoleVisibility()
         {
-            if (InvokeProp.m_consoleHandle == IntPtr.Zero) return;
-            if (IsWindowVisible(consoleWindowHandle))
+            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                LoggerConsole.DisposeConsole();
-                ConsoleTaskbarToggle.Text = _showConsole;
-                LogWriteLine("Console Hidden!");
-            }
-            else
-            {
-                LoggerConsole.AllocateConsole();
-                SetForegroundWindow(InvokeProp.GetConsoleWindow());
-                ConsoleTaskbarToggle.Text = _hideConsole;
-                LogWriteLine("Console Visible!");
+                IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+                if (InvokeProp.m_consoleHandle == IntPtr.Zero) return;
+                if (IsWindowVisible(consoleWindowHandle))
+                {
+                    LoggerConsole.DisposeConsole();
+                    ConsoleTaskbarToggle.Text = _showConsole;
+                    LogWriteLine("Console is hidden!");
+                }
+                else
+                {
+                    LoggerConsole.AllocateConsole();
+                    SetForegroundWindow(InvokeProp.GetConsoleWindow());
+                    ConsoleTaskbarToggle.Text = _hideConsole;
+                    LogWriteLine("Console is visible!");
+                }
             }
         }
 
@@ -111,15 +115,11 @@ namespace CollapseLauncher
         [RelayCommand]
         public void ToggleAllVisibility()
         {
+            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
             IntPtr mainWindowHandle = m_windowHandle;
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
-            bool isConsoleVisible = false;
-            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
-            {
-                isConsoleVisible = IsWindowVisible(consoleWindowHandle);
-            }
-                
+            bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
 
             if (isMainWindowVisible && !isConsoleVisible)
             {
@@ -144,6 +144,8 @@ namespace CollapseLauncher
         public void BringToForeground()
         {
             IntPtr mainWindowHandle = m_windowHandle;
+            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
@@ -152,11 +154,13 @@ namespace CollapseLauncher
                 {
                     LoggerConsole.AllocateConsole();
                 }
+                ShowWindow(consoleWindowHandle, 9);
                 SetForegroundWindow(consoleWindowHandle);
             }
 
             if (!isMainWindowVisible)
                 WindowExtensions.Show(m_window);
+            ShowWindow(mainWindowHandle, 9);
             SetForegroundWindow(mainWindowHandle);
         }
 
