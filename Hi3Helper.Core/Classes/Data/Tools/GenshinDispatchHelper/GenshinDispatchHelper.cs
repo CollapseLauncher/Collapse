@@ -25,10 +25,7 @@ namespace Hi3Helper.Data
 
         public GenshinDispatchHelper(int RegionID, string DispatchKey, string DispatchURLPrefix, string VersionString = "2.6.0", CancellationToken cancelToken = new CancellationToken())
         {
-            if (RegionID == 4)
-            {
-                ChannelName = "CNRELWin";
-            }
+            if (RegionID >= 4) ChannelName = "CNRELWin";
             this._httpClient = new Http.Http(false, 1, 1);
             this.RegionSubdomain = GetSubdomainByRegionID(RegionID);
             this.Version = VersionString;
@@ -125,31 +122,24 @@ namespace Hi3Helper.Data
 
         public QueryProperty GetResult() => returnValProp;
 
-        private string GetSubdomainByRegionID(int RegionID)
+        private string GetSubdomainByRegionID(int RegionID) => RegionID switch
         {
-            switch (RegionID)
-            {
-                /*
-                 * Region ID:
-                 * 0 = USA
-                 * 1 = Europe
-                 * 2 = Asia
-                 * 3 = TW/HK/MO
-                 * 4 = Mainland China
-                 */
-                case 0:
-                    return "osusadispatch";
-                case 1:
-                    return "oseurodispatch";
-                case 2:
-                    return "osasiadispatch";
-                case 3:
-                    return "oschtdispatch";
-                case 4:
-                    return "cngfdispatch";
-                default:
-                    throw new FormatException("Unknown region ID!");
-            }
-        }
+            /*
+             * Region ID:
+             * 0 = USA
+             * 1 = Europe
+             * 2 = Asia
+             * 3 = TW/HK/MO
+             * 4 = Mainland China
+             * 5 = Mainland China (Bilibili)
+             */
+            0 => "osusadispatch",
+            1 => "oseurodispatch",
+            2 => "osasiadispatch",
+            3 => "oschtdispatch",
+            4 => "cngfdispatch",
+            5 => "cnqddispatch",
+            _ => throw new FormatException("Unknown region ID!")
+        };
     }
 }
