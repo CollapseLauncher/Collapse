@@ -178,10 +178,17 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState)
         {
+            // Initialize the return list
+            List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
             // If the GameVersion is not installed, then return the latest one
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
             {
-                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+                // Add the latest prop to the return list
+                returnList.Add(GameAPIProp.data.game.latest);
+                // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
+                if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+                return returnList;
             }
 
             // Try get the diff file  by the first or default (null)
@@ -190,11 +197,17 @@ namespace CollapseLauncher.GameVersioning
                 .FirstOrDefault();
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
-            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.game.latest : diff };
+            // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
+            returnList.Add(diff == null ? GameAPIProp.data.game.latest : diff);
+            if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+            return returnList;
         }
 
         public virtual List<RegionResourceVersion> GetGamePreloadZip()
         {
+            // Initialize the return list
+            List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
             // If the preload is not exist, then return null
             if (GameAPIProp.data.pre_download_game == null) return null;
 
@@ -204,7 +217,9 @@ namespace CollapseLauncher.GameVersioning
                 .FirstOrDefault();
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
-            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.pre_download_game.latest : diff };
+            returnList.Add(diff == null ? GameAPIProp.data.pre_download_game.latest : diff);
+            if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+            return returnList;
         }
 
         public virtual DeltaPatchProperty GetDeltaPatchInfo() => null;

@@ -37,10 +37,10 @@ namespace CollapseLauncher.InstallManager.StarRail
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async ValueTask TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
         {
             // Do action from base method first
-            await base.TryAddResourceVersionList(asset, packageList);
+            if (!await base.TryAddResourceVersionList(asset, packageList)) return false;
 
             // Initialize langID
             int langID;
@@ -59,6 +59,7 @@ namespace CollapseLauncher.InstallManager.StarRail
             }
 
             LogWriteLine($"Setting audio ID to: {_gameVersionManager.GamePreset.GetStarRailVoiceLanguageFullNameByID(_gameVoiceLanguageID)}", LogType.Default, true);
+            return true;
         }
 
         private List<string> EnumerateAudioLanguageString()

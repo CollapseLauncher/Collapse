@@ -167,10 +167,10 @@ namespace CollapseLauncher.InstallManager.Genshin
         #endregion
 
         #region Override Methods - GetInstallationPath
-        protected override async ValueTask TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
+        protected override async ValueTask<bool> TryAddResourceVersionList(RegionResourceVersion asset, List<GameInstallPackage> packageList)
         {
             // Do action from base method first
-            await base.TryAddResourceVersionList(asset, packageList);
+            if (!await base.TryAddResourceVersionList(asset, packageList)) return false;
 
             // Initialize langID
             int langID;
@@ -203,6 +203,8 @@ namespace CollapseLauncher.InstallManager.Genshin
 
                 LogWriteLine($"Adding primary {package.LanguageName} audio package: {package.Name} to the list (Hash: {package.HashString})", LogType.Default, true);
             }
+
+            return true;
         }
         #endregion
         #region Private Methods - GetInstallationPath
