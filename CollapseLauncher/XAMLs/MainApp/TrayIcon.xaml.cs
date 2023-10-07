@@ -150,8 +150,11 @@ namespace CollapseLauncher
                 {
                     LoggerConsole.AllocateConsole();
                 }
+                //Stupid workaround for console window not showing up using SetForegroundWindow
+                //Basically do minimize then maximize action using ShowWindow 6->9 (nice)
+                ShowWindow(consoleWindowHandle, 6);
                 ShowWindow(consoleWindowHandle, 9);
-                SetForegroundWindow(consoleWindowHandle);
+                //SetForegroundWindow(consoleWindowHandle);
             }
 
             if (!isMainWindowVisible)
