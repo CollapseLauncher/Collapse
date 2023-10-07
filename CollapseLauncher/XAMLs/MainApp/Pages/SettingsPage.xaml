@@ -151,7 +151,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock TextWrapping="Wrap">
                                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright3}"/>
-                                    <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/blob/main/LICENSE" UnderlineStyle="None"><Run Text="MIT License" FontWeight="Bold"/></Hyperlink>
+                                    <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE" UnderlineStyle="None"><Run Text="MIT License" FontWeight="Bold"/></Hyperlink>
                                 </TextBlock>
                                 <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" Style="{ThemeResource BodyTextBlockStyle}"/>
                             </StackPanel>
@@ -159,13 +159,13 @@
                     </Grid>
                     <StackPanel Margin="0,8,0,0">
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
-                            <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/issues" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/></Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/issues" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ReportIssueBtn}"/></Hyperlink>
                         </TextBlock>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
-                            <Hyperlink NavigateUri="https://github.com/neon-nyan/Collapse/graphs/contributors" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}"/></Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/graphs/contributors" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributorListBtn}"/></Hyperlink>
                         </TextBlock>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,8,0,8" HorizontalAlignment="Left">
-                            <Hyperlink NavigateUri="https://github.com/neon-nyan/CollapseLauncher/pulls" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/></Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/CollapseLauncher/Collapse/pulls" UnderlineStyle="None"><Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}"/></Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
