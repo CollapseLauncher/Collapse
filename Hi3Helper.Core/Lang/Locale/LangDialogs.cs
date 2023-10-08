@@ -94,6 +94,8 @@
                 public string LocateExePathSubtitle { get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
                 public string StopGameTitle { get; set; } = LangFallback?._Dialogs.StopGameTitle;
                 public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
+                public string MeteredConnectionWarningTitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningTitle;
+                public string MeteredConnectionWarningSubtitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningSubtitle;
             }
         }
         #endregion

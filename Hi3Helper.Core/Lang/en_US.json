@@ -587,7 +587,9 @@
     "CannotUseAppLocationForGameDirTitle": "Folder is invalid!",
     "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
     "StopGameTitle": "Force Stop Game",
-    "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress."
+    "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
+    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
+    "MeteredConnectionWarningSubtitle": "Your current internet connection is stated as Metered! Continuing the action may result in additional charges. Are you sure?"
   },
 
   "_InstallMgmt": {
