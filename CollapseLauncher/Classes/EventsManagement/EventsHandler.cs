@@ -30,6 +30,8 @@ namespace CollapseLauncher
 
         public static async void StartCheckUpdate(bool forceUpdate)
         {
+
+            bool notMetered = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile().GetConnectionCost().NetworkCostType == Windows.Networking.Connectivity.NetworkCostType.Unrestricted;
             UpdateChannelName = IsPreview ? "preview" : "stable";
             while (true)
             {
@@ -46,16 +48,19 @@ namespace CollapseLauncher
                             isUpdateCooldownActive = true;
                             using (Updater updater = new Updater(UpdateChannelName))
                             {
+
                                 UpdateInfo info = await updater.StartCheck();
                                 GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
                                 AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
                                 UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
-
-                                if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                                else
-                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                if (notMetered || forceUpdate)
+                                {
+                                    if (CompareVersion(AppCurrentVersion, RemoteVersion))
+                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
+                                    else
+                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                }
                             }
                             ForceInvokeUpdate = false;
                         }
