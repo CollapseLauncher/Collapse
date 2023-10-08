@@ -1,0 +1,9 @@
+version: "1.0"
+linter: jetbrains/qodana-dotnet:2023.2-eap
+dotnet:
+    solution: CollapseLauncher.sln
+exclude:
+    - name: All
+    paths:
+        - Hi3Helper.EncTool.Test
+      - Hi3Helper.Core/Classes/DiscordPresence/src
