@@ -28,13 +28,13 @@ namespace CollapseLauncher
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
         public static bool isUpdateCooldownActive;
-        public static bool notMetered;
+        public static bool isMetered;
 
         public static async void StartCheckUpdate(bool forceUpdate)
         {
             NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
             if (currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown)
-                notMetered = true;
+                isMetered = false;
 
             UpdateChannelName = IsPreview ? "preview" : "stable";
             while (true)
@@ -49,7 +49,7 @@ namespace CollapseLauncher
                         // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
                         if (!isUpdateCooldownActive)
                         {
-                            if (notMetered || forceUpdate)
+                            if (!isMetered || forceUpdate)
                             {
                                 isUpdateCooldownActive = true;
                                 using (Updater updater = new Updater(UpdateChannelName))
