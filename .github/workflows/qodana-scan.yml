@@ -16,11 +16,11 @@ jobs:
         checks: write
     steps:
         - uses: actions/checkout@v3
-        with:
+          with:
             ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
             fetch-depth: 0  # a full history is required for pull request analysis
             submodules: recursive # many many submodules
-      - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.2.6
-        env:
+        - name: 'Qodana Scan'
+          uses: JetBrains/qodana-action@v2023.2.6
+          env:
             QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
