@@ -124,7 +124,7 @@ namespace CollapseLauncher
         {
             GameChannel.Beta => "BETA",
             GameChannel.DevRelease => "DEV",
-            _ => "EXPER"
+            _ => "PREVIEW"
         };
 
         public static void SaveLocalNotificationData()
