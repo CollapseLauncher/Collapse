@@ -155,6 +155,7 @@
                                 </TextBlock>
                                 <TextBlock TextWrapping="Wrap" Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" Style="{ThemeResource BodyTextBlockStyle}"/>
                             </StackPanel>
+                            <TextBlock x:Name="GitVersionIndicator" TextWrapping="Wrap" Style="{ ThemeResource BodyTextBlockStyle}" IsTextSelectionEnabled="True"></TextBlock>
                         </StackPanel>
                     </Grid>
                     <StackPanel Margin="0,8,0,0">

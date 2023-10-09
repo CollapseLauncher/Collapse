@@ -42,6 +42,9 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
+            
+            // TODO: Eventually, we should make this a button which copies on click, but this works for now
+            GitVersionIndicator.Text = $"{ThisAssembly.Git.Branch} - {ThisAssembly.Git.Commit} - {ThisAssembly.Git.CommitDate}";
 
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
