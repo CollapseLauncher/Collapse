@@ -922,8 +922,8 @@
     "GameManagementTab": "Game Management",
 
     "General_Title": "General",
-    "General_OpenMenu": "Open this menu / shows all shortcuts",
-    "General_OpenMenu_Desc": "It can also be accessed through the App Settings",
+    "General_OpenMenu": "Open this menu",
+    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
     "General_GoHome": "Go to the Home page",
     "General_GoSettings": "Go to the Settings page",
     "General_OpenNotifTray": "Open the Notification Tray",
@@ -932,9 +932,9 @@
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
     "Switch_SwapBtn": "Swap {0} and {1}",
     "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
-    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
 
     "GameFolder_Title": "Game Folder Access",
     "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
@@ -942,18 +942,18 @@
     "GameFolder_CacheFolder": "Open the Cache folder",
 
     "GameManagement_Title": "Game Management",
-    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
     "GameManagement_ForceCloseGame": "Close the game forcefully",
-    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be immediatly closed without any type of confirmation.",
-    "GameManagement_GoRepair": "Go to the Repair page",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
+    "GameManagement_GoRepair": "Go to the Game Repair page",
     "GameManagement_GoSettings": "Go to the Game Settings page",
-    "GameManagement_GoCaches": "Go to the Caches page",
+    "GameManagement_GoCaches": "Go to the Caches Repair page",
 
     "ChangeShortcut_Title": "Change Shortcut",
     "ChangeShortcut_Text": "Type the new combination for this shortcut!",
     "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
     "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
     "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used."
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
   }
 }
