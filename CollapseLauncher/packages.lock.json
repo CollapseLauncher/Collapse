@@ -11,6 +11,12 @@
           "SharpCompress": "0.31.0"
         }
       },
+      "CommunityToolkit.Mvvm": {
+        "type": "Direct",
+        "requested": "[8.2.1, )",
+        "resolved": "8.2.1",
+        "contentHash": "I24ofWVEdplxYjUez9/bljv/qb8r8Ccj6cvYXHexNBegLaD3iDy3QrzAAOYVMmfGWIXxlU1ZtECQNfU07+6hXQ=="
+      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -32,6 +38,25 @@
         "requested": "[3.0.0-wux.2, )",
         "resolved": "3.0.0-wux.2",
         "contentHash": "bWi9eF+I2Gb3lDUwGtzGdtyD3epopH0EySDmjxoO1hv1D+XlY56tkIryZVXtxegQchHhL5MqT9HWlTwL3263YQ=="
+      },
+      "GitInfo": {
+        "type": "Direct",
+        "requested": "[3.3.3, )",
+        "resolved": "3.3.3",
+        "contentHash": "l7m4M/figjWz4B3eIL2Qy3UJiP2vvTOTeavlCT/GGH0khg0uxLanh/cwTZ27AZNhim56q1Mk0nbyRXtLqF4vmg==",
+        "dependencies": {
+          "ThisAssembly.Constants": "1.4.1"
+        }
+      },
+      "H.NotifyIcon.WinUI": {
+        "type": "Direct",
+        "requested": "[2.0.115, )",
+        "resolved": "2.0.115",
+        "contentHash": "x5MibKboTUK+xnem2q6oqXWKQtsatvMbD1ZKn7aeQDghj/5Zyw0zOSNUeo8kp3eMnGlzwa2lV/6Z3GlvNzS9fg==",
+        "dependencies": {
+          "H.NotifyIcon": "2.0.115",
+          "Microsoft.WindowsAppSDK": "1.3.230724000"
+        }
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
@@ -65,9 +90,18 @@
       },
       "System.CommandLine": {
         "type": "Direct",
-        "requested": "[2.0.0-beta3.22114.1, )",
-        "resolved": "2.0.0-beta3.22114.1",
-        "contentHash": "QMzk1jj+PzdGbwuVsxII7FcQaCelnK+TcRcAqOGVoPovLBCSQPdikKiEzb56vAidvum5t4LSdDZ34O4j7+ALgw=="
+        "requested": "[2.0.0-beta4.22272.1, )",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg=="
+      },
+      "System.CommandLine.NamingConventionBinder": {
+        "type": "Direct",
+        "requested": "[2.0.0-beta4.22272.1, )",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "ux2eUA/syF+JtlpMDc/Lsd6PBIBuwjH3AvHnestoh5uD0WKT5b+wkQxDWVCqp9qgVjMBTLNhX19ZYFtenunt9A==",
+        "dependencies": {
+          "System.CommandLine": "2.0.0-beta4.22272.1"
+        }
       },
       "System.Drawing.Common": {
         "type": "Direct",
@@ -241,6 +275,27 @@
         "type": "Transitive",
         "resolved": "3.24.3",
         "contentHash": "HX8KHRTJPUcC4KOvEobKBNlMpHGYmK+3X73xPq+OUE2M5dLYvpGhp9qQQWt2jASgTUbxI1yHaGeBqFYiECBupw=="
+      },
+      "H.GeneratedIcons.System.Drawing": {
+        "type": "Transitive",
+        "resolved": "2.0.115",
+        "contentHash": "ZXLwrXfLfRf64jh0bYda9kxP9+3k03qXGAV5TLa2xqBgdSWZFQ9z97X7RPFbbQilcLc6ihCO3lqVjx3YMvmbpg==",
+        "dependencies": {
+          "System.Drawing.Common": "7.0.0"
+        }
+      },
+      "H.NotifyIcon": {
+        "type": "Transitive",
+        "resolved": "2.0.115",
+        "contentHash": "Ek+YrApxiWtivgZ0v0CWGL7vmTv09xnYGcSoe5fiUpe9iIsXSEhWYKtfCN2G/aSDH5Yn8mKUiPB2X0oTmMb0yQ==",
+        "dependencies": {
+          "H.GeneratedIcons.System.Drawing": "2.0.115"
+        }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -1060,13 +1115,8 @@
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "npvJkVKl5rKXrtl1Kkm6OhOUaYGEiF9wFbppFRWSMoApKzt2PiPHT2Bb8a5sAWxprvdOAtvaARS9QYMznEUtug==",
-        "dependencies": {
-          "System.Collections": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Threading.Tasks": "4.3.0"
-        }
+        "resolved": "4.5.4",
+        "contentHash": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg=="
       },
       "System.Threading.Timer": {
         "type": "Transitive",
@@ -1117,6 +1167,15 @@
           "System.Text.Encoding": "4.3.0",
           "System.Threading": "4.3.0",
           "System.Xml.ReaderWriter": "4.3.0"
+        }
+      },
+      "ThisAssembly.Constants": {
+        "type": "Transitive",
+        "resolved": "1.4.1",
+        "contentHash": "sV0CDYlC6YSIkYbdwd4+jRinLb888Dac71pmNhF2Ll6UXY1J+1oVt3EfmX6euXEKz2RLdfV+4GyZctfEA0NSqA==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0",
+          "System.Threading.Tasks.Extensions": "4.5.4"
         }
       },
       "colorthief": {

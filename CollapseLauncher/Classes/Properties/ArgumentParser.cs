@@ -1,6 +1,6 @@
 ﻿using System;
 using System.CommandLine;
-
+using System.CommandLine.NamingConventionBinder;
 using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher
@@ -50,6 +50,10 @@ namespace CollapseLauncher
                     m_appMode = AppMode.OOBEState;
                     ParseOOBEArguments(args);
                     break;
+                case "tray":
+                    m_appMode = AppMode.StartOnTray;
+                    ParseStartOnTrayArguments(args);
+                    break;
             }
 
             if (rootCommand.Invoke(args) > 0)
@@ -87,31 +91,34 @@ namespace CollapseLauncher
 
         public static void AddUpdaterOptions()
         {
-            Option o_Input, o_Channel;
-            rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true });
-            rootCommand.AddOption(o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "Release channel of the app") { IsRequired = true }.FromAmong());
-            rootCommand.SetHandler((string Input, AppReleaseChannel ReleaseChannel) =>
+            Option<string> o_Input = new Option<string>(new string[] { "--input", "-i" }, "App path") { IsRequired = true };
+            Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "App release channel") { IsRequired = true }.FromAmong();
+            rootCommand.AddOption(o_Input);
+            rootCommand.AddOption(o_Channel);
+            rootCommand.Handler = CommandHandler.Create((string Input, AppReleaseChannel ReleaseChannel) =>
             {
                 m_arguments.Updater = new ArgumentUpdater
                 {
                     AppPath = Input,
                     UpdateChannel = ReleaseChannel
                 };
-            }, o_Input, o_Channel);
+            });
         }
 
         public static void ParseTakeOwnershipArguments(params string[] args)
         {
-            Option o_Input;
-            rootCommand.AddArgument(new Argument<string>("takeownership", "Take ownership of the folder") { HelpName = null });
-            rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the folder to be taken") { IsRequired = true });
-            rootCommand.SetHandler((string Input) =>
+            var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Folder path to claim") { IsRequired = true };
+            var command = new Command("takeownership", "Take ownership of the folder");
+            command.AddOption(inputOption);
+            command.Handler = CommandHandler.Create<string>((string Input) =>
             {
                 m_arguments.TakeOwnership = new ArgumentReindexer
                 {
                     AppPath = Input
                 };
-            }, o_Input);
+            });
+            var rootCommand = new RootCommand();
+            rootCommand.AddCommand(command);
         }
 
         public static void ParseMigrateArguments(bool isBHI3L = false, params string[] args)
@@ -128,62 +135,77 @@ namespace CollapseLauncher
             rootCommand.AddArgument(new Argument<string>("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup") { HelpName = null });
         }
 
+        public static void ParseStartOnTrayArguments(params string[] args)
+        {
+            rootCommand.AddArgument(new Argument<string>("tray", "Start Collapse in system tray") { HelpName = null });
+        }
+
         private static void AddMigrateOptions(bool isBHI3L)
         {
-            Option o_Input, o_Output, o_GameVer = null, o_RegLoc = null;
-            rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Installation Source") { IsRequired = true });
-            rootCommand.AddOption(o_Output = new Option<string>(new string[] { "--output", "-o" }, "Installation Target") { IsRequired = true });
+            var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Installation Source") { IsRequired = true };
+            var outputOption = new Option<string>(new string[] { "--output", "-o" }, description: "Installation Target") { IsRequired = true };
+            var rootCommand = new RootCommand();
+            rootCommand.AddOption(inputOption);
+            rootCommand.AddOption(outputOption);
             if (isBHI3L)
             {
-                rootCommand.AddOption(o_GameVer = new Option<string>(new string[] { "--gamever", "-g" }, "Game version string (in x.x.x format)") { IsRequired = true });
-                rootCommand.AddOption(o_RegLoc = new Option<string>(new string[] { "--regloc", "-r" }, "Location of game registry in BetterHI3Launcher keys") { IsRequired = true });
-                rootCommand.SetHandler((string Input, string Output, string GameVer, string RegLoc) =>
+                var gameVerOption = new Option<string>(new string[] { "--gamever", "-g" }, description: "Game version string (Format: x.x.x)") { IsRequired = true };
+                var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
+                rootCommand.AddOption(gameVerOption);
+                rootCommand.AddOption(regLocOption);
+                rootCommand.Handler = CommandHandler.Create(
+                    (string Input, string Output, string GameVer, string RegLoc) =>
+                    {
+                        m_arguments.Migrate = new ArgumentMigrate
+                        {
+                            InputPath = Input,
+                            OutputPath = Output,
+                            GameVer = GameVer,
+                            RegLoc = RegLoc,
+                            IsBHI3L = true
+                        };
+                    });
+                return;
+            }
+            rootCommand.Handler = CommandHandler.Create(
+                (string Input, string Output) =>
                 {
                     m_arguments.Migrate = new ArgumentMigrate
                     {
                         InputPath = Input,
                         OutputPath = Output,
-                        GameVer = GameVer,
-                        RegLoc = RegLoc,
-                        IsBHI3L = true
+                        GameVer = null,
+                        RegLoc = null,
+                        IsBHI3L = false
                     };
-                }, o_Input, o_Output, o_GameVer, o_RegLoc);
-
-                return;
-            }
-
-            rootCommand.SetHandler((string Input, string Output) =>
-            {
-                m_arguments.Migrate = new ArgumentMigrate
-                {
-                    InputPath = Input,
-                    OutputPath = Output,
-                    GameVer = null,
-                    RegLoc = null,
-                    IsBHI3L = false
-                };
-            }, o_Input, o_Output);
+                });
         }
 
         public static void ParseMoveSteamArguments(params string[] args)
         {
-            Option o_Input, o_Output, o_KeyName = null, o_RegLoc = null;
-            rootCommand.AddArgument(new Argument<string>("movesteam", "Migrate Game from Steam to another location") { HelpName = null });
-            rootCommand.AddOption(o_Input = new Option<string>(new string[] { "--input", "-i" }, "Installation Source") { IsRequired = true });
-            rootCommand.AddOption(o_Output = new Option<string>(new string[] { "--output", "-o" }, "Installation Target") { IsRequired = true });
-            rootCommand.AddOption(o_KeyName = new Option<string>(new string[] { "--keyname", "-k" }, "Registry key name") { IsRequired = true });
-            rootCommand.AddOption(o_RegLoc = new Option<string>(new string[] { "--regloc", "-r" }, "Location of game registry in BetterHI3Launcher keys") { IsRequired = true });
-            rootCommand.SetHandler((string Input, string Output, string KeyName, string RegLoc) =>
-            {
-                m_arguments.Migrate = new ArgumentMigrate
+            var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Installation Source") { IsRequired = true };
+            var outputOption = new Option<string>(new string[] { "--output", "-o" }, description: "Installation Target") { IsRequired = true };
+            var keyNameOption = new Option<string>(new string[] { "--keyname", "-k" }, description: "Registry key name") { IsRequired = true };
+            var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
+            var command = new Command("movesteam", "Migrate Game from Steam to another location");
+            command.AddOption(inputOption);
+            command.AddOption(outputOption);
+            command.AddOption(keyNameOption);
+            command.AddOption(regLocOption);
+            command.Handler = CommandHandler.Create(
+                (string Input, string Output, string KeyName, string RegLoc) =>
                 {
-                    InputPath = Input,
-                    OutputPath = Output,
-                    KeyName = KeyName,
-                    RegLoc = RegLoc,
-                    IsBHI3L = false
-                };
-            }, o_Input, o_Output, o_KeyName, o_RegLoc);
+                    m_arguments.Migrate = new ArgumentMigrate
+                    {
+                        InputPath = Input,
+                        OutputPath = Output,
+                        KeyName = KeyName,
+                        RegLoc = RegLoc,
+                        IsBHI3L = false
+                    };
+                });
+            var rootCommand = new RootCommand();
+            rootCommand.AddCommand(command);
         }
     }
 

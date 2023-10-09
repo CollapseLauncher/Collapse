@@ -38,6 +38,11 @@
       "commandName": "Project",
       "commandLineArgs": "hi3cacheupdate",
       "nativeDebugging": true
+    },
+    "Start on Tray": {
+      "commandName": "Project",
+      "commandLineArgs": "tray",
+      "nativeDebugging": false
     }
   }
 }

@@ -65,6 +65,10 @@ namespace CollapseLauncher
                 FileVersionInfo winappSDKver = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
                 LogWriteLine(string.Format("Runtime: {0} - WindowsAppSDK {1}", RuntimeInformation.FrameworkDescription, winappSDKver.ProductVersion), LogType.Scheme, true);
 
+                LogWriteLine(string.Format("Built from repo {0}\r\n\t" +
+                                                "Branch {1} - Commit {2} at {3}", 
+                                                ThisAssembly.Git.RepositoryUrl, ThisAssembly.Git.Branch, ThisAssembly.Git.Commit, ThisAssembly.Git.CommitDate), LogType.Scheme, true);
+
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
                 InitializeAppSettings();

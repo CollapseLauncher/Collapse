@@ -1,3 +1,4 @@
+using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -39,11 +40,24 @@ namespace CollapseLauncher
                         m_window = new MainWindow();
                         ((MainWindow)m_window).InitializeWindowProperties(true);
                         break;
+                    case AppMode.StartOnTray:
+                        m_window = new MainWindow();
+                        ((MainWindow)m_window).InitializeWindowProperties();
+                        LogWriteLine("Running Collapse in Tray Mode!", LogType.Scheme);
+                        break;
                 }
 
                 m_window.Activate();
                 bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
                 if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
+                if (m_appMode == AppMode.StartOnTray)
+                {
+                    WindowExtensions.Hide(m_window);
+                    if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
+                    {
+                        LoggerConsole.DisposeConsole();
+                    }
+                }
             }
             catch (Exception ex)
             {

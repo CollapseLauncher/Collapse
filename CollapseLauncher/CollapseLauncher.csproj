@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
@@ -20,6 +20,7 @@
 		<TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
 		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    		<GitVersion>false</GitVersion>
 	</PropertyGroup>
 <!--
   Constants List:
@@ -37,21 +38,30 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW</DefineConstants>
 		<Optimize>True</Optimize>
+    		<GitSkipCache>true</GitSkipCache>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION</DefineConstants>
 		<Optimize>True</Optimize>
+    		<GitSkipCache>true</GitSkipCache>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+		<PackageReference Include="GitInfo" Version="3.3.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.115" />
 		<PackageReference Include="Dongle.Windows.CsWinRT" Version="3.0.0-wux.2" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.5.1" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.13.2" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
@@ -94,6 +104,7 @@
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />
 			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
+			<TrimmableAssembly Include="CommunityToolkit.Mvvm" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
@@ -102,7 +113,9 @@
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
+      			<TrimmableAssembly Include="GitInfo" />
 			<TrimmableAssembly Include="Google.Protobuf" />
+      			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
 			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
@@ -122,11 +135,15 @@
 			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
 			<TrimmableAssembly Include="SquirrelLib" />
 			<TrimmableAssembly Include="SharpCompress" />
+      			<TrimmableAssembly Include="System.CommandLine" />
+      			<TrimmableAssembly Include="System.CommandLine.NamingConventionBinder" />
 			<TrimmableAssembly Include="System.Drawing" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
 			<TrimmableAssembly Include="System.Drawing.Primitives" />
 			<TrimmableAssembly Include="System.IO.Compression.Brotli" />
 			<TrimmableAssembly Include="System.IO.Compression" />
+      			<TrimmableAssembly Include="System.Net.HTTP" />
+      			<TrimmableAssembly Include="System.Text.RegularExpression" />
 			<TrimmableAssembly Include="WinRT.Runtime" />
 		</ItemGroup>
 	</Target>

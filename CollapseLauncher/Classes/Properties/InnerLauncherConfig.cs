@@ -38,7 +38,8 @@ namespace CollapseLauncher
             InvokerTakeOwnership,
             InvokerMoveSteam,
             Hi3CacheUpdater,
-            OOBEState
+            OOBEState,
+            StartOnTray
         }
 
         public static AppMode m_appMode;
