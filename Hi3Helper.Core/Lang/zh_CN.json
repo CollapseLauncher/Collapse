@@ -587,7 +587,7 @@
     "CannotUseAppLocationForGameDirTitle": "文件夹无效！",
     "CannotUseAppLocationForGameDirSubtitle": "您无法使用此文件夹，因为它已被用作系统文件夹或被用于存放应用程序的主执行文件。请选择其他文件夹！",
     "StopGameTitle": "强制停止游戏",
-    "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。"
+    "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
     "MeteredConnectionWarningTitle": "检测到按流量计费的连接！",
     "MeteredConnectionWarningSubtitle": "您当前的互联网连接按流量计费！继续更新可能会让互联网提供商收取额外费用。您希望继续吗？"
   },
