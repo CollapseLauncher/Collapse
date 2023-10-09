@@ -303,7 +303,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]"
   },
 
   "_SettingsPage": {
@@ -331,7 +331,7 @@
     "AppWindowSize_Normal": "Bình thường",
     "AppWindowSize_Small": "Nhỏ",
 
-    "AppCDNRepository": "Repository CDN",
+    "AppCDNRepository": "Kho lưu trữ CDN",
 
     "AppBG": "Hình nền",
     "AppBG_Checkbox": "Dùng hình nền tuỳ chọn",
@@ -365,9 +365,9 @@
     "AppFiles_ClearLogBtn": "Xoá tệp log",
     "AppFiles_ClearImgCachesBtn": "Xoá tệp ảnh đĩa",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataBtn": "Xóa Metadata và Khởi động lại",
+    "AppFiles_ClearMetadataDialog": "Xóa Metadata Collapse!",
+    "AppFiles_ClearMetadataDialogHelp": "Xóa Collapse metadata sẽ khiến Collapse buộc phải khởi động lại. Chỉ sử dụng tùy chọn này nếu bạn gặp sự cố khi thay đổi khu vực.\r\nBạn có chắc không?",
 
     "ReportIssueBtn": "Báo lỗi",
     "ContributePRBtn": "Đóng góp",
@@ -831,19 +831,19 @@
     "Graphics_GlobalIllumination_Help1": "Chỉ cho phần cứng được hỗ trợ!",
     "Graphics_GlobalIllumination_Help2": "Thêm thông tin (vi)",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
-    "Graphics_HDR_UiBrightness": "UI Brightness",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+    "Graphics_HDR_Enable": "Bật HDR",
+    "Graphics_HDR_NotSupported1": "Màn hình của bạn không hỗ trợ HDR",
+    "Graphics_HDR_NotSupported2": "Cần có màn hình hỗ trợ HDR!",
+    "Graphics_HDR_NotEnabled1": "Thiết bị của bạn hỗ trợ HDR nhưng chưa được bật.",
+    "Graphics_HDR_NotEnabled2": "Tùy chọn \"Sử dụng HDR\" nên được bật trong Cài đặt Windows.",
+    "Graphics_HDR_Help_Link": "Thêm thông tin",
+    "Graphics_HDR_MaxLuminosity": "Độ sáng tối đa (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Độ sáng tối đa cho phép cho các điểm nổi bật",
+    "Graphics_HDR_Calibration_Help": "Điều chỉnh cho đến khi hình ảnh hiển thị mờ nhưng có thể nhìn thấy",
+    "Graphics_HDR_UiBrightness": "Độ sáng giao diện người dùng",
+    "Graphics_HDR_UiBrightness_Help": "Kiểm soát mức độ sáng của các yếu tố giao diện người dùng",
+    "Graphics_HDR_SceneBrightness": "Độ sáng phong cảnh",
+    "Graphics_HDR_SceneBrightness_Help": "Kiểm soát độ sáng của phong cảnh",
 
     "Graphics_SpecPanel": "Cài đặt đồ hoạ chung",
     "SpecEnabled": "Bật",
