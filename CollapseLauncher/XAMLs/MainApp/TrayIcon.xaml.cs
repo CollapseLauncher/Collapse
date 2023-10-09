@@ -9,7 +9,6 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
-
 namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
@@ -43,7 +42,13 @@ namespace CollapseLauncher
         public TrayIcon()
         {
             this.InitializeComponent();
-            CollapseTaskbar.ToolTipText = string.Format("Collapse Launcher v{0} {1}", AppCurrentVersion.VersionString, LauncherConfig.IsPreview ? _preview : _stable);
+#if DEBUG
+            CollapseTaskbar.ToolTipText =
+                $"Collapse Launcher v{AppCurrentVersion.VersionString}d {(LauncherConfig.IsPreview ? "DEBUG" : _stable)}";  
+#else
+            CollapseTaskbar.ToolTipText = 
+                $"Collapse Launcher v{AppCurrentVersion.VersionString}d {(LauncherConfig.IsPreview ? _preview : _stable)}"; 
+#endif
             CloseButton.Text = _exitApp;
 
             // Switch toggle text to see if its started with Start
