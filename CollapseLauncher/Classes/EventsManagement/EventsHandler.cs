@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Squirrel;
+using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -27,9 +28,13 @@ namespace CollapseLauncher
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
         public static bool isUpdateCooldownActive;
+        public static bool isMetered = true;
 
         public static async void StartCheckUpdate(bool forceUpdate)
         {
+            NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
+            isMetered = !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
+
             UpdateChannelName = IsPreview ? "preview" : "stable";
             while (true)
             {
@@ -43,21 +48,29 @@ namespace CollapseLauncher
                         // Stopping auto update when it was recently called. Workaround for update being called twice on metadata update.
                         if (!isUpdateCooldownActive)
                         {
-                            isUpdateCooldownActive = true;
-                            using (Updater updater = new Updater(UpdateChannelName))
+                            if (!isMetered || forceUpdate)
                             {
-                                UpdateInfo info = await updater.StartCheck();
-                                GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
+                                isUpdateCooldownActive = true;
+                                using (Updater updater = new Updater(UpdateChannelName))
+                                {
+                                    UpdateInfo info = await updater.StartCheck();
+                                    GameVersion RemoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
 
-                                AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
-                                UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
+                                    AppUpdateVersionProp miscMetadata = await GetUpdateMetadata();
+                                    UpdateProperty = new AppUpdateVersionProp { ver = RemoteVersion.VersionString, time = miscMetadata.time };
 
-                                if (CompareVersion(AppCurrentVersion, RemoteVersion))
-                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
-                                else
-                                    GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                    if (CompareVersion(AppCurrentVersion, RemoteVersion))
+                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = true, NewVersionName = RemoteVersion });
+                                    else
+                                        GetStatus(new LauncherUpdateProperty { IsUpdateAvailable = false, NewVersionName = RemoteVersion });
+                                }
+                                ForceInvokeUpdate = false;
                             }
-                            ForceInvokeUpdate = false;
+                            else
+                            {
+                                LogWriteLine($"Current network state is metered or disconnected! Auto update is skipped.\r\n\tPlease check your connection or use `Check for Update` button in Settings menu to update.", LogType.Warning, true);
+                            }
+                            isUpdateCooldownActive = true;
                         }
                         else LogWriteLine("Update was recently invoked! Stopping auto update until it resets in 15 minutes", LogType.Error, true);
                     }

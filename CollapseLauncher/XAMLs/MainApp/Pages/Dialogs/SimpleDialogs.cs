@@ -491,6 +491,23 @@ namespace CollapseLauncher.Dialogs
             );
         }
 
+        public static async Task<ContentDialogResult> Dialog_MeteredConnectionWarning(UIElement Content)
+        {
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            texts.Inlines.Add(new Run { Text = Lang._Dialogs.MeteredConnectionWarningSubtitle });
+
+            return await SpawnDialog(
+                        Lang._Dialogs.MeteredConnectionWarningTitle,
+                        texts,
+                        Content,
+                        Lang._Misc.NoCancel,
+                        Lang._Misc.Yes,
+                        null,
+                        ContentDialogButton.Primary,
+                        ContentDialogTheme.Warning
+                );   
+        }
+
         public static async Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,
             string closeText = null, string primaryText = null,

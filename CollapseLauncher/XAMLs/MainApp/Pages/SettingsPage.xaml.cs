@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
@@ -183,17 +184,41 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void CheckUpdate(object sender, RoutedEventArgs e)
+        private async void CheckUpdate(object sender, RoutedEventArgs e)
         {
-            UpdateLoadingStatus.Visibility = Visibility.Visible;
-            UpdateAvailableStatus.Visibility = Visibility.Collapsed;
-            UpToDateStatus.Visibility = Visibility.Collapsed;
-            CheckUpdateBtn.IsEnabled = false;
+            var isMetered = true;
+            NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
+            if (currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown)
+                isMetered = false;
 
-            ForceInvokeUpdate = true;
+            if (isMetered)
+            {
+                switch (await Dialog_MeteredConnectionWarning(Content))
+                {
+                    case ContentDialogResult.Primary:
+                        UpdateLoadingStatus.Visibility = Visibility.Visible;
+                        UpdateAvailableStatus.Visibility = Visibility.Collapsed;
+                        UpToDateStatus.Visibility = Visibility.Collapsed;
+                        CheckUpdateBtn.IsEnabled = false;
+                        ForceInvokeUpdate = true;
+                        LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+                        LauncherUpdateWatcher.StartCheckUpdate(true);
+                        break;
 
-            LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
-            LauncherUpdateWatcher.StartCheckUpdate(true);
+                    case ContentDialogResult.Secondary:
+                        return;
+                }
+            }
+            else
+            {
+                UpdateLoadingStatus.Visibility = Visibility.Visible;
+                UpdateAvailableStatus.Visibility = Visibility.Collapsed;
+                UpToDateStatus.Visibility = Visibility.Collapsed;
+                CheckUpdateBtn.IsEnabled = false;
+                ForceInvokeUpdate = true;
+                LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+                LauncherUpdateWatcher.StartCheckUpdate(true);
+            }
         }
 
         private void LauncherUpdateInvoker_UpdateEvent(object sender, LauncherUpdateProperty e)
