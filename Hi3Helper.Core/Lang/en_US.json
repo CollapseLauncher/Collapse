@@ -392,7 +392,13 @@
 
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+	
+	"KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_ShowBtn": "Show Shortcuts",
+    "KbShortcuts_ResetBtn": "Reset to Default"
+
   },
 
   "_Misc": {
@@ -596,6 +602,9 @@
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?"
+
+    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
   },
 
   "_InstallMgmt": {
@@ -730,7 +739,11 @@
 
     "NotifPreviewBuildUsedTitle": "You are using a Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "You are currently using a [PREVIEW] build, which is still being tested. If you encounter any issues, please report them by using the \"{0}\" button below. Thanks!",
-    "NotifPreviewBuildUsedBtn": "Submit an Issue"
+    "NotifPreviewBuildUsedBtn": "Submit an Issue",
+
+    "NotifKbShortcutTitle": "A new feature has arrived!",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate aroud Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
   "_StarRailGameSettingsPage": {
@@ -899,5 +912,48 @@
     "VO_cn": "Chinese",
     "VO_jp": "Japanese",
     "VO_kr": "Korean"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Keyboard Shortcuts",
+    "GeneralTab": "General",
+    "SwitchTab": "Quick Switch",
+    "GameFolderTab": "Folder Access",
+    "GameManagementTab": "Game Management",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Open this menu / shows all shortcuts",
+    "General_OpenMenu_Desc": "It can also be accessed through the App Settings",
+    "General_GoHome": "Go to the Home page",
+    "General_GoSettings": "Go to the Settings page",
+    "General_OpenNotifTray": "Open the Notification Tray",
+
+    "Switch_Title": "Quick Game/Region change",
+    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_SwapBtn": "Swap {0} and {1}",
+    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame_Desc": "You can just use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region)",
+    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region",
+
+    "GameFolder_Title": "Game Folder Access",
+    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
+    "GameFolder_MainFolder": "Open the Game folder",
+    "GameFolder_CacheFolder": "Open the Cache folder",
+
+    "GameManagement_Title": "Game Management",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region",
+    "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be immediatly closed without any type of confirmation.",
+    "GameManagement_GoRepair": "Go to the Repair page",
+    "GameManagement_GoSettings": "Go to the Game Settings page",
+    "GameManagement_GoCaches": "Go to the Caches page",
+
+    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
+    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
+    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
+    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved for the system or it is already being used."
   }
 }

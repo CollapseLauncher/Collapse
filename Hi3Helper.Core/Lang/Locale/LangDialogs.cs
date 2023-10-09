@@ -1,4 +1,4 @@
-﻿namespace Hi3Helper
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -96,6 +96,8 @@
                 public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
                 public string MeteredConnectionWarningTitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningTitle;
                 public string MeteredConnectionWarningSubtitle { get; set; } = LangFallback?._Dialogs.MeteredConnectionWarningSubtitle;
+                public string ResetKbShortcutsTitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsTitle;
+                public string ResetKbShortcutsSubtitle { get; set; } = LangFallback?._Dialogs.ResetKbShortcutsSubtitle;
             }
         }
         #endregion

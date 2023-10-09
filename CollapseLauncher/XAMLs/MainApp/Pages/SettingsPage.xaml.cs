@@ -583,5 +583,29 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
         }
+		
+        #region Keyboard Shortcuts
+        private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
+
+        private async void ResetKeylist_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialogs.SimpleDialogs.Dialog_ResetKeyboardShortcuts(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                Dialogs.KeyboardShortcuts.ResetKeyboardShortcuts();
+                KeyboardShortcutsEvent(null, AreShortcutsEnabled ? 1 : 2);
+            }
+        }
+
+        public static event EventHandler<int> KeyboardShortcutsEvent;
+        private bool AreShortcutsEnabled
+        {
+            get => GetAppConfigValue("EnableShortcuts").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("EnableShortcuts", value);
+                KeyboardShortcutsEvent(this, value ? 0 : 2);  
+            }
+        }
+        #endregion
     }
 }

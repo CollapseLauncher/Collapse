@@ -76,6 +76,9 @@
                 public string EnableAcrylicEffect { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
                 public string LowerCollapsePrioOnGameLaunch { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
+				public string KbShortcuts_Title { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
+                public string KbShortcuts_ShowBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
+                public string KbShortcuts_ResetBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;
             }
         }
         #endregion

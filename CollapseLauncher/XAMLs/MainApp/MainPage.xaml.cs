@@ -6,6 +6,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -23,13 +24,17 @@ using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.Statics.GamePropertyVault;
+using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Preset.ConfigV2Store;
+using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Windows.System;
 
 namespace CollapseLauncher
 {
+    using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAcceleratorInvokedEventArgs>;
     public partial class MainPage : Page
     {
         private bool LockRegionChangeBtn;
@@ -211,6 +216,8 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
+            SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void BackgroundImg_IsImageHideEvent(object sender, bool e) => HideBackgroundImage(e);
@@ -225,6 +232,8 @@ namespace CollapseLauncher
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
+            SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
+            Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
         }
 
         private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
@@ -752,6 +761,7 @@ namespace CollapseLauncher
 
             PresetConfigV2 Preset = LoadSavedGameSelection();
 
+            InitKeyboardShortcuts();
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
             if (await LoadRegionFromCurrentConfigV2(Preset, true))
             {
@@ -1280,5 +1290,350 @@ namespace CollapseLauncher
                 NavigationViewControl.SelectedItem = navItem;
             }
         }
+
+        #region Keyboard Shortcuts Methods
+        private void InitKeyboardShortcuts()
+        {
+            if (GetAppConfigValue("EnableShortcuts").ToBoolNullable() == null)
+            {
+                SetAndSaveConfigValue("EnableShortcuts", true);
+                KeyList = null;
+
+                SpawnNotificationPush(
+                    Lang._AppNotification.NotifKbShortcutTitle,
+                    Lang._AppNotification.NotifKbShortcutSubtitle,
+                    NotifSeverity.Informational,
+                    -20,
+                    true,
+                    false,
+                    null,
+                    NotificationPush.GenerateNotificationButton("", Lang._AppNotification.NotifKbShortcutBtn, (o, e) => ShowKeybinds_Invoked(null, null)),
+                    true,
+                    true,
+                    true
+                    );
+            }
+
+            if (AreShortcutsEnabled) CreateKeyboardShortcutHandlers();
+        }
+
+        private void CreateKeyboardShortcutHandlers()
+        {
+            try
+            {
+                List<List<string>> keys = KeyList;
+
+                int keysIndex = 0;
+
+                int numIndex = 0;
+                VirtualKeyModifiers keyModifier = StrToVKeyModifier(keys[keysIndex][0]);
+                foreach (string game in ComboBoxGameCategory.Items)
+                {
+                    KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                    {
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.Number1 + numIndex,
+                    };
+                    keystroke.Invoked += KeyboardGameShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+
+                    KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                    {
+                        Key = VirtualKey.NumberPad1 + numIndex++,
+                    };
+                    keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
+                }
+
+                numIndex = 0;
+                keyModifier = StrToVKeyModifier(keys[++keysIndex][0]);
+                while (numIndex < 6)
+                {
+                    KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                    {
+                        Modifiers = keyModifier,
+                        Key = VirtualKey.Number1 + numIndex++,
+                    };
+                    keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
+                    KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+                }
+
+                List<KeybindAction> actions = new()
+                {
+                    // General
+                    ShowKeybinds_Invoked,
+                    GoHome_Invoked,
+                    GoSettings_Invoked,
+                    OpenNotify_Invoked,
+
+                    // Game Related
+                    OpenScreenshot_Invoked,
+                    OpenGameFolder_Invoked,
+                    OpenGameCacheFolder_Invoked,
+                    ForceCloseGame_Invoked,
+
+                    GoGameRepir_Invoked,
+                    GoGameSettings_Invoked,
+                    GoGameCaches_Invoked
+                };
+
+                foreach (KeybindAction func in actions)
+                {
+                    KeyboardAccelerator kbfunc = new KeyboardAccelerator()
+                    {
+                        Modifiers = StrToVKeyModifier(keys[++keysIndex][0]),
+                        Key = StrToVKey(keys[keysIndex][1])
+                    };
+                    kbfunc.Invoked += func;
+                    KeyboardHandler.KeyboardAccelerators.Add(kbfunc);
+                }
+            }
+            catch (Exception error)
+            {
+                LogWriteLine(error.ToString());
+                KeyList = null;
+                CreateKeyboardShortcutHandlers();
+            }
+        }
+
+        private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
+
+        private bool CannotChange = true;
+        private async void ChangeTimer(int time = 500)
+        {
+            try
+            {
+                CannotChange = true;
+                await Task.Delay(time);
+                CannotChange = false;
+            }
+            catch { }
+        }
+
+        private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+
+            if (CannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
+                return;
+
+            if (ComboBoxGameCategory.SelectedValue != ComboBoxGameCategory.Items[index])
+            {
+                ComboBoxGameCategory.SelectedValue = ComboBoxGameCategory.Items[index];
+                ComboBoxGameRegion.SelectedIndex = GetIndexOfRegionStringOrDefault(ComboBoxGameCategory.SelectedValue.ToString());
+                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                CannotChange = true;
+            }
+        }
+
+        private void KeyboardGameRegionShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
+
+            if (CannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
+                return;
+            
+            if (ComboBoxGameRegion.SelectedValue != ComboBoxGameRegion.Items[index])
+            {
+                ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
+                ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+                ChangeRegionConfirmBtn.IsEnabled = false;
+                ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
+                CannotChange = true;
+            }
+        }
+
+        private async void ShowKeybinds_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
+        }
+
+        private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
+               return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) 
+                return;
+
+            ChangeTimer();
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
+            NavigateInnerSwitch("launcher");
+            
+        }
+
+        private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) 
+                return;
+
+            ChangeTimer();
+            NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
+            Navigate(typeof(SettingsPage), "settings");
+        }
+
+        private void OpenNotify_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            ToggleNotificationPanelBtn.IsChecked = !ToggleNotificationPanelBtn.IsChecked;
+            ToggleNotificationPanelBtnClick(null, null);
+        }
+
+        string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
+        private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsGameInstalled()) return;
+
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
+            {
+                GameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                _ => "ScreenShot"
+            });
+
+            LogWriteLine($"Opening Screenshot Folder:\r\n\t{ScreenshotFolder}");
+
+            if (!Directory.Exists(ScreenshotFolder))
+                Directory.CreateDirectory(ScreenshotFolder);
+
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = ScreenshotFolder
+                }
+            }.Start();
+        }
+
+        private void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsGameInstalled()) return;
+
+            string GameFolder = NormalizePath(GameDirPath);
+            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = GameFolder
+                }
+            }.Start();
+        }
+
+        private void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!IsGameInstalled()) return;
+
+            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+            new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = "explorer.exe",
+                    Arguments = GameFolder
+                }
+            }.Start();
+        }
+
+        private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!CurrentGameProperty.IsGameRunning) return;
+
+            PresetConfigV2 gamePreset = CurrentGameProperty._GameVersion.GamePreset;
+            try
+            {
+                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName.Split('.')[0]);
+                foreach (var p in gameProcess)
+                {
+                    LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    p.Kill();
+                }
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            }
+        }
+        private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange) 
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) 
+                return;
+
+            ChangeTimer();
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
+            NavigateInnerSwitch("repair");
+        }
+
+        private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange) 
+                return;
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3]) 
+                return;
+
+            ChangeTimer();
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
+            NavigateInnerSwitch("caches");
+        }
+
+
+        private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (!(IsLoadRegionComplete || IsExplicitCancel) || CannotChange)
+                return;
+
+            if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems.Last()) 
+                return;
+
+            ChangeTimer();
+            NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems.Last();
+            switch (CurrentGameProperty._GamePreset.GameType)
+            {
+                case GameType.Honkai:
+                    Navigate(typeof(GameSettingsPage), "gamesettings");
+                    break;
+                case GameType.Genshin:
+                    Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
+                    break;
+                case GameType.StarRail:
+                    Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
+                    break;
+            }
+        }
+
+        private bool AreShortcutsEnabled
+        {
+            get => GetAppConfigValue("EnableShortcuts").ToBool(true);
+        }
+
+        private void SettingsPage_KeyboardShortcutsEvent(object sender, int e)
+        {
+            switch (e)
+            {
+                case 0:
+                    CreateKeyboardShortcutHandlers();
+                    break;
+                case 1:
+                    DeleteKeyboardShortcutHandlers();
+                    CreateKeyboardShortcutHandlers();
+                    break;
+                case 2:
+                    DeleteKeyboardShortcutHandlers();
+                    break;
+            }
+        }
+        #endregion
     }
 }

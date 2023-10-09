@@ -66,6 +66,20 @@
                                 </StackPanel>
                             </RadioButtons>
                         </StackPanel>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_Title}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
+                        <ToggleSwitch OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"/>
+                        <Button Margin="0,8,0,8" Height="40" Width="170" Click="ShowKbScList_Click" CornerRadius="20" Style="{ThemeResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="&#xf101;" FontSize="20"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ShowBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Margin="0,8,0,8" Height="40" Width="170" CornerRadius="20" Click="ResetKeylist_Click" Style="{ThemeResource AccentButtonStyle}">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                <TextBlock FontFamily="{ThemeResource FontAwesomeSolid}" Text="" FontSize="20"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ResetBtn}" Margin="8,-2,0,0" FontWeight="Medium" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,0,8"/>
                         <ToggleSwitch x:Name="ToggleDiscordRPC" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_Toggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsOn="{x:Bind IsDiscordRPCEnabled, Mode=TwoWay}"/>
                         <ToggleSwitch x:Name="ToggleDiscordGameStatus" Header="{x:Bind helper:Locale.Lang._SettingsPage.DiscordRPC_GameStatusToggle}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" Margin="0,4" IsEnabled="False" IsOn="{x:Bind IsDiscordGameStatusEnabled, Mode=TwoWay}" Visibility="Collapsed"/>

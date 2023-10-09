@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.CustomControls;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -506,6 +506,20 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogButton.Primary,
                         ContentDialogTheme.Warning
                 );   
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._Dialogs.ResetKbShortcutsTitle,
+                Lang._Dialogs.ResetKbShortcutsSubtitle,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning
+                );
         }
 
         public static async Task<ContentDialogResult> SpawnDialog(
