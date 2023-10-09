@@ -12,6 +12,7 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"/>
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
+        <ListView x:Name="KeyboardHandler"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
         <Grid x:Name="Background" Visibility="Collapsed">
