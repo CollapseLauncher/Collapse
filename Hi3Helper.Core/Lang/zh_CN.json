@@ -367,7 +367,7 @@
 
     "AppFiles_ClearMetadataBtn": "清除元数据并重启",
     "AppFiles_ClearMetadataDialog": "清除 Collapse 的元数据！",
-    "AppFiles_ClearMetadataDialogHelp": "清除 Collapse 的元数据会导致 Collapse 强制重启。只有在区域加载有问题时才使用此选项。\r\n你确定吗？",
+    "AppFiles_ClearMetadataDialogHelp": "清除 Collapse 的元数据会导致 Collapse 强制重启。只有在区域加载有问题时才使用此选项。\r\n您确定吗？",
 
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献",
