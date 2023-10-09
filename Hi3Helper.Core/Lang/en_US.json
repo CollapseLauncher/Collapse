@@ -589,7 +589,7 @@
     "StopGameTitle": "Force Stop Game",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
-    "MeteredConnectionWarningSubtitle": "Your current internet connection is stated as Metered! Continuing the action may result in additional charges. Are you sure?"
+    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?"
   },
 
   "_InstallMgmt": {
