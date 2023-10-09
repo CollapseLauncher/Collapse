@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -44,7 +43,7 @@ namespace CollapseLauncher
                     case AppMode.StartOnTray:
                         m_window = new MainWindow();
                         ((MainWindow)m_window).InitializeWindowProperties();
-                        LogWriteLine("Running Collapse in Tray!", LogType.Scheme);
+                        LogWriteLine("Running Collapse in Tray Mode!", LogType.Scheme);
                         break;
                 }
 

@@ -91,8 +91,8 @@ namespace CollapseLauncher
 
         public static void AddUpdaterOptions()
         {
-            Option<string> o_Input = new Option<string>(new string[] { "--input", "-i" }, "Path of the app") { IsRequired = true };
-            Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "Release channel of the app") { IsRequired = true }.FromAmong();
+            Option<string> o_Input = new Option<string>(new string[] { "--input", "-i" }, "App path") { IsRequired = true };
+            Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(new string[] { "--channel", "-c" }, "App release channel") { IsRequired = true }.FromAmong();
             rootCommand.AddOption(o_Input);
             rootCommand.AddOption(o_Channel);
             rootCommand.Handler = CommandHandler.Create((string Input, AppReleaseChannel ReleaseChannel) =>
@@ -107,7 +107,7 @@ namespace CollapseLauncher
 
         public static void ParseTakeOwnershipArguments(params string[] args)
         {
-            var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Path of the folder to be taken") { IsRequired = true };
+            var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Folder path to claim") { IsRequired = true };
             var command = new Command("takeownership", "Take ownership of the folder");
             command.AddOption(inputOption);
             command.Handler = CommandHandler.Create<string>((string Input) =>
@@ -149,8 +149,8 @@ namespace CollapseLauncher
             rootCommand.AddOption(outputOption);
             if (isBHI3L)
             {
-                var gameVerOption = new Option<string>(new string[] { "--gamever", "-g" }, description: "Game version string (in x.x.x format)") { IsRequired = true };
-                var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry in BetterHI3Launcher keys") { IsRequired = true };
+                var gameVerOption = new Option<string>(new string[] { "--gamever", "-g" }, description: "Game version string (Format: x.x.x)") { IsRequired = true };
+                var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
                 rootCommand.AddOption(gameVerOption);
                 rootCommand.AddOption(regLocOption);
                 rootCommand.Handler = CommandHandler.Create(
@@ -186,7 +186,7 @@ namespace CollapseLauncher
             var inputOption = new Option<string>(new string[] { "--input", "-i" }, description: "Installation Source") { IsRequired = true };
             var outputOption = new Option<string>(new string[] { "--output", "-o" }, description: "Installation Target") { IsRequired = true };
             var keyNameOption = new Option<string>(new string[] { "--keyname", "-k" }, description: "Registry key name") { IsRequired = true };
-            var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry in BetterHI3Launcher keys") { IsRequired = true };
+            var regLocOption = new Option<string>(new string[] { "--regloc", "-r" }, description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
             var command = new Command("movesteam", "Migrate Game from Steam to another location");
             command.AddOption(inputOption);
             command.AddOption(outputOption);
