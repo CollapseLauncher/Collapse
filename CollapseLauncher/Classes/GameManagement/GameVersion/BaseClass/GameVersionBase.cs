@@ -32,6 +32,20 @@ namespace CollapseLauncher.GameVersioning
             };
         }
 
+        private IniSection _defaultIniProfileBilibili
+        {
+            get => new IniSection()
+            {
+                { "cps", new IniValue("bilibili") },
+                { "channel", new IniValue("14") },
+                { "sub_channel", new IniValue("0") },
+                { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
+                { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
+                { "is_first_exit", new IniValue(false) },
+                { "exit_type", new IniValue(2) }
+            };
+        }
+
         private IniSection _defaultIniVersion
         {
             get => new IniSection()
@@ -40,6 +54,18 @@ namespace CollapseLauncher.GameVersioning
                 { "cps", new IniValue() },
                 { "game_version", new IniValue() },
                 { "sub_channel", new IniValue(1) },
+                { "sdk_version", new IniValue() }
+            };
+        }
+
+        private IniSection _defaultIniVersionBilibili
+        {
+            get => new IniSection()
+            {
+                { "channel", new IniValue(14) },
+                { "cps", new IniValue("bilibili") },
+                { "game_version", new IniValue() },
+                { "sub_channel", new IniValue(0) },
                 { "sdk_version", new IniValue() }
             };
         }
@@ -152,10 +178,17 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState)
         {
+            // Initialize the return list
+            List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
             // If the GameVersion is not installed, then return the latest one
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
             {
-                return new List<RegionResourceVersion> { GameAPIProp.data.game.latest };
+                // Add the latest prop to the return list
+                returnList.Add(GameAPIProp.data.game.latest);
+                // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
+                if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+                return returnList;
             }
 
             // Try get the diff file  by the first or default (null)
@@ -164,11 +197,17 @@ namespace CollapseLauncher.GameVersioning
                 .FirstOrDefault();
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
-            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.game.latest : diff };
+            // If the game SDK is not null (Bilibili SDK zip), then add it to the return list
+            returnList.Add(diff == null ? GameAPIProp.data.game.latest : diff);
+            if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+            return returnList;
         }
 
         public virtual List<RegionResourceVersion> GetGamePreloadZip()
         {
+            // Initialize the return list
+            List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
             // If the preload is not exist, then return null
             if (GameAPIProp.data.pre_download_game == null) return null;
 
@@ -178,7 +217,9 @@ namespace CollapseLauncher.GameVersioning
                 .FirstOrDefault();
 
             // Return if the diff is null, then get the latest. If found, then return the diff one.
-            return new List<RegionResourceVersion> { diff == null ? GameAPIProp.data.pre_download_game.latest : diff };
+            returnList.Add(diff == null ? GameAPIProp.data.pre_download_game.latest : diff);
+            if (GameAPIProp.data.sdk != null) returnList.Add(GameAPIProp.data.sdk);
+            return returnList;
         }
 
         public virtual DeltaPatchProperty GetDeltaPatchInfo() => null;
@@ -268,9 +309,17 @@ namespace CollapseLauncher.GameVersioning
             GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName);
 
             // Initialize INIs
-            InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
-            InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
-
+            if (GamePreset.ZoneName == "Bilibili")
+            {
+                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfileBilibili, _defaultIniProfileSection);
+                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersionBilibili, _defaultIniVersionSection);
+            }
+            else
+            {
+                InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
+                InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
+            }
+            
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName), GamePreset.VendorType);
         }

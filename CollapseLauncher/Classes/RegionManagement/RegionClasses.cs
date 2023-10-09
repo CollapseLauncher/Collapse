@@ -53,6 +53,7 @@ namespace CollapseLauncher
         public RegionResourceLatest game { get; set; }
         public RegionResourceLatest pre_download_game { get; set; }
         public RegionBackgroundProp adv { get; set; }
+        public RegionResourceVersion sdk { get; set; }
         public IList<RegionSocMedProp> banner { get; set; }
         public IList<RegionSocMedProp> icon { get; set; }
         public IList<RegionSocMedProp> post { get; set; }
@@ -61,6 +62,7 @@ namespace CollapseLauncher
             game = game?.Copy(),
             pre_download_game = pre_download_game?.Copy(),
             adv = adv?.Copy(),
+            sdk = sdk?.Copy(),
             banner = banner?.Copy(),
             icon = icon?.Copy(),
             post = post?.Copy()
@@ -93,6 +95,11 @@ namespace CollapseLauncher
         public int? languageID { get; set; }
         public bool is_recommended_update { get; set; }
         public string entry { get; set; }
+        public string pkg_version { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? channel_id { get; set; }
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int? sub_channel_id { get; set; }
         public IList<RegionResourceVersion> voice_packs { get; set; }
         public IList<RegionResourceVersion> segments { get; set; }
         public RegionResourceVersion Copy() => new RegionResourceVersion()
