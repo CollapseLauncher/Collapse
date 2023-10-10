@@ -21,7 +21,7 @@ on:
 jobs:
   build:
     # runs-on: [self-hosted, linux]
-    runs-on: ${{ !contains(github.event.inputs.os, 'windows-latest') }}
+    runs-on: ${{ github.event.inputs.os || 'windows-latest' }}
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
