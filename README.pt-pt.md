@@ -181,7 +181,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > A tabela acima serve para ilustrar as funcionalidades que o Collapse suporta no momento. Esta lista é atualizada gradualmente conforme a adição de novas funcionalidades ao Collapse e o lançamento de novos jogos. Se tens algum problema com alguma das funcionalidades suportadas, verifica a aba de Issues do GitHub e cria um "Issue" caso nenhum sobre o mesmo assunto exista.
 > > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact: 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
-# Descarrega versões prontas a usar
+# Descarrega compilações prontas a usar
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
 > **Nota**: A última versão para esta compilação é a `1.71.13` (Lançada em: 2 de outubro de 2023).
 
@@ -190,7 +190,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 
 Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
-# Requisitos de sistema para as versões prontas a usar
+# Requisitos de sistema para as compilações prontas a usar
 - Sistema operativo: **Windows 10 versão 1809 (Compilação 17763)** ou superior / **Windows 11 (Qualquer compilação)**
 - Arquitetura: **x64/AMD64**
 - Acesso à Internet: **Sim**
@@ -213,15 +213,15 @@ Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/Co
 - [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) por force-net
 - [**UABT**](https://github.com/neon-nyan/UABT) por _unknown_
 
-**Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
+**Disclaimer**: Este projeto **NÃO ESTÁ AFILIADO** de qualquer forma com a [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) nem com a [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) e é completamente fonte-aberta (open source). Quaisquer contribuições são bem-vindas! 😃
 
-# UI Design Overview
+# Visão geral sobre o design da UI
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
 # How can I support this project?
 Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
-- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
+- **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Em breve:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
 
-Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
+Feito por todos os capitães à volta do mundo com ❤️. Luta por tudo o que é belo neste mundo!
