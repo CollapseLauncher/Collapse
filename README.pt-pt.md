@@ -36,8 +36,8 @@ O **Collapse** foi desenhado originalmente para o **Honkai Impact 3rd**. No enta
 # Porquê "Collapse"?
 Collapse vem da tradução de **Honkai Impact** em Chinês e Japonês. A palavra origina dos vocábulos [**崩坏**] ou **Bēng huài** do Chinês e [**崩壊**] or **Houkai** do Japonês, os quais ambos significam "**Collapse**" ou Colapso em português. É por esta causa que decidimos escolher este nome para o nosso launcher, com inspiração no aspeto de que originalmente este projeto era suposto ser uma alternativa (melhorada) ao launcher do *Honkai Impact 3rd*.
 
-**Collapse** contains advanced features for **Honkai Impact 3rd** that not only provide you with the ability to download and launch the game, but also some additional features that the Official Launcher doesn't have, including:
-* Caches Download (aka "Updating Settings" in-game).
+O **Collapse** contêm funcionalidades avançadas para o **Honkai Impact 3rd** que não te permitem apenas descarregar e abrir o jogo como também efetuar algumas operações adicionais não presentes no launcher oficial, tais como:
+* Descarregar Caches (ou seja "Updating Settings" dentro do jogo).
 * Game Data Repair (with less bandwidth required than the *Data Repair* feature in-game).
 * Changing Game Settings (Graphics Settings & Audio Settings) without opening the game.
 * Multi-Region Game Download Support (Allows for downloading and launching different versions of the game).
