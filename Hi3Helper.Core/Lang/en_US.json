@@ -394,11 +394,10 @@
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
-	
-	"KbShortcuts_Title": "Keyboard Shortcuts",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
     "KbShortcuts_ResetBtn": "Reset to Default"
-
   },
 
   "_Misc": {
@@ -742,7 +741,7 @@
     "NotifPreviewBuildUsedBtn": "Submit an Issue",
 
     "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate aroud Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
     "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
