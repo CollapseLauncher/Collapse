@@ -14,23 +14,19 @@ on:
           - "windows-latest"
           - "windows-2019"
           - "windows-2022"
-      framework:
-      # Use net7.0-windows10.0.19041.0 to retain compatibility (WindowsAppSDK last supported OS build)
-        type: choice
-        description: "Select .NET Framework version"
-        default: "net7.0-windows10.0.19041.0"
-        options:
-          - "net7.0-windows10.0.22000.0"
-          - "net7.0-windows10.0.19041.0"
+  
+  schedule:
+    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
 jobs:
   build:
     # runs-on: [self-hosted, linux]
-    runs-on: ${{ github.event.inputs.os }}
+    runs-on: ${{ !contains(github.event.inputs.os, 'windows-latest') }}
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
+        framework: [net7.0-windows10.0.22000.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
@@ -79,18 +75,18 @@ jobs:
     - name: Build
       run: |
         msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
-        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ github.event.inputs.framework }}
+        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ matrix.framework }}
     
 #    - name: Upload Artifact (Debug)
 #      uses: actions/upload-artifact@v3.1.2
 #      if: ${{ matrix.configuration == 'Debug' }}
 #      with:
-#          name: collapse_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
-#          path: ./CollapseLauncher/bin/x64/Debug/${{ github.event.inputs.framework }}/
+#          name: collapse_debug_${{ github.ref }}_${{ steps.vars.outputs.sha_short }}.${{ matrix.platform }}-${{ matrix.configuration }}
+#          path: ./CollapseLauncher/bin/x64/Debug/${{ matrix.framework }}/
           
     - name: Upload Artifact (Release)
       uses: actions/upload-artifact@v3.1.2
       if: ${{ matrix.configuration == 'Release' }}
       with:
-          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ github.event.inputs.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/bin/x64/Release/${{ github.event.inputs.framework }}/
+          name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
+          path: ./CollapseLauncher/bin/x64/Release/${{ matrix.framework }}/
