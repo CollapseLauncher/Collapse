@@ -16,25 +16,25 @@ O **Collapse** foi desenhado originalmente para o **Honkai Impact 3rd**. No enta
 
 
 [![Localização](https://img.shields.io/badge/Localização-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
-[![Discord](https://img.shields.io/badge/Junta-te_à_comunidade-Discord-5865F2)](https://discord.gg/vJd2exaS7j)
+[![Discord](https://img.shields.io/badge/Junta--te_à_comunidade-Discord-5865F2)](https://discord.gg/vJd2exaS7j)
 [![KanbanBoard](https://img.shields.io/badge/Kanban_Board-Trello-white)](https://trello.com/b/rsqrnn15/collapse-launcher-tracker)
 
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
-       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
+       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Ajuda a traduzir o Collapse Launcher no Transifex" Width=280/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
-        <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Discord Shield for Collapse Launcher Discord server" Width=280/>
+        <img src="https://discordapp.com/api/guilds/1116150300324139131/widget.png?style=banner2" alt="Servidor de Discord do Collapse Launcher" Width=280/>
     </a>
     &nbsp;
     <a href="https://trello.com/b/rsqrnn15/collapse-launcher-tracker" target="_blank">
-        <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Collapse Launcher Trello board" Height=66/>
+        <img src="https://cdn.discordapp.com/attachments/593053443761897482/1137795596191797318/logo-gradient-white-trello.svg" alt="Quadro do Trello do Collapse Launcher" Height=66/>
     </a>
 </p>
 
-# Why "Collapse"?
-Collapse came from the **Honkai Impact** translation in Chinese and Japanese. The word came from [**崩坏**] or **Bēng huài** in Chinese and also [**崩壊**] or **Houkai** in Japanese, both meaning "**Collapse**" which is why we chose it as our launcher name with the added inspiration that this was supposed to be an alternative (enhanced) launcher for *Honkai Impact 3rd* in the first place.
+# Porquê "Collapse"?
+Collapse vem da tradução de **Honkai Impact** em Chinês e Japonês. A palavra origina dos vocábulos [**崩坏**] ou **Bēng huài** do Chinês e [**崩壊**] or **Houkai** do Japonês, os quais ambos significam "**Collapse**" ou Colapso em português. É por esta causa que decidimos escolher este nome para o nosso launcher, com inspiração no aspeto de que originalmente este projeto era suposto ser uma alternativa (melhorada) ao launcher do *Honkai Impact 3rd*.
 
 **Collapse** contains advanced features for **Honkai Impact 3rd** that not only provide you with the ability to download and launch the game, but also some additional features that the Official Launcher doesn't have, including:
 * Caches Download (aka "Updating Settings" in-game).
@@ -52,22 +52,22 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Choosing your voice-line language during the first installation, so you don't have to download it inside the game.
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
-# Supported Features 
+# Funcionalidades suportadas 
 <table>
   <thead>
     <tr>
-      <th rowspan="2">Game Title</th>
-      <th rowspan="2">Region</th>
-      <th colspan="7">Features</th>
+      <th rowspan="2">Título do jogo</th>
+      <th rowspan="2">Região</th>
+      <th colspan="7">Funcionalidades</th>
     </tr>
     <tr>
-      <th>Install</th>
-      <th>Pre-load</th>
-      <th>Update</th>
-      <th>Game Repair</th>
-      <th>Cache Update</th>
-      <th>Game Settings</th>
-      <th>Game Region Convert</th>
+      <th>Instalação</th>
+      <th>Pré-carregamento</th>
+      <th>Atualização</th>
+      <th>Reparação do jogo</th>
+      <th>Atualização das caches</th>
+      <th>Definições do jogo</th>
+      <th>Conversão da região do jogo</th>
     </tr>
   </thead>
   <tbody>
@@ -76,21 +76,21 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>Southeast Asia</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark: (Atualizações normais ou em formato Delta disponíveis)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From SEA -&gt; Global) </td>
+      <td>:white_check_mark: <br> (De SEA -&gt; Global) </td>
     </tr>
     <tr>
       <td>Global</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
+      <td>:white_check_mark: (Atualizações normais ou em formato Delta disponíveis)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
+      <td>:white_check_mark: <br> (De Steam -&gt; Global) <br> (De Global -&gt; SEA) </td>
     </tr>
     <tr>
       <td>Mainland China</td>
@@ -177,41 +177,41 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
   </tbody>
 </table>
 
-> **Note**:
-> The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released. If you have any issues with any supported features above, checks our GitHub issue tab, report if no active issues for it is found.
-> > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
+> **Nota**:
+> A tabela acima serve para ilustrar as funcionalidades que o Collapse suporta no momento. Esta lista é atualizada gradualmente conforme a adição de novas funcionalidades ao Collapse e o lançamento de novos jogos. Se tens algum problema com alguma das funcionalidades suportadas, verifica a aba de Issues do GitHub e cria um "Issue" caso nenhum sobre o mesmo assunto exista.
+> > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact: 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
-# Download Ready-To-Use Builds
+# Descarrega versões prontas a usar
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
-> **Note**: The version for this build is `1.71.13` (Released on: October 2nd, 2023).
+> **Nota**: A última versão para esta compilação é a `1.71.13` (Lançada em: 2 de outubro de 2023).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.72.4-pre/CL-1.72.4-preview_Installer.exe)
-> **Note**: The version for this build is `1.72.4` (Released on: October 9th, 2023).
+> **Nota**: A última versão para esta compilação é a `1.72.4` (Lançada em: 9 de outubro de 2023).
 
-To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
+Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
-# System Requirements for Ready-to-use build
-- OS: **Windows 10 1809 Update (build 17763)** or later / **Windows 11 (Any builds)**
-- Architecture: **x64/AMD64**
-- Internet Access: **Yes**
-
-***
-
-# Prerequisites for Building Locally/Development
-> ### More information can be found in [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+# Requisitos de sistema para as versões prontas a usar
+- Sistema operativo: **Windows 10 versão 1809 (Compilação 17763)** ou superior / **Windows 11 (Qualquer compilação)**
+- Arquitetura: **x64/AMD64**
+- Acesso à Internet: **Sim**
 
 ***
 
-# Third-party repositories and libraries used in this project
-- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) by Microsoft
-- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) by Microsoft
-- [**HDiffPatch**](https://github.com/sisong/HDiffPatch) by housisong
-- [**Color Thief .NET**](https://github.com/neon-nyan/ColorThief) by KSemenenko
-- [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) by adoconnection
-- [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) by neon-nyan
-- [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) by neon-nyan
-- [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) by force-net
-- [**UABT**](https://github.com/neon-nyan/UABT) by _unknown_
+# Pré-requisitos para compilar localmente/desenvolvimento
+> ### Mais informação pode ser encontrada em [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+
+***
+
+# Repositórios de terceiros e bibliotecas usadas neste projeto
+- [**Windows UI Library**](https://github.com/microsoft/microsoft-ui-xaml) por Microsoft
+- [**Windows App SDK**](https://github.com/microsoft/WindowsAppSDK) por Microsoft
+- [**HDiffPatch**](https://github.com/sisong/HDiffPatch) por housisong
+- [**Color Thief .NET**](https://github.com/neon-nyan/ColorThief) por KSemenenko
+- [**SevenZipExtractor**](https://github.com/neon-nyan/SevenZipExtractor) por adoconnection
+- [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) por neon-nyan
+- [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) por neon-nyan
+- [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) por force-net
+- [**UABT**](https://github.com/neon-nyan/UABT) por _unknown_
 
 **Disclaimer**: This project **IS NOT AFFILIATED** with [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) or [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) by any means and is completely open-sourced. Any contributions are welcomed! 😃
 
