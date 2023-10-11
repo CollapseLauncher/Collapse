@@ -25,12 +25,12 @@
     "Pg2PrevBtn": "戻る - フォルダーを選択",
     "Pg2Subtitle1_1": "もう少しで",
     "Pg2Subtitle1_2": "Collapse Launcher",
-    "Pg2Subtitle1_3": "",
+    "Pg2Subtitle1_3": "を開始できます。",
     "Pg2Subtitle2_1": "Collapse Launcherは複数の",
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "のゲームをサポートしています。ランチャーを開始するには、",
     "Pg2Subtitle2_4": "Collapse Launcher",
-    "Pg2Subtitle2_5": "",
+    "Pg2Subtitle2_5": "を使いたいゲームを選択してください。",
     "Pg2Title": "風だ～！",
     "Subtitle1": "こんにちは！",
     "Subtitle2": "Collapseを初めて起動したようですね。",
@@ -374,8 +374,8 @@
     "ContributorListBtn": "コントリビューターリスト",
 
     "About": "Collapse Launcherについて",
-    "About_Copyright1": "© 2022-2023 Created by",
-    "About_Copyright2": " neon-nyan [14372096 SEA]",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -392,7 +392,13 @@
 
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
-    "LowerCollapsePrioOnGameLaunch": "ゲーム起動中はランチャーのプロセス優先度を下げる"
+
+    "LowerCollapsePrioOnGameLaunch": "ゲーム起動中はランチャーのプロセス優先度を下げる",
+	
+	"KbShortcuts_Title": "キーボードショートカット",
+    "KbShortcuts_ShowBtn": "ショートカット一覧",
+    "KbShortcuts_ResetBtn": "デフォルトに戻す"
+
   },
 
   "_Misc": {
@@ -486,7 +492,13 @@
     "DiscordRP_Idle": "待機",
     "DiscordRP_Default": "放置",
     "DiscordRP_Ad": "- Collapse Launcherから起動",
-    "DiscordRP_Region": "サーバー:"
+    "DiscordRP_Region": "サーバー:",
+
+    "Taskbar_ShowApp": "Collapseメインウィンドウを表示",
+    "Taskbar_HideApp": "メインウィンドウをタスクバーへ最小化",
+    "Taskbar_ShowConsole": "コンソールを表示",
+    "Taskbar_HideConsole": "コンソールをタスクバーへ最小化",
+    "Taskbar_ExitApp": "Collapseを閉じる"
   },
 
   "_BackgroundNotification": {
@@ -587,7 +599,12 @@
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
     "StopGameTitle": "ゲームを強制終了します",
-    "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。"
+    "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
+    "MeteredConnectionWarningTitle": "従量制課金接続を検出しました！",
+    "MeteredConnectionWarningSubtitle": "現在のインターネット接続は「従量制」として検出されました。更新を続行すると、インターネットプロバイダーから追加料金が発生する場合があります。続行しますか?",
+
+    "ResetKbShortcutsTitle": "本当にすべてのショートカットをリセットしますか？",
+    "ResetKbShortcutsSubtitle": "リセットすると、ショートカットのキー割り当てがデフォルトに戻ります。\n\n本当にリセットしますか？\n\n注：リセットしてもCollapseの動作には影響しません。ショートカット一覧から、またいつでもキー割り当てを変更できます。"
   },
 
   "_InstallMgmt": {
@@ -722,7 +739,11 @@
 
     "NotifPreviewBuildUsedTitle": "プレビュービルドを使用しています！",
     "NotifPreviewBuildUsedSubtitle": "現在テスト中のプレビュービルドを使用しています。問題が発生した場合は、下の \"{0}\" ボタンを使用して問題を報告してください。よろしくね！",
-    "NotifPreviewBuildUsedBtn": "問題を送信する"
+    "NotifPreviewBuildUsedBtn": "問題を送信する",
+
+    "NotifKbShortcutTitle": "新しい機能を実装しました！",
+    "NotifKbShortcutSubtitle": "Collapseを便利にするための新機能、キーボードショートカットを実装しました。\nキーボードを使って、一部の機能に素早くアクセスできます！\n\n詳しく知りたいですか？\nCTRL + Tabを押すか、下のボタンをクリックしてください。",
+    "NotifKbShortcutBtn": "ショートカット一覧"
   },
 
   "_StarRailGameSettingsPage": {
@@ -891,5 +912,48 @@
     "VO_cn": "中国語",
     "VO_jp": "日本語",
     "VO_kr": "韓国語"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "キーボードショートカット",
+    "GeneralTab": "全般",
+    "SwitchTab": "クイック切り替え",
+    "GameFolderTab": "フォルダー",
+    "GameManagementTab": "ゲーム",
+
+    "General_Title": "全般",
+    "General_OpenMenu": "ショートカット一覧",
+    "General_OpenMenu_Desc": "ランチャー設定画面からも開くことができます。",
+    "General_GoHome": "ホームページ",
+    "General_GoSettings": "ランチャー設定",
+    "General_OpenNotifTray": "通知トレイを開く",
+
+    "Switch_Title": "ゲーム/サーバーのクイック切り替え",
+    "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
+    "Switch_SwapBtn": "{0} と {1}を入れ替え",
+    "Switch_ChangeGame": "ゲームを変更",
+    "Switch_ChangeGame_Desc": "テンキーを使用することもできます！\n例：{0}+1 かテンキーの1で崩壊3rdのページ（最後に選択したサーバー）に移動",
+    "Switch_ChangeRegion": "サーバーを変更",
+    "Switch_ChangeRegion_Desc": "例：{0}+1で原神をグローバル版に変更",
+
+    "GameFolder_Title": "各種フォルダーを開く",
+    "GameFolder_ScreenshotFolder": "スクショフォルダーを開く",
+    "GameFolder_MainFolder": "ゲームフォルダーを開く",
+    "GameFolder_CacheFolder": "キャッシュフォルダーを開く",
+
+    "GameManagement_Title": "ゲーム管理",
+    "GameManagement_Subtitle": "注：ショートカットはその機能が使用可能な場合のみ有効になります。",
+    "GameManagement_ForceCloseGame": "ゲームを強制終了",
+    "GameManagement_ForceCloseGame_Desc": "警告：このショートカットを使うと、すぐさまゲームが強制終了します。",
+    "GameManagement_GoRepair": "ゲームの修復",
+    "GameManagement_GoSettings": "ゲーム設定",
+    "GameManagement_GoCaches": "キャッシュ更新",
+
+    "ChangeShortcut_Title": "ショートカットを変更",
+    "ChangeShortcut_Text": "変更したいショートカットの組み合わせを入力してください！",
+    "ChangeShortcut_Help1": "ショートカットは以下の2要素で構成されます。",
+    "ChangeShortcut_Help2": "・ 修飾キー - Shift、Control、Alt/Menu",
+    "ChangeShortcut_Help3": "・ キー - アルファベット（AからZ）またはTab",
+    "ChangeShortcut_Help4": "システムに割り当てられているか、すでに使用されている場合を除いて、各カテゴリから キーを1つずつ選んで任意の組み合わせを選択できます。"
   }
 }
