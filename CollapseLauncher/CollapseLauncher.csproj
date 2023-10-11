@@ -1,4 +1,4 @@
-﻿ <Project Sdk="Microsoft.NET.Sdk">
+ <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>net7.0-windows10.0.19041.0;net7.0-windows10.0.22000.0</TargetFrameworks>
@@ -43,6 +43,8 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    	<PackageReference Include="System.Net.Http" Version="4.3.4" />
+    	<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>
