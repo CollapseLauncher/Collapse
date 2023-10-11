@@ -7,7 +7,7 @@
 
 [![en](https://img.shields.io/badge/README-en-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.md) [![jp](https://img.shields.io/badge/README-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/README-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md)
 
-O **Collapse** foi desenhado originalmente para o **Honkai Impact 3rd**. No entanto, com a evolução do projeto, o launcher tornou-se numa aplicação para todos os **jogos da miHoYo/Hoyoverse** atualmente lançados.
+O **Collapse** foi originalmente desenhado para **Honkai Impact 3rd**. No entanto, com a evolução do projeto, o launcher tornou-se numa aplicação para todos os **jogos da miHoYo/Hoyoverse** atualmente lançados.
 
 [![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
@@ -36,21 +36,21 @@ O **Collapse** foi desenhado originalmente para o **Honkai Impact 3rd**. No enta
 # Porquê "Collapse"?
 Collapse vem da tradução de **Honkai Impact** em Chinês e Japonês. A palavra origina dos vocábulos [**崩坏**] ou **Bēng huài** do Chinês e [**崩壊**] or **Houkai** do Japonês, os quais ambos significam "**Collapse**" ou Colapso em português. É por esta causa que decidimos escolher este nome para o nosso launcher, com inspiração no aspeto de que originalmente este projeto era suposto ser uma alternativa (melhorada) ao launcher do *Honkai Impact 3rd*.
 
-O **Collapse** contêm funcionalidades avançadas para o **Honkai Impact 3rd** que não te permitem apenas descarregar e abrir o jogo como também efetuar algumas operações adicionais não presentes no launcher oficial, tais como:
-* Descarregar Caches (ou seja "Updating Settings" dentro do jogo).
-* Game Data Repair (with less bandwidth required than the *Data Repair* feature in-game).
-* Changing Game Settings (Graphics Settings & Audio Settings) without opening the game.
-* Multi-Region Game Download Support (Allows for downloading and launching different versions of the game).
-* Steam to Global version conversion (without re-downloading the whole game).
-* Global to SEA version (or vice versa) conversion.
-* Multi-session Download for faster Game Download/Installation.
-* Multi-thread Game Extraction for faster installation.
-* Delta-Patch Update Mechanism for smaller updates ([**Click here**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) for more info).
-* Ability to select Graphics API (DirectX 11 (FL: 10.1, 11.0 and 11.1) and DirectX 12 [May crash the game in newer stages]).
+O **Collapse** contêm funcionalidades avançadas para **Honkai Impact 3rd** que não te permitem apenas descarregar e abrir o jogo como também efetuar algumas operações adicionais não presentes no launcher oficial, tais como:
+* Descarregar daches (ou seja "Updating Settings" dentro do jogo).
+* Reparar dados corrumpidos (com um uso de banda menor que a funcionalidade *Data Repair* dentro do jogo).
+* Mudar as definições do jogo (Definições gráficas e de áudio) sem a necessidade de abrir o jogo.
+* Suporte para o descarregamento de várias regiões (Permite descarregar e iniciar diversas versões do jogo).
+* Conversão da versão Steam para a Global (sem ser necessário redescarregar o jogo inteiro).
+* Conversão da versão Global para a SEA (ou vice versa).
+* Descarregamentos multi-sessão para um descarregamento e uma instalação mais rápidas.
+* Extração de jogo multi-thread para uma instalação mais rápida.
+* Mecanismo de atualizações em formato Delta para reduzir o tamanho das atualizações ([**Clica aqui**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) para mais informações).
+* Possibilidade de escolher o API de gráficos (DirectX 11 (FL: 10.1, 11.0 and 11.1) ou DirectX 12 [Em fases mais recentes, o jogo poderá fechar inesperadamente]).
 
-Not only that, this launcher also has some advanced features for **Genshin Impact**, including but not limited to:
-* Choosing your voice-line language during the first installation, so you don't have to download it inside the game.
-* Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
+Para além disto, este launcher também possui algumas funcionalidades avançadas para **Genshin Impact**, incluindo mas não limitadas a:
+* Escolher a linguagem das vozes durante a primeira instalação, para não teres de o fazer dentro do jogo.
+* Reparar os ficheiros do jogo, incluindo caches, cutscenes, pacotes de áudio e ficheiros persistentes fora do jogo.
 
 # Funcionalidades suportadas 
 <table>
@@ -181,7 +181,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > A tabela acima serve para ilustrar as funcionalidades que o Collapse suporta no momento. Esta lista é atualizada gradualmente conforme a adição de novas funcionalidades ao Collapse e o lançamento de novos jogos. Se tens algum problema com alguma das funcionalidades suportadas, verifica a aba de Issues do GitHub e cria um "Issue" caso nenhum sobre o mesmo assunto exista.
 > > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact: 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
-# Descarrega compilações prontas a usar
+# Descarregar compilações prontas a usar
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
 > **Nota**: A última versão para esta compilação é a `1.71.13` (Lançada em: 2 de outubro de 2023).
 
@@ -198,7 +198,7 @@ Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/Co
 ***
 
 # Pré-requisitos para compilar localmente/desenvolvimento
-> ### Mais informação pode ser encontrada em [**Contribution Guidelines**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+> ### Mais informação pode ser encontrada nas [**Diretrizes de contribuição**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
 
 ***
 
@@ -218,8 +218,8 @@ Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/Co
 # Visão geral sobre o design da UI
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
-# How can I support this project?
-Supporting is never an obligation but is always appreciated and motivates us to invest more time in the project and to keep this and other projects alive. To this end, should you decide to support us, here are ways you can do so :smile::
+# Como posso apoiar este projeto?
+Apoiar nunca será uma obrigação mas é sempre apreciado e motiva-nos a investir mais tempo no projeto e a manter este e outros projetos ativos. Para este fim, se decidires apoiar-nos, aqui estão algumas formas de como o podes fazer :smile::
 - **[GitHub Sponsors](https://github.com/sponsors/neon-nyan)**
 - **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Em breve:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
