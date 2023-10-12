@@ -741,7 +741,7 @@
     "NotifPreviewBuildUsedBtn": "問題を送信する",
 
     "NotifKbShortcutTitle": "新しい機能を実装しました！",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutSubtitle": "Collapseを便利にするための新機能、キーボードショートカットを実装しました。\nキーボードを使って、一部の機能に素早くアクセスできます！\n\n詳しく知りたいですか？\nCTRL + Tabを押すか、下のボタンをクリックしてください。",
     "NotifKbShortcutBtn": "ショートカット一覧"
   },
 
