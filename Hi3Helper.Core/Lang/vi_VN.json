@@ -374,8 +374,8 @@
     "ContributorListBtn": "Người đóng góp mã nguồn mở",
 
     "About": "Về chúng tôi",
-    "About_Copyright1": "© 2023 Được tạo bởi",
-    "About_Copyright2": " neon-nyan [14372096 SEA]",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký Bản quyền.",
 
@@ -392,7 +392,12 @@
 
     "EnableAcrylicEffect": "Dùng hiệu ứng làm mờ",
     "EnableDownloadChunksMerging": "Gộp các gói đã tải xuống",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_ShowBtn": "Show Shortcuts",
+    "KbShortcuts_ResetBtn": "Reset to Default"
   },
 
   "_Misc": {
@@ -486,7 +491,13 @@
     "DiscordRP_Idle": "Tạm nghỉ",
     "DiscordRP_Default": "Không có hoạt động",
     "DiscordRP_Ad": "- Với trình khởi chạy Collapse",
-    "DiscordRP_Region": "Khu vực:"
+    "DiscordRP_Region": "Khu vực:",
+
+    "Taskbar_ShowApp": "Show Collapse window",
+    "Taskbar_HideApp": "Hide Collapse window to taskbar",
+    "Taskbar_ShowConsole": "Show Collapse console window",
+    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
+    "Taskbar_ExitApp": "Exit Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -587,7 +598,12 @@
     "CannotUseAppLocationForGameDirTitle": "Thư mục không hợp lệ!",
     "CannotUseAppLocationForGameDirSubtitle": "Bạn không thể sử dụng thư mục này vì nó đang được sử dụng làm thư mục hệ thống hoặc được sử dụng để thực thi chính của ứng dụng. Vui lòng chọn thư mục khác!",
     "StopGameTitle": "Buộc dừng trò chơi",
-    "StopGameSubtitle": "Bạn có chắc chắn muốn buộc dừng trò chơi đang chạy hiện tại không?\nBạn có thể mất một số tiến trình trong trò chơi."
+    "StopGameSubtitle": "Bạn có chắc chắn muốn buộc dừng trò chơi đang chạy hiện tại không?\nBạn có thể mất một số tiến trình trong trò chơi.",
+    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
+    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+
+    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
   },
 
   "_InstallMgmt": {
@@ -722,7 +738,11 @@
 
     "NotifPreviewBuildUsedTitle": "Bạn đang sử dụng phiên bản xem trước!",
     "NotifPreviewBuildUsedSubtitle": "Bạn đang sử dụng bản dựng XEM TRƯỚC trong khi vẫn còn đang được thử nghiệm. Nếu có bất kì lỗi nào, vui lòng báo lỗi với chúng tôi bằng cách ấn vào nút \"{0}\" dưới đây. Xin cảm ơn!",
-    "NotifPreviewBuildUsedBtn": "Gửi lỗi"
+    "NotifPreviewBuildUsedBtn": "Gửi lỗi",
+
+    "NotifKbShortcutTitle": "A new feature has arrived!",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
   "_StarRailGameSettingsPage": {
@@ -891,5 +911,48 @@
     "VO_cn": "Tiếng Trung",
     "VO_jp": "Tiếng Nhật",
     "VO_kr": "Tiếng Hàn"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Keyboard Shortcuts",
+    "GeneralTab": "General",
+    "SwitchTab": "Quick Switch",
+    "GameFolderTab": "Folder Access",
+    "GameManagementTab": "Game Management",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Open this menu",
+    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
+    "General_GoHome": "Go to the Home page",
+    "General_GoSettings": "Go to the Settings page",
+    "General_OpenNotifTray": "Open the Notification Tray",
+
+    "Switch_Title": "Quick Game/Region change",
+    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_SwapBtn": "Swap {0} and {1}",
+    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+
+    "GameFolder_Title": "Game Folder Access",
+    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
+    "GameFolder_MainFolder": "Open the Game folder",
+    "GameFolder_CacheFolder": "Open the Cache folder",
+
+    "GameManagement_Title": "Game Management",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
+    "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
+    "GameManagement_GoRepair": "Go to the Game Repair page",
+    "GameManagement_GoSettings": "Go to the Game Settings page",
+    "GameManagement_GoCaches": "Go to the Caches Repair page",
+
+    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
+    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
+    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
+    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
   }
 }
