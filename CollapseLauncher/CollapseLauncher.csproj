@@ -21,7 +21,7 @@
 		<TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
 		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    	<GitVersion>false</GitVersion>
+    <GitVersion>false</GitVersion>
 	</PropertyGroup>
 <!--
   Constants List:
@@ -35,11 +35,7 @@
 -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
-	</PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
-	</PropertyGroup>-Trimmed
-  <Optimize>True</Optimize>
+		<Optimize>True</Optimize>
     <GitSkipCache>true</GitSkipCache>
     <SelfContained>true</SelfContained>
 		<PublishTrimmed>true</PublishTrimmed>
@@ -62,6 +58,7 @@
     <EventSourceSupport>false</EventSourceSupport>
     <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
     <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW</DefineConstants>
 		<Optimize>True</Optimize>
