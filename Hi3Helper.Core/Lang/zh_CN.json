@@ -73,7 +73,7 @@
     "RegionLoadingTitle": "加载区服",
     "RegionLoadingAPITitle1": "加载中",
     "RegionLoadingAPITitle2": "启动器API",
-    "RegionLoadingSubtitleTimeOut": "操作超时（>{1}秒）。正在重试加载区服{0}……",
+    "RegionLoadingSubtitleTimeOut": "操作已超时（>{1}秒）。正在重新尝试加载区服{0}……",
     "RegionLoadingSubtitleTooLong": "重试的时间比预期的长一些……请确保您的网络连接稳定！",
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不再显示",
