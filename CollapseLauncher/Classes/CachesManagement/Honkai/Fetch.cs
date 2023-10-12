@@ -228,7 +228,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Deserialize the line and set the type
-                    CacheAsset content = (CacheAsset)JsonSerializer.Deserialize(line, typeof(CacheAsset), InternalAppJSONContext.Default);
+                    CacheAsset content = line.Deserialize<CacheAsset>(InternalAppJSONContext.Default);
                     content.DataType = type;
 
                     // Check if the asset is regional and contains only selected language.

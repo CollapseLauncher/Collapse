@@ -56,7 +56,7 @@ namespace CollapseLauncher.GameSettings
         {
             using (FileStream fs = new FileStream(presetJSONPath, FileMode.Open, FileAccess.Read))
             {
-                Presets = (Dictionary<string, T1>?)JsonSerializer.Deserialize(fs, typeof(Dictionary<string, T1>), jsonContext);
+                Presets = fs.Deserialize<Dictionary<string, T1>>(jsonContext);
                 PresetKeys = GetPresetKeys();
             }
         }

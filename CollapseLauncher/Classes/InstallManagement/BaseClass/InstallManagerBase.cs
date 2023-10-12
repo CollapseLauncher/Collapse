@@ -966,7 +966,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value = Encoding.UTF8.GetString(keyValue);
-                config = (BHI3LInfo?)JsonSerializer.Deserialize(value, typeof(BHI3LInfo), CoreLibraryJSONContext.Default);
+                config = value.Deserialize<BHI3LInfo>(CoreLibraryJSONContext.Default);
             }
             catch (Exception ex)
             {
