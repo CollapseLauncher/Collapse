@@ -1,3 +1,4 @@
+
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -10,7 +11,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Debug-Trimmed;Release;Publish;Debug-Trimmed</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.71.5</Version>
+		<Version>1.73.5</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
@@ -182,5 +183,12 @@
       		<TrimmableAssembly Include="System.Text.RegularExpression" />
 			<TrimmableAssembly Include="WinRT.Runtime" />
 		</ItemGroup>
+	</Target>
+  
+	<Target Name="CustomTrim" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)|$(Platform)'=='Debug-Trimmed|x64'">
+		<ILLink AssemblyPaths="$(TargetDir)$(TargetFileName)"
+						RootAssemblyNames="$(TargetDir)$(TargetFileName)"
+						OutputDirectory="$(TargetDir)trimmed\"
+						ExtraArgs="-t --verbose --skip-unresolved true" />
 	</Target>
 </Project>
