@@ -311,7 +311,7 @@
 
     "Debug": "デバッグ",
     "Debug_Console": "コンソールを表示",
-    "Debug_IncludeGameLogs": "Collapseにゲームログを保存（個人情報も保存される可能性有り）",
+    "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
     "Debug_MultipleInstance": "Collapse の多重起動を許可する",
 
     "ChangeRegionWarning_Toggle": "サーバー変更時に確認する",
@@ -612,7 +612,7 @@
     "AddtDownloadTitle": "追加ダウンロード: {0}/{1}",
     "RepairFilesRequiredShowFilesBtn": "破損したファイルの一覧を表示",
     "RepairFilesRequiredTitle": "{0}個のファイルを修復する必要があります！",
-    "RepairFilesRequiredSubtitle": "更新前に修復が必要なファイルが {0}以上({1})あります！\r\n\r\n参考:この作業は予想より長くかかる場合があります(接続速度と安定性によって異なります)。ダウンロード速度が遅い場合、VPNを使ってみてください(ProtonVPNのような無料VPNで十分です)。"
+    "RepairFilesRequiredSubtitle": "アップデート前に修復が必要なファイルが {0}個以上（{1}）あります！\r\n\r\n注：この作業には予想より時間がかかる場合があります（接続安定性と帯域幅によって異なります）。ダウンロード速度が遅い場合、VPNを使ってみてください :)"
   },
 
   "_InstallConvert": {
