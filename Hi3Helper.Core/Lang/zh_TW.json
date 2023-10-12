@@ -374,8 +374,8 @@
     "ContributorListBtn": "開源協作者",
 
     "About": "關於",
-    "About_Copyright1": "© 2022-2023 由",
-    "About_Copyright2": " neon-nyan [14372096 SEA] 製作",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Under",
     "About_Copyright4": "。版權所有。",
 
@@ -392,7 +392,12 @@
 
     "EnableAcrylicEffect": "使用壓克力模糊效果",
     "EnableDownloadChunksMerging": "合併已下載的軟體包區塊",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_ShowBtn": "Show Shortcuts",
+    "KbShortcuts_ResetBtn": "Reset to Default"
   },
 
   "_Misc": {
@@ -486,7 +491,13 @@
     "DiscordRP_Idle": "閒置",
     "DiscordRP_Default": "沒有活動",
     "DiscordRP_Ad": "- 使用 Collapse 啟動器",
-    "DiscordRP_Region": "區域："
+    "DiscordRP_Region": "區域：",
+
+    "Taskbar_ShowApp": "Show Collapse window",
+    "Taskbar_HideApp": "Hide Collapse window to taskbar",
+    "Taskbar_ShowConsole": "Show Collapse console window",
+    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
+    "Taskbar_ExitApp": "Exit Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -587,7 +598,12 @@
     "CannotUseAppLocationForGameDirTitle": "無效的資料夾！",
     "CannotUseAppLocationForGameDirSubtitle": "由於此資料夾已經被系統佔用，或被用於啟動器的主要資料夾，您不能使用它。請選擇另一個資料夾！",
     "StopGameTitle": "強制停止遊戲",
-    "StopGameSubtitle": "您是否要強制停止當前正在執行的遊戲？\n您可能會失去一些遊戲進度。"
+    "StopGameSubtitle": "您是否要強制停止當前正在執行的遊戲？\n您可能會失去一些遊戲進度。",
+    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
+    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+
+    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
   },
 
   "_InstallMgmt": {
@@ -722,7 +738,11 @@
 
     "NotifPreviewBuildUsedTitle": "您正在使用預覽版本！",
     "NotifPreviewBuildUsedSubtitle": "您目前正在使用 [PREVIEW] 版本，它仍然在測試階段。如果您遇到任何問題，請點擊下方的「{0}」按鈕來回報。謝謝！",
-    "NotifPreviewBuildUsedBtn": "回報問題"
+    "NotifPreviewBuildUsedBtn": "回報問題",
+
+    "NotifKbShortcutTitle": "A new feature has arrived!",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
   "_StarRailGameSettingsPage": {
@@ -891,5 +911,48 @@
     "VO_cn": "中文",
     "VO_jp": "日文",
     "VO_kr": "韓文"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Keyboard Shortcuts",
+    "GeneralTab": "General",
+    "SwitchTab": "Quick Switch",
+    "GameFolderTab": "Folder Access",
+    "GameManagementTab": "Game Management",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Open this menu",
+    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
+    "General_GoHome": "Go to the Home page",
+    "General_GoSettings": "Go to the Settings page",
+    "General_OpenNotifTray": "Open the Notification Tray",
+
+    "Switch_Title": "Quick Game/Region change",
+    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_SwapBtn": "Swap {0} and {1}",
+    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+
+    "GameFolder_Title": "Game Folder Access",
+    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
+    "GameFolder_MainFolder": "Open the Game folder",
+    "GameFolder_CacheFolder": "Open the Cache folder",
+
+    "GameManagement_Title": "Game Management",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
+    "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
+    "GameManagement_GoRepair": "Go to the Game Repair page",
+    "GameManagement_GoSettings": "Go to the Game Settings page",
+    "GameManagement_GoCaches": "Go to the Caches Repair page",
+
+    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
+    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
+    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
+    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
   }
 }
