@@ -74,8 +74,9 @@ jobs:
 
     - name: Build
       run: |
-        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
+        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform;PublishProfile=Publish-PreviewRelease"
         dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ matrix.framework }}
+
     
 #    - name: Upload Artifact (Debug)
 #      uses: actions/upload-artifact@v3.1.2
@@ -89,4 +90,4 @@ jobs:
       if: ${{ matrix.configuration == 'Release' }}
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/bin/x64/Release/${{ matrix.framework }}/
+          path: ../CollapseLauncher-ReleaseRepo/preview-build/
