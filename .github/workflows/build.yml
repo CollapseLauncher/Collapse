@@ -4,24 +4,13 @@ run-name: Canary Build for ${{ github.ref }}
 
 on:
   workflow_dispatch:
-    inputs:
-      os:
-      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
-        type: choice
-        description: "Select Runner image to use for this deployment"
-        default: "windows-2019"
-        options:
-          - "windows-latest"
-          - "windows-2019"
-          - "windows-2022"
-  
   schedule:
     - cron: '0 0 * * 0' # At 00:00 on Sunday
 
 jobs:
   build:
     # runs-on: [self-hosted, linux]
-    runs-on: ${{ github.event.inputs.os || 'windows-latest' }}
+    runs-on: windows-latest
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
@@ -74,8 +63,7 @@ jobs:
 
     - name: Build
       run: |
-        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform;PublishProfile=Publish-PreviewRelease"
-        dotnet build CollapseLauncher -p:DeployOnBuild=true -p:PublishProfile=Publish-PreviewRelease -c $env:Configuration -p:Platform=$env:Platform -f ${{ matrix.framework }} -p:PublishDir=".\preview-build\"
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\" 
     
 #    - name: Upload Artifact (Debug)
 #      uses: actions/upload-artifact@v3.1.2
@@ -89,4 +77,4 @@ jobs:
       if: ${{ matrix.configuration == 'Release' }}
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./preview-build/
+          path: ./CollapseLauncher/preview-build/
