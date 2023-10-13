@@ -1,11 +1,15 @@
 # Credits to @Scighost from Starward for his contributions!
 name: Build-Canary
-run-name: Canary Build for ${{ github.ref }}
+#run-name: Canary Build for ${{ github.ref }}
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 0' # At 00:00 on Sunday
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+#  schedule:
+#    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
 jobs:
   build:
@@ -27,12 +31,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         submodules: recursive
-
-    - name: Get short Git SHA
-      id: vars
-      run: | 
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
 
     - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
       id: cache-dotnet
@@ -78,3 +76,12 @@ jobs:
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/preview-build/
+
+    - name: Notify discord
+      uses: th0th/notify-discord@v0.4.1
+      if: ${{ always() }}
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_JOB_NAME: "Canary Build Status"
+        GITHUB_JOB_STATUS: ${{ job.status }}
