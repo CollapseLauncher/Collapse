@@ -79,7 +79,7 @@ jobs:
           path: ./CollapseLauncher/preview-build/
 
     - name: Notify Discord
-      uses: sarisia/actions-status-discord@latest
+      uses: sarisia/actions-status-discord@v1.13.0
       if: always()
       continue-on-error: true
       with:
@@ -88,4 +88,4 @@ jobs:
         status: ${{ job.status }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }}
-          Click [here](https://nightly.link/quassel/quassel/actions/runs/${{ github.run_id }}) to download!
+          Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
