@@ -43,10 +43,10 @@
   },
 
   "_DisconnectedPage": {
-    "PageTitle": "Conexão falhada",
+    "PageTitle": "Sem conexão",
     "Header1": "A tua Internet está",
     "Header2": "Desligada",
-    "Footer1": "Verifica a tua conexão de Internet e clica na",
+    "Footer1": "Verifica a tua conexão à Internet e clica na",
     "Footer2": "Paimon",
     "Footer3": "para tentar novamente.",
     "ShowErrorBtn": "Mostrar mensagem de erro"
@@ -54,11 +54,11 @@
 
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "Erro inesperado",
-    "UnhandledSubtitle1": "Um erro inesperado com a exceção abaixo:",
+    "UnhandledSubtitle1": "Um erro inesperado ocorreu e lançou a exceção abaixo:",
     "UnhandledTitle2": "Problema de conexão",
-    "UnhandledSubtitle2": "Oops, parece que foste desconectado da internet~ Ou será que não?",
-    "UnhandledTitle3": "Crash de Jogo",
-    "UnhandledSubtitle3": "O jogo parou inesperadamente com os seguintes erros detalhados abaixo:",
+    "UnhandledSubtitle2": "Oops, parece que foste desconectado da Internet~ Ou será que não?",
+    "UnhandledTitle3": "Crash do jogo",
+    "UnhandledSubtitle3": "O jogo parou inesperadamente devido aos erros detalhados abaixo:",
     "CopyClipboardBtn1": "Copiar tudo para a clipboard",
     "CopyClipboardBtn2": "Copiado para a clipboard!",
     "GoBackPageBtn1": "Voltar à página anterior"
@@ -158,7 +158,7 @@
     "Status9": "A reparar Nlk: {0}",
     "Status10": "A reparar Nlk: {0} | Desvio: 0x{1} - Tamanho: 0x{2}",
     "Status11": "A aguardar pelo início do processo de reparação...",
-    "Status12": "A atualizar audio: {0}",
+    "Status12": "A atualizar áudio: {0}",
     "Status13": "A atualizar bloco: {0}",
     "StatusNone": "Nada",
     "PerProgressTitle1": "Progresso por ficheiro",
@@ -273,7 +273,7 @@
     "Audio_VO": "Nível de destaque das vozes",
     "Audio_Elf": "Nível de destaque das vozes dos Elf",
     "Audio_Cutscenes": "Volume das cutscenes",
-    "Audio_Mute": "Silenciar audio",
+    "Audio_Mute": "Silenciar áudio",
 
     "ApplyBtn": "Aplicar alterações",
     "SettingsApplied": "Alterações guardadas!",
@@ -303,7 +303,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (em Inglês)",
     "CustomArgs_Footer3": "para ver mais parâmetros.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Aumentar a prioridade do jogo [Experimental]"
   },
 
   "_SettingsPage": {
@@ -365,17 +365,17 @@
     "AppFiles_ClearLogBtn": "Limpar ficheiros de registo",
     "AppFiles_ClearImgCachesBtn": "Limpar ficheiros de imagem",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataBtn": "Limpar metadados e reiniciar",
+    "AppFiles_ClearMetadataDialog": "A limpar os metadados do Collapse!",
+    "AppFiles_ClearMetadataDialogHelp": "Limpar os metadados do Collapse irá forçá-lo a reiniciar. Usa isto apenas se tiveres problemas com o carregamento de regiões.\nTens a certeza?",
 
     "ReportIssueBtn": "Reportar um problema",
     "ContributePRBtn": "Contribuir com um \"Pull Request\"",
     "ContributorListBtn": "Contribuidores de código aberto",
 
     "About": "Sobre",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "",
+    "About_Copyright2": "",
     "About_Copyright3": "Sobre licença:",
     "About_Copyright4": ". Todos os direitos reservados.",
 
@@ -395,9 +395,9 @@
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_Title": "Atalhos de teclado",
+    "KbShortcuts_ShowBtn": "Mostrar atalhos",
+    "KbShortcuts_ResetBtn": "Redefinir para o valor predefinido"
   },
 
   "_Misc": {
@@ -493,11 +493,11 @@
     "DiscordRP_Ad": "- Com Collapse Launcher",
     "DiscordRP_Region": "Região:",
 
-    "Taskbar_ShowApp": "Show Collapse window",
-    "Taskbar_HideApp": "Hide Collapse window to taskbar",
-    "Taskbar_ShowConsole": "Show Collapse console window",
-    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ShowApp": "Mostrar janela do Collapse",
+    "Taskbar_HideApp": "Esconder janela do Collapse na gaveta de aplicações",
+    "Taskbar_ShowConsole": "Mostrar janela da consola do Collapse",
+    "Taskbar_HideConsole": "Esconder janela da consola do Collapse na gaveta de aplicações",
+    "Taskbar_ExitApp": "Fechar o Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -519,15 +519,15 @@
     "DeltaPatchPrevFailedSubtitle": "A atualização Delta anterior não foi aplicada com sucesso. Queres restaurar o jogo para prevenir um novo descarregamento?",
     "GameConversionPrevFailedTitle": "Conversão de jogo anterior falhou/incompleta!",
     "GameConversionPrevFailedSubtitle": "A conversão de jogo anterior falhou/está incompleta! Queres restaurar o jogo para prevenir um novo descarregamentos?",
-    "PreloadVerifiedTitle": "Pacote de pré-descarregamento verificado!",
-    "PreloadVerifiedSubtitle": "O pacote de pré-descarregamento está pronto e verificado!",
+    "PreloadVerifiedTitle": "Pacote de pré-carregamento verificado!",
+    "PreloadVerifiedSubtitle": "O pacote de pré-carregamento está pronto e verificado!",
     "LocateInstallTitle": "Localizar pasta de instalação",
     "LocateInstallSubtitle": "Antes de instalar o jogo, queres especificar a localização do mesmo?",
     "UnauthorizedDirTitle": "Localização não autorizada escolhida",
     "UnauthorizedDirSubtitle": "Escolheste uma localização onde não tens permissão para escrever, no seguinte caminho:\n\n{0}\n\nPor favor escolhe outra localização!",
     "ChooseAudioLangSelectPlaceholder": "Seleciona o idioma do áudio",
     "ChooseAudioLangTitle": "Seleciona o idioma do áudio",
-    "ChooseAudioLangSubtitle": "Antes de instalar o jogo precisas de escolher o idioma do áudio que queres usar: (Predefinição: japonês):",
+    "ChooseAudioLangSubtitle": "Antes de instalar o jogo precisas de escolher o idioma de áudio que queres usar: (Predefinição: japonês):",
     "AddtDownloadNeededTitle": "Descarregamento adicional necessário",
     "AddtDownloadNeededSubtitle": "Tens de descarregar pelo menos {0} ficheiros adicionais/persistentes. No entanto, podes saltar isto e baixá-los dentro do jogo.\nQueres continuar?",
     "AddtDownloadCompletedTitle": "Descarregamento adicional terminou!",
@@ -599,11 +599,11 @@
     "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
     "StopGameTitle": "Forçar a paragem do jogo",
     "StopGameSubtitle": "Tens a certeza que queres parar o jogo em execução?\nPoderás perder algum progresso dentro mesmo.",
-    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
-    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+    "MeteredConnectionWarningTitle": "Conexão de tráfego limitado detectada!",
+    "MeteredConnectionWarningSubtitle": "A tua conexão à internet atual foi detectada como 'tráfego limitado'! Continuar o processo de atualização poderá resultar em taxas suplementares por parte da tua operadora. Queres continuar?",
 
-    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsTitle": "Tens a certeza que queres redefinir todos os atalhos?",
+    "ResetKbShortcutsSubtitle": "Isto significa que todos os atalhos irão ser mudados para a sua combinação predefinida.\n\nQueres continuar?\n\nNota: Isto não impacta o modo como o Collapse opera e poderás alterar os atalhos a qualquer momento através do menu \"Atalhos de teclado\"."
   },
 
   "_InstallMgmt": {
@@ -740,9 +740,9 @@
     "NotifPreviewBuildUsedSubtitle": "Atualmente estás a usar uma versão [PREVIEW], a qual ainda está a ser testada. Se encontrares algum problema, podes reportá-los através do botão \"{0}\" abaixo. Obrigado!",
     "NotifPreviewBuildUsedBtn": "Submeter um problema",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutTitle": "Uma nova funcionalidade chegou!",
+    "NotifKbShortcutSubtitle": "Estamos a introduzir uma nova forma de navegar dentro do Collapse, atalhos de teclado.\nAgora podes usar o teu teclado para um acesso mais rápido a algumas funcionalidades!\n\nQueres saber mais?\nTenta usar a combinação CTRL + Tab ou clica no botão abaixo.",
+    "NotifKbShortcutBtn": "Mostrar todos os atalhos"
   },
 
   "_StarRailGameSettingsPage": {
@@ -806,7 +806,7 @@
 
     "Language": "Definições de idioma",
     "Language_Help1": "O Collapse não consegue baixar pacotes de áudio diretamente.",
-    "Language_Help2": "Pacotes de áudio irão ser baixados na próxima vez que iniciares o jogo.",
+    "Language_Help2": "Pacotes de áudio irão ser descarregados na próxima vez em que iniciares o jogo.",
     "LanguageAudio": "Áudio",
     "LanguageText": "Texto",
     "VO_en": "Inglês",
@@ -851,19 +851,19 @@
     "Graphics_GlobalIllumination_Help1": "Apenas para hardware suportado!",
     "Graphics_GlobalIllumination_Help2": "Mais informação (em inglês)",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
-    "Graphics_HDR_UiBrightness": "UI Brightness",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+    "Graphics_HDR_Enable": "Ativar HDR",
+    "Graphics_HDR_NotSupported1": "O teu monitor não suporta HDR",
+    "Graphics_HDR_NotSupported2": "Um monitor compatível com HDR é necessário!",
+    "Graphics_HDR_NotEnabled1": "O teu dispositivo suporta HDR, mas não está ativado.",
+    "Graphics_HDR_NotEnabled2": "A opção \"Usar HDR\" deve ser ligada nas definições do Windows.",
+    "Graphics_HDR_Help_Link": "Mais informação",
+    "Graphics_HDR_MaxLuminosity": "Luminosidade máxima (nits)",
+    "Graphics_HDR_MaxLuminosity_Help": "Pico de luminosidade máxima permitida para destaques",
+    "Graphics_HDR_Calibration_Help": "Ajusta até a imagem estar esbatida mas visível",
+    "Graphics_HDR_UiBrightness": "Luminosidade da interface",
+    "Graphics_HDR_UiBrightness_Help": "Controla o quão luminoso os elementos da interface devem ser",
+    "Graphics_HDR_SceneBrightness": "Luminosidade do cenário",
+    "Graphics_HDR_SceneBrightness_Help": "Controla o quão luminoso o cenário deve ser",
 
     "Graphics_SpecPanel": "Definições gráficas globais",
     "SpecEnabled": "Ativado",
@@ -898,9 +898,9 @@
     "Audio_SFX": "Volume dos efeitos sonoros",
     "Audio_VO": "Nível de destaque das vozes",
 
-    "Audio_Output_Surround": "Use Surround Sound",
+    "Audio_Output_Surround": "Usar Surround sound",
     "Audio_DynamicRange": "Full Dynamic Range",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "Silenciar áudio quando minimizado",
 
     "Language": "Definições de idioma",
     "Language_Help1": "O Collapse não consegue baixar pacotes de áudio diretamente.",
@@ -914,45 +914,45 @@
   },
 
   "_KbShortcuts": {
-    "DialogTitle": "Keyboard Shortcuts",
-    "GeneralTab": "General",
-    "SwitchTab": "Quick Switch",
-    "GameFolderTab": "Folder Access",
-    "GameManagementTab": "Game Management",
+    "DialogTitle": "Atalhos de teclado",
+    "GeneralTab": "Geral",
+    "SwitchTab": "Mudança rápida",
+    "GameFolderTab": "Acesso a pastas",
+    "GameManagementTab": "Gestão do jogo",
 
-    "General_Title": "General",
-    "General_OpenMenu": "Open this menu",
-    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
-    "General_GoHome": "Go to the Home page",
-    "General_GoSettings": "Go to the Settings page",
-    "General_OpenNotifTray": "Open the Notification Tray",
+    "General_Title": "Geral",
+    "General_OpenMenu": "Abrir este menu",
+    "General_OpenMenu_Desc": "Também pode ser acessado através da página de definições da aplicação.",
+    "General_GoHome": "Ir para a página principal",
+    "General_GoSettings": "Ir para a página de definições",
+    "General_OpenNotifTray": "Abrir o painel de notificações",
 
-    "Switch_Title": "Quick Game/Region change",
-    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
-    "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
-    "Switch_ChangeRegion": "Change region",
-    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+    "Switch_Title": "Mudança rápida de jogo/região",
+    "Switch_Subtitle": "Nota: Os atalhos seguem a ordem do seletor",
+    "Switch_SwapBtn": "Mudar {0} e {1}",
+    "Switch_ChangeGame": "Mudar de jogo",
+    "Switch_ChangeGame_Desc": "Também podes usar o teclado numérico para este atalho!\nEx. {0}+1 or NumPad1 corresponde à página da última região usada de Honkai Impact 3rd",
+    "Switch_ChangeRegion": "Mudar de região",
+    "Switch_ChangeRegion_Desc": "Ex. No caso de Genshin Impact, {0}+1 corresponde à região Global.",
 
-    "GameFolder_Title": "Game Folder Access",
-    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
-    "GameFolder_MainFolder": "Open the Game folder",
-    "GameFolder_CacheFolder": "Open the Cache folder",
+    "GameFolder_Title": "Acesso a pastas dos jogos",
+    "GameFolder_ScreenshotFolder": "Abrir a pasta de capturas de ecrã",
+    "GameFolder_MainFolder": "Abrir a pasta do jogo",
+    "GameFolder_CacheFolder": "Abrir a pasta das caches",
 
-    "GameManagement_Title": "Game Management",
-    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
-    "GameManagement_ForceCloseGame": "Close the game forcefully",
-    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
-    "GameManagement_GoRepair": "Go to the Game Repair page",
-    "GameManagement_GoSettings": "Go to the Game Settings page",
-    "GameManagement_GoCaches": "Go to the Caches Repair page",
+    "GameManagement_Title": "Gestão do jogo",
+    "GameManagement_Subtitle": "Nota: Estes atalhos apenas funcionam se tal funcionalidade é suportada pela região.",
+    "GameManagement_ForceCloseGame": "Forçar o encerramento do jogo",
+    "GameManagement_ForceCloseGame_Desc": "AVISO: Ao usar este atalho, o jogo irá ser fechado sem qualquer tipo de confirmação.",
+    "GameManagement_GoRepair": "Ir para a página de reparação do jogo",
+    "GameManagement_GoSettings": "Ir para a página de definições de jogo",
+    "GameManagement_GoCaches": "Ir para a página de reparação das caches",
 
-    "ChangeShortcut_Title": "Change Shortcut",
-    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
-    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
-    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
-    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Title": "Mudar atalho",
+    "ChangeShortcut_Text": "Pressiona a nova combinação para este atalho!",
+    "ChangeShortcut_Help1": "Um atalho é composto por 2 partes:",
+    "ChangeShortcut_Help2": "・ Modificador - Shift, Control ou Alt/Menu",
+    "ChangeShortcut_Help3": "・ Tecla - Alfabética (A a Z) ou Tab",
+    "ChangeShortcut_Help4": "Podes escolher qualquer combinação que consista de um valor de cada uma das categorias, a não ser que esteja reservada para o sistema ou já estiver a ser usada."
   }
 }
