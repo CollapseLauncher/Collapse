@@ -1,5 +1,4 @@
-﻿using Hi3Helper;
-using System;
+﻿using System;
 using System.Buffers;
 using System.IO;
 using System.Text;
@@ -103,29 +102,37 @@ namespace CollapseLauncher
             // Check if the data is null, then return default value
             if (data == null) return _defaultValue;
 
-            // Clear the writer and its buffer
-            jsonBufferWriter.Clear();
+            // Lock the buffer
+            lock (jsonBufferWriter)
+            {
+                // Clear the writer and its buffer
+                jsonBufferWriter.Clear();
 
-            // SANITY CHECK: Check if the buffer is already zero-ed
-            if (jsonBufferWriter.WrittenCount != 0) throw new InvalidOperationException("Illegal Fault: The buffer hasn't been zeroed!");
+                // SANITY CHECK: Check if the buffer is already zero-ed
+                if (jsonBufferWriter.WrittenCount != 0) throw new InvalidOperationException("Illegal Fault: The buffer hasn't been zeroed!");
 
-            // Reset the writer state
-            if (isWriteIndented) jsonWriterIndented.Reset();
-            else jsonWriter.Reset();
+                // Reset the writer state
+                if (isWriteIndented) jsonWriterIndented.Reset();
+                else jsonWriter.Reset();
 
-            // Assign the writer
-            Utf8JsonWriter writer = isWriteIndented ? ref jsonWriterIndented : ref jsonWriter;
+                // Assign the writer
+                Utf8JsonWriter writer = isWriteIndented ? ref jsonWriterIndented : ref jsonWriter;
 
-            // Try serialize the type into JSON string
-            JsonSerializer.Serialize(writer, data, typeof(T), context);
+                // Lock the writer
+                lock (writer)
+                {
+                    // Try serialize the type into JSON string
+                    JsonSerializer.Serialize(writer, data, typeof(T), context);
 
-            // Write the buffer to string
-            ReadOnlySpan<byte> buffer = jsonBufferWriter.WrittenSpan;
-            string returnValue = Encoding.UTF8.GetString(buffer);
+                    // Write the buffer to string
+                    ReadOnlySpan<byte> buffer = jsonBufferWriter.WrittenSpan;
+                    string returnValue = Encoding.UTF8.GetString(buffer);
 
-            // If the serialization accepts \0 char at the end of the return, then return it with \0
-            // Otherwise, return as is.
-            return isIncludeNullEndChar ? returnValue + '\0' : returnValue;
+                    // If the serialization accepts \0 char at the end of the return, then return it with \0
+                    // Otherwise, return as is.
+                    return isIncludeNullEndChar ? returnValue + '\0' : returnValue;
+                }
+            }
         }
 #nullable disable
     }
