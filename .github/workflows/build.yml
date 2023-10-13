@@ -7,7 +7,8 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches-ignore:
+      - 'translations_**'
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
@@ -76,3 +77,15 @@ jobs:
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/preview-build/
+
+    - name: Notify Discord
+      uses: sarisia/actions-status-discord@latest
+      if: always()
+      continue-on-error: true
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
+        title: New canary build is ready!
+        status: ${{ job.status }}
+        description: |
+          Commit `${{ github.sha }}` by ${{ github.actor }}
+          Click [here](https://nightly.link/quassel/quassel/actions/runs/${{ github.run_id }}) to download!
