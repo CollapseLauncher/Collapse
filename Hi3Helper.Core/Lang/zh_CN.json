@@ -182,7 +182,7 @@
 
   "_CachesPage": {
     "PageTitle": "缓存更新",
-    "ListCol1": "文件名",
+    "ListCol1": "名称",
     "ListCol2": "类型",
     "ListCol3": "来源",
     "ListCol4": "大小",
