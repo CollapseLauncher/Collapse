@@ -76,12 +76,3 @@ jobs:
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/preview-build/
-
-    - name: Notify discord
-      uses: th0th/notify-discord@v0.4.1
-      if: ${{ always() }}
-      env:
-        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_JOB_NAME: "Canary Build Status"
-        GITHUB_JOB_STATUS: ${{ job.status }}
