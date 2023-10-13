@@ -374,8 +374,8 @@
     "ContributorListBtn": "Kontributor Open Source",
 
     "About": "Tentang",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "",
+    "About_Copyright2": "",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
 
@@ -395,9 +395,9 @@
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_Title": "Pintasan Keyboard",
+    "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
+    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan"
   },
 
   "_Misc": {
@@ -493,11 +493,11 @@
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
     "DiscordRP_Region": "Wilayah:",
 
-    "Taskbar_ShowApp": "Show Collapse window",
-    "Taskbar_HideApp": "Hide Collapse window to taskbar",
-    "Taskbar_ShowConsole": "Show Collapse console window",
-    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ShowApp": "Tampilkan jendela Collapse",
+    "Taskbar_HideApp": "Sembunyikan jendela Collapse ke taskbar",
+    "Taskbar_ShowConsole": "Tampilkan jendela konsol Collapse",
+    "Taskbar_HideConsole": "Sembunyikan jendela konsol Collapse ke taskbar",
+    "Taskbar_ExitApp": "Hentikan Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -599,11 +599,11 @@
     "CannotUseAppLocationForGameDirSubtitle": "Anda tidak dapat menggunakan folder ini karena digunakan sebagai folder sistem atau digunakan sebagai folder utama dari executable aplikasi ini. Mohon untuk gunakan folder lainnya!",
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
-    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
-    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Ditemukan!",
+    "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
 
-    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsTitle": "Apa kamu yakin untuk mengatur ulang semua pintasan?",
+    "ResetKbShortcutsSubtitle": "Semua pintasan akan diatur ulang ke kombinasi tombol bawaan.\n\nApakah kamu ingin melanjutkan aksi ini?\n\nCatatan: Aksi ini tidak berdampak pada bagaimana Collapse bekerja dan kamu tetap dapat mengubah kombinasi pintasan di menu Pintasan Keyboard."
   },
 
   "_InstallMgmt": {
@@ -740,9 +740,9 @@
     "NotifPreviewBuildUsedSubtitle": "Kamu sedang menggunakan build preview dan kamu mungkin akan mengalami beberapa issue pada saat mencoba fitur eksperimental. Apabila kamu ingin melaporkan issue yang kamu dapat, klik tombol \"{0}\" di bawah ini untuk mengirim issue-mu.",
     "NotifPreviewBuildUsedBtn": "Kirim Issue",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutTitle": "Fitur baru telah tiba!",
+    "NotifKbShortcutSubtitle": "Kami memperkenalkan cara baru untuk berselancar dalam Collapse, Pintasan Keyboard!\nKamu sekarang dapat menggunakan keyboard untuk mendapatkan akses yang lebih cepat ke beberapa fungsi Collapse!\n\nIngin tahu lebih lanjut?\nCoba tekan CTRL + Tab atau tekan tombol dibawah.",
+    "NotifKbShortcutBtn": "Tampilkan semua pintasan"
   },
 
   "_StarRailGameSettingsPage": {
@@ -914,45 +914,45 @@
   },
 
   "_KbShortcuts": {
-    "DialogTitle": "Keyboard Shortcuts",
+    "DialogTitle": "Pintasan Keyboard",
     "GeneralTab": "General",
-    "SwitchTab": "Quick Switch",
-    "GameFolderTab": "Folder Access",
-    "GameManagementTab": "Game Management",
+    "SwitchTab": "Beralih Cepat",
+    "GameFolderTab": "Akses Folder",
+    "GameManagementTab": "Manajemen Game",
 
     "General_Title": "General",
-    "General_OpenMenu": "Open this menu",
-    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
-    "General_GoHome": "Go to the Home page",
-    "General_GoSettings": "Go to the Settings page",
-    "General_OpenNotifTray": "Open the Notification Tray",
+    "General_OpenMenu": "Buka menu ini",
+    "General_OpenMenu_Desc": "Menu ini juga dapat diakses melalui halaman Pengaturan Aplikasi.",
+    "General_GoHome": "Ke Beranda",
+    "General_GoSettings": "Ke halaman Pengaturan",
+    "General_OpenNotifTray": "Buka Notifikasi",
 
-    "Switch_Title": "Quick Game/Region change",
-    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
-    "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
-    "Switch_ChangeRegion": "Change region",
-    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+    "Switch_Title": "Peralihan Game/Region Cepat",
+    "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",
+    "Switch_SwapBtn": "Tukar {0} dengan {1}",
+    "Switch_ChangeGame": "Ubah game",
+    "Switch_ChangeGame_Desc": "Kamu juga dapat menggunakan NumPad untuk pintasan ini!\nContoh. {0}+1 atau NumPad1 membukan halaman terakhir Honkai Impact 3rd.",
+    "Switch_ChangeRegion": "Ubah region",
+    "Switch_ChangeRegion_Desc": "Contoh. Untuk Genshin Impact, {0}+1 membuka region Global.",
 
-    "GameFolder_Title": "Game Folder Access",
-    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
-    "GameFolder_MainFolder": "Open the Game folder",
-    "GameFolder_CacheFolder": "Open the Cache folder",
+    "GameFolder_Title": "Akses Folder Game",
+    "GameFolder_ScreenshotFolder": "Buka folder Tangkapan Layar",
+    "GameFolder_MainFolder": "Buka folder Game",
+    "GameFolder_CacheFolder": "Buka folder Cache",
 
-    "GameManagement_Title": "Game Management",
-    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
-    "GameManagement_ForceCloseGame": "Close the game forcefully",
-    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
-    "GameManagement_GoRepair": "Go to the Game Repair page",
-    "GameManagement_GoSettings": "Go to the Game Settings page",
-    "GameManagement_GoCaches": "Go to the Caches Repair page",
+    "GameManagement_Title": "Manajemen Game",
+    "GameManagement_Subtitle": "Catatan: Pintasan ini hanya bekerja jika fitur didukung oleh region masing-masing.",
+    "GameManagement_ForceCloseGame": "Paksa hentikan game",
+    "GameManagement_ForceCloseGame_Desc": "PERINGATAN: Dengan pintasan ini, game akan berhenti tanpa konfirmasi apa pun.",
+    "GameManagement_GoRepair": "Ke halaman Perbaikan Game",
+    "GameManagement_GoSettings": "Ke halaman Pengaturan Game",
+    "GameManagement_GoCaches": "Ke halaman Perbaikan Cache",
 
-    "ChangeShortcut_Title": "Change Shortcut",
-    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
-    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
-    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
-    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Title": "Ubah Pintasan",
+    "ChangeShortcut_Text": "Ketik kombinasi baru untuk pintasan ini!",
+    "ChangeShortcut_Help1": "Sebuah pintasan terdiri dari 2 bagian:",
+    "ChangeShortcut_Help2": "・Pengubah - Shift, Ctrl atau Alt/Menu",
+    "ChangeShortcut_Help3": "・Tombol - Alfabet (A ke Z) atau Tab",
+    "ChangeShortcut_Help4": "Kamu dapat memilih kombinasi apa pun dari masing-masing bagian, kecuali juga sudah digunakan oleh Collapse atau sistem."
   }
 }
