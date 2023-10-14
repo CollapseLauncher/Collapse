@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Cài đặt trình khởi chạy",
 
-    "Debug": "Gỡ lỗi",
+    "Debug": "Additional Settings",
     "Debug_Console": "Hiển thị console (cmd)",
     "Debug_IncludeGameLogs": "Lưu nhật ký trò chơi vào Collapse (có thể chứa dữ liệu nhạy cảm)",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
@@ -372,10 +372,11 @@
     "ReportIssueBtn": "Báo lỗi",
     "ContributePRBtn": "Đóng góp",
     "ContributorListBtn": "Người đóng góp mã nguồn mở",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Về chúng tôi",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "",
+    "About_Copyright2": "",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký Bản quyền.",
 
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "Dùng hiệu ứng làm mờ",
     "EnableDownloadChunksMerging": "Gộp các gói đã tải xuống",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
