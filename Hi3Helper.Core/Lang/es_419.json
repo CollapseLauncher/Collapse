@@ -375,8 +375,8 @@
     "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Acerca de",
-    "About_Copyright1": "",
-    "About_Copyright2": "",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
@@ -933,7 +933,7 @@
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
     "Switch_SwapBtn": "Swap {0} and {1}",
     "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
 
