@@ -933,7 +933,7 @@
     "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
     "Switch_SwapBtn": "{0} と {1}を入れ替え",
     "Switch_ChangeGame": "ゲームを変更",
-    "Switch_ChangeGame_Desc": "テンキーを使用することもできます！\n例：{0}+1 かテンキーの1で崩壊3rdのページ（最後に選択したサーバー）に移動",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "サーバーを変更",
     "Switch_ChangeRegion_Desc": "例：{0}+1で原神をグローバル版に変更",
 
