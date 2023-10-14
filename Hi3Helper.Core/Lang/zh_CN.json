@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "程序设置",
 
-    "Debug": "调试",
+    "Debug": "Additional Settings",
     "Debug_Console": "显示控制台",
     "Debug_IncludeGameLogs": "保存游戏日志到 Collapse（可能含有敏感数据）",
     "Debug_MultipleInstance": "允许开启多个 Collapse",
@@ -372,6 +372,7 @@
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献 PR",
     "ContributorListBtn": "开源贡献者",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "关于",
     "About_Copyright1": "© 2022-2023",
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "使用亚克力模糊效果",
     "EnableDownloadChunksMerging": "合并已下载的软件包块",
 
-    "LowerCollapsePrioOnGameLaunch": "在游戏启动后降低 Collapse 进程的优先级",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "快捷键",
     "KbShortcuts_ShowBtn": "显示快捷键",

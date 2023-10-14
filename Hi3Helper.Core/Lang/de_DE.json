@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "App Einstellungen",
 
-    "Debug": "Debuggen",
+    "Debug": "Additional Settings",
     "Debug_Console": "Konsole anzeigen",
     "Debug_IncludeGameLogs": "Speichern von Spielprotokollen in Collapse's (könnte sensible Daten enthalten)",
     "Debug_MultipleInstance": "Ausführen von mehr als einer Instanz von Collapse erlauben",
@@ -372,10 +372,11 @@
     "ReportIssueBtn": "Ein Problem melden",
     "ContributePRBtn": "Mit einer Pull Request beitragen",
     "ContributorListBtn": "Open-Source-Mitwirkende",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Info",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "",
+    "About_Copyright2": "",
     "About_Copyright3": "Unter der",
     "About_Copyright4": ". Alle Rechte vorbehalten.",
 
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "Acryl-Weichzeichner-Effekt verwenden",
     "EnableDownloadChunksMerging": "Heruntergeladene Paketstücke zusammenführen",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",

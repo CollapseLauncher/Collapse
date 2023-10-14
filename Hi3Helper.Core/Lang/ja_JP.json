@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "ランチャー設定",
 
-    "Debug": "デバッグ",
+    "Debug": "Additional Settings",
     "Debug_Console": "コンソールを表示",
     "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
     "Debug_MultipleInstance": "Collapse の多重起動を許可する",
@@ -372,6 +372,7 @@
     "ReportIssueBtn": "問題を報告",
     "ContributePRBtn": "プルリクエストで貢献",
     "ContributorListBtn": "コントリビューターリスト",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Collapse Launcherについて",
     "About_Copyright1": "© 2022-2023",
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
 
-    "LowerCollapsePrioOnGameLaunch": "ゲーム起動中はランチャーのプロセス優先度を下げる",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "キーボードショートカット",
     "KbShortcuts_ShowBtn": "ショートカット一覧",

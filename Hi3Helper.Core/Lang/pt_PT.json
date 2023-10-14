@@ -309,9 +309,9 @@
   "_SettingsPage": {
     "PageTitle": "Definições da aplicação",
 
-    "Debug": "Depuração",
+    "Debug": "Additional Settings",
     "Debug_Console": "Mostrar consola",
-    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
+    "Debug_IncludeGameLogs": "Guardar logs do jogo dentro dos do Collapse (poderá conter dados sensíveis)",
     "Debug_MultipleInstance": "Permitir várias instâncias do Collapse",
 
     "ChangeRegionWarning_Toggle": "Mostrar aviso de mudança de região",
@@ -372,6 +372,7 @@
     "ReportIssueBtn": "Reportar um problema",
     "ContributePRBtn": "Contribuir com um \"Pull Request\"",
     "ContributorListBtn": "Contribuidores de código aberto",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Sobre",
     "About_Copyright1": "",
@@ -388,16 +389,17 @@
     "DiscordBtn2": "Visita o Discord do Honkai Impact 3rd",
     "DiscordBtn3": "Discord oficial do Collapse!",
 
-    "AppChangeReleaseChannel": "Mudar para o canal da lançamento {0}",
+    "AppChangeReleaseChannel": "Mudar para a versão {0}",
 
     "EnableAcrylicEffect": "Usar efeito de desfoque acrílico",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "EnableDownloadChunksMerging": "Combinar porções de pacotes descarregados",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "Atalhos de teclado",
     "KbShortcuts_ShowBtn": "Mostrar atalhos",
-    "KbShortcuts_ResetBtn": "Redefinir para o valor predefinido"
+    "KbShortcuts_ResetBtn": "Redefinir atalhos"
   },
 
   "_Misc": {
@@ -475,8 +477,8 @@
     "BuildChannelStable": "Stable",
 
     "CDNDescription_Github": "O repositório oficial (principal) do launcher.",
-    "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
+    "CDNDescription_Cloudflare": "Uma cópia do repositório (principal) oficial hospedado dentro de um bucket R2 da Cloudflare.",
+    "CDNDescription_Bitbucket": "Uma cópia do repositório (principal) oficial hospedado no Bitbucket.",
 
     "LocateExecutable": "Localizar executável",
     "OpenDownloadPage": "Abrir página de download",
@@ -838,15 +840,15 @@
     "Graphics_VSync": "VSync",
     "Graphics_AAMode": "Modo de anti-aliasing",
     "Graphics_VolFogs": "Nevoeiro volumétrico",
-    "Graphics_VolFogs_ToolTip": "Requires Shadow Quality to be set at Medium or higher!",
-    "Graphics_ReflectionQuality": "Reflection",
+    "Graphics_VolFogs_ToolTip": "É necessário que a qualidade das sombras seja definida como média ou melhor!",
+    "Graphics_ReflectionQuality": "Reflexões",
     "Graphics_MotionBlur": "Motion Blur",
     "Graphics_BloomQuality": "Bloom",
     "Graphics_CrowdDensity": "Densidade da multidão",
-    "Graphics_SubsurfaceScattering": "Subsurface Scattering",
+    "Graphics_SubsurfaceScattering": "Difusão subsuperfície de luz",
     "Graphics_TeammateFX": "Efeitos de equipa",
     "Graphics_AnisotropicFiltering": "Filtro anisotrópico",
-    "Graphics_TeamPageBackground": "Regional Party Setup Background",
+    "Graphics_TeamPageBackground": "Papel de fundo regional do seletor de equipas",
     "Graphics_GlobalIllumination": "Iluminação global",
     "Graphics_GlobalIllumination_Help1": "Apenas para hardware suportado!",
     "Graphics_GlobalIllumination_Help2": "Mais informação (em inglês)",
