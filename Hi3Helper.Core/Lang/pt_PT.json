@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Definições da aplicação",
 
-    "Debug": "Additional Settings",
+    "Debug": "Definições adicionais",
     "Debug_Console": "Mostrar consola",
     "Debug_IncludeGameLogs": "Guardar logs do jogo dentro dos do Collapse (poderá conter dados sensíveis)",
     "Debug_MultipleInstance": "Permitir várias instâncias do Collapse",
@@ -372,7 +372,7 @@
     "ReportIssueBtn": "Reportar um problema",
     "ContributePRBtn": "Contribuir com um \"Pull Request\"",
     "ContributorListBtn": "Contribuidores de código aberto",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "Ajuda-nos a traduzir o Collapse!",
 
     "About": "Sobre",
     "About_Copyright1": "© 2022-2023",
@@ -394,8 +394,8 @@
     "EnableAcrylicEffect": "Usar efeito de desfoque acrílico",
     "EnableDownloadChunksMerging": "Combinar porções de pacotes descarregados",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "Diminui o uso de recursos do Collapse quando um jogo for iniciado",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Desativa o carrousel da página principal e diminui a prioridade do Collapse para \"Abaixo do normal\" ",
 
     "KbShortcuts_Title": "Atalhos de teclado",
     "KbShortcuts_ShowBtn": "Mostrar atalhos",
@@ -933,7 +933,7 @@
     "Switch_Subtitle": "Nota: Os atalhos seguem a ordem do seletor",
     "Switch_SwapBtn": "Mudar {0} e {1}",
     "Switch_ChangeGame": "Mudar de jogo",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeGame_Desc": "Também podes usar o teclado numérico para este atalho!\nEx. {0}+1 ou NumPad1 (sem o modificador {0}) corresponde à página da última região usada de Honkai Impact 3rd",
     "Switch_ChangeRegion": "Mudar de região",
     "Switch_ChangeRegion_Desc": "Ex. No caso de Genshin Impact, {0}+1 corresponde à região Global.",
 
