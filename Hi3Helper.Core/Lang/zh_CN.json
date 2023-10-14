@@ -933,7 +933,7 @@
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",
     "Switch_SwapBtn": "交换 {0} 和 {1}",
     "Switch_ChangeGame": "选择游戏",
-    "Switch_ChangeGame_Desc": "您也可以使用小键盘来执行此快捷操作！\n例如：{0}+1 或 小键盘1 会切换到崩坏3页面（上一次使用的区服）。",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "选择区服",
     "Switch_ChangeRegion_Desc": "例如：对于原神，{0}+1 会切换到国际服。",
 
