@@ -126,7 +126,6 @@
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
