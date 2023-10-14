@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Pengaturan Aplikasi",
 
-    "Debug": "Debugging",
+    "Debug": "Pengaturan Tambahan",
     "Debug_Console": "Perlihatkan Konsol",
     "Debug_IncludeGameLogs": "Simpan catatan game ke Collapse (kemungkinan berisi data sensitif)",
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
@@ -372,6 +372,7 @@
     "ReportIssueBtn": "Laporkan Isu",
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
+    "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
 
     "About": "Tentang",
     "About_Copyright1": "",
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "Gunakan Efek Blur Akrilik",
     "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+    "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",

@@ -11,7 +11,7 @@
 		<LangVersion>preview</LangVersion>
 		<Configurations>Debug;Debug-Trimmed;Release;Publish;Debug-Trimmed</Configurations>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.73.5</Version>
+		<Version>1.72.5</Version>
 		<DebugType>portable</DebugType>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
