@@ -395,7 +395,7 @@
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
 
     "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal'",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
