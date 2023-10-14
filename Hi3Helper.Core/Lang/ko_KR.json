@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "앱 설정",
 
-    "Debug": "디버깅",
+    "Debug": "Additional Settings",
     "Debug_Console": "콘솔 표시",
     "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
     "Debug_MultipleInstance": "여러 인스턴스에서 실행 허용",
@@ -372,10 +372,11 @@
     "ReportIssueBtn": "문제 보고",
     "ContributePRBtn": "기여하기",
     "ContributorListBtn": "Open Source Contributors",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "정보",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "",
+    "About_Copyright2": "",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
 
@@ -393,7 +394,8 @@
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
