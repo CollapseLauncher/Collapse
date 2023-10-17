@@ -5,7 +5,7 @@
 
 ##### GI Nahida Background Credit: [Rafa on Pixiv](https://www.pixiv.net/en/users/3970196)
 
-[![jp](https://img.shields.io/badge/README-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/README-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md)
+[![jp](https://img.shields.io/badge/README-jp-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.ja-jp.md) [![id](https://img.shields.io/badge/README-id-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.id-id.md) [![pt](https://img.shields.io/badge/lang-pt-red.svg)](https://github.com/neon-nyan/Collapse/blob/main/README.pt-pt.md)
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
