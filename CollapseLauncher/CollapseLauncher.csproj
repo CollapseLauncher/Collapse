@@ -133,7 +133,6 @@
 			<TrimmableAssembly Include="Google.Protobuf" />
 			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
-			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
 			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
 			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
 			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
