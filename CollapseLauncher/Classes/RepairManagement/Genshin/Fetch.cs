@@ -236,7 +236,7 @@ namespace CollapseLauncher
                 while (!reader.EndOfStream)
                 {
                     string manifestLine = reader.ReadLine();
-                    PkgVersionProperties manifestEntry = (PkgVersionProperties)JsonSerializer.Deserialize(manifestLine, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+                    PkgVersionProperties manifestEntry = manifestLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
 
                     // Ignore if the remote name is "svc_catalog" or "ctable.dat"
                     if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
@@ -459,7 +459,7 @@ namespace CollapseLauncher
             foreach (string data in File.ReadAllLines(manifestPath).Where(x => x.EndsWith(acceptedExtension, StringComparison.OrdinalIgnoreCase)))
             {
                 // Deserialize JSON line into local entry.
-                entry = (PkgVersionProperties)JsonSerializer.Deserialize(data, typeof(PkgVersionProperties), CoreLibraryJSONContext.Default);
+                entry = data.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
 
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
                 if (!string.IsNullOrEmpty(parentPath))

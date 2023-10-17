@@ -132,7 +132,7 @@ namespace CollapseLauncher
                 {
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{this.ChannelName.ToLower()}/fileindex.json", default);
                     ms.Position = 0;
-                    AppUpdateVersionProp updateInfo = (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), InternalAppJSONContext.Default);
+                    AppUpdateVersionProp updateInfo = await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
                     NewVersionTag = new GameVersion(updateInfo.ver);
                     UpdateStatus();
                     UpdateProgress();

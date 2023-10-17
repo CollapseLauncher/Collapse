@@ -1,27 +1,21 @@
 # Credits to @Scighost from Starward for his contributions!
 name: Build-Canary
-run-name: Canary Build for ${{ github.ref }}
+#run-name: Canary Build for ${{ github.ref }}
 
 on:
   workflow_dispatch:
-    inputs:
-      os:
-      # Use Windows Server 2019 to retain compatibility (WindowsAppSDK last supported OS build)
-        type: choice
-        description: "Select Runner image to use for this deployment"
-        default: "windows-2019"
-        options:
-          - "windows-latest"
-          - "windows-2019"
-          - "windows-2022"
-  
-  schedule:
-    - cron: '0 0 * * 0' # At 00:00 on Sunday
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches-ignore:
+      - 'translations_**'
+#  schedule:
+#    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
 jobs:
   build:
     # runs-on: [self-hosted, linux]
-    runs-on: ${{ !contains(github.event.inputs.os, 'windows-latest') }}
+    runs-on: windows-latest
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
@@ -38,12 +32,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         submodules: recursive
-
-    - name: Get short Git SHA
-      id: vars
-      run: | 
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
 
     - name: Cache dotnet # cache dotnet install https://stackoverflow.com/questions/75180149/how-to-cache-dotnet-installation-in-github-actions
       id: cache-dotnet
@@ -74,8 +62,7 @@ jobs:
 
     - name: Build
       run: |
-        msbuild CollapseLauncher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
-        dotnet build CollapseLauncher -c $env:Configuration -p:Platform=$env:Platform -f ${{ matrix.framework }}
+        dotnet publish CollapseLauncher -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\" 
     
 #    - name: Upload Artifact (Debug)
 #      uses: actions/upload-artifact@v3.1.2
@@ -89,4 +76,16 @@ jobs:
       if: ${{ matrix.configuration == 'Release' }}
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/bin/x64/Release/${{ matrix.framework }}/
+          path: ./CollapseLauncher/preview-build/
+
+    - name: Notify Discord
+      uses: sarisia/actions-status-discord@v1.13.0
+      if: always()
+      continue-on-error: true
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
+        title: New canary build is ready!
+        status: ${{ job.status }}
+        description: |
+          Commit `${{ github.sha }}` by ${{ github.actor }}
+          Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!

@@ -599,9 +599,25 @@ namespace CollapseLauncher.Pages
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private bool AreShortcutsEnabled
         {
-            get => GetAppConfigValue("EnableShortcuts").ToBool();
+            get 
+            {
+                bool value = GetAppConfigValue("EnableShortcuts").ToBool();
+                if (value)
+                {
+                    KbScBtns.Visibility = Visibility.Visible;
+                }
+                return value;
+            }
             set
             {
+                if (value)
+                {
+                    KbScBtns.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    KbScBtns.Visibility = Visibility.Collapsed;
+                }
                 SetAndSaveConfigValue("EnableShortcuts", value);
                 KeyboardShortcutsEvent(this, value ? 0 : 2);  
             }

@@ -25,12 +25,12 @@
     "Pg2PrevBtn": "Back - Select Folder",
     "Pg2Subtitle1_1": "Just one more step to play your game from",
     "Pg2Subtitle1_2": "Collapse Launcher.",
-    "Pg2Subtitle1_3": "",
+    "Pg2Subtitle1_3": "\u2006",
     "Pg2Subtitle2_1": "We have a few",
     "Pg2Subtitle2_2": "miHoYo/HoYoverse",
     "Pg2Subtitle2_3": "games that are supported. Please select your game below to start using",
     "Pg2Subtitle2_4": "Collapse Launcher.",
-    "Pg2Subtitle2_5": "",
+    "Pg2Subtitle2_5": "\u2006",
     "Pg2Title": "Time to fly~",
     "Subtitle1": "Hi!",
     "Subtitle2": "Seems like it's your first time using this launcher.",
@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "App Settings",
 
-    "Debug": "Debugging",
+    "Debug": "Additional Settings",
     "Debug_Console": "Show Console",
     "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
@@ -372,6 +372,7 @@
     "ReportIssueBtn": "Report an Issue",
     "ContributePRBtn": "Contribute with a Pull Request",
     "ContributorListBtn": "Open Source Contributors",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "About",
     "About_Copyright1": "© 2022-2023",
@@ -393,12 +394,12 @@
     "EnableAcrylicEffect": "Use Acrylic Blur Effect",
     "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched",
-	
-	"KbShortcuts_Title": "Keyboard Shortcuts",
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
     "KbShortcuts_ResetBtn": "Reset to Default"
-
   },
 
   "_Misc": {
@@ -742,7 +743,7 @@
     "NotifPreviewBuildUsedBtn": "Submit an Issue",
 
     "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate aroud Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
     "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
@@ -932,7 +933,7 @@
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
     "Switch_SwapBtn": "Swap {0} and {1}",
     "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 leads Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
 

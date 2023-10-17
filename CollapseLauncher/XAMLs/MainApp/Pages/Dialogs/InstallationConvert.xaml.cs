@@ -158,7 +158,7 @@ namespace CollapseLauncher.Dialogs
                     string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_Http, s, repoListURL, tokenSource.Token);
                     s.Position = 0;
-                    _RepoList = (Dictionary<string, string>)JsonSerializer.Deserialize(s, typeof(Dictionary<string, string>), CoreLibraryJSONContext.Default);
+                    _RepoList = await s.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, tokenSource.Token);
                 }
             }
             finally
@@ -172,7 +172,7 @@ namespace CollapseLauncher.Dialogs
             {
                 await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
                 s.Position = 0;
-                _Entry = (RegionResourceProp)JsonSerializer.Deserialize(s, typeof(RegionResourceProp), InternalAppJSONContext.Default);
+                _Entry = await s.DeserializeAsync<RegionResourceProp>(InternalAppJSONContext.Default, tokenSource.Token);
             }
 
             GameVersion = _Entry.data.game.latest.version;

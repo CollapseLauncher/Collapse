@@ -58,6 +58,7 @@
                 public string AppFiles_ClearMetadataDialog { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearMetadataDialog;
                 public string AppFiles_ClearMetadataDialogHelp { get; set; } = LangFallback?._SettingsPage.AppFiles_ClearMetadataDialogHelp;
                 public string ReportIssueBtn { get; set; } = LangFallback?._SettingsPage.ReportIssueBtn;
+                public string HelpLocalizeBtn { get; set; } = LangFallback?._SettingsPage.HelpLocalizeBtn;
                 public string ContributePRBtn { get; set; } = LangFallback?._SettingsPage.ContributePRBtn;
                 public string ContributorListBtn { get; set; } = LangFallback?._SettingsPage.ContributorListBtn;
                 public string About { get; set; } = LangFallback?._SettingsPage.About;
@@ -76,6 +77,7 @@
                 public string EnableAcrylicEffect { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
                 public string LowerCollapsePrioOnGameLaunch { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
+                public string LowerCollapsePrioOnGameLaunch_Tooltip {get; set;} = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
 				public string KbShortcuts_Title { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
                 public string KbShortcuts_ResetBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;

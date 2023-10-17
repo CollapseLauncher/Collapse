@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Ajustes de la Aplicación",
 
-    "Debug": "Depuración",
+    "Debug": "Additional Settings",
     "Debug_Console": "Mostrar Consola",
     "Debug_IncludeGameLogs": "Guardar registros de juego en Collapse (podría contener datos sensibles)",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
@@ -372,10 +372,11 @@
     "ReportIssueBtn": "Reportar un problema",
     "ContributePRBtn": "Contribuye con un Pull Request",
     "ContributorListBtn": "Colaboradores del Open Source",
+    "HelpLocalizeBtn": "Help Us Translate Collapse!",
 
     "About": "Acerca de",
-    "About_Copyright1": "©️ 2022-2023 Creado por",
-    "About_Copyright2": " neon-nyan [14372096 SEA]",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
 
@@ -392,7 +393,13 @@
 
     "EnableAcrylicEffect": "Usar efecto de desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+
+    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+
+    "KbShortcuts_Title": "Keyboard Shortcuts",
+    "KbShortcuts_ShowBtn": "Show Shortcuts",
+    "KbShortcuts_ResetBtn": "Reset to Default"
   },
 
   "_Misc": {
@@ -486,7 +493,13 @@
     "DiscordRP_Idle": "Inactivo",
     "DiscordRP_Default": "Sin actividad",
     "DiscordRP_Ad": "- Con Collapse Launcher",
-    "DiscordRP_Region": "Región:"
+    "DiscordRP_Region": "Región:",
+
+    "Taskbar_ShowApp": "Show Collapse window",
+    "Taskbar_HideApp": "Hide Collapse window to taskbar",
+    "Taskbar_ShowConsole": "Show Collapse console window",
+    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
+    "Taskbar_ExitApp": "Exit Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -587,7 +600,12 @@
     "CannotUseAppLocationForGameDirTitle": "¡La carpeta no es válida!",
     "CannotUseAppLocationForGameDirSubtitle": "No puede utilizar esta carpeta ya que está siendo usada como una carpeta del sistema o usada para el ejecutable principal de la aplicación. ¡Por favor, elige otra carpeta!",
     "StopGameTitle": "Forzar el cierre del juego",
-    "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego."
+    "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
+    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
+    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+
+    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
+    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
   },
 
   "_InstallMgmt": {
@@ -722,7 +740,11 @@
 
     "NotifPreviewBuildUsedTitle": "¡Estás usando una Preview Build!",
     "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\" a continuación. ¡Gracias!",
-    "NotifPreviewBuildUsedBtn": "Enviar un Problema"
+    "NotifPreviewBuildUsedBtn": "Enviar un Problema",
+
+    "NotifKbShortcutTitle": "A new feature has arrived!",
+    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
+    "NotifKbShortcutBtn": "Show all shortcuts"
   },
 
   "_StarRailGameSettingsPage": {
@@ -891,5 +913,48 @@
     "VO_cn": "Chino",
     "VO_jp": "Japones",
     "VO_kr": "Coreano"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Keyboard Shortcuts",
+    "GeneralTab": "General",
+    "SwitchTab": "Quick Switch",
+    "GameFolderTab": "Folder Access",
+    "GameManagementTab": "Game Management",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Open this menu",
+    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
+    "General_GoHome": "Go to the Home page",
+    "General_GoSettings": "Go to the Settings page",
+    "General_OpenNotifTray": "Open the Notification Tray",
+
+    "Switch_Title": "Quick Game/Region change",
+    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_SwapBtn": "Swap {0} and {1}",
+    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeRegion": "Change region",
+    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+
+    "GameFolder_Title": "Game Folder Access",
+    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
+    "GameFolder_MainFolder": "Open the Game folder",
+    "GameFolder_CacheFolder": "Open the Cache folder",
+
+    "GameManagement_Title": "Game Management",
+    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
+    "GameManagement_ForceCloseGame": "Close the game forcefully",
+    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
+    "GameManagement_GoRepair": "Go to the Game Repair page",
+    "GameManagement_GoSettings": "Go to the Game Settings page",
+    "GameManagement_GoCaches": "Go to the Caches Repair page",
+
+    "ChangeShortcut_Title": "Change Shortcut",
+    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
+    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
+    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
+    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
+    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
   }
 }

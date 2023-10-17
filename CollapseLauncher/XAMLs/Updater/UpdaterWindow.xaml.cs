@@ -6,10 +6,8 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Graphics;
-using WinRT.Interop;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.InvokeProp;
@@ -63,7 +61,7 @@ namespace CollapseLauncher
                     {
                         await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
                         ms.Position = 0;
-                        updateInfo = (AppUpdateVersionProp)JsonSerializer.Deserialize(ms, typeof(AppUpdateVersionProp), InternalAppJSONContext.Default);
+                        updateInfo = await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
                         NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
                     }
 

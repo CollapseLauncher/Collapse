@@ -129,7 +129,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 string Content = "";
-                using (Http _httpClient = new Http(true))
+                using (Http _httpClient = new Http(true, 5, 1000, GetAppConfigValue("UserAgent").ToString()))
                 using (MemoryStream _stream = new MemoryStream())
                 {
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, _stream, string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token);

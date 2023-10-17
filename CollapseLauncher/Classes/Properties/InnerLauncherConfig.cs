@@ -135,19 +135,18 @@ namespace CollapseLauncher
                 RegionPushIgnoreMsgIds = NotificationData.RegionPushIgnoreMsgIds
             };
             File.WriteAllText(AppNotifIgnoreFile,
-                JsonSerializer.Serialize(LocalNotificationData, typeof(NotificationPush), InternalAppJSONContext.Default));
+                LocalNotificationData.Serialize(InternalAppJSONContext.Default));
         }
 
         public static void LoadLocalNotificationData()
         {
             if (!File.Exists(AppNotifIgnoreFile))
                 File.WriteAllText(AppNotifIgnoreFile,
-                    JsonSerializer.Serialize(new NotificationPush(),
-                    typeof(NotificationPush),
-                    InternalAppJSONContext.Default));
+                    new NotificationPush()
+                    .Serialize(InternalAppJSONContext.Default));
 
             string Data = File.ReadAllText(AppNotifIgnoreFile);
-            NotificationPush LocalNotificationData = (NotificationPush)JsonSerializer.Deserialize(Data, typeof(NotificationPush), InternalAppJSONContext.Default);
+            NotificationPush LocalNotificationData = Data.Deserialize<NotificationPush>(InternalAppJSONContext.Default);
             NotificationData.AppPushIgnoreMsgIds = LocalNotificationData.AppPushIgnoreMsgIds;
             NotificationData.RegionPushIgnoreMsgIds = LocalNotificationData.RegionPushIgnoreMsgIds;
             NotificationData.CurrentShowMsgIds = LocalNotificationData.CurrentShowMsgIds;

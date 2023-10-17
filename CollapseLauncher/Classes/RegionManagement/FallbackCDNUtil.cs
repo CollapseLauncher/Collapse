@@ -270,15 +270,12 @@ namespace CollapseLauncher
 
         public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
 #if NET7_0_OR_GREATER
-            => await _client.GetFromJsonAsync<T>(URL, new JsonSerializerOptions()
-            {
-                TypeInfoResolver = context
-            }, token);
+            => (T)await _client.GetFromJsonAsync(URL, typeof(T), context, token) ?? default;
 #else
         {
             using (BridgedNetworkStream content = await GetHttpStreamFromResponse(URL, token))
             {
-                return (T)await JsonSerializer.DeserializeAsync(content, typeof(T), context, token);
+                return (T)await JsonSerializer.DeserializeAsync(content, typeof(T), context, token) ?? default;
             }
         }
 #endif

@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Pengaturan Aplikasi",
 
-    "Debug": "Debugging",
+    "Debug": "Pengaturan Tambahan",
     "Debug_Console": "Perlihatkan Konsol",
     "Debug_IncludeGameLogs": "Simpan catatan game ke Collapse (kemungkinan berisi data sensitif)",
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
@@ -372,10 +372,11 @@
     "ReportIssueBtn": "Laporkan Isu",
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
+    "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
 
     "About": "Tentang",
-    "About_Copyright1": "© 2022-2023 Dibuat oleh",
-    "About_Copyright2": " neon-nyan [14372096 SEA]",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
 
@@ -392,7 +393,13 @@
 
     "EnableAcrylicEffect": "Gunakan Efek Blur Akrilik",
     "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package",
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process priority when a game is launched"
+
+    "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",
+
+    "KbShortcuts_Title": "Pintasan Keyboard",
+    "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
+    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan"
   },
 
   "_Misc": {
@@ -486,7 +493,13 @@
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "Tidak ada Aktivitas",
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
-    "DiscordRP_Region": "Wilayah:"
+    "DiscordRP_Region": "Wilayah:",
+
+    "Taskbar_ShowApp": "Tampilkan jendela Collapse",
+    "Taskbar_HideApp": "Sembunyikan jendela Collapse ke taskbar",
+    "Taskbar_ShowConsole": "Tampilkan jendela konsol Collapse",
+    "Taskbar_HideConsole": "Sembunyikan jendela konsol Collapse ke taskbar",
+    "Taskbar_ExitApp": "Hentikan Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -587,7 +600,12 @@
     "CannotUseAppLocationForGameDirTitle": "Folder tidak valid!",
     "CannotUseAppLocationForGameDirSubtitle": "Anda tidak dapat menggunakan folder ini karena digunakan sebagai folder sistem atau digunakan sebagai folder utama dari executable aplikasi ini. Mohon untuk gunakan folder lainnya!",
     "StopGameTitle": "Tutup Paksa Game",
-    "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game."
+    "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
+    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Ditemukan!",
+    "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
+
+    "ResetKbShortcutsTitle": "Apa kamu yakin untuk mengatur ulang semua pintasan?",
+    "ResetKbShortcutsSubtitle": "Semua pintasan akan diatur ulang ke kombinasi tombol bawaan.\n\nApakah kamu ingin melanjutkan aksi ini?\n\nCatatan: Aksi ini tidak berdampak pada bagaimana Collapse bekerja dan kamu tetap dapat mengubah kombinasi pintasan di menu Pintasan Keyboard."
   },
 
   "_InstallMgmt": {
@@ -722,7 +740,11 @@
 
     "NotifPreviewBuildUsedTitle": "Kamu sedang menggunakan Build Preview!",
     "NotifPreviewBuildUsedSubtitle": "Kamu sedang menggunakan build preview dan kamu mungkin akan mengalami beberapa issue pada saat mencoba fitur eksperimental. Apabila kamu ingin melaporkan issue yang kamu dapat, klik tombol \"{0}\" di bawah ini untuk mengirim issue-mu.",
-    "NotifPreviewBuildUsedBtn": "Kirim Issue"
+    "NotifPreviewBuildUsedBtn": "Kirim Issue",
+
+    "NotifKbShortcutTitle": "Fitur baru telah tiba!",
+    "NotifKbShortcutSubtitle": "Kami memperkenalkan cara baru untuk berselancar dalam Collapse, Pintasan Keyboard!\nKamu sekarang dapat menggunakan keyboard untuk mendapatkan akses yang lebih cepat ke beberapa fungsi Collapse!\n\nIngin tahu lebih lanjut?\nCoba tekan CTRL + Tab atau tekan tombol dibawah.",
+    "NotifKbShortcutBtn": "Tampilkan semua pintasan"
   },
 
   "_StarRailGameSettingsPage": {
@@ -891,5 +913,48 @@
     "VO_cn": "Mandarin",
     "VO_jp": "Jepang",
     "VO_kr": "Korea"
+  },
+
+  "_KbShortcuts": {
+    "DialogTitle": "Pintasan Keyboard",
+    "GeneralTab": "General",
+    "SwitchTab": "Beralih Cepat",
+    "GameFolderTab": "Akses Folder",
+    "GameManagementTab": "Manajemen Game",
+
+    "General_Title": "General",
+    "General_OpenMenu": "Buka menu ini",
+    "General_OpenMenu_Desc": "Menu ini juga dapat diakses melalui halaman Pengaturan Aplikasi.",
+    "General_GoHome": "Ke Beranda",
+    "General_GoSettings": "Ke halaman Pengaturan",
+    "General_OpenNotifTray": "Buka Notifikasi",
+
+    "Switch_Title": "Peralihan Game/Region Cepat",
+    "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",
+    "Switch_SwapBtn": "Tukar {0} dengan {1}",
+    "Switch_ChangeGame": "Ubah game",
+    "Switch_ChangeGame_Desc": "Kamu juga dapat menggunakan NumPad untuk pintasan ini!\nContoh: {0}+1 atau NumPad1 (tanpa modifier {0}) membuka halaman terakhir Honkai Impact 3rd.",
+    "Switch_ChangeRegion": "Ubah region",
+    "Switch_ChangeRegion_Desc": "Contoh. Untuk Genshin Impact, {0}+1 membuka region Global.",
+
+    "GameFolder_Title": "Akses Folder Game",
+    "GameFolder_ScreenshotFolder": "Buka folder Tangkapan Layar",
+    "GameFolder_MainFolder": "Buka folder Game",
+    "GameFolder_CacheFolder": "Buka folder Cache",
+
+    "GameManagement_Title": "Manajemen Game",
+    "GameManagement_Subtitle": "Catatan: Pintasan ini hanya bekerja jika fitur didukung oleh region masing-masing.",
+    "GameManagement_ForceCloseGame": "Paksa hentikan game",
+    "GameManagement_ForceCloseGame_Desc": "PERINGATAN: Dengan pintasan ini, game akan berhenti tanpa konfirmasi apa pun.",
+    "GameManagement_GoRepair": "Ke halaman Perbaikan Game",
+    "GameManagement_GoSettings": "Ke halaman Pengaturan Game",
+    "GameManagement_GoCaches": "Ke halaman Perbaikan Cache",
+
+    "ChangeShortcut_Title": "Ubah Pintasan",
+    "ChangeShortcut_Text": "Ketik kombinasi baru untuk pintasan ini!",
+    "ChangeShortcut_Help1": "Sebuah pintasan terdiri dari 2 bagian:",
+    "ChangeShortcut_Help2": "・Pengubah - Shift, Ctrl atau Alt/Menu",
+    "ChangeShortcut_Help3": "・Tombol - Alfabet (A ke Z) atau Tab",
+    "ChangeShortcut_Help4": "Kamu dapat memilih kombinasi apa pun dari masing-masing bagian, kecuali juga sudah digunakan oleh Collapse atau sistem."
   }
 }
