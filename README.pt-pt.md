@@ -50,7 +50,7 @@ O **Collapse** contêm funcionalidades avançadas para **Honkai Impact 3rd** que
 
 Para além disto, este launcher também possui algumas funcionalidades avançadas para **Genshin Impact**, incluindo mas não limitadas a:
 * Escolher a linguagem das vozes durante a primeira instalação, para não teres de o fazer dentro do jogo.
-* Reparar os ficheiros do jogo, incluindo caches, cutscenes, pacotes de áudio e ficheiros persistentes fora do jogo.
+* Reparar ficheiros do jogo, incluindo caches, cutscenes, pacotes de áudio e ficheiros persistentes fora do jogo.
 
 # Funcionalidades suportadas 
 <table>
@@ -178,15 +178,15 @@ Para além disto, este launcher também possui algumas funcionalidades avançada
 </table>
 
 > **Nota**:
-> A tabela acima serve para ilustrar as funcionalidades que o Collapse suporta no momento. Esta lista é atualizada gradualmente conforme a adição de novas funcionalidades ao Collapse e o lançamento de novos jogos. Se tens algum problema com alguma das funcionalidades suportadas, verifica a aba de Issues do GitHub e cria um "Issue" caso nenhum sobre o mesmo assunto exista.
-> > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact: 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
+> A tabela acima serve para ilustrar as funcionalidades que o Collapse suporta no momento. Esta lista é atualizada gradualmente conforme a adição de novas funcionalidades ao Collapse e o lançamento de novos jogos. Se tens algum problema com alguma das funcionalidades suportadas, verifica a aba de Issues do GitHub e cria uma "Issue" caso nenhuma sobre o mesmo assunto exista.
+> > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
 # Descarregar compilações prontas a usar
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
-> **Nota**: A última versão para esta compilação é a `1.71.13` (Lançada em: 2 de outubro de 2023).
+> **Nota**: A última versão para esta compilação é a `1.71.15` (Lançada em: 14 de outubro de 2023).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.72.4-pre/CL-1.72.4-preview_Installer.exe)
-> **Nota**: A última versão para esta compilação é a `1.72.4` (Lançada em: 9 de outubro de 2023).
+> **Nota**: A última versão para esta compilação é a `1.72.5` (Lançada em: 14 de outubro de 2023).
 
 Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -213,7 +213,7 @@ Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/Co
 - [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) por force-net
 - [**UABT**](https://github.com/neon-nyan/UABT) por _unknown_
 
-**Disclaimer**: Este projeto **NÃO ESTÁ AFILIADO** de qualquer forma com a [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) nem com a [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) e é completamente fonte-aberta (open source). Quaisquer contribuições são bem-vindas! 😃
+**Declaração**: Este projeto **NÃO ESTÁ AFILIADO** de qualquer forma com a [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) nem com a [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) e é completamente fonte-aberta (open source). Quaisquer contribuições são bem-vindas! 😃
 
 # Visão geral sobre o design da UI
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
