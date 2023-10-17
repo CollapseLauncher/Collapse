@@ -182,13 +182,7 @@ Para além disto, este launcher também possui algumas funcionalidades avançada
 > > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
 # Descarregar compilações prontas a usar
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
-> **Nota**: A última versão para esta compilação é a `1.71.15` (Lançada em: 14 de outubro de 2023).
-
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.72.4-pre/CL-1.72.4-preview_Installer.exe)
-> **Nota**: A última versão para esta compilação é a `1.72.5` (Lançada em: 14 de outubro de 2023).
-
-Para ver todos os lançamentos, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases).
+Para descarregar o Collapse, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases) de forma a aceder à página de lançamentos.
 
 # Requisitos de sistema para as compilações prontas a usar
 - Sistema operativo: **Windows 10 versão 1809 (Compilação 17763)** ou superior / **Windows 11 (Qualquer compilação)**
