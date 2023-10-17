@@ -182,7 +182,7 @@ Para além disto, este launcher também possui algumas funcionalidades avançada
 > > Por favor lembra-te que a conversão de região apenas está disponível para o Honkai Impact 3rd. Não temos planos de implementar esta funcionalidade para outros jogos da miHoYo/Cognosphere Pte. Ltd. 
 
 # Descarregar compilações prontas a usar
-Para descarregar o Collapse, [**clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases) de forma a aceder à página de lançamentos.
+[**Clica aqui**](https://github.com/neon-nyan/CollapseLauncher/releases) para aceder à página de lançamentos e descarregar o Collapse.
 
 # Requisitos de sistema para as compilações prontas a usar
 - Sistema operativo: **Windows 10 versão 1809 (Compilação 17763)** ou superior / **Windows 11 (Qualquer compilação)**
