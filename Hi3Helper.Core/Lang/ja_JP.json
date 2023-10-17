@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "ランチャー設定",
 
-    "Debug": "Additional Settings",
+    "Debug": "その他の設定",
     "Debug_Console": "コンソールを表示",
     "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
     "Debug_MultipleInstance": "Collapse の多重起動を許可する",
@@ -348,7 +348,7 @@
     "AppThreads_Help6": "注: この設定は、崩壊3rd のインストール中は無効になります。",
 
     "DiscordRPC": "Discordアクティビティステータス",
-    "DiscordRPC_Toggle": "Discordのステータスに表示",
+    "DiscordRPC_Toggle": "ランチャーをDiscordのステータスに表示",
     "DiscordRPC_GameStatusToggle": "今遊んでいるゲームをステータスに表示",
 
     "Update": "アップデートの確認",
@@ -372,7 +372,7 @@
     "ReportIssueBtn": "問題を報告",
     "ContributePRBtn": "プルリクエストで貢献",
     "ContributorListBtn": "コントリビューターリスト",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "翻訳にご協力ください！",
 
     "About": "Collapse Launcherについて",
     "About_Copyright1": "© 2022-2023",
@@ -385,8 +385,8 @@
     "Disclaimer2": "とは何の関係もありません。",
     "Disclaimer3": "完全にオープンソースです。どんな貢献も歓迎します。",
 
-    "DiscordBtn1": "開発者の艦隊Discord(SEA)",
-    "DiscordBtn2": "崩壊3rd公式Discord(GLB)",
+    "DiscordBtn1": "開発者の艦隊Discord(SEA鯖)",
+    "DiscordBtn2": "崩壊3rd公式Discord(英語)",
     "DiscordBtn3": "Collapse Launcher公式Discord",
 
     "AppChangeReleaseChannel": "{0} リリースチャンネルに変更",
@@ -394,8 +394,8 @@
     "EnableAcrylicEffect": "背景をぼかす",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "バナーの回転を無効化＆Collapseのプロセス優先度を「通常以下」に",
 
     "KbShortcuts_Title": "キーボードショートカット",
     "KbShortcuts_ShowBtn": "ショートカット一覧",
@@ -404,7 +404,7 @@
 
   "_Misc": {
     "UpdateCompleteTitle": "更新が完了しました！",
-    "UpdateCompleteSubtitle": "ランチャーのバージョンが{0}に更新されました! (リリース チャネル: {1})",
+    "UpdateCompleteSubtitle": "ランチャーのバージョンが{0}に更新されました！（リリースチャンネル：{1}）",
     "FeatureUnavailableTitle": "現在この機能は利用できません",
     "FeatureUnavailableSubtitle": "後でもう一度確認してください！",
     "TimeRemain": "残り時間",
@@ -585,8 +585,8 @@
     "CookbookLocateSubtitle7": "ダウンロードが必要なCookbookファイルの名前です:\r\n",
     "PrivilegeMustRunTitle": "Collapseは管理者権限が必要です！",
     "PrivilegeMustRunSubtitle": "Collapseは管理者権限が必要です。Collapseを管理者権限で再起動しますか？",
-    "ReleaseChannelChangeTitle": "リリースチャネルの変更",
-    "ReleaseChannelChangeSubtitle1": "リリースチャネルを次に変更しようとしています:",
+    "ReleaseChannelChangeTitle": "リリースチャンネルの変更",
+    "ReleaseChannelChangeSubtitle1": "リリースチャンネルを次のものに変更しようとしています：",
     "ReleaseChannelChangeSubtitle2": "注意：",
     "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。ゲームデータの消失や破損が発生しても責任を負いかねます。",
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
@@ -698,7 +698,7 @@
     "PageTitle2": "が可能です！",
     "VerCurLabel": "現在のバージョン:",
     "VerNewLabel": "新しいバージョン:",
-    "VerChannelLabel": "更新チャネル:",
+    "VerChannelLabel": "更新チャンネル：",
     "VerDateLabel": "コンパイル日:",
     "ReleaseNote": "リリースノート",
     "NeverShowNotification": "再表示しない",
@@ -933,7 +933,7 @@
     "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
     "Switch_SwapBtn": "{0} と {1}を入れ替え",
     "Switch_ChangeGame": "ゲームを変更",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
+    "Switch_ChangeGame_Desc": "テンキーを使用することもできます！\n例：{0}+1かテンキーの1（{0}不要）で崩壊3rdのページ（前回選択したサーバー）に移動",
     "Switch_ChangeRegion": "サーバーを変更",
     "Switch_ChangeRegion_Desc": "例：{0}+1で原神をグローバル版に変更",
 
