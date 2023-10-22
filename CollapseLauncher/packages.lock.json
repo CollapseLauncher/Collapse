@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net7.0-windows10.0.22000": {
+    "net8.0-windows10.0.22000": {
       "Clowd.Squirrel": {
         "type": "Direct",
         "requested": "[2.9.42, )",
@@ -50,12 +50,12 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.0.115, )",
-        "resolved": "2.0.115",
-        "contentHash": "x5MibKboTUK+xnem2q6oqXWKQtsatvMbD1ZKn7aeQDghj/5Zyw0zOSNUeo8kp3eMnGlzwa2lV/6Z3GlvNzS9fg==",
+        "requested": "[2.0.118, )",
+        "resolved": "2.0.118",
+        "contentHash": "XKKAeZcA4zq1woNkZ//78KNEa5lR6+uZ02KSzOhe5M7JOUYci8MYbBdos8HqRSnI2sVGxd5lO+MgqGHDmHgMUw==",
         "dependencies": {
-          "H.NotifyIcon": "2.0.115",
-          "Microsoft.WindowsAppSDK": "1.3.230724000"
+          "H.NotifyIcon": "2.0.118",
+          "Microsoft.WindowsAppSDK": "1.4.230822000"
         }
       },
       "Microsoft.Graphics.Win2D": {
@@ -75,18 +75,18 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.3.230724000, )",
-        "resolved": "1.3.230724000",
-        "contentHash": "cCw26h8Uh8IjDMOUzHaR7/IKxEVJxuqEOgBlmLj0Pu1wDezZb9J0Wz53Vop10FQUOZaTfnwDcHavyPTxgkwbKQ==",
+        "requested": "[1.4.231008000, )",
+        "resolved": "1.4.231008000",
+        "contentHash": "RIDsC3YPHkbd1LMrrg9peR7ObkF3uJvynthubY9EJVOpG/QjRFkRvDFSO9PhTTofKpTCkS2KOBbRyengCEmE4g==",
         "dependencies": {
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
       },
       "PhotoSauce.MagicScaler": {
         "type": "Direct",
-        "requested": "[0.13.2, )",
-        "resolved": "0.13.2",
-        "contentHash": "MSFwTRbK9NwBsaDDupMvMfzI+27Ns4eilkcR0lni3LTx9cQVgZbxJJSq5Qg3Y2LbkeYiVbLWWj7T8BHYeif6MA=="
+        "requested": "[0.14.0, )",
+        "resolved": "0.14.0",
+        "contentHash": "JsPAREpPJCHBcL753YnGX132BemFM42NgnIQkwuwmb1n9qADrrBXhgkJNaCI+4TFbnMblRdF5K7OD0fe173cBA=="
       },
       "System.CommandLine": {
         "type": "Direct",
@@ -144,15 +144,6 @@
           "runtime.native.System": "4.3.0",
           "runtime.native.System.Net.Http": "4.3.0",
           "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.2"
-        }
-      },
-      "System.Text.Json": {
-        "type": "Direct",
-        "requested": "[7.0.3, )",
-        "resolved": "7.0.3",
-        "contentHash": "AyjhwXN1zTFeIibHimfJn6eAsZ7rTBib79JQpzg8WAuR/HKDu9JGNHTuu3nbbXQ/bgI+U4z6HtZmCHNXB1QXrQ==",
-        "dependencies": {
-          "System.Text.Encodings.Web": "7.0.0"
         }
       },
       "System.Text.RegularExpressions": {
@@ -278,18 +269,18 @@
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.0.115",
-        "contentHash": "ZXLwrXfLfRf64jh0bYda9kxP9+3k03qXGAV5TLa2xqBgdSWZFQ9z97X7RPFbbQilcLc6ihCO3lqVjx3YMvmbpg==",
+        "resolved": "2.0.118",
+        "contentHash": "slPrVrIEKgicjwVYgARxQw4D5EnmGD0F5Hy+QXW3WK6xJLMXFuw7FimkiZnrLQhgYbD0D2hpLO+42hAVAz+w1g==",
         "dependencies": {
           "System.Drawing.Common": "7.0.0"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.0.115",
-        "contentHash": "Ek+YrApxiWtivgZ0v0CWGL7vmTv09xnYGcSoe5fiUpe9iIsXSEhWYKtfCN2G/aSDH5Yn8mKUiPB2X0oTmMb0yQ==",
+        "resolved": "2.0.118",
+        "contentHash": "Q3gIoRcYxxLfOISzRcYn9OpYUXwKxheRYjVOesL9xc5yoXC6YCel4xb95WgPt1hnXhZbjlVEJWnNiUM/o+Rpjg==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.0.115"
+          "H.GeneratedIcons.System.Drawing": "2.0.118"
         }
       },
       "Microsoft.CSharp": {
@@ -1089,10 +1080,10 @@
           "System.Text.Encoding": "4.3.0"
         }
       },
-      "System.Text.Encodings.Web": {
+      "System.Text.Json": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg=="
+        "resolved": "5.0.2",
+        "contentHash": "I47dVIGiV6SfAyppphxqupertT/5oZkYLDCX6vC3HpOI4ZLjyoKAreUoem2ie6G0RbRuFrlqz/PcTQjfb2DOfQ=="
       },
       "System.Threading": {
         "type": "Transitive",
