@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0-windows10.0.22000": {
+    "net8.0-windows10.0.22621": {
       "Clowd.Squirrel": {
         "type": "Direct",
         "requested": "[2.9.42, )",
@@ -60,11 +60,11 @@
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.0.5.1, )",
-        "resolved": "1.0.5.1",
-        "contentHash": "9DVEVvyQWWz8kqhsFBAx9Zv4KRIAcmxuT7kFpK1Fgh6czSiMB+CQW0DlhZXT44Mtv41FRXG47lhEv+7a2YyiLA==",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "bHHnKtvoIGitm7EiOtENw3J1E9DSDAzJcrNhwve6nMvMoiFwtRnSZRO0mB1t0QYKhaZD6zM9Rq5kvBmiu4nelQ==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.0.4"
+          "Microsoft.WindowsAppSDK": "1.4.230913002"
         }
       },
       "Microsoft.Windows.SDK.BuildTools": {
