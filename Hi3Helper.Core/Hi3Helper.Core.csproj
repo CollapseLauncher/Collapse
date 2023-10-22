@@ -8,7 +8,6 @@
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DebugType>portable</DebugType>
-		<DefineConstants>HDIFFEXPERIMENTAL</DefineConstants>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
