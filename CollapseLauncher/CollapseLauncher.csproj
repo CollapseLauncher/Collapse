@@ -23,6 +23,7 @@
 		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <GitVersion>false</GitVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 <!--
   Constants List:
