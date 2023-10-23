@@ -5,7 +5,9 @@ name: Build-Canary
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+        - 'main'
+        - 'net-8'
   pull_request:
     branches-ignore:
       - 'translations_**'
@@ -88,5 +90,6 @@ jobs:
         title: New canary build is ready!
         status: ${{ job.status }}
         description: |
+          WARNING! THIS IS NET 8 TEST BUILD. STABILITY MAY SUFFER!
           Commit `${{ github.sha }}` by ${{ github.actor }}
           Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
