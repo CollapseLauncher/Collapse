@@ -86,11 +86,8 @@
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.0-rc.2.23479.14" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0-rc.2.23479.6" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-	</ItemGroup>
-	
-	<ItemGroup Condition="'$(TargetFramework)'=='net7.0-windows10.0.22000.0'">
-		<PackageReference Include="System.Text.Json" Version="7.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -163,6 +160,8 @@
 			<TrimmableAssembly Include="System.IO.Compression.Brotli" />
 			<TrimmableAssembly Include="System.IO.Compression" />
 			<TrimmableAssembly Include="System.Net.HTTP" />
+      <TrimmableAssembly Include="System.Text.Encodings.Web"/>
+      <TrimmableAssembly Include="System.Text.Json" />
 			<TrimmableAssembly Include="System.Text.RegularExpression" />
 			<TrimmableAssembly Include="WinRT.Runtime" />
 		</ItemGroup>
