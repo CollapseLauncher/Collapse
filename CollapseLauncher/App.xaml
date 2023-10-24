@@ -407,11 +407,6 @@
                         </Setter>
                     </Style>
                     <!-- END: Button styles -->
-                    <!--https://github.com/microsoft/microsoft-ui-xaml/issues/8756-->
-                    <Style TargetType="MenuFlyoutPresenter">
-                        <Setter Property="Background" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
-                        <Setter Property="BorderBrush" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
-                    </Style>
                 </ResourceDictionary>
                 <!-- Custom controls styles -->
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>
