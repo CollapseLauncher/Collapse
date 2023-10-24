@@ -8,7 +8,7 @@
     xmlns:customcontrol="using:CollapseLauncher.CustomControls"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
-        <MicaBackdrop/>
+        <DesktopAcrylicBackdrop/>
     </Window.SystemBackdrop>
     <Grid>
         <Grid.RowDefinitions>
