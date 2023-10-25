@@ -198,7 +198,7 @@ Pour voir toutes les versions, [**cliquez ici**](https://github.com/neon-nyan/Co
 ***
 
 # Conditions préalables à la construction locale/au développement
-> ### Plus d'informations peuvent être trouvées dans [**Contribution Guidelines**] (https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
+> ### Plus d'informations peuvent être trouvées dans [**Directives de Contribution**](https://github.com/neon-nyan/Collapse/blob/main/CONTRIBUTING.md)
 
 ***
 
