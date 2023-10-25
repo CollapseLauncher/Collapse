@@ -343,11 +343,11 @@ namespace CollapseLauncher.GameSettings.Genshin
 #endif
                     GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
-                    data.globalPerfData = new();
+                    data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
                     return data;
                 }
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                GraphicsData.Load(null);
+                GlobalPerfData.Load(null, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 return new GeneralData();
             }
@@ -372,8 +372,8 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                _graphicsData = graphicsData.Save();
-                _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
+                _graphicsData = graphicsData.Create(globalPerfData);
+                _globalPerfData = globalPerfData.Save();
 
                 string data = this.Serialize(GenshinSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
