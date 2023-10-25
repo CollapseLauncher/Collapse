@@ -15,9 +15,9 @@
 [![Téléverser vers R2](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
 
 
-[![Localisation](https://img.shields.io/badge/Localization-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
-[![Discord](https://img.shields.io/badge/Join_Community-Discord-5865F2)](https://discord.gg/vJd2exaS7j)
-[![Tableau Kanban](https://img.shields.io/badge/Kanban_Board-Trello-white)](https://trello.com/b/rsqrnn15/collapse-launcher-tracker)
+[![Localisation](https://img.shields.io/badge/Localisation-Transifex-blue)](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
+[![Discord](https://img.shields.io/badge/Rejoins_la_communauté-Discord-5865F2)](https://discord.gg/vJd2exaS7j)
+[![Tableau Kanban](https://img.shields.io/badge/Tableau_Kanban-Trello-white)](https://trello.com/b/rsqrnn15/collapse-launcher-tracker)
 
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
@@ -42,10 +42,10 @@ Collapse est issu de la traduction d'**Honkai Impact** en chinois et en japonais
 * Modification des paramètres du jeu (paramètres graphiques et paramètres audio) sans ouvrir le jeu.
 * Prise en charge du téléchargement de jeux multirégionaux (permet de télécharger et de lancer différentes versions du jeu).
 * Conversion de la version Steam en version globale (sans avoir à retélécharger l'ensemble du jeu).
-* Conversion de la version globale en version SEA (ou vice versa).
+* Conversion de la version globale en version ASE (ou vice versa).
 * Téléchargement multi-session pour un téléchargement/une installation plus rapide du jeu.
-* Extraction de jeu multithread pour une installation plus rapide.
-* Mécanisme de mise à jour Delta-Patch pour les petites mises à jour ([**Cliquez ici**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) pour plus d'informations).
+* Extraction de jeu multi-thread pour une installation plus rapide.
+* Mécanisme de mise à jour au format Delta pour les petites mises à jour ([**Cliquez ici**](https://github.com/neon-nyan/CollapseLauncher/wiki/Update-Game-Region-with-Delta-Patch) pour plus d'informations).
 * Possibilité de sélectionner l'API graphique (DirectX 11 (FL : 10.1, 11.0 et 11.1) et DirectX 12 [Peut faire planter le jeu dans les phases plus récentes]).
 
 En plus de cela, ce lanceur possède également des fonctionnalités avancées pour **Genshin Impact**, qui permet, sans s'y restreindre, de:
@@ -61,7 +61,7 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
       <th colspan="7">Fonctionnalités</th>
     </tr>
     <tr>
-      <th>Installer</th>
+      <th>Installation</th>
       <th>Préchargement</th>
       <th>Mise à jour</th>
       <th>Réparation du jeu</th>
@@ -76,21 +76,21 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
       <td>Asie du Sud-Est</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Mises à jour normales et Delta-patch disponibles)</td>
+      <td>:white_check_mark: (Mises à jour normales et au format Delta disponibles)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (De SEA -&gt ; Global) </td>
+      <td>:white_check_mark: <br> (D'ASE -&gt Global) </td>
     </tr>
     <tr>
       <td>Global</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Mises à jour normales et Delta-patch disponibles)</td>
+      <td>:white_check_mark: (Mises à jour normales et au format Delta disponibles)</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (De Steam -&gt; Global) <br> (De Global -&gt; SEA) </td>
+      <td>:white_check_mark: <br> (De Steam -&gt; Global) <br> (De Global -&gt; ASE) </td>
     </tr>
     <tr>
       <td>Chine continentale</td>
@@ -181,7 +181,7 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
 > Le tableau ci-dessus sert à illustrer les fonctionnalités que Collapse prend actuellement en charge. Cette liste sera continuellement mise à jour au fur et à mesure que de nouvelles fonctionnalités seront ajoutées à Collapse et que de nouveaux jeux sortiront. Si vous avez des problèmes avec l'une des fonctionnalités supportées ci-dessus, vérifiez notre onglet GitHub Issues, si aucun problème actif n'est trouvé pour cette fonctionnalité, créez une Issue.
 > Veuillez garder à l'esprit que la fonction de conversion de jeu n'est actuellement disponible que pour Honkai Impact : 3rd. Les autres jeux miHoYo/Cognosphere Pte. Ltd. ne sont pas prévus pour l'instant.
 
-# Télécharger les builds prêts à l'emploi
+# Télécharger les versions prêtes à l'emploi
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
 > **Note** : La version pour ce build est `1.71.13` (Sortie le : 2 Octobre 2023).
 
@@ -211,9 +211,9 @@ Pour voir toutes les versions, [**cliquez ici**](https://github.com/neon-nyan/Co
 - [**Hi3Helper.Http**](https://github.com/neon-nyan/Hi3Helper.Http) par neon-nyan
 - [**Hi3Helper.EncTool**](https://github.com/neon-nyan/Hi3Helper.EncTool) par neon-nyan
 - [**Crc32.NET**](https://github.com/neon-nyan/Crc32.NET) par force-net
-- [**UABT**](https://github.com/neon-nyan/UABT) par _unknown_
+- [**UABT**](https://github.com/neon-nyan/UABT) par _inconnu_
 
-**Disclaimer** : Ce projet **N'EST PAS AFFILIE** à [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) ou [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) par quelque moyen que ce soit et est complètement libre. Toutes les contributions sont les bienvenues ! 😃
+**Disclaimer** : Ce projet **N'EST PAS AFFILIÉ** à [**miHoYo (miHoYo Co., Ltd.)**](https://www.mihoyo.com/) ou [**HoYoverse (COGNOSPHERE PTE. LTD.)**](https://www.hoyoverse.com/en-us) par quelque moyen que ce soit et est complètement libre. Toutes les contributions sont les bienvenues ! 😃
 
 # Aperçu de la conception de l'interface utilisateur
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
@@ -225,6 +225,3 @@ Soutenir n'est jamais une obligation mais est toujours apprécié et nous motive
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Réalisé par tous les capitaines du monde entier avec ❤️. Luttez pour tout ce qui est beau dans ce monde !
-
-@gablm
-gablm committed last week
