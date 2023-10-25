@@ -80,7 +80,7 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
-      <td>:white_check_mark: <br> (D'ASE -&gt Global) </td>
+      <td>:white_check_mark: <br> (De ASE -&gt Global) </td>
     </tr>
     <tr>
       <td>Global</td>
@@ -179,7 +179,7 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
 
 > **Note** :
 > Le tableau ci-dessus sert à illustrer les fonctionnalités que Collapse prend actuellement en charge. Cette liste sera continuellement mise à jour au fur et à mesure que de nouvelles fonctionnalités seront ajoutées à Collapse et que de nouveaux jeux sortiront. Si vous avez des problèmes avec l'une des fonctionnalités supportées ci-dessus, vérifiez notre onglet GitHub Issues, si aucun problème actif n'est trouvé pour cette fonctionnalité, créez une Issue.
-> Veuillez garder à l'esprit que la fonction de conversion de jeu n'est actuellement disponible que pour Honkai Impact : 3rd. Les autres jeux miHoYo/Cognosphere Pte. Ltd. ne sont pas prévus pour l'instant.
+> Veuillez garder à l'esprit que la fonction de conversion de jeu n'est actuellement disponible que pour Honkai Impact 3rd. Les autres jeux miHoYo/Cognosphere Pte. Ltd. ne sont pas prévus pour l'instant.
 
 # Télécharger les versions prêtes à l'emploi
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
@@ -219,7 +219,7 @@ Pour voir toutes les versions, [**cliquez ici**](https://github.com/neon-nyan/Co
 ![](https://raw.githubusercontent.com/neon-nyan/CollapseLauncher-Page/main/images/UI%20Overview%20RC2.webp)
 
 # Comment puis-je soutenir ce projet ?
-Soutenir n'est jamais une obligation mais est toujours apprécié et nous motive à investir plus de temps dans le projet et à garder ce projet et d'autres projets en vie. A cette fin, si vous décidez de nous soutenir, voici comment vous pouvez le faire :smile: :
+Soutenir n'est jamais une obligation mais est toujours apprécié et nous motive à investir plus de temps dans le projet et à garder ce projet et d'autres projets en vie. À cette fin, si vous décidez de nous soutenir, voici comment vous pouvez le faire :smile: :
 - **[Sponsors GitHub](https://github.com/sponsors/neon-nyan)**
 - **[QRIS (Quick Response Code Indonesian Standard)](https://qris.id/homepage/)** (Coming Soon:tm:)
 - **[PayPal](https://paypal.me/neonnyan)**
