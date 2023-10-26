@@ -31,20 +31,21 @@ namespace CollapseLauncher
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
                 // Initialize the metadata tool (including dispatcher and gateway)
-                await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent"));
+                if (await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                {
+                    // Read block metadata and convert to FilePropertiesRemote
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
 
-                // Read block metadata and convert to FilePropertiesRemote
-                await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
-                await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
-                ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
+                    // Read Audio metadata and convert to FilePropertiesRemote
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
 
-                // Read Audio metadata and convert to FilePropertiesRemote
-                await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
-                ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
-
-                // Read Video metadata and convert to FilePropertiesRemote
-                await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
-                ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
+                    // Read Video metadata and convert to FilePropertiesRemote
+                    await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
+                }
 
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
                 await FetchBilibiliSDK(token);
