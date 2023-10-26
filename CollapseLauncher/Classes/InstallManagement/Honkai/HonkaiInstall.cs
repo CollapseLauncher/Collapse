@@ -132,12 +132,14 @@ namespace CollapseLauncher.InstallManager.Honkai
                     RestartStopwatch();
 
                     // Start the patching process
+                    HDiffPatch.LogVerbosity = Verbosity.Verbose;
                     EventListener.PatchEvent += DeltaPatchCheckProgress;
+                    EventListener.LoggerEvent += DeltaPatchCheckLogEvent;
                     await Task.Run(() =>
                     {
                         HDiffPatch patch = new HDiffPatch();
                         patch.Initialize(patchProperty.PatchPath);
-                        patch.Patch(ingredientPath, previousPath, false, _token.Token);
+                        patch.Patch(ingredientPath, previousPath, true, _token.Token, false, true);
                     });
 
                     // Remove ingredient folder
@@ -159,6 +161,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 finally
                 {
                     EventListener.PatchEvent -= DeltaPatchCheckProgress;
+                    EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
                 }
             }
 
@@ -300,6 +303,29 @@ namespace CollapseLauncher.InstallManager.Honkai
                 UpdateProgressBase();
                 UpdateStatus();
             }
+        }
+
+        private void DeltaPatchCheckLogEvent(object sender, LoggerEvent e)
+        {
+            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
+            || (HDiffPatch.LogVerbosity == Verbosity.Debug
+            && !(e.LogLevel == Verbosity.Debug ||
+                 e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Verbose
+            && !(e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Info
+            && !(e.LogLevel == Verbosity.Info))) return;
+
+            LogType type = e.LogLevel switch
+            {
+                Verbosity.Verbose => LogType.Debug,
+                Verbosity.Debug => LogType.Debug,
+                _ => LogType.Default
+            };
+
+            LogWriteLine(e.Message, type, true);
         }
 
         private async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
