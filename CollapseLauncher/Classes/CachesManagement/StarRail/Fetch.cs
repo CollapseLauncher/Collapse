@@ -31,7 +31,9 @@ namespace CollapseLauncher
                 _status.IsProgressTotalIndetermined = true;
                 _status.IsIncludePerFileIndicator = false;
                 UpdateStatus();
-                await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent"));
+
+                if (!await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                    throw new InvalidDataException("The dispatcher response is invalid! Please open an issue to our GitHub page to report this issue.");
 
                 // Iterate type and do fetch
                 foreach (SRAssetType type in Enum.GetValues(typeof(SRAssetType)))
