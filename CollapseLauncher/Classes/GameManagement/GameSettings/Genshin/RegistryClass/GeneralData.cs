@@ -320,36 +320,29 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                object value = RegistryRoot.GetValue(_ValueName) ?? throw new ArgumentNullException($"Cannot find registry key {_ValueName}");
 
-                if (value != null)
-                {
-                    ReadOnlySpan<byte> byteStr = (byte[])value;
+                ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DUMPGIJSON
-                    // Dump GeneralData as raw string
-                    LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
-                        $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                // Dump GeneralData as raw string
+                LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
+                             $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 
-                    // Dump GeneralData as indented JSON output using GeneralData properties
-                    LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
-                        .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
-                        .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
+                // Dump GeneralData as indented JSON output using GeneralData properties
+                LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
+                    .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
+                    .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #else
-                    LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
+                LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
-                    GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
-                    data.graphicsData = GraphicsData.Load(data._graphicsData);
-                    data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
-                    return data;
-                }
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                GlobalPerfData.Load(null, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-                return new GeneralData();
+                GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
+                data.graphicsData = GraphicsData.Load(data._graphicsData);
+                data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
+                return data;
             }
             catch (Exception ex)
             {
