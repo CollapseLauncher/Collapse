@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.FileDialogNative;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
