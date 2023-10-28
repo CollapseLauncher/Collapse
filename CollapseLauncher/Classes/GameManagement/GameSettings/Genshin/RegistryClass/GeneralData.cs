@@ -335,8 +335,6 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
                         .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
                         .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
-                    LogWriteLine($"graphicsData dump:\r\n\t{data._graphicsData}");
-                    LogWriteLine($"globalPerfData dump:\r\n\t{data._globalPerfData}");
 #endif
 #if DEBUG
                     LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
@@ -344,6 +342,10 @@ namespace CollapseLauncher.GameSettings.Genshin
                     LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
                     GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
+#if DUMPGIJSON
+                    LogWriteLine($"graphicsData dump:\r\n\t{data._graphicsData}");
+                    LogWriteLine($"globalPerfData dump:\r\n\t{data._globalPerfData}");
+#endif
                     data.graphicsData = GraphicsData.Load(data._graphicsData);
                     data.globalPerfData = new();
                     return data;
