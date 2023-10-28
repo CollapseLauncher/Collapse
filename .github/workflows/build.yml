@@ -41,8 +41,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.DOTNET_INSTALL_DIR }}
-        key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}
-        restore-keys: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}   
+        key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
+        restore-keys: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
         
     - name: Cache nuget # cache nuget https://github.com/actions/cache/blob/main/examples.md#c---nuget
       uses: actions/cache@v3
@@ -59,6 +59,9 @@ jobs:
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
+      with:
+        vs-prerelease: true
+        msbuild-architecture: ${{ matrix.platform }}
 
     - name: Restore
       run: dotnet restore CollapseLauncher
