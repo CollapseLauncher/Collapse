@@ -294,13 +294,15 @@ namespace CollapseLauncher
 
                 Directory.CreateDirectory(OutputPath);
 
+                HDiffPatch.LogVerbosity = Verbosity.Verbose;
+                EventListener.LoggerEvent += EventListener_PatchLogEvent;
                 EventListener.PatchEvent += EventListener_PatchEvent;
 
                 await Task.Run(() =>
                 {
                     HDiffPatch patch = new HDiffPatch();
                     patch.Initialize(CookbookPath);
-                    patch.Patch(IngredientsPath, OutputPath, false, Token);
+                    patch.Patch(IngredientsPath, OutputPath, true, Token, false, true);
                 }, Token);
 
                 TryDirectoryDelete(IngredientsPath, true);
@@ -325,7 +327,31 @@ namespace CollapseLauncher
             finally
             {
                 EventListener.PatchEvent -= EventListener_PatchEvent;
+                EventListener.LoggerEvent -= EventListener_PatchLogEvent;
             }
+        }
+
+        private void EventListener_PatchLogEvent(object sender, LoggerEvent e)
+        {
+            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
+            || (HDiffPatch.LogVerbosity == Verbosity.Debug
+            && !(e.LogLevel == Verbosity.Debug ||
+                 e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Verbose
+            && !(e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Info
+            && !(e.LogLevel == Verbosity.Info))) return;
+
+            LogType type = e.LogLevel switch
+            {
+                Verbosity.Verbose => LogType.Debug,
+                Verbosity.Debug => LogType.Debug,
+                _ => LogType.Default
+            };
+
+            LogWriteLine(e.Message, type, true);
         }
 
         private void EventListener_PatchEvent(object sender, PatchEvent e)
