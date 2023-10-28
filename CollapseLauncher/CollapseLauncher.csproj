@@ -70,7 +70,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="GitInfo" Version="3.3.3">
 		  <PrivateAssets>all</PrivateAssets>
@@ -82,6 +83,7 @@
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231008000" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
+		<PackageReference Include="SharpCompress" Version="0.34.1" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.0-rc.2.23479.14" />
@@ -124,20 +126,13 @@
 			<TrimmableAssembly Include="Hi3Helper.Http" />
 			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
 			<TrimmableAssembly Include="CommunityToolkit.Mvvm" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
 			<TrimmableAssembly Include="GitInfo" />
 			<TrimmableAssembly Include="Google.Protobuf" />
 			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Display" />
 			<TrimmableAssembly Include="Microsoft.InputStateManager" />
-			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppSDK" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
 			<TrimmableAssembly Include="Microsoft.WinUI" />
@@ -154,7 +149,7 @@
 			<TrimmableAssembly Include="System.Runtime" />
 			<TrimmableAssembly Include="System.Runtime.Numerics" />
 			<TrimmableAssembly Include="System.Text.Encoding.CodePages" />
-			<TrimmableAssembly Include="System.Text.Encodings.Web"/>
+			<TrimmableAssembly Include="System.Text.Encodings.Web" />
 			<TrimmableAssembly Include="System.Text.Json" />
 			<TrimmableAssembly Include="System.Text.RegularExpression" />
 			<TrimmableAssembly Include="WinUIEdit" />

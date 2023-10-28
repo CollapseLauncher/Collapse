@@ -11,11 +11,17 @@
           "SharpCompress": "0.31.0"
         }
       },
+      "CommunityToolkit.Common": {
+        "type": "Direct",
+        "requested": "[8.2.2, )",
+        "resolved": "8.2.2",
+        "contentHash": "8/enuV1R68d0hK66UO8/HQ3yEsMjxUqondiEXlA499XB3tYgIqhCM+ITe8fHfH3l4JN3gY6h21SvkJnxfaG3NQ=="
+      },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
-        "requested": "[8.2.1, )",
-        "resolved": "8.2.1",
-        "contentHash": "I24ofWVEdplxYjUez9/bljv/qb8r8Ccj6cvYXHexNBegLaD3iDy3QrzAAOYVMmfGWIXxlU1ZtECQNfU07+6hXQ=="
+        "requested": "[8.2.2, )",
+        "resolved": "8.2.2",
+        "contentHash": "r0g0k9tGYdrnz8R7T3x5UiokDffeevzK/2P/9SBL6fqLgN8B157MIi/bVUWI1KAz6ZorZrK9AdABCWUeXZZsvA=="
       },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
@@ -67,12 +73,6 @@
           "Microsoft.WindowsAppSDK": "1.4.230913002"
         }
       },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.0-rc.2.23479.6, )",
-        "resolved": "8.0.0-rc.2.23479.6",
-        "contentHash": "neRDuxVI/tdf5yz/rLyD1kP3DkWx8uHTvb1wcqbjDn4QQDHmYHwcuHBnVVPYtBzMFmlVNmJMa91weUEhHx2z5A=="
-      },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
         "requested": "[10.0.22621.756, )",
@@ -93,6 +93,15 @@
         "requested": "[0.14.0, )",
         "resolved": "0.14.0",
         "contentHash": "JsPAREpPJCHBcL753YnGX132BemFM42NgnIQkwuwmb1n9qADrrBXhgkJNaCI+4TFbnMblRdF5K7OD0fe173cBA=="
+      },
+      "SharpCompress": {
+        "type": "Direct",
+        "requested": "[0.34.1, )",
+        "resolved": "0.34.1",
+        "contentHash": "WttRM/J/ktUwM3hRPxRYux1AOT+TGLqab34ZNBGTZRChHtpkJXFGHJ/cZCyNOH0OqpCNDdOsHhzxOVYkx4WoGw==",
+        "dependencies": {
+          "ZstdSharp.Port": "0.7.2"
+        }
       },
       "System.CommandLine": {
         "type": "Direct",
@@ -186,11 +195,6 @@
           "ColorCode.Core": "2.0.13",
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
-      },
-      "CommunityToolkit.Common": {
-        "type": "Transitive",
-        "resolved": "7.1.2",
-        "contentHash": "KnHnukN+Sc26YT98OWYTp8mvaYlLc61lzDh0RrVRNQXm01hZ+iXAjCgKM59vAojqxNVrlbcXj22LYOyXWDItgg=="
       },
       "CommunityToolkit.WinUI": {
         "type": "Transitive",
@@ -485,11 +489,6 @@
         "type": "Transitive",
         "resolved": "4.3.2",
         "contentHash": "leXiwfiIkW7Gmn7cgnNcdtNAU70SjmKW3jxGj1iKHOvdn0zRWsgv/l2OJUO5zdGdiv2VRFnAsxxhDgMzofPdWg=="
-      },
-      "SharpCompress": {
-        "type": "Transitive",
-        "resolved": "0.31.0",
-        "contentHash": "wFf5N0ysnlKbG54beDDm4Z1uqM0EAKTupEkTxyG4EGVE1uZgTtohuBd2BhTHR2gNweJ6agxKbMFzmzk181qqjw=="
       },
       "System.AppContext": {
         "type": "Transitive",
@@ -1183,6 +1182,11 @@
           "Microsoft.CSharp": "4.7.0",
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
+      },
+      "ZstdSharp.Port": {
+        "type": "Transitive",
+        "resolved": "0.7.2",
+        "contentHash": "mT6Pb7qzDGapJ2ic4dAFqbzHpM+qgnasQIGR/Sofrk0fmKTQSTljG55OFXHbDJczLZWnUAFsg4bKR81uHiKzPg=="
       },
       "colorthief": {
         "type": "Project",
