@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool.Test", "Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj", "{1BAB5CE4-640E-41A7-B529-4842D378BD4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.SharpHDiffPatch", "Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj", "{D236EC29-B627-4A73-A605-C12C8E1B70B5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj", "{D145686A-C0AA-4164-9854-A8942CB1DFDE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.SharpHDiffPatch", "Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj", "{3AD82793-E1E0-46C6-B239-703373CD11CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,14 +75,6 @@ Global
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Debug-Trimmed|x64.Build.0 = Debug|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Publish|x64.ActiveCfg = Release|x64
 		{1BAB5CE4-640E-41A7-B529-4842D378BD4C}.Release|x64.ActiveCfg = Release|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Debug|x64.ActiveCfg = Debug|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Debug|x64.Build.0 = Debug|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Debug-Trimmed|x64.ActiveCfg = Debug|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Debug-Trimmed|x64.Build.0 = Debug|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Publish|x64.ActiveCfg = Release|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Publish|x64.Build.0 = Release|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Release|x64.ActiveCfg = Release|x64
-		{D236EC29-B627-4A73-A605-C12C8E1B70B5}.Release|x64.Build.0 = Release|x64
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Debug|x64.ActiveCfg = Debug|x64
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Debug|x64.Build.0 = Debug|x64
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Debug-Trimmed|x64.ActiveCfg = Debug|x64
@@ -91,6 +83,14 @@ Global
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Publish|x64.Build.0 = Release|x64
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Release|x64.ActiveCfg = Release|x64
 		{D145686A-C0AA-4164-9854-A8942CB1DFDE}.Release|x64.Build.0 = Release|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Debug|x64.ActiveCfg = Debug|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Debug|x64.Build.0 = Debug|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Debug-Trimmed|x64.ActiveCfg = Debug|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Debug-Trimmed|x64.Build.0 = Debug|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Publish|x64.ActiveCfg = Release|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Publish|x64.Build.0 = Release|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Release|x64.ActiveCfg = Release|x64
+		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

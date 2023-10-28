@@ -283,8 +283,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.24.3",
-        "contentHash": "HX8KHRTJPUcC4KOvEobKBNlMpHGYmK+3X73xPq+OUE2M5dLYvpGhp9qQQWt2jASgTUbxI1yHaGeBqFYiECBupw=="
+        "resolved": "3.24.4",
+        "contentHash": "TmUI4ndd3x5HePyLmqAmGT6oVvoRCu+bMmrJmOpAFtCPEB+oUMWF8dyVY1zxXry/8cqsTHWszYRIAwpuUNpUyA=="
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
@@ -700,8 +700,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "sDnWM0N3AMCa86LrKTWeF3BZLD2sgWyYUc7HL6z4+xyDZNQRwzmxbo4qP2rX2MqC+Sy1/gOSRDah5ltxY5jPxw=="
+        "resolved": "8.0.0-rc.2.23479.6",
+        "contentHash": "U1dk8ZXsNwdawQYZqP4uba49mjzb+lWOHHHhUN7CVnXJTqH6ucR/J9exHrsPoMV1Y74mxaWvKk8MC0U662I3rQ=="
       },
       "System.Linq": {
         "type": "Transitive",
@@ -1191,7 +1191,7 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[7.0.0, )"
+          "System.Drawing.Common": "[8.0.0-rc.2.23479.14, )"
         }
       },
       "hi3helper.core": {
@@ -1206,9 +1206,9 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.24.3, )",
+          "Google.Protobuf": "[3.24.4, )",
           "Hi3Helper.Http": "[1.0.0, )",
-          "System.IO.Hashing": "[7.0.0, )"
+          "System.IO.Hashing": "[8.0.0-rc.2.23479.6, )"
         }
       },
       "hi3helper.http": {
