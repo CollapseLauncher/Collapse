@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -8,7 +9,10 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
@@ -520,6 +524,98 @@ namespace CollapseLauncher.Dialogs
                 ContentDialogButton.Primary,
                 ContentDialogTheme.Warning
                 );
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
+        {
+            void CopyTextToClipboard(object sender, RoutedEventArgs e)
+            {
+                InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+
+                Button btn = sender as Button;
+                FontIcon fontIcon = (btn.Content as StackPanel).Children[0] as FontIcon;
+                TextBlock textBlock = (btn.Content as StackPanel).Children[1] as TextBlock;
+                fontIcon.Glyph = "";
+                textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
+                btn.IsEnabled = false;
+            }
+
+            Button copyButton = null;
+
+            try
+            {
+                string exceptionContent = ErrorSender.ExceptionContent;
+                string title = ErrorSender.ExceptionTitle;
+                string subtitle = ErrorSender.ExceptionSubtitle;
+
+                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (InnerLauncherConfig.m_window as MainWindow).rootFrame.CanGoBack;
+
+                Grid rootGrid = new Grid()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                    RowDefinitions =
+                    {
+                        new RowDefinition() { Height = GridLength.Auto },
+                        new RowDefinition(),
+                        new RowDefinition() { Height = GridLength.Auto }
+                    }
+                };
+
+                TextBlock subtitleText = new TextBlock
+                {
+                    Text = subtitle,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontWeight = FontWeights.Medium
+                };
+                TextBox exceptionText = new TextBox
+                {
+                    IsReadOnly = true,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                    TextWrapping = TextWrapping.Wrap,
+                    MaxHeight = 300,
+                    AcceptsReturn = true,
+                    Text = exceptionContent,
+                    Margin = new Thickness(0, 8, 0, 8)
+                };
+
+                StackPanel copyButtonTextPanel = new StackPanel() { Orientation = Orientation.Horizontal };
+                copyButtonTextPanel.Children.Add(new FontIcon { FontFamily = (FontFamily)Application.Current.Resources["FontAwesomeSolid"], Glyph = "", Margin = new Thickness(0, 0, 8, 0), FontSize = 16 });
+                copyButtonTextPanel.Children.Add(new TextBlock() { Text = Lang._UnhandledExceptionPage.CopyClipboardBtn1, FontWeight = FontWeights.Medium });
+                copyButton = new Button
+                {
+                    Style = Application.Current.Resources["AccentButtonStyle"] as Style,
+                    Content = copyButtonTextPanel,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    CornerRadius = new CornerRadius(15)
+                };
+                copyButton.Click += CopyTextToClipboard;
+
+                rootGrid.Children.Add(subtitleText);
+                rootGrid.Children.Add(exceptionText);
+                rootGrid.Children.Add(copyButton);
+
+                Grid.SetRow(subtitleText, 0);
+                Grid.SetRow(exceptionText, 1);
+                Grid.SetRow(copyButton, 2);
+
+                ContentDialogResult result = await SpawnDialog(
+                    title, rootGrid, Content,
+                    Lang._UnhandledExceptionPage.GoBackPageBtn1,
+                    null,
+                    null,
+                    ContentDialogButton.Close,
+                    ContentDialogTheme.Error);
+
+                return result;
+            }
+            catch { throw; }
+            finally
+            {
+                if (copyButton != null)
+                    copyButton.Click -= CopyTextToClipboard;
+            }
         }
 
         public static async Task<ContentDialogResult> SpawnDialog(

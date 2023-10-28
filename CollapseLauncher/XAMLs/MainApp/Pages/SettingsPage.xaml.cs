@@ -46,7 +46,7 @@ namespace CollapseLauncher.Pages
 
             AppVersionTextBlock.Text = Version;
             CurrentVersion.Text = Version;
-            
+
             // TODO: Eventually, we should make this a button which copies on click, but this works for now
             GitVersionIndicator.Text = $"{ThisAssembly.Git.Branch} - {ThisAssembly.Git.Commit}";
 
@@ -97,9 +97,11 @@ namespace CollapseLauncher.Pages
                         Process.Start(collapsePath);
                         App.Current.Exit();
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
-                        LogWriteLine($"An error occurred while attempting to clear metadata folder. Exception stacktrace below:\r\n{ex}", LogType.Error, true);
+                        string msg = $"An error occurred while attempting to clear metadata folder. Exception stacktrace below:\r\n{ex}";
+                        ErrorSender.SendException(ex);
+                        LogWriteLine(msg, LogType.Error, true);
                     }
                     break;
                 default:
@@ -122,24 +124,40 @@ namespace CollapseLauncher.Pages
 
         private void ClearImgFolder(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(AppGameImgFolder))
-                Directory.Delete(AppGameImgFolder, true);
+            try
+            {
+                if (Directory.Exists(AppGameImgFolder))
+                    Directory.Delete(AppGameImgFolder, true);
 
-            Directory.CreateDirectory(AppGameImgFolder);
-            (sender as Button).IsEnabled = false;
+                Directory.CreateDirectory(AppGameImgFolder);
+                (sender as Button).IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                string msg = $"An error occurred while attempting to clear image folder. Exception stacktrace below:\r\n{ex}";
+                ErrorSender.SendException(ex);
+                LogWriteLine(msg, LogType.Error, true);
+            }
         }
 
         private void ClearLogsFolder(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(AppGameLogsFolder))
+            try
             {
-                _log.Dispose();
-                Directory.Delete(AppGameLogsFolder, true);
-                _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-            }
+                if (Directory.Exists(AppGameLogsFolder))
+                {
+                    _log.Dispose();
+                    Directory.Delete(AppGameLogsFolder, true);
+                    _log.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
+                }
 
-            Directory.CreateDirectory(AppGameLogsFolder);
-            (sender as Button).IsEnabled = false;
+                Directory.CreateDirectory(AppGameLogsFolder);
+                (sender as Button).IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex);
+            }
         }
 
         private void ForceUpdate(object sender, RoutedEventArgs e)
@@ -151,7 +169,7 @@ namespace CollapseLauncher.Pages
         private async void ChangeRelease(object sender, RoutedEventArgs e)
         {
             string ChannelName = IsPreview ? "Stable" : "Preview";
-            switch (await Dialogs.SimpleDialogs.Dialog_ChangeReleaseChannel(ChannelName, this))
+            switch (await Dialog_ChangeReleaseChannel(ChannelName, this))
             {
                 case ContentDialogResult.Primary:
                     LaunchUpdater(ChannelName);
@@ -488,19 +506,9 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("ExtractionThread", value);
         }
 
-        private List<string> LanguageList
-        {
-            get
-            {
-                List<string> _out = new List<string>();
-                foreach (var a in LanguageNames)
-                {
-                    _out.Add(string.Format(Lang._SettingsPage.LanguageEntry, a.Value.LangName, a.Value.LangAuthor));
-                }
-
-                return _out;
-            }
-        }
+        private List<string> LanguageList => LanguageNames
+            .Select(a => string.Format(Lang._SettingsPage.LanguageEntry, a.Value.LangName, a.Value.LangAuthor))
+            .ToList();
 
         private int LanguageSelectedIndex
         {
@@ -583,7 +591,7 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
         }
-		
+
         #region Keyboard Shortcuts
         private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
 
@@ -599,7 +607,7 @@ namespace CollapseLauncher.Pages
         public static event EventHandler<int> KeyboardShortcutsEvent;
         private bool AreShortcutsEnabled
         {
-            get 
+            get
             {
                 bool value = GetAppConfigValue("EnableShortcuts").ToBool();
                 if (value)
@@ -619,7 +627,7 @@ namespace CollapseLauncher.Pages
                     KbScBtns.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableShortcuts", value);
-                KeyboardShortcutsEvent(this, value ? 0 : 2);  
+                KeyboardShortcutsEvent(this, value ? 0 : 2);
             }
         }
         #endregion

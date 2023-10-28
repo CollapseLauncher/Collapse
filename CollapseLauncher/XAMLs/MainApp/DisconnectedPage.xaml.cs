@@ -1,4 +1,4 @@
-using CollapseLauncher.Pages;
+using CollapseLauncher.Dialogs;
 using Hi3Helper;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -28,9 +28,10 @@ namespace CollapseLauncher
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage), new DrillInNavigationTransitionInfo());
         }
 
-        private void ShowError(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private async void ShowError(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            MainFrameChanger.ChangeWindowFrame(typeof(UnhandledExceptionPage));
+            await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
+            // MainFrameChanger.ChangeWindowFrame(typeof(UnhandledExceptionPage));
         }
     }
 }

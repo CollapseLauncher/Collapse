@@ -165,6 +165,28 @@ namespace Hi3Helper
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
 
+        [DllImport("user32.dll")]
+        public static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+        [DllImport("user32.dll")]
+        public static extern bool CloseClipboard();
+
+        [DllImport("user32.dll")]
+        public static extern bool SetClipboardData(uint uFormat, IntPtr data);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool EmptyClipboard();
+
+        public static void CopyStringToClipboard(string str)
+        {
+            IntPtr ptr = Marshal.StringToHGlobalUni(str);
+            OpenClipboard(IntPtr.Zero);
+            EmptyClipboard();
+            SetClipboardData(13, ptr);
+            CloseClipboard();
+            Marshal.FreeHGlobal(ptr);
+        }
+
         public struct WindowRect
         {
             public int Left { get; set; }
