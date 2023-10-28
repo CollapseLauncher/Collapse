@@ -18,7 +18,7 @@ using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
 using static CollapseLauncher.WindowSize.WindowSize;
-using static CollapseLauncher.FileDialogNative;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;

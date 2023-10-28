@@ -1,7 +1,7 @@
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -17,14 +17,12 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using PatcherHDiff = Hi3Helper.SharpHDiffPatch;
 using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 namespace CollapseLauncher.InstallManager.Base
@@ -868,7 +866,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-#endregion
+        #endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()
