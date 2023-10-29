@@ -9,6 +9,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DebugType>portable</DebugType>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<TieredCompilation>true</TieredCompilation>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
