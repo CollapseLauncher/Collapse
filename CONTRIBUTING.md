@@ -10,7 +10,7 @@
 - We don't require a fully descriptive PR, but please be clear on what is added/removed and what the code does.
 
 ## Localization Contribution(s)
-You can help us add or proofread localization changes for [Collapse on Crowdin!](https://crowdin.com/project/collapse-launcher)
+You can help us add or proofread localization changes for [Collapse on Transifex!](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
 If you wish to add new language that isn't yet listed in the Crowdin project, please create an issue either in GitHub or create a discussion through Crowdin itself. We'll do our best to get back to you in a timely manner. 
 
 ## Tools Needed
@@ -18,12 +18,12 @@ Below is a list of tools needed to contribute to this project:
 1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
    - Select .NET desktop development component
 2. **Windows SDK (10.0.19043.0 or 10.0.22000.0 ONLY)** via Visual Studio Installer
-3. .NET Core 7 SDK: [**(7.0.100 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-4. WinUI 3: [**(WindowsAppSDK 1.3.0-230331000 Stable Runtime)**](https://aka.ms/windowsappsdk/1.3/1.3.230331000/windowsappruntimeinstall-x64.exe)
+3. .NET Core 8 SDK: [**(8.0.0-rc2 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+4. WinUI 3: [**(WindowsAppSDK 1.4.0 Stable Runtime)**](https://aka.ms/windowsappsdk/1.4/latest/windowsappruntimeinstall-x64.exe)
 
 > **Note**:
 > 
-> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WinUI 3 1.3 Stable`.
+> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WindowsAppSDK`.
 > 
 > Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, no support will be provided for this method. **This is not recommended for beginner users.**
 
