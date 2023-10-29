@@ -1198,7 +1198,8 @@
         "dependencies": {
           "Google.Protobuf": "[3.24.4, )",
           "Hi3Helper.Http": "[1.0.0, )",
-          "System.IO.Hashing": "[8.0.0-rc.2.23479.6, )"
+          "System.IO.Hashing": "[8.0.0-rc.2.23479.6, )",
+          "System.Text.Json": "[8.0.0-rc.2.23479.6, )"
         }
       },
       "hi3helper.http": {
