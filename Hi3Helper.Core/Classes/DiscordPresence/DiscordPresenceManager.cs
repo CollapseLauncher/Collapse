@@ -72,6 +72,7 @@ namespace Hi3Helper.DiscordPresence
 
             // Dispose Discord RPC client
             // _client?.Dispose();
+            UpdateCallbacksRoutine();
             _client?.Dispose();
             _client = null;
         }
