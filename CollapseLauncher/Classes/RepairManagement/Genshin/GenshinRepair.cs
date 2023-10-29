@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO;

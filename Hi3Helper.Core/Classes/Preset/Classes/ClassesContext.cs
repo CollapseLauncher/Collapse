@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;

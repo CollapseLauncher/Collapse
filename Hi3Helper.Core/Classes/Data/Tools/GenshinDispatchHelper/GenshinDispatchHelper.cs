@@ -1,5 +1,5 @@
-﻿using Hi3Helper.EncTool.Proto.Genshin;
-using Hi3Helper.Preset;
+﻿using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Proto.Genshin;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;

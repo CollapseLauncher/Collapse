@@ -154,6 +154,31 @@ namespace CollapseLauncher
             }
         }
 
+        public static async Task<BridgedNetworkStream> DownloadCDNFallbackContent(Http httpInstance, string relativeURL, CancellationToken token)
+        {
+            // Get the preferred CDN first and try get the content stream
+            CDNURLProperty preferredCDN = GetPreferredCDN();
+            BridgedNetworkStream outputStream = await TryGetCDNContent(preferredCDN, httpInstance, relativeURL, token);
+
+            // If stream is not null, then return
+            if (outputStream != null) return outputStream;
+
+            // If the fail return code occurred by the token, then throw cancellation exception
+            token.ThrowIfCancellationRequested();
+
+            // If not, then continue to get the content from another CDN
+            foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
+            {
+                outputStream = await TryGetCDNContent(fallbackCDN, httpInstance, relativeURL, token);
+
+                // If the stream is not null, then return
+                if (outputStream != null) return outputStream;
+            }
+
+            // If all of them failed, then return null
+            return null;
+        }
+
         private static void PerformStreamCheckAndSeek(Stream outputStream)
         {
             // Throw if output stream can't write and seek
@@ -162,6 +187,28 @@ namespace CollapseLauncher
 
             // Reset the outputStream position
             outputStream.Position = 0;
+        }
+
+        private static async ValueTask<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, Http httpInstance, string relativeURL, CancellationToken token)
+        {
+            try
+            {
+                // Get the URL Status then return boolean and and URLStatus
+                (bool, string) urlStatus = await TryGetURLStatus(cdnProp, httpInstance, relativeURL, token);
+
+                // If URL status is false, then return null
+                if (!urlStatus.Item1) return null;
+
+                // Continue to get the content and return the stream if successful
+                HttpResponseMessage response = await GetURLHttpResponse(urlStatus.Item2, token);
+                return await GetHttpStreamFromResponse(response, token);
+            }
+            // Handle the error and log it. If fails, then log it and return false
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
+                return null;
+            }
         }
 
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, Http httpInstance, Stream outputStream, string relativeURL, CancellationToken token)

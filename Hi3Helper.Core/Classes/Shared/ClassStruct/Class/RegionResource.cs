@@ -1,4 +1,4 @@
-﻿using Hi3Helper.Preset;
+﻿using Hi3Helper.EncTool.Parser.AssetIndex;
 using System.Collections.Generic;
 
 namespace Hi3Helper.Shared.ClassStruct
