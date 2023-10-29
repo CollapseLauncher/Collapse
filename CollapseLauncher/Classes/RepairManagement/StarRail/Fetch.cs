@@ -1,18 +1,22 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
+using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 
 namespace CollapseLauncher
 {
@@ -27,28 +31,42 @@ namespace CollapseLauncher
 
             try
             {
+                // Get the primary manifest
+                using Http httpClient = new Http();
+                Dictionary<string, int> hashtable = new Dictionary<string, int>();
+                await GetPrimaryManifest(httpClient, token, assetIndex, hashtable);
+
+                // If the this._isOnlyRecoverMain && base._isVersionOverride is true, store the _originAssetIndex from assetIndex
+                if (this._isOnlyRecoverMain && base._isVersionOverride)
+                    _originAssetIndex = new List<FilePropertiesRemote>(assetIndex);
+
                 // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
 
-                // Initialize the metadata tool (including dispatcher and gateway)
-                if (await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                // Initialize the metadata tool (including dispatcher and gateway).
+                // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
+                // not for delta patch integrity check.
+                if (!base._isVersionOverride && !this._isOnlyRecoverMain && await _innerGameVersionManager.StarRailMetadataTool.Initialize(token, GetExistingGameRegionID(), Path.Combine(_gamePath, $"{Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     // Read block metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadAsbMetadataInformation(token);
                     await _innerGameVersionManager.StarRailMetadataTool.ReadBlockMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataBlock, assetIndex, hashtable);
 
                     // Read Audio metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadAudioMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, true);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataAudio, assetIndex, hashtable, true);
 
                     // Read Video metadata and convert to FilePropertiesRemote
                     await _innerGameVersionManager.StarRailMetadataTool.ReadVideoMetadataInformation(token);
-                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex);
+                    ConvertSRMetadataToAssetIndex(_innerGameVersionManager.StarRailMetadataTool.MetadataVideo, assetIndex, hashtable);
                 }
 
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
                 await FetchBilibiliSDK(token);
+
+                // Clear the hashtable
+                hashtable.Clear();
             }
             finally
             {
@@ -56,6 +74,152 @@ namespace CollapseLauncher
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
         }
+
+        #region PrimaryManifest
+        private async Task GetPrimaryManifest(Http client, CancellationToken token, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable)
+        {
+            // Initialize pkgVersion list
+            List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
+
+            // Initialize repo metadata
+            bool isSuccess = true;
+            try
+            {
+                // Get the metadata
+                Dictionary<string, string> repoMetadata = await FetchMetadata(client, token);
+
+                // Check for manifest. If it doesn't exist, then throw and warn the user
+                if (!(isSuccess = repoMetadata.ContainsKey(_gameVersion.VersionString)))
+                {
+                    throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                }
+
+                // Assign the URL based on the version
+                _gameRepoURL = repoMetadata[_gameVersion.VersionString];
+            }
+            // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
+            catch when (base._isVersionOverride) { throw; }
+
+            // If the base._isVersionOverride is false and the repo metadata is null,
+            // then fetch the asset index from CDN (also check if the status is success)
+            if (!base._isVersionOverride && isSuccess)
+            {
+                // Set asset index URL
+                string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+
+                // Start downloading asset index using FallbackCDNUtil and return its stream
+                BridgedNetworkStream stream = await FallbackCDNUtil.DownloadCDNFallbackContent(client, urlIndex, token);
+                if (stream != null)
+                {
+                    using (stream)
+                    {
+                        // Deserialize asset index and set it to list
+                        AssetIndexV2 parserTool = new AssetIndexV2();
+                        pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                        LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
+                    }
+                }
+            }
+            else
+            {
+                // If the base._isVersionOverride is true (for delta patch), then return
+                if (base._isVersionOverride) return;
+                LogWriteLine($"Falling back to the miHoYo provided pkg_version as the asset index!", LogType.Warning, true);
+
+                // Get the latest game property from the API
+                GameInstallStateEnum gameState = _gameVersionManager.GetGameState();
+                RegionResourceVersion gameVersion = _gameVersionManager.GetGameLatestZip(gameState).FirstOrDefault();
+
+                // If the gameVersion is null, then return
+                if (gameVersion == null) return;
+
+                // Try get the uncompressed url and the pkg_version
+                string baseZipURL = gameVersion.path;
+                int lastIndexOfURL = baseZipURL.LastIndexOf('/');
+                string baseUncompressedURL = baseZipURL.Substring(0, lastIndexOfURL);
+                baseUncompressedURL = CombineURLFromString(baseUncompressedURL, "unzip");
+                string basePkgVersionUrl = CombineURLFromString(baseUncompressedURL, "pkg_version");
+
+                try
+                {
+                    // Set the _gameRepoURL
+                    _gameRepoURL = baseUncompressedURL;
+
+                    // Try get the data
+                    using MemoryStream ms = new MemoryStream();
+                    using StreamReader sr = new StreamReader(ms);
+                    client.DownloadProgress += _httpClient_FetchAssetProgress;
+                    await client.Download(basePkgVersionUrl, ms, null, null, token);
+
+                    // Read the stream and deserialize the JSON
+                    pkgVersion.Clear();
+                    while (!sr.EndOfStream)
+                    {
+                        // Deserialize and add the line to pkgVersion list
+                        string jsonLine = sr.ReadLine();
+                        PkgVersionProperties entry = jsonLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                        pkgVersion.Add(entry);
+                    }
+                }
+                catch { throw; }
+                finally
+                {
+                    // Unsubscribe the event
+                    client.DownloadProgress -= _httpClient_FetchAssetProgress;
+                }
+            }
+
+            // Convert the pkg version list to asset index
+            ConvertPkgVersionToAssetIndex(pkgVersion, assetIndex, hashtable);
+
+            // Clear the pkg version list
+            pkgVersion.Clear();
+        }
+
+        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
+        {
+            // Fetch metadata dictionary
+            using (MemoryStream mfs = new MemoryStream())
+            {
+                // Set metadata URL
+                string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
+
+                // Start downloading metadata using FallbackCDNUtil
+                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
+
+                // Deserialize metadata
+                mfs.Position = 0;
+                return await mfs.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
+            }
+        }
+
+        private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable)
+        {
+            int count = 0;
+            foreach (PkgVersionProperties entry in pkgVersion)
+            {
+                // Get the lookup string for the hashtable
+                string lookupString = $"{Path.GetFileName(entry.remoteName)}|{entry.fileSize}|{entry.md5.ToLower()}";
+                // If the hashtable has the lookup string already, then skip it.
+                if (!hashtable.ContainsKey(lookupString))
+                {
+                    // Otherwise, add the lookup string to the hashtable
+                    hashtable.Add(lookupString, count);
+                }
+                count++;
+
+                // Add the pkgVersion entry to asset index
+                assetIndex.Add(new FilePropertiesRemote
+                {
+                    FT = FileType.Generic,
+                    CRC = entry.md5,
+                    N = entry.remoteName,
+                    RN = CombineURLFromString(_gameRepoURL, entry.remoteName),
+                    S = entry.fileSize
+                });
+            }
+        }
+        #endregion
 
         #region Utilities
         private unsafe string GetExistingGameRegionID()
@@ -78,7 +242,7 @@ namespace CollapseLauncher
             return name;
         }
 
-        private void ConvertSRMetadataToAssetIndex(SRMetadataBase metadata, List<FilePropertiesRemote> assetIndex, bool writeAudioLangRedord = false)
+        private void ConvertSRMetadataToAssetIndex(SRMetadataBase metadata, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable, bool writeAudioLangRedord = false)
         {
             // Get the voice Lang ID
             int voLangID = _innerGameVersionManager.GamePreset.GetVoiceLanguageID();
@@ -111,27 +275,48 @@ namespace CollapseLauncher
                 // Filter only current audio language file and other assets
                 if (FilterCurrentAudioLangFile(asset, voLangName, out bool IsHasHashMark))
                 {
-                    // Convert and add the asset as FilePropertiesRemote to assetIndex
-                    assetIndex.Add(new FilePropertiesRemote
+                    // Get the lookup string and check whether the hashtable contains it.
+                    // If yes, then override the one from assetIndex list.
+                    string lookupString = $"{Path.GetFileName(asset.LocalName)}|{asset.Size}|{hash.ToLower()}";
+                    if (hashtable.ContainsKey(lookupString))
                     {
-                        N = asset.LocalName,
-                        RN = asset.RemoteURL,
-                        CRC = hash,
-                        FT = ConvertFileTypeEnum(asset.AssetType),
-                        S = asset.Size,
-                        IsPatchApplicable = asset.IsPatch,
-                        IsHasHashMark = IsHasHashMark
-                    });
-                    count++;
-                    countSize += asset.Size;
+                        // Get the index of the asset index
+                        int indexOf = hashtable[lookupString];
+                        assetIndex[indexOf] = new FilePropertiesRemote
+                        {
+                            N = asset.LocalName,
+                            RN = asset.RemoteURL,
+                            CRC = hash,
+                            FT = ConvertFileTypeEnum(asset.AssetType),
+                            S = asset.Size,
+                            IsPatchApplicable = asset.IsPatch,
+                            IsHasHashMark = IsHasHashMark
+                        };
+                    }
+                    else
+                    {
+                        // Convert and add the asset as FilePropertiesRemote to assetIndex
+                        assetIndex.Add(new FilePropertiesRemote
+                        {
+                            N = asset.LocalName,
+                            RN = asset.RemoteURL,
+                            CRC = hash,
+                            FT = ConvertFileTypeEnum(asset.AssetType),
+                            S = asset.Size,
+                            IsPatchApplicable = asset.IsPatch,
+                            IsHasHashMark = IsHasHashMark
+                        });
+                        count++;
+                        countSize += asset.Size;
 
 #if DEBUG
-                    LogWriteLine($"Adding {asset.LocalName} [T: {asset.AssetType}] [S: {SummarizeSizeSimple(asset.Size)} / {asset.Size} bytes]", LogType.Default, true);
+                        LogWriteLine($"Adding {asset.LocalName} [T: {asset.AssetType}] [S: {SummarizeSizeSimple(asset.Size)} / {asset.Size} bytes]", LogType.Default, true);
 #endif
+                    }
                 }
             }
 
-            LogWriteLine($"Added {count} assets with {SummarizeSizeSimple(countSize)}/{countSize} bytes in size", LogType.Default, true);
+            LogWriteLine($"Added additional {count} assets with {SummarizeSizeSimple(countSize)}/{countSize} bytes in size", LogType.Default, true);
         }
 
         private bool FilterCurrentAudioLangFile(SRAsset asset, string langName, out bool isHasHashMark)

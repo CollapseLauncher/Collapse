@@ -3,17 +3,13 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
-using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Honkai
@@ -27,7 +23,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Private Properties
         private HonkaiCache _gameCacheManager { get; set; }
-        private bool _forceIgnoreDeltaPatch = false;
+        private HonkaiRepair _gameRepairManager { get; set; }
         #endregion
 
         public HonkaiInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings)
@@ -41,129 +37,23 @@ namespace CollapseLauncher.InstallManager.Honkai
         public override async ValueTask<int> StartPackageVerification()
         {
             IsRunning = true;
-            DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
 
-            // Check if the game has delta patch and in NeedsUpdate status. If true, then
-            // proceed with the delta patch update
-            if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
+            // Get the delta patch confirmation if the property is not null
+            if (_gameDeltaPatchProperty != null)
             {
-                switch (await Dialog_DeltaPatchFileDetected(_parentUI, patchProperty.SourceVer, patchProperty.TargetVer))
-                {
-                    // If no, then proceed with normal update (0)
-                    // Also set ignore delta patch process if this method is re-called
-                    case ContentDialogResult.Secondary:
-                        _forceIgnoreDeltaPatch = true;
-                        return 0;
-                    // If cancel. then proceed to cancel (-1)
-                    case ContentDialogResult.None:
-                        return -1;
-                }
-
-                // Always reset the token
-                ResetToken();
-
-                // Initialize repair tool
-                _gameRepairTool = new HonkaiRepair(_parentUI, _gameVersionManager, _gameCacheManager, _gameSettings, true, patchProperty.SourceVer);
-                try
-                {
-                    // Set the activity
-                    _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status2);
-                    _status.IsIncludePerFileIndicator = false;
-                    _status.IsProgressTotalIndetermined = true;
-                    UpdateStatus();
-
-                    // Start the check routine and get the state if download needed
-                    _gameRepairTool.ProgressChanged += DeltaPatchCheckProgress;
-                    bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine();
-                    if (isDownloadNeeded)
-                    {
-                        _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status8, "").Replace(": ", "");
-                        _progressTotalSizeCurrent = 0;
-                        _progressTotalCountCurrent = 1;
-                        _progressTotalReadCurrent = 0;
-                        UpdateStatus();
-
-                        // If download needed, then start the repair (download) routine
-                        await _gameRepairTool.StartRepairRoutine(true);
-                    }
-                }
-                catch
-                {
-                    IsRunning = false;
-                    throw;
-                }
-                finally
-                {
-                    // Unsubscribe the progress event
-                    _gameRepairTool.ProgressChanged -= DeltaPatchCheckProgress;
-                }
-
-                // Then return 1 as continue to other steps
-                return 1;
+                // If the confirm is 1 (verified) or -1 (cancelled), then return the code
+                int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty, _gameRepairManager = new HonkaiRepair(_parentUI, _gameVersionManager, _gameCacheManager, _gameSettings, true, _gameDeltaPatchProperty.SourceVer));
+                if (deltaPatchConfirm == -1 || deltaPatchConfirm == 1) return deltaPatchConfirm;
             }
 
-            // If no delta patch is happening, then do the base verification
+            // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
             return await base.StartPackageVerification();
         }
 
         protected override async Task StartPackageInstallationInner()
         {
-            if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
-            {
-                DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
-
-                string previousPath = _gamePath;
-                string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
-
-                try
-                {
-                    List<FilePropertiesRemote> localAssetIndex = ((HonkaiRepair)_gameRepairTool).GetAssetIndex();
-                    MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath);
-
-                    // Get the sum of uncompressed size and
-                    // Set progress count to beginning
-                    _progressTotalSize = localAssetIndex.Sum(x => x.S);
-                    _progressTotalSizeCurrent = 0;
-                    _progressTotalCountCurrent = 1;
-                    _status.IsIncludePerFileIndicator = false;
-                    _status.IsProgressTotalIndetermined = true;
-                    _status.ActivityStatus = Lang._Misc.ApplyingPatch;
-                    UpdateStatus();
-                    RestartStopwatch();
-
-                    // Start the patching process
-                    HDiffPatch.LogVerbosity = Verbosity.Verbose;
-                    EventListener.PatchEvent += DeltaPatchCheckProgress;
-                    EventListener.LoggerEvent += DeltaPatchCheckLogEvent;
-                    await Task.Run(() =>
-                    {
-                        HDiffPatch patch = new HDiffPatch();
-                        patch.Initialize(patchProperty.PatchPath);
-                        patch.Patch(ingredientPath, previousPath, true, _token.Token, false, true);
-                    });
-
-                    // Remove ingredient folder
-                    Directory.Delete(ingredientPath, true);
-
-                    if (_canDeleteZip)
-                    {
-                        File.Delete(patchProperty.PatchPath);
-                    }
-
-                    // Then return
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
-                    throw;
-                }
-                finally
-                {
-                    EventListener.PatchEvent -= DeltaPatchCheckProgress;
-                    EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
-                }
-            }
+            // If the delta patch is performed, then return
+            if (await StartDeltaPatch(_gameRepairManager, true)) return;
 
             // If no delta patch is happening, then do the base installation
             await base.StartPackageInstallationInner();
@@ -228,122 +118,6 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // Reset _forceIgnoreDeltaPatch state to false
             _forceIgnoreDeltaPatch = false;
-        }
-        #endregion
-
-        #region Private Methods - StartPackageInstallation
-        private void MoveFileToIngredientList(List<FilePropertiesRemote> assetIndex, string sourcePath, string targetPath)
-        {
-            string inputPath;
-            string outputPath;
-            string outputFolder;
-
-            // Iterate the asset
-            FileInfo fileInfo;
-            foreach (FilePropertiesRemote index in assetIndex)
-            {
-                // Get the combined path from the asset name
-                inputPath = Path.Combine(sourcePath, index.N);
-                outputPath = Path.Combine(targetPath, index.N);
-                outputFolder = Path.GetDirectoryName(outputPath);
-
-                // Create directory of the output path if not exist
-                if (!Directory.Exists(outputFolder))
-                {
-                    Directory.CreateDirectory(outputFolder);
-                }
-
-                // Sanity Check: If the file is still missing even after the process, then throw
-                fileInfo = new FileInfo(inputPath);
-                if (!fileInfo.Exists)
-                {
-                    throw new AccessViolationException($"File: {inputPath} isn't found!");
-                }
-
-                // Move the file to the target directory
-                fileInfo.IsReadOnly = false;
-                fileInfo.MoveTo(outputPath, true);
-                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
-            }
-
-            // TODO: Make it automatic
-            // Move block file to ingredient path
-            string baseBlockPath = @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
-            inputPath = Path.Combine(sourcePath, baseBlockPath);
-            outputPath = Path.Combine(targetPath, baseBlockPath);
-
-            // Sanity Check: If the block manifest (xmf) is still missing even after the process, then throw
-            fileInfo = new FileInfo(inputPath);
-            if (!fileInfo.Exists)
-            {
-                throw new AccessViolationException($"Block file: {inputPath} isn't found!");
-            }
-
-            // Move the block manifest (xmf) to the target directory
-            fileInfo.IsReadOnly = false;
-            fileInfo.MoveTo(outputPath, true);
-            LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
-        }
-        #endregion
-
-        #region Event Methods
-        private async void DeltaPatchCheckProgress(object sender, PatchEvent e)
-        {
-            _progress.ProgressTotalPercentage = e.ProgressPercentage;
-
-            _progress.ProgressTotalTimeLeft = e.TimeLeft;
-            _progress.ProgressTotalSpeed = e.Speed;
-
-            _progress.ProgressTotalSizeToDownload = e.TotalSizeToBePatched;
-            _progress.ProgressTotalDownload = e.CurrentSizePatched;
-
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                _status.IsProgressTotalIndetermined = false;
-                UpdateProgressBase();
-                UpdateStatus();
-            }
-        }
-
-        private void DeltaPatchCheckLogEvent(object sender, LoggerEvent e)
-        {
-            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
-            || (HDiffPatch.LogVerbosity == Verbosity.Debug
-            && !(e.LogLevel == Verbosity.Debug ||
-                 e.LogLevel == Verbosity.Verbose ||
-                 e.LogLevel == Verbosity.Info))
-            || (HDiffPatch.LogVerbosity == Verbosity.Verbose
-            && !(e.LogLevel == Verbosity.Verbose ||
-                 e.LogLevel == Verbosity.Info))
-            || (HDiffPatch.LogVerbosity == Verbosity.Info
-            && !(e.LogLevel == Verbosity.Info))) return;
-
-            LogType type = e.LogLevel switch
-            {
-                Verbosity.Verbose => LogType.Debug,
-                Verbosity.Debug => LogType.Debug,
-                _ => LogType.Default
-            };
-
-            LogWriteLine(e.Message, type, true);
-        }
-
-        private async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
-        {
-            _progress.ProgressTotalPercentage = e.ProgressTotalPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressTotalPercentage;
-
-            _progress.ProgressTotalTimeLeft = e.ProgressTotalTimeLeft;
-            _progress.ProgressTotalSpeed = e.ProgressTotalSpeed;
-
-            _progress.ProgressTotalSizeToDownload = e.ProgressTotalSizeToDownload;
-            _progress.ProgressTotalDownload = e.ProgressTotalDownload;
-
-            if (await CheckIfNeedRefreshStopwatch())
-            {
-                _status.IsProgressTotalIndetermined = false;
-                UpdateProgressBase();
-                UpdateStatus();
-            }
         }
         #endregion
 

@@ -5,6 +5,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -141,6 +142,10 @@ namespace CollapseLauncher.GameVersioning
             }
             set => UpdateGameVersion(value ?? GameVersionAPI);
         }
+
+        // Assign for the Game Delta-Patch properties (if any).
+        // If there's no Delta-Patch, then set it to null.
+        protected DeltaPatchProperty GameDeltaPatchProp { get => CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI); }
         #endregion
 
         protected GameVersionBase(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfigV2 gamePreset)
@@ -275,6 +280,41 @@ namespace CollapseLauncher.GameVersioning
         }
 #nullable disable
 
+        public virtual DeltaPatchProperty CheckDeltaPatchUpdate(string gamePath, string profileName, GameVersion gameVersion)
+        {
+            // If GameVersionInstalled doesn't have a value (null). then return null.
+            if (!GameVersionInstalled.HasValue) return null;
+
+            // Get the pre-load status
+            bool isGameHasPreload = IsGameHasPreload() && GameVersionInstalled.Value.IsMatch(gameVersion);
+
+            // If the game version doesn't match with the API's version, then go to the next check.
+            if (!GameVersionInstalled.Value.IsMatch(gameVersion) || isGameHasPreload)
+            {
+                // Sanitation check if the directory doesn't exist, then return null.
+                if (!Directory.Exists(gamePath)) return null;
+
+                // Iterate the possible path
+                IEnumerable PossiblePaths = Directory.EnumerateFiles(gamePath, $"{profileName}*.patch", SearchOption.TopDirectoryOnly);
+                foreach (string path in PossiblePaths)
+                {
+                    // Initialize patchProperty for versioning check.
+                    DeltaPatchProperty patchProperty = new DeltaPatchProperty(path);
+                    // If the version of the game is valid and the profile name matches, then return the property.
+                    if (GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
+                     && GameVersionAPI.IsMatch(patchProperty.TargetVer)
+                     && patchProperty.ProfileName == GamePreset.ProfileName) return patchProperty;
+                    // If the state is on pre-load, then try check the pre-load delta patch
+                    if (isGameHasPreload && GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
+                     && GameVersionAPIPreload.Value.IsMatch(patchProperty.TargetVer)
+                     && patchProperty.ProfileName == GamePreset.ProfileName) return patchProperty;
+                }
+            }
+
+            // If all not passed, then return null.
+            return null;
+        }
+
         public virtual void Reinitialize() => InitializeIniProp();
 
         public void UpdateGamePath(string path, bool saveValue = true)
@@ -319,7 +359,7 @@ namespace CollapseLauncher.GameVersioning
                 InitializeIniProp(GameIniProfilePath, GameIniProfile, _defaultIniProfile, _defaultIniProfileSection);
                 InitializeIniProp(GameIniVersionPath, GameIniVersion, _defaultIniVersion, _defaultIniVersionSection);
             }
-            
+
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath, Path.GetFileNameWithoutExtension(GamePreset.GameExecutableName), GamePreset.VendorType);
         }

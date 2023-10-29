@@ -793,14 +793,19 @@ namespace CollapseLauncher.Interfaces
         #region HandlerUpdaters
         public void Dispatch(DispatcherQueueHandler handler) => _parentUI.DispatcherQueue.TryEnqueue(handler);
 
-        protected virtual void PopRepairAssetEntry() => Dispatch(() =>
+        protected virtual void PopRepairAssetEntry()
         {
             try
             {
-                AssetEntry.RemoveAt(0);
+                if (_parentUI.DispatcherQueue.HasThreadAccess)
+                {
+                    if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0);
+                    return;
+                }
+                Dispatch(() => { if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0); });
             }
             catch { }
-        });
+        }
 
         protected async Task<bool> CheckIfNeedRefreshStopwatch()
         {

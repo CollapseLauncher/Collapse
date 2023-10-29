@@ -16,6 +16,12 @@ namespace CollapseLauncher.InstallManager.StarRail
     {
         #region Override Properties
         protected override int _gameVoiceLanguageID { get => _gameVersionManager.GamePreset.GetVoiceLanguageID(); }
+        protected override bool _canDeltaPatch { get => _gameVersionManager.IsGameHasDeltaPatch(); }
+        protected override DeltaPatchProperty _gameDeltaPatchProperty { get => _gameVersionManager.GetDeltaPatchInfo(); }
+        #endregion
+
+        #region Properties
+        private StarRailRepair _gameRepairManager { get; set; }
         #endregion
 
         public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
@@ -25,8 +31,27 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
         #region Public Methods
+        public override async ValueTask<int> StartPackageVerification()
+        {
+            IsRunning = true;
+
+            // Get the delta patch confirmation if the property is not null
+            if (_gameDeltaPatchProperty != null)
+            {
+                // If the confirm is 1 (verified) or -1 (cancelled), then return the code
+                int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty, _gameRepairManager = new StarRailRepair(_parentUI, _gameVersionManager, true, _gameDeltaPatchProperty.SourceVer));
+                if (deltaPatchConfirm == -1 || deltaPatchConfirm == 1) return deltaPatchConfirm;
+            }
+
+            // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
+            return await base.StartPackageVerification();
+        }
+
         protected override async Task StartPackageInstallationInner()
         {
+            // If the delta patch is performed, then return
+            if (await StartDeltaPatch(_gameRepairManager, false)) return;
+
             // Run the base installation process
             await base.StartPackageInstallationInner();
 
