@@ -148,26 +148,26 @@ namespace CollapseLauncher.Pages
 
         public bool VerticalSync
         {
-            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VerticalSync - 1);
-            set => Settings.SettingsGeneralData.graphicsData.VerticalSync = (VerticalSyncOption)(Convert.ToInt32(value) + 1);
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.VerticalSync);
+            set => Settings.SettingsGeneralData.globalPerfData.VerticalSync = (VerticalSyncOption)(Convert.ToInt32(value));
         }
 
         public bool VolumetricFog
         {
-            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.VolumetricFog - 1);
-            set => Settings.SettingsGeneralData.graphicsData.VolumetricFog = (VolumetricFogOption)(Convert.ToInt32(value) + 1);
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.VolumetricFog);
+            set => Settings.SettingsGeneralData.globalPerfData.VolumetricFog = (VolumetricFogOption)(Convert.ToInt32(value));
         }
 
         public bool Reflections
         {
-            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.Reflections - 1);
-            set => Settings.SettingsGeneralData.graphicsData.Reflections = (ReflectionsOption)(Convert.ToInt32(value) + 1);
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.Reflections);
+            set => Settings.SettingsGeneralData.globalPerfData.Reflections = (ReflectionsOption)(Convert.ToInt32(value));
         }
 
         public bool Bloom
         {
-            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.graphicsData.Bloom - 1);
-            set => Settings.SettingsGeneralData.graphicsData.Bloom = (BloomOption)(Convert.ToInt32(value) + 1);
+            get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.Bloom);
+            set => Settings.SettingsGeneralData.globalPerfData.Bloom = (BloomOption)(Convert.ToInt32(value));
         }
 
         public int FPS
@@ -175,9 +175,9 @@ namespace CollapseLauncher.Pages
             get
             {
                 // Get the current value
-                FPSOption curValue = Settings.SettingsGeneralData.graphicsData.FPS;
+                FPSOption curValue = Settings.SettingsGeneralData.globalPerfData.FPS;
                 // Get the index of the current value in FPSOptionsList array
-                int indexOfValue = Array.IndexOf(GraphicsData.FPSOptionsList, curValue);
+                int indexOfValue = Array.IndexOf(GlobalPerfData.FPSOptionsList, curValue);
                 // Return the index of the value
                 return indexOfValue;
             }
@@ -187,9 +187,9 @@ namespace CollapseLauncher.Pages
                 if (value < 0) return;
 
                 // Get the FPSOption based on the selected index by the "value"
-                FPSOption valueFromIndex = GraphicsData.FPSOptionsList[value];
+                FPSOption valueFromIndex = GlobalPerfData.FPSOptionsList[value];
                 // Set the actual value to its property
-                Settings.SettingsGeneralData.graphicsData.FPS = valueFromIndex;
+                Settings.SettingsGeneralData.globalPerfData.FPS = valueFromIndex;
             }
         }
 
@@ -197,16 +197,16 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int enumIndex = Settings.SettingsGeneralData.graphicsData.RenderResolution;
-                int valueIndex = GraphicsData.RenderScaleIndex.IndexOf(enumIndex);
-                double enumValue = GraphicsData.RenderScaleValues[valueIndex];
-                return GraphicsData.RenderScaleValues.IndexOf(enumValue);
+                int enumIndex = Settings.SettingsGeneralData.globalPerfData.RenderResolution;
+                int valueIndex = GlobalPerfData.RenderScaleIndex.IndexOf(enumIndex);
+                double enumValue = GlobalPerfData.RenderScaleValues[valueIndex];
+                return GlobalPerfData.RenderScaleValues.IndexOf(enumValue);
             }
             set
             {
-                double enumValue = GraphicsData.RenderScaleValues[value];
+                double enumValue = GlobalPerfData.RenderScaleValues[value];
                 int enumIndex = DictionaryCategory.RenderResolutionOption[enumValue];
-                Settings.SettingsGeneralData.graphicsData.RenderResolution = enumIndex;
+                Settings.SettingsGeneralData.globalPerfData.RenderResolution = enumIndex;
             }
         }
 
@@ -214,7 +214,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int curValue = (int)Settings.SettingsGeneralData.graphicsData.ShadowQuality - 1;
+                int curValue = (int)Settings.SettingsGeneralData.globalPerfData.ShadowQuality;
 
                 // Disable Volumetric Fog when ShadowQuality is not Medium or higher
                 if (curValue < 2)
@@ -241,62 +241,62 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsEnabled = true;
                 }
 
-                Settings.SettingsGeneralData.graphicsData.ShadowQuality = (ShadowQualityOption)(value + 1);
+                Settings.SettingsGeneralData.globalPerfData.ShadowQuality = (ShadowQualityOption)(value);
             }
         }
 
         public int VisualEffects
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.VisualEffects - 1;
-            set => Settings.SettingsGeneralData.graphicsData.VisualEffects = (VisualEffectsOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.VisualEffects;
+            set => Settings.SettingsGeneralData.globalPerfData.VisualEffects = (VisualEffectsOption)(value);
         }
 
         public int SFXQuality
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.SFXQuality - 1;
-            set => Settings.SettingsGeneralData.graphicsData.SFXQuality = (SFXQualityOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.SFXQuality;
+            set => Settings.SettingsGeneralData.globalPerfData.SFXQuality = (SFXQualityOption)(value);
         }
 
         public int EnvironmentDetail
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.EnvironmentDetail - 1;
-            set => Settings.SettingsGeneralData.graphicsData.EnvironmentDetail = (EnvironmentDetailOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.EnvironmentDetail;
+            set => Settings.SettingsGeneralData.globalPerfData.EnvironmentDetail = (EnvironmentDetailOption)(value);
         }
 
         public int MotionBlur
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.MotionBlur - 1;
-            set => Settings.SettingsGeneralData.graphicsData.MotionBlur = (MotionBlurOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.MotionBlur;
+            set => Settings.SettingsGeneralData.globalPerfData.MotionBlur = (MotionBlurOption)(value);
         }
 
         public int CrowdDensity
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.CrowdDensity - 1;
-            set => Settings.SettingsGeneralData.graphicsData.CrowdDensity = (CrowdDensityOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.CrowdDensity;
+            set => Settings.SettingsGeneralData.globalPerfData.CrowdDensity = (CrowdDensityOption)(value);
         }
 
         public int SubsurfaceScattering
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.SubsurfaceScattering - 1;
-            set => Settings.SettingsGeneralData.graphicsData.SubsurfaceScattering = (SubsurfaceScatteringOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.SubsurfaceScattering;
+            set => Settings.SettingsGeneralData.globalPerfData.SubsurfaceScattering = (SubsurfaceScatteringOption)(value);
         }
 
         public int CoOpTeammateEffects
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.CoOpTeammateEffects - 1;
-            set => Settings.SettingsGeneralData.graphicsData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.CoOpTeammateEffects;
+            set => Settings.SettingsGeneralData.globalPerfData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)(value);
         }
 
         public int AnisotropicFiltering
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.AnisotropicFiltering - 1;
-            set => Settings.SettingsGeneralData.graphicsData.AnisotropicFiltering = (AnisotropicFilteringOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.AnisotropicFiltering;
+            set => Settings.SettingsGeneralData.globalPerfData.AnisotropicFiltering = (AnisotropicFilteringOption)(value);
         }
 
         public int Antialiasing
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.Antialiasing - 1;
-            set => Settings.SettingsGeneralData.graphicsData.Antialiasing = (AntialiasingOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.Antialiasing;
+            set => Settings.SettingsGeneralData.globalPerfData.Antialiasing = (AntialiasingOption)(value);
         }
 
         public bool TeamPageBackground
@@ -307,8 +307,8 @@ namespace CollapseLauncher.Pages
 
         public int GlobalIllumination
         {
-            get => (int)Settings.SettingsGeneralData.graphicsData.GlobalIllumination - 1;
-            set => Settings.SettingsGeneralData.graphicsData.GlobalIllumination = (GlobalIlluminationOption)(value + 1);
+            get => (int)Settings.SettingsGeneralData.globalPerfData.GlobalIllumination;
+            set => Settings.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)(value);
         }
         #endregion
 
