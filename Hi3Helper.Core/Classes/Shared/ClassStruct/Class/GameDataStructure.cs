@@ -7,11 +7,7 @@ using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<FileType>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum FileType : byte { Generic, Blocks, Audio, Video, Unused }
     public class FilePropertiesRemote : IAssetIndexSummary
     {

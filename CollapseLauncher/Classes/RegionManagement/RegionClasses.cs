@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -12,11 +11,7 @@ namespace CollapseLauncher
         T Copy();
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<PostCarouselType>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum PostCarouselType
     {
         POST_TYPE_INFO,
@@ -189,7 +184,7 @@ namespace CollapseLauncher
             QR_Description = QR_Description,
             Description = Description,
             Links = Links?.Copy()
-    };
+        };
     }
 
     public class RegionBackgroundProp : IRegionResourceCopyable<RegionBackgroundProp>
@@ -221,7 +216,7 @@ namespace CollapseLauncher
 
         public string icon_id { get; set; }
         public string icon_link
-        { 
+        {
             get => StripTabsAndNewlines(string.IsNullOrEmpty(_icon_link) ? url : _icon_link);
             set => _icon_link = value;
         }

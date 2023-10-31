@@ -34,11 +34,7 @@ namespace Hi3Helper.Shared.ClassStruct
 #nullable disable
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<NotificationActionTypeDesc>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum NotificationActionTypeDesc : int
     {
         ClickLink = 0
@@ -212,11 +208,7 @@ namespace Hi3Helper.Shared.ClassStruct
         }
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<NotifSeverity>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum NotifSeverity : uint
     {
         Informational,
