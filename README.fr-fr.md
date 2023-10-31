@@ -182,12 +182,6 @@ En plus de cela, ce lanceur possède également des fonctionnalités avancées p
 > Veuillez garder à l'esprit que la fonction de conversion de jeu n'est actuellement disponible que pour Honkai Impact 3rd. Les autres jeux miHoYo/Cognosphere Pte. Ltd. ne sont pas prévus pour l'instant.
 
 # Télécharger les versions prêtes à l'emploi
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.13/CL-1.71.13_Installer.exe)
-> **Note** : La version pour ce build est `1.71.13` (Sortie le : 2 Octobre 2023).
-
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/v1.72.4-pre/CL-1.72.4-preview_Installer.exe)
-> **Note** : La version pour ce build est `1.72.4` (Sortie le : 9 Octobre 2023).
-
 Pour voir toutes les versions, [**cliquez ici**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
 # Configuration requise pour la version prête à l'emploi
