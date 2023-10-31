@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.FileDialogCOM;
+﻿using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -6,68 +6,83 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.FileDialogCOM
 {
-    // Reference:
-    // https://www.dotnetframework.org/default.aspx/4@0/4@0/DEVDIV_TFS/Dev10/Releases/RTMRel/ndp/fx/src/WinForms/Managed/System/WinForms/FileDialog_Vista_Interop@cs/1305376/FileDialog_Vista_Interop@cs
+    /*
+     * Reference:
+     * https://www.dotnetframework.org/default.aspx/4@0/4@0/DEVDIV_TFS/Dev10/Releases/RTMRel/ndp/fx/src/WinForms/Managed/System/WinForms/FileDialog_Vista_Interop@cs/1305376/FileDialog_Vista_Interop@cs
+     * 
+     * UPDATE: 2023-11-01
+     * This code has been modified to support ILTrimming and Native AOT
+     * by using Source-generated COM Wrappers on .NET 8.
+     * 
+     * Please refer to this link for more information:
+     * https://learn.microsoft.com/en-us/dotnet/standard/native-interop/comwrappers-source-generation
+     */
     public static class FileDialogNative
     {
         private static IntPtr parentHandler = IntPtr.Zero;
         public static void InitHandlerPointer(IntPtr handle) => parentHandler = handle;
 
-        public static async Task<List<string>> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null) => await Task.Run(() =>
+        public static async Task<string[]> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null) => await Task.Run(() =>
         {
             IFileOpenDialog dialog = null;
             IShellItemArray resShell;
 
             try
             {
-                dialog = new NativeFileOpenDialog();
+                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT | FOS.FOS_ALLOWMULTISELECT);
-                SetFileTypeFiler(ref dialog, FileTypeFilter);
+                SetFileTypeFilter(dialog, FileTypeFilter);
 
                 if (dialog.Show(parentHandler) < 0) return null;
 
                 dialog.GetResults(out resShell);
-                return GetIShellItemArray(dialog, resShell);
+                return GetIShellItemArray(resShell);
             }
             catch (COMException)
             {
                 return null;
             }
+#if !NET8_0_OR_GREATER
             finally
             {
                 if (dialog != null) Marshal.FinalReleaseComObject(dialog);
             }
+#endif
         }).ConfigureAwait(false);
 
         public static async Task<string> GetFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) => await Task.Run(() =>
         {
             IFileOpenDialog dialog = null;
             IShellItem resShell;
-            string result;
+            IntPtr titlePtr = IntPtr.Zero;
 
             try
             {
-                dialog = new NativeFileOpenDialog();
+                dialog = new IFileOpenDialog();
                 if (title != null)
                 {
-                    dialog.SetTitle(title);
+                    dialog.SetTitle(titlePtr = UnicodeStringToCOMPtr(title));
                 }
-                SetFileTypeFiler(ref dialog, FileTypeFilter);
+                SetFileTypeFilter(dialog, FileTypeFilter);
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT);
 
                 if (dialog.Show(parentHandler) < 0) return null;
 
                 dialog.GetResult(out resShell);
-                resShell.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out result);
-                return result;
+                resShell.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out IntPtr resultPtr);
+                return COMPtrToUnicodeString(resultPtr);
             }
-            catch (COMException)
+            catch (COMException ex)
             {
+                Logger.LogWriteLine($"COM Exception: {ex}", LogType.Error, true);
                 return null;
             }
             finally
             {
+#if !NET8_0_OR_GREATER
                 if (dialog != null) Marshal.FinalReleaseComObject(dialog);
+#endif
+                if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
             }
         }).ConfigureAwait(false);
 
@@ -75,23 +90,23 @@ namespace CollapseLauncher.FileDialogCOM
         {
             IFileSaveDialog dialog = null;
             IShellItem resShell;
-            string result;
+            IntPtr titlePtr = IntPtr.Zero;
 
             try
             {
-                dialog = new NativeFileSaveDialog();
+                dialog = new IFileSaveDialog();
                 if (title != null)
                 {
-                    dialog.SetTitle(title);
+                    dialog.SetTitle(titlePtr = UnicodeStringToCOMPtr(title));
                 }
-                SetFileTypeSaveFiler(ref dialog, FileTypeFilter);
+                SetFileTypeFilter(dialog, FileTypeFilter);
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT);
 
                 if (dialog.Show(parentHandler) < 0) return null;
 
                 dialog.GetResult(out resShell);
-                resShell.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out result);
-                return result;
+                resShell.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out IntPtr resultPtr);
+                return COMPtrToUnicodeString(resultPtr);
             }
             catch (COMException)
             {
@@ -99,101 +114,149 @@ namespace CollapseLauncher.FileDialogCOM
             }
             finally
             {
+#if !NET8_0_OR_GREATER
                 if (dialog != null) Marshal.FinalReleaseComObject(dialog);
+#endif
+                if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
             }
         }).ConfigureAwait(false);
 
-        public static async Task<List<string>> GetMultiFolderPicker() => await Task.Run(() =>
+        public static async Task<string[]> GetMultiFolderPicker() => await Task.Run(() =>
         {
             IFileOpenDialog dialog = null;
             IShellItemArray resShell;
 
             try
             {
-                dialog = new NativeFileOpenDialog();
+                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_ALLOWMULTISELECT | FOS.FOS_DONTADDTORECENT | FOS.FOS_PICKFOLDERS);
 
                 if (dialog.Show(parentHandler) < 0) return null;
 
                 dialog.GetResults(out resShell);
-                return GetIShellItemArray(dialog, resShell);
+                return GetIShellItemArray(resShell);
             }
             catch (COMException)
             {
                 return null;
             }
+#if !NET8_0_OR_GREATER
             finally
             {
                 if (dialog != null) Marshal.FinalReleaseComObject(dialog);
             }
+#endif
         }).ConfigureAwait(false);
 
         public static async Task<string> GetFolderPicker() => await Task.Run(() =>
         {
-            IFileDialog dialog = null;
+            IFileOpenDialog dialog = null;
             IShellItem resShell;
-            string result;
 
             try
             {
-                dialog = new NativeFileOpenDialog();
+                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT | FOS.FOS_PICKFOLDERS);
 
                 if (dialog.Show(parentHandler) < 0) return null;
 
                 dialog.GetFolder(out resShell);
-                resShell.GetDisplayName(SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out result);
-                return result;
+                resShell.GetDisplayName(SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out IntPtr resultPtr);
+                return COMPtrToUnicodeString(resultPtr);
             }
             catch (COMException)
             {
                 return null;
             }
+#if !NET8_0_OR_GREATER
             finally
             {
                 if (dialog != null) Marshal.FinalReleaseComObject(dialog);
             }
+#endif
         }).ConfigureAwait(false);
 
-        private static void SetFileTypeSaveFiler(ref IFileSaveDialog dialog, Dictionary<string, string> FileTypeFilter)
+        private static void SetFileTypeFilter(IFileOpenDialog dialog, Dictionary<string, string> FileTypeFilter)
         {
-            List<COMDLG_FILTERSPEC> fileTypes = new List<COMDLG_FILTERSPEC>();
-
             if (FileTypeFilter != null)
             {
+                int len = FileTypeFilter.Count;
+                int i = 0;
+                COMDLG_FILTERSPEC[] array = new COMDLG_FILTERSPEC[len];
                 foreach (KeyValuePair<string, string> entry in FileTypeFilter)
-                    fileTypes.Add(new COMDLG_FILTERSPEC { pszName = entry.Key, pszSpec = entry.Value });
+                    array[i++] = new COMDLG_FILTERSPEC { pszName = entry.Key, pszSpec = entry.Value };
 
-                dialog.SetFileTypes((uint)fileTypes.Count, fileTypes.ToArray());
+                IntPtr structPtr = ArrayToHGlobalPtr(array);
+                dialog.SetFileTypes((uint)len, structPtr);
+                Marshal.FreeHGlobal(structPtr);
             }
         }
 
-        private static void SetFileTypeFiler(ref IFileOpenDialog dialog, Dictionary<string, string> FileTypeFilter)
+        private static void SetFileTypeFilter(IFileSaveDialog dialog, Dictionary<string, string> FileTypeFilter)
         {
-            List<COMDLG_FILTERSPEC> fileTypes = new List<COMDLG_FILTERSPEC>();
-
             if (FileTypeFilter != null)
             {
+                int len = FileTypeFilter.Count;
+                int i = 0;
+                COMDLG_FILTERSPEC[] array = new COMDLG_FILTERSPEC[len];
                 foreach (KeyValuePair<string, string> entry in FileTypeFilter)
-                    fileTypes.Add(new COMDLG_FILTERSPEC { pszName = entry.Key, pszSpec = entry.Value });
+                    array[i++] = new COMDLG_FILTERSPEC { pszName = entry.Key, pszSpec = entry.Value };
 
-                dialog.SetFileTypes((uint)fileTypes.Count, fileTypes.ToArray());
+                IntPtr structPtr = ArrayToHGlobalPtr(array);
+                dialog.SetFileTypes((uint)len, structPtr);
+                Marshal.FreeHGlobal(structPtr);
             }
         }
 
-        private static List<string> GetIShellItemArray(in IFileOpenDialog dialog, in IShellItemArray itemArray)
+        private static IntPtr ArrayToHGlobalPtr<T>(T[] array)
         {
-            List<string> results = new List<string>();
+            int sizeOf = Marshal.SizeOf<T>();
+
+            IntPtr structPtr = Marshal.AllocHGlobal(sizeOf * array.Length);
+            long partPtrLong = structPtr.ToInt64();
+            for (int i = 0; i < array.Length; i++)
+            {
+                IntPtr partPtr = new IntPtr(partPtrLong);
+                Marshal.StructureToPtr(array[i], partPtr, false);
+                partPtrLong += sizeOf;
+            }
+
+            return structPtr;
+        }
+
+        private static IntPtr UnicodeStringToCOMPtr(string str) => Marshal.StringToCoTaskMemUni(str);
+
+        private static string COMPtrToUnicodeString(IntPtr ptr)
+        {
+            try
+            {
+                string result = Marshal.PtrToStringUni(ptr);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Logger.LogWriteLine($"Error while marshalling COM Pointer {ptr} to string!\r\n{e}");
+                throw;
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero) Marshal.FreeCoTaskMem(ptr);
+            }
+        }
+
+        private static string[] GetIShellItemArray(IShellItemArray itemArray)
+        {
             IShellItem item;
             uint fileCount;
-            string _res;
 
             itemArray.GetCount(out fileCount);
+            string[] results = new string[fileCount];
+
             for (uint i = 0; i < fileCount; i++)
             {
                 itemArray.GetItemAt(i, out item);
-                item.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out _res);
-                results.Add(_res);
+                item.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out IntPtr _resPtr);
+                results[0] = COMPtrToUnicodeString(_resPtr);
             }
 
             return results;

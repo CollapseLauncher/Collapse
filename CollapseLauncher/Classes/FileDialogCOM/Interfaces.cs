@@ -1,37 +1,18 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace CollapseLauncher.FileDialogCOM
 {
     [ComImport]
-    [Guid(IIDGuid.IFileOpenDialog)]
-    [CoClass(typeof(FileOpenDialogRCW))]
-    public interface NativeFileOpenDialog : IFileOpenDialog
-    { }
-
-    [ComImport]
-    [Guid(IIDGuid.IFileSaveDialog)]
-    [CoClass(typeof(FileSaveDialogRCW))]
-    public interface NativeFileSaveDialog : IFileSaveDialog
-    { }
-
-    [ComImport()]
-    [Guid(IIDGuid.IModalWindow)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IModalWindow
-    {
-
-        [PreserveSig]
-        int Show(IntPtr parent);
-    }
-
-    [ComImport]
     [Guid(IIDGuid.IShellItemArray)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IShellItemArray
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
+    public partial interface IShellItemArray
     {
         // Not supported: IBindCtx
-
         void BindToHandler(IntPtr pbc, ref Guid rbhid, ref Guid riid, out IntPtr ppvOut);
 
         void GetPropertyStore(int Flags, ref Guid riid, out IntPtr ppv);
@@ -50,12 +31,24 @@ namespace CollapseLauncher.FileDialogCOM
     [ComImport()]
     [Guid(IIDGuid.IFileDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public partial interface IFileDialog
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
+    public partial interface IFileDialog { } // This interface is now replaced by IFileOpenDialog and IFileSaveDialog
+
+    [ComImport()]
+    [Guid(IIDGuid.IFileOpenDialog)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [CoClass(typeof(FileOpenDialogRCW))]
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
+    public partial interface IFileOpenDialog
     {
         [PreserveSig]
         int Show(IntPtr parent);
 
-        void SetFileTypes(uint cFileTypes, [MarshalAs(UnmanagedType.LPArray)] COMDLG_FILTERSPEC[] rgFilterSpec);
+        void SetFileTypes(uint cFileTypes, IntPtr rgFilterSpec);
 
         void SetFileTypeIndex(uint iFileType);
 
@@ -77,84 +70,30 @@ namespace CollapseLauncher.FileDialogCOM
 
         void GetCurrentSelection(out IShellItem ppsi);
 
-        void SetFileName([MarshalAs(UnmanagedType.LPWStr)] string pszName);
+        void SetFileName(IntPtr pszName);
 
-        void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
+        void GetFileName(out IntPtr pszName);
 
-        void SetTitle([MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+        void SetTitle(IntPtr pszTitle);
 
-        void SetOkButtonLabel([MarshalAs(UnmanagedType.LPWStr)] string pszText);
+        void SetOkButtonLabel(IntPtr pszText);
 
-        void SetFileNameLabel([MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+        void SetFileNameLabel(IntPtr pszLabel);
 
         void GetResult(out IShellItem ppsi);
 
-        void AddPlace(IShellItem psi, int alignment);
+        // Argument: IShellItem psi, FileDialogCustomPlace (no longer available) fdcp
+        void AddPlace(IShellItem psi, IntPtr fdcp);
 
-        void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+        void SetDefaultExtension(IntPtr pszDefaultExtension);
 
-        void Close([MarshalAs(UnmanagedType.Error)] int hr);
+        void Close(int hr);
 
         void SetClientGuid(ref Guid guid);
 
         void ClearClientData();
 
         void SetFilter(IntPtr pFilter);
-    }
-
-    [ComImport()]
-    [Guid(IIDGuid.IFileOpenDialog)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IFileOpenDialog : IFileDialog
-    {
-        [PreserveSig]
-        new int Show(IntPtr parent);
-
-        void SetFileTypes(uint cFileTypes, ref COMDLG_FILTERSPEC rgFilterSpec);
-
-        new void SetFileTypeIndex(uint iFileType);
-
-        new void GetFileTypeIndex(out uint piFileType);
-
-        new void Advise(IFileDialogEvents pfde, out uint pdwCookie);
-
-        new void Unadvise(uint dwCookie);
-
-        new void SetOptions(FOS fos);
-
-        new void GetOptions(out FOS pfos);
-
-        new void SetDefaultFolder(IShellItem psi);
-
-        new void SetFolder(IShellItem psi);
-
-        new void GetFolder(out IShellItem ppsi);
-
-        new void GetCurrentSelection(out IShellItem ppsi);
-
-        new void SetFileName([MarshalAs(UnmanagedType.LPWStr)] string pszName);
-
-        new void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
-
-        new void SetTitle([MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
-
-        new void SetOkButtonLabel([MarshalAs(UnmanagedType.LPWStr)] string pszText);
-
-        new void SetFileNameLabel([MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
-
-        new void GetResult(out IShellItem ppsi);
-
-        void AddPlace(IShellItem psi, FileDialogCustomPlace fdcp);
-
-        new void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
-
-        new void Close([MarshalAs(UnmanagedType.Error)] int hr);
-
-        new void SetClientGuid(ref Guid guid);
-
-        new void ClearClientData();
-
-        new void SetFilter(IntPtr pFilter);
 
         void GetResults(out IShellItemArray ppenum);
 
@@ -164,56 +103,61 @@ namespace CollapseLauncher.FileDialogCOM
     [ComImport()]
     [Guid(IIDGuid.IFileSaveDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IFileSaveDialog : IFileDialog
+    [CoClass(typeof(FileSaveDialogRCW))]
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
+    public partial interface IFileSaveDialog
     {
         [PreserveSig]
-        new int Show(IntPtr parent);
+        int Show(IntPtr parent);
 
-        void SetFileTypes(uint cFileTypes, ref COMDLG_FILTERSPEC rgFilterSpec);
+        void SetFileTypes(uint cFileTypes, IntPtr rgFilterSpec);
 
-        new void SetFileTypeIndex(uint iFileType);
+        void SetFileTypeIndex(uint iFileType);
 
-        new void GetFileTypeIndex(out uint piFileType);
+        void GetFileTypeIndex(out uint piFileType);
 
-        new void Advise(IFileDialogEvents pfde, out uint pdwCookie);
+        void Advise(IFileDialogEvents pfde, out uint pdwCookie);
 
-        new void Unadvise(uint dwCookie);
+        void Unadvise(uint dwCookie);
 
-        new void SetOptions(FOS fos);
+        void SetOptions(FOS fos);
 
-        new void GetOptions(out FOS pfos);
+        void GetOptions(out FOS pfos);
 
-        new void SetDefaultFolder(IShellItem psi);
+        void SetDefaultFolder(IShellItem psi);
 
-        new void SetFolder(IShellItem psi);
+        void SetFolder(IShellItem psi);
 
-        new void GetFolder(out IShellItem ppsi);
+        void GetFolder(out IShellItem ppsi);
 
-        new void GetCurrentSelection(out IShellItem ppsi);
+        void GetCurrentSelection(out IShellItem ppsi);
 
-        new void SetFileName([MarshalAs(UnmanagedType.LPWStr)] string pszName);
+        void SetFileName(IntPtr pszName);
 
-        new void GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
+        void GetFileName(out IntPtr pszName);
 
-        new void SetTitle([MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+        void SetTitle(IntPtr pszTitle);
 
-        new void SetOkButtonLabel([MarshalAs(UnmanagedType.LPWStr)] string pszText);
+        void SetOkButtonLabel(IntPtr pszText);
 
-        new void SetFileNameLabel([MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+        void SetFileNameLabel(IntPtr pszLabel);
 
-        new void GetResult(out IShellItem ppsi);
+        void GetResult(out IShellItem ppsi);
 
-        void AddPlace(IShellItem psi, FileDialogCustomPlace fdcp);
+        // Argument: IShellItem psi, FileDialogCustomPlace (no longer available) fdcp
+        void AddPlace(IShellItem psi, IntPtr fdcp);
 
-        new void SetDefaultExtension([MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+        void SetDefaultExtension(IntPtr pszDefaultExtension);
 
-        new void Close([MarshalAs(UnmanagedType.Error)] int hr);
+        void Close([MarshalAs(UnmanagedType.Error)] int hr);
 
-        new void SetClientGuid(ref Guid guid);
+        void SetClientGuid(ref Guid guid);
 
-        new void ClearClientData();
+        void ClearClientData();
 
-        new void SetFilter(IntPtr pFilter);
+        void SetFilter(IntPtr pFilter);
 
         void SetSaveAsItem(IShellItem psi);
 
@@ -223,45 +167,30 @@ namespace CollapseLauncher.FileDialogCOM
 
         void GetProperties(out IntPtr ppStore);
 
-        void ApplyProperties(IShellItem psi, IntPtr pStore, [ComAliasName("ShellObjects.wireHWND")] ref IntPtr hwnd, IntPtr pSink);
+        void ApplyProperties(IShellItem psi, IntPtr pStore, ref IntPtr hwnd, IntPtr pSink);
     }
 
     [ComImport]
     [Guid(IIDGuid.IFileDialogEvents)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IFileDialogEvents
-    {
-        // NOTE: some of these callbacks are cancelable - returning S_FALSE means that 
-        // the dialog should not proceed (e.g. with closing, changing folder); to
-        // support this, we need to use the PreserveSig attribute to enable us to return 
-        // the proper HRESULT 
-        [PreserveSig]
-        int OnFileOk(IFileDialog pfd);
-
-        [PreserveSig]
-        int OnFolderChanging(IFileDialog pfd, IShellItem psiFolder);
-
-        void OnFolderChange(IFileDialog pfd);
-
-        void OnSelectionChange(IFileDialog pfd);
-
-        void OnShareViolation(IFileDialog pfd, IShellItem psi, out FDE_SHAREVIOLATION_RESPONSE pResponse);
-
-        void OnTypeChange(IFileDialog pfd);
-
-        void OnOverwrite(IFileDialog pfd, IShellItem psi, out FDE_OVERWRITE_RESPONSE pResponse);
-    }
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
+    public partial interface IFileDialogEvents { } // This dialog is no longer being used
 
     [ComImport]
     [Guid(IIDGuid.IShellItem)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+#if NET8_0_OR_GREATER
+    [GeneratedComInterface]
+#endif
     public partial interface IShellItem
     {
         void BindToHandler(IntPtr pbc, ref Guid bhid, ref Guid riid, out IntPtr ppv);
 
         void GetParent(out IShellItem ppsi);
 
-        void GetDisplayName(SIGDN sigdnName, [MarshalAs(UnmanagedType.LPWStr)] out string ppszName);
+        void GetDisplayName(SIGDN sigdnName, out IntPtr ppszName);
 
         void GetAttributes(uint sfgaoMask, out uint psfgaoAttribs);
 

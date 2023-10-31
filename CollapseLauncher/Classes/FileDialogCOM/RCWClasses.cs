@@ -36,7 +36,4 @@ namespace CollapseLauncher.FileDialogCOM
         internal const string FileOpenDialog = "DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7";
         internal const string FileSaveDialog = "C0B4E2F3-BA21-4773-8DBA-335EC946EB8B";
     }
-
-    // HACK: Since the class is only available for Windows.Forms and we are avoiding to use that, then use this dummy one instead.
-    public partial class FileDialogCustomPlace { }
 }
