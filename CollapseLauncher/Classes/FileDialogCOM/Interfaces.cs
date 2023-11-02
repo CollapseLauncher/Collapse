@@ -4,13 +4,10 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace CollapseLauncher.FileDialogCOM
 {
-    [ComImport]
     [Guid(IIDGuid.IShellItemArray)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-#if NET8_0_OR_GREATER
     [GeneratedComInterface]
-#endif
-    public partial interface IShellItemArray
+    internal partial interface IShellItemArray
     {
         // Not supported: IBindCtx
         void BindToHandler(IntPtr pbc, ref Guid rbhid, ref Guid riid, out IntPtr ppvOut);
@@ -28,22 +25,10 @@ namespace CollapseLauncher.FileDialogCOM
         void EnumItems(out IntPtr ppenumShellItems);
     }
 
-    [ComImport()]
-    [Guid(IIDGuid.IFileDialog)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-#if NET8_0_OR_GREATER
-    [GeneratedComInterface]
-#endif
-    public partial interface IFileDialog { } // This interface is now replaced by IFileOpenDialog and IFileSaveDialog
-
-    [ComImport()]
     [Guid(IIDGuid.IFileOpenDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [CoClass(typeof(FileOpenDialogRCW))]
-#if NET8_0_OR_GREATER
     [GeneratedComInterface]
-#endif
-    public partial interface IFileOpenDialog
+    internal partial interface IFileOpenDialog
     {
         [PreserveSig]
         int Show(IntPtr parent);
@@ -100,14 +85,10 @@ namespace CollapseLauncher.FileDialogCOM
         void GetSelectedItems(out IShellItemArray ppsai);
     }
 
-    [ComImport()]
     [Guid(IIDGuid.IFileSaveDialog)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [CoClass(typeof(FileSaveDialogRCW))]
-#if NET8_0_OR_GREATER
-    [GeneratedComInterface]
-#endif
-    public partial interface IFileSaveDialog
+    [GeneratedComInterface(Options = ComInterfaceOptions.ComObjectWrapper)]
+    internal partial interface IFileSaveDialog
     {
         [PreserveSig]
         int Show(IntPtr parent);
@@ -170,21 +151,16 @@ namespace CollapseLauncher.FileDialogCOM
         void ApplyProperties(IShellItem psi, IntPtr pStore, ref IntPtr hwnd, IntPtr pSink);
     }
 
-    [ComImport]
     [Guid(IIDGuid.IFileDialogEvents)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-#if NET8_0_OR_GREATER
     [GeneratedComInterface]
-#endif
-    public partial interface IFileDialogEvents { } // This dialog is no longer being used
+    internal partial interface IFileDialogEvents { } // This dialog is no longer being used
 
     [ComImport]
     [Guid(IIDGuid.IShellItem)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-#if NET8_0_OR_GREATER
     [GeneratedComInterface]
-#endif
-    public partial interface IShellItem
+    internal partial interface IShellItem
     {
         void BindToHandler(IntPtr pbc, ref Guid bhid, ref Guid riid, out IntPtr ppv);
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Windows.Win32;
 
 namespace CollapseLauncher.FileDialogCOM
 {
@@ -24,12 +25,16 @@ namespace CollapseLauncher.FileDialogCOM
 
         public static async Task<string[]> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null) => await Task.Run(() =>
         {
-            IFileOpenDialog dialog = null;
+            PInvoke.CoCreateInstance(
+                new Guid(CLSIDGuid.FileOpenDialog),
+                null,
+                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                out IFileOpenDialog dialog).ThrowOnFailure();
+
             IShellItemArray resShell;
 
             try
             {
-                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT | FOS.FOS_ALLOWMULTISELECT);
                 SetFileTypeFilter(dialog, FileTypeFilter);
 
@@ -52,13 +57,17 @@ namespace CollapseLauncher.FileDialogCOM
 
         public static async Task<string> GetFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) => await Task.Run(() =>
         {
-            IFileOpenDialog dialog = null;
+            PInvoke.CoCreateInstance(
+                new Guid(CLSIDGuid.FileOpenDialog),
+                null,
+                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                out IFileOpenDialog dialog).ThrowOnFailure();
+
             IShellItem resShell;
             IntPtr titlePtr = IntPtr.Zero;
 
             try
             {
-                dialog = new IFileOpenDialog();
                 if (title != null)
                 {
                     dialog.SetTitle(titlePtr = UnicodeStringToCOMPtr(title));
@@ -79,22 +88,23 @@ namespace CollapseLauncher.FileDialogCOM
             }
             finally
             {
-#if !NET8_0_OR_GREATER
-                if (dialog != null) Marshal.FinalReleaseComObject(dialog);
-#endif
                 if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
             }
         }).ConfigureAwait(false);
 
         public static async Task<string> GetFileSavePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) => await Task.Run(() =>
         {
-            IFileSaveDialog dialog = null;
+            PInvoke.CoCreateInstance(
+                new Guid(CLSIDGuid.FileSaveDialog),
+                null,
+                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                out IFileSaveDialog dialog).ThrowOnFailure();
+
             IShellItem resShell;
             IntPtr titlePtr = IntPtr.Zero;
 
             try
             {
-                dialog = new IFileSaveDialog();
                 if (title != null)
                 {
                     dialog.SetTitle(titlePtr = UnicodeStringToCOMPtr(title));
@@ -123,12 +133,16 @@ namespace CollapseLauncher.FileDialogCOM
 
         public static async Task<string[]> GetMultiFolderPicker() => await Task.Run(() =>
         {
-            IFileOpenDialog dialog = null;
+            PInvoke.CoCreateInstance(
+                new Guid(CLSIDGuid.FileOpenDialog),
+                null,
+                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                out IFileOpenDialog dialog).ThrowOnFailure();
+
             IShellItemArray resShell;
 
             try
             {
-                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_ALLOWMULTISELECT | FOS.FOS_DONTADDTORECENT | FOS.FOS_PICKFOLDERS);
 
                 if (dialog.Show(parentHandler) < 0) return null;
@@ -150,12 +164,16 @@ namespace CollapseLauncher.FileDialogCOM
 
         public static async Task<string> GetFolderPicker() => await Task.Run(() =>
         {
-            IFileOpenDialog dialog = null;
+            PInvoke.CoCreateInstance(
+                new Guid(CLSIDGuid.FileOpenDialog),
+                null,
+                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                out IFileOpenDialog dialog).ThrowOnFailure();
+
             IShellItem resShell;
 
             try
             {
-                dialog = new IFileOpenDialog();
                 dialog.SetOptions(FOS.FOS_NOREADONLYRETURN | FOS.FOS_DONTADDTORECENT | FOS.FOS_PICKFOLDERS);
 
                 if (dialog.Show(parentHandler) < 0) return null;
