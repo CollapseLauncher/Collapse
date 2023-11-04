@@ -62,12 +62,6 @@
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
       },
-      "Dongle.Windows.CsWinRT": {
-        "type": "Direct",
-        "requested": "[3.0.0-wux.2, )",
-        "resolved": "3.0.0-wux.2",
-        "contentHash": "bWi9eF+I2Gb3lDUwGtzGdtyD3epopH0EySDmjxoO1hv1D+XlY56tkIryZVXtxegQchHhL5MqT9HWlTwL3263YQ=="
-      },
       "GitInfo": {
         "type": "Direct",
         "requested": "[3.3.3, )",
@@ -120,6 +114,12 @@
           "System.Memory": "4.5.5",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
+      },
+      "Microsoft.Windows.CsWinRT": {
+        "type": "Direct",
+        "requested": "[2.0.4, )",
+        "resolved": "2.0.4",
+        "contentHash": "ULRbWAcqUG2jLZRGpMGOOL1SokFDcWlTLCjKUXVzQSnh/TR+7vsvet+eICRT0JIN4W2XRkJOBhxjFUEmlmN3rA=="
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",

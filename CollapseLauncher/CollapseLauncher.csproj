@@ -80,13 +80,13 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.118" />
-		<PackageReference Include="Dongle.Windows.CsWinRT" Version="3.0.0-wux.2" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.0" />
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
 		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231008000" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
