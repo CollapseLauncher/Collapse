@@ -72,6 +72,8 @@
 		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
 		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
+		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.230907" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="GitInfo" Version="3.3.3">
 		  <PrivateAssets>all</PrivateAssets>

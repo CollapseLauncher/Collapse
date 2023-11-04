@@ -12,7 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:f="using:Windows.Globalization.NumberFormatting"
     xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d"
     Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>

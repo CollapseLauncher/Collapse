@@ -23,6 +23,29 @@
         "resolved": "8.2.2",
         "contentHash": "r0g0k9tGYdrnz8R7T3x5UiokDffeevzK/2P/9SBL6fqLgN8B157MIi/bVUWI1KAz6ZorZrK9AdABCWUeXZZsvA=="
       },
+      "CommunityToolkit.WinUI.Controls.Primitives": {
+        "type": "Direct",
+        "requested": "[8.0.230907, )",
+        "resolved": "8.0.230907",
+        "contentHash": "1qNDNparFwyEv0KkkHUo8B5IfKXbA+bGPmtiH67oVZu1uXe+IqAJiAqsUx3/XE3Dw9Lt+1QyPs1dNOddlFxqkw==",
+        "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "8.0.230907",
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
+          "Microsoft.WindowsAppSDK": "1.3.230331000"
+        }
+      },
+      "CommunityToolkit.WinUI.Media": {
+        "type": "Direct",
+        "requested": "[8.0.230907, )",
+        "resolved": "8.0.230907",
+        "contentHash": "9eZGWZwZ9r3zYVC5nuf8GYxBM+Bt1ju8t8itoBL3J5GjnVJFxtvY6g5zIiXoRjCnYcWDYylT13hEy1ij9OCOYA==",
+        "dependencies": {
+          "CommunityToolkit.WinUI.Animations": "8.0.230907",
+          "Microsoft.Graphics.Win2D": "1.0.5.1",
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
+          "Microsoft.WindowsAppSDK": "1.3.230331000"
+        }
+      },
       "CommunityToolkit.WinUI.UI.Controls": {
         "type": "Direct",
         "requested": "[7.1.2, )",
@@ -228,6 +251,26 @@
         "dependencies": {
           "CommunityToolkit.Common": "7.1.2",
           "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
+      "CommunityToolkit.WinUI.Animations": {
+        "type": "Transitive",
+        "resolved": "8.0.230907",
+        "contentHash": "ZaTG1kK8tNUxFRAMtgYRTy3gKCSiByzm33TTZsW85GSPnQJssKaY4IPxhVFYYouLf6m1bzqPd/5YrOHOrq4L5w==",
+        "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "8.0.230907",
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
+          "Microsoft.WindowsAppSDK": "1.3.230331000"
+        }
+      },
+      "CommunityToolkit.WinUI.Extensions": {
+        "type": "Transitive",
+        "resolved": "8.0.230907",
+        "contentHash": "fNbNqyfzuq+o1j6pSifa8wL288XqW0UTI+XwCpf702LCZpIr3xvGbmAjg0BTBEOs3Um/VWTVj21Cm9tRZaY8qw==",
+        "dependencies": {
+          "CommunityToolkit.Common": "8.2.1",
+          "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756",
+          "Microsoft.WindowsAppSDK": "1.3.230331000"
         }
       },
       "CommunityToolkit.WinUI.UI": {

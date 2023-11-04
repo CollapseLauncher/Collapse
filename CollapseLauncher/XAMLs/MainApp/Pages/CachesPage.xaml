@@ -7,7 +7,8 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:control="using:CommunityToolkit.WinUI.Controls"
+    xmlns:control_legacy="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Loaded="InitializeLoaded" Unloaded="Page_Unloaded">
     <Grid>
@@ -24,7 +25,7 @@
                         <PopupThemeTransition/>
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
-                <control:DataGrid
+                <control_legacy:DataGrid
                     x:Name="CachesDataGrid"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Stretch"
@@ -33,15 +34,15 @@
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
                     ItemsSource="{x:Bind CurrentGameProperty._GameCache.AssetEntry}">
-                    <control:DataGrid.Columns>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding Name}" Tag="CacheName" Width="296" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding AssetType}" Tag="CacheType" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" Binding="{Binding SizeStr}" Tag="CacheSize" Width="128" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CacheLastDate" Width="92" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="CacheStatus" Width="92" FontSize="13"/>
-                    </control:DataGrid.Columns>
-                </control:DataGrid>
+                    <control_legacy:DataGrid.Columns>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol1}" Binding="{Binding Name}" Tag="CacheName" Width="296" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol2}" Binding="{Binding AssetType}" Tag="CacheType" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol4}" Binding="{Binding SizeStr}" Tag="CacheSize" Width="128" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CacheLastDate" Width="92" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._CachesPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="CacheStatus" Width="92" FontSize="13"/>
+                    </control_legacy:DataGrid.Columns>
+                </control_legacy:DataGrid>
             </Grid>
             <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
                 <TextBlock x:Name="CachesStatus" Text="{x:Bind helper:Locale.Lang._CachesPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>
