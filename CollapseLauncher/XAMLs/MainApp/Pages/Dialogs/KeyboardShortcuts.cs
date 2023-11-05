@@ -1,19 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Windows.System;
+﻿using CollapseLauncher.CustomControls;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using CommunityToolkit.WinUI;
-using CollapseLauncher.CustomControls;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.System;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {

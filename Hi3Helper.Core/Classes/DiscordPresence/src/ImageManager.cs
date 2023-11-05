@@ -1,13 +1,12 @@
 #if !DISABLEDISCORD
 using System;
-using System.Runtime.InteropServices;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 #endif
 
 namespace Discord
 {
-	public struct ImageHandle
+    public struct ImageHandle
     {
         static public ImageHandle User(Int64 id)
         {

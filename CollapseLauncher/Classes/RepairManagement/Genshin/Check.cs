@@ -2,7 +2,6 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
-using Hi3Helper.Preset;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,8 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
-using CollapseLauncher.Statics;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.Preset;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;

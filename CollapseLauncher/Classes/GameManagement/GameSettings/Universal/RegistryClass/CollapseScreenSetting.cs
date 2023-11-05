@@ -4,7 +4,6 @@ using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using System.Text.Json;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 

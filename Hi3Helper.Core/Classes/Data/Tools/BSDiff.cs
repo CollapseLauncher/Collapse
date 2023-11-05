@@ -1,14 +1,14 @@
 ﻿// Original Source:
 // https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/src/bsdiff/BinaryPatchUtility.cs
 
+using SharpCompress.Compressors.BZip2;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
-using SharpCompress.Compressors.BZip2;
 
 namespace Hi3Helper.Data
 {

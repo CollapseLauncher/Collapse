@@ -1,6 +1,4 @@
 ﻿#if !DISABLEDISCORD
-using System;
-
 namespace Discord
 {
     static class Constants
