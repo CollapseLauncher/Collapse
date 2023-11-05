@@ -2,7 +2,8 @@
     x:Class="CollapseLauncher.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:localUI="using:Microsoft.UI.Xaml.Controls">
+    xmlns:localUI="using:Microsoft.UI.Xaml.Controls"
+    xmlns:ui="using:Windows.UI">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,18 +12,18 @@
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default"> <!-- For dark theme -->
                             <!-- Base accent color -->
-                            <Color x:Key="TemplateAccentColor">#ffd52a</Color>
-                            <Color x:Key="SystemAccentColor">#ffd52a</Color>
-                            <Color x:Key="SystemAccentColorLight1">#ffd52a</Color>
-                            <Color x:Key="SystemAccentColorLight2">#ffd52a</Color>
-                            <Color x:Key="SystemAccentColorLight3">#ffd52a</Color>
+                            <ui:Color x:Key="TemplateAccentColor">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColor">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorLight1">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorLight2">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorLight3">#ffd52a</ui:Color>
                             <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColorLight2}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#FFFFFF"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#000000"/>
 
                             <!-- Dialog brushes -->
-                            <Color x:Key="DialogTitleColor">#ffd52a</Color>
+                            <ui:Color x:Key="DialogTitleColor">#ffd52a</ui:Color>
                             <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
 
                             <!-- Notification brushes -->
@@ -62,18 +63,18 @@
 
                         <ResourceDictionary x:Key="Light"> <!-- For light theme -->
                             <!-- Base accent color -->
-                            <Color x:Key="TemplateAccentColor">#693758</Color>
-                            <Color x:Key="SystemAccentColor">#693758</Color>
-                            <Color x:Key="SystemAccentColorDark1">#693758</Color>
-                            <Color x:Key="SystemAccentColorDark2">#693758</Color>
-                            <Color x:Key="SystemAccentColorDark3">#693758</Color>
+                            <ui:Color x:Key="TemplateAccentColor">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColor">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorDark1">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorDark2">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorDark3">#693758</ui:Color>
                             <AcrylicBrush x:Key="AccentColorBrush" TintColor="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="AccentColor" Color="{ThemeResource SystemAccentColor}"/>
                             <SolidColorBrush x:Key="DefaultBGColorAccentBrush" Color="#000000"/>
                             <SolidColorBrush x:Key="DefaultFGColorAccentBrush" Color="#FFFFFF"/>
 
                             <!-- Dialog brushes -->
-                            <Color x:Key="DialogTitleColor">#693758</Color>
+                            <ui:Color x:Key="DialogTitleColor">#693758</ui:Color>
                             <SolidColorBrush x:Key="DialogTitleBrush" Color="{ThemeResource DialogTitleColor}"/>
 
                             <!-- Notification brushes -->
