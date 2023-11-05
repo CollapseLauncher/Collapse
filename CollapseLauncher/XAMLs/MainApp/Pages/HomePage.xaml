@@ -606,9 +606,7 @@
                                                     </GridView.ItemContainerStyle>
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="1"
-                                                           Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid1" MaximumRowsOrColumns="1" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                 </GridView>
@@ -629,9 +627,7 @@
                                                     </GridView.ItemContainerStyle>
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="2"
-                                                           Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid2" MaximumRowsOrColumns="2" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                 </GridView>
