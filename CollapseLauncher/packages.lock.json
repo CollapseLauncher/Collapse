@@ -136,6 +136,15 @@
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.1"
         }
       },
+      "Microsoft.Xaml.Behaviors.WinUI.Managed": {
+        "type": "Direct",
+        "requested": "[2.0.9, )",
+        "resolved": "2.0.9",
+        "contentHash": "rGIUCwQZB1degP2+Cc7hBbGOwuokyUxMh97umT+dpqJ8X71y2DKsXrKzDDQc8lKdWbloJbVDpzB9X42yZiS8tA==",
+        "dependencies": {
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
       "PhotoSauce.MagicScaler": {
         "type": "Direct",
         "requested": "[0.14.0, )",
