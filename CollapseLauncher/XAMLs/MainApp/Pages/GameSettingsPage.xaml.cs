@@ -135,14 +135,14 @@ namespace CollapseLauncher.Pages
             try
             {
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
-
                 if (CurrentGameProperty.IsGameRunning)
                 {
+                    #if !GSPBYPASSGAMERUNNING
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
-
+                    #endif
                     return;
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled

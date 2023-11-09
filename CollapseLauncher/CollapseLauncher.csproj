@@ -34,9 +34,10 @@
 		- SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
 		- DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
 		- SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
+		- GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
 -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING</DefineConstants>
 		<DebugType>portable</DebugType>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
