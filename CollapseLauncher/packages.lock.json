@@ -81,6 +81,15 @@
           "Microsoft.WindowsAppSDK": "1.4.230822000"
         }
       },
+      "ImageEx": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "kp894Xue0YIflPIao+bEEB65si250ne1sFqDd4aA7pTjQn4TGScuopojx/73vfRKcEsxgclbWjEAlKqGSYqiQA==",
+        "dependencies": {
+          "Microsoft.WindowsAppSDK": "1.0.0"
+        }
+      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
         "requested": "[1.1.0, )",

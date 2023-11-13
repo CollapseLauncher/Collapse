@@ -2,7 +2,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CollapseLauncher.FileDialogCOM;
-using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
@@ -412,7 +411,7 @@ namespace CollapseLauncher.Pages
         #region Open Link from Tag
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
-            SpawnWebView2.SpawnWebView2Window(((ImageEx)sender).Tag.ToString());
+            SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString());
         }
 
         private async void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
