@@ -181,10 +181,10 @@
 			<TrimmableAssembly Include="System.CommandLine" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
 			<TrimmableAssembly Include="WinUIEdit" />
-      
-			<!-- Explicitly tell ILTrimmer to not trim these assemblies (all assemblies that gives ILTrim warnings --> 
-			<TrimmerRootAssembly Include="Microsoft.WinUI" />
-      
+
+			<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
+			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+
 			<!--
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
