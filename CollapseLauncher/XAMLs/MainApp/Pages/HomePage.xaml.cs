@@ -258,8 +258,12 @@ namespace CollapseLauncher.Pages
 
         private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
         {
-            CarouselToken = new CancellationTokenSource();
-            StartCarouselAutoScroll(CarouselToken.Token);
+            // Don't restart carousel if game is running and LoPrio is on
+            if (!CurrentGameProperty.IsGameRunning || !GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+            {
+                CarouselToken = new CancellationTokenSource();
+                StartCarouselAutoScroll(CarouselToken.Token);
+            }
         }
 
         private async void HideImageCarousel(bool hide)
