@@ -141,11 +141,78 @@
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
+			<!-- Trimmable submodule assemblies -->
+			<TrimmableAssembly Include="ColorThief" />
 			<TrimmableAssembly Include="Hi3Helper.Core" />
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />
 			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
 			<TrimmableAssembly Include="SevenZipExtractor" />
+      
+			<!-- Additional assemblies -->
+			<TrimmableAssembly Include="ColorCode.Core" />
+			<TrimmableAssembly Include="ColorCode.WinUI" />
+			<TrimmableAssembly Include="CommunityToolkit.Common" />
+			<TrimmableAssembly Include="CommunityToolkit.Mvvm" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
+			<TrimmableAssembly Include="Google.Protobuf" />
+			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
+			<TrimmableAssembly Include="H.NotifyIcon" />
+			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
+			<TrimmableAssembly Include="Microsoft.DirectManipulation" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Display" />
+			<TrimmableAssembly Include="Microsoft.InputStateManager" />
+			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
+			<TrimmableAssembly Include="Microsoft.Internal.FrameworkUdk" />
+			<TrimmableAssembly Include="Microsoft.UI.Composition.OSSupport" />
+			<TrimmableAssembly Include="Microsoft.UI" />
+			<TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
+			<TrimmableAssembly Include="Microsoft.UI.Windowing" />
+			<TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
+			<TrimmableAssembly Include="Microsoft.Windows.Widgets" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
+			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+			<TrimmableAssembly Include="System.CommandLine" />
+			<TrimmableAssembly Include="System.Drawing.Common" />
+			<TrimmableAssembly Include="WinUIEdit" />
+      
+			<!-- Explicitly tell ILTrimmer to not trim these assemblies (all assemblies that gives ILTrim warnings --> 
+			<TrimmerRootAssembly Include="Microsoft.WinUI" />
+      
+			<!--
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Core" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
+			<TrimmerRootAssembly Include="ImageEx" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.Resources.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.SDK.NET" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.System.Power.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.System.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
+			
+			<TrimmerRootAssembly Include="SquirrelLib" />
+			<TrimmerRootAssembly Include="System.CommandLine.NamingConventionBinder" />
+			<TrimmerRootAssembly Include="WinRT.Runtime" />
+			-->
 		</ItemGroup>
 	</Target>
   

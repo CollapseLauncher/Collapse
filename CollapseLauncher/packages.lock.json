@@ -99,6 +99,12 @@
           "Microsoft.WindowsAppSDK": "1.4.230913002"
         }
       },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.0-rc.2.23479.6, )",
+        "resolved": "8.0.0-rc.2.23479.6",
+        "contentHash": "neRDuxVI/tdf5yz/rLyD1kP3DkWx8uHTvb1wcqbjDn4QQDHmYHwcuHBnVVPYtBzMFmlVNmJMa91weUEhHx2z5A=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Direct",
         "requested": "[8.0.0-preview.7.23375.6, )",
