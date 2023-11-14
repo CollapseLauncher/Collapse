@@ -93,8 +93,6 @@
 		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.118" />
 		<PackageReference Include="ImageEx" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.0" />
-		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
-		<PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
 		  <PrivateAssets>all</PrivateAssets>
 		</PackageReference>
