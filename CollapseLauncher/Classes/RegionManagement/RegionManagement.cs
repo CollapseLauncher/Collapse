@@ -220,7 +220,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine("[FetchLauncherDownloadInformation] SIMULATEPRELOAD: Simulating Pre-load!");
                 RegionResourceVersion simDataLatest = _gameAPIProp.data.game.latest.Copy();
-                List<RegionResourceVersion> simDataDiff = _gameAPIProp.data.game.diffs.Copy();
+                IList<RegionResourceVersion> simDataDiff = _gameAPIProp.data.game.diffs.Copy();
 
                 simDataLatest.version = new GameVersion(simDataLatest.version).GetIncrementedVersion().ToString();
                 _gameAPIProp.data.pre_download_game = new RegionResourceLatest() { latest = simDataLatest };
