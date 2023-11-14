@@ -394,7 +394,7 @@
     "EnableAcrylicEffect": "Usar efeito de desfoque acrílico",
     "EnableDownloadChunksMerging": "Combinar porções de pacotes descarregados",
 
-    "LowerCollapsePrioOnGameLaunch": "Diminui o uso de recursos do Collapse quando um jogo for iniciado",
+    "LowerCollapsePrioOnGameLaunch": "Diminuir o uso de recursos do Collapse quando um jogo for iniciado",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desativa o carrousel da página principal e diminui a prioridade do Collapse para \"Abaixo do normal\" ",
 
     "KbShortcuts_Title": "Atalhos de teclado",
