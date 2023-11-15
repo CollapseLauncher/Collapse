@@ -31,6 +31,7 @@ using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Windows.System;
+using CollapseLauncher.Dialogs;
 
 namespace CollapseLauncher
 {
@@ -1081,21 +1082,23 @@ namespace CollapseLauncher
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
         }
 
-        private void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
+        private async void ErrorSenderInvoker_ExceptionEvent(object sender, ErrorProperties e)
         {
-            DispatcherQueue.TryEnqueue(() =>
+            if (e.Exception.GetType() == typeof(NotImplementedException))
             {
-                if (e.Exception.GetType() == typeof(NotImplementedException))
-                {
-                    PreviousTag = "unavailable";
-                    MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
-                }
+                PreviousTag = "unavailable";
+                if (!DispatcherQueue.HasThreadAccess)
+                    DispatcherQueue.TryEnqueue(() => MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage)));
                 else
-                {
-                    PreviousTag = "crashinfo";
-                    MainFrameChanger.ChangeMainFrame(typeof(UnhandledExceptionPage));
-                }
-            });
+                    MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));
+
+            }
+            else
+            {
+                PreviousTag = "crashinfo";
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
+                // MainFrameChanger.ChangeMainFrame(typeof(UnhandledExceptionPage));
+            }
         }
 
         private void MainFrameChangerInvoker_FrameEvent(object sender, MainFrameProperties e)

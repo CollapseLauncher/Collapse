@@ -12,7 +12,6 @@ namespace CollapseLauncher.Interfaces
     {
         private string _gamePathField { get; init; }
         private GameVersion _gameVersionOverride { get; init; }
-        private bool _isVersionOverride { get; init; }
 
         public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, IGameSettings gameSettings, string gamePath, string gameRepoURL, string versionOverride)
             : this(parentUI, gameVersionManager, gamePath, gameRepoURL, versionOverride)
@@ -41,6 +40,7 @@ namespace CollapseLauncher.Interfaces
         protected const int _sizeForMultiDownload = 10 << 20;
         protected const string _userAgent = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
+        protected bool _isVersionOverride { get; init; }
         protected byte _downloadThreadCount { get => (byte)AppCurrentDownloadThread; }
         protected byte _threadCount { get => (byte)AppCurrentThread; }
         protected CancellationTokenSource _token { get; set; }

@@ -375,8 +375,8 @@
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
 
     "About": "Tentang",
-    "About_Copyright1": "",
-    "About_Copyright2": "",
+    "About_Copyright1": "© 2022-2023",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
 
@@ -425,7 +425,7 @@
     "OkaySad": "Oke deh... ;-;)",
     "OkayHappy": "Okehh! (≧▽≦)ﾉ",
     "OkayBackToMenu": "Oke, kembali ke menu",
-    "Skip": "Lewati",
+    "Skip": "Lewati, jangan tunjukkan lagi",
     "Next": "Selanjutnya",
     "Prev": "Sebelumnya",
     "Uninstall": "Hapus Pemasangan",
@@ -933,7 +933,7 @@
     "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",
     "Switch_SwapBtn": "Tukar {0} dengan {1}",
     "Switch_ChangeGame": "Ubah game",
-    "Switch_ChangeGame_Desc": "Kamu juga dapat menggunakan NumPad untuk pintasan ini!\nContoh. {0}+1 atau NumPad1 membukan halaman terakhir Honkai Impact 3rd.",
+    "Switch_ChangeGame_Desc": "Kamu juga dapat menggunakan NumPad untuk pintasan ini!\nContoh: {0}+1 atau NumPad1 (tanpa modifier {0}) membuka halaman terakhir Honkai Impact 3rd.",
     "Switch_ChangeRegion": "Ubah region",
     "Switch_ChangeRegion_Desc": "Contoh. Untuk Genshin Impact, {0}+1 membuka region Global.",
 

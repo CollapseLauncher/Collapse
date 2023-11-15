@@ -1,11 +1,13 @@
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.SharpHDiffPatch;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
@@ -16,14 +18,13 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using PatcherHDiff = Hi3Helper.SharpHDiffPatch;
+using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 namespace CollapseLauncher.InstallManager.Base
 {
@@ -57,6 +58,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected bool _canMergeDownloadChunks { get => LauncherConfig.GetAppConfigValue("UseDownloadChunksMerging").ToBool(); }
         protected virtual bool _canDeltaPatch { get => false; }
         protected virtual DeltaPatchProperty _gameDeltaPatchProperty { get => null; }
+        protected bool _forceIgnoreDeltaPatch = false;
 
         private long _totalLastSizeCurrent = 0;
         #endregion
@@ -106,6 +108,133 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         #region Public Methods
+        protected virtual async ValueTask<int> ConfirmDeltaPatchDialog(DeltaPatchProperty patchProperty, IRepair gameRepair)
+        {
+            // Check if the game has delta patch and in NeedsUpdate status. If true, then
+            // proceed with the delta patch update
+            if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
+            {
+                switch (await Dialog_DeltaPatchFileDetected(_parentUI, patchProperty.SourceVer, patchProperty.TargetVer))
+                {
+                    // If no, then proceed with normal update (0)
+                    // Also set ignore delta patch process if this method is re-called
+                    case ContentDialogResult.Secondary:
+                        _forceIgnoreDeltaPatch = true;
+                        return 0;
+                    // If cancel. then proceed to cancel (-1)
+                    case ContentDialogResult.None:
+                        return -1;
+                }
+
+                // Always reset the token
+                ResetToken();
+
+                // Initialize repair tool
+                _gameRepairTool = gameRepair;
+                try
+                {
+                    // Set the activity
+                    _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status2);
+                    _status.IsIncludePerFileIndicator = false;
+                    _status.IsProgressTotalIndetermined = true;
+                    UpdateStatus();
+
+                    // Start the check routine and get the state if download needed
+                    _gameRepairTool.ProgressChanged += DeltaPatchCheckProgress;
+                    bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine();
+                    if (isDownloadNeeded)
+                    {
+                        _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status8, "").Replace(": ", "");
+                        _progressTotalSizeCurrent = 0;
+                        _progressTotalCountCurrent = 1;
+                        _progressTotalReadCurrent = 0;
+                        UpdateStatus();
+
+                        // If download needed, then start the repair (download) routine
+                        await _gameRepairTool.StartRepairRoutine(true);
+                    }
+                }
+                catch
+                {
+                    IsRunning = false;
+                    throw;
+                }
+                finally
+                {
+                    // Unsubscribe the progress event
+                    _gameRepairTool.ProgressChanged -= DeltaPatchCheckProgress;
+                }
+
+                // Then return 1 as continue to other steps
+                return 1;
+            }
+
+            return 0;
+        }
+
+        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai)
+        {
+            if (_canDeltaPatch && _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate && !_forceIgnoreDeltaPatch)
+            {
+                DeltaPatchProperty patchProperty = _gameDeltaPatchProperty;
+
+                string previousPath = _gamePath;
+                string ingredientPath = previousPath.TrimEnd('\\') + "_Ingredients";
+
+                try
+                {
+                    List<FilePropertiesRemote> localAssetIndex = repairGame.GetAssetIndex();
+                    MoveFileToIngredientList(localAssetIndex, previousPath, ingredientPath, isHonkai);
+
+                    // Get the sum of uncompressed size and
+                    // Set progress count to beginning
+                    _progressTotalSize = localAssetIndex.Sum(x => x.S);
+                    _progressTotalSizeCurrent = 0;
+                    _progressTotalCountCurrent = 1;
+                    _status.IsIncludePerFileIndicator = false;
+                    _status.IsProgressTotalIndetermined = true;
+                    _status.ActivityStatus = Lang._Misc.ApplyingPatch;
+                    UpdateStatus();
+                    RestartStopwatch();
+
+                    // Start the patching process
+                    HDiffPatch.LogVerbosity = Verbosity.Verbose;
+                    EventListener.PatchEvent += DeltaPatchCheckProgress;
+                    EventListener.LoggerEvent += DeltaPatchCheckLogEvent;
+                    await Task.Run(() =>
+                    {
+                        HDiffPatch patch = new HDiffPatch();
+                        patch.Initialize(patchProperty.PatchPath);
+                        patch.Patch(ingredientPath, previousPath, true, _token.Token, false, true);
+                    });
+
+                    // Remove ingredient folder
+                    Directory.Delete(ingredientPath, true);
+
+                    if (_canDeleteZip)
+                    {
+                        File.Delete(patchProperty.PatchPath);
+                    }
+
+                    // Then return
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
+                    throw;
+                }
+                finally
+                {
+                    EventListener.PatchEvent -= DeltaPatchCheckProgress;
+                    EventListener.LoggerEvent -= DeltaPatchCheckLogEvent;
+                }
+            }
+
+            // Return false to indicate that there's no delta patch running
+            return false;
+        }
+
         // Bool:  0      -> Indicates that the action is completed and no need to step further
         //        1      -> Continue to the next step
         //       -1      -> Cancel the operation
@@ -309,7 +438,7 @@ namespace CollapseLauncher.InstallManager.Base
         private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
         {
             return asset.Segments != null && asset.Segments.Count != 0 ?
-                new CombinedStream(asset.Segments.Select(x => x.GetReadStream(_downloadThreadCount)).ToArray()) :
+                new CoreCombinedStream(asset.Segments.Select(x => x.GetReadStream(_downloadThreadCount)).ToArray()) :
                 asset.GetReadStream(_downloadThreadCount);
         }
 
@@ -522,6 +651,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 else foldersToKeepInDataFullPath = Array.Empty<string>();
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 LogWriteLine($"Uninstalling game: {_gameVersionManager.GameType} - region: {_gameVersionManager.GamePreset.ZoneName}\r\n" +
                     $"  GameFolder          : {GameFolder}\r\n" +
                     $"  gameDataFolderName  : {UninstallProperty.gameDataFolderName}\r\n" +
@@ -530,6 +660,7 @@ namespace CollapseLauncher.InstallManager.Base
                     $"  foldersToKeepInData : {string.Join(", ", UninstallProperty.foldersToKeepInData)}\r\n" +
                     $"  _Data folder path   : {_DataFolderFullPath}\r\n" +
                     $"  Excluded full paths : {string.Join(", ", foldersToKeepInDataFullPath)}", LogType.Warning, true);
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 // Cleanup Game_Data folder while keeping whatever specified in foldersToKeepInData
                 foreach (string folderGameData in Directory.EnumerateFileSystemEntries(_DataFolderFullPath))
@@ -715,7 +846,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressTotalCount = 1;
             _progressTotalCountFound = hdiffEntry.Count;
 
-            PatcherHDiff.HDiffPatch patcher = new PatcherHDiff.HDiffPatch();
+            HDiffPatch patcher = new HDiffPatch();
             foreach (PkgVersionProperties entry in hdiffEntry)
             {
                 _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Patching, string.Format(Lang._Misc.PerFromTo, _progressTotalCount, _progressTotalCountFound));
@@ -728,7 +859,9 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     _token.Token.ThrowIfCancellationRequested();
-                    PatcherHDiff.EventListener.PatchEvent += EventListener_PatchEvent;
+                    HDiffPatch.LogVerbosity = Verbosity.Verbose;
+                    EventListener.LoggerEvent += EventListener_PatchLogEvent;
+                    EventListener.PatchEvent += EventListener_PatchEvent;
                     if (File.Exists(sourceBasePath) && File.Exists(patchPath))
                     {
                         LogWriteLine($"Patching file {entry.remoteName}...", LogType.Default, true);
@@ -738,7 +871,7 @@ namespace CollapseLauncher.InstallManager.Base
                         await Task.Run(() =>
                         {
                             patcher.Initialize(patchPath);
-                            patcher.Patch(sourceBasePath, destPath, true, _token.Token);
+                            patcher.Patch(sourceBasePath, destPath, true, _token.Token, false, true);
                         }, _token.Token);
 
                         File.Move(destPath, sourceBasePath, true);
@@ -763,7 +896,8 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 finally
                 {
-                    PatcherHDiff.EventListener.PatchEvent -= EventListener_PatchEvent;
+                    EventListener.PatchEvent -= EventListener_PatchEvent;
+                    EventListener.LoggerEvent -= EventListener_PatchLogEvent;
                     try
                     {
                         if (File.Exists(destPath)) File.Delete(destPath);
@@ -782,7 +916,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async void EventListener_PatchEvent(object sender, PatcherHDiff.PatchEvent e)
+        private async void EventListener_PatchEvent(object sender, PatchEvent e)
         {
             _progress.ProgressTotalDownload += e.Read;
             if (await base.CheckIfNeedRefreshStopwatch())
@@ -793,6 +927,29 @@ namespace CollapseLauncher.InstallManager.Base
                 _progress.ProgressTotalTimeLeft = TimeSpan.FromSeconds((_progress.ProgressTotalSizeToDownload - _progress.ProgressTotalDownload) / ConverterTool.Unzeroed(_progress.ProgressTotalSpeed));
                 UpdateProgress();
             }
+        }
+
+        private void EventListener_PatchLogEvent(object sender, LoggerEvent e)
+        {
+            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
+            || (HDiffPatch.LogVerbosity == Verbosity.Debug
+            && !(e.LogLevel == Verbosity.Debug ||
+                 e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Verbose
+            && !(e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Info
+            && !(e.LogLevel == Verbosity.Info))) return;
+
+            LogType type = e.LogLevel switch
+            {
+                Verbosity.Verbose => LogType.Debug,
+                Verbosity.Debug => LogType.Debug,
+                _ => LogType.Default
+            };
+
+            LogWriteLine(e.Message, type, true);
         }
 
         public virtual List<PkgVersionProperties> TryGetHDiffList()
@@ -810,18 +967,14 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         while (!listReader.EndOfStream)
                         {
-                            prop = (PkgVersionProperties)JsonSerializer
-                                .Deserialize(
-                                    listReader.ReadLine(),
-                                    typeof(PkgVersionProperties),
-                                    CoreLibraryJSONContext.Default);
+                            prop = listReader.ReadLine().Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
 
                             string filePath = Path.Combine(_gamePath, prop.remoteName + ".hdiff");
                             if (File.Exists(filePath))
                             {
                                 try
                                 {
-                                    prop.fileSize = PatcherHDiff.HDiffPatch.GetHDiffNewSize(filePath);
+                                    prop.fileSize = HDiffPatch.GetHDiffNewSize(filePath);
                                     LogWriteLine($"hdiff entry: {prop.remoteName}", LogType.Default, true);
 
                                     _out.Add(prop);
@@ -842,7 +995,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return _out;
         }
-#endregion
+        #endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingSteamInstallation()
@@ -1097,6 +1250,62 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Private Methods - StartPackageInstallation
+        private void MoveFileToIngredientList(List<FilePropertiesRemote> assetIndex, string sourcePath, string targetPath, bool isHonkai)
+        {
+            string inputPath;
+            string outputPath;
+            string outputFolder;
+
+            // Iterate the asset
+            FileInfo fileInfo;
+            foreach (FilePropertiesRemote index in assetIndex)
+            {
+                // Get the combined path from the asset name
+                inputPath = Path.Combine(sourcePath, index.N);
+                outputPath = Path.Combine(targetPath, index.N);
+                outputFolder = Path.GetDirectoryName(outputPath);
+
+                // Create directory of the output path if not exist
+                if (!Directory.Exists(outputFolder))
+                {
+                    Directory.CreateDirectory(outputFolder);
+                }
+
+                // Sanity Check: If the file is still missing even after the process, then throw
+                fileInfo = new FileInfo(inputPath);
+                if (!fileInfo.Exists)
+                {
+                    throw new AccessViolationException($"File: {inputPath} isn't found!");
+                }
+
+                // Move the file to the target directory
+                fileInfo.IsReadOnly = false;
+                fileInfo.MoveTo(outputPath, true);
+                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
+            }
+
+            // If it's not honkai, then return
+            if (!isHonkai) return;
+
+            // TODO: Make it automatic
+            // Move block file to ingredient path
+            string baseBlockPath = @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf";
+            inputPath = Path.Combine(sourcePath, baseBlockPath);
+            outputPath = Path.Combine(targetPath, baseBlockPath);
+
+            // Sanity Check: If the block manifest (xmf) is still missing even after the process, then throw
+            fileInfo = new FileInfo(inputPath);
+            if (!fileInfo.Exists)
+            {
+                throw new AccessViolationException($"Block file: {inputPath} isn't found!");
+            }
+
+            // Move the block manifest (xmf) to the target directory
+            fileInfo.IsReadOnly = false;
+            fileInfo.MoveTo(outputPath, true);
+            LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
+        }
+
         private void TryUnassignReadOnlyFiles()
         {
             foreach (string file in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
@@ -1440,6 +1649,65 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Event Methods
         protected void UpdateProgressBase() => base.UpdateProgress();
+
+        protected async void DeltaPatchCheckProgress(object sender, PatchEvent e)
+        {
+            _progress.ProgressTotalPercentage = e.ProgressPercentage;
+
+            _progress.ProgressTotalTimeLeft = e.TimeLeft;
+            _progress.ProgressTotalSpeed = e.Speed;
+
+            _progress.ProgressTotalSizeToDownload = e.TotalSizeToBePatched;
+            _progress.ProgressTotalDownload = e.CurrentSizePatched;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                _status.IsProgressTotalIndetermined = false;
+                UpdateProgressBase();
+                UpdateStatus();
+            }
+        }
+
+        protected void DeltaPatchCheckLogEvent(object sender, LoggerEvent e)
+        {
+            if (HDiffPatch.LogVerbosity == Verbosity.Quiet
+            || (HDiffPatch.LogVerbosity == Verbosity.Debug
+            && !(e.LogLevel == Verbosity.Debug ||
+                 e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Verbose
+            && !(e.LogLevel == Verbosity.Verbose ||
+                 e.LogLevel == Verbosity.Info))
+            || (HDiffPatch.LogVerbosity == Verbosity.Info
+            && !(e.LogLevel == Verbosity.Info))) return;
+
+            LogType type = e.LogLevel switch
+            {
+                Verbosity.Verbose => LogType.Debug,
+                Verbosity.Debug => LogType.Debug,
+                _ => LogType.Default
+            };
+
+            LogWriteLine(e.Message, type, true);
+        }
+
+        protected async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
+        {
+            _progress.ProgressTotalPercentage = e.ProgressTotalPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressTotalPercentage;
+
+            _progress.ProgressTotalTimeLeft = e.ProgressTotalTimeLeft;
+            _progress.ProgressTotalSpeed = e.ProgressTotalSpeed;
+
+            _progress.ProgressTotalSizeToDownload = e.ProgressTotalSizeToDownload;
+            _progress.ProgressTotalDownload = e.ProgressTotalDownload;
+
+            if (await CheckIfNeedRefreshStopwatch())
+            {
+                _status.IsProgressTotalIndetermined = false;
+                UpdateProgressBase();
+                UpdateStatus();
+            }
+        }
 
         private async void ZipProgressAdapter(object sender, ExtractProgress e)
         {

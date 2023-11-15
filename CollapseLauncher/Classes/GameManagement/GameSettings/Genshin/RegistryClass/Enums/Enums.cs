@@ -7,132 +7,139 @@ namespace CollapseLauncher.GameSettings.Genshin.Enums
         // HoYoooooooo :wogreeee:
         internal static Dictionary<double, int> RenderResolutionOption = new Dictionary<double, int>
         {
-            { 0.6d, 1 },
-            { 0.8d, 2 },
-            { 0.9d, 9 },
-            { 1.0d, 3 },
-            { 1.1d, 4 },
-            { 1.2d, 5 },
-            { 1.3d, 6 },
-            { 1.4d, 7 },
-            { 1.5d, 8 }
+            { 0.6d, 0 },
+            { 0.8d, 1 },
+            { 0.9d, 8 },
+            { 1.0d, 2 },
+            { 1.1d, 3 },
+            { 1.2d, 4 },
+            { 1.3d, 5 },
+            { 1.4d, 6 },
+            { 1.5d, 7 }
         };
     }
 
     enum FPSOption : int
     {
-        f30 = 1,
-        f60 = 2,
-        f45 = 3
+        f30,
+        f60,
+        f45
     }
 
     enum ShadowQualityOption
     {
-        Lowest = 1,
-        Low = 2,
-        Medium = 3,
-        High = 4
+        Lowest,
+        Low,
+        Medium,
+        High
     }
 
     enum VisualEffectsOption
     {
-        Lowest = 1,
-        Low = 2,
-        Medium = 3,
-        High = 4
+        Lowest,
+        Low,
+        Medium,
+        High
     }
 
     enum SFXQualityOption
     {
-        Lowest = 1,
-        Low = 2,
-        Medium = 3,
-        High = 4
+        Lowest,
+        Low,
+        Medium,
+        High
     }
 
     enum EnvironmentDetailOption
     {
-        Lowest = 1,
-        Low = 2,
-        Medium = 3,
-        High = 4,
-        Highest = 5
+        Lowest,
+        Low,
+        Medium,
+        High,
+        Highest
     }
 
     enum VerticalSyncOption
     {
-        Off = 1,
-        On = 2
+        Off,
+        On
     }
 
     enum AntialiasingOption
     {
-        Off = 1,
-        FSR2 = 2,
-        SMAA = 3
+        Off,
+        FSR2,
+        SMAA
     }
 
     enum VolumetricFogOption
     {
-        Off = 1,
-        On = 2
+        Off,
+        On
     }
 
     enum ReflectionsOption
     {
-        Off = 1,
-        On = 2
+        Off,
+        On
     }
 
     enum MotionBlurOption
     {
-        Off = 1,
-        Low = 2,
-        High = 3,
-        Extreme = 4
+        Off,
+        Low,
+        High,
+        Extreme
     }
 
     enum BloomOption
     {
-        Off = 1,
-        On = 2
+        Off,
+        On
     }
 
     enum CrowdDensityOption
     {
-        Low = 1,
-        High = 2
+        Low,
+        High
     }
 
     enum SubsurfaceScatteringOption
     {
-        Off = 1,
-        Medium = 2,
-        High = 3
+        Off,
+        Medium,
+        High
     }
 
     enum CoOpTeammateEffectsOption
     {
-        Off = 1,
-        PartiallyOff = 2,
-        On = 3
+        Off,
+        PartiallyOff,
+        On
     }
 
     enum AnisotropicFilteringOption
     {
-        x1 = 1,
-        x2 = 2,
-        x4 = 3,
-        x8 = 4,
-        x16 = 5
+        x1,
+        x2,
+        x4,
+        x8,
+        x16
+    }
+
+    enum GraphicsQualityOption
+    {
+        Lowest,
+        Low,
+        Medium,
+        High
     }
 
     enum GlobalIlluminationOption
     {
-        Off = 1,
-        Medium = 2,
-        High = 3,
-        Extreme = 4
+        Off,
+        Medium,
+        High,
+        Extreme
     }
 }
-

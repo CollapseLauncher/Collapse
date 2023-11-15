@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.FileDialogCOM;
+using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT.Binary;
 using Microsoft.Win32;

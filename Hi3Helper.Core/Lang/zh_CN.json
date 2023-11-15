@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "程序设置",
 
-    "Debug": "Additional Settings",
+    "Debug": "附加设置",
     "Debug_Console": "显示控制台",
     "Debug_IncludeGameLogs": "保存游戏日志到 Collapse（可能含有敏感数据）",
     "Debug_MultipleInstance": "允许开启多个 Collapse",
@@ -372,7 +372,7 @@
     "ReportIssueBtn": "报告问题",
     "ContributePRBtn": "贡献 PR",
     "ContributorListBtn": "开源贡献者",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "帮助我们翻译 Collapse！",
 
     "About": "关于",
     "About_Copyright1": "© 2022-2023",
@@ -394,8 +394,8 @@
     "EnableAcrylicEffect": "使用亚克力模糊效果",
     "EnableDownloadChunksMerging": "合并已下载的软件包块",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "在游戏启动后降低 Collapse 进程的资源占用",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "禁用主页轮播，并降低 Collapse 的优先级至“低于正常”",
 
     "KbShortcuts_Title": "快捷键",
     "KbShortcuts_ShowBtn": "显示快捷键",
@@ -425,7 +425,7 @@
     "OkaySad": "好的 ;-;)",
     "OkayHappy": "好的 (≧▽≦)ﾉ",
     "OkayBackToMenu": "好的，回到菜单",
-    "Skip": "跳过",
+    "Skip": "跳过，不再显示",
     "Next": "下一页",
     "Prev": "上一页",
     "Uninstall": "卸载",
@@ -834,7 +834,7 @@
     "Graphics_FPS": "帧率",
     "Graphics_RenderScale": "渲染精度",
     "Graphics_ShadowQuality": "阴影质量",
-    "Graphics_VisualFX": "视觉效果",
+    "Graphics_VisualFX": "后期效果",
     "Graphics_SFXQuality": "特效质量",
     "Graphics_EnvDetailQuality": "场景细节",
     "Graphics_VSync": "垂直同步（VSync）",
@@ -870,12 +870,12 @@
     "Graphics_SpecPanel": "全局图形设置",
     "SpecEnabled": "打开",
     "SpecDisabled": "关闭",
-    "SpecVeryLow": "非常低",
+    "SpecVeryLow": "极低",
     "SpecLow": "低",
     "SpecMedium": "中",
     "SpecHigh": "高",
-    "SpecVeryHigh": "非常高",
-    "SpecExtreme": "极高",
+    "SpecVeryHigh": "极高",
+    "SpecExtreme": "非常高",
     "SpecPartiallyOff": "部分关闭",
 
     "ApplyBtn": "应用设置",
@@ -933,7 +933,7 @@
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",
     "Switch_SwapBtn": "交换 {0} 和 {1}",
     "Switch_ChangeGame": "选择游戏",
-    "Switch_ChangeGame_Desc": "您也可以使用小键盘来执行此快捷操作！\n例如：{0}+1 或 小键盘1 会切换到崩坏3页面（上一次使用的区服）。",
+    "Switch_ChangeGame_Desc": "您也可以使用小键盘来执行此快捷操作！\n例如：{0}+1 或 小键盘1 （不带 {0} 修饰键）会切换到崩坏3页面（上一次使用的区服）。",
     "Switch_ChangeRegion": "选择区服",
     "Switch_ChangeRegion_Desc": "例如：对于原神，{0}+1 会切换到国际服。",
 

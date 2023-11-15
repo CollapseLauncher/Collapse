@@ -4,17 +4,19 @@ using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
     internal partial class StarRailRepair :
-        ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair
+        ProgressBase<RepairAssetType, FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
         private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
         private bool _isOnlyRecoverMain { get; set; }
+        private List<FilePropertiesRemote> _originAssetIndex { get; set; }
         #endregion
 
         public StarRailRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
@@ -26,6 +28,8 @@ namespace CollapseLauncher
         }
 
         ~StarRailRepair() => Dispose();
+
+        public List<FilePropertiesRemote> GetAssetIndex() => _originAssetIndex;
 
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
