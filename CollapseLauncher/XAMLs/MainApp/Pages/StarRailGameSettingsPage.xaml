@@ -304,9 +304,9 @@
                                 <StackPanel Grid.Column="0" x:Name="LangSettingLeft" Margin="0,0,24,0">
                                     <TextBlock Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.LanguageAudio}" FontSize="16" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
                                     <ComboBox x:Name="AudioLangSelector" Margin="-4,0,0,16" CornerRadius="14" HorizontalAlignment="Stretch" SelectedIndex="{x:Bind AudioLang, Mode=TwoWay}">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_en}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_jp}"/>
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_cn}"/>
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.VO_kr}"/>
                                     </ComboBox>
                                 </StackPanel>
