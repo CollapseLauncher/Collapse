@@ -91,6 +91,8 @@ namespace CollapseLauncher.InstallManager.StarRail
             {
                 // Try get the voice language ID from the registry
                 langID = _gameVoiceLanguageID;
+                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
                 package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
 
@@ -101,6 +103,9 @@ namespace CollapseLauncher.InstallManager.StarRail
             else
             {
                 langID = await Dialog_ChooseAudioLanguage(_parentUI, langStrings);
+                // Since zh-CN (0) and zh-TW (1) have the same resource, then move the index forward
+                langID += langID > 0 && asset.voice_packs.Count > 4 ? 1 : 0;
+
                 package = new GameInstallPackage(asset.voice_packs[langID], _gamePath, asset.version) { LanguageID = langID, PackageType = GameInstallPackageType.Audio };
                 packageList.Add(package);
 

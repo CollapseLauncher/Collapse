@@ -7,9 +7,6 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.SharpHDiffPatch;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -52,6 +49,7 @@ namespace CollapseLauncher.InstallManager.Base
         protected virtual int _gameVoiceLanguageID { get => int.MinValue; }
         protected IRepair _gameRepairTool { get; set; }
         protected Http _httpClient { get; private set; }
+        protected bool _canDeleteHdiffReference { get => !File.Exists(Path.Combine(_gamePath, "@NoDeleteHdiffReference")); }
         protected bool _canDeleteZip { get => !File.Exists(Path.Combine(_gamePath, "@NoDeleteZip")); }
         protected bool _canSkipVerif { get => File.Exists(Path.Combine(_gamePath, "@NoVerification")); }
         protected bool _canSkipExtract { get => File.Exists(Path.Combine(_gamePath, "@NoExtraction")); }
@@ -423,13 +421,17 @@ namespace CollapseLauncher.InstallManager.Base
             return 1;
         }
 
-        private long GetAssetIndexTotalUncompressSize(SevenZipTool zip, List<GameInstallPackage> assetIndex)
+        private long GetAssetIndexTotalUncompressSize(List<GameInstallPackage> assetIndex)
         {
             long returnSize = 0;
 
             foreach (GameInstallPackage asset in assetIndex)
             {
-                using (Stream sr = GetSingleOrSegmentedDownloadStream(asset)) returnSize += zip.GetUncompressedSize(sr);
+                using (Stream stream = GetSingleOrSegmentedDownloadStream(asset))
+                using (ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll"))
+                {
+                    returnSize += archiveFile.Entries.Sum(x => (long)x.Size);
+                }
             }
 
             return returnSize;
@@ -471,6 +473,9 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task StartPackageInstallationInner()
         {
+            // Start Async Thread
+            // Since the ArchiveFile (especially with the callbacks) can't run under
+            // different thread, so the async call will be called at the start
             await Task.Run(() =>
             {
                 // Sanity Check: Check if the package list is empty or not
@@ -479,81 +484,72 @@ namespace CollapseLauncher.InstallManager.Base
                 // If _canSkipExtract flag is true, then return (skip) the extraction
                 if (_canSkipExtract) return;
 
-                // Start Async Thread
-                // Since the SevenZipTool (especially with the callbacks) can't run under
-                // different thread, so the async call will be called at the start
+                // Get the sum of uncompressed size and
+                // Set progress count to beginning
+                _progressTotalSize = GetAssetIndexTotalUncompressSize(_assetIndex);
 
-                // Initialize the zip tool
-                using (SevenZipTool zip = new SevenZipTool())
+                _progressTotalSizeCurrent = 0;
+                _progressTotalCountCurrent = 1;
+                _progressTotalCount = _assetIndex.Count;
+                _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
+                RestartStopwatch();
+
+                // Reset the last size counter
+                _totalLastSizeCurrent = 0;
+
+                // Try unassign read-only and redundant diff files
+                TryUnassignReadOnlyFiles();
+                TryRemoveRedundantHDiffList();
+
+                foreach (GameInstallPackage asset in _assetIndex)
                 {
-                    // Get the sum of uncompressed size and
-                    // Set progress count to beginning
-                    _progressTotalSize = GetAssetIndexTotalUncompressSize(zip, _assetIndex);
+                    // Update the status
+                    _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
+                    _status.IsProgressPerFileIndetermined = false;
+                    _status.IsProgressTotalIndetermined = false;
+                    UpdateStatus();
 
-                    _progressTotalSizeCurrent = 0;
-                    _progressTotalCountCurrent = 1;
-                    _progressTotalCount = _assetIndex.Count;
-                    _status.IsIncludePerFileIndicator = _assetIndex.Count > 1;
-                    RestartStopwatch();
+                    // Load the zip
+                    Stream stream = GetSingleOrSegmentedDownloadStream(asset);
+                    ArchiveFile archiveFile = new ArchiveFile(stream, null, @"Lib\7z.dll");
 
-                    // Reset the last size counter
-                    _totalLastSizeCurrent = 0;
-
-                    // Try unassign read-only and redundant diff files
-                    TryUnassignReadOnlyFiles();
-                    TryRemoveRedundantHDiffList();
-
-                    foreach (GameInstallPackage asset in _assetIndex)
+                    try
                     {
-                        // Update the status
-                        _status.ActivityStatus = string.Format("{0}: {1}", Lang._Misc.Extracting, string.Format(Lang._Misc.PerFromTo, _progressTotalCountCurrent, _progressTotalCount));
-                        _status.IsProgressPerFileIndetermined = false;
-                        _status.IsProgressTotalIndetermined = false;
-                        UpdateStatus();
+                        // Start extraction
+                        archiveFile.ExtractProgress += ZipProgressAdapter;
+                        archiveFile.Extract(e => Path.Combine(_gamePath, e.FileName), _token.Token);
 
-                        try
+                        // Get the information about diff and delete list file
+                        FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
+                        FileInfo deleteList = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt"));
+
+                        // If diff list file exist, then rename the file
+                        if (hdiffList.Exists)
                         {
-                            // Load the zip
-                            zip.LoadArchive(GetSingleOrSegmentedDownloadStream(asset));
-
-                            // Start extraction
-                            zip.ExtractProgressChanged += ZipProgressAdapter;
-                            zip.ExtractToDirectory(_gamePath, _threadCount, _token.Token);
-
-                            // Get the information about diff and delete list file
-                            FileInfo hdiffList = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
-                            FileInfo deleteList = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt"));
-
-                            // If diff list file exist, then rename the file
-                            if (hdiffList.Exists)
-                            {
-                                hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
-                            }
-
-                            // If the delete zip file exist, then rename the file
-                            if (deleteList.Exists)
-                            {
-                                deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
-                            }
-
-                            // Make sure that the ZipTool is getting disposed first
-                            zip?.Dispose();
-
-                            // If the _canDeleteZip flag is true, then delete the zip
-                            if (_canDeleteZip)
-                            {
-                                DeleteSingleOrSegmentedDownloadStream(asset);
-                            }
-                        }
-                        catch (Exception) { throw; }
-                        finally
-                        {
-                            zip.ExtractProgressChanged -= ZipProgressAdapter;
-                            zip?.Dispose();
+                            hdiffList.MoveTo(Path.Combine(_gamePath, $"hdifffiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
                         }
 
-                        _progressTotalCountCurrent++;
+                        // If the delete zip file exist, then rename the file
+                        if (deleteList.Exists)
+                        {
+                            deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
+                        }
+
+                        // If the _canDeleteZip flag is true, then delete the zip
+                        if (_canDeleteZip)
+                        {
+                            DeleteSingleOrSegmentedDownloadStream(asset);
+                        }
                     }
+                    catch (Exception) { throw; }
+                    finally
+                    {
+                        archiveFile.ExtractProgress -= ZipProgressAdapter;
+                        stream?.Dispose();
+                        archiveFile?.Dispose();
+                    }
+
+                    _progressTotalCountCurrent++;
                 }
             });
         }
@@ -791,7 +787,12 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (string path in Directory.EnumerateFiles(_gamePath, "deletefiles_*", SearchOption.TopDirectoryOnly))
             {
                 using (StreamReader sw = new StreamReader(path,
-                    new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read, Options = FileOptions.DeleteOnClose }))
+                    new FileStreamOptions
+                    {
+                        Mode = FileMode.Open,
+                        Access = FileAccess.Read,
+                        Options = _canDeleteHdiffReference ? FileOptions.DeleteOnClose : FileOptions.None
+                    }))
                 {
                     while (!sw.EndOfStream)
                     {
@@ -963,7 +964,12 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     using (StreamReader listReader = new StreamReader(listFile,
-                        new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read, Options = FileOptions.DeleteOnClose }))
+                        new FileStreamOptions
+                        {
+                            Mode = FileMode.Open,
+                            Access = FileAccess.Read,
+                            Options = _canDeleteHdiffReference ? FileOptions.DeleteOnClose : FileOptions.None
+                        }))
                     {
                         while (!listReader.EndOfStream)
                         {
@@ -1709,17 +1715,17 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async void ZipProgressAdapter(object sender, ExtractProgress e)
+        private async void ZipProgressAdapter(object sender, ExtractProgressProp e)
         {
             if (await base.CheckIfNeedRefreshStopwatch())
             {
                 // Incrment current total size
-                long lastSize = GetLastSize(e.totalExtractedSize);
+                long lastSize = GetLastSize((long)e.TotalRead);
                 _progressTotalSizeCurrent += lastSize;
 
                 // Assign per file size
-                _progressPerFileSizeCurrent = e.totalExtractedSize;
-                _progressPerFileSize = e.totalUncompressedSize;
+                _progressPerFileSizeCurrent = (long)e.TotalRead;
+                _progressPerFileSize = (long)e.TotalSize;
 
                 // Assign local sizes to progress
                 _progress.ProgressPerFileDownload = _progressPerFileSizeCurrent;
