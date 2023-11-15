@@ -1081,9 +1081,9 @@ namespace CollapseLauncher.InstallManager.Base
             List<string> steamLibsList = SteamTool.GetSteamLibs();
             if (steamLibsList == null) return false;
 
-            List<SteamTool.AppInfo> steamAppList = SteamTool.GetSteamApps(steamLibsList);
+            List<AppInfo> steamAppList = SteamTool.GetSteamApps(steamLibsList);
 #nullable enable
-            SteamTool.AppInfo? steamAppInfo = steamAppList.Where(x => x.Id == steamID).FirstOrDefault();
+            AppInfo? steamAppInfo = steamAppList.Where(x => x.Id == steamID).FirstOrDefault();
 
             // If the app info is not null, then assign OutputPath to the game path
             if (steamAppInfo != null)
