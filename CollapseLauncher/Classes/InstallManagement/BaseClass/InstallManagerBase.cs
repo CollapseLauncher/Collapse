@@ -7,7 +7,11 @@ using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.SharpHDiffPatch;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
+using SevenZipExtractor;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -473,6 +477,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual async Task StartPackageInstallationInner()
         {
+            // Get the sum of uncompressed size and
+            // Set progress count to beginning
+            _progressTotalSize = GetAssetIndexTotalUncompressSize(_assetIndex);
+
             // Start Async Thread
             // Since the ArchiveFile (especially with the callbacks) can't run under
             // different thread, so the async call will be called at the start
@@ -483,10 +491,6 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // If _canSkipExtract flag is true, then return (skip) the extraction
                 if (_canSkipExtract) return;
-
-                // Get the sum of uncompressed size and
-                // Set progress count to beginning
-                _progressTotalSize = GetAssetIndexTotalUncompressSize(_assetIndex);
 
                 _progressTotalSizeCurrent = 0;
                 _progressTotalCountCurrent = 1;
