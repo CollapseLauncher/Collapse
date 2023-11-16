@@ -1,30 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- General Properties -->
 		<OutputType>WinExe</OutputType>
-		<EnableWindowsTargeting>true</EnableWindowsTargeting>
-		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<Platforms>x64</Platforms>
-		<UseWinUI>true</UseWinUI>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<LangVersion>preview</LangVersion>
-		<Configurations>Debug;Debug-Trimmed;Release;Publish;Debug-Trimmed</Configurations>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.72.6</Version>
-		<DebugType>portable</DebugType>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
-		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Configurations>Debug;Release;Publish</Configurations>
+		<!-- Versioning -->
+		<Version>1.72.6</Version>
+		<LangVersion>preview</LangVersion>
+		<!-- Target Settings -->
+		<Platforms>x64</Platforms>
+		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>		
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<!-- Debug Settings -->
+		<DebugType>portable</DebugType>
+		<GitVersion>false</GitVersion>
+		<!-- Performance Settings -->
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
 		<TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
 		<TieredPGO>true</TieredPGO>
+		<!-- WinUI Properties -->
+		<UseWinUI>true</UseWinUI>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<!-- Other Settings -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-		<GitVersion>false</GitVersion>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
+
 <!--
   Constants List:
 		- PREVIEW : States the version is a preview branch 
@@ -50,22 +58,6 @@
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION</DefineConstants>
 		<Optimize>true</Optimize>
 		<GitSkipCache>true</GitSkipCache>
-		<DebugType>portable</DebugType>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Trimmed|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;DEBUG;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
-		<Optimize>true</Optimize>
-		<GitSkipCache>true</GitSkipCache>
-		<SelfContained>true</SelfContained>
-		<PublishTrimmed>true</PublishTrimmed>
-		<TrimMode>partial</TrimMode>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<AutoreleasePoolSupport>false</AutoreleasePoolSupport>
-		<EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
-		<EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
-		<EventSourceSupport>false</EventSourceSupport>
-		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
-		<InvariantGlobalization>true</InvariantGlobalization>
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
 
@@ -103,6 +95,9 @@
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -210,9 +205,5 @@
 			<TrimmerRootAssembly Include="WinRT.Runtime" />
 			-->
 		</ItemGroup>
-	</Target>
-  
-	<Target Name="CustomTrim" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)|$(Platform)'=='Debug-Trimmed|x64'">
-		<ILLink AssemblyPaths="$(TargetDir)$(TargetFileName)" RootAssemblyNames="$(TargetDir)$(TargetFileName)" OutputDirectory="$(TargetDir)trimmed\" ExtraArgs="-t --verbose --skip-unresolved true" />
 	</Target>
 </Project>
