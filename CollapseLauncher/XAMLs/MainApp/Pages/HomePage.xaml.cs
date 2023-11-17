@@ -1079,26 +1079,36 @@ namespace CollapseLauncher.Pages
 
         private void GameInstall_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusTitle.Text = e.ActivityStatus;
-                progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstall_StatusChanged_Inner(e);
+            else
+                DispatcherQueue.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
+        }
 
-                progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
-                progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
-            });
+        private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
+        {
+            ProgressStatusTitle.Text = e.ActivityStatus;
+            progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+
+            progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
+            progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
         private void GameInstall_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressRing.Value = e.ProgressTotalPercentage;
-                progressRingPerFile.Value = e.ProgressPerFilePercentage;
-                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
-                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
-            });
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstall_ProgressChanged_Inner(e);
+            else
+                DispatcherQueue.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
+        }
+
+        private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
+        {
+            progressRing.Value = e.ProgressTotalPercentage;
+            progressRingPerFile.Value = e.ProgressPerFilePercentage;
+            ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+            ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
+            ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
         }
 
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)

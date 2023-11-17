@@ -34,9 +34,6 @@
 		<Content Include="Lang\*.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="Lib\7z.dll">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Include="Lib\discord_game_sdk.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
