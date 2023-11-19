@@ -171,6 +171,7 @@ namespace Hi3Helper.Shared.Region
             { "ShowRegionChangeWarning", true },
 #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
+            { "EnableDiscordGameStatus", true },
 #endif
             { "EnableAcrylicEffect", true },
             { "IncludeGameLogs", false },
