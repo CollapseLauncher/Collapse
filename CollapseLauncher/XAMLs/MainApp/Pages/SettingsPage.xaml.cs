@@ -592,6 +592,36 @@ namespace CollapseLauncher.Pages
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
         }
 
+        private int AppGameLaunchedBehaviorIndex
+        {
+            get => GetAppConfigValue("GameLaunchedBehavior").ToString() switch
+                   {
+                       "Minimize" => 0,
+                       "ToTray"   => 1,
+                       "Nothing"  => 2,
+                       _ => 0
+                   };
+            set
+            {
+                switch (value)
+                {
+                    case 0:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Minimize");
+                        break;
+                    case 1:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "ToTray");
+                        break;
+                    case 2:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Nothing");
+                        break;
+                    default:
+                        LogWriteLine("Invalid GameLaunchedBehavior selection! Reverting to default 'Minimize'", LogType.Error, true);
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Minimize");
+                        break;
+                }
+            }
+        }
+
         #region Keyboard Shortcuts
         private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
 

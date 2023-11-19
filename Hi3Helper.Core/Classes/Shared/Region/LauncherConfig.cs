@@ -82,25 +82,25 @@ namespace Hi3Helper.Shared.Region
                 return Path.Combine(dirPath, execName + ".exe");
             }
         }
-        public static string AppExecutableName { get => Path.GetFileName(AppExecutablePath); }
-        public static string AppGameImgFolder { get => Path.Combine(AppGameFolder, "_img"); }
+        public static string AppExecutableName      { get => Path.GetFileName(AppExecutablePath); }
+        public static string AppGameImgFolder       { get => Path.Combine(AppGameFolder,    "_img"); }
         public static string AppGameImgCachedFolder { get => Path.Combine(AppGameImgFolder, "cached"); }
-        public static string AppGameLogsFolder { get => Path.Combine(AppGameFolder, "_logs"); }
-        public static string AppConfigFile = Path.Combine(AppDataFolder, "config.ini");
-        public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+        public static string AppGameLogsFolder      { get => Path.Combine(AppGameFolder,    "_logs"); }
+        public static string AppConfigFile      = Path.Combine(AppDataFolder,               "config.ini");
+        public static string AppNotifIgnoreFile = Path.Combine(AppDataFolder,               "ignore_notif_ids.json");
         public static string AppCurrentVersionString { get; set; }
         public static string GamePathOnSteam;
 
-        public const long AppDiscordApplicationID = 1138126643592970251;
+        public const long AppDiscordApplicationID     = 1138126643592970251;
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
-        public const long AppDiscordApplicationID_GI = 1124137436650426509;
+        public const long AppDiscordApplicationID_GI  = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
         //public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
       
-        public const string AppNotifURLPrefix = "/notification_{0}.json";
-        public const string AppGameConfigV2URLPrefix = "/metadata/metadatav2_{0}.json";
+        public const string AppNotifURLPrefix           = "/notification_{0}.json";
+        public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";
         public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
-        public const string AppGameRepoIndexURLPrefix = "/metadata/repair_indexes/{0}/repo";
+        public const string AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
 
         public static long AppGameConfigLastUpdate;
         public static int AppCurrentThread
@@ -120,13 +120,13 @@ namespace Hi3Helper.Shared.Region
         public static DiscordPresenceManager AppDiscordPresence;
 #endif
 
-        public static bool RequireAdditionalDataDownload;
-        public static bool IsThisRegionInstalled = false;
-        public static bool IsPreview = false;
-        public static bool IsAppThemeNeedRestart = false;
-        public static bool IsAppLangNeedRestart = false;
+public static         bool RequireAdditionalDataDownload;
+        public static bool IsThisRegionInstalled            = false;
+        public static bool IsPreview                        = false;
+        public static bool IsAppThemeNeedRestart            = false;
+        public static bool IsAppLangNeedRestart             = false;
         public static bool IsChangeRegionWarningNeedRestart = false;
-        public static bool IsFirstInstall = false;
+        public static bool IsFirstInstall                   = false;
         public static bool IsConsoleEnabled
         {
             get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
@@ -179,7 +179,8 @@ namespace Hi3Helper.Shared.Region
             { "LowerCollapsePrioOnGameLaunch", false },
             { "EnableHTTPRepairOverride", false },
             { "ForceGIHDREnable", false },
-            { "HI3IgnoreMediaPack", false }
+            { "HI3IgnoreMediaPack", false },
+            { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
         };
 
         public static void LoadGamePreset()

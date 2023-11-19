@@ -1189,10 +1189,24 @@ namespace CollapseLauncher.Pages
 
                 WatchOutputLog = new CancellationTokenSource();
 
+                GameRunningWatcher();
+
                 if (GetAppConfigValue("EnableConsole").ToBool())
-                {
                     ReadOutputLog();
-                    GameLogWatcher();
+
+                switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+                {
+                    case "Minimize":
+                        m_presenter.Minimize();
+                        break;
+                    case "ToTray":
+                        H.NotifyIcon.WindowExtensions.Hide(m_window);
+                        break;
+                    case "Nothing":
+                        break;
+                    default:
+                        m_presenter.Minimize();
+                        break;
                 }
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
@@ -1224,6 +1238,37 @@ namespace CollapseLauncher.Pages
             catch (System.ComponentModel.Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            }
+        }
+
+        // Use this method to do something when game is closed
+        private async void GameRunningWatcher()
+        {
+            await Task.Delay(5000);
+            while (CurrentGameProperty.IsGameRunning)
+            {
+                await Task.Delay(3000);
+            }
+
+            // Stopping GameLogWatcher
+            if (GetAppConfigValue("EnableConsole").ToBool())
+                WatchOutputLog.Cancel();
+
+            // Window manager on game closed
+            switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+            {
+                case "Minimize":
+                    m_presenter.Restore();
+                    break;
+                case "ToTray":
+                    H.NotifyIcon.WindowExtensions.Show(m_window);
+                    m_presenter.Restore();
+                    break;
+                case "Nothing":
+                    break;
+                default:
+                    m_presenter.Restore();
+                    break;
             }
         }
 
@@ -1440,7 +1485,6 @@ namespace CollapseLauncher.Pages
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
             {
-                m_presenter.Minimize();
                 string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath, CurrentGameProperty._GameVersion.GameOutputLogName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(logPath)))
@@ -1478,17 +1522,6 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"{ex}", LogType.Error);
             }
-        }
-
-        private async void GameLogWatcher()
-        {
-            await Task.Delay(5000);
-            while (CurrentGameProperty.IsGameRunning)
-            {
-                await Task.Delay(3000);
-            }
-
-            WatchOutputLog.Cancel();
         }
         #endregion
 

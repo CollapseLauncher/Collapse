@@ -47,6 +47,26 @@
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}"
                                 Visibility="Collapsed" />
                         </StackPanel>
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock
+                                Margin="0,0,0,8"
+                                Style="{ThemeResource SubtitleTextBlockStyle}"
+                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}"/>
+                            <TextBlock
+                                Margin="0,0,0,8"
+                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}"/>
+                            <ComboBox
+                                Margin="0,0,0,0"
+                                x:Name="GameLaunchedBehaviorSelector"
+                                MinWidth="256"
+                                CornerRadius="14"
+                                MaxDropDownHeight="200"
+                                SelectedIndex="{x:Bind AppGameLaunchedBehaviorIndex, Mode=TwoWay}">
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}"/>
+                            </ComboBox>
+                        </StackPanel>
                         <TextBlock
                             Margin="0,10,0,16"
                             Style="{ThemeResource SubtitleTextBlockStyle}"
