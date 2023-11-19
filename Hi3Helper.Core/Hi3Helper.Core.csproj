@@ -42,8 +42,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
-		<ProjectReference Include="Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

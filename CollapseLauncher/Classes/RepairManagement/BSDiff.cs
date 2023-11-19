@@ -10,7 +10,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Threading;
 
-namespace Hi3Helper.Data
+namespace CollapseLauncher
 {
     /*
 	The original bsdiff.c source code (http://www.daemonology.net/bsdiff/) is
@@ -40,26 +40,6 @@ namespace Hi3Helper.Data
 	IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 	*/
-
-#if !NET7_0_OR_GREATER
-    public static class StreamExtension
-    {
-        public static void ReadExactly(this Stream stream, Span<byte> buffer) => 
-            ReadAtLeastCore(stream, buffer, buffer.Length);
-
-        private static void ReadAtLeastCore(Stream stream, Span<byte> buffer, int minimumBytes)
-        {
-            int totalRead = 0;
-            while (totalRead < minimumBytes)
-            {
-                int read = stream.Read(buffer.Slice(totalRead));
-                if (read == 0) return;
-
-                totalRead += read;
-            }
-        }
-    }
-#endif
 
     public sealed class BinaryPatchUtility
     {

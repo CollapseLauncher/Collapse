@@ -102,9 +102,11 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
+		<ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

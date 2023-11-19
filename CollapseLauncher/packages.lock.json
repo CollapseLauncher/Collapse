@@ -1282,9 +1282,7 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Hi3Helper.Http": "[1.0.0, )",
-          "Hi3Helper.SharpHDiffPatch": "[1.0.0, )",
-          "SevenZipExtractor": "[1.0.17, )"
+          "Hi3Helper.Http": "[1.0.0, )"
         }
       },
       "hi3helper.enctool": {
