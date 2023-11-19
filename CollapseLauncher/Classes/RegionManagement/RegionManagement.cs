@@ -639,7 +639,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
 #if !DISABLEDISCORD
-                if (GetAppConfigValue("EnableDiscordGameStatus").ToBool())
+                if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                     AppDiscordPresence.SetupPresence();
 #endif
                 return true;
