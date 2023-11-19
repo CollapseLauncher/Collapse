@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 
@@ -23,7 +25,7 @@ namespace CollapseLauncher
     {
         public static RegionResourceProp regionBackgroundProp = new RegionResourceProp();
         public static HomeMenuPanel regionNewsProp = new HomeMenuPanel();
-        public static IList<T> Copy<T>(this IList<T> source)
+        public static List<T> Copy<T>(this List<T> source)
             where T : IRegionResourceCopyable<T>
         {
             if (source == null) return null;
@@ -45,15 +47,17 @@ namespace CollapseLauncher
 
     public class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
     {
+        public List<RegionResourcePlugin> plugins { get; set; }
         public RegionResourceLatest game { get; set; }
         public RegionResourceLatest pre_download_game { get; set; }
         public RegionBackgroundProp adv { get; set; }
         public RegionResourceVersion sdk { get; set; }
-        public IList<RegionSocMedProp> banner { get; set; }
-        public IList<RegionSocMedProp> icon { get; set; }
-        public IList<RegionSocMedProp> post { get; set; }
+        public List<RegionSocMedProp> banner { get; set; }
+        public List<RegionSocMedProp> icon { get; set; }
+        public List<RegionSocMedProp> post { get; set; }
         public RegionResourceGame Copy() => new RegionResourceGame()
         {
+            plugins = plugins?.Copy(),
             game = game?.Copy(),
             pre_download_game = pre_download_game?.Copy(),
             adv = adv?.Copy(),
@@ -64,10 +68,35 @@ namespace CollapseLauncher
         };
     }
 
+    public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
+    {
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+        public int plugin_id { get; set; }
+        public string version { get; set; }
+        public RegionResourceVersion package { get; set; }
+        public RegionResourcePlugin Copy() => new RegionResourcePlugin()
+        {
+            plugin_id = plugin_id,
+            version = version,
+            package = package?.Copy()
+        };
+    }
+
+    public class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
+    {
+        public string path { get; set; }
+        public string md5 { get; set; }
+        public RegionResourcePluginValidate Copy() => new RegionResourcePluginValidate()
+        {
+            path = path,
+            md5 = md5
+        };
+    }
+
     public class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
     {
         public RegionResourceVersion latest { get; set; }
-        public IList<RegionResourceVersion> diffs { get; set; }
+        public List<RegionResourceVersion> diffs { get; set; }
         public RegionResourceLatest Copy() => new RegionResourceLatest()
         {
             latest = latest?.Copy(),
@@ -78,6 +107,7 @@ namespace CollapseLauncher
     public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
         public string version { get; set; }
+        public string url { get; set; }
         public string path { get; set; }
         public string decompressed_path { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
@@ -95,12 +125,15 @@ namespace CollapseLauncher
         public int? channel_id { get; set; }
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public int? sub_channel_id { get; set; }
-        public IList<RegionResourceVersion> voice_packs { get; set; }
-        public IList<RegionResourceVersion> segments { get; set; }
+        public List<RegionResourceVersion> voice_packs { get; set; }
+        public List<RegionResourceVersion> segments { get; set; }
+        [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
+        public List<RegionResourcePluginValidate> validate { get; set; }
         public RegionResourceVersion Copy() => new RegionResourceVersion()
         {
             version = version,
             path = path,
+            url = url,
             decompressed_path = decompressed_path,
             size = size,
             package_size = package_size,
@@ -110,14 +143,67 @@ namespace CollapseLauncher
             is_recommended_update = is_recommended_update,
             entry = entry,
             voice_packs = voice_packs?.Copy(),
-            segments = segments?.Copy()
+            segments = segments?.Copy(),
+            validate = validate?.Copy()
         };
+    }
+
+    public class RegionResourcePluginValidateConverter : JsonConverter<List<RegionResourcePluginValidate>>
+    {
+        public override bool CanConvert(Type type)
+        {
+            return true;
+        }
+
+        public override List<RegionResourcePluginValidate> Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            string valueString = EmptiedBackslash(reader.ValueSpan);
+            List<RegionResourcePluginValidate> returnList = valueString.Deserialize<List<RegionResourcePluginValidate>>(InternalAppJSONContext.Default);
+
+            return returnList;
+        }
+
+        private unsafe string EmptiedBackslash(ReadOnlySpan<byte> span)
+        {
+            Span<byte> buffer = new byte[span.Length];
+            int indexIn = 0;
+            int indexOut = 0;
+            while (indexIn < span.Length)
+            {
+                if (span[indexIn] == '\\')
+                {
+                    ++indexIn;
+                    continue;
+                }
+
+                buffer[indexOut] = span[indexIn];
+                ++indexIn;
+                ++indexOut;
+            }
+
+            fixed (byte* bufferPtr = buffer)
+            {
+                return Encoding.UTF8.GetString(bufferPtr, indexOut);
+            }
+        }
+
+        public override void Write(
+                Utf8JsonWriter writer,
+                List<RegionResourcePluginValidate> baseType,
+                JsonSerializerOptions options)
+        {
+
+            throw new JsonException($"Serializing is not supported!");
+        }
     }
 
     public class HomeMenuPanel : IRegionResourceCopyable<HomeMenuPanel>
     {
-        public IList<MenuPanelProp> sideMenuPanel { get; set; }
-        public IList<MenuPanelProp> imageCarouselPanel { get; set; }
+        public List<MenuPanelProp> sideMenuPanel { get; set; }
+        public List<MenuPanelProp> imageCarouselPanel { get; set; }
         public PostCarouselTypes articlePanel { get; set; }
         public RegionBackgroundProp eventPanel { get; set; }
         public HomeMenuPanel Copy() => new HomeMenuPanel()
@@ -131,9 +217,9 @@ namespace CollapseLauncher
 
     public class PostCarouselTypes : IRegionResourceCopyable<PostCarouselTypes>
     {
-        public IList<RegionSocMedProp> Events { get; set; } = new List<RegionSocMedProp>();
-        public IList<RegionSocMedProp> Notices { get; set; } = new List<RegionSocMedProp>();
-        public IList<RegionSocMedProp> Info { get; set; } = new List<RegionSocMedProp>();
+        public List<RegionSocMedProp> Events { get; set; } = new List<RegionSocMedProp>();
+        public List<RegionSocMedProp> Notices { get; set; } = new List<RegionSocMedProp>();
+        public List<RegionSocMedProp> Info { get; set; } = new List<RegionSocMedProp>();
         public PostCarouselTypes Copy() => new PostCarouselTypes()
         {
             Events = Events?.Copy(),
@@ -171,7 +257,7 @@ namespace CollapseLauncher
         public string Description { get; set; }
         public bool IsDescriptionExist => !string.IsNullOrEmpty(Description);
         public bool IsQRDescriptionExist => !string.IsNullOrEmpty(QR_Description);
-        public IList<LinkProp> Links { get; set; }
+        public List<LinkProp> Links { get; set; }
         public bool IsLinksExist => Links?.Any() == true;
         public bool ShowLinks => IsLinksExist && Links.Count > 1;
         public bool ShowDescription => IsDescriptionExist && !ShowLinks;
@@ -211,8 +297,8 @@ namespace CollapseLauncher
         private string _url;
         private string _icon_link;
         private string _tittle;
-        private IList<LinkProp> _links;
-        private IList<LinkProp> _other_links;
+        private List<LinkProp> _links;
+        private List<LinkProp> _other_links;
 
         public string icon_id { get; set; }
         public string icon_link
@@ -239,7 +325,7 @@ namespace CollapseLauncher
         public string show_time { get; set; }
         public PostCarouselType type { get; set; }
 
-        public IList<LinkProp> links
+        public List<LinkProp> links
         {
             get => _links;
             set
@@ -252,7 +338,7 @@ namespace CollapseLauncher
             }
         }
 
-        public IList<LinkProp> other_links
+        public List<LinkProp> other_links
         {
             get => _other_links;
             set

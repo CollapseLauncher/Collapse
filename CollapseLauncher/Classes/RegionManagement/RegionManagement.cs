@@ -88,6 +88,11 @@ namespace CollapseLauncher
                 await ChangeBackgroundImageAsRegion(false);
             else
                 ChangeBackgroundImageAsRegionAsync();
+
+            // Set pages cache
+            if (m_homePage != null)
+                m_homePage.ResetPageCache();
+
             FinalizeLoadRegion(preset);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
@@ -207,6 +212,18 @@ namespace CollapseLauncher
         private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
         {
             _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, InternalAppJSONContext.Default, token);
+            if (!string.IsNullOrEmpty(Preset.LauncherPluginURL))
+            {
+                RegionResourceProp _pluginAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherPluginURL, InternalAppJSONContext.Default, token);
+                if (_pluginAPIProp?.data != null && _pluginAPIProp?.data?.plugins != null)
+                {
+#if DEBUG
+                    LogWriteLine("[FetchLauncherDownloadInformation] Loading plugin handle!");
+#endif
+                    _gameAPIProp.data.plugins = _pluginAPIProp.data.plugins.Copy();
+                }
+            }
+
 #if DEBUG
             if (_gameAPIProp.data.game.latest.decompressed_path != null) LogWriteLine($"Decompressed Path: {_gameAPIProp.data.game.latest.decompressed_path}", LogType.Default, true);
             if (_gameAPIProp.data.game.latest.path != null) LogWriteLine($"ZIP Path: {_gameAPIProp.data.game.latest.path}", LogType.Default, true);
@@ -282,7 +299,7 @@ namespace CollapseLauncher
             {
                 // Default: links
                 // Fallback: url/title + other_links
-                IList<LinkProp> links = item.links;
+                List<LinkProp> links = item.links;
                 if (links == null && !string.IsNullOrEmpty(item.url))
                 {
                     links = new List<LinkProp>

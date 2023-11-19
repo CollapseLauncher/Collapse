@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Pages;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -52,6 +53,7 @@ namespace CollapseLauncher
         public static AppWindow             m_appWindow;
         public static OverlappedPresenter   m_presenter;
         public static MainPage              m_mainPage;
+        public static HomePage              m_homePage;
         public static bool                  m_windowSupportCustomTitle = false;
         public static Size                  m_actualMainFrameSize;
         public static double                m_appDPIScale;

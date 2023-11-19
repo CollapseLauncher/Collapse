@@ -535,6 +535,7 @@ namespace Hi3Helper.Preset
         public bool? UseRightSideProgress { get; set; }
         public bool LauncherSpriteURLMultiLang { get; set; }
         public string? LauncherSpriteURLMultiLangFallback { get; set; }
+        public string? LauncherPluginURL { get; set; }
         public string? LauncherSpriteURL { get; set; }
         public string? LauncherResourceURL { get; set; }
         public string? DispatcherKey { get; set; }

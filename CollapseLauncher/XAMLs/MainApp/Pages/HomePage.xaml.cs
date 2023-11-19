@@ -58,7 +58,24 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
+            // HACK: Fix random crash by manually load the XAML part
+            //       But first, let it initialize its properties.
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+
+            this.InitializeComponent();
             this.Loaded += StartLoadedRoutine;
+
+            m_homePage = this;
+        }
+
+        public void ResetPageCache()
+        {
+            int cacheSize = ((Frame)Parent).CacheSize;
+
+            ((Frame)Parent).CacheSize = 0;
+            ((Frame)Parent).CacheSize = cacheSize;
+
+            this.Loaded -= StartLoadedRoutine;
         }
 
         ~HomePage()
@@ -75,6 +92,9 @@ namespace CollapseLauncher.Pages
             if (!IsPageUnload
              || GamePropertyVault.GetCurrentGameProperty()._GamePreset.HashID == CurrentGameProperty._GamePreset.HashID)
             {
+                // Reset pages cache
+                ResetPageCache();
+
                 MainPage.PreviousTagString.Add(MainPage.PreviousTag);
                 MainFrameChanger.ChangeMainFrame(typeof(HomePage));
             }
@@ -84,17 +104,9 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                // HACK: Fix random crash by manually load the XAML part
-                //       But first, let it initialize its properties.
-                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
                 PageToken = new CancellationTokenSource();
                 CarouselToken = new CancellationTokenSource();
                 PlaytimeToken = new CancellationTokenSource();
-
-                // Always set the _contentLoaded as true and load the XAML
-                _contentLoaded = true;
-                Uri resourceLocator = new Uri("ms-appx:///XAMLs/MainApp/Pages/HomePage.xaml");
-                Application.LoadComponent(this, resourceLocator, ComponentResourceLocation.Application);
 
                 BackgroundImgChanger.ToggleBackground(false);
                 CheckIfRightSideProgress();

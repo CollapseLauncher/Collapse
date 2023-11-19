@@ -7,7 +7,7 @@
     xmlns:innerConfig="using:Hi3Helper.Shared.Region"
     xmlns:local="using:CollapseLauncher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" NavigationCacheMode="Enabled" CacheMode="BitmapCache">
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>

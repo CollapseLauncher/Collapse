@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 namespace CollapseLauncher
 {
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(RegionResourcePluginValidate))]
     [JsonSerializable(typeof(CommunityToolsProperty))]
     [JsonSerializable(typeof(AppUpdateVersionProp))]
     [JsonSerializable(typeof(RegionResourceProp))]
