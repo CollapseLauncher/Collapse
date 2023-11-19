@@ -167,8 +167,6 @@ namespace CollapseLauncher.Pages
             PageToken.Cancel();
             CarouselToken.Cancel();
             PlaytimeToken.Cancel();
-
-            this.Loaded -= StartLoadedRoutine;
         }
         #endregion
 
