@@ -30,7 +30,6 @@ namespace CollapseLauncher.Pages
     {
         public SettingsPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
             LoadAppConfig();
             this.DataContext = this;
@@ -63,6 +62,11 @@ namespace CollapseLauncher.Pages
 #else
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            BackgroundImgChanger.ToggleBackground(true);
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
