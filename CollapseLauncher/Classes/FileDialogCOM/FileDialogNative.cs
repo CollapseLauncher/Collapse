@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;

@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.GameVersioning;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;

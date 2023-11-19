@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.GameVersioning;
+using CollapseLauncher.GameVersioning;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;

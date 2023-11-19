@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
