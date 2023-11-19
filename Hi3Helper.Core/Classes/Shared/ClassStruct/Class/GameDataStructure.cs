@@ -26,6 +26,19 @@ namespace Hi3Helper.Shared.ClassStruct
         public bool IsBlockNeedRepair { get; set; }
         public bool IsHasHashMark { get; set; }
 
+        public FilePropertiesRemote Copy() => new FilePropertiesRemote
+        {
+            N = N,
+            RN = RN,
+            CRC = CRC,
+            M = M,
+            FT = FT,
+            S = S,
+            IsPatchApplicable = IsPatchApplicable,
+            IsBlockNeedRepair = IsBlockNeedRepair,
+            IsHasHashMark = IsHasHashMark,
+        };
+
         public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
         public string GetRemoteURL() => RN;
