@@ -19,10 +19,10 @@
 		<DebugType>portable</DebugType>
 		<GitVersion>false</GitVersion>
 		<!-- Performance Settings -->
-		<TieredCompilation>true</TieredCompilation>
-		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
-		<TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
 		<TieredPGO>true</TieredPGO>
+		<TieredCompilation>true</TieredCompilation>
+		<TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+		<TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
 		<!-- WinUI Properties -->
 		<UseWinUI>true</UseWinUI>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
