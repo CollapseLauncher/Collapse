@@ -1169,8 +1169,11 @@ namespace CollapseLauncher.Pages
                 IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
 
                 bool IsContinue = await CheckMediaPackInstalled();
-
                 if (!IsContinue) return;
+
+                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
+                    GenshinHDREnforcer();
+
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
@@ -1191,9 +1194,6 @@ namespace CollapseLauncher.Pages
                     ReadOutputLog();
                     GameLogWatcher();
                 }
-
-                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
-                    GenshinHDREnforcer();
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
