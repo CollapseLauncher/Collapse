@@ -70,10 +70,10 @@ namespace CollapseLauncher.Pages
 
         public void ResetPageCache()
         {
-            int cacheSize = ((Frame)Parent).CacheSize;
-
-            ((Frame)Parent).CacheSize = 0;
-            ((Frame)Parent).CacheSize = cacheSize;
+            if (this.Frame != null && this.Frame.CacheSize > 0)
+            {
+                this.Frame.CacheSize = 0;
+            }
 
             this.Loaded -= StartLoadedRoutine;
         }
@@ -167,6 +167,8 @@ namespace CollapseLauncher.Pages
             PageToken.Cancel();
             CarouselToken.Cancel();
             PlaytimeToken.Cancel();
+
+            this.Loaded -= StartLoadedRoutine;
         }
         #endregion
 
