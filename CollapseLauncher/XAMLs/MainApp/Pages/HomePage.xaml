@@ -13,7 +13,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     mc:Ignorable="d"
-    x:FieldModifier="public" Unloaded="Page_Unloaded" NavigationCacheMode="Enabled" CacheMode="BitmapCache">
+    x:FieldModifier="public" Unloaded="Page_Unloaded">
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow"/>
         <s:AttachedDropShadow x:Key="SharedDropShadow" Offset="0,4,0" BlurRadius="16" Opacity="0.3" CastTo="{x:Bind ImageEventImgShadow}"/>

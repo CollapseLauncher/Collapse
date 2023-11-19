@@ -89,10 +89,6 @@ namespace CollapseLauncher
             else
                 ChangeBackgroundImageAsRegionAsync();
 
-            // Set pages cache
-            if (m_homePage != null)
-                m_homePage.ResetPageCache();
-
             FinalizeLoadRegion(preset);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
