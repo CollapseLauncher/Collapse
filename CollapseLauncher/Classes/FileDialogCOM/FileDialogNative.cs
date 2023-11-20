@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Windows.Win32;
 
 namespace CollapseLauncher.FileDialogCOM
 {
@@ -28,7 +27,7 @@ namespace CollapseLauncher.FileDialogCOM
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileOpenDialog),
                 null,
-                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileOpenDialog dialog).ThrowOnFailure();
 
             IShellItemArray resShell;
@@ -47,12 +46,6 @@ namespace CollapseLauncher.FileDialogCOM
             {
                 return null;
             }
-#if !NET8_0_OR_GREATER
-            finally
-            {
-                if (dialog != null) Marshal.FinalReleaseComObject(dialog);
-            }
-#endif
         }).ConfigureAwait(false);
 
         public static async Task<string> GetFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) => await Task.Run(() =>
@@ -60,7 +53,7 @@ namespace CollapseLauncher.FileDialogCOM
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileOpenDialog),
                 null,
-                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileOpenDialog dialog).ThrowOnFailure();
 
             IShellItem resShell;
@@ -97,7 +90,7 @@ namespace CollapseLauncher.FileDialogCOM
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileSaveDialog),
                 null,
-                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileSaveDialog dialog).ThrowOnFailure();
 
             IShellItem resShell;
@@ -124,9 +117,6 @@ namespace CollapseLauncher.FileDialogCOM
             }
             finally
             {
-#if !NET8_0_OR_GREATER
-                if (dialog != null) Marshal.FinalReleaseComObject(dialog);
-#endif
                 if (titlePtr != IntPtr.Zero) Marshal.FreeCoTaskMem(titlePtr);
             }
         }).ConfigureAwait(false);
@@ -136,7 +126,7 @@ namespace CollapseLauncher.FileDialogCOM
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileOpenDialog),
                 null,
-                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileOpenDialog dialog).ThrowOnFailure();
 
             IShellItemArray resShell;
@@ -154,12 +144,6 @@ namespace CollapseLauncher.FileDialogCOM
             {
                 return null;
             }
-#if !NET8_0_OR_GREATER
-            finally
-            {
-                if (dialog != null) Marshal.FinalReleaseComObject(dialog);
-            }
-#endif
         }).ConfigureAwait(false);
 
         public static async Task<string> GetFolderPicker() => await Task.Run(() =>
@@ -167,7 +151,7 @@ namespace CollapseLauncher.FileDialogCOM
             PInvoke.CoCreateInstance(
                 new Guid(CLSIDGuid.FileOpenDialog),
                 null,
-                Windows.Win32.System.Com.CLSCTX.CLSCTX_INPROC_SERVER,
+                CLSCTX.CLSCTX_INPROC_SERVER,
                 out IFileOpenDialog dialog).ThrowOnFailure();
 
             IShellItem resShell;
@@ -186,12 +170,6 @@ namespace CollapseLauncher.FileDialogCOM
             {
                 return null;
             }
-#if !NET8_0_OR_GREATER
-            finally
-            {
-                if (dialog != null) Marshal.FinalReleaseComObject(dialog);
-            }
-#endif
         }).ConfigureAwait(false);
 
         private static void SetFileTypeFilter(IFileOpenDialog dialog, Dictionary<string, string> FileTypeFilter)
