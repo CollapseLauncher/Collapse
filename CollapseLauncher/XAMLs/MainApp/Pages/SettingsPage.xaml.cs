@@ -293,7 +293,7 @@ namespace CollapseLauncher.Pages
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-            if (file != null)
+            if (!string.IsNullOrEmpty(file))
             {
                 regionBackgroundProp.imgLocalPath = file;
                 SetAndSaveConfigValue("CustomBGPath", file);

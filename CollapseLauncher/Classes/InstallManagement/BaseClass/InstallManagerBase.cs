@@ -1172,7 +1172,7 @@ namespace CollapseLauncher.InstallManager.Base
                     case ContentDialogResult.Secondary:
                         folder = await FileDialogNative.GetFolderPicker();
 
-                        if (folder != null)
+                        if (!string.IsNullOrEmpty(folder))
                         {
                             // Check for the write permission on the folder
                             if (ConverterTool.IsUserHasPermission(folder))
