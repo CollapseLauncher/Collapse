@@ -25,16 +25,16 @@ namespace CollapseLauncher.FileDialogCOM
         public static async ValueTask<string> GetFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
             (string)await GetPickerOpenTask<string>(string.Empty, FileTypeFilter, title).ConfigureAwait(false);
 
-        public static async Task<string[]> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
+        public static async ValueTask<string[]> GetMultiFilePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
             (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), FileTypeFilter, title, true).ConfigureAwait(false);
 
-        public static async Task<string> GetFolderPicker(string title = null) =>
+        public static async ValueTask<string> GetFolderPicker(string title = null) =>
             (string)await GetPickerOpenTask<string>(string.Empty, null, title, false, true).ConfigureAwait(false);
 
-        public static async Task<string[]> GetMultiFolderPicker(string title = null) =>
+        public static async ValueTask<string[]> GetMultiFolderPicker(string title = null) =>
             (string[])await GetPickerOpenTask<string[]>(Array.Empty<string>(), null, title, true, true).ConfigureAwait(false);
 
-        public static async Task<string> GetFileSavePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
+        public static async ValueTask<string> GetFileSavePicker(Dictionary<string, string> FileTypeFilter = null, string title = null) =>
             (string)await GetPickerSaveTask<string>(string.Empty, FileTypeFilter, title).ConfigureAwait(false);
 
         private static ValueTask<object> GetPickerOpenTask<T>(object defaultValue, Dictionary<string, string> FileTypeFilter = null,
