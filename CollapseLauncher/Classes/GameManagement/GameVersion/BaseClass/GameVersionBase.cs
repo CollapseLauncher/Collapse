@@ -265,7 +265,6 @@ namespace CollapseLauncher.GameVersioning
             return returnList;
         }
 
-
         public virtual DeltaPatchProperty GetDeltaPatchInfo() => null;
 
         public virtual bool IsGameHasPreload() => GameAPIProp.data.pre_download_game != null;
