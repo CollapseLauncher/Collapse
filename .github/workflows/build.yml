@@ -7,7 +7,6 @@ on:
   push:
     branches:
         - 'main'
-        - 'net-8'
   pull_request:
     branches-ignore:
       - 'translations_**'
@@ -60,7 +59,7 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
       with:
-        vs-prerelease: true
+        vs-prerelease: false
         msbuild-architecture: ${{ matrix.platform }}
 
     - name: Restore
@@ -90,9 +89,8 @@ jobs:
       continue-on-error: true
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
-        title: New canary build is ready!
+        title: Collapse Launcher CI build is complete!
         status: ${{ job.status }}
         description: |
-          WARNING! THIS IS NET 8 TEST BUILD. STABILITY MAY SUFFER!
           Commit `${{ github.sha }}` by ${{ github.actor }}
           Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
