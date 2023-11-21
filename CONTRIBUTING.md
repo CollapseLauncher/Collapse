@@ -15,18 +15,17 @@ If you wish to add new language that isn't yet listed in the Crowdin project, pl
 
 ## Tools Needed
 Below is a list of tools needed to contribute to this project:
-1. **Visual Studio 2022 (Any Edition - 17.4 or later)**
+1. **Visual Studio 2022 (Any Edition - 17.8 or later)**
    - Select .NET desktop development component
-2. **Windows SDK (10.0.19043.0 or 10.0.22000.0 ONLY)** via Visual Studio Installer
-3. .NET Core 8 SDK: [**(8.0.0-rc2 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+2. **Windows SDK (10.0.22621.0 ONLY)** via Visual Studio Installer
+3. .NET 8 SDK: [**(8.0.0 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 4. WinUI 3: [**(WindowsAppSDK 1.4.0 Stable Runtime)**](https://aka.ms/windowsappsdk/1.4/latest/windowsappruntimeinstall-x64.exe)
 
 > **Note**:
 > 
-> Starting from November 13<sup>rd</sup> 2022, you <b>must</b> have Visual Studio 2022 installed on your computer due to the updated minimum system requirement of `WindowsAppSDK`.
+> Starting from November 21<sup>st</sup> 2023, you <b>must</b> have Visual Studio 2022 version 17.8+ installed on your computer due to the updated minimum system requirement of `WindowsAppSDK` and `.NET 8`.
 > 
-> Using a lower Visual Studio version (like VS2019) is possible, but it is not recommended as you need to downgrade **WindowsAppSDK** via *NuGet* to **WindowsAppSDK 1.1.5** or **WindowsAppSDK 1.2-preview2** before building. This has an increased risk of breaking the application and as such, no support will be provided for this method. **This is not recommended for beginner users.**
-
+> Using a lower Visual Studio version (like VS2019) is not possible due to requirement from WindowsAppSDK used in this project.
 ## Restrictions for New Feature(s)
 While this software is fully open source and not affiliated with HoYoverse, Cognosphere, or any of its related entities in any way, we are nonetheless bound to their Terms of Service and Code of Conduct when developing Collapse. This means that there are some features that we will **not** implement. We will close any issue or PRs that are made to add such functionality to Collapse. Such features include, but are not limited to:
 - Anything that, in any way, interacts with the miHoYo SDK and/or API, including their Authentication and Payment Processing endpoints.
