@@ -164,54 +164,57 @@ namespace Hi3Helper.DiscordPresence
 
         public async void SetActivity(ActivityType activity, int delay = 500)
         {
-            await Task.Delay(delay);
-            bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
-
-            _activityType = activity;
-
-            lock (_sdkLock)
+            if (GetAppConfigValue("EnableDiscordRPC").ToBool())
             {
-                switch (activity)
+                await Task.Delay(delay);
+                bool IsGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+
+                _activityType = activity;
+
+                lock (_sdkLock)
                 {
-                    case ActivityType.Play:
-                        BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.Update:
-                        BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.Repair:
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.Cache:
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.GameSettings:
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.AppSettings:
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
-                        break;
-                    case ActivityType.Idle:
-                        _lastUnixTimestamp = null;
-                        BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
-                        break;
-                    default:
-                        _activity = new Activity
-                        {
-                            Details = StrToByteUtf8(Lang._Misc.DiscordRP_Default),
-                            Assets = new ActivityAssets
-                            {
-                                LargeImage = StrToByteUtf8($"launcher-logo")
-                            }
-                        };
-                        break;
+                    switch (activity)
+                    {
+                        case ActivityType.Play:
+                            BuildActivityGameStatus(IsGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.Update:
+                            BuildActivityGameStatus(Lang._Misc.DiscordRP_Update, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.Repair:
+                            BuildActivityAppStatus(Lang._Misc.DiscordRP_Repair, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.Cache:
+                            BuildActivityAppStatus(Lang._Misc.DiscordRP_Cache, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.GameSettings:
+                            BuildActivityAppStatus(Lang._Misc.DiscordRP_GameSettings, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.AppSettings:
+                            BuildActivityAppStatus(Lang._Misc.DiscordRP_AppSettings, IsGameStatusEnabled);
+                            break;
+                        case ActivityType.Idle:
+                            _lastUnixTimestamp = null;
+                            BuildActivityAppStatus(Lang._Misc.DiscordRP_Idle, IsGameStatusEnabled);
+                            break;
+                        default:
+                            _activity = new Activity
+                                        {
+                                            Details = StrToByteUtf8(Lang._Misc.DiscordRP_Default),
+                                            Assets = new ActivityAssets
+                                                     {
+                                                         LargeImage = StrToByteUtf8($"launcher-logo")
+                                                     }
+                                        };
+                            break;
+                    }
                 }
-            }
 
-            if (!_previousActivity.Equals(_activity) && !_clientToken.IsCancellationRequested)
-            {
-                UpdateActivity();
-                _previousActivity = _activity;
+                if (!_previousActivity.Equals(_activity) && !_clientToken.IsCancellationRequested)
+                {
+                    UpdateActivity();
+                    _previousActivity = _activity;
+                }
             }
         }
 

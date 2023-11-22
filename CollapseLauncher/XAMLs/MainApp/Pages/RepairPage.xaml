@@ -7,7 +7,8 @@
     xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:control="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:control="using:CommunityToolkit.WinUI.Controls"
+    xmlns:control_legacy="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded" Loaded="InitializeLoaded">
 
@@ -25,7 +26,7 @@
                         <PopupThemeTransition/>
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
-                <control:DataGrid
+                <control_legacy:DataGrid
                     x:Name="RepairDataGrid"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
@@ -34,15 +35,15 @@
                     AutoGenerateColumns="False"
                     CanUserSortColumns="True"
                     ItemsSource="{x:Bind CurrentGameProperty._GameRepair.AssetEntry}">
-                    <control:DataGrid.Columns>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding AssetType}" Tag="DataType" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding SizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
-                        <control:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
-                    </control:DataGrid.Columns>
-                </control:DataGrid>
+                    <control_legacy:DataGrid.Columns>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol1}" Binding="{Binding Name}" Tag="FileName" Width="296" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol2}" Binding="{Binding AssetType}" Tag="DataType" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol3}" Binding="{Binding Source}" Tag="Source" Width="436" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol4}" Binding="{Binding SizeStr}" Tag="FileSize" Width="128" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol5}" Binding="{Binding LocalCRC}" Tag="CurCRC" Width="92" FontSize="13"/>
+                        <control_legacy:DataGridTextColumn Header="{x:Bind helper:Locale.Lang._GameRepairPage.ListCol6}" Binding="{Binding RemoteCRC}" Tag="ExptCRC" Width="92" FontSize="13"/>
+                    </control_legacy:DataGrid.Columns>
+                </control_legacy:DataGrid>
             </Grid>
             <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
                 <TextBlock x:Name="RepairStatus" Text="{x:Bind helper:Locale.Lang._GameRepairPage.Status1}" FontSize="18" Grid.Row="1" Margin="0,0,0,16"/>

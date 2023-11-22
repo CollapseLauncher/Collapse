@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 #if !DISABLEDISCORD
 using Hi3Helper.DiscordPresence;
@@ -30,7 +30,6 @@ namespace CollapseLauncher.Pages
     {
         public SettingsPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             this.InitializeComponent();
             LoadAppConfig();
             this.DataContext = this;
@@ -63,6 +62,11 @@ namespace CollapseLauncher.Pages
 #else
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            BackgroundImgChanger.ToggleBackground(true);
         }
 
         private async void RelocateFolder(object sender, RoutedEventArgs e)
@@ -289,7 +293,7 @@ namespace CollapseLauncher.Pages
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
             string file = await GetFilePicker(new Dictionary<string, string> { { "Supported formats", "*.jpg;*.jpeg;*.jfif;*.png;*.bmp;*.tiff;*.tif;*.webp" } });
-            if (file != null)
+            if (!string.IsNullOrEmpty(file))
             {
                 regionBackgroundProp.imgLocalPath = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
@@ -590,6 +594,36 @@ namespace CollapseLauncher.Pages
         {
             get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
+        }
+
+        private int AppGameLaunchedBehaviorIndex
+        {
+            get => GetAppConfigValue("GameLaunchedBehavior").ToString() switch
+                   {
+                       "Minimize" => 0,
+                       "ToTray"   => 1,
+                       "Nothing"  => 2,
+                       _ => 0
+                   };
+            set
+            {
+                switch (value)
+                {
+                    case 0:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Minimize");
+                        break;
+                    case 1:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "ToTray");
+                        break;
+                    case 2:
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Nothing");
+                        break;
+                    default:
+                        LogWriteLine("Invalid GameLaunchedBehavior selection! Reverting to default 'Minimize'", LogType.Error, true);
+                        SetAndSaveConfigValue("GameLaunchedBehavior", "Minimize");
+                        break;
+                }
+            }
         }
 
         #region Keyboard Shortcuts

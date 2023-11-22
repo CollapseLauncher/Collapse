@@ -3,8 +3,10 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local1="using:CollapseLauncher"
-                    xmlns:local="using:CommunityToolkit.WinUI.UI.Controls"
-                    xmlns:localprimitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives">
+    xmlns:local="using:CommunityToolkit.WinUI.Controls"
+    xmlns:control_legacy="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:localprimitives="using:CommunityToolkit.WinUI.Controls"
+    xmlns:localprimitives_legacy="using:CommunityToolkit.WinUI.UI.Controls.Primitives"> 
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
@@ -104,7 +106,7 @@
     <StaticResource x:Key="DataGridCellFocusVisualSecondaryBrush" ResourceKey="SystemControlFocusVisualSecondaryBrush"/>
     <StaticResource x:Key="DataGridCellInvalidBrush" ResourceKey="InvalidBrush"/>
 
-    <Style TargetType="local:DataGrid">
+    <Style TargetType="control_legacy:DataGrid">
         <Setter Property="DragIndicatorStyle">
             <Setter.Value>
                 <Style TargetType="ContentControl">
@@ -173,7 +175,7 @@
         <Setter Property="VerticalGridLinesBrush" Value="{ThemeResource GridLinesBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:DataGrid">
+                <ControlTemplate TargetType="control_legacy:DataGrid">
                     <Grid x:Name="Root" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -367,7 +369,7 @@
                         <Grid Background="{TemplateBinding Background}" CornerRadius="5">
                             <Grid.Resources>
                                 <!--Start: TopLeftHeaderTemplate-->
-                                <ControlTemplate x:Key="TopLeftHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
+                                <ControlTemplate x:Key="TopLeftHeaderTemplate" TargetType="localprimitives_legacy:DataGridColumnHeader">
                                     <Grid x:Name="TopLeftHeaderRoot">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
@@ -381,7 +383,7 @@
                                 <!--End: TopLeftHeaderTemplate-->
 
                                 <!--Start: TopRightHeaderTemplate-->
-                                <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
+                                <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="localprimitives_legacy:DataGridColumnHeader">
                                     <Grid x:Name="RootElement"/>
                                 </ControlTemplate>
                                 <!--End: TopRightHeaderTemplate-->
@@ -401,15 +403,15 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <localprimitives:DataGridColumnHeader x:Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}"/>
-                            <localprimitives:DataGridColumnHeadersPresenter x:Name="ColumnHeadersPresenter" Grid.Column="1" Grid.ColumnSpan="2"
+                            <localprimitives_legacy:DataGridColumnHeader x:Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}"/>
+                            <localprimitives_legacy:DataGridColumnHeadersPresenter x:Name="ColumnHeadersPresenter" Grid.Column="1" Grid.ColumnSpan="2"
                                 AutomationProperties.AccessibilityView="Raw"/>
                             <!-- Use TopRightCornerHeader when ColumnHeadersPresenter's Grid.ColumnSpan is 1 and the vertical ScrollBar does not paint on top of the cells -->
                             <!--<localprimitives:DataGridColumnHeader x:Name="TopRightCornerHeader" Grid.Column="2" Template="{StaticResource TopRightHeaderTemplate}"/>-->
                             <Rectangle x:Name="ColumnHeadersAndRowsSeparator" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Width="Auto" StrokeThickness="1" Height="1" Fill="{ThemeResource GridLinesBrush}"/>
 
-                            <localprimitives:DataGridRowsPresenter x:Name="RowsPresenter" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="2"
-                                AutomationProperties.AccessibilityView="Raw"/>
+                            <localprimitives_legacy:DataGridRowsPresenter x:Name="RowsPresenter" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="2"
+                                                                          AutomationProperties.AccessibilityView="Raw"/>
                             <Rectangle x:Name="BottomRightCorner" Fill="{ThemeResource ScrollBarsSeparatorBackground}" Opacity="0" Grid.Row="2" Grid.Column="2"/>
                             <!-- Use BottomLeftCorner when RowsPresenter's Grid.RowSpan is 1 and the horizontal ScrollBar does not paint on top of the cells -->
                             <!--<Rectangle x:Name="BottomLeftCorner" Fill="#FFE9EEF4" Grid.Row="2" Grid.ColumnSpan="2"/>-->
@@ -433,7 +435,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:DataGridCell">
+    <Style TargetType="control_legacy:DataGridCell">
         <Setter Property="Background" Value="{ThemeResource DataGridCellBackgroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -442,7 +444,7 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:DataGridCell">
+                <ControlTemplate TargetType="control_legacy:DataGridCell">
                     <Grid x:Name="CellRoot" Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CurrentStates">
@@ -495,7 +497,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="localprimitives:DataGridColumnHeader">
+    <Style TargetType="localprimitives_legacy:DataGridColumnHeader">
         <Setter Property="Foreground" Value="{ThemeResource DataGridColumnHeaderForegroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -506,7 +508,7 @@
         <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="localprimitives:DataGridColumnHeader">
+                <ControlTemplate TargetType="localprimitives_legacy:DataGridColumnHeader">
                     <Grid x:Name="ColumnHeaderRoot" CornerRadius="5">
                         <Grid.BackgroundTransition>
                             <BrushTransition Duration="0:0:0.25" />
@@ -633,14 +635,14 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:DataGridRow">
+    <Style TargetType="control_legacy:DataGridRow">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:DataGridRow">
+                <ControlTemplate TargetType="control_legacy:DataGridRow">
                     <!-- TODO: Apply Margin and Fix the vertical scroll issue
                     <localprimitives:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5" Margin="0,1.5">-->
-                    <localprimitives:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5">
+                    <localprimitives_legacy:DataGridFrozenGrid x:Name="RowRoot" CornerRadius="5">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -701,21 +703,21 @@
                         <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Fill="{ThemeResource SystemControlTransparentBrush}"/>
                         <Rectangle x:Name="InvalidVisualElement" Grid.ColumnSpan="2" Opacity="0" Fill="{ThemeResource DataGridRowInvalidBrush}"/>
 
-                        <localprimitives:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="3" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
-                        <localprimitives:DataGridCellsPresenter x:Name="CellsPresenter" Margin="0,2" Grid.Column="1"
-                            localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="32"
-                            AutomationProperties.AccessibilityView="Raw"/>
-                        <localprimitives:DataGridDetailsPresenter x:Name="DetailsPresenter" Grid.Row="1" Grid.Column="1"
-                            Background="{ThemeResource DataGridDetailsPresenterBackgroundBrush}"
-                            AutomationProperties.AccessibilityView="Raw"/>
+                        <localprimitives_legacy:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="3" localprimitives_legacy:DataGridFrozenGrid.IsFrozen="True"/>
+                        <localprimitives_legacy:DataGridCellsPresenter x:Name="CellsPresenter" Margin="0,2" Grid.Column="1"
+                                                                       localprimitives_legacy:DataGridFrozenGrid.IsFrozen="True" MinHeight="32"
+                                                                       AutomationProperties.AccessibilityView="Raw"/>
+                        <localprimitives_legacy:DataGridDetailsPresenter x:Name="DetailsPresenter" Grid.Row="1" Grid.Column="1"
+                                                                         Background="{ThemeResource DataGridDetailsPresenterBackgroundBrush}"
+                                                                         AutomationProperties.AccessibilityView="Raw"/>
                         <Rectangle x:Name="BottomGridLine" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Height="1"/>
-                    </localprimitives:DataGridFrozenGrid>
+                    </localprimitives_legacy:DataGridFrozenGrid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style TargetType="localprimitives:DataGridRowHeader">
+    <Style TargetType="localprimitives_legacy:DataGridRowHeader">
         <Setter Property="Background" Value="{ThemeResource DataGridRowHeaderBackgroundBrush}"/>
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
@@ -723,7 +725,7 @@
         <Setter Property="AutomationProperties.AccessibilityView" Value="Raw"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="localprimitives:DataGridRowHeader">
+                <ControlTemplate TargetType="localprimitives_legacy:DataGridRowHeader">
                     <Grid x:Name="RowHeaderRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -899,15 +901,15 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:DataGridRowGroupHeader">
+    <Style TargetType="control_legacy:DataGridRowGroupHeader">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Foreground" Value="{ThemeResource DataGridRowGroupHeaderForegroundBrush}"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="local:DataGridRowGroupHeader">
-                    <localprimitives:DataGridFrozenGrid x:Name="RowGroupHeaderRoot" Background="{ThemeResource DataGridRowGroupHeaderBackgroundBrush}" MinHeight="{TemplateBinding MinHeight}">
+                <ControlTemplate TargetType="control_legacy:DataGridRowGroupHeader">
+                    <localprimitives_legacy:DataGridFrozenGrid x:Name="RowGroupHeaderRoot" Background="{ThemeResource DataGridRowGroupHeaderBackgroundBrush}" MinHeight="{TemplateBinding MinHeight}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -939,7 +941,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
-                        <localprimitives:DataGridFrozenGrid.Resources>
+                        <localprimitives_legacy:DataGridFrozenGrid.Resources>
                             <ControlTemplate x:Key="ToggleButtonTemplate" TargetType="ToggleButton">
                                 <Grid Background="{TemplateBinding Background}">
                                     <VisualStateManager.VisualStateGroups>
@@ -976,7 +978,7 @@
                                         HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
                             </ControlTemplate>
-                        </localprimitives:DataGridFrozenGrid.Resources>
+                        </localprimitives_legacy:DataGridFrozenGrid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -1009,10 +1011,10 @@
                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
                         </Grid>
 
-                        <localprimitives:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="2" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
+                        <localprimitives_legacy:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="2" localprimitives_legacy:DataGridFrozenGrid.IsFrozen="True"/>
 
                         <Rectangle x:Name="BottomGridLine" Grid.ColumnSpan="5" Height="1" Grid.Row="1"/>
-                    </localprimitives:DataGridFrozenGrid>
+                    </localprimitives_legacy:DataGridFrozenGrid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

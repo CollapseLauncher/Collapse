@@ -81,6 +81,11 @@
 				public string KbShortcuts_Title { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
                 public string KbShortcuts_ResetBtn { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;
+                public string AppBehavior_Title { get; set; } = LangFallback?._SettingsPage.AppBehavior_Title;
+                public string AppBehavior_PostGameLaunch { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch;
+                public string AppBehavior_PostGameLaunch_Minimize { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_Minimize;
+                public string AppBehavior_PostGameLaunch_ToTray { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_ToTray;
+                public string AppBehavior_PostGameLaunch_Nothing { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_Nothing;
             }
         }
         #endregion

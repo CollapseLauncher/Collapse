@@ -399,7 +399,13 @@
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_ResetBtn": "Reset to Default",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing"
   },
 
   "_Misc": {

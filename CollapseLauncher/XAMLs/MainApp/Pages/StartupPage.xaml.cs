@@ -45,7 +45,7 @@ namespace CollapseLauncher.Pages
                     break;
                 case ContentDialogResult.Secondary:
                     folder = await GetFolderPicker();
-                    if (folder != null)
+                    if (!string.IsNullOrEmpty(folder))
                     {
                         if (!CheckIfFolderIsValid(folder))
                         {

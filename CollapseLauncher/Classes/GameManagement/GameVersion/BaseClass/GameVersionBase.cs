@@ -110,6 +110,19 @@ namespace CollapseLauncher.GameVersioning
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
+        protected GameVersion? PluginVersionAPI
+        {
+            get
+            {
+                // Return null if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+
+                // Get the version and convert it into GameVersion
+                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
+                return new GameVersion(plugin.version);
+            }
+        }
+
         protected GameVersion? GameVersionAPIPreload
         {
             get
@@ -141,6 +154,31 @@ namespace CollapseLauncher.GameVersioning
                 return null;
             }
             set => UpdateGameVersion(value ?? GameVersionAPI);
+        }
+
+        protected GameVersion? PluginVersionInstalled
+        {
+            get
+            {
+                // Return null if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+
+                // Get the version and convert it into GameVersion
+                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
+
+                // Check if the INI has plugin_ID_version key...
+                string keyName = $"plugin_{plugin.plugin_id}_version";
+                if (GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                {
+                    string val = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
+                    if (string.IsNullOrEmpty(val)) return null;
+                    return new GameVersion(val);
+                }
+
+                // If not, then return as null
+                return null;
+            }
+            set => UpdatePluginVersion(value ?? PluginVersionAPI.Value);
         }
 
         // Assign for the Game Delta-Patch properties (if any).
@@ -239,9 +277,12 @@ namespace CollapseLauncher.GameVersioning
             // If not, then return false to indicate that the game isn't installed.
             if (!GameVersionInstalled.HasValue) return false;
 
-            // If the game is installed and the version doesn't match, then return to false.
-            // But if the game version matches, then return to true.
-            return GameVersionInstalled.Value.IsMatch(GameVersionAPI);
+            // Ensure if the version of the Plugin is matching. Get the plugin state.
+            bool isPluginVersionMatch = IsPluginInstalled();
+
+            // If the game/plugin is installed and the version doesn't match, then return to false.
+            // But if the game/plugin version matches, then return to true.
+            return GameVersionInstalled.Value.IsMatch(GameVersionAPI) && isPluginVersionMatch;
         }
 
         public virtual bool IsGameInstalled()
@@ -257,6 +298,28 @@ namespace CollapseLauncher.GameVersioning
 
             // Check all the pattern and return based on the condition
             return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo.Exists && execFileInfo.Length > 1 << 16;
+        }
+
+        public virtual bool IsPluginInstalled()
+        {
+#if !MHYPLUGINSUPPORT
+            // TODO: Work on integration of plugin installations on InstallManagerBase
+            return true;
+#else
+            // Get the pluginVersion
+            GameVersion? pluginVersion = PluginVersionAPI;
+
+            if (pluginVersion != null)
+            {
+                // If the installedPluginVersion is null, the return false
+                GameVersion? installedPluginVersion = PluginVersionInstalled;
+                if (installedPluginVersion == null) return false;
+
+                // Check if the version value is matching
+                return pluginVersion.Value.IsMatch(installedPluginVersion.Value);
+            }
+            return true;
+#endif
         }
 
 #nullable enable
@@ -338,6 +401,23 @@ namespace CollapseLauncher.GameVersioning
         public void UpdateGameVersion(GameVersion version, bool saveValue = true)
         {
             GameIniVersion[_defaultIniVersionSection]["game_version"] = version.VersionString;
+            if (saveValue)
+            {
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
+        }
+
+        public void UpdatePluginVersion(GameVersion version, bool saveValue = true)
+        {
+            // If the plugin is empty, ignore it
+            if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return;
+
+            // Get the plugin property and its key name
+            RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
+            string keyName = $"plugin_{plugin.plugin_id}_version";
+
+            // Set the value
+            GameIniVersion[_defaultIniVersionSection][keyName] = version.VersionString;
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);

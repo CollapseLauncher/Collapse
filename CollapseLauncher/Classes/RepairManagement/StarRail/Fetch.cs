@@ -1,4 +1,4 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
@@ -36,9 +36,15 @@ namespace CollapseLauncher
                 Dictionary<string, int> hashtable = new Dictionary<string, int>();
                 await GetPrimaryManifest(httpClient, token, assetIndex, hashtable);
 
-                // If the this._isOnlyRecoverMain && base._isVersionOverride is true, store the _originAssetIndex from assetIndex
+                // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (this._isOnlyRecoverMain && base._isVersionOverride)
-                    _originAssetIndex = new List<FilePropertiesRemote>(assetIndex);
+                {
+                    _originAssetIndex = new List<FilePropertiesRemote>();
+                    foreach (FilePropertiesRemote asset in assetIndex)
+                    {
+                        _originAssetIndex.Add(asset.Copy());
+                    }
+                }
 
                 // Subscribe the fetching progress and subscribe StarRailMetadataTool progress to adapter
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent += _httpClient_FetchAssetProgress;
@@ -82,7 +88,7 @@ namespace CollapseLauncher
             List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
 
             // Initialize repo metadata
-            bool isSuccess = true;
+            bool isSuccess = false;
             try
             {
                 // Get the metadata
@@ -100,9 +106,8 @@ namespace CollapseLauncher
             // If the base._isVersionOverride is true, then throw. This sanity check is required if the delta patch is being performed.
             catch when (base._isVersionOverride) { throw; }
 
-            // If the base._isVersionOverride is false and the repo metadata is null,
-            // then fetch the asset index from CDN (also check if the status is success)
-            if (!base._isVersionOverride && isSuccess)
+            // Fetch the asset index from CDN (also check if the status is success)
+            if (isSuccess)
             {
                 // Set asset index URL
                 string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";

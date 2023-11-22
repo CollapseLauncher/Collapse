@@ -1,8 +1,8 @@
 #if !DISABLEDISCORD
+using Hi3Helper.EncTool;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Hi3Helper.EncTool;
 
 namespace Discord
 {

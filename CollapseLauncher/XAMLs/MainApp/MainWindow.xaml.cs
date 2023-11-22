@@ -1,4 +1,4 @@
-﻿using Microsoft.UI;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -9,8 +9,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
-using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.FileDialogCOM.FileDialogNative;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;

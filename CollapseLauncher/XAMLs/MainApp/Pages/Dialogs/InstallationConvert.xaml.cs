@@ -294,7 +294,7 @@ namespace CollapseLauncher.Dialogs
                     case ContentDialogResult.Primary:
                         cPath = await FileDialogNative.GetFilePicker(
                             new Dictionary<string, string> { { $"{SourceProfile.ProfileName} to {TargetProfile.ProfileName} Cookbook", FileName } });
-                        IsChoosen = cPath != null;
+                        IsChoosen = !string.IsNullOrEmpty(cPath);
                         break;
                     case ContentDialogResult.None:
                         throw new OperationCanceledException();

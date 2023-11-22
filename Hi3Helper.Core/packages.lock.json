@@ -1,16 +1,16 @@
 {
   "version": 1,
   "dependencies": {
-    "net6.0": {
+    "net8.0": {
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.24.4",
-        "contentHash": "TmUI4ndd3x5HePyLmqAmGT6oVvoRCu+bMmrJmOpAFtCPEB+oUMWF8dyVY1zxXry/8cqsTHWszYRIAwpuUNpUyA=="
+        "resolved": "3.25.1",
+        "contentHash": "Sw9bq4hOD+AaS3RrnmP5IT25cyZ/T1qpM0e8+G+23Nojhv7+ScJFPEAQo1m4EFQWhXoI4FRZDrK+wjHCPw9yxg=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "8.0.0-rc.2.23479.6",
-        "contentHash": "U1dk8ZXsNwdawQYZqP4uba49mjzb+lWOHHHhUN7CVnXJTqH6ucR/J9exHrsPoMV1Y74mxaWvKk8MC0U662I3rQ=="
+        "resolved": "8.0.0",
+        "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
@@ -37,62 +37,12 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.24.4, )",
+          "Google.Protobuf": "[3.25.1, )",
           "Hi3Helper.Http": "[1.0.0, )",
-          "System.IO.Hashing": "[8.0.0-rc.2.23479.6, )",
-          "System.Text.Json": "[8.0.0-rc.2.23479.6, )"
+          "System.IO.Hashing": "[8.0.0, )"
         }
       },
       "hi3helper.http": {
-        "type": "Project"
-      },
-      "hi3helper.sharphdiffpatch": {
-        "type": "Project"
-      },
-      "sevenzipextractor": {
-        "type": "Project"
-      }
-    },
-    "net7.0": {
-      "Google.Protobuf": {
-        "type": "Transitive",
-        "resolved": "3.24.4",
-        "contentHash": "TmUI4ndd3x5HePyLmqAmGT6oVvoRCu+bMmrJmOpAFtCPEB+oUMWF8dyVY1zxXry/8cqsTHWszYRIAwpuUNpUyA=="
-      },
-      "System.IO.Hashing": {
-        "type": "Transitive",
-        "resolved": "8.0.0-rc.2.23479.6",
-        "contentHash": "U1dk8ZXsNwdawQYZqP4uba49mjzb+lWOHHHhUN7CVnXJTqH6ucR/J9exHrsPoMV1Y74mxaWvKk8MC0U662I3rQ=="
-      },
-      "System.Text.Encodings.Web": {
-        "type": "Transitive",
-        "resolved": "8.0.0-rc.2.23479.6",
-        "contentHash": "n66ZIJjetmrMq9hJ61Xed2cp9O2zr/VdzhhURjkLDEFOZ38/VpOWnvM3CWCXA18NbM7x0tdKZYex9rj0NimpPA=="
-      },
-      "System.Text.Json": {
-        "type": "Transitive",
-        "resolved": "8.0.0-rc.2.23479.6",
-        "contentHash": "SXMjrmm/e0Om+731AEUgm+81dC+i9mV54nKJGOq9+zTYpzujMCmSQSMS1sgQb0gmiiAfTfRC5WgD3l92cfAP+g==",
-        "dependencies": {
-          "System.Text.Encodings.Web": "8.0.0-rc.2.23479.6"
-        }
-      },
-      "hi3helper.enctool": {
-        "type": "Project",
-        "dependencies": {
-          "Google.Protobuf": "[3.24.4, )",
-          "Hi3Helper.Http": "[1.0.0, )",
-          "System.IO.Hashing": "[8.0.0-rc.2.23479.6, )",
-          "System.Text.Json": "[8.0.0-rc.2.23479.6, )"
-        }
-      },
-      "hi3helper.http": {
-        "type": "Project"
-      },
-      "hi3helper.sharphdiffpatch": {
-        "type": "Project"
-      },
-      "sevenzipextractor": {
         "type": "Project"
       }
     }

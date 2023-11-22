@@ -265,15 +265,18 @@ namespace CollapseLauncher.GameSettings.Genshin
         //[JsonIgnore]
         //public Controllers _overrideControllerMapValueList { get; set; }
 
-        public bool rewiredDisableKeyboard { get; set; } = false;
-        public bool rewiredEnableKeyboard { get; set; } = false;
-        public bool rewiredEnableEDS { get; set; } = false;
-        public bool disableRewiredDelayInit { get; set; } = false;
-        public bool disableRewiredInitProtection { get; set; } = false;
-        public int lastSeenPreDownloadTime { get; set; } = 0;
-        public bool enableEffectAssembleInEditor { get; set; } = true;
-        public bool forceDisableQuestResourceManagement { get; set; } = false;
-        public bool needReportQuestResourceDeleteStatusFiles { get; set; } = false;
+        public bool         rewiredDisableKeyboard                   { get; set; } = false;
+        public bool         rewiredEnableKeyboard                    { get; set; } = false;
+        public bool         rewiredEnableEDS                         { get; set; } = false;
+        public bool         disableRewiredDelayInit                  { get; set; } = false;
+        public bool         disableRewiredInitProtection             { get; set; } = false;
+        public List<object> conflictKeyBindingElementId              { get; set; }
+        public List<object> conflictKeyBindingActionId               { get; set; }
+        public int          lastSeenPreDownloadTime                  { get; set; } = 0;
+        public string       lastSeenSettingResourceTabScriptVersion  { get; set; } = "";
+        public bool         enableEffectAssembleInEditor             { get; set; } = true;
+        public bool         forceDisableQuestResourceManagement      { get; set; } = false;
+        public bool         needReportQuestResourceDeleteStatusFiles { get; set; } = false;
 
         /// <summary>
         /// This defines "<c>The background of the Party Setup screen will change based on your current region</c>" in-game combo box <br/>

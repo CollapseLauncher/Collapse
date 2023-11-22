@@ -134,8 +134,8 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public List<PerfDataItem> saveItems { get; set; } = new();
         public bool truePortedFromGraphicData { get; set; } = true;
-        public string portedVersion { get; set; } = "OSRELWin4.1.0";
-        public bool portedFromGraphicsData { get; set; } = false;
+        public string portedVersion { get; set; } = "OSRELWin4.2.0";
+        public bool portedFromGraphicData { get; set; } = false;
         #endregion
 
         #region Settings
@@ -309,7 +309,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             // Apply custom changes
             globalPerf.truePortedFromGraphicData = tempData.truePortedFromGraphicData;
             globalPerf.portedVersion = tempData.portedVersion;
-            globalPerf.portedFromGraphicsData = tempData.portedFromGraphicsData;
+            globalPerf.portedFromGraphicData = tempData.portedFromGraphicData;
             foreach (var setting in tempData.saveItems)
             {
                 switch (setting.entryType)
