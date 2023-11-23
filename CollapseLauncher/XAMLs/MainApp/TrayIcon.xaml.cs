@@ -64,30 +64,40 @@ namespace CollapseLauncher
         /// Using H.NotifyIcon's WindowExtension to toggle visibility of main window (m_window)
         /// </summary>
         [RelayCommand]
-        public void ToggleMainVisibility()
-        {
-            IntPtr mainWindowHandle = m_windowHandle;
-            var isVisible = IsWindowVisible(mainWindowHandle);
-
-            if (isVisible)
-            {
-                WindowExtensions.Hide(m_window);
-                MainTaskbarToggle.Text = _showApp;
-                LogWriteLine("Main window is hidden!");
-            }
-            else
-            {
-                WindowExtensions.Show(m_window);
-                SetForegroundWindow(mainWindowHandle);
-                MainTaskbarToggle.Text = _hideConsole;
-                LogWriteLine("Main window is shown!");
-            }
-        }
+        public void ToggleMainVisibilityButton() => ToggleMainVisibility();
 
         /// <summary>
         /// Toggle console visibility using LoggerConsole's DisposeConsole//AllocateConsole
         /// </summary>
         [RelayCommand]
+        public void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
+
+        /// <summary>
+        /// Toggle both main and console visibility while avoiding flip flop condition
+        /// </summary>
+        [RelayCommand]
+        public void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
+
+        /// <summary>
+        /// Using user32's SetForegroundWindow to pull both windows to foreground
+        /// </summary>
+        [RelayCommand]
+        public void BringToForegroundInvoke() => BringToForeground();
+
+        /// <summary>
+        /// Close app
+        /// </summary>
+        [RelayCommand]
+        public void CloseApp()
+        {
+            App.Current.Exit();
+        }
+        #endregion
+
+        #region Taskbar Public Methods
+        /// <summary>
+        /// Toggle console window visibility
+        /// </summary>
         public void ToggleConsoleVisibility()
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
@@ -111,14 +121,36 @@ namespace CollapseLauncher
         }
 
         /// <summary>
-        /// Toggle both main and console visibility while avoiding flip flop condition
+        /// Toggle main window visibility
         /// </summary>
-        [RelayCommand]
+        public void ToggleMainVisibility()
+        {
+            IntPtr mainWindowHandle = m_windowHandle;
+            var    isVisible        = IsWindowVisible(mainWindowHandle);
+
+            if (isVisible)
+            {
+                WindowExtensions.Hide(m_window);
+                MainTaskbarToggle.Text = _showApp;
+                LogWriteLine("Main window is hidden!");
+            }
+            else
+            {
+                WindowExtensions.Show(m_window);
+                SetForegroundWindow(mainWindowHandle);
+                MainTaskbarToggle.Text = _hideConsole;
+                LogWriteLine("Main window is shown!");
+            }
+        }
+
+        /// <summary>
+        /// Toggle both main and console windows visibility
+        /// </summary>
         public void ToggleAllVisibility()
         {
             IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
-            IntPtr mainWindowHandle = m_windowHandle;
-            bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
+            IntPtr mainWindowHandle    = m_windowHandle;
+            bool   isMainWindowVisible = IsWindowVisible(mainWindowHandle);
 
             bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
 
@@ -136,15 +168,13 @@ namespace CollapseLauncher
                 ToggleMainVisibility();
             }
         }
-        #endregion
 
         /// <summary>
-        /// Using user32's SetForegroundWindow to pull both windows to foreground
+        /// Bring all windows into foreground, also brought all windows if they were hidden in taskbar.
         /// </summary>
-        [RelayCommand]
         public void BringToForeground()
         {
-            IntPtr mainWindowHandle = m_windowHandle;
+            IntPtr mainWindowHandle    = m_windowHandle;
             IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
 
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
@@ -167,14 +197,6 @@ namespace CollapseLauncher
             ShowWindow(mainWindowHandle, 9);
             SetForegroundWindow(mainWindowHandle);
         }
-
-        /// <summary>
-        /// Close app
-        /// </summary>
-        [RelayCommand]
-        public void CloseApp()
-        {
-            App.Current.Exit();
-        }
+        #endregion
     }
 }
