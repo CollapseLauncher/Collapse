@@ -291,6 +291,7 @@ namespace Hi3Helper.Shared.Region
             { "ForceGIHDREnable", false },
             { "HI3IgnoreMediaPack", false },
             { "GameLaunchedBehavior", "Minimize" }, // Possible Values: "Minimize", "ToTray", and "Nothing"
+            { "MinimizeToTray", false }
         };
         #endregion
     }

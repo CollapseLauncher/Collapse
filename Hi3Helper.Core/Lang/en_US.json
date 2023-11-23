@@ -405,7 +405,8 @@
     "AppBehavior_PostGameLaunch": "After Launching Game",
     "AppBehavior_PostGameLaunch_Minimize": "Minimize",
     "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing"
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray"
   },
 
   "_Misc": {

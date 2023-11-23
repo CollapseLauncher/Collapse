@@ -311,6 +311,13 @@ namespace CollapseLauncher
             }
         }
 
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e) => m_presenter.Minimize();
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetAppConfigValue("MinimizeToTray").ToBool())
+            {
+                TrayIcon.ToggleAllVisibility();
+            }
+            else m_presenter.Minimize();
+        }
     }
 }

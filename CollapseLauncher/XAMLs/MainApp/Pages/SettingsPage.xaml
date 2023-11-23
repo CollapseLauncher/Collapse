@@ -47,16 +47,16 @@
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}"
                                 Visibility="Collapsed" />
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,16">
+                        <StackPanel Margin="0,10,0,16">
                             <TextBlock
                                 Margin="0,0,0,8"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}"/>
                             <TextBlock
-                                Margin="0,0,0,8"
+                                Margin="0,0,0,10"
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}"/>
                             <ComboBox
-                                Margin="0,0,0,0"
+                                Margin="0,0,0,14"
                                 x:Name="GameLaunchedBehaviorSelector"
                                 MinWidth="256"
                                 CornerRadius="14"
@@ -66,9 +66,15 @@
                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}"/>
                                 <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}"/>
                             </ComboBox>
+                            <ToggleSwitch
+                                Margin="0,4"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_MinimizeToTray}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"/>
                         </StackPanel>
                         <TextBlock
-                            Margin="0,10,0,16"
+                            Margin="0,0,0,16"
                             Style="{ThemeResource SubtitleTextBlockStyle}"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" />
                         <StackPanel Margin="0,-8,0,8">

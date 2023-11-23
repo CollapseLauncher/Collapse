@@ -626,6 +626,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsMinimizeToTaskbar
+        {
+            get => GetAppConfigValue("MinimizeToTray").ToBool();
+            set => SetAndSaveConfigValue("MinimizeToTray", value);
+        }
+
         #region Keyboard Shortcuts
         private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
 

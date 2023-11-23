@@ -86,6 +86,7 @@
                 public string AppBehavior_PostGameLaunch_Minimize { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_Minimize;
                 public string AppBehavior_PostGameLaunch_ToTray { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_ToTray;
                 public string AppBehavior_PostGameLaunch_Nothing { get; set; } = LangFallback?._SettingsPage.AppBehavior_PostGameLaunch_Nothing;
+                public string AppBehavior_MinimizeToTray { get; set; } = LangFallback?._SettingsPage.AppBehavior_MinimizeToTray;
             }
         }
         #endregion
