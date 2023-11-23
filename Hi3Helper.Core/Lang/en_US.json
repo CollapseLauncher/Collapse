@@ -502,6 +502,8 @@
     "DiscordRP_Ad": "- With Collapse Launcher",
     "DiscordRP_Region": "Region:",
 
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Show Collapse window",
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",

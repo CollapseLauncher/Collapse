@@ -28,6 +28,9 @@ namespace CollapseLauncher
         #endregion
 
         #region Locales
+        private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
+        private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
+
         private readonly string _showApp = Lang._Misc.Taskbar_ShowApp;
         private readonly string _hideApp = Lang._Misc.Taskbar_HideApp;
         private readonly string _showConsole = Lang._Misc.Taskbar_ShowConsole;
@@ -44,7 +47,9 @@ namespace CollapseLauncher
             this.InitializeComponent();
 #if DEBUG
             CollapseTaskbar.ToolTipText =
-                $"Collapse Launcher v{AppCurrentVersion.VersionString}d {(LauncherConfig.IsPreview ? "DEBUG" : _stable)}";  
+                $"Collapse Launcher v{AppCurrentVersion.VersionString}d - Commit {ThisAssembly.Git.Commit}\r\n" +
+                $"{_popupHelp1}\r\n" +
+                $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
                 $"Collapse Launcher v{AppCurrentVersion.VersionString}d {(LauncherConfig.IsPreview ? _preview : _stable)}"; 
