@@ -1,4 +1,5 @@
 using Microsoft.UI;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -133,34 +134,33 @@ namespace CollapseLauncher
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
 
-                if (IsAppThemeLight)
-                {
-                    m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 0, G = 0, R = 0 };
-                    m_appWindow.TitleBar.ButtonInactiveForegroundColor = new Windows.UI.Color { A = 0, B = 160, G = 160, R = 160 };
-                    m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 64, B = 0, G = 0, R = 0 };
-                }
-                else
-                {
-                    m_appWindow.TitleBar.ButtonForegroundColor = new Windows.UI.Color { A = 255, B = 255, G = 255, R = 255 };
-                    m_appWindow.TitleBar.ButtonHoverBackgroundColor = new Windows.UI.Color { A = 64, B = 0, G = 0, R = 0 };
-                }
-
                 m_appWindow.TitleBar.ButtonBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
                 m_appWindow.TitleBar.ButtonInactiveBackgroundColor = new Windows.UI.Color { A = 0, B = 0, G = 0, R = 0 };
+
+                // Hide system menu
+                var controlsHwnd = FindWindowEx(m_windowHandle, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
+                if (controlsHwnd != IntPtr.Zero)
+                {
+                    DestroyWindow(controlsHwnd);
+                }
+
+                // Fix mouse event
+                var incps = InputNonClientPointerSource.GetForWindowId(m_windowID);
+                incps.SetRegionRects(NonClientRegionKind.Close, null);
+                incps.SetRegionRects(NonClientRegionKind.Minimize, null);
+                var safeArea = new RectInt32[] { new(m_appWindow.Size.Width - (int)((144 + 12) * m_appDPIScale), 0, (int)((144 + 12) * m_appDPIScale), (int)(48 * m_appDPIScale)) };
+                incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
             }
             else
             {
+                // Shouldn't happen
+                // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#colors
+
                 m_presenter.IsResizable = false;
                 m_presenter.IsMaximizable = false;
                 ExtendsContentIntoTitleBar = false;
+                AppTitleBar.Visibility = Visibility.Collapsed;
             }
-
-            // Hide minimize and maximize button
-            int gwl_style = -16;
-            uint minimizeBtn = 0x00020000;
-            uint maximizeBtn = 0x00010000;
-            var currentStyle = GetWindowLong(m_windowHandle, gwl_style);
-            SetWindowLong(m_windowHandle, gwl_style, currentStyle & ~minimizeBtn & ~maximizeBtn);
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
@@ -318,6 +318,11 @@ namespace CollapseLauncher
                 TrayIcon.ToggleAllVisibility();
             }
             else m_presenter.Minimize();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
