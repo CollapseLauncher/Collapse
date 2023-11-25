@@ -9,6 +9,8 @@ on:
         - 'main'
   pull_request:
     branches-ignore:
+      - 'stable'
+      - 'preview'
       - 'translations_**'
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
