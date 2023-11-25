@@ -666,6 +666,11 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+
+                    <!-- WindowChrome min max close styles -->
+                    <x:Double x:Key="WindowCaptionButtonStrokeWidth">1</x:Double>
+                    <SolidColorBrush x:Key="WindowCaptionBackground" Color="#00000000"/>
+                    <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="#00000000"/>
                 </ResourceDictionary>
                 <!-- Custom controls styles -->
                 <ResourceDictionary Source="ms-appx:///XAMLs/Theme/DataGrid.xaml"/>

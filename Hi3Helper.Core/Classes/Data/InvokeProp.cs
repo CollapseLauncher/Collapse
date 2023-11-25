@@ -20,7 +20,7 @@ namespace Hi3Helper
         public enum SetWindowPosFlags : uint
         {
             SWP_NOMOVE = 2,
-            SWP_SHOWWINDOW = 40,
+            SWP_SHOWWINDOW = 0x40,
         }
 
         public enum SpecialWindowHandles
@@ -202,6 +202,12 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public extern static uint SetWindowLong(IntPtr hwnd, int index, uint value);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        [DllImport("user32.dll")]
+        public static extern bool DestroyWindow(IntPtr hwnd);
 
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 
