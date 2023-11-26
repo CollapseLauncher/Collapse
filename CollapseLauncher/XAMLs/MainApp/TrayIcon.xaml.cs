@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Xaml;
 using System;
 using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -59,8 +58,6 @@ namespace CollapseLauncher
             // Switch toggle text to see if its started with Start
             MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
-            // Show visibility toggle for console if the console is enabled
-            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool()) ConsoleTaskbarToggle.Visibility = Visibility.Visible;
         }
         #endregion
 
@@ -88,6 +85,12 @@ namespace CollapseLauncher
         /// </summary>
         [RelayCommand]
         public void BringToForegroundInvoke() => BringToForeground();
+
+        /// <summary>
+        /// Update tray context menu
+        /// </summary>
+        [RelayCommand]
+        public void UpdateContextMenuInvoke() => UpdateContextMenu();
 
         /// <summary>
         /// Close app
@@ -143,7 +146,7 @@ namespace CollapseLauncher
             {
                 WindowExtensions.Show(m_window);
                 SetForegroundWindow(mainWindowHandle);
-                MainTaskbarToggle.Text = _hideConsole;
+                MainTaskbarToggle.Text = _hideApp;
                 LogWriteLine("Main window is shown!");
             }
         }
@@ -201,6 +204,23 @@ namespace CollapseLauncher
                 WindowExtensions.Show(m_window);
             ShowWindow(mainWindowHandle, 9);
             SetForegroundWindow(mainWindowHandle);
+        }
+
+        /// <summary>
+        /// Update tray context menu
+        /// </summary>
+        public void UpdateContextMenu()
+        {
+            // Enable visibility toggle for console if the console is enabled
+            if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
+            {
+                ConsoleTaskbarToggle.IsEnabled = true;
+            }
+            else
+            {
+                ConsoleTaskbarToggle.IsEnabled = false;
+                ConsoleTaskbarToggle.Text = _hideConsole;
+            }
         }
         #endregion
     }
