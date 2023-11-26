@@ -75,14 +75,14 @@
                             <ToggleSwitch
                                 x:Name="StartupToggle"
                                 Margin="0,4"
-                                Header="Start Collapse on Startup"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_LaunchOnStartup}"
                                 OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                 IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"/>
                             <ToggleSwitch
                                 x:Name="StartupToTrayToggle"
                                 Margin="0,4"
-                                Header="Start Collapse to Tray on Startup"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_StartupToTray}"
                                 OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                 IsOn="{x:Bind IsStartupToTray, Mode=TwoWay}"
