@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.RegionResourceListHelper;
@@ -680,21 +679,28 @@ namespace CollapseLauncher.Pages
             {
                 using TaskService ts = new TaskService();
 
-                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                Task task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) CreateScheduledTask(_collapseStartupTaskName);
 
                 bool value = task.Definition.Settings.Enabled;
                 task.Dispose();
+
+                if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
+                else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
+
                 return value;
             }
             set
             {
                 using TaskService ts = new TaskService();
 
-                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                Task task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Settings.Enabled = value;
                 task.RegisterChanges();
                 task.Dispose();
+
+                if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
+                else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
             }
         }
 
@@ -703,22 +709,23 @@ namespace CollapseLauncher.Pages
             get
             {
                 using TaskService ts = new TaskService();
-                
-                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+
+                Task task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) CreateScheduledTask(_collapseStartupTaskName);
-            
-                var action = task.Definition.Actions[0];
-                bool value = action.ToString().ToLower().Contains("tray");
+
+                bool? value = false;
+                if (task.Definition.Actions[0] is ExecAction execAction)
+                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.CurrentCultureIgnoreCase);
+                
                 task.Dispose();
-                return value;
+                return value ?? false;
             }
             set
             {
                 string collapseStartupTarget = FindCollapseStubPath();
                 using TaskService ts = new TaskService();
 
-                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
-
+                Task task = ts.GetTask(_collapseStartupTaskName);
                 task.Definition.Actions.Clear();
                 task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
                 task.RegisterChanges();

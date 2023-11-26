@@ -72,6 +72,21 @@
                                 OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                 IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"/>
+                            <ToggleSwitch
+                                x:Name="StartupToggle"
+                                Margin="0,4"
+                                Header="Start Collapse on Startup"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"/>
+                            <ToggleSwitch
+                                x:Name="StartupToTrayToggle"
+                                Margin="0,4"
+                                Header="Start Collapse to Tray on Startup"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsStartupToTray, Mode=TwoWay}"
+                                Visibility="Collapsed"/>
                         </StackPanel>
                         <TextBlock
                             Margin="0,0,0,16"
