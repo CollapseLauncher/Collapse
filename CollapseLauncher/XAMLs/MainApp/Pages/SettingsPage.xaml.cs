@@ -7,6 +7,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,6 +29,11 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class SettingsPage : Page
     {
+        #region Properties
+        private readonly string _collapseStartupTaskName = "CollapseLauncherStartupTask";
+        #endregion
+
+        #region Settings Page Handler
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -68,7 +74,9 @@ namespace CollapseLauncher.Pages
         {
             BackgroundImgChanger.ToggleBackground(true);
         }
+        #endregion
 
+        #region Settings Methods
         private async void RelocateFolder(object sender, RoutedEventArgs e)
         {
             switch (await Dialog_RelocateFolder(Content))
@@ -309,6 +317,40 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
+        // Check the task name and see if its enabled or not (return bool)
+        private bool QueryStartupTask(string taskName)
+        {
+            string collapseStartupTarget;
+            var collapseExecName = "CollapseLauncher.exe";
+            var collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
+            var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
+            if (File.Exists(collapseStubPath))
+                collapseStartupTarget  = collapseStubPath;
+            else collapseStartupTarget = collapseMainPath;
+                
+            using (TaskService ts = new TaskService())
+            {
+                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(taskName);
+                if (task == null)
+                {
+                    TaskDefinition taskDefinition = TaskService.Instance.NewTask();
+                    taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
+                    taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
+                    taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
+                    taskDefinition.Settings.Enabled             = true;
+                    taskDefinition.Triggers.Add(new LogonTrigger());
+                    taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
+
+                    TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+                    taskDefinition.Dispose();
+                }
+
+                return task.Definition.Settings.Enabled;
+            }
+        }
+        #endregion
+
+        #region Settings UI Backend
         private bool IsBGCustom
         {
             get
@@ -547,7 +589,7 @@ namespace CollapseLauncher.Pages
                 CurrentWindowSizeName = WindowSizeProfilesKey[value];
                 var delayedDragAreaChange = async () =>
                 {
-                    await Task.Delay(250);
+                    await System.Threading.Tasks.Task.Delay(250);
                     ChangeTitleDragArea.Change(DragAreaTemplate.Default);
                 };
                 delayedDragAreaChange();
@@ -631,6 +673,21 @@ namespace CollapseLauncher.Pages
             get => GetAppConfigValue("MinimizeToTray").ToBool();
             set => SetAndSaveConfigValue("MinimizeToTray", value);
         }
+
+        private bool IsLaunchOnStartup
+        {
+            get => QueryStartupTask(_collapseStartupTaskName);
+            set
+            {
+                using TaskService ts = new TaskService();
+
+                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                task.Definition.Settings.Enabled = value;
+                task.RegisterChanges();
+                task.Dispose();
+            }
+        }
+        #endregion
 
         #region Keyboard Shortcuts
         private async void ShowKbScList_Click(Object sender, RoutedEventArgs e) => await Dialogs.KeyboardShortcuts.Dialog_ShowKbShortcuts(this);
