@@ -444,7 +444,7 @@ namespace CollapseLauncher.Interfaces
                     if (sdkDllFile != null)
                     {
                         // Try create the file if not exist or open an existing one
-                        await using (Stream sdkDllStream = sdkDllFile.Open(entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate))
+                        await using (Stream sdkDllStream = sdkDllFile.Open(!sdkDllFile.Exists || entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate))
                         {
                             // Initiate the Crc32 hash
                             Crc32 hash = new Crc32();
