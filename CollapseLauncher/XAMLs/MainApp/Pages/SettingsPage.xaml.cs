@@ -319,13 +319,7 @@ namespace CollapseLauncher.Pages
 
         private void CreateScheduledTask(string taskName)
         {
-            string collapseStartupTarget;
-            var    collapseExecName = "CollapseLauncher.exe";
-            var    collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
-            var    collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
-            if (File.Exists(collapseStubPath))
-                collapseStartupTarget  = collapseStubPath;
-            else collapseStartupTarget = collapseMainPath;
+            string collapseStartupTarget = FindCollapseStubPath();
 
             using TaskService ts = new TaskService();
 
@@ -341,6 +335,19 @@ namespace CollapseLauncher.Pages
             taskDefinition.Dispose();
         }
 
+        public string FindCollapseStubPath()
+        {
+            var    collapseExecName = "CollapseLauncher.exe";
+            var    collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
+            var    collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
+            if (File.Exists(collapseStubPath))
+            {
+                LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
+                return  collapseStubPath;
+            }
+            LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}", LogType.Default, true);
+            return collapseMainPath;
+        }
         #endregion
 
         #region Settings UI Backend
@@ -676,7 +683,9 @@ namespace CollapseLauncher.Pages
                 Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
                 if (task == null) CreateScheduledTask(_collapseStartupTaskName);
 
-                return task.Definition.Settings.Enabled;
+                bool value = task.Definition.Settings.Enabled;
+                task.Dispose();
+                return value;
             }
             set
             {
@@ -693,25 +702,28 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                using (TaskService ts = new TaskService())
-                {
-                    Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
-                    if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+                using TaskService ts = new TaskService();
                 
-                    var action = task.Definition.Actions[0];
-                    return action.ToString().ToLower().Contains("tray");
-                }
+                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+            
+                var action = task.Definition.Actions[0];
+                bool value = action.ToString().ToLower().Contains("tray");
+                task.Dispose();
+                return value;
             }
             set
             {
-                // TODO: actually make this
-                //using TaskService ts = new TaskService();
+                string collapseStartupTarget = FindCollapseStubPath();
+                using TaskService ts = new TaskService();
 
-                //Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
-                //task.Definition.Actions.
-                throw new NotImplementedException();
+                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+
+                task.Definition.Actions.Clear();
+                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null, null));
+                task.RegisterChanges();
+                task.Dispose();
             }
-
         }
         #endregion
 
