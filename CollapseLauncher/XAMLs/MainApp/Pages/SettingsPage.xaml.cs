@@ -317,37 +317,30 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        // Check the task name and see if its enabled or not (return bool)
-        private bool QueryStartupTask(string taskName)
+        private void CreateScheduledTask(string taskName)
         {
             string collapseStartupTarget;
-            var collapseExecName = "CollapseLauncher.exe";
-            var collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
-            var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
+            var    collapseExecName = "CollapseLauncher.exe";
+            var    collapseMainPath = Process.GetCurrentProcess().MainModule.FileName;
+            var    collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)).FullName, collapseExecName);
             if (File.Exists(collapseStubPath))
                 collapseStartupTarget  = collapseStubPath;
             else collapseStartupTarget = collapseMainPath;
-                
-            using (TaskService ts = new TaskService())
-            {
-                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(taskName);
-                if (task == null)
-                {
-                    TaskDefinition taskDefinition = TaskService.Instance.NewTask();
-                    taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
-                    taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
-                    taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
-                    taskDefinition.Settings.Enabled             = true;
-                    taskDefinition.Triggers.Add(new LogonTrigger());
-                    taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
 
-                    TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-                    taskDefinition.Dispose();
-                }
+            using TaskService ts = new TaskService();
 
-                return task.Definition.Settings.Enabled;
-            }
+            TaskDefinition taskDefinition = TaskService.Instance.NewTask();
+            taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
+            taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
+            taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
+            taskDefinition.Settings.Enabled             = true;
+            taskDefinition.Triggers.Add(new LogonTrigger());
+            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
+
+            TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+            taskDefinition.Dispose();
         }
+
         #endregion
 
         #region Settings UI Backend
@@ -676,7 +669,15 @@ namespace CollapseLauncher.Pages
 
         private bool IsLaunchOnStartup
         {
-            get => QueryStartupTask(_collapseStartupTaskName);
+            get
+            {
+                using TaskService ts = new TaskService();
+
+                Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+
+                return task.Definition.Settings.Enabled;
+            }
             set
             {
                 using TaskService ts = new TaskService();
@@ -686,6 +687,31 @@ namespace CollapseLauncher.Pages
                 task.RegisterChanges();
                 task.Dispose();
             }
+        }
+
+        private bool IsStartupToTray
+        {
+            get
+            {
+                using (TaskService ts = new TaskService())
+                {
+                    Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                    if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+                
+                    var action = task.Definition.Actions[0];
+                    return action.ToString().ToLower().Contains("tray");
+                }
+            }
+            set
+            {
+                // TODO: actually make this
+                //using TaskService ts = new TaskService();
+
+                //Microsoft.Win32.TaskScheduler.Task task = ts.GetTask(_collapseStartupTaskName);
+                //task.Definition.Actions.
+                throw new NotImplementedException();
+            }
+
         }
         #endregion
 
