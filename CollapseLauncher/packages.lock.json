@@ -89,12 +89,18 @@
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.1.0, )",
-        "resolved": "1.1.0",
-        "contentHash": "bHHnKtvoIGitm7EiOtENw3J1E9DSDAzJcrNhwve6nMvMoiFwtRnSZRO0mB1t0QYKhaZD6zM9Rq5kvBmiu4nelQ==",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "pY+vydSMYOSTa0BkArumLiyr3VihbW1aJBzD1nk9UAGyR5iA/hZxX319g9tnMGV5xc/88CAwi5uAq/AqTdfVRw==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.4.230913002"
+          "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
+      },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "B3etT5XQ2nlWkZGO2m/ytDYrOmSsQG1XNBaM6ZYlX5Ch/tDrMFadr0/mK6gjZwaQc55g+5+WZMw4Cz3m8VEF7g=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -1265,11 +1271,11 @@
     "net8.0-windows10.0.22621/win-x64": {
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.1.0, )",
-        "resolved": "1.1.0",
-        "contentHash": "bHHnKtvoIGitm7EiOtENw3J1E9DSDAzJcrNhwve6nMvMoiFwtRnSZRO0mB1t0QYKhaZD6zM9Rq5kvBmiu4nelQ==",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "pY+vydSMYOSTa0BkArumLiyr3VihbW1aJBzD1nk9UAGyR5iA/hZxX319g9tnMGV5xc/88CAwi5uAq/AqTdfVRw==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.4.230913002"
+          "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
       "Microsoft.WindowsAppSDK": {
