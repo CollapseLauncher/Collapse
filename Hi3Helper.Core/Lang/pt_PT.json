@@ -399,7 +399,14 @@
 
     "KbShortcuts_Title": "Atalhos de teclado",
     "KbShortcuts_ShowBtn": "Mostrar atalhos",
-    "KbShortcuts_ResetBtn": "Redefinir atalhos"
+    "KbShortcuts_ResetBtn": "Redefinir atalhos",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray"
   },
 
   "_Misc": {
@@ -495,6 +502,8 @@
     "DiscordRP_Ad": "- Com Collapse Launcher",
     "DiscordRP_Region": "Região:",
 
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Mostrar janela do Collapse",
     "Taskbar_HideApp": "Esconder janela do Collapse na gaveta de aplicações",
     "Taskbar_ShowConsole": "Mostrar janela da consola do Collapse",

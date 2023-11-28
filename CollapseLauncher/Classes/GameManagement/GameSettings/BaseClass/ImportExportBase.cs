@@ -22,7 +22,7 @@ namespace CollapseLauncher.GameSettings.Base
             {
                 string path = FileDialogNative.GetFilePicker(new Dictionary<string, string> { { "Collapse Registry", "*.clreg" } }, Lang._GameSettingsPage.SettingsRegImportTitle).GetAwaiter().GetResult();
 
-                if (path == null) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
+                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
 
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
@@ -105,7 +105,7 @@ namespace CollapseLauncher.GameSettings.Base
 
                 EnsureFileSaveHasExtension(ref path, ".clreg");
 
-                if (path == null) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
+                if (string.IsNullOrEmpty(path)) throw new OperationCanceledException(Lang._GameSettingsPage.SettingsRegErr1);
 
                 Logger.LogWriteLine($"Exporting registry {RegistryPath}...");
 
@@ -154,6 +154,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         private void EnsureFileSaveHasExtension(ref string path, string exte)
         {
+            if (string.IsNullOrEmpty(path)) return;
             string ext = Path.GetExtension(path);
             if (ext == null) return;
             if (string.IsNullOrEmpty(ext))

@@ -399,7 +399,14 @@
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
-    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan"
+    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan",
+
+    "AppBehavior_Title": "Perilaku Aplikasi",
+    "AppBehavior_PostGameLaunch": "Setelah Meluncurkan Permainan",
+    "AppBehavior_PostGameLaunch_Minimize": "Mengecilkan",
+    "AppBehavior_PostGameLaunch_ToTray": "Sembunyikan ke Tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Tidak melakukan apapun",
+    "AppBehavior_MinimizeToTray": "Kecilkan ke Tray"
   },
 
   "_Misc": {
@@ -495,6 +502,8 @@
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
     "DiscordRP_Region": "Wilayah:",
 
+    "Taskbar_PopupHelp1": "Klik untuk membawa Collapse ke layar depan",
+    "Taskbar_PopupHelp2": "Klik ganda untuk mengatur visibilitas jendela",
     "Taskbar_ShowApp": "Tampilkan jendela Collapse",
     "Taskbar_HideApp": "Sembunyikan jendela Collapse ke taskbar",
     "Taskbar_ShowConsole": "Tampilkan jendela konsol Collapse",

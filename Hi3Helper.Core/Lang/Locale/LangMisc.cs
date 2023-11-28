@@ -93,11 +93,13 @@
                 public string DiscordRP_Ad { get; set; } = LangFallback?._Misc.DiscordRP_Ad;
                 public string DiscordRP_Region { get; set; } = LangFallback?._Misc.DiscordRP_Region;
 
-                public string Taskbar_ShowApp { get; set; } = LangFallback?._Misc.Taskbar_ShowApp;
-                public string Taskbar_HideApp { get; set; } = LangFallback?._Misc.Taskbar_HideApp;
+                public string Taskbar_PopupHelp1      { get; set; } = LangFallback?._Misc.Taskbar_PopupHelp1;
+                public string Taskbar_PopupHelp2      { get; set; } = LangFallback?._Misc.Taskbar_PopupHelp2;
+                public string Taskbar_ShowApp     { get; set; } = LangFallback?._Misc.Taskbar_ShowApp;
+                public string Taskbar_HideApp     { get; set; } = LangFallback?._Misc.Taskbar_HideApp;
                 public string Taskbar_ShowConsole { get; set; } = LangFallback?._Misc.Taskbar_ShowConsole;
                 public string Taskbar_HideConsole { get; set; } = LangFallback?._Misc.Taskbar_HideConsole;
-                public string Taskbar_ExitApp { get; set; } = LangFallback?._Misc.Taskbar_ExitApp;
+                public string Taskbar_ExitApp     { get; set; } = LangFallback?._Misc.Taskbar_ExitApp;
             }
         }
         #endregion

@@ -1,7 +1,4 @@
-﻿using Hi3Helper.Data;
-using Hi3Helper.Shared.ClassStruct;
-
-namespace Hi3Helper.Preset
+﻿namespace Hi3Helper.Preset
 {
     public class BHI3LInfo
     {

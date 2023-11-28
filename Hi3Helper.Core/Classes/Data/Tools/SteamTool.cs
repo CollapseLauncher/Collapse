@@ -7,6 +7,17 @@ using System.Text.RegularExpressions;
 
 namespace Hi3Helper.Data
 {
+    public class AppInfo
+    {
+        public int Id { get; internal set; }
+        public string Name { get; internal set; }
+        public string SteamUrl { get; internal set; }
+        public string Manifest { get; internal set; }
+        public string GameRoot { get; internal set; }
+        public string Executable { get; internal set; }
+        public string InstallDir { get; internal set; }
+    }
+
     public static class SteamTool
     {
         // Reference:
@@ -17,8 +28,7 @@ namespace Hi3Helper.Data
             foreach (var lib in steamLibs)
             {
                 var appMetaDataPath = Path.Combine(lib, "SteamApps");
-                var files = Directory.GetFiles(appMetaDataPath, "*.acf");
-                foreach (var file in files)
+                foreach (var file in Directory.EnumerateFiles(appMetaDataPath, "*.acf"))
                 {
                     var appInfo = GetAppInfo(file);
                     if (appInfo != null)
@@ -27,14 +37,21 @@ namespace Hi3Helper.Data
                     }
                 }
             }
+
+#if DEBUG
+            if (apps.Count == 0) Logger.LogWriteLine($"AppInfo on steam cannot be found!");
+#endif
             return apps;
         }
 
         public static AppInfo GetAppInfo(string appMetaFile)
         {
             var fileDataLines = File.ReadAllLines(appMetaFile);
-
             var dic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+#if DEBUG
+            Logger.LogWriteLine($"Reading .acf Steam file: {appMetaFile}");
+#endif
 
             foreach (var line in fileDataLines)
             {
@@ -43,6 +60,9 @@ namespace Hi3Helper.Data
                 {
                     var key = match.Groups["key"].Value;
                     var val = match.Groups["val"].Value;
+#if DEBUG
+                    Logger.LogWriteLine($"    AppInfo key: {key} val: {val}");
+#endif
                     dic[key] = val;
                 }
             }
@@ -161,6 +181,7 @@ namespace Hi3Helper.Data
                 Logger.LogWriteLine("LibraryFolder.vdf not found. If you think this is an error report it on our GitHub.", LogType.Error, true);
                 return null;
             }
+
             var lines = File.ReadAllLines(listFile);
             foreach (var line in lines)
             {
@@ -168,8 +189,14 @@ namespace Hi3Helper.Data
                 if (match.Success)
                 {
                     var path = match.Groups["path"].Value.Replace(@"\\", @"\");
+#if DEBUG
+                    Logger.LogWriteLine($"Checking Steam Lib Path: {path}", LogType.Debug, true);
+#endif
                     if (Directory.Exists(path))
                     {
+#if DEBUG
+                        Logger.LogWriteLine($"    Path: {path} is exist", LogType.Debug, true);
+#endif
                         libraries.Add(path);
                     }
                 }
@@ -183,22 +210,6 @@ namespace Hi3Helper.Data
             if (a == null) return null;
             if(!Directory.Exists(a as string)) return null;
             return ((string)a).Replace('\\', '/');
-        }
-
-        public class AppInfo
-        {
-            public int Id { get; internal set; }
-            public string Name { get; internal set; }
-            public string SteamUrl { get; internal set; }
-            public string Manifest { get; internal set; }
-            public string GameRoot { get; internal set; }
-            public string Executable { get; internal set; }
-            public string InstallDir { get; internal set; }
-
-            public override string ToString()
-            {
-                return $"{Name} ({Id}) - {SteamUrl} - {Executable}";
-            }
         }
     }
 }

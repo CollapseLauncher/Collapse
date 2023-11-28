@@ -2,7 +2,6 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using CollapseLauncher.FileDialogCOM;
-using CommunityToolkit.WinUI.UI.Controls;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Hi3Helper.Screen;
@@ -51,7 +50,7 @@ namespace CollapseLauncher.Pages
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; set; }
         private HomeMenuPanel MenuPanels { get => regionNewsProp; }
-        private CancellationTokenSource PageToken { get; init; }
+        private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
         private CancellationTokenSource PlaytimeToken { get; set; }
         #endregion
@@ -59,13 +58,14 @@ namespace CollapseLauncher.Pages
         #region PageMethod
         public HomePage()
         {
-            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            PageToken = new CancellationTokenSource();
-            CarouselToken = new CancellationTokenSource();
-            PlaytimeToken = new CancellationTokenSource();
-            this.InitializeComponent();
-            CheckIfRightSideProgress();
             this.Loaded += StartLoadedRoutine;
+            m_homePage = this;
+        }
+
+        ~HomePage()
+        {
+            // HACK: Fix random crash by always unsubscribing the StartLoadedRoutine if the GC is calling the deconstructor.
+            this.Loaded -= StartLoadedRoutine;
         }
 
         private bool IsPageUnload { get; set; }
@@ -85,7 +85,17 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                // HACK: Fix random crash by manually load the XAML part
+                //       But first, let it initialize its properties.
+                CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                PageToken = new CancellationTokenSource();
+                CarouselToken = new CancellationTokenSource();
+                PlaytimeToken = new CancellationTokenSource();
+
+                this.InitializeComponent();
+
                 BackgroundImgChanger.ToggleBackground(false);
+                CheckIfRightSideProgress();
                 GetCurrentGameState();
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
@@ -245,8 +255,12 @@ namespace CollapseLauncher.Pages
 
         private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
         {
-            CarouselToken = new CancellationTokenSource();
-            StartCarouselAutoScroll(CarouselToken.Token);
+            // Don't restart carousel if game is running and LoPrio is on
+            if (!CurrentGameProperty.IsGameRunning || !GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+            {
+                CarouselToken = new CancellationTokenSource();
+                StartCarouselAutoScroll(CarouselToken.Token);
+            }
         }
 
         private async void HideImageCarousel(bool hide)
@@ -395,7 +409,7 @@ namespace CollapseLauncher.Pages
         #region Open Link from Tag
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
-            SpawnWebView2.SpawnWebView2Window(((ImageEx)sender).Tag.ToString());
+            SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString());
         }
 
         private async void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
@@ -1063,26 +1077,36 @@ namespace CollapseLauncher.Pages
 
         private void GameInstall_StatusChanged(object sender, TotalPerfileStatus e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                ProgressStatusTitle.Text = e.ActivityStatus;
-                progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstall_StatusChanged_Inner(e);
+            else
+                DispatcherQueue.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
+        }
 
-                progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
-                progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
-            });
+        private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
+        {
+            ProgressStatusTitle.Text = e.ActivityStatus;
+            progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
+
+            progressRing.IsIndeterminate = e.IsProgressTotalIndetermined;
+            progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
         private void GameInstall_ProgressChanged(object sender, TotalPerfileProgress e)
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                progressRing.Value = e.ProgressTotalPercentage;
-                progressRingPerFile.Value = e.ProgressPerFilePercentage;
-                ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
-                ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
-                ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
-            });
+            if (DispatcherQueue.HasThreadAccess)
+                GameInstall_ProgressChanged_Inner(e);
+            else
+                DispatcherQueue.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
+        }
+
+        private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
+        {
+            progressRing.Value = e.ProgressTotalPercentage;
+            progressRingPerFile.Value = e.ProgressPerFilePercentage;
+            ProgressStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, SummarizeSizeSimple(e.ProgressTotalDownload), SummarizeSizeSimple(e.ProgressTotalSizeToDownload));
+            ProgressStatusFooter.Text = string.Format(Lang._Misc.Speed, SummarizeSizeSimple(e.ProgressTotalSpeed));
+            ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressTotalTimeLeft);
         }
 
         private void CancelInstallationProcedure(object sender, RoutedEventArgs e)
@@ -1143,8 +1167,11 @@ namespace CollapseLauncher.Pages
                 IGameSettingsUniversal _Settings = CurrentGameProperty._GameSettings.AsIGameSettingsUniversal();
 
                 bool IsContinue = await CheckMediaPackInstalled();
-
                 if (!IsContinue) return;
+
+                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
+                    GenshinHDREnforcer();
+
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
                 proc.StartInfo.UseShellExecute = true;
@@ -1160,14 +1187,25 @@ namespace CollapseLauncher.Pages
 
                 WatchOutputLog = new CancellationTokenSource();
 
-                if (GetAppConfigValue("EnableConsole").ToBool())
-                {
-                    ReadOutputLog();
-                    GameLogWatcher();
-                }
+                GameRunningWatcher();
 
-                if (CurrentGameProperty._GameVersion.GameType == GameType.Genshin && GetAppConfigValue("ForceGIHDREnable").ToBool())
-                    GenshinHDREnforcer();
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                    ReadOutputLog();
+
+                switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+                {
+                    case "Minimize":
+                        m_presenter.Minimize();
+                        break;
+                    case "ToTray":
+                        H.NotifyIcon.WindowExtensions.Hide(m_window);
+                        break;
+                    case "Nothing":
+                        break;
+                    default:
+                        m_presenter.Minimize();
+                        break;
+                }
 
                 StartPlaytimeCounter(CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, proc, CurrentGameProperty._GameVersion.GamePreset);
                 AutoUpdatePlaytimeCounter(true, PlaytimeToken.Token);
@@ -1198,6 +1236,37 @@ namespace CollapseLauncher.Pages
             catch (System.ComponentModel.Win32Exception ex)
             {
                 LogWriteLine($"There is a problem while trying to launch Game with Region: {CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            }
+        }
+
+        // Use this method to do something when game is closed
+        private async void GameRunningWatcher()
+        {
+            await Task.Delay(5000);
+            while (CurrentGameProperty.IsGameRunning)
+            {
+                await Task.Delay(3000);
+            }
+
+            // Stopping GameLogWatcher
+            if (GetAppConfigValue("EnableConsole").ToBool())
+                WatchOutputLog.Cancel();
+
+            // Window manager on game closed
+            switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
+            {
+                case "Minimize":
+                    m_presenter.Restore();
+                    break;
+                case "ToTray":
+                    H.NotifyIcon.WindowExtensions.Show(m_window);
+                    m_presenter.Restore();
+                    break;
+                case "Nothing":
+                    break;
+                default:
+                    m_presenter.Restore();
+                    break;
             }
         }
 
@@ -1414,7 +1483,6 @@ namespace CollapseLauncher.Pages
             LogWriteLine($"{new string('=', barwidth)} GAME STARTED {new string('=', barwidth)}", LogType.Warning, true);
             try
             {
-                m_presenter.Minimize();
                 string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath, CurrentGameProperty._GameVersion.GameOutputLogName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(logPath)))
@@ -1452,17 +1520,6 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine($"{ex}", LogType.Error);
             }
-        }
-
-        private async void GameLogWatcher()
-        {
-            await Task.Delay(5000);
-            while (CurrentGameProperty.IsGameRunning)
-            {
-                await Task.Delay(3000);
-            }
-
-            WatchOutputLog.Cancel();
         }
         #endregion
 

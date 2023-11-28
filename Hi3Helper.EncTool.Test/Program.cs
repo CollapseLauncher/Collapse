@@ -7,10 +7,10 @@ namespace Hi3Helper.EncTool.Test
     {
         static async Task Main(string[] args)
         {
-            using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "495e8edf66",
+            using (SRMetadata srm = new SRMetadata("https://globaldp-prod-os01.starrails.com/query_dispatch", "3a57430d8d",
                 "?version={0}{1}&t={2}&language_type=3&platform_type=3&channel_id=1&sub_channel_id=1&is_new_format=1",
                 "?version={0}{1}&t={2}&uid=0&language_type=3&platform_type=3&dispatch_seed={3}&channel_id=1&sub_channel_id=1&is_need_url=1",
-                "OSPRODWin", "1.0.5"))
+                "OSPRODWin", "1.5.0"))
             {
                 await srm.Initialize(default, "prod_official_asia", "F:\\CollapseData\\SRGlb\\Games\\StarRail_Data\\Persistent");
                 await srm.ReadAsbMetadataInformation(default);

@@ -7,7 +7,7 @@
     xmlns:innerConfig="using:Hi3Helper.Shared.Region"
     xmlns:local="using:CollapseLauncher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" NavigationCacheMode="Enabled" CacheMode="BitmapCache" Loaded="Page_Loaded">
     <ScrollViewer>
         <Grid Margin="32,40,32,32">
             <Grid.ColumnDefinitions>
@@ -47,8 +47,34 @@
                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.AppLang_ApplyNeedRestart}"
                                 Visibility="Collapsed" />
                         </StackPanel>
+                        <StackPanel Margin="0,10,0,16">
+                            <TextBlock
+                                Margin="0,0,0,8"
+                                Style="{ThemeResource SubtitleTextBlockStyle}"
+                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_Title}"/>
+                            <TextBlock
+                                Margin="0,0,0,10"
+                                Text="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch}"/>
+                            <ComboBox
+                                Margin="0,0,0,14"
+                                x:Name="GameLaunchedBehaviorSelector"
+                                MinWidth="256"
+                                CornerRadius="14"
+                                MaxDropDownHeight="200"
+                                SelectedIndex="{x:Bind AppGameLaunchedBehaviorIndex, Mode=TwoWay}">
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Minimize}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_ToTray}"/>
+                                <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_PostGameLaunch_Nothing}"/>
+                            </ComboBox>
+                            <ToggleSwitch
+                                Margin="0,4"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_MinimizeToTray}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"/>
+                        </StackPanel>
                         <TextBlock
-                            Margin="0,10,0,16"
+                            Margin="0,0,0,16"
                             Style="{ThemeResource SubtitleTextBlockStyle}"
                             Text="{x:Bind helper:Locale.Lang._SettingsPage.AppThemes}" />
                         <StackPanel Margin="0,-8,0,8">

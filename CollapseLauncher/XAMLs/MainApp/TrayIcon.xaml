@@ -13,13 +13,14 @@
         IconSource="ms-appx:///icon.ico"
         MenuActivation="RightClick"
         ContextMenuMode="PopupMenu"
-        DoubleClickCommand="{x:Bind ToggleAllVisibilityCommand}"
-        LeftClickCommand="{x:Bind BringToForegroundCommand}"
+        DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
+        LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
+        RightClickCommand="{x:Bind UpdateContextMenuInvokeCommand}"
     >
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem x:Name="MainTaskbarToggle" Command="{x:Bind ToggleMainVisibilityCommand}"/>
-                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle" Command="{x:Bind ToggleConsoleVisibilityCommand}" Visibility="Collapsed"/>
+                <MenuFlyoutItem x:Name="MainTaskbarToggle" Command="{x:Bind ToggleMainVisibilityButtonCommand}"/>
+                <MenuFlyoutItem x:Name="ConsoleTaskbarToggle" Command="{x:Bind ToggleConsoleVisibilityButtonCommand}" IsEnabled="False"/>
                 <MenuFlyoutSeparator/>
                 <MenuFlyoutItem x:Name="CloseButton" Command="{x:Bind CloseAppCommand}"/>
             </MenuFlyout>

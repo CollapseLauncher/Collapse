@@ -399,7 +399,14 @@
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_ResetBtn": "Reset to Default",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray"
   },
 
   "_Misc": {
@@ -425,7 +432,7 @@
     "OkaySad": "ตกลง ;-;)",
     "OkayHappy": "โอเคร (≧▽≦)ﾉ",
     "OkayBackToMenu": "โอเคร กลับไปที่เมนู",
-    "Skip": "ข้าม",
+    "Skip": "Skip, never show again",
     "Next": "ถัดไป",
     "Prev": "ก่อนหน้า",
     "Uninstall": "ถอนการติดตั้ง",
@@ -495,6 +502,8 @@
     "DiscordRP_Ad": "- สู่ Collapse Launcher",
     "DiscordRP_Region": "ภูมิภาค",
 
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Show Collapse window",
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",

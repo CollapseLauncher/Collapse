@@ -179,6 +179,13 @@ namespace CollapseLauncher.InstallManager.Genshin
             List<string> langStrings = EnumerateAudioLanguageString(asset);
             GameInstallPackage package;
 
+            // Skip if the asset doesn't have voice packs
+            if (asset.voice_packs == null || asset.voice_packs.Count == 0)
+            {
+                LogWriteLine($"Asset for version: {asset.version} doesn't have voice packs! Skipping!", LogType.Warning, true);
+                return true;
+            }
+
             // If the game has already installed or in preload, then try get Voice language ID from registry
             if (_gameInstallationStatus == GameInstallStateEnum.InstalledHavePreload
              || _gameInstallationStatus == GameInstallStateEnum.NeedsUpdate)

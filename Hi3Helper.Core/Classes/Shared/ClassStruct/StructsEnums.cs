@@ -13,8 +13,8 @@ namespace Hi3Helper.Shared.ClassStruct
     public enum AppThemeMode
     {
         Default = 0,
-        Light = 1,
-        Dark = 2,
+        Light   = 1,
+        Dark    = 2,
     }
 
     public enum GameInstallStateEnum

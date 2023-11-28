@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace CollapseLauncher.FileDialogCOM
 {
     [Flags]
-    public enum FOS : uint
+    internal enum FOS : uint
     {
         FOS_OVERWRITEPROMPT = 0x00000002,
         FOS_STRICTFILETYPES = 0x00000004,
@@ -27,28 +27,14 @@ namespace CollapseLauncher.FileDialogCOM
         FOS_DEFAULTNOMINIMODE = 0x20000000
     }
 
-    public enum FDE_SHAREVIOLATION_RESPONSE
-    {
-        FDESVR_DEFAULT = 0x00000000,
-        FDESVR_ACCEPT = 0x00000001,
-        FDESVR_REFUSE = 0x00000002
-    }
-
-    public enum FDE_OVERWRITE_RESPONSE
-    {
-        FDEOR_DEFAULT = 0x00000000,
-        FDEOR_ACCEPT = 0x00000001,
-        FDEOR_REFUSE = 0x00000002
-    }
-
-    public enum SIATTRIBFLAGS
+    internal enum SIATTRIBFLAGS
     {
         SIATTRIBFLAGS_AND = 0x00000001, // if multiple items and the attributes together.
         SIATTRIBFLAGS_OR = 0x00000002, // if multiple items or the attributes together.
         SIATTRIBFLAGS_APPCOMPAT = 0x00000003, // Call GetAttributes directly on the ShellFolder for multiple attributes 
     }
 
-    public enum SIGDN : uint
+    internal enum SIGDN : uint
     {
         SIGDN_NORMALDISPLAY = 0x00000000,           // SHGDN_NORMAL 
         SIGDN_PARENTRELATIVEPARSING = 0x80018001,   // SHGDN_INFOLDER | SHGDN_FORPARSING
