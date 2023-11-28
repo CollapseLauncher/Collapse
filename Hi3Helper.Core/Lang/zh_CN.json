@@ -399,7 +399,14 @@
 
     "KbShortcuts_Title": "快捷键",
     "KbShortcuts_ShowBtn": "显示快捷键",
-    "KbShortcuts_ResetBtn": "重置为默认"
+    "KbShortcuts_ResetBtn": "重置为默认",
+
+    "AppBehavior_Title": "应用行为",
+    "AppBehavior_PostGameLaunch": "启动游戏后",
+    "AppBehavior_PostGameLaunch_Minimize": "最小化",
+    "AppBehavior_PostGameLaunch_ToTray": "隐藏到系统托盘",
+    "AppBehavior_PostGameLaunch_Nothing": "什么也不做",
+    "AppBehavior_MinimizeToTray": "最小化到系统托盘"
   },
 
   "_Misc": {
@@ -495,6 +502,8 @@
     "DiscordRP_Ad": "- 使用 Collapse 启动器",
     "DiscordRP_Region": "区服：",
 
+    "Taskbar_PopupHelp1": "单击将 Collapse 置顶",
+    "Taskbar_PopupHelp2": "双击切换窗口可见性",
     "Taskbar_ShowApp": "显示 Collapse 窗口",
     "Taskbar_HideApp": "隐藏 Collapse 窗口到任务栏",
     "Taskbar_ShowConsole": "显示 Collapse 控制台窗口",
