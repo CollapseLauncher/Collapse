@@ -204,10 +204,16 @@ namespace Hi3Helper
         public extern static uint SetWindowLong(IntPtr hwnd, int index, uint value);
 
         [DllImport("user32.dll")]
+        public extern static IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
+
+        [DllImport("user32.dll")]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
         [DllImport("user32.dll")]
         public static extern bool DestroyWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 

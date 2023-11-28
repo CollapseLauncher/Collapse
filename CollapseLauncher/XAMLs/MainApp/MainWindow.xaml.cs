@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -164,6 +165,27 @@ namespace CollapseLauncher
 
             MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+
+            // Install WndProc hook
+            const int GWLP_WNDPROC = -4;
+            m_newWndProcDelegate = (WndProcDelegate)WndProc;
+            IntPtr pWndProc = Marshal.GetFunctionPointerForDelegate(m_newWndProcDelegate);
+            m_oldWndProc = SetWindowLongPtr(m_windowHandle, GWLP_WNDPROC, pWndProc);
+        }
+
+        private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+
+        private IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        {
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_MAXIMIZE = 0xF030;
+            if (msg == WM_SYSCOMMAND && wParam == SC_MAXIMIZE)
+            {
+                // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                // Thank you Microsoft :)
+                return 1;
+            }
+            return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }
 
         private void SetLegacyTitleBarColor()

@@ -50,6 +50,8 @@ namespace CollapseLauncher
         public static Microsoft.UI.WindowId m_windowID;
         public static Rect                  m_windowPosSize;
         public static IntPtr                m_windowHandle;
+        public static IntPtr                m_oldWndProc;
+        public static Delegate              m_newWndProcDelegate;
         public static AppWindow             m_appWindow;
         public static OverlappedPresenter   m_presenter;
         public static MainPage              m_mainPage;
