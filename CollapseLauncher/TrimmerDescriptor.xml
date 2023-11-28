@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <assembly fullname="CollapseLauncher.dll">
+    <type fullname="CollapseLauncher.PInvoke">
+      <!-- Preserve COM Interop used in project code when trimming -->
+      <method signature="System.Object CoCreateInstance(System.Guid*, System.Object, CLSCTX, System.Guid*, out System.Object)" />
+    </type>
+  </assembly>
+</linker>

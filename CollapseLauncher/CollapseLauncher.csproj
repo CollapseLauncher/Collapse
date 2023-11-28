@@ -176,6 +176,7 @@
 
 			<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
 			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+			<TrimmerRootDescriptor Include="TrimmerDescriptor.xml" />
 
 			<!--
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
