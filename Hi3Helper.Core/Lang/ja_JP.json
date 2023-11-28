@@ -399,7 +399,14 @@
 
     "KbShortcuts_Title": "キーボードショートカット",
     "KbShortcuts_ShowBtn": "ショートカット一覧",
-    "KbShortcuts_ResetBtn": "デフォルトに戻す"
+    "KbShortcuts_ResetBtn": "デフォルトに戻す",
+
+    "AppBehavior_Title": "ランチャーの挙動",
+    "AppBehavior_PostGameLaunch": "ゲーム起動後、ランチャーを",
+    "AppBehavior_PostGameLaunch_Minimize": "最小化",
+    "AppBehavior_PostGameLaunch_ToTray": "タスクトレイへ移動",
+    "AppBehavior_PostGameLaunch_Nothing": "そのまま",
+    "AppBehavior_MinimizeToTray": "最小化でタスクトレイに移動"
   },
 
   "_Misc": {
@@ -495,11 +502,13 @@
     "DiscordRP_Ad": "- Collapse Launcherから起動",
     "DiscordRP_Region": "サーバー:",
 
+    "Taskbar_PopupHelp1": "クリックでCollapseを最前面で開く",
+    "Taskbar_PopupHelp2": "ダブルクリックでウィンドウの表示/非表示を切り替え",
     "Taskbar_ShowApp": "Collapseメインウィンドウを表示",
-    "Taskbar_HideApp": "メインウィンドウをタスクバーへ最小化",
+    "Taskbar_HideApp": "ランチャーを最小化",
     "Taskbar_ShowConsole": "コンソールを表示",
-    "Taskbar_HideConsole": "コンソールをタスクバーへ最小化",
-    "Taskbar_ExitApp": "Collapseを閉じる"
+    "Taskbar_HideConsole": "コンソールを最小化",
+    "Taskbar_ExitApp": "Collapseを終了"
   },
 
   "_BackgroundNotification": {
