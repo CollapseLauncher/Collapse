@@ -70,12 +70,12 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.0.118, )",
-        "resolved": "2.0.118",
-        "contentHash": "XKKAeZcA4zq1woNkZ//78KNEa5lR6+uZ02KSzOhe5M7JOUYci8MYbBdos8HqRSnI2sVGxd5lO+MgqGHDmHgMUw==",
+        "requested": "[2.0.123, )",
+        "resolved": "2.0.123",
+        "contentHash": "5bjznDW2WeAclAFCD7pyr/QSntpS8/+XBuvPuRwnFQTSM90yCg2vlEfIl8E97or4JXTgudjgvmbT5I58RTC1eg==",
         "dependencies": {
-          "H.NotifyIcon": "2.0.118",
-          "Microsoft.WindowsAppSDK": "1.4.230822000"
+          "H.NotifyIcon": "2.0.123",
+          "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
       "ImageEx": {
@@ -95,12 +95,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
-      },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "B3etT5XQ2nlWkZGO2m/ytDYrOmSsQG1XNBaM6ZYlX5Ch/tDrMFadr0/mK6gjZwaQc55g+5+WZMw4Cz3m8VEF7g=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -334,18 +328,18 @@
       },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.0.118",
-        "contentHash": "slPrVrIEKgicjwVYgARxQw4D5EnmGD0F5Hy+QXW3WK6xJLMXFuw7FimkiZnrLQhgYbD0D2hpLO+42hAVAz+w1g==",
+        "resolved": "2.0.123",
+        "contentHash": "DUAz97UjT0FPw8s6vs7eGKX5G3VP6sgWfEJrY6OWvL4hEt24brlNofQ0+L8gCWLKxMTImJvdPNfanPmif3lkOg==",
         "dependencies": {
-          "System.Drawing.Common": "7.0.0"
+          "System.Drawing.Common": "8.0.0"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.0.118",
-        "contentHash": "Q3gIoRcYxxLfOISzRcYn9OpYUXwKxheRYjVOesL9xc5yoXC6YCel4xb95WgPt1hnXhZbjlVEJWnNiUM/o+Rpjg==",
+        "resolved": "2.0.123",
+        "contentHash": "CN439qo3oaa3rE46Xif6NDZRpVJYLHPdpeVue/iLkpzqGIen8OSn/QRngNgbr27sLkEkoLDe/xLrFxmMpFDHmQ==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.0.118"
+          "H.GeneratedIcons.System.Drawing": "2.0.123"
         }
       },
       "Microsoft.CSharp": {

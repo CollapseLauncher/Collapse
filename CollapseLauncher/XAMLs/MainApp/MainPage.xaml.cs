@@ -1393,6 +1393,13 @@ namespace CollapseLauncher
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
                 }
 
+                KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator()
+                {
+                    Key = VirtualKey.F5
+                };
+                keystrokeF5.Invoked += KeystrokeF5_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(keystrokeF5);
+
                 List<KeybindAction> actions = new()
                 {
                     // General
@@ -1429,6 +1436,13 @@ namespace CollapseLauncher
                 KeyList = null;
                 CreateKeyboardShortcutHandlers();
             }
+        }
+
+        private void KeystrokeF5_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel))
+                return;
+            ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
         }
 
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();

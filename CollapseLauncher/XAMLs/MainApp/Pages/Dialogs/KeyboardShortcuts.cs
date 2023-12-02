@@ -48,7 +48,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5 });
-
+                        
             string gameMod = keys[0][0];
             string regionMod = keys[1][0];
 
@@ -76,6 +76,7 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             changeStack.Children.Add(GenerateShortcutBlock(keys[0], Lang._KbShortcuts.Switch_ChangeGame, string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc, gameMod), false));
             changeStack.Children.Add(GenerateShortcutBlock(keys[1], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false));
+            changeStack.Children.Add(GenerateShortcutBlock(new List<string> { "F5" }, Lang._KbShortcuts.Switch_ReloadRegion, Lang._KbShortcuts.Switch_ReloadRegion_Desc));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -180,9 +181,10 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal
             };
 
-            List<string> dataKeys = new List<string> { kbKeys[0], kbKeys[1], description, pageNum.ToString() };
-            if (enableSwapButton)
+            
+            if (enableSwapButton && kbKeys.Count > 1)
             {
+                List<string> dataKeys = new List<string> { kbKeys[0], kbKeys[1], description, pageNum.ToString() };
                 Button shortcutSwap = new Button()
                 {
                     Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },

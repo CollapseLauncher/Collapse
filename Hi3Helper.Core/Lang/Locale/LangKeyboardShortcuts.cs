@@ -29,6 +29,8 @@
                 public string Switch_ChangeGame_Desc { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeGame_Desc;
                 public string Switch_ChangeRegion { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeRegion;
                 public string Switch_ChangeRegion_Desc { get; set; } = LangFallback?._KbShortcuts.Switch_ChangeRegion_Desc;
+                public string Switch_ReloadRegion { get; set; } = LangFallback?._KbShortcuts.Switch_ReloadRegion;
+                public string Switch_ReloadRegion_Desc { get; set; } = LangFallback?._KbShortcuts.Switch_ReloadRegion_Desc;
 
                 public string GameFolder_Title { get; set; } = LangFallback?._KbShortcuts.GameFolder_Title;
                 public string GameFolder_ScreenshotFolder { get; set; } = LangFallback?._KbShortcuts.GameFolder_ScreenshotFolder;
