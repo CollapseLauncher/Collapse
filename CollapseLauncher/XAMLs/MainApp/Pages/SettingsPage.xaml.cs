@@ -326,6 +326,7 @@ namespace CollapseLauncher.Pages
             taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
             taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
             taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
+            taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
             taskDefinition.Settings.Enabled             = false;
             taskDefinition.Triggers.Add(new LogonTrigger());
             taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
