@@ -316,7 +316,7 @@ namespace CollapseLauncher.Pages
                 HerLegacy.Visibility = Visibility.Visible;
         }
 
-        private void CreateScheduledTask(string taskName)
+        private Task CreateScheduledTask(string taskName)
         {
             string collapseStartupTarget = FindCollapseStubPath();
 
@@ -330,8 +330,9 @@ namespace CollapseLauncher.Pages
             taskDefinition.Triggers.Add(new LogonTrigger());
             taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget, null, null));
 
-            TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+            Task task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
             taskDefinition.Dispose();
+            return task;
         }
 
         public string FindCollapseStubPath()
@@ -680,7 +681,7 @@ namespace CollapseLauncher.Pages
                 using TaskService ts = new TaskService();
 
                 Task task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool value = task.Definition.Settings.Enabled;
                 task.Dispose();
@@ -711,7 +712,7 @@ namespace CollapseLauncher.Pages
                 using TaskService ts = new TaskService();
 
                 Task task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) CreateScheduledTask(_collapseStartupTaskName);
+                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
 
                 bool? value = false;
                 if (task.Definition.Actions[0] is ExecAction execAction)
