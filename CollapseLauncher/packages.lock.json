@@ -96,12 +96,6 @@
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
       },
-      "Microsoft.NET.ILLink.Tasks": {
-        "type": "Direct",
-        "requested": "[8.0.0, )",
-        "resolved": "8.0.0",
-        "contentHash": "B3etT5XQ2nlWkZGO2m/ytDYrOmSsQG1XNBaM6ZYlX5Ch/tDrMFadr0/mK6gjZwaQc55g+5+WZMw4Cz3m8VEF7g=="
-      },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
         "requested": "[2.0.4, )",

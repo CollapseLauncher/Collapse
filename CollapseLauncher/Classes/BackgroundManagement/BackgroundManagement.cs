@@ -31,9 +31,7 @@ namespace CollapseLauncher
         private bool BGLastState = true;
         private bool IsFirstStartup = true;
 
-        internal async void ChangeBackgroundImageAsRegionAsync() => await ChangeBackgroundImageAsRegion().ConfigureAwait(false);
-
-        private async Task ChangeBackgroundImageAsRegion(bool ShowLoadingMsg = false)
+        internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             if (IsCustomBG)
@@ -53,8 +51,9 @@ namespace CollapseLauncher
             {
                 BackgroundImgChanger.ChangeBackground(regionBackgroundProp.imgLocalPath, IsCustomBG);
                 await BackgroundImgChanger.WaitForBackgroundToLoad();
-                IsFirstStartup = false;
             }
+
+            IsFirstStartup = false;
 
             ReloadPageTheme(this, ConvertAppThemeToElementTheme(CurrentAppTheme));
         }
@@ -271,82 +270,89 @@ namespace CollapseLauncher
             return new Bitmap(image.AsStream());
         }
 
-        private async void ApplyBackgroundAsync() => await ApplyBackground();
-
-        private async Task ApplyBackground()
+        private async Task ApplyBackground(bool IsFirstStartup)
         {
-            BackgroundBackBuffer.Source = BackgroundBitmap;
-
             uint Width = (uint)((double)m_actualMainFrameSize.Width * 1.5 * m_appDPIScale);
             uint Height = (uint)((double)m_actualMainFrameSize.Height * 1.5 * m_appDPIScale);
 
             FileStream stream = new FileStream(regionBackgroundProp.imgLocalPath, FileMode.Open, FileAccess.Read);
 
-            (PaletteBitmap, BackgroundBitmap) = await GetResizedBitmap(stream, Width, Height);
+            BitmapImage ReplacementBitmap;
+            (PaletteBitmap, ReplacementBitmap) = await GetResizedBitmap(stream, Width, Height);
 
             ApplyAccentColor(this, PaletteBitmap, regionBackgroundProp.imgLocalPath);
 
-            FadeOutFrontBg();
-            FadeOutBackBg();
+            if (!IsFirstStartup)
+                FadeSwitchAllBg(0.125f, ReplacementBitmap);
+            else
+                FadeInAllBg(0.125f, ReplacementBitmap);
         }
 
-        private async void FadeOutFrontBg()
+        private async void FadeInAllBg(double duration, BitmapImage ReplacementImage)
         {
-            BackgroundFront.Source = BackgroundBitmap;
-            BackgroundFrontBuffer.Visibility = Visibility.Visible;
+            Storyboard storyBefore = new Storyboard();
+            AddDoubleAnimationFadeToObject(BackgroundFrontBuffer, "Opacity", 0.125, BackgroundFrontBuffer.Opacity, 0f, ref storyBefore);
+            AddDoubleAnimationFadeToObject(BackgroundBackBuffer, "Opacity", 0.125, BackgroundBackBuffer.Opacity, 0f, ref storyBefore);
+            AddDoubleAnimationFadeToObject(BackgroundFront, "Opacity", 0.125, BackgroundFront.Opacity, 0f, ref storyBefore);
+            AddDoubleAnimationFadeToObject(BackgroundBack, "Opacity", 0.125, BackgroundBack.Opacity, 0f, ref storyBefore);
+            storyBefore.Begin();
+            await Task.Delay(250);
 
-            double dur = 0.125;
-            Storyboard storyBufFront = new Storyboard();
+            BackgroundBack.Source = ReplacementImage;
+            BackgroundFront.Source = ReplacementImage;
 
-            DoubleAnimation OpacityBufFront = new DoubleAnimation();
-            OpacityBufFront.Duration = new Duration(TimeSpan.FromSeconds(dur));
+            Storyboard storyAfter = new Storyboard();
+            if (m_appMode != AppMode.Hi3CacheUpdater)
+                AddDoubleAnimationFadeToObject(BackgroundFront, "Opacity", duration, 0f, 1f, ref storyAfter);
+            AddDoubleAnimationFadeToObject(BackgroundBack, "Opacity", duration, 0f, 1f, ref storyAfter);
+            storyAfter.Begin();
+            await Task.Delay((int)(duration * 1000));
 
-            OpacityBufFront.From = 1; OpacityBufFront.To = 0;
+            BackgroundBitmap = ReplacementImage;
+        }
 
-            Storyboard.SetTarget(OpacityBufFront, BackgroundFrontBuffer);
-            Storyboard.SetTargetProperty(OpacityBufFront, "Opacity");
-            storyBufFront.Children.Add(OpacityBufFront);
+        private async void FadeSwitchAllBg(double duration, BitmapImage ReplacementImage)
+        {
+            Storyboard storyBuf = new Storyboard();
+
+            BackgroundBackBuffer.Source = BackgroundBitmap;
+            BackgroundBackBuffer.Opacity = 1f;
+
+            BackgroundFrontBuffer.Source = BackgroundBitmap;
+            if (m_appCurrentFrameName == "HomePage")
+            {
+                BackgroundFrontBuffer.Opacity = 1f;
+            }
+
+            BackgroundBack.Opacity = 1f;
 
             if (m_appCurrentFrameName == "HomePage")
             {
-                storyBufFront.Begin();
+                BackgroundFront.Opacity = 1f;
+                AddDoubleAnimationFadeToObject(BackgroundFrontBuffer, "Opacity", duration, 1, 0, ref storyBuf);
             }
 
-            await Task.Delay((int)(dur * 1000));
-            BackgroundFrontBuffer.Visibility = Visibility.Collapsed;
+            AddDoubleAnimationFadeToObject(BackgroundBackBuffer, "Opacity", duration, 1, 0, ref storyBuf);
+            BackgroundBack.Source = ReplacementImage;
+            BackgroundFront.Source = ReplacementImage;
 
-            BackgroundFrontBuffer.Source = BackgroundBitmap;
+            storyBuf.Begin();
+            await Task.Delay((int)duration * 1000);
+
+            BackgroundBitmap = ReplacementImage;
         }
 
-        private async void FadeOutBackBg()
+        private void AddDoubleAnimationFadeToObject<T>(T objectToAnimate, string targetProperty,
+            double duration, double valueFrom, double valueTo, ref Storyboard storyboard)
+            where T : DependencyObject
         {
-            BackgroundBack.Source = BackgroundBitmap;
+            DoubleAnimation Animation = new DoubleAnimation();
+            Animation.Duration = new Duration(TimeSpan.FromSeconds(duration));
+            Animation.From = valueFrom; Animation.To = valueTo;
 
-            BackgroundBack.Opacity = 0;
-
-            double dur = 0.125;
-            Storyboard storyBufBack = new Storyboard();
-            Storyboard storyBgBack = new Storyboard();
-
-            DoubleAnimation OpacityBufBack = new DoubleAnimation();
-            OpacityBufBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
-            DoubleAnimation OpacityBgBack = new DoubleAnimation();
-            OpacityBgBack.Duration = new Duration(TimeSpan.FromSeconds(dur));
-
-            OpacityBufBack.From = 1; OpacityBufBack.To = 0;
-            OpacityBgBack.From = 0; OpacityBgBack.To = 1;
-
-            Storyboard.SetTarget(OpacityBufBack, BackgroundBackBuffer);
-            Storyboard.SetTargetProperty(OpacityBufBack, "Opacity");
-            storyBufBack.Children.Add(OpacityBufBack);
-            Storyboard.SetTarget(OpacityBgBack, BackgroundBack);
-            Storyboard.SetTargetProperty(OpacityBgBack, "Opacity");
-            storyBgBack.Children.Add(OpacityBgBack);
-
-            storyBufBack.Begin();
-            storyBgBack.Begin();
-
-            await Task.Delay((int)(dur * 1000));
+            Storyboard.SetTarget(Animation, objectToAnimate);
+            Storyboard.SetTargetProperty(Animation, targetProperty);
+            storyboard.Children.Add(Animation);
         }
 
         private async void HideLoadingPopup(bool hide, string title, string subtitle)
@@ -410,9 +416,12 @@ namespace CollapseLauncher
                 OpacityAnimationBack.To = hideImage ? 0.4 : 1;
                 OpacityAnimationBack.Duration = new Duration(TimeSpan.FromSeconds(0.25));
 
-                Storyboard.SetTarget(OpacityAnimation, BackgroundFront);
-                Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
-                storyboardFront.Children.Add(OpacityAnimation);
+                if (!IsFirstStartup)
+                {
+                    Storyboard.SetTarget(OpacityAnimation, BackgroundFront);
+                    Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
+                    storyboardFront.Children.Add(OpacityAnimation);
+                }
 
                 Storyboard.SetTarget(OpacityAnimationBack, Background);
                 Storyboard.SetTargetProperty(OpacityAnimationBack, "Opacity");

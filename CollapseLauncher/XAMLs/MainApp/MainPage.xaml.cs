@@ -396,7 +396,7 @@ namespace CollapseLauncher
 
             try
             {
-                await RunApplyBackgroundTask();
+                await RunApplyBackgroundTask(IsFirstStartup);
             }
             catch (Exception ex)
             {
@@ -439,13 +439,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Background Tasks
-        private async Task RunApplyBackgroundTask()
-        {
-            if (IsFirstStartup)
-                await ApplyBackground();
-            else
-                ApplyBackgroundAsync();
-        }
+        private async Task RunApplyBackgroundTask(bool IsFirstStartup) => await ApplyBackground(IsFirstStartup);
 
         private async void RunBackgroundCheck()
         {

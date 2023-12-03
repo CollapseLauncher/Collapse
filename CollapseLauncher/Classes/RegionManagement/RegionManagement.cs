@@ -83,12 +83,10 @@ namespace CollapseLauncher
                 return false;
             }
 
-            // Finalize Region Load
-            if (IsInitialStartUp)
-                await ChangeBackgroundImageAsRegion(false);
-            else
-                ChangeBackgroundImageAsRegionAsync();
+            // Load the background image asynchronously
+            ChangeBackgroundImageAsRegionAsync();
 
+            // Finalize Region Load
             FinalizeLoadRegion(preset);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
@@ -182,17 +180,39 @@ namespace CollapseLauncher
 
         private async ValueTask DownloadBackgroundImage(CancellationToken Token)
         {
-            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+            // Get and set the current path of the image
+            string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
+            string backgroundFileName = Path.GetFileName(regionBackgroundProp.data.adv.background);
+            regionBackgroundProp.imgLocalPath = Path.Combine(backgroundFolder, backgroundFileName);
             SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
 
-            if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
-                Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
+            // Check if the background folder exist
+            if (!Directory.Exists(backgroundFolder))
+                Directory.CreateDirectory(backgroundFolder);
 
+            // Initialize the FileInfo and check
+            bool isFileExist = false;
             FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
 
-            if (fI.Exists && fI.Length >= 1 << 20) return;
+            // Try get the prop file which includes the background filename + the suggested size provided
+            // by the network stream if it has been downloaded before
+            string propFilePath = Directory.EnumerateFiles(backgroundFolder, $"{backgroundFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            // Check if the file is found (not null), then try parse the information
+            if (!string.IsNullOrEmpty(propFilePath))
+            {
+                // Try split the filename into a segment by # char
+                string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+                // Assign the check if the condition met and set the file existence status
+                isFileExist = propSegment.Length >= 2
+                           && long.TryParse(propSegment[1], null, out long suggestedSize)
+                           && fI.Exists && fI.Length == suggestedSize;
+            }
 
-            await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionBackgroundProp.data.adv.background, Token))
+            // If the file and all the condition above met, then return
+            if (isFileExist) return;
+
+            // If not, then try get the remote stream and download the file
+            using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionBackgroundProp.data.adv.background, Token);
             using (Stream outStream = fI.Open(new FileStreamOptions()
             {
                 Access = FileAccess.Write,
@@ -201,6 +221,11 @@ namespace CollapseLauncher
                 Options = FileOptions.Asynchronous
             }))
             {
+                // Create the prop file for download completeness checking
+                propFilePath = Path.Combine(backgroundFolder, $"{backgroundFileName}#{netStream.Length}");
+                File.Create(propFilePath).Dispose();
+
+                // Copy (and download) the remote streams to local
                 await netStream.CopyToAsync(outStream, Token);
             }
         }

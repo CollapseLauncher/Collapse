@@ -15,7 +15,7 @@
         <ListView x:Name="KeyboardHandler"/>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
-        <Grid x:Name="Background" Visibility="Collapsed">
+        <Grid x:Name="Background">
             <Image x:Name="BackgroundBack" Source="ms-appx:///Assets/Images/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
             <Image x:Name="BackgroundBackBuffer" Source="ms-appx:///Assets/Images/default.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
         </Grid>
