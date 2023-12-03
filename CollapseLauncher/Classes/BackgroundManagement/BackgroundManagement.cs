@@ -369,14 +369,19 @@ namespace CollapseLauncher
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 1;
                 OpacityAnimation.To = 0;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
 
                 Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
                 Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
                 storyboard.Children.Add(OpacityAnimation);
 
                 storyboard.Begin();
-                await Task.Delay(250 * 2);
+
+                Thickness lastMargin = LoadingPopupPill.Margin;
+                lastMargin.Bottom = -72;
+                LoadingPopupPill.Margin = lastMargin;
+
+                await Task.Delay(125 * 2);
                 LoadingPopup.Visibility = Visibility.Collapsed;
                 LoadingCancelBtn.Visibility = Visibility.Collapsed;
             }
@@ -389,13 +394,18 @@ namespace CollapseLauncher
                 DoubleAnimation OpacityAnimation = new DoubleAnimation();
                 OpacityAnimation.From = 0;
                 OpacityAnimation.To = 1;
-                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.25));
+                OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.125));
 
                 Storyboard.SetTarget(OpacityAnimation, LoadingPopup);
                 Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
                 storyboard.Children.Add(OpacityAnimation);
-
                 storyboard.Begin();
+
+                await Task.Delay(125);
+
+                Thickness lastMargin = LoadingPopupPill.Margin;
+                lastMargin.Bottom = 28;
+                LoadingPopupPill.Margin = lastMargin;
             }
         }
 

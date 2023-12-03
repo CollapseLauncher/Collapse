@@ -45,6 +45,9 @@
                       Visibility="Collapsed" Opacity="0" Background="{ThemeResource LoadingGradientBG}">
                     <Grid x:Name="LoadingPopupPill" Background="{ThemeResource LoadingPopupGridBrush}" Margin="28" CornerRadius="8"
                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="47" Shadow="{ThemeResource SharedShadow}">
+                        <Grid.Transitions>
+                            <RepositionThemeTransition/>
+                        </Grid.Transitions>
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="8" HorizontalAlignment="Center">
                             <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="16,-2,16,0">
                                 <TextBlock x:Name="LoadingTitle" Text="Loading Region" Margin="0,0,8,0" Foreground="{ThemeResource DefaultFGColorAccentBrush}"
