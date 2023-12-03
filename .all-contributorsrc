@@ -1,4 +1,23 @@
 {
-  "projectName": "Collapse Launcher",
-  "projectOwner": "neon-nyan"
+  "projectName": "Collapse",
+  "projectOwner": "CollapseLauncher",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "Cryotechnic",
+      "name": "Ron Friedman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9833218?v=4",
+      "profile": "https://ronfriedman.dev",
+      "contributions": [
+        "code",
+        "maintenance",
+        "review"
+      ]
+    }
+  ]
 }
