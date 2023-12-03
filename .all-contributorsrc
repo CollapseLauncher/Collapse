@@ -1,6 +1,8 @@
 {
-  "projectName": "Collapse",
-  "projectOwner": "CollapseLauncher",
+  "projectName": "Collapse Launcher",
+  "projectOwner": "neon-nyan",
+  "skipCi": true,
+  "commit": true,
   "files": [
     "README.md"
   ],
@@ -8,6 +10,19 @@
   "commitConvention": "angular",
   "contributorsPerLine": 7,
   "contributors": [
+    {
+      "login": "neon-nyan",
+      "name": "Kemal Setya Adhi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30566970?v=4",
+      "profile": "https://prophost.ironmaid.xyz",
+      "contributions": [
+        "code",
+        "design",
+        "mentoring",
+        "maintenance",
+        "review"
+      ]
+    },
     {
       "login": "Cryotechnic",
       "name": "Ron Friedman",
