@@ -1442,6 +1442,8 @@ namespace CollapseLauncher
         {
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel))
                 return;
+
+            RestoreCurrentRegion();
             ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
         }
 
@@ -1458,10 +1460,27 @@ namespace CollapseLauncher
             catch { }
         }
 
+        private void RestoreCurrentRegion()
+        {
+            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+
+            if (!GetConfigV2Regions(GameCategory))
+                GameCategory = ConfigV2GameCategory.FirstOrDefault();
+
+            int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
+            if (IndexCategory < 0) IndexCategory = 0;
+
+            int IndexRegion = GetPreviousGameRegion(GameCategory);
+
+            ComboBoxGameCategory.SelectedIndex = IndexCategory;
+            ComboBoxGameRegion.SelectedIndex = IndexRegion;
+        }
+
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            RestoreCurrentRegion();
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
                 return;
 
@@ -1480,6 +1499,7 @@ namespace CollapseLauncher
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            RestoreCurrentRegion();
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
                 return;
             
