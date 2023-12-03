@@ -1452,7 +1452,6 @@ namespace CollapseLauncher
                     ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
                     return;
                 case "settings":
-                    Navigate(typeof(SettingsPage), "settings");
                     return;
                 default:
                     string Tag = PreviousTag;
