@@ -1,6 +1,8 @@
 {
-  "projectName": "Collapse",
-  "projectOwner": "CollapseLauncher",
+  "projectName": "Collapse Launcher",
+  "projectOwner": "neon-nyan",
+  "skipCi": true,
+  "commit": true,
   "files": [
     "README.md"
   ],
