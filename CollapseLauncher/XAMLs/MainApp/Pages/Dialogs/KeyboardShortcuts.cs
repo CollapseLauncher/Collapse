@@ -41,6 +41,7 @@ namespace CollapseLauncher.Dialogs
             genStack.Children.Add(GenerateShortcutBlock(keys[3], Lang._KbShortcuts.General_GoHome));
             genStack.Children.Add(GenerateShortcutBlock(keys[4], Lang._KbShortcuts.General_GoSettings));
             genStack.Children.Add(GenerateShortcutBlock(keys[5], Lang._KbShortcuts.General_OpenNotifTray));
+            genStack.Children.Add(GenerateShortcutBlock(keys[13], Lang._KbShortcuts.Switch_ReloadRegion, Lang._KbShortcuts.Switch_ReloadRegion_Desc));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -76,7 +77,6 @@ namespace CollapseLauncher.Dialogs
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 8, 0, 8) });
             changeStack.Children.Add(GenerateShortcutBlock(keys[0], Lang._KbShortcuts.Switch_ChangeGame, string.Format(Lang._KbShortcuts.Switch_ChangeGame_Desc, gameMod), false));
             changeStack.Children.Add(GenerateShortcutBlock(keys[1], Lang._KbShortcuts.Switch_ChangeRegion, string.Format(Lang._KbShortcuts.Switch_ChangeRegion_Desc, regionMod), false));
-            changeStack.Children.Add(GenerateShortcutBlock(new List<string> { "F5" }, Lang._KbShortcuts.Switch_ReloadRegion, Lang._KbShortcuts.Switch_ReloadRegion_Desc));
             changeStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -557,7 +557,7 @@ namespace CollapseLauncher.Dialogs
                     new List<string> { "Ctrl", "1 - 3" },   // Game selection
                     new List<string> { "Shift", "1 - 6" },  // Region selection
 
-                    new List<string> { "Ctrl", "Tab" },     // Keybind menu
+                    new List<string> { "Ctrl", "Tab" },     // Keyboard shortcuts menu
                     new List<string> { "Ctrl", "H" },       // Home page
                     new List<string> { "Ctrl", "S" },       // Settings page
                     new List<string> { "Ctrl", "Q" },       // Notification panel
@@ -569,7 +569,9 @@ namespace CollapseLauncher.Dialogs
 
                     new List<string> { "Shift", "R" },      // Repair page
                     new List<string> { "Shift", "S" },      // Game settings page
-                    new List<string> { "Shift", "C" }       // Caches page
+                    new List<string> { "Shift", "C" },      // Caches page
+
+                    new List<string> { "Ctrl", "R" }        // Reload region
 
                 };
 
@@ -604,7 +606,9 @@ namespace CollapseLauncher.Dialogs
 
                 if (resultList.Count < defaultKeyList.Count)
                 {
-                    resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, defaultKeyList.Count - resultList.Count));
+                    int newKeyCount = defaultKeyList.Count - resultList.Count;
+                    resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, newKeyCount));
+                    KeyList = resultList;
                 }
 
                 return resultList;

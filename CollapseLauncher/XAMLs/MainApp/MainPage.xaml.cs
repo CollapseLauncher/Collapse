@@ -1397,7 +1397,7 @@ namespace CollapseLauncher
                 {
                     Key = VirtualKey.F5
                 };
-                keystrokeF5.Invoked += KeystrokeF5_Invoked;
+                keystrokeF5.Invoked += RefreshPage_Invoked;
                 KeyboardHandler.KeyboardAccelerators.Add(keystrokeF5);
 
                 List<KeybindAction> actions = new()
@@ -1416,7 +1416,9 @@ namespace CollapseLauncher
 
                     GoGameRepir_Invoked,
                     GoGameSettings_Invoked,
-                    GoGameCaches_Invoked
+                    GoGameCaches_Invoked,
+
+                    RefreshPage_Invoked
                 };
 
                 foreach (KeybindAction func in actions)
@@ -1438,13 +1440,26 @@ namespace CollapseLauncher
             }
         }
 
-        private void KeystrokeF5_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void RefreshPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel))
                 return;
 
-            RestoreCurrentRegion();
-            ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
+            switch (PreviousTag)
+            {
+                case "launcher":
+                    RestoreCurrentRegion();
+                    ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
+                    return;
+                case "settings":
+                    Navigate(typeof(SettingsPage), "settings");
+                    return;
+                default:
+                    string Tag = PreviousTag;
+                    PreviousTag = "Empty";
+                    NavigateInnerSwitch(Tag);
+                    return;
+            }
         }
 
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();

@@ -945,8 +945,8 @@
     "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
-    "Switch_ReloadRegion": "Reload region",
-    "Switch_ReloadRegion_Desc": "Use this shortcut if the background image did not load correctly or if you want to update the event panel.",
+    "Switch_ReloadRegion": "Reload current page",
+    "Switch_ReloadRegion_Desc": "Tip: Pressing F5 is an alternative to this shortcut.",
 
     "GameFolder_Title": "Game Folder Access",
     "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
