@@ -1495,11 +1495,7 @@ namespace CollapseLauncher.Pages
                     {
                         while (!reader.EndOfStream)
                         {
-#if NET7_0_OR_GREATER
                             line = await reader.ReadLineAsync(WatchOutputLog.Token);
-#else
-                            line = await reader.ReadLineAsync();
-#endif
                             if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                             {
                                 StartExclusiveWindowPayload();
