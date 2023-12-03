@@ -1457,6 +1457,8 @@ namespace CollapseLauncher
                     string Tag = PreviousTag;
                     PreviousTag = "Empty";
                     NavigateInnerSwitch(Tag);
+                    LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
+                    PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
                     return;
             }
         }

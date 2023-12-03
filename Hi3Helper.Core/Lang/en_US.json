@@ -946,7 +946,7 @@
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
     "Switch_ReloadRegion": "Reload current page",
-    "Switch_ReloadRegion_Desc": "Tip: Pressing F5 is an alternative to this shortcut.",
+    "Switch_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.",
 
     "GameFolder_Title": "Game Folder Access",
     "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
