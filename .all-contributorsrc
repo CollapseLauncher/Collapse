@@ -22,6 +22,17 @@
         "maintenance",
         "review"
       ]
+    },
+    {
+      "login": "Cryotechnic",
+      "name": "Ron Friedman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9833218?v=4",
+      "profile": "https://ronfriedman.dev",
+      "contributions": [
+        "code",
+        "maintenance",
+        "review"
+      ]
     }
   ]
 }
