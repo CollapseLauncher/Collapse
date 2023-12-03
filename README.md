@@ -225,3 +225,14 @@ Supporting is never an obligation but is always appreciated and motivates us to 
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
