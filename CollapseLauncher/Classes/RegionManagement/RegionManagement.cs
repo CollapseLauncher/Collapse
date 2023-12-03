@@ -125,13 +125,7 @@ namespace CollapseLauncher
                 CancellationTokenSource oldToken = InnerTokenSource;
 
                 // Assign new cancellation token source
-                // Try cancelling and disposing the old token source
                 InnerTokenSource = new CancellationTokenSource(); // Assign the new token
-                if (oldToken != null)
-                {
-                    await oldToken?.CancelAsync(); // Cancel and await the token source cancellation
-                    oldToken?.Dispose(); // Try disposing a previous
-                }
 
                 // Watch for timeout
                 WatchAndCancelIfTimeout(InnerTokenSource, CurrentTimeout);
@@ -155,12 +149,10 @@ namespace CollapseLauncher
                 }
                 catch (OperationCanceledException)
                 {
-                    if (oldToken != null && (oldToken?.IsCancellationRequested ?? false)) return false; // To avoid another session using the old token re-throwing cancellation exception more than once.
                     CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
                 }
                 catch (Exception ex)
                 {
-                    if (oldToken != null && (oldToken?.IsCancellationRequested ?? false)) return false; // To avoid another session using the old token re-throwing cancellation exception more than once.
                     CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
                 }
 
