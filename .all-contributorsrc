@@ -1,4 +1,25 @@
 {
-  "projectName": "Collapse Launcher",
-  "projectOwner": "neon-nyan"
+  "projectName": "Collapse",
+  "projectOwner": "CollapseLauncher",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "neon-nyan",
+      "name": "Kemal Setya Adhi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30566970?v=4",
+      "profile": "https://prophost.ironmaid.xyz",
+      "contributions": [
+        "code",
+        "design",
+        "mentoring",
+        "maintenance",
+        "review"
+      ]
+    }
+  ]
 }
