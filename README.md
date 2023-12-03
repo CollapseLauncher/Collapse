@@ -231,6 +231,13 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://ronfriedman.dev"><img src="https://avatars.githubusercontent.com/u/9833218?v=4?s=100" width="100px;" alt="Ron Friedman"/><br /><sub><b>Ron Friedman</b></sub></a><br /><a href="#code-Cryotechnic" title="Code">💻</a> <a href="#maintenance-Cryotechnic" title="Maintenance">🚧</a> <a href="#review-Cryotechnic" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
