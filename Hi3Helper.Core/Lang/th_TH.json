@@ -54,7 +54,7 @@
 
   "_UnhandledExceptionPage": {
     "UnhandledTitle1": "ข้อผิดพลาดที่ไม่ได้จัดการ",
-    "UnhandledSubtitle1": "เกิดข้อผิดพลาดที่ไม่ได้รับการจัดการขึ้น พร้อมกับการ Exception ด้านล่าง:",
+    "UnhandledSubtitle1": "เกิดข้อผิดพลาดที่ไม่ได้รับการจัดการขึ้น พร้อมกับ ข้อยกเว้น ด้านล่าง:",
     "UnhandledTitle2": "ปัญหาการเชื่อมต่อ",
     "UnhandledSubtitle2": "อ๊ะ ดูเหมือนว่าคุณได้ตัดการเชื่อมต่ออินเทอร์เน็ตไปแล้วนะ~ หรือเกิดอะไรขึ้นอีกหรือเปล่า?",
     "UnhandledTitle3": "เกมหยุดทำงาน",
@@ -72,7 +72,7 @@
     "RegionChangeWarnExper1": "เกมนี้กำลังอยู่ใน {0} ใช้ด้วยความเสี่ยงของคุณเอง!",
     "RegionLoadingTitle": "กำลังโหลดภูมิภาค",
     "RegionLoadingAPITitle1": "กำลังโหลด",
-    "RegionLoadingAPITitle2": "Launcher API",
+    "RegionLoadingAPITitle2": "Launcher เอพีไอ",
     "RegionLoadingSubtitleTimeOut": "การกระทำหมดเวลา (> {1} วินาที) กำลังลองโหลดภูมิภาค {0} อีกครั้ง...",
     "RegionLoadingSubtitleTooLong": "การดำเนินการนี้ใช้เวลานานกว่าที่คาดไว้... โปรดตรวจสอบให้แน่ใจว่าการเชื่อมต่ออินเทอร์เน็ตของคุณมีความเสถียร!",
     "NavCtrlTitleSettings": "การตั้งค่าแอปพลิเคชั่น",
@@ -175,7 +175,7 @@
     "RepairBtn2Quick": "ตรวจสอบด่วน",
     "RepairBtn2QuickDesc": "วิธีนี้จะตรวจสอบขนาดไฟล์และความพร้อมใช้งานเท่านั้น โปรดใช้ 'ตรวจสอบทั้งหมด' หากคุณต้องการตรวจสอบความสมบูรณ์ของไฟล์",
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณสมบัตินี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคที่เลือกหรือจำเป็นต้องอัปเดต!",
-    "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้า game's launcher!",
+    "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้า ตัวเรียกใช้เกม!",
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!"
   },
@@ -201,11 +201,11 @@
     "CachesBtn1": "อัปเดตแคช",
     "CachesBtn2": "เช็คด่วน",
     "CachesBtn2Full": "ตรวจสอบเต็มรูปแบบ",
-    "CachesBtn2FullDesc": "วิธีนี้ตรวจสอบ checksum/integrity ของแคช, ขนาดและความพร้อมเท่านั้น กรุณาใช้ \"ตรวจสอบเต็มรูปแบบ\" หากคุณต้องการตรวจสอบความสมบูรณ์ของไฟล์",
+    "CachesBtn2FullDesc": "วิธีนี้ตรวจสอบ ค่ายืนยัน/ความสมบูรณ์ ของแคช, ขนาดและความพร้อมเท่านั้น กรุณาใช้ \"ตรวจสอบเต็มรูปแบบ\" หากคุณต้องการตรวจสอบความสมบูรณ์ของไฟล์",
     "CachesBtn2Quick": "เช็คด่วน",
     "CachesBtn2QuickDesc": "วิธีนี้ตรวจสอบขนาดและความพร้อมของแคชเท่านั้น กรุณาใช้ \"ตรวจสอบเต็มรูปแบบ\" หากคุณต้องการตรวจสอบความสมบูรณ์ของแคช",
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณลักษณะนี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคหรือต้องการอัปเดต!",
-    "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้า game's launcher!",
+    "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้า ตัวเรียกใช้เกม!",
     "OverlayGameRunningTitle": "เกมกำลังเปิดอยู่!",
     "OverlayGameRunningSubtitle": "โปรดปิดเกมก่อนเพื่อใช้คุณสมบัตินี้!"
   },
@@ -227,7 +227,7 @@
     "Graphics_ResCustomW": "กว้าง",
     "Graphics_ResCustomH": "สูง",
 
-    "Graphics_FPSPanel": "FPS สูงสุด",
+    "Graphics_FPSPanel": "เฟรมเรท สูงสุด",
     "Graphics_FPSInCombat": "ในการต่อสู้",
     "Graphics_FPSInMenu": "หน้าหลัก",
 
@@ -247,11 +247,11 @@
     "Graphics_FXHDR": "HDR",
     "Graphics_FXHQ": "คุณภาพสูง",
     "Graphics_FXAA": "FXAA",
-    "Graphics_FXDistort": "Distortion",
+    "Graphics_FXDistort": "การบิดเบือน",
 
     "Graphics_APHO2Panel": "APHO2 และการตั้งค่ากราฟิกตอนใหม่",
     "Graphics_APHO2GI": "แสงสะท้อนทั่วไป",
-    "Graphics_APHO2VL": "Volumetric Lighting",
+    "Graphics_APHO2VL": "แสงสว่างตามปริมาตร",
     "Graphics_APHO2AO": "แสงเงาระหว่างวัตถุในฉาก",
     "Graphics_APHO2LOD": "ระดับความละเอียด",
 
@@ -286,7 +286,7 @@
 
     "RegImportExport": "นำเข้า / ส่งออก Registry",
     "RegExportTitle": "ส่งออก",
-    "RegExportTooltip": "Export Registry ไปยัง Collapse Registry ไฟล์",
+    "RegExportTooltip": "ส่งออก Registry ไปยังไฟล์ Collapse Registry",
     "RegImportTitle": "นําเข้า",
     "RegImportTooltip": "นำเข้า Registry จากไฟล์ Collapse Registry",
 
@@ -303,13 +303,13 @@
     "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "เพิ่มลำดับความสำคัญของเกม [Experimental]"
   },
 
   "_SettingsPage": {
     "PageTitle": "การตั้งค่าแอปพลิเคชั่น",
 
-    "Debug": "Additional Settings",
+    "Debug": "การตั้งค่าเพิ่มเติม",
     "Debug_Console": "แสดงคอนโซล",
     "Debug_IncludeGameLogs": "บันทึก Log เกมลงใน Collapse (อาจมีข้อมูลที่ละเอียดอ่อน)",
     "Debug_MultipleInstance": "อนุญาตให้เรียกใช้หลายอินสแตนซ์ของ Collapse",
@@ -347,9 +347,9 @@
     "AppThreads_Help5": "หัวข้อนี้จะจัดการกระบวนการแยก/ตรวจสอบขณะติดตั้ง/ซ่อมแซมเกม",
     "AppThreads_Help6": "หมายเหตุ: การตั้งค่านี้จะไม่มีผลอีกต่อไปในขณะที่ติดตั้ง Honkai Impact 3rd",
 
-    "DiscordRPC": "แสดงสถานะ Discord Presence",
-    "DiscordRPC_Toggle": "แสดง Discord Presence",
-    "DiscordRPC_GameStatusToggle": "แสดงเกมปัจจุบันบนสถานะ Discord",
+    "DiscordRPC": "แสดงสถานะกิจกรรมดิสคอร์ด",
+    "DiscordRPC_Toggle": "แสดงสถานะดิสคอร์ด",
+    "DiscordRPC_GameStatusToggle": "แสดงเกมที่เล่นในปัจจุบันบนสถานะดิสคอร์ด",
 
     "Update": "ตรวจสอบการอัปเดต",
     "Update_CurVer": "เวอร์ชันปัจจุบัน",
@@ -365,18 +365,18 @@
     "AppFiles_ClearLogBtn": "ล้างไฟล์ Log",
     "AppFiles_ClearImgCachesBtn": "ล้างไฟล์รูปภาพ",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataBtn": "ล้างข้อมูลเมตาและเริ่มต้นใหม่",
+    "AppFiles_ClearMetadataDialog": "กำลังล้างข้อมูลเมตาของ Collapse !",
+    "AppFiles_ClearMetadataDialogHelp": "ล้างข้อมูลประเภท Collapse จะทำให้ Collapse เริ่มทำงานใหม่อย่างเคร่งครัด ใช้เฉพาะเมื่อพบปัญหาในการโหลดภูมิภาค\r\nคุณแน่ใจหรือไม่ ?",
 
     "ReportIssueBtn": "รายงานปัญหา",
     "ContributePRBtn": "ร่วมสนับสนุนด้วยการ Pull Request",
     "ContributorListBtn": "ผู้ร่วมให้ข้อมูล Open Source",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "ช่วยเราในการแปลภาษา Collapse!",
 
     "About": "เกี่ยวกับ",
-    "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright1": "© 2565-2566",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl และ Kuro",
     "About_Copyright3": "ต่ำกว่า",
     "About_Copyright4": "สงวนลิขสิทธิ์ทั้งหมด",
 
@@ -385,28 +385,28 @@
     "Disclaimer2": "ไม่ว่าด้วยวิธีใดก็ตาม",
     "Disclaimer3": "และโอเพ่นซอร์สโดยสมบูรณ์ ยินดีให้การสนับสนุน",
 
-    "DiscordBtn1": "เข้าร่วม Armada Discord ของเรา!",
-    "DiscordBtn2": "Honkai Impact 3rd Discord",
-    "DiscordBtn3": "Collapse's Official Discord!",
+    "DiscordBtn1": "เข้าร่วม Armada ดิสคอร์ดของเรา!",
+    "DiscordBtn2": "Honkai Impact 3rd ดิสคอร์ด",
+    "DiscordBtn3": "ดิสคอร์ด Collapse อย่างเป็นทางการ!",
 
     "AppChangeReleaseChannel": "เปลี่ยนเป็นช่องเผยแพร่ทางการ{0}",
 
     "EnableAcrylicEffect": "ใช้งานเบลอแบบ Acrylic",
     "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "ลดการใช้ทรัพยากรของกระบวนการ Collapse ลงเมื่อเกมถูกเปิดใช้งาน",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "ปิดการใช้งาน Carousel ในหน้าหลักและลดลำดับการยุติของ Collapse เป็น Below Normal",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default",
+    "KbShortcuts_Title": "แป้นพิมพ์ทางลัด",
+    "KbShortcuts_ShowBtn": "แสดงทางลัด",
+    "KbShortcuts_ResetBtn": "รีเซ็ตเป็นค่าเริ่มต้น",
 
-    "AppBehavior_Title": "App Behavior",
-    "AppBehavior_PostGameLaunch": "After Launching Game",
-    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
-    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
-    "AppBehavior_MinimizeToTray": "Minimize to Tray"
+    "AppBehavior_Title": "พฤติกรรมของแอป",
+    "AppBehavior_PostGameLaunch": "หลังจากเปิดเกม",
+    "AppBehavior_PostGameLaunch_Minimize": "ย่อเล็กสุด",
+    "AppBehavior_PostGameLaunch_ToTray": "ซ่อนไปที่ถาด",
+    "AppBehavior_PostGameLaunch_Nothing": "ไม่ต้องทำอะไร",
+    "AppBehavior_MinimizeToTray": "ย่อไปที่ถาด"
   },
 
   "_Misc": {
@@ -432,7 +432,7 @@
     "OkaySad": "ตกลง ;-;)",
     "OkayHappy": "โอเคร (≧▽≦)ﾉ",
     "OkayBackToMenu": "โอเคร กลับไปที่เมนู",
-    "Skip": "Skip, never show again",
+    "Skip": "ข้ามไป, ไม่ต้องแสดงอีก",
     "Next": "ถัดไป",
     "Prev": "ก่อนหน้า",
     "Uninstall": "ถอนการติดตั้ง",
@@ -480,7 +480,7 @@
     "Disabled": "ปิดใช้งาน",
     "Enabled": "เปิดการใช้งาน",
 
-    "BuildChannelPreview": "Preview",
+    "BuildChannelPreview": "ดูตัวอย่าง",
     "BuildChannelStable": "เสถียร",
 
     "CDNDescription_Github": "พื้นที่เก็บข้อมูล Launcher อย่างเป็นทางการ (หลัก)",
@@ -502,13 +502,13 @@
     "DiscordRP_Ad": "- สู่ Collapse Launcher",
     "DiscordRP_Region": "ภูมิภาค",
 
-    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
-    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
-    "Taskbar_ShowApp": "Show Collapse window",
-    "Taskbar_HideApp": "Hide Collapse window to taskbar",
-    "Taskbar_ShowConsole": "Show Collapse console window",
-    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_PopupHelp1": "คลิกเพื่อนำ Collapse มาอยู่เบื้องหน้า",
+    "Taskbar_PopupHelp2": "ดับเบิลคลิกเพื่อสลับการมองเห็นหน้าต่าง",
+    "Taskbar_ShowApp": "แสดงหน้าต่างยุบ",
+    "Taskbar_HideApp": "ซ่อนหน้าต่างยุบไปที่ทาสก์บาร์",
+    "Taskbar_ShowConsole": "แสดงหน้าต่างคอนโซลยุบ",
+    "Taskbar_HideConsole": "ซ่อนหน้าต่างคอนโซลยุบไปที่ทาสก์บาร์",
+    "Taskbar_ExitApp": "ออกจาก Collapse Launcher"
   },
 
   "_BackgroundNotification": {
@@ -524,10 +524,10 @@
   },
 
   "_Dialogs": {
-    "DeltaPatchDetectedTitle": "คำเตือน: ตรวจพบการอัพเดต Delta Patch!",
-    "DeltaPatchDetectedSubtitle": "Delta Patch จะถูกใช้เพื่ออัปเดตเกมของคุณจาก {0} เป็น {1}\nโปรดจำไว้ว่าคุณยังอาจจำเป็นต้องดาวน์โหลดไฟล์บางไฟล์ในเกม\n\nคุณต้องการดำเนินการต่อหรือไม่?",
-    "DeltaPatchPrevFailedTitle": "มีการใช้ Delta Patch ก่อนหน้าอย่างไม่ถูกต้องหรือไม่สามารถใช้งานให้เสร็จสิ้นได้!",
-    "DeltaPatchPrevFailedSubtitle": "ไม่สามารถใช้งาน Delta Patch ก่อนหน้านี้ได้ คุณต้องการกู้คืนเกม ต้องการดาวน์โหลดซ้ำหรือไม่?",
+    "DeltaPatchDetectedTitle": "คำเตือน: ตรวจพบการอัพเดต เดลต้าแพทช์!",
+    "DeltaPatchDetectedSubtitle": "เดลต้าแพทช์ จะถูกใช้เพื่ออัปเดตเกมของคุณจาก {0} เป็น {1}\nโปรดจำไว้ว่าคุณยังอาจจำเป็นต้องดาวน์โหลดไฟล์บางไฟล์ในเกม\n\nคุณต้องการดำเนินการต่อหรือไม่?",
+    "DeltaPatchPrevFailedTitle": "มีการใช้ เดลต้าแพทช์ ก่อนหน้าอย่างไม่ถูกต้องหรือไม่สามารถใช้งานให้เสร็จสิ้นได้!",
+    "DeltaPatchPrevFailedSubtitle": "ไม่สามารถใช้งาน เดลต้าแพทช์ ก่อนหน้านี้ได้ คุณต้องการกู้คืนเกม ต้องการดาวน์โหลดซ้ำหรือไม่?",
     "GameConversionPrevFailedTitle": "การแปลงเกมครั้งก่อนล้มเหลวหรือยังไม่เสร็จสมบูรณ์!",
     "GameConversionPrevFailedSubtitle": "การแปลงเกมก่อนหน้านี้ล้มเหลว คุณต้องการกู้คืนเกมของคุณ ต้องการดาวน์โหลดซ้ำหรือไม่?",
     "PreloadVerifiedTitle": "ยืนยันโหลดแพ็คเกจล่วงหน้าแล้ว!",
@@ -572,12 +572,12 @@
     "UninstallGameSubtitle": "คุณกำลังจะถอนการติดตั้งเกมที่อยู่ที่:\n\n{0}\n\nดำเนินการ?",
     "MigrationTitle": "ค้นหาโฟลเดอร์เป้าหมาย",
     "MigrationSubtitle": "ก่อนที่จะย้าย คุณต้องการระบุตำแหน่งของเกมหรือไม่?",
-    "NeedInstallMediaPackTitle": "ไม่พบ Media Feature Pack!",
-    "NeedInstallMediaPackSubtitle1": "คำเตือน: ตั้งแต่การอัปเดตเวอร์ชัน 5.8 เป็นต้นไป Honkai Impact 3rd จำเป็นต้องติดตั้ง \"Media Feature Pack\" บนพีซีของคุณเพื่อให้ทำงานได้อย่างถูกต้อง วิธีนี้จะแก้ไขข้อผิดพลาด \"ไม่สามารถโหลด DLL 'cri_ware_unity'\" ในเกมได้\n\n",
-    "NeedInstallMediaPackSubtitle2": "คุณอาจต้องรีสตาร์ทพีซีหลังจากติดตั้ง \"Media Feature Pack\" แล้ว คุณสามารถเพิกเฉยต่อคำเตือนนี้ได้ หากคุณได้ติดตั้งไว้แล้วหรือต้องการลองเล่น Honkai Impact 3rd แต่มีโอกาสที่คุณจะได้รับข้อผิดพลาดขณะเล่นเกม",
-    "InstallMediaPackCompleteTitle": "ติดตั้ง Media Feature Pack แล้ว!",
-    "InstallMediaPackCompleteSubtitle": "มีการติดตั้ง Media Feature Pack บนเครื่องของคุณแล้ว\nโปรดรีสตาร์ทเครื่องของคุณเพื่อใช้งานแพตช์!",
-    "InstallingMediaPackTitle": "กำลังติดตั้ง Media Feature Pack",
+    "NeedInstallMediaPackTitle": "ไม่พบ ชุดคุณลักษณะสื่อ!",
+    "NeedInstallMediaPackSubtitle1": "คำเตือน: ตั้งแต่การอัปเดตเวอร์ชัน 5.8 เป็นต้นไป Honkai Impact 3rd จำเป็นต้องติดตั้ง \"ชุดคุณลักษณะสื่อ\" บนพีซีของคุณเพื่อให้ทำงานได้อย่างถูกต้อง วิธีนี้จะแก้ไขข้อผิดพลาด \"ไม่สามารถโหลด DLL 'cri_ware_unity'\" ในเกมได้\n\n",
+    "NeedInstallMediaPackSubtitle2": "คุณอาจต้องรีสตาร์ทพีซีหลังจากติดตั้ง \"ชุดคุณลักษณะสื่อ\" แล้ว คุณสามารถเพิกเฉยต่อคำเตือนนี้ได้ หากคุณได้ติดตั้งไว้แล้วหรือต้องการลองเล่น Honkai Impact 3rd แต่มีโอกาสที่คุณจะได้รับข้อผิดพลาดขณะเล่นเกม",
+    "InstallMediaPackCompleteTitle": "ติดตั้ง ชุดคุณลักษณะสื่อ แล้ว!",
+    "InstallMediaPackCompleteSubtitle": "มีการติดตั้ง ชุดคุณลักษณะสื่อ บนเครื่องของคุณแล้ว\nโปรดรีสตาร์ทเครื่องของคุณเพื่อใช้งานแพตช์!",
+    "InstallingMediaPackTitle": "กำลังติดตั้ง ชุดคุณลักษณะสื่อ",
     "InstallingMediaPackSubtitle": "การติดตั้งกำลังเสร็จสิ้นกรุณารอ...",
     "InstallingMediaPackSubtitleFinished": "เสร็จสิ้น",
     "GameConfigBrokenTitle1": "คอนฟิกตั้งค่าเกมเสียหาย",
@@ -610,11 +610,11 @@
     "CannotUseAppLocationForGameDirSubtitle": "คุณไม่สามารถใช้โฟลเดอร์นี้ได้เนื่องจากถูกใช้เป็นโฟลเดอร์ระบบหรือใช้สำหรับปฏิบัติการหลักของแอป โปรดเลือกโฟลเดอร์อื่น!",
     "StopGameTitle": "บังคับปิดเกม",
     "StopGameSubtitle": "คุณแน่ใจหรือไม่ว่าต้องการบังคับให้ปิดเกมที่รันอยู่ในปัจจุบัน?\nคุณอาจสูญเสียความคืบหน้าในเกมบางส่วน",
-    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
-    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+    "MeteredConnectionWarningTitle": "การตรวจพบการเชื่อมต่อที่มีการถูกจำกัด!",
+    "MeteredConnectionWarningSubtitle": "การเชื่อมต่ออินเทอร์เน็ตปัจจุบันของคุณถูกตรวจพบว่าเป็น 'ถูกจำกัด'! การดำเนินการอัปเดตต่ออาจมีค่าใช้จ่ายเพิ่มเติมจากผู้ให้บริการอินเทอร์เน็ตของคุณ คุณต้องการดำเนินการต่อหรือไม่?",
 
-    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsTitle": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตทางลัดทั้งหมด?",
+    "ResetKbShortcutsSubtitle": "ซึ่งหมายความว่าทุกทางลัดจะถูกเปลี่ยนเป็นคีย์ค่าเริ่มต้น. \n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของ Collapse และคุณยังคงสามารถเปลี่ยนชุดทางลัดได้โดยเข้าไปที่เมนูแป้นพิมพ์ลัด."
   },
 
   "_InstallMgmt": {
@@ -630,11 +630,11 @@
     "PageTitle": "การแปลงข้ามเวอร์ชั่น",
     "Step1Title": "เลือกเกมและดึงข้อมูล",
     "Step2Title": "กำลังดาวน์โหลด Recipe",
-    "Step2Subtitle": "กำลังค้นหา API...",
-    "Step3Title": "กำลังเตรียม Ingredients",
-    "Step3Title1": "กำลังซ่อมแซม Ingredients",
-    "Step3Title2": "กำลังตรวจสอบ Ingredients",
-    "Step3Subtitle": "กำลังเตรียม Ingredients",
+    "Step2Subtitle": "กำลังค้นหา เอพีไอ...",
+    "Step3Title": "กำลังเตรียม ส่วนประกอบ",
+    "Step3Title1": "กำลังซ่อมแซม ส่วนประกอบ",
+    "Step3Title2": "กำลังตรวจสอบ ส่วนประกอบ",
+    "Step3Subtitle": "กำลังเตรียม ส่วนประกอบ",
     "Step4Title": "รายการ การแปลง",
     "Step4Subtitle": "กำลังเริ่มการแปลง...",
     "Step5Title": "ตรวจสอบความสมบูรณ์หลังการแปลง",
@@ -667,11 +667,11 @@
     "Step2Subtitle1": "กระบวนการย้ายข้อมูลจะดำเนินการภายใน 5 วินาที",
     "Step2Subtitle2": "กำลังทำงาน...",
     "Step3Title": "การตวรจสอบความสมบูรณ์ของข้อมูลเกมสำหรับการแปลง",
-    "Step3Subtitle": "กำลังดึงข้อมูล API...",
+    "Step3Subtitle": "กำลังดึงข้อมูล เอพีไอ...",
     "Step4Title": "รายการที่ต้องแปลง",
-    "Step4Subtitle": "กำลังรอการ Prompt...",
+    "Step4Subtitle": "กำลังรอการ พรอมต์...",
     "Step5Title": "การตรวจสอบความถูกต้องสมบูรณ์ของข้อมูล",
-    "Step5Subtitle": "กำลังยืนยันการดึงข้อมูล API...",
+    "Step5Subtitle": "กำลังยืนยันการดึงข้อมูล เอพีไอ...",
     "StepNotRunning": "ไม่ได้ทำงาน",
     "PageFooter1": "กรุณา",
     "PageFooter2": "อย่า",
@@ -738,22 +738,22 @@
 
   "_AppNotification": {
     "NotifMetadataUpdateTitle": "มีการอัปเดตข้อมูลของ Launcher แล้ว!",
-    "NotifMetadataUpdateSubtitle": "ข้อมูลเมตาใหม่สำหรับ Launcher พร้อมใช้งานแล้ว! กระบวนการนี้เป็นไปโดยอัตโนมัติและทำเพื่อให้แน่ใจว่าตัวเรียกใช้งานสามารถสื่อสารกับเซิร์ฟเวอร์ miHoYo/HoYoverse ได้อย่างถูกต้อง การอัปเดตจะเริ่มในไม่ช้า!",
+    "NotifMetadataUpdateSubtitle": "ข้อมูลเมตาใหม่สำหรับ Launcher พร้อมใช้งานแล้ว! กระบวนการนี้เป็นไปโดยอัตโนมัติและทำเพื่อให้แน่ใจว่า Launcher สามารถสื่อสารกับเซิร์ฟเวอร์ miHoYo/HoYoverse ได้อย่างถูกต้อง การอัปเดตจะเริ่มในไม่ช้า!",
     "NotifMetadataUpdateBtn": "อัปเดตข้อมูลเมตา",
     "NotifMetadataUpdateBtnCountdown": "กำลังอัปเดตข้อมูลเมตาใน: {0}",
     "NotifMetadataUpdateBtnUpdating": "กำลังอัปเดตข้อมูลเมตา โปรดรอสักครู่...",
 
     "NotifFirstWelcomeTitle": "ยินดีต้อนรับสู่ Collapse!",
     "NotifFirstWelcomeSubtitle": "ในการเริ่มต้น ให้คลิกปุ่ม \"{0}\" ด้านล่างเพื่อดูวิธีการติดตั้งหรือย้ายเกมที่มีอยู่",
-    "NotifFirstWelcomeBtn": "เยี่ยมชม GitHub Wiki",
+    "NotifFirstWelcomeBtn": "เยี่ยมชม กิตฮับวิกิ",
 
-    "NotifPreviewBuildUsedTitle": "คุณกำลังใช้ Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "ขณะนี้คุณกำลังใช้ Build[PREVIEW] ซึ่งยังอยู่ระหว่างการทดสอบ หากคุณพบปัญหาใดๆ โปรดรายงานโดยใช้ปุ่ม \"{0}\" ด้านล่าง ขอบคุณ!",
+    "NotifPreviewBuildUsedTitle": "คุณกำลังใช้ รุ่นตัวอย่างบิลด์!",
+    "NotifPreviewBuildUsedSubtitle": "ขณะนี้คุณกำลังใช้ บิลด์[PREVIEW] ซึ่งยังอยู่ระหว่างการทดสอบ หากคุณพบปัญหาใดๆ โปรดรายงานโดยใช้ปุ่ม \"{0}\" ด้านล่าง ขอบคุณ!",
     "NotifPreviewBuildUsedBtn": "รายงานปัญหา",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutTitle": "คุณลักษณะใหม่ได้มาถึงแล้ว!",
+    "NotifKbShortcutSubtitle": "เรากำลังนำเสนอทางลัดวิธีใหม่ในการนำทาง แป้นพิมพ์ลัด.\nตอนนี้คุณสามารถใช้แป้นพิมพ์ของคุณเพื่อเข้าถึงฟังก์ชันบางอย่างได้เร็วขึ้น!\n\nอยากรู้มากกว่านี้?\nลองใช้ CTRL + Tab หรือคลิกปุ่มด้านล่าง.",
+    "NotifKbShortcutBtn": "แสดงทางลัดทั้งหมด"
   },
 
   "_StarRailGameSettingsPage": {
@@ -805,7 +805,7 @@
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
-    "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
+    "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง ผู้เล่นเอกภาพแบบสแตนด์อโลน",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
     "Audio_Title": "การตั้งค่าเสียง",
@@ -836,11 +836,11 @@
     "Graphics_ExclusiveFullscreen_Help": "แบบเต็มหน้าจอพิเศษอาจทำให้เกมสุ่มค้าง!",
     "Graphics_ResSelectPlaceholder": "เลือก",
     "Graphics_ResCustom": "ใช้ความละเอียดที่กำหนดเอง",
-    "Graphics_ResCustomW": "W",
-    "Graphics_ResCustomH": "H",
+    "Graphics_ResCustomW": "ความกว้าง",
+    "Graphics_ResCustomH": "ความสูง",
 
     "Graphics_Gamma": "แกมมา",
-    "Graphics_FPS": "FPS",
+    "Graphics_FPS": "เฟรมเรท",
     "Graphics_RenderScale": "เรนเดอร์สเกล",
     "Graphics_ShadowQuality": "คุณภาพของเงา",
     "Graphics_VisualFX": "วิชวลเอฟเฟกต์",
@@ -854,7 +854,7 @@
     "Graphics_MotionBlur": "โมชั่นเบลอ",
     "Graphics_BloomQuality": "Bloom",
     "Graphics_CrowdDensity": "ความหนาแน่นของNPC",
-    "Graphics_SubsurfaceScattering": "Subsurface Scattering",
+    "Graphics_SubsurfaceScattering": "การกระจายแสงใต้พื้นผิว",
     "Graphics_TeammateFX": "เอฟเฟกต์เพื่อนร่วมทีม",
     "Graphics_AnisotropicFiltering": "ตัวกรอง Anisotropic",
     "Graphics_TeamPageBackground": "ตั้งค่าพื้นหลังของภูมิภาค",
@@ -862,19 +862,19 @@
     "Graphics_GlobalIllumination_Help1": "สำหรับฮาร์ดแวร์ที่รองรับเท่านั้น!",
     "Graphics_GlobalIllumination_Help2": "ข้อมูลเพิ่มเติม (en)",
     "Graphics_HDR": "HDR",
-    "Graphics_HDR_Enable": "Enable HDR",
-    "Graphics_HDR_NotSupported1": "Your display does not support HDR.",
-    "Graphics_HDR_NotSupported2": "An HDR-capable monitor is required!",
-    "Graphics_HDR_NotEnabled1": "Your device supports HDR, but it's not enabled.",
-    "Graphics_HDR_NotEnabled2": "Option \"Use HDR\" should be turned on in Windows Settings.",
-    "Graphics_HDR_Help_Link": "More information",
-    "Graphics_HDR_MaxLuminosity": "Max Luminosity (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Maximum allowed peak brightness for highlights",
-    "Graphics_HDR_Calibration_Help": "Adjust until the image shown is faint but visible",
-    "Graphics_HDR_UiBrightness": "UI Brightness",
-    "Graphics_HDR_UiBrightness_Help": "Controls how bright UI elements should be",
-    "Graphics_HDR_SceneBrightness": "Scenery Brightness",
-    "Graphics_HDR_SceneBrightness_Help": "Controls how bright a scenery should be",
+    "Graphics_HDR_Enable": "เปิดใช้งาน HDR",
+    "Graphics_HDR_NotSupported1": "จอแสดงผลของคุณไม่รองรับ HDR",
+    "Graphics_HDR_NotSupported2": "จำเป็นต้องมีจอแสดงผลที่รองรับ HDR!",
+    "Graphics_HDR_NotEnabled1": "อุปกรณ์ของคุณรองรับ HDR แต่ไม่ได้เปิดใช้งาน",
+    "Graphics_HDR_NotEnabled2": "ตัวเลือก \"ใช้ HDR\" ควรเปิดในการตั้งค่า Windows",
+    "Graphics_HDR_Help_Link": "ข้อมูลเพิ่มเติม",
+    "Graphics_HDR_MaxLuminosity": "ความสว่างสูงสุด (นิตส์)",
+    "Graphics_HDR_MaxLuminosity_Help": "ความสว่างสูงสุดที่อนุญาตสำหรับไฮไลต์",
+    "Graphics_HDR_Calibration_Help": "ปรับจนภาพที่แสดงจางแต่มองเห็นได้",
+    "Graphics_HDR_UiBrightness": "ความสว่างของอินเตอร์เฟซ",
+    "Graphics_HDR_UiBrightness_Help": "ควบคุมความสว่างขององค์ประกอบ อินเตอร์เฟซ ที่ควรจะเป็น",
+    "Graphics_HDR_SceneBrightness": "ความสว่างของทิวทัศน์",
+    "Graphics_HDR_SceneBrightness_Help": "ควบคุมความสว่างของทิวทัศน์ที่ควรจะเป็น",
 
     "Graphics_SpecPanel": "การตั้งค่ากราฟิกโดยรวม",
     "SpecEnabled": "เปิดการใช้งาน",
@@ -911,7 +911,7 @@
 
     "Audio_Output_Surround": "ระบบเสียงรอบทิศทาง",
     "Audio_DynamicRange": "ไดนามิกเต็มรูปแบบ",
-    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
+    "Audio_MuteOnMinimize": "ปิดเสียงเมื่อหน้าต่างย่อเล็กสุด",
 
     "Language": "การตั้งค่าภาษา",
     "Language_Help1": "Collapse ปัจจุบันไม่สามารถดาวน์โหลดแพ็คเกจเสียงได้โดยตรง",
@@ -925,45 +925,45 @@
   },
 
   "_KbShortcuts": {
-    "DialogTitle": "Keyboard Shortcuts",
-    "GeneralTab": "General",
-    "SwitchTab": "Quick Switch",
-    "GameFolderTab": "Folder Access",
-    "GameManagementTab": "Game Management",
+    "DialogTitle": "แป้นพิมพ์ทางลัด",
+    "GeneralTab": "ทั่วไป",
+    "SwitchTab": "การสลับอย่างรวดเร็ว",
+    "GameFolderTab": "การเข้าถึงโฟลเดอร์",
+    "GameManagementTab": "การจัดการเกม",
 
     "General_Title": "General",
-    "General_OpenMenu": "Open this menu",
-    "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
-    "General_GoHome": "Go to the Home page",
-    "General_GoSettings": "Go to the Settings page",
-    "General_OpenNotifTray": "Open the Notification Tray",
+    "General_OpenMenu": "เปิดเมนูนี้",
+    "General_OpenMenu_Desc": "นอกจากนี้ยังสามารถเข้าถึงได้ผ่านหน้าการตั้งค่าแอป.",
+    "General_GoHome": "ไปที่หน้าแรก",
+    "General_GoSettings": "ไปที่หน้าการตั้งค่า",
+    "General_OpenNotifTray": "เปิดถาดการแจ้งเตือน",
 
-    "Switch_Title": "Quick Game/Region change",
-    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
-    "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
-    "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
-    "Switch_ChangeRegion": "Change region",
-    "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
+    "Switch_Title": "เกมด่วน/การเปลี่ยนแปลงภูมิภาค",
+    "Switch_Subtitle": "หมายเหตุ: ปุ่มลัดตามลำดับตัวเลือก",
+    "Switch_SwapBtn": "สลับ {0} และ {1}",
+    "Switch_ChangeGame": "เปลี่ยนเกม",
+    "Switch_ChangeGame_Desc": "คุณสามารถใช้ นัมแพด สำหรับทางลัดนี้ได้เช่นกัน!\n ตัวอย่างเช่น {0}+1 หรือ นัมแพด 1 (โดยไม่ต้องใช้ตัวดัดแปลง {0}) จะนำไปสู่หน้า Honkai Impact 3rd (ภูมิภาคที่ใช้ครั้งล่าสุด).",
+    "Switch_ChangeRegion": "เปลี่ยนภูมิภาค",
+    "Switch_ChangeRegion_Desc": "ตัวอย่างเช่น สำหรับ Genshin Impact, {0}+1 จะนำไปสู่ภูมิภาค Global.",
 
-    "GameFolder_Title": "Game Folder Access",
-    "GameFolder_ScreenshotFolder": "Open the Screenshot folder",
-    "GameFolder_MainFolder": "Open the Game folder",
-    "GameFolder_CacheFolder": "Open the Cache folder",
+    "GameFolder_Title": "เกม การเข้าถึงโฟลเดอร์",
+    "GameFolder_ScreenshotFolder": "เปิดโฟลภาพหน้าจอ",
+    "GameFolder_MainFolder": "เปิดโฟลเดอร์เกม",
+    "GameFolder_CacheFolder": "เปิดโฟลเดอร์แคช",
 
-    "GameManagement_Title": "Game Management",
-    "GameManagement_Subtitle": "Note: These keybinds only work if such feature is supported in the region.",
-    "GameManagement_ForceCloseGame": "Close the game forcefully",
-    "GameManagement_ForceCloseGame_Desc": "WARNING: By using this shortcut, the game will be closed without any type of confirmation.",
-    "GameManagement_GoRepair": "Go to the Game Repair page",
-    "GameManagement_GoSettings": "Go to the Game Settings page",
-    "GameManagement_GoCaches": "Go to the Caches Repair page",
+    "GameManagement_Title": "การจัดการเกม",
+    "GameManagement_Subtitle": "หมายเหตุ: ปุ่มลัดเหล่านี้จะใช้งานได้ก็ต่อเมื่อคุณสมบัติดังกล่าวได้รับการรองรับในภูมิภาคเท่านั้น.",
+    "GameManagement_ForceCloseGame": "บังคับปิดเกม",
+    "GameManagement_ForceCloseGame_Desc": "คำเตือน: เมื่อใช้ทางลัดนี้เกมจะถูกปิดโดยไม่มีการยืนยันใดๆ",
+    "GameManagement_GoRepair": "ไปที่หน้าการซ่อมแซม",
+    "GameManagement_GoSettings": "ไปที่หน้าการตั้งค่าเกม",
+    "GameManagement_GoCaches": "ไปที่หน้าการซ่อมแซมแคช",
 
-    "ChangeShortcut_Title": "Change Shortcut",
-    "ChangeShortcut_Text": "Type the new combination for this shortcut!",
-    "ChangeShortcut_Help1": "A shortcut is composed by 2 parts:",
-    "ChangeShortcut_Help2": "・ Modifier - Shift, Control or Alt/Menu",
-    "ChangeShortcut_Help3": "・ Key - Alphabetical (A to Z) or Tab",
-    "ChangeShortcut_Help4": "You can choose any combination consisting of one value from each category, unless it is reserved by the system or is already being used."
+    "ChangeShortcut_Title": "เปลี่ยนทางลัด",
+    "ChangeShortcut_Text": "พิมพ์ชุดค่าผสมใหม่สำหรับทางลัดนี้!",
+    "ChangeShortcut_Help1": "ทางลัดประกอบด้วย 2 ส่วน:",
+    "ChangeShortcut_Help2": "・ ตัวแก้ไข - Shift, Control หรือ Alt/Menu",
+    "ChangeShortcut_Help3": "・ คีย์ - ตัวอักษร (A ถึง Z) หรือแท็บ",
+    "ChangeShortcut_Help4": "คุณสามารถเลือกคอมบิเนชั่นใดก็ได้ที่ประกอบด้วยค่าหนึ่งจากแต่ละหมวดหมู่ ยกเว้นกรณีที่ถูกสงวนโดยระบบหรือถูกใช้งานอยู่แล้ว."
   }
 }
