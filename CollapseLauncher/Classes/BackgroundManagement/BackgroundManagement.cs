@@ -375,13 +375,15 @@ namespace CollapseLauncher
                 Storyboard.SetTargetProperty(OpacityAnimation, "Opacity");
                 storyboard.Children.Add(OpacityAnimation);
 
-                storyboard.Begin();
+                await Task.Delay(125);
 
                 Thickness lastMargin = LoadingPopupPill.Margin;
                 lastMargin.Bottom = -72;
                 LoadingPopupPill.Margin = lastMargin;
 
-                await Task.Delay(125 * 2);
+                storyboard.Begin();
+
+                await Task.Delay(500);
                 LoadingPopup.Visibility = Visibility.Collapsed;
                 LoadingCancelBtn.Visibility = Visibility.Collapsed;
             }
