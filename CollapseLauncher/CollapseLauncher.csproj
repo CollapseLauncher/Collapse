@@ -23,6 +23,7 @@
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>false</TieredCompilationQuickJit>
 		<TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
+    <InvariantGlobalization>false</InvariantGlobalization>
 		<!-- WinUI Properties -->
 		<UseWinUI>true</UseWinUI>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -178,9 +179,8 @@
 			<TrimmableAssembly Include="System.Drawing.Common" />
 			<TrimmableAssembly Include="WinUIEdit" />
 
-			<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
+			<!-- Descriptor for all classes that cannot be trimmed -->
 			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
-			<TrimmerRootDescriptor Include="TrimmerDescriptor.xml" />
 
 			<!--
 			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
