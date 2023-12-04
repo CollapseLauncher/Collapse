@@ -407,8 +407,8 @@
     "AppBehavior_PostGameLaunch_ToTray": "隐藏到系统托盘",
     "AppBehavior_PostGameLaunch_Nothing": "什么也不做",
     "AppBehavior_MinimizeToTray": "最小化到系统托盘",
-    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_LaunchOnStartup": "开机时自动启动 Collapse",
+    "AppBehavior_StartupToTray": "自动启动时隐藏 Collapse 窗口"
   },
 
   "_Misc": {
@@ -939,8 +939,8 @@
     "General_GoHome": "前往主页面",
     "General_GoSettings": "前往设置页面",
     "General_OpenNotifTray": "打开通知托盘",
-    "General_ReloadRegion": "Reload current page",
-    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
+    "General_ReloadRegion": "重新加载当前页面",
+    "General_ReloadRegion_Desc": "F5 为替代快捷键。\n请注意，重新加载主页将会重新加载区服。",
 
     "Switch_Title": "快速游戏/区服切换",
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",
