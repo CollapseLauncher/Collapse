@@ -396,7 +396,7 @@ namespace CollapseLauncher
 
             try
             {
-                await RunApplyBackgroundTask();
+                await RunApplyBackgroundTask(IsFirstStartup);
             }
             catch (Exception ex)
             {
@@ -439,13 +439,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Background Tasks
-        private async Task RunApplyBackgroundTask()
-        {
-            if (IsFirstStartup)
-                await ApplyBackground();
-            else
-                ApplyBackgroundAsync();
-        }
+        private async Task RunApplyBackgroundTask(bool IsFirstStartup) => await ApplyBackground(IsFirstStartup);
 
         private async void RunBackgroundCheck()
         {
@@ -1393,6 +1387,13 @@ namespace CollapseLauncher
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
                 }
 
+                KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator()
+                {
+                    Key = VirtualKey.F5
+                };
+                keystrokeF5.Invoked += RefreshPage_Invoked;
+                KeyboardHandler.KeyboardAccelerators.Add(keystrokeF5);
+
                 List<KeybindAction> actions = new()
                 {
                     // General
@@ -1409,7 +1410,9 @@ namespace CollapseLauncher
 
                     GoGameRepir_Invoked,
                     GoGameSettings_Invoked,
-                    GoGameCaches_Invoked
+                    GoGameCaches_Invoked,
+
+                    RefreshPage_Invoked
                 };
 
                 foreach (KeybindAction func in actions)
@@ -1431,6 +1434,29 @@ namespace CollapseLauncher
             }
         }
 
+        private void RefreshPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel))
+                return;
+
+            switch (PreviousTag)
+            {
+                case "launcher":
+                    RestoreCurrentRegion();
+                    ChangeRegionNoWarning(IsShowRegionChangeWarning ? ChangeRegionConfirmBtn : ChangeRegionConfirmBtnNoWarning, null);
+                    return;
+                case "settings":
+                    return;
+                default:
+                    string Tag = PreviousTag;
+                    PreviousTag = "Empty";
+                    NavigateInnerSwitch(Tag);
+                    LauncherFrame.BackStack.RemoveAt(LauncherFrame.BackStack.Count - 1);
+                    PreviousTagString.RemoveAt(PreviousTagString.Count - 1);
+                    return;
+            }
+        }
+
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
         private async void ChangeTimer(int time = 500)
@@ -1444,10 +1470,27 @@ namespace CollapseLauncher
             catch { }
         }
 
+        private void RestoreCurrentRegion()
+        {
+            string GameCategory = GetAppConfigValue("GameCategory").ToString();
+
+            if (!GetConfigV2Regions(GameCategory))
+                GameCategory = ConfigV2GameCategory.FirstOrDefault();
+
+            int IndexCategory = ConfigV2GameCategory.IndexOf(GameCategory);
+            if (IndexCategory < 0) IndexCategory = 0;
+
+            int IndexRegion = GetPreviousGameRegion(GameCategory);
+
+            ComboBoxGameCategory.SelectedIndex = IndexCategory;
+            ComboBoxGameRegion.SelectedIndex = IndexRegion;
+        }
+
         private void KeyboardGameShortcut_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            RestoreCurrentRegion();
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameCategory.Items.Count)
                 return;
 
@@ -1466,6 +1509,7 @@ namespace CollapseLauncher
         {
             int index = (int)sender.Key; index -= index < 96 ? 49 : 97;
 
+            RestoreCurrentRegion();
             if (IsKbShortcutCannotChange || !(IsLoadRegionComplete || IsExplicitCancel) || index >= ComboBoxGameRegion.Items.Count)
                 return;
             

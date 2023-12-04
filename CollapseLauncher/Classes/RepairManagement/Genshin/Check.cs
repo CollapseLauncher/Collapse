@@ -108,7 +108,7 @@ namespace CollapseLauncher
 
                         // Try move the file to the asb path
                         if (!Directory.Exists(newPathDir)) Directory.CreateDirectory(newPathDir);
-                        File.Move(filePath, newPath);
+                        File.Move(filePath, newPath, true);
                     }
                 }
             }

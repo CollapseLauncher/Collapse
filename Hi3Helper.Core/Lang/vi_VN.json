@@ -406,7 +406,9 @@
     "AppBehavior_PostGameLaunch_Minimize": "Minimize",
     "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
     "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
-    "AppBehavior_MinimizeToTray": "Minimize to Tray"
+    "AppBehavior_MinimizeToTray": "Minimize to Tray",
+    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
 
   "_Misc": {
@@ -937,6 +939,8 @@
     "General_GoHome": "Đi tới Trang chủ",
     "General_GoSettings": "Đi tới trang Cài đặt",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "Thay đổi trò chơi / khu vực nhanh chóng",
     "Switch_Subtitle": "Lưu ý: Các tổ hợp phím tuân theo 1 thứ tự.",

@@ -72,6 +72,21 @@
                                 OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                 OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                 IsOn="{x:Bind IsMinimizeToTaskbar, Mode=TwoWay}"/>
+                            <ToggleSwitch
+                                x:Name="StartupToggle"
+                                Margin="0,4"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_LaunchOnStartup}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsLaunchOnStartup, Mode=TwoWay}"/>
+                            <ToggleSwitch
+                                x:Name="StartupToTrayToggle"
+                                Margin="0,4"
+                                Header="{x:Bind helper:Locale.Lang._SettingsPage.AppBehavior_StartupToTray}"
+                                OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                IsOn="{x:Bind IsStartupToTray, Mode=TwoWay}"
+                                Visibility="Collapsed"/>
                         </StackPanel>
                         <TextBlock
                             Margin="0,0,0,16"
@@ -192,22 +207,17 @@
                             IsOn="{x:Bind AreShortcutsEnabled, Mode=TwoWay}"
                             OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                             OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                        <Grid x:Name="KbScBtns" Visibility="Collapsed">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
+                        <StackPanel x:Name="KbScBtns" Visibility="Collapsed" Orientation="Horizontal" Margin="0,8">
                             <Button Grid.Column="0"
-                                Width="170"
                                 Height="40"
-                                Margin="0,8,0,8"
+                                Margin="0,0,12,0"
                                 Click="ShowKbScList_Click"
                                 CornerRadius="20"
                                 Style="{ThemeResource AccentButtonStyle}">
-                                <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         FontFamily="{ThemeResource FontAwesomeSolid}"
-                                        FontSize="20"
+                                        FontSize="18"
                                         Text="&#xf101;" />
                                     <TextBlock
                                         Margin="8,-2,0,0"
@@ -217,16 +227,14 @@
                                 </StackPanel>
                             </Button>
                             <Button Grid.Column="1"
-                                Width="170"
                                 Height="40"
-                                Margin="0,8,0,8"
                                 Click="ResetKeylist_Click"
                                 CornerRadius="20"
                                 Style="{ThemeResource AccentButtonStyle}">
-                                <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         FontFamily="{ThemeResource FontAwesomeSolid}"
-                                        FontSize="20"
+                                        FontSize="18"
                                         Text="" />
                                     <TextBlock
                                         Margin="8,-2,0,0"
@@ -235,7 +243,7 @@
                                         Text="{x:Bind helper:Locale.Lang._SettingsPage.KbShortcuts_ResetBtn}" />
                                 </StackPanel>
                             </Button>
-                        </Grid>
+                        </StackPanel>
                         <TextBlock
                             Margin="0,16,0,8"
                             Style="{ThemeResource SubtitleTextBlockStyle}"

@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -34,15 +35,15 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
-        private CancellationTokenSource InnerTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource InnerTokenSource;
 
         private uint MaxRetry = 5; // Max 5 times of retry attempt
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
-        private uint BackgroundImageLoadTimeout = 60; // 60 seconds of initial Background Image Load Timeout
+        private uint BackgroundImageLoadTimeout = 3600; // Give background image download 1 hour of timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
 
         private string RegionToChangeName;
-        private IList<object> LastNavigationItem;
+        private List<object> LastNavigationItem;
         private HomeMenuPanel LastRegionNewsProp;
         public static string PreviousTag = string.Empty;
 
@@ -83,12 +84,10 @@ namespace CollapseLauncher
                 return false;
             }
 
-            // Finalize Region Load
-            if (IsInitialStartUp)
-                await ChangeBackgroundImageAsRegion(false);
-            else
-                ChangeBackgroundImageAsRegionAsync();
+            // Load the background image asynchronously
+            ChangeBackgroundImageAsRegionAsync();
 
+            // Finalize Region Load
             FinalizeLoadRegion(preset);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
@@ -112,7 +111,7 @@ namespace CollapseLauncher
             PreviousTagString.Clear();
             PreviousTagString.Add(PreviousTag);
             LauncherFrame.BackStack.Clear();
-            InnerTokenSource.Cancel();
+            InnerTokenSource?.Cancel();
             ResetRegionProp();
         }
 
@@ -122,8 +121,11 @@ namespace CollapseLauncher
             uint RetryCount = 0;
             while (RetryCount < MaxRetry)
             {
+                // Store the old token into oldToken to check and avoid unnecessary re-throw
+                CancellationTokenSource oldToken = InnerTokenSource;
+
                 // Assign new cancellation token source
-                InnerTokenSource = new CancellationTokenSource();
+                InnerTokenSource = new CancellationTokenSource(); // Assign the new token
 
                 // Watch for timeout
                 WatchAndCancelIfTimeout(InnerTokenSource, CurrentTimeout);
@@ -182,26 +184,102 @@ namespace CollapseLauncher
 
         private async ValueTask DownloadBackgroundImage(CancellationToken Token)
         {
-            regionBackgroundProp.imgLocalPath = Path.Combine(AppGameImgFolder, "bg", Path.GetFileName(regionBackgroundProp.data.adv.background));
+            // Get and set the current path of the image
+            string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
+            string backgroundFileName = Path.GetFileName(regionBackgroundProp.data.adv.background);
+            regionBackgroundProp.imgLocalPath = Path.Combine(backgroundFolder, backgroundFileName);
             SetAndSaveConfigValue("CurrentBackground", regionBackgroundProp.imgLocalPath);
 
-            if (!Directory.Exists(Path.Combine(AppGameImgFolder, "bg")))
-                Directory.CreateDirectory(Path.Combine(AppGameImgFolder, "bg"));
+            // Check if the background folder exist
+            if (!Directory.Exists(backgroundFolder))
+                Directory.CreateDirectory(backgroundFolder);
 
-            FileInfo fI = new FileInfo(regionBackgroundProp.imgLocalPath);
+            // Start downloading the background image
+            await DownloadAndEnsureCompleteness(regionBackgroundProp.data.adv.background, regionBackgroundProp.imgLocalPath, Token);
+        }
 
-            if (fI.Exists && fI.Length >= 1 << 20) return;
+        internal static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, CancellationToken token)
+        {
+            // Initialize the FileInfo and check if the file is exist
+            FileInfo fI = new FileInfo(outputPath);
+            bool isFileExist = IsFileCompletelyDownloaded(fI);
 
-            await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(regionBackgroundProp.data.adv.background, Token))
-            using (Stream outStream = fI.Open(new FileStreamOptions()
+            // If the file and the file assumed to be exist, then return
+            if (isFileExist) return;
+
+            // If not, then try download the file
+            await TryDownloadToCompleteness(url, fI, token);
+        }
+
+        internal static bool IsFileCompletelyDownloaded(FileInfo fileInfo)
+        {
+            // Get the parent path and file name
+            string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+            string outputFileName = Path.GetFileName(fileInfo.FullName);
+
+            // Try get the prop file which includes the filename + the suggested size provided
+            // by the network stream if it has been downloaded before
+            string propFilePath = Directory.EnumerateFiles(outputParentPath, $"{outputFileName}#*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            // Check if the file is found (not null), then try parse the information
+            if (!string.IsNullOrEmpty(propFilePath))
             {
-                Access = FileAccess.Write,
-                Mode = FileMode.Create,
-                Share = FileShare.ReadWrite,
-                Options = FileOptions.Asynchronous
-            }))
+                // Try split the filename into a segment by # char
+                string[] propSegment = Path.GetFileName(propFilePath).Split('#');
+                // Assign the check if the condition met and set the file existence status
+                return propSegment.Length >= 2
+                    && long.TryParse(propSegment[1], null, out long suggestedSize)
+                    && fileInfo.Exists && fileInfo.Length == suggestedSize;
+            }
+
+            // If the prop doesn't exist, then return false to assume that the file doesn't exist
+            return false;
+        }
+
+        internal static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
+            => await TryDownloadToCompleteness(url, fileInfo, token);
+
+        internal static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
+        {
+            try
             {
-                await netStream.CopyToAsync(outStream, Token);
+                // Try get the remote stream and download the file
+                using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                {
+                    Access = FileAccess.Write,
+                    Mode = FileMode.Create,
+                    Share = FileShare.ReadWrite,
+                    Options = FileOptions.Asynchronous
+                });
+
+                // Get the file length
+                long fileLength = netStream.Length;
+
+                // Create the prop file for download completeness checking
+                string outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+                string outputFilename = Path.GetFileName(fileInfo.FullName);
+                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                File.Create(propFilePath).Dispose();
+
+                // Copy (and download) the remote streams to local
+                LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
+                int read = 0;
+                byte[] buffer = new byte[4 << 10];
+                while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                    await outStream.WriteAsync(buffer, 0, read, token);
+
+                LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
+                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+            }
+#if DEBUG
+            catch
+            {
+                throw;
+#else
+            catch (Exception ex)
+            {
+                ErrorSender.SendException(ex, ErrorType.Connection);
+#endif
             }
         }
 
@@ -406,9 +484,9 @@ namespace CollapseLauncher
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!fInfo.Exists || fInfo.Length < (1 << 10))
+            if (!IsFileCompletelyDownloaded(fInfo))
             {
-                TryDownloadSpriteToCache(fInfo, URL, token);
+                TryDownloadToCompletenessAsync(URL, fInfo, token);
                 return URL;
             }
 
@@ -417,54 +495,20 @@ namespace CollapseLauncher
 
         public static async ValueTask<string> GetCachedSpritesAsync(string URL, CancellationToken token)
         {
+            if (string.IsNullOrEmpty(URL)) return URL;
+
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(URL));
             if (!Directory.Exists(AppGameImgCachedFolder))
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!fInfo.Exists || fInfo.Length < (1 << 10))
+            if (!IsFileCompletelyDownloaded(fInfo))
             {
-                using (FileStream fs = fInfo.Open(new FileStreamOptions()
-                {
-                    Access = FileAccess.Write,
-                    Mode = FileMode.Create,
-                    Share = FileShare.ReadWrite,
-                    Options = FileOptions.Asynchronous
-                }))
-                await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(URL, token))
-                    await netStream.CopyToAsync(fs, token);
+                await TryDownloadToCompleteness(URL, fInfo, token);
+                return URL;
             }
 
             return cachePath;
-        }
-
-        public static async void TryDownloadSpriteToCache(FileInfo fInfo, string URL, CancellationToken token)
-        {
-            // Check back if the file has exist, has a proper size and the token isn't cancelled.
-            // If the condition doesn't meet, then return.
-            if (fInfo.Exists && fInfo.Length >= (1 << 10) && !token.IsCancellationRequested) return;
-
-            try
-            {
-                // Start downloading the file in background
-                using (FileStream fs = fInfo.Open(new FileStreamOptions()
-                {
-                    Access = FileAccess.Write,
-                    Mode = FileMode.Create,
-                    Share = FileShare.ReadWrite,
-                    Options = FileOptions.Asynchronous
-                }))
-                await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(URL, token))
-                    await netStream.CopyToAsync(fs, token);
-
-#if DEBUG
-                LogWriteLine($"\n\rDownloaded the cached asset from: {URL} is completed! (Stored to: cached\\{fInfo.Name})", LogType.Debug, true);
-#endif
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed while trying to cache asset from: {URL}\r\n{ex}", LogType.Error, true);
-            }
         }
 
         private uint SendTimeoutCancelationMessage(Exception ex, uint currentTimeout, bool ShowLoadingMsg)

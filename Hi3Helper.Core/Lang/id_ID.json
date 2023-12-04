@@ -406,7 +406,9 @@
     "AppBehavior_PostGameLaunch_Minimize": "Mengecilkan",
     "AppBehavior_PostGameLaunch_ToTray": "Sembunyikan ke Tray",
     "AppBehavior_PostGameLaunch_Nothing": "Tidak melakukan apapun",
-    "AppBehavior_MinimizeToTray": "Kecilkan ke Tray"
+    "AppBehavior_MinimizeToTray": "Kecilkan ke Tray",
+    "AppBehavior_LaunchOnStartup": "Jalankan Collapse secara otomatis saat komputer menyala",
+    "AppBehavior_StartupToTray": "Sembunyikan jendela Collapse setelah dijalankan secara otomatis"
   },
 
   "_Misc": {
@@ -937,6 +939,8 @@
     "General_GoHome": "Ke Beranda",
     "General_GoSettings": "Ke halaman Pengaturan",
     "General_OpenNotifTray": "Buka Notifikasi",
+    "General_ReloadRegion": "Muat ulang halaman saat ini",
+    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang Wilayah.",
 
     "Switch_Title": "Peralihan Game/Region Cepat",
     "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",

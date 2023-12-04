@@ -406,7 +406,9 @@
     "AppBehavior_PostGameLaunch_Minimize": "最小化",
     "AppBehavior_PostGameLaunch_ToTray": "タスクトレイへ移動",
     "AppBehavior_PostGameLaunch_Nothing": "そのまま",
-    "AppBehavior_MinimizeToTray": "最小化でタスクトレイに移動"
+    "AppBehavior_MinimizeToTray": "最小化でタスクトレイに移動",
+    "AppBehavior_LaunchOnStartup": "Windows起動時にCollapseを自動で起動",
+    "AppBehavior_StartupToTray": "自動で起動した場合はウィンドウを最小化する"
   },
 
   "_Misc": {
@@ -505,7 +507,7 @@
     "Taskbar_PopupHelp1": "クリックでCollapseを最前面で開く",
     "Taskbar_PopupHelp2": "ダブルクリックでウィンドウの表示/非表示を切り替え",
     "Taskbar_ShowApp": "Collapseメインウィンドウを表示",
-    "Taskbar_HideApp": "ランチャーを最小化",
+    "Taskbar_HideApp": "Collapseメインウィンドウを最小化",
     "Taskbar_ShowConsole": "コンソールを表示",
     "Taskbar_HideConsole": "コンソールを最小化",
     "Taskbar_ExitApp": "Collapseを終了"
@@ -937,6 +939,8 @@
     "General_GoHome": "ホームページ",
     "General_GoSettings": "ランチャー設定",
     "General_OpenNotifTray": "通知トレイを開く",
+    "General_ReloadRegion": "ページを再読み込み",
+    "General_ReloadRegion_Desc": "F5キーを押してページを再読み込みすることもできます。\n再読み込みによってサーバーと接続し直します。",
 
     "Switch_Title": "ゲーム/サーバーのクイック切り替え",
     "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
