@@ -406,7 +406,9 @@
     "AppBehavior_PostGameLaunch_Minimize": "ย่อเล็กสุด",
     "AppBehavior_PostGameLaunch_ToTray": "ซ่อนไปที่ถาด",
     "AppBehavior_PostGameLaunch_Nothing": "ไม่ต้องทำอะไร",
-    "AppBehavior_MinimizeToTray": "ย่อไปที่ถาด"
+    "AppBehavior_MinimizeToTray": "ย่อไปที่ถาด",
+    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
 
   "_Misc": {
@@ -937,6 +939,8 @@
     "General_GoHome": "ไปที่หน้าแรก",
     "General_GoSettings": "ไปที่หน้าการตั้งค่า",
     "General_OpenNotifTray": "เปิดถาดการแจ้งเตือน",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "เกมด่วน/การเปลี่ยนแปลงภูมิภาค",
     "Switch_Subtitle": "หมายเหตุ: ปุ่มลัดตามลำดับตัวเลือก",
