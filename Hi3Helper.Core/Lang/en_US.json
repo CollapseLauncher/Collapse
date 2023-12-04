@@ -937,6 +937,8 @@
     "General_GoHome": "Go to the Home page",
     "General_GoSettings": "Go to the Settings page",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
@@ -945,8 +947,6 @@
     "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",
-    "Switch_ReloadRegion": "Reload current page",
-    "Switch_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.",
 
     "GameFolder_Title": "Game Folder Access",
     "GameFolder_ScreenshotFolder": "Open the Screenshot folder",

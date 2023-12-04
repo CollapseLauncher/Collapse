@@ -41,7 +41,7 @@ namespace CollapseLauncher.Dialogs
             genStack.Children.Add(GenerateShortcutBlock(keys[3], Lang._KbShortcuts.General_GoHome));
             genStack.Children.Add(GenerateShortcutBlock(keys[4], Lang._KbShortcuts.General_GoSettings));
             genStack.Children.Add(GenerateShortcutBlock(keys[5], Lang._KbShortcuts.General_OpenNotifTray));
-            genStack.Children.Add(GenerateShortcutBlock(keys[13], Lang._KbShortcuts.Switch_ReloadRegion, Lang._KbShortcuts.Switch_ReloadRegion_Desc));
+            genStack.Children.Add(GenerateShortcutBlock(keys[13], Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
