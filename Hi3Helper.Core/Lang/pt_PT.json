@@ -401,12 +401,14 @@
     "KbShortcuts_ShowBtn": "Mostrar atalhos",
     "KbShortcuts_ResetBtn": "Redefinir atalhos",
 
-    "AppBehavior_Title": "App Behavior",
-    "AppBehavior_PostGameLaunch": "After Launching Game",
-    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
-    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
-    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
-    "AppBehavior_MinimizeToTray": "Minimize to Tray"
+    "AppBehavior_Title": "Comportamento da aplicação",
+    "AppBehavior_PostGameLaunch": "Após iniciar o jogo",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimizar",
+    "AppBehavior_PostGameLaunch_ToTray": "Esconder na gaveta de aplicações",
+    "AppBehavior_PostGameLaunch_Nothing": "Não fazer nada",
+    "AppBehavior_MinimizeToTray": "Minimizar para a gaveta de aplicações",
+    "AppBehavior_LaunchOnStartup": "Iniciar o Collapse automaticamente quando o computador ligar",
+    "AppBehavior_StartupToTray": "Esconder a janela do Collapse quando inicia automaticamente"
   },
 
   "_Misc": {
@@ -502,8 +504,8 @@
     "DiscordRP_Ad": "- Com Collapse Launcher",
     "DiscordRP_Region": "Região:",
 
-    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
-    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
+    "Taskbar_PopupHelp1": "Clica para trazer o Collapse para primeiro plano",
+    "Taskbar_PopupHelp2": "Clica duas vezes para alterar a visibilidade da janela",
     "Taskbar_ShowApp": "Mostrar janela do Collapse",
     "Taskbar_HideApp": "Esconder janela do Collapse na gaveta de aplicações",
     "Taskbar_ShowConsole": "Mostrar janela da consola do Collapse",
@@ -937,6 +939,8 @@
     "General_GoHome": "Ir para a página principal",
     "General_GoSettings": "Ir para a página de definições",
     "General_OpenNotifTray": "Abrir o painel de notificações",
+    "General_ReloadRegion": "Recarregar página atual",
+    "General_ReloadRegion_Desc": "Em alternativa, podes usar F5 para este atalho.\nNota que recarregar a página principal irá recarregar a região.",
 
     "Switch_Title": "Mudança rápida de jogo/região",
     "Switch_Subtitle": "Nota: Os atalhos seguem a ordem do seletor",
