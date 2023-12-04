@@ -1,6 +1,6 @@
 {
-  "projectName": "Collapse Launcher",
-  "projectOwner": "neon-nyan",
+  "projectName": "Collapse",
+  "projectOwner": "CollapseLauncher",
   "skipCi": true,
   "commit": true,
   "files": [
@@ -32,6 +32,16 @@
         "code",
         "maintenance",
         "review"
+      ]
+    },
+    {
+      "login": "gablm",
+      "name": "Gabriel Lima",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44784408?v=4",
+      "profile": "https://github.com/gablm",
+      "contributions": [
+        "code",
+        "translation"
       ]
     }
   ]
