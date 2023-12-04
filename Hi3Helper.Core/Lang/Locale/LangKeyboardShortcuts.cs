@@ -21,6 +21,8 @@
                 public string General_GoHome { get; set; } = LangFallback?._KbShortcuts.General_GoHome;
                 public string General_GoSettings { get; set; } = LangFallback?._KbShortcuts.General_GoSettings;
                 public string General_OpenNotifTray { get; set; } = LangFallback?._KbShortcuts.General_OpenNotifTray;
+                public string General_ReloadRegion { get; set; } = LangFallback?._KbShortcuts.General_ReloadRegion;
+                public string General_ReloadRegion_Desc { get; set; } = LangFallback?._KbShortcuts.General_ReloadRegion_Desc;
 
                 public string Switch_Title { get; set; } = LangFallback?._KbShortcuts.Switch_Title;
                 public string Switch_Subtitle { get; set; } = LangFallback?._KbShortcuts.Switch_Subtitle;

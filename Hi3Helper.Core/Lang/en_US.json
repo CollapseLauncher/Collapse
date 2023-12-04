@@ -939,6 +939,8 @@
     "General_GoHome": "Go to the Home page",
     "General_GoSettings": "Go to the Settings page",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",
