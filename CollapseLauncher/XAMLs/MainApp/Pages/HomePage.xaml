@@ -326,14 +326,12 @@
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                                 Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                            <StackPanel HorizontalAlignment="Left">
+                            <StackPanel HorizontalAlignment="Left" PointerEntered="CarouselStopScroll" PointerExited="CarouselRestartScroll">
                                 <FlipView x:Name="ImageCarousel" Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
                                   MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
                                   Style="{ThemeResource CollapseFlipViewStyle}"
-                                  HorizontalAlignment="Center"
-                                  PointerEntered="CarouselStopScroll"
-                                  PointerExited="CarouselRestartScroll">
+                                  HorizontalAlignment="Center">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
                                             <imageex:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
