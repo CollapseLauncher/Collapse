@@ -409,6 +409,7 @@ namespace CollapseLauncher.Pages
         #region Open Link from Tag
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
+            if (!e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed) return;
             SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString());
         }
 
@@ -465,6 +466,7 @@ namespace CollapseLauncher.Pages
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
         {
+            if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             object ImageTag = ((Image)sender).Tag;
             if (ImageTag == null) return;
             SpawnWebView2.SpawnWebView2Window((string)ImageTag);

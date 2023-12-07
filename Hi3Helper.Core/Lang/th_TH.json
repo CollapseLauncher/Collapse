@@ -1,7 +1,7 @@
 {
   "LanguageName": "ภาษาไทย",
   "LanguageID": "th-TH",
-  "Author": "kinodev, armzyaec1234",
+  "Author": "Faelayis, kinodev, armzyaec1234",
 
   "_StartupPage": {
     "ChooseFolderBtn": "สร้างแฟ้มเก็บไฟล์",
@@ -77,13 +77,13 @@
     "RegionLoadingSubtitleTooLong": "การดำเนินการนี้ใช้เวลานานกว่าที่คาดไว้... โปรดตรวจสอบให้แน่ใจว่าการเชื่อมต่ออินเทอร์เน็ตของคุณมีความเสถียร!",
     "NavCtrlTitleSettings": "การตั้งค่าแอปพลิเคชั่น",
     "NotifNeverAsk": "ไม่ต้องแสดงอีก",
-    "NotifNoNewNotifs": "ไม่มีการแจ้งเตือนใหม่",
+    "NotifNoNewNotifs": "ไม่มีการแจ้งเตือนใหม่ในขณะนี้",
     "NavigationMenu": "เมนู",
     "NavigationUtilities":  "ยูทิลิตี้"
   },
 
   "_HomePage": {
-    "PageTitle": "Launcher",
+    "PageTitle": "ตัวเปิดเกม",
     "PreloadTitle": "การดาวน์โหลดล่วงหน้าพร้อมใช้งาน",
     "PreloadNotifTitle": "การดาวน์โหลดแพ็กเกจล่วงหน้าของเวอร์ชั่น {0} พร้อมใช้งาน",
     "PreloadNotifDeltaDetectTitle": "ตรวจพบแพ็กเกจการโหลดล่วงหน้าในรูปแบบดีลต้าแพทช์สำหรับเวอร์ชัน {0}!",
@@ -134,7 +134,7 @@
     "PostPanel_NoNews": "มีข่าวอะไรไหมสำหรับวันนี้?",
 
     "CommunityToolsBtn": "เครื่องมือคอมมูนิตี้",
-    "CommunityToolsBtn_OfficialText": "เครื่องมือออฟฟิเชียล",
+    "CommunityToolsBtn_OfficialText": "เครื่องมืออย่างเป็นทางการ",
     "CommunityToolsBtn_CommunityText": "เครื่องมือคอมมูนิตี้",
     "CommunityToolsBtn_OpenExecutableAppDialogTitle": "เลือกไฟล์โปรแกรมที่ใช้งาน: {0}"
   },
@@ -147,7 +147,7 @@
     "ListCol4": "ขนาด",
     "ListCol5": "L.CRC",
     "ListCol6": "R.CRC",
-    "Status1": "คลิกที่ \"ตรวจสอบด่วน\" หรือ \"ตรวจสอบเต็ม\" เพื่อตรวจสอบความสมบูรณ์ของไฟล์เกมส์",
+    "Status1": "คลิกที่ \"ตรวจสอบด่วน\" หรือ \"ตรวจสอบทั้งหมด\" เพื่อตรวจสอบความสมบูรณ์ของไฟล์เกมส์",
     "Status2": "กำลังโหลดดัชนี...",
     "Status3": "ไฟล์ {0} ไฟล์อาจเสียหายหรือเสียหาย ({1} ไฟล์ทั้งหมด) คลิก \"ซ่อมแซมเกม\" เพื่อเริ่มกระบวนการซ่อมแซม",
     "Status4": "ไม่พบไฟล์เสียหาย!",
@@ -211,7 +211,7 @@
   },
 
   "_CutscenesPage": {
-    "PageTitle": "Cutscenes"
+    "PageTitle": "คัตซีน"
   },
 
   "_GameSettingsPage": {
@@ -242,7 +242,7 @@
     "Graphics_Shadow": "คุณภาพของเงา",
     "Graphics_Reflection": "คุณภาพเงาสะท้อน",
     "Graphics_FX": "ลักษณะการแสดงผล",
-    "Graphics_FXPost": "Post Processing",
+    "Graphics_FXPost": "โพสต์โปรเซส",
     "Graphics_FXPhysics": "ฟิสิกส์",
     "Graphics_FXHDR": "HDR",
     "Graphics_FXHQ": "คุณภาพสูง",
@@ -264,7 +264,7 @@
 
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
-    "Audio_BGM": "ระดับเสียง BGM",
+    "Audio_BGM": "ระดับเสียงเพลง",
     "Audio_SFX": "ระดับเสียงเอฟเฟค",
     "Audio_VOLang": "ระดับเสียงพากย์",
     "Audio_VOLang1": "จีน (สาธารณรัฐประชาชนจีน)",
@@ -278,17 +278,17 @@
     "ApplyBtn": "ยืนยันตั้งค่า",
     "SettingsApplied": "การเปลี่ยนแปลงได้รับการบันทึกแล้ว",
     "SettingsRegExported": "ส่งออกรีจิสทรีแล้ว!",
-    "SettingsRegExportTitle": "บันทึกไฟล์ Collapse Registry ไปที่...",
-    "SettingsRegImported": "นำเข้า Registry แล้ว! (จำเป็นต้องรีสตาร์ทlauncherเพื่อใช้การเปลี่ยนแปลงที่นำเข้า)",
-    "SettingsRegImportTitle": "เลือกไฟล์ Collapse Registry ไปที่...",
+    "SettingsRegExportTitle": "บันทึกไฟล์ Collapse รีจิสทรี ไปที่...",
+    "SettingsRegImported": "นำเข้า รีจิสทรี แล้ว! (จำเป็นต้องรีสตาร์ท launcher เพื่อใช้การเปลี่ยนแปลงที่นำเข้า)",
+    "SettingsRegImportTitle": "เลือกไฟล์ Collapse รีจิสทรี ไปที่...",
     "SettingsRegErr1": "ไม่ได้เลือกไฟล์",
-    "SettingsRegErr2": "ส่วนหัวของไฟล์ Collapse Registry ไม่ถูกต้อง!",
+    "SettingsRegErr2": "ส่วนหัวของไฟล์ Collapse รีจิสทรี ไม่ถูกต้อง!",
 
-    "RegImportExport": "นำเข้า / ส่งออก Registry",
+    "RegImportExport": "นำเข้า / ส่งออก รีจิสทรี",
     "RegExportTitle": "ส่งออก",
-    "RegExportTooltip": "ส่งออก Registry ไปยังไฟล์ Collapse Registry",
+    "RegExportTooltip": "ส่งออก รีจิสทรี ไปยังไฟล์ Collapse รีจิสทรี",
     "RegImportTitle": "นําเข้า",
-    "RegImportTooltip": "นำเข้า Registry จากไฟล์ Collapse Registry",
+    "RegImportTooltip": "นำเข้า รีจิสทรี จากไฟล์ Collapse รีจิสทรี",
 
     "OverlayNotInstalledTitle": "คุณไม่สามารถใช้คุณลักษณะนี้ได้เนื่องจากไม่ได้ติดตั้งภูมิภาคนี้หรือต้องการอัปเดต!",
     "OverlayNotInstalledSubtitle": "โปรดดาวน์โหลด/อัปเดตเกมก่อนในหน้าแรก",
@@ -300,10 +300,10 @@
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
-    "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
+    "CustomArgs_Footer2": "เอกสารคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
-    "GameBoost": "เพิ่มลำดับความสำคัญของเกม [Experimental]"
+    "GameBoost": "เพิ่มลำดับความสำคัญของเกม [ทดลอง]"
   },
 
   "_SettingsPage": {
@@ -311,8 +311,8 @@
 
     "Debug": "การตั้งค่าเพิ่มเติม",
     "Debug_Console": "แสดงคอนโซล",
-    "Debug_IncludeGameLogs": "บันทึก Log เกมลงใน Collapse (อาจมีข้อมูลที่ละเอียดอ่อน)",
-    "Debug_MultipleInstance": "อนุญาตให้เรียกใช้หลายอินสแตนซ์ของ Collapse",
+    "Debug_IncludeGameLogs": "บันทึกประวัติเหตุการณ์เกมลงใน Collapse (อาจมีข้อมูลที่ละเอียดอ่อน)",
+    "Debug_MultipleInstance": "อนุญาตให้เรียกใช้ Collapse หลายอินสแตนซ์",
 
     "ChangeRegionWarning_Toggle": "แสดงคำเตือนเมื่อมีการเปลี่ยนภูมิภาค",
     "ChangeRegionWarning_Warning": "*คุณต้องรีสตาร์ทแอปเพื่อให้การตั้งค่านี้มีผลใช้งาน",
@@ -347,14 +347,14 @@
     "AppThreads_Help5": "หัวข้อนี้จะจัดการกระบวนการแยก/ตรวจสอบขณะติดตั้ง/ซ่อมแซมเกม",
     "AppThreads_Help6": "หมายเหตุ: การตั้งค่านี้จะไม่มีผลอีกต่อไปในขณะที่ติดตั้ง Honkai Impact 3rd",
 
-    "DiscordRPC": "แสดงสถานะกิจกรรมดิสคอร์ด",
+    "DiscordRPC": "แสดงสถานะกิจกรรมในดิสคอร์ด",
     "DiscordRPC_Toggle": "แสดงสถานะดิสคอร์ด",
-    "DiscordRPC_GameStatusToggle": "แสดงเกมที่เล่นในปัจจุบันบนสถานะดิสคอร์ด",
+    "DiscordRPC_GameStatusToggle": "แสดงเกมที่เล่นอยู่ในสถานะดิสคอร์ด",
 
     "Update": "ตรวจสอบการอัปเดต",
     "Update_CurVer": "เวอร์ชันปัจจุบัน",
     "Update_CheckBtn": "ตรวจสอบการอัปเดต",
-    "Update_ForceBtn": "อัปเดตแบบบังคับ",
+    "Update_ForceBtn": "บังคับอัปเดต",
     "Update_NewVer1": "อัปเดตเป็น",
     "Update_NewVer2": "สามารถใช้ได้!",
     "Update_LatestVer": "คุณกำลังใช้งานเวอร์ชั่นล่าสุด",
@@ -362,7 +362,7 @@
     "AppFiles": "การจัดการไฟล์โปรแกรม",
     "AppFiles_OpenDataFolderBtn": "เปิดโฟลเดอร์ที่ติดตั้ง",
     "AppFiles_RelocateDataFolderBtn": "ย้ายโฟลเดอร์ติดตั้ง",
-    "AppFiles_ClearLogBtn": "ล้างไฟล์ Log",
+    "AppFiles_ClearLogBtn": "ล้างไฟล์ บันทึกประวัติเหตุการณ์",
     "AppFiles_ClearImgCachesBtn": "ล้างไฟล์รูปภาพ",
 
     "AppFiles_ClearMetadataBtn": "ล้างข้อมูลเมตาและเริ่มต้นใหม่",
@@ -370,15 +370,15 @@
     "AppFiles_ClearMetadataDialogHelp": "ล้างข้อมูลประเภท Collapse จะทำให้ Collapse เริ่มทำงานใหม่อย่างเคร่งครัด ใช้เฉพาะเมื่อพบปัญหาในการโหลดภูมิภาค\r\nคุณแน่ใจหรือไม่ ?",
 
     "ReportIssueBtn": "รายงานปัญหา",
-    "ContributePRBtn": "ร่วมสนับสนุนด้วยการ Pull Request",
-    "ContributorListBtn": "ผู้ร่วมให้ข้อมูล Open Source",
+    "ContributePRBtn": "ร่วมสนับสนุนด้วยการ สร้างคำขอรวมโค้ด",
+    "ContributorListBtn": "ผู้ร่วมให้ข้อมูล โอเพ่นซอร์ส",
     "HelpLocalizeBtn": "ช่วยเราในการแปลภาษา Collapse!",
 
     "About": "เกี่ยวกับ",
     "About_Copyright1": "© 2565-2566",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl และ Kuro",
     "About_Copyright3": "ต่ำกว่า",
-    "About_Copyright4": "สงวนลิขสิทธิ์ทั้งหมด",
+    "About_Copyright4": " สงวนลิขสิทธิ์ทั้งหมด",
 
     "Disclaimer": "สงวนสิทธิ์",
     "Disclaimer1": "แอพนี้ไม่มีส่วนเกี่ยวข้องกับ",
@@ -389,12 +389,12 @@
     "DiscordBtn2": "Honkai Impact 3rd ดิสคอร์ด",
     "DiscordBtn3": "ดิสคอร์ด Collapse อย่างเป็นทางการ!",
 
-    "AppChangeReleaseChannel": "เปลี่ยนเป็นช่องเผยแพร่ทางการ{0}",
+    "AppChangeReleaseChannel": "เปลี่ยนเป็นช่องเผยแพร่ทางการ {0}",
 
     "EnableAcrylicEffect": "ใช้งานเบลอแบบ Acrylic",
     "EnableDownloadChunksMerging": "รวมแพ็คเกจที่ดาวน์โหลด",
 
-    "LowerCollapsePrioOnGameLaunch": "ลดการใช้ทรัพยากรของกระบวนการ Collapse ลงเมื่อเกมถูกเปิดใช้งาน",
+    "LowerCollapsePrioOnGameLaunch": "ลดการใช้ทรัพยากรของ Collapse ลงเมื่อเกมถูกเปิดใช้งาน",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "ปิดการใช้งาน Carousel ในหน้าหลักและลดลำดับการยุติของ Collapse เป็น Below Normal",
 
     "KbShortcuts_Title": "แป้นพิมพ์ทางลัด",
@@ -407,8 +407,8 @@
     "AppBehavior_PostGameLaunch_ToTray": "ซ่อนไปที่ถาด",
     "AppBehavior_PostGameLaunch_Nothing": "ไม่ต้องทำอะไร",
     "AppBehavior_MinimizeToTray": "ย่อไปที่ถาด",
-    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
-    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
+    "AppBehavior_LaunchOnStartup": "เริ่มต้นโดยอัตโนมัติเมื่อคอมพิวเตอร์ของคุณบูทขึ้น",
+    "AppBehavior_StartupToTray": "ซ่อนหน้าต่างเมื่อเริ่มต้นโดยอัตโนมัติ"
   },
 
   "_Misc": {
@@ -418,10 +418,10 @@
     "FeatureUnavailableSubtitle": "โปรดตรวจสอบในภายหลัง!",
     "TimeRemain": "เวลาที่เหลือ",
     "TimeRemainHMSFormat": "เหลืออีก {0:%h}ชม{0:%m}น{0:%s}วิ",
-    "TimeRemainHMSFormatPlaceholder": "เหลืออีก --ชม--น--วิ left",
-    "Speed": "ความเร็ว: {0} /s",
-    "SpeedPerSec": "+{0}/s",
-    "SpeedPlaceholder": "ความเร็ว: - /s",
+    "TimeRemainHMSFormatPlaceholder": "เหลืออีก --ชม--น--วิ ที่เหลือ",
+    "Speed": "ความเร็ว: {0} /วิ",
+    "SpeedPerSec": "+{0}/วิ",
+    "SpeedPlaceholder": "ความเร็ว: - /วิ",
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
@@ -482,7 +482,7 @@
     "Disabled": "ปิดใช้งาน",
     "Enabled": "เปิดการใช้งาน",
 
-    "BuildChannelPreview": "ดูตัวอย่าง",
+    "BuildChannelPreview": "ตัวอย่าง",
     "BuildChannelStable": "เสถียร",
 
     "CDNDescription_Github": "พื้นที่เก็บข้อมูล Launcher อย่างเป็นทางการ (หลัก)",
@@ -496,7 +496,7 @@
     "DiscordRP_InGame": "ในเกม",
     "DiscordRP_Update": "กำลังอัปเดต",
     "DiscordRP_Repair": "กำลังซ่อมแซมไฟล์เกม",
-    "DiscordRP_Cache": "กำลังอัปเดต Cache",
+    "DiscordRP_Cache": "กำลังอัปเดตแคช",
     "DiscordRP_GameSettings": "กำลังเปลี่ยนการตั้งค่าเกม",
     "DiscordRP_AppSettings": "กำลังเปลี่ยนการตั้งค่าแอป",
     "DiscordRP_Idle": "ว่าง",
@@ -604,7 +604,7 @@
     "ChangePlaytimeSubtitle": "การเปลี่ยนเวลาที่เล่นหมายถึงการเขียนทับค่าปัจจุบันด้วยค่าที่คุณเพิ่งป้อนเข้าไป\n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของยุบ และคุณสามารถเปลี่ยนค่านี้อีกครั้งเมื่อใดก็ได้เมื่อไม่ได้เล่นเกม",
     "ResetPlaytimeTitle": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตเวลาที่เล่นของคุณ?",
     "ResetPlaytimeSubtitle": "การรีเซ็ตเวลาที่เล่นของคุณหมายถึงการตั้งค่าตัวนับเวลาเล่นกลับเป็น 0 ",
-    "ResetPlaytimeSubtitle2": "destructive",
+    "ResetPlaytimeSubtitle2": "รีเซ็ต",
     "ResetPlaytimeSubtitle3": " การดำเนินการ หมายความว่าคุณไม่สามารถยกเลิกการดำเนินการนี้ได้เมื่อคุณยืนยันแล้ว\n\nคุณต้องการดำเนินการต่อหรือไม่?\n\nหมายเหตุ: สิ่งนี้ไม่มีผลกระทบต่อวิธีการทำงานของยุบ และคุณสามารถเปลี่ยนค่านี้อีกครั้งเมื่อใดก็ได้เมื่อไม่ได้เล่นเกม",
     "LocateExePathTitle": "ค้นหาตำแหน่งการติดตั้งที่ใช้งานได้",
     "LocateExePathSubtitle": "โปรดชี้ Collapse ไปยังตำแหน่งของไฟล์ปฏิบัติการของแอปพลิเคชันของคุณ:",
@@ -750,7 +750,7 @@
     "NotifFirstWelcomeBtn": "เยี่ยมชม กิตฮับวิกิ",
 
     "NotifPreviewBuildUsedTitle": "คุณกำลังใช้ รุ่นตัวอย่างบิลด์!",
-    "NotifPreviewBuildUsedSubtitle": "ขณะนี้คุณกำลังใช้ บิลด์[PREVIEW] ซึ่งยังอยู่ระหว่างการทดสอบ หากคุณพบปัญหาใดๆ โปรดรายงานโดยใช้ปุ่ม \"{0}\" ด้านล่าง ขอบคุณ!",
+    "NotifPreviewBuildUsedSubtitle": "ขณะนี้คุณกำลังใช้ บิลด์ [ตัวอย่าง] ซึ่งยังอยู่ระหว่างการทดสอบ หากคุณพบปัญหาใดๆ โปรดรายงานโดยใช้ปุ่ม \"{0}\" ด้านล่าง ขอบคุณ!",
     "NotifPreviewBuildUsedBtn": "รายงานปัญหา",
 
     "NotifKbShortcutTitle": "คุณลักษณะใหม่ได้มาถึงแล้ว!",
@@ -767,12 +767,12 @@
     "Graphics_ExclusiveFullscreen": "ใช้แบบเต็มหน้าจอพิเศษ",
     "Graphics_ResSelectPlaceholder": "เลือก",
     "Graphics_ResCustom": "ใช้ความละเอียดที่กำหนดเอง",
-    "Graphics_ResCustomW": "W",
-    "Graphics_ResCustomH": "H",
+    "Graphics_ResCustomW": "ความกว้าง",
+    "Graphics_ResCustomH": "ความสูง",
 
-    "Graphics_FPS": "FPS",
-    "Graphics_FPS_Help": "120 FPS เป็นการทดลอง! โปรดใช้ด้วยความระมัดระวังเนื่องจาก Honkai: Star Rail ไม่รองรับสิ่งนี้อย่างเป็นทางการ!",
-    "Graphics_FPS_Help2": "การตั้งค่า FPS เป็น 120 จะทำให้เมนูการตั้งค่ากราฟิกในเกมหยุดทำงาน\nหากเมนูของคุณเสียในเกม ให้ใช้ Collapse เพื่อเปลี่ยนการตั้งค่ากราฟิกเกม",
+    "Graphics_FPS": "เฟรมเรท",
+    "Graphics_FPS_Help": "120 เฟรมเรท เป็นการทดลอง! โปรดใช้ด้วยความระมัดระวังเนื่องจาก Honkai: Star Rail ไม่รองรับสิ่งนี้อย่างเป็นทางการ!",
+    "Graphics_FPS_Help2": "การตั้งค่า เฟรมเรท เป็น 120 จะทำให้เมนูการตั้งค่ากราฟิกในเกมหยุดทำงาน\nหากเมนูของคุณเสียในเกม ให้ใช้ Collapse เพื่อเปลี่ยนการตั้งค่ากราฟิกเกม",
     "Graphics_VSync": "VSync",
     "Graphics_RenderScale": "เรนเดอร์สเกล",
     "Graphics_ResolutionQuality": "คุณภาพความละเอียด",
@@ -781,7 +781,7 @@
     "Graphics_CharacterQuality": "คุณภาพตัวละคร",
     "Graphics_EnvDetailQuality": "รายละเอียดสภาพแวดล้อม",
     "Graphics_ReflectionQuality": "คุณภาพแสงสะท้อน",
-    "Graphics_BloomQuality": "คุณภาพ Bloom",
+    "Graphics_BloomQuality": "คุณภาพแสงที่ส่องออกมาจากวัตถุ",
     "Graphics_AAMode": "โหมดลบรอยหยัก",
     "Graphics_SFXQuality": "คุณภาพเอฟเฟค",
 
@@ -806,8 +806,8 @@
 
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
-    "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
-    "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง ผู้เล่นเอกภาพแบบสแตนด์อโลน",
+    "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเองห โปรดตรวจสอบที่",
+    "CustomArgs_Footer2": "เอกสารคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
     "Audio_Title": "การตั้งค่าเสียง",
@@ -832,7 +832,7 @@
     "PageTitle": "ตั้งค่าเกม",
 
     "Graphics_Title": "การตั้งค่ากราฟิก",
-    "Graphics_ResolutionPanel": "ขนาดของตัวเกม:",
+    "Graphics_ResolutionPanel": "การแสดงผลของตัวเกม:",
     "Graphics_Fullscreen": "เต็มหน้าจอ",
     "Graphics_ExclusiveFullscreen": "ใช้แบบเต็มหน้าจอพิเศษ",
     "Graphics_ExclusiveFullscreen_Help": "แบบเต็มหน้าจอพิเศษอาจทำให้เกมสุ่มค้าง!",
@@ -854,8 +854,8 @@
     "Graphics_VolFogs_ToolTip": "ต้องตั้งค่าคุณภาพของเงาไว้ที่ระดับปานกลางหรือสูงกว่า!",
     "Graphics_ReflectionQuality": "เงาสะท้อน",
     "Graphics_MotionBlur": "โมชั่นเบลอ",
-    "Graphics_BloomQuality": "Bloom",
-    "Graphics_CrowdDensity": "ความหนาแน่นของNPC",
+    "Graphics_BloomQuality": "แสงที่ส่องออกมาจากวัตถุ",
+    "Graphics_CrowdDensity": "ความหนาแน่นของตัวละคร (NPC)",
     "Graphics_SubsurfaceScattering": "การกระจายแสงใต้พื้นผิว",
     "Graphics_TeammateFX": "เอฟเฟกต์เพื่อนร่วมทีม",
     "Graphics_AnisotropicFiltering": "ตัวกรอง Anisotropic",
@@ -886,7 +886,7 @@
     "SpecMedium": "ปานกลาง",
     "SpecHigh": "สูง",
     "SpecVeryHigh": "สูงมาก",
-    "SpecExtreme": "เต็มคาราเบล",
+    "SpecExtreme": "สุดขีด",
     "SpecPartiallyOff": "ปิดบางส่วน",
 
     "ApplyBtn": "ยืนยันตั้งค่า",
@@ -902,12 +902,12 @@
     "CustomArgs_Title": "เริ่มต้นตั้งค่าการเริ่มเกมแบบกำหนดเอง (ขั้นสูง)",
     "CustomArgs_Subtitle": "การเริ่มเกมแบบกำหนดเอง",
     "CustomArgs_Footer1": "สำหรับข้อมูลเพิ่มเติมเกี่ยวกับการเริ่มเกมแบบกำหนดเอง โปรดตรวจสอบที่",
-    "CustomArgs_Footer2": "เอกสารบรรทัดคำสั่ง Unity Standalone Player",
+    "CustomArgs_Footer2": "เอกสารคำสั่ง Unity Standalone Player",
     "CustomArgs_Footer3": "เพื่อดูพารามิเตอร์เพิ่มเติม",
 
     "Audio_Title": "การตั้งค่าเสียง",
     "Audio_Master": "ระดับเสียงหลัก",
-    "Audio_BGM": "ระดับเสียง BGM",
+    "Audio_BGM": "ระดับเสียงเพลง",
     "Audio_SFX": "ระดับเสียงเอฟเฟค",
     "Audio_VO": "ระดับเสียงพากย์",
 
@@ -933,20 +933,20 @@
     "GameFolderTab": "การเข้าถึงโฟลเดอร์",
     "GameManagementTab": "การจัดการเกม",
 
-    "General_Title": "General",
+    "General_Title": "ทั่วไป",
     "General_OpenMenu": "เปิดเมนูนี้",
     "General_OpenMenu_Desc": "นอกจากนี้ยังสามารถเข้าถึงได้ผ่านหน้าการตั้งค่าแอป.",
     "General_GoHome": "ไปที่หน้าแรก",
     "General_GoSettings": "ไปที่หน้าการตั้งค่า",
     "General_OpenNotifTray": "เปิดถาดการแจ้งเตือน",
-    "General_ReloadRegion": "Reload current page",
-    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
+    "General_ReloadRegion": "โหลดหน้าปัจจุบันซ้ำ",
+    "General_ReloadRegion_Desc": "การกด F5 เป็นอีกทางเลือกหนึ่งของทางลัดนี้.\nโปรดทราบว่าการโหลดหน้าแรกซ้ำจะเป็นการโหลดภูมิภาคใหม่.",
 
     "Switch_Title": "เกมด่วน/การเปลี่ยนแปลงภูมิภาค",
     "Switch_Subtitle": "หมายเหตุ: ปุ่มลัดตามลำดับตัวเลือก",
     "Switch_SwapBtn": "สลับ {0} และ {1}",
     "Switch_ChangeGame": "เปลี่ยนเกม",
-    "Switch_ChangeGame_Desc": "คุณสามารถใช้ นัมแพด สำหรับทางลัดนี้ได้เช่นกัน!\n ตัวอย่างเช่น {0}+1 หรือ นัมแพด 1 (โดยไม่ต้องใช้ตัวดัดแปลง {0}) จะนำไปสู่หน้า Honkai Impact 3rd (ภูมิภาคที่ใช้ครั้งล่าสุด).",
+    "Switch_ChangeGame_Desc": "คุณสามารถใช้ นัมแพด สำหรับทางลัดนี้ได้เช่นกัน!\nตัวอย่างเช่น {0}+1 หรือ นัมแพด 1 (โดยไม่ต้องใช้ตัวดัดแปลง {0}) จะนำไปสู่หน้า Honkai Impact 3rd (ภูมิภาคที่ใช้ครั้งล่าสุด).",
     "Switch_ChangeRegion": "เปลี่ยนภูมิภาค",
     "Switch_ChangeRegion_Desc": "ตัวอย่างเช่น สำหรับ Genshin Impact, {0}+1 จะนำไปสู่ภูมิภาค Global.",
 
