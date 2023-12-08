@@ -199,7 +199,7 @@ namespace CollapseLauncher
                 if (!urlStatus.Item1) return null;
 
                 // Continue to get the content and return the stream if successful
-                HttpResponseMessage response = await GetURLHttpResponse(urlStatus.Item2, token);
+                using HttpResponseMessage response = await GetURLHttpResponse(urlStatus.Item2, token);
                 return await GetHttpStreamFromResponse(response, token);
             }
             // Handle the error and log it. If fails, then log it and return false
@@ -319,7 +319,7 @@ namespace CollapseLauncher
 
         public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token)
         {
-            HttpRequestMessage requestMsg = new HttpRequestMessage()
+            using HttpRequestMessage requestMsg = new HttpRequestMessage()
             {
                 RequestUri = new Uri(URL),
                 Method = HttpMethod.Get
@@ -331,7 +331,7 @@ namespace CollapseLauncher
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
-            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
+            using HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
