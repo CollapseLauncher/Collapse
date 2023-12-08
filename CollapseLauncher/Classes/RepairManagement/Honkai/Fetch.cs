@@ -190,12 +190,11 @@ namespace CollapseLauncher
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "manifest.m");
             string manifestRemotePath = string.Format(CombineURLFromString(_audioBaseRemotePath, _gameServer.Manifest.ManifestAudio.ManifestAudioPlatform.ManifestWindows), $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision);
-            KianaAudioManifest manifest;
 
             try
             {
                 // Try to get the audio manifest and deserialize it
-                manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
+                KianaAudioManifest manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
 
                 // Deserialize manifest and build Audio Index
                 await BuildAudioIndex(_httpClient, manifest, assetIndex, token);
@@ -227,7 +226,10 @@ namespace CollapseLauncher
         private async Task BuildAudioIndex(Http _httpClient, KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
         {
             // Iterate the audioAsset to be added in audioIndex
-            foreach (ManifestAssetInfo audioInfo in audioManifest.AudioAssets)
+            foreach (ManifestAssetInfo audioInfo in audioManifest
+                .AudioAssets
+                .Where(audioInfo => audioInfo.Language == AudioLanguageType.Common
+                                 || audioInfo.Language == _audioLanguage))
             {
                 // Try get the availability of the audio asset
                 if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
