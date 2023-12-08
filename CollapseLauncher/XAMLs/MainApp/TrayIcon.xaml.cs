@@ -51,7 +51,9 @@ namespace CollapseLauncher
                 $"{_popupHelp2}";  
 #else
             CollapseTaskbar.ToolTipText = 
-                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}"; 
+                $"Collapse Launcher v{AppCurrentVersion.VersionString} {(LauncherConfig.IsPreview ? _preview : _stable)}" +
+                $"{_popupHelp1}\r\n" +
+                $"{_popupHelp2}";
 #endif
             CloseButton.Text = _exitApp;
 
