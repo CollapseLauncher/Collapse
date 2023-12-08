@@ -18,14 +18,17 @@ namespace CollapseLauncher.GameVersioning
         private const string _defaultIniProfileSection = "launcher";
         private const string _defaultIniVersionSection = "General";
         private string _defaultGameDirPath { get => Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName, GamePreset.GameDirectoryName); }
-
+        
+        private readonly int gameChannelID    = new PresetConfigV2().ChannelID;
+        private readonly int gameSubChannelID = new PresetConfigV2().SubChannelID;
+        
         private IniSection _defaultIniProfile
         {
             get => new IniSection()
             {
                 { "cps", new IniValue() },
-                { "channel", new IniValue("1") },
-                { "sub_channel", new IniValue("1") },
+                { "channel", new IniValue(gameChannelID) },
+                { "sub_channel", new IniValue(gameSubChannelID) },
                 { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
                 { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
                 { "is_first_exit", new IniValue(false) },
@@ -38,23 +41,23 @@ namespace CollapseLauncher.GameVersioning
             get => new IniSection()
             {
                 { "cps", new IniValue("bilibili") },
-                { "channel", new IniValue("14") },
-                { "sub_channel", new IniValue("0") },
+                { "channel", new IniValue(gameChannelID) },
+                { "sub_channel", new IniValue(gameSubChannelID) },
                 { "game_install_path", new IniValue(_defaultGameDirPath.Replace('\\', '/')) },
                 { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
                 { "is_first_exit", new IniValue(false) },
                 { "exit_type", new IniValue(2) }
             };
         }
-
+        
         private IniSection _defaultIniVersion
         {
             get => new IniSection()
             {
-                { "channel", new IniValue(1) },
+                { "channel", new IniValue(gameChannelID) },
                 { "cps", new IniValue() },
                 { "game_version", new IniValue() },
-                { "sub_channel", new IniValue(1) },
+                { "sub_channel", new IniValue(gameSubChannelID) },
                 { "sdk_version", new IniValue() }
             };
         }
@@ -63,10 +66,10 @@ namespace CollapseLauncher.GameVersioning
         {
             get => new IniSection()
             {
-                { "channel", new IniValue(14) },
+                { "channel", new IniValue(gameChannelID) },
                 { "cps", new IniValue("bilibili") },
                 { "game_version", new IniValue() },
-                { "sub_channel", new IniValue(0) },
+                { "sub_channel", new IniValue(gameSubChannelID) },
                 { "sdk_version", new IniValue() }
             };
         }
@@ -93,7 +96,11 @@ namespace CollapseLauncher.GameVersioning
         public string GameDirPath
         {
             get => Path.GetDirectoryName(GameIniVersionPath);
-            set => UpdateGamePath(value, false);
+            set
+            {
+                UpdateGamePath(value, false);
+                UpdateGameChannels(true);
+            }
         }
         public string GameDirAppDataPath
         {
@@ -153,7 +160,11 @@ namespace CollapseLauncher.GameVersioning
                 // If not, then return as null
                 return null;
             }
-            set => UpdateGameVersion(value ?? GameVersionAPI);
+            set
+            {
+                UpdateGameVersion(value ?? GameVersionAPI);
+                UpdateGameChannels(true);
+            }
         }
 
         protected GameVersion? PluginVersionInstalled
@@ -395,6 +406,7 @@ namespace CollapseLauncher.GameVersioning
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
+                UpdateGameChannels(true);
             }
         }
 
@@ -405,6 +417,18 @@ namespace CollapseLauncher.GameVersioning
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
             }
+        }
+
+        public void UpdateGameChannels(bool saveValue = true)
+        {
+            GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
+            GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
+            
+            if (GamePreset.ZoneName == "Bilibili") 
+                GameIniVersion[_defaultIniVersionSection]["cps"] = "bilibili";
+            
+            if (saveValue)
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
         }
 
         public void UpdatePluginVersion(GameVersion version, bool saveValue = true)
