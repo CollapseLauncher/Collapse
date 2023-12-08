@@ -1,18 +1,29 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
     class BridgedNetworkStream : Stream
     {
+        private protected readonly HttpResponseMessage _networkResponse;
         private protected readonly Stream _networkStream;
         private protected long _networkLength;
         private protected long _currentPosition = 0;
 
-        public BridgedNetworkStream(Stream networkStream, long networkLength)
+        internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
+            Stream networkStream = await networkResponse?.Content?.ReadAsStreamAsync(token);
+            return new BridgedNetworkStream(networkResponse, networkStream);
+        }
+
+        public BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream)
+        {
+            _networkResponse = networkResponse;
+            _networkLength = networkResponse?.Content?.Headers?.ContentLength ?? 0;
             _networkStream = networkStream;
-            _networkLength = networkLength;
         }
 
         ~BridgedNetworkStream() => Dispose();
@@ -77,7 +88,8 @@ namespace CollapseLauncher
             base.Dispose(disposing);
             if (disposing)
             {
-                _networkStream.Dispose();
+                _networkResponse?.Dispose();
+                _networkStream?.Dispose();
             }
         }
     }

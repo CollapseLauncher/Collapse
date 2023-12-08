@@ -7,6 +7,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -250,6 +251,7 @@ namespace CollapseLauncher
 
         internal static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
         {
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
                 // Try get the remote stream and download the file
@@ -274,7 +276,6 @@ namespace CollapseLauncher
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read = 0;
-                byte[] buffer = new byte[4 << 10];
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
 
@@ -290,6 +291,10 @@ namespace CollapseLauncher
             {
                 ErrorSender.SendException(ex, ErrorType.Connection);
 #endif
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
 

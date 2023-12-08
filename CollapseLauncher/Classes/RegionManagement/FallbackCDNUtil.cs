@@ -331,16 +331,12 @@ namespace CollapseLauncher
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
-            using HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
+            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
-        {
-            long networkLength = responseMsg?.Content?.Headers?.ContentLength ?? 0;
-
-            return new BridgedNetworkStream(await responseMsg.Content.ReadAsStreamAsync(token), networkLength);
-        }
+            => await BridgedNetworkStream.CreateStream(responseMsg, token);
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);
