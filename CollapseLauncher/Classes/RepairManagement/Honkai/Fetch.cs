@@ -13,10 +13,14 @@ using System.Data;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Media.Protection.PlayReady;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -197,7 +201,7 @@ namespace CollapseLauncher
                 KianaAudioManifest manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
 
                 // Deserialize manifest and build Audio Index
-                await BuildAudioIndex(_httpClient, manifest, assetIndex, token);
+                await BuildAudioIndex(manifest, assetIndex, token);
 
                 // Build audio version file
                 BuildAudioVersioningFile(manifest);
@@ -223,38 +227,47 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task BuildAudioIndex(Http _httpClient, KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
+        private async Task BuildAudioIndex(KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
         {
-            // Iterate the audioAsset to be added in audioIndex
-            foreach (ManifestAssetInfo audioInfo in audioManifest
+            // Iterate the audioAsset to be added in audioIndex in parallel
+            await Parallel.ForEachAsync(audioManifest
                 .AudioAssets
                 .Where(audioInfo => audioInfo.Language == AudioLanguageType.Common
-                                 || audioInfo.Language == _audioLanguage))
-            {
-                // Try get the availability of the audio asset
-                if (await IsAudioFileAvailable(_httpClient, audioInfo, token))
+                                 || audioInfo.Language == _audioLanguage),
+                new ParallelOptions
                 {
-                    // Skip AUDIO_Default since it's already been provided by base index
-                    if (audioInfo.Name == "AUDIO_Default") continue;
-
-                    // Assign based on each values
-                    FilePropertiesRemote audioAsset = new FilePropertiesRemote
+                    CancellationToken = token,
+                    MaxDegreeOfParallelism = _threadCount
+                }, async (audioInfo, token) =>
+                {
+                    // Try get the availability of the audio asset
+                    if (await IsAudioFileAvailable(audioInfo, token))
                     {
-                        RN = audioInfo.Path,
-                        N = CombineURLFromString(_audioBaseLocalPath, audioInfo.Name + ".pck"),
-                        S = audioInfo.Size,
-                        FT = FileType.Audio,
-                        CRC = audioInfo.HashString,
-                        AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
-                    };
+                        // Skip AUDIO_Default since it's already been provided by base index
+                        if (audioInfo.Name != "AUDIO_Default")
+                        {
+                            lock (audioIndex)
+                            {
+                                // Assign based on each values
+                                FilePropertiesRemote audioAsset = new FilePropertiesRemote
+                                {
+                                    RN = audioInfo.Path,
+                                    N = CombineURLFromString(_audioBaseLocalPath, audioInfo.Name + ".pck"),
+                                    S = audioInfo.Size,
+                                    FT = FileType.Audio,
+                                    CRC = audioInfo.HashString,
+                                    AudioPatchInfo = audioInfo.IsHasPatch ? audioInfo.PatchInfo : null,
+                                };
 
-                    // Add audioAsset to audioIndex
-                    audioIndex.Add(audioAsset);
-                }
-            }
+                                // Add audioAsset to audioIndex
+                                audioIndex.Add(audioAsset);
+                            }
+                        }
+                    }
+                });
         }
 
-        private async ValueTask<bool> IsAudioFileAvailable(Http _httpClient, ManifestAssetInfo audioInfo, CancellationToken token)
+        private async ValueTask<bool> IsAudioFileAvailable(ManifestAssetInfo audioInfo, CancellationToken token)
         {
             // If the file is static (NeedMap == true), then pass
             if (audioInfo.NeedMap) return true;
@@ -267,11 +280,11 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string audioURL = CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), audioInfo.Path);
-            (int, bool) urlStatus = await _httpClient.GetURLStatus(audioURL, token);
+            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(audioURL, token);
 
-            LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
+            LogWriteLine($"The audio asset: {audioInfo.Path} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
-            return urlStatus.Item2;
+            return urlStatus.IsSuccessStatusCode;
         }
 
         private string GetXmlConfigKey()
