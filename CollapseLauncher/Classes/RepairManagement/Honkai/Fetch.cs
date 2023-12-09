@@ -7,6 +7,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,6 +27,18 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
+    internal struct HonkaiRepairAssetIgnore
+    {
+        internal static HonkaiRepairAssetIgnore CreateEmpty() => new HonkaiRepairAssetIgnore()
+        {
+            IgnoredAudioPCKType = Array.Empty<AudioPCKType>(),
+            IgnoredVideoCGSubCategory = Array.Empty<int>()
+        };
+
+        internal AudioPCKType[] IgnoredAudioPCKType;
+        internal int[] IgnoredVideoCGSubCategory;
+    }
+
     internal partial class HonkaiRepair
     {
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
@@ -44,13 +57,6 @@ namespace CollapseLauncher
                 _cacheUtil.ProgressChanged += _innerObject_ProgressAdapter;
                 _cacheUtil.StatusChanged += _innerObject_StatusAdapter;
 
-                // Region: VideoIndex via External -> _cacheUtil: Data Fetch
-                // Fetch video index and also fetch the gateway URL
-                (string, string) gatewayURL;
-                gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, token);
-                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
-                _gameServer = _cacheUtil?.GetCurrentGateway();
-
                 // Region: XMFAndAssetIndex
                 // Fetch metadata
                 Dictionary<string, string> manifestDict = await FetchMetadata(_httpClient, token);
@@ -59,6 +65,23 @@ namespace CollapseLauncher
                 if (!manifestDict.ContainsKey(_gameVersion.VersionString))
                 {
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                }
+
+                // Get the list of ignored assets
+                HonkaiRepairAssetIgnore IgnoredAssetIDs = GetIgnoredAssetsProperty();
+
+                // Region: VideoIndex via External -> _cacheUtil: Data Fetch
+                // Fetch video index and also fetch the gateway URL
+                (string, string) gatewayURL;
+                gatewayURL = await FetchVideoAndGateway(_httpClient, assetIndex, IgnoredAssetIDs, token);
+                _assetBaseURL = "http://" + gatewayURL.Item1 + '/';
+                _gameServer = _cacheUtil?.GetCurrentGateway();
+
+                // Region: AudioIndex
+                // Try check audio manifest.m file and fetch it if it doesn't exist
+                if (!_isOnlyRecoverMain)
+                {
+                    await FetchAudioIndex(_httpClient, assetIndex, IgnoredAssetIDs, token);
                 }
 
                 // Assign the URL based on the version
@@ -71,13 +94,6 @@ namespace CollapseLauncher
                 // Region: XMFAndAssetIndex
                 // Try check XMF file and fetch it if it doesn't exist
                 await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
-
-                // Region: AudioIndex
-                // Try check audio manifest.m file and fetch it if it doesn't exist
-                if (!_isOnlyRecoverMain)
-                {
-                    await FetchAudioIndex(_httpClient, assetIndex, token);
-                }
             }
             finally
             {
@@ -89,8 +105,42 @@ namespace CollapseLauncher
             }
         }
 
+        #region Registry Utils
+#nullable enable
+        private HonkaiRepairAssetIgnore GetIgnoredAssetsProperty()
+        {
+            // Try get the parent registry key
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager.GamePreset.ConfigRegistryLocation);
+            if (keys == null) return HonkaiRepairAssetIgnore.CreateEmpty(); // Return an empty property if the parent key doesn't exist
+            
+            // Initialize the property
+            AudioPCKType[] IgnoredAudioPCKTypes = Array.Empty<AudioPCKType>();
+            int[] IgnoredVideoCGSubCategory = Array.Empty<int>();
+
+            // Try get the values of the registry key of the Audio ignored list
+            object? objIgnoredAudioPCKTypes = keys?.GetValue("GENERAL_DATA_V2_DeletedAudioTypes_h214176984");
+            if (objIgnoredAudioPCKTypes != null)
+            {
+                ReadOnlySpan<byte> bytesIgnoredAudioPckTypes = (byte[])objIgnoredAudioPCKTypes;
+                IgnoredAudioPCKTypes = bytesIgnoredAudioPckTypes.Deserialize<AudioPCKType[]>(InternalAppJSONContext.Default) ?? IgnoredAudioPCKTypes;
+            }
+
+            // Try get the values of the registry key of the Video CG ignored list
+            object? objIgnoredVideoCGSubCategory = keys?.GetValue("GENERAL_DATA_V2_DeletedCGPackages_h2282700200");
+            if (objIgnoredVideoCGSubCategory != null)
+            {
+                ReadOnlySpan<byte> bytesIgnoredVideoCGSubCategory = (byte[])objIgnoredVideoCGSubCategory;
+                IgnoredVideoCGSubCategory = bytesIgnoredVideoCGSubCategory.Deserialize<int[]>(InternalAppJSONContext.Default) ?? IgnoredVideoCGSubCategory;
+            }
+
+            // Return the property value
+            return new HonkaiRepairAssetIgnore { IgnoredAudioPCKType = IgnoredAudioPCKTypes, IgnoredVideoCGSubCategory = IgnoredVideoCGSubCategory };
+        }
+#nullable disable
+        #endregion
+
         #region VideoIndex via External -> _cacheUtil: Data Fetch
-        private async Task<(string, string)> FetchVideoAndGateway(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task<(string, string)> FetchVideoAndGateway(Http _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
         {
             // Fetch data cache file only and get the gateway
             (List<CacheAsset>, string, string, int) cacheProperty = await _cacheUtil.GetCacheAssetList(_httpClient, CacheAssetType.Data, token);
@@ -101,14 +151,14 @@ namespace CollapseLauncher
                 CacheAsset cacheAsset = cacheProperty.Item1.Where(x => x.N.EndsWith($"{HashID.CGMetadata}")).FirstOrDefault();
 
                 // Deserialize and build video index into asset index
-                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, cacheProperty.Item4, token);
+                await BuildVideoIndex(_httpClient, cacheAsset, cacheProperty.Item2, assetIndex, ignoredAssetIDs, cacheProperty.Item4, token);
             }
 
             // Return the gateway URL including asset bundle and asset cache
             return (cacheProperty.Item2, cacheProperty.Item3);
         }
 
-        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, int luckyNumber, CancellationToken token)
+        private async Task BuildVideoIndex(Http _httpClient, CacheAsset cacheAsset, string assetBundleURL, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, int luckyNumber, CancellationToken token)
         {
             // Get the remote stream and use CacheStream
             using (Stream memoryStream = new MemoryStream())
@@ -121,12 +171,12 @@ namespace CollapseLauncher
                 using (CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber))
                 {
                     // Enumerate and iterate the metadata to asset index
-                    await BuildAndEnumerateVideoVersioningFile(_httpClient, token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, assetBundleURL);
+                    await BuildAndEnumerateVideoVersioningFile(_httpClient, token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, ignoredAssetIDs, assetBundleURL);
                 }
             }
         }
 
-        private async Task BuildAndEnumerateVideoVersioningFile(Http _httpClient, CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, string assetBundleURL)
+        private async Task BuildAndEnumerateVideoVersioningFile(Http _httpClient, CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL)
         {
             // Get the base URL
             string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
@@ -138,7 +188,10 @@ namespace CollapseLauncher
                 foreach (CGMetadata metadata in enumEntry)
                 {
                     // Only add remote available videos (not build-in) and check if the CG file is available in the server
-                    if (!metadata.InStreamingAssets && await IsCGFileAvailable(_httpClient, metadata, baseURL, token))
+                    // Edit: 2023-12-09
+                    // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
+                    if (!metadata.InStreamingAssets && await IsCGFileAvailable(_httpClient, metadata, baseURL, token)
+                     && !ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory))
                     {
                         string name = metadata.CgPath + ".usm";
                         assetIndex.Add(new FilePropertiesRemote
@@ -179,7 +232,7 @@ namespace CollapseLauncher
         #endregion
 
         #region AudioIndex
-        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task FetchAudioIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
         {
             // If the gameServer is null, then just leave
             if (_gameServer == null)
@@ -198,10 +251,10 @@ namespace CollapseLauncher
                 KianaAudioManifest manifest = await TryGetAudioManifest(_httpClient, manifestLocalPath, manifestRemotePath, token);
 
                 // Deserialize manifest and build Audio Index
-                await BuildAudioIndex(manifest, assetIndex, token);
+                await BuildAudioIndex(manifest, assetIndex, ignoredAssetIDs, token);
 
                 // Build audio version file
-                BuildAudioVersioningFile(manifest);
+                BuildAudioVersioningFile(manifest, ignoredAssetIDs);
             }
             // If a throw was thrown, then try to redownload the manifest.m file and try deserialize it again
             catch (Exception ex)
@@ -211,12 +264,18 @@ namespace CollapseLauncher
             }
         }
 
-        private void BuildAudioVersioningFile(KianaAudioManifest audioManifest)
+        private void BuildAudioVersioningFile(KianaAudioManifest audioManifest, HonkaiRepairAssetIgnore ignoredAssetIDs)
         {
             // Build audio versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_audioBaseLocalPath), "Version.txt"), false))
             {
-                foreach (ManifestAssetInfo audioAsset in audioManifest.AudioAssets)
+                // Edit: 2023-12-09
+                // Starting from 7.1, the Audio Packages that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
+                foreach (ManifestAssetInfo audioAsset in audioManifest
+                    .AudioAssets
+                    .Where(audioInfo => (audioInfo.Language == AudioLanguageType.Common
+                                      || audioInfo.Language == _audioLanguage)
+                                      && !ignoredAssetIDs.IgnoredAudioPCKType.Contains(audioInfo.PckType)))
                 {
                     // Only add common and language specific audio file
                     sw.WriteLine($"{audioAsset.Name}.pck\t{audioAsset.HashString}");
@@ -224,13 +283,16 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task BuildAudioIndex(KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, CancellationToken token)
+        private async Task BuildAudioIndex(KianaAudioManifest audioManifest, List<FilePropertiesRemote> audioIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, CancellationToken token)
         {
             // Iterate the audioAsset to be added in audioIndex in parallel
+            // Edit: 2023-12-09
+            // Starting from 7.1, the Audio Packages that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
             await Parallel.ForEachAsync(audioManifest
                 .AudioAssets
-                .Where(audioInfo => audioInfo.Language == AudioLanguageType.Common
-                                 || audioInfo.Language == _audioLanguage),
+                .Where(audioInfo => (audioInfo.Language == AudioLanguageType.Common
+                                  || audioInfo.Language == _audioLanguage)
+                                  && !ignoredAssetIDs.IgnoredAudioPCKType.Contains(audioInfo.PckType)),
                 new ParallelOptions
                 {
                     CancellationToken = token,
