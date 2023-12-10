@@ -196,6 +196,20 @@ namespace CollapseLauncher
                     // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
                     bool isCGAvailable = await IsCGFileAvailable(metadata, baseURL, token);
                     bool isCGIgnored = ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory);
+                    if (!metadata.InStreamingAssets)
+                    {
+                        lock (sw)
+                        {
+                            // Append the versioning list
+                            sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
+                        }
+                    }
+
+#if DEBUG
+                    if (isCGIgnored)
+                        LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {metadata.CgPath}", LogType.Debug, true);
+#endif
+
                     if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
                         string name = metadata.CgPath + ".usm";
@@ -208,11 +222,6 @@ namespace CollapseLauncher
                                 S = metadata.FileSize,
                                 FT = FileType.Video
                             });
-                        }
-                        lock (sw)
-                        {
-                            // Append the versioning list
-                            sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
                         }
                     }
                 });
