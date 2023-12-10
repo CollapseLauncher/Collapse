@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Hi3Helper
@@ -83,19 +84,33 @@ namespace Hi3Helper
                 return;
             }
 
-            InvokeProp.AllocConsole();
-            InvokeProp.m_consoleHandle = InvokeProp.GetStdHandle(-11);
+            if (!InvokeProp.AllocConsole())
+            {
+                throw new ContextMarshalException($"Failed to allocate console with error code: {Marshal.GetLastPInvokeError()}");
+            }
+
+            const uint GENERIC_READ = 0x80000000;
+            const uint GENERIC_WRITE = 0x40000000;
+            const uint FILE_SHARE_WRITE = 2;
+            const uint OPEN_EXISTING = 3;
+            InvokeProp.m_consoleHandle = InvokeProp.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+
+            const int STD_OUTPUT_HANDLE = -11;
+            InvokeProp.SetStdHandle(STD_OUTPUT_HANDLE, InvokeProp.m_consoleHandle);
+
             Console.OutputEncoding = Encoding.UTF8;
             Console.Title = "Collapse Console";
 
             if (!InvokeProp.GetConsoleMode(InvokeProp.m_consoleHandle, out uint mode))
             {
-                throw new ContextMarshalException("Failed to initialize console mode!");
+                throw new ContextMarshalException($"Failed to get console mode with error code: {Marshal.GetLastPInvokeError()}");
             }
 
-            if (!InvokeProp.SetConsoleMode(InvokeProp.m_consoleHandle, mode | 12))
+            const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
+            const uint DISABLE_NEWLINE_AUTO_RETURN = 8;
+            if (!InvokeProp.SetConsoleMode(InvokeProp.m_consoleHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN))
             {
-                throw new ContextMarshalException($"Failed to set console mode with error code: {InvokeProp.GetLastError()}");
+                throw new ContextMarshalException($"Failed to set console mode with error code: {Marshal.GetLastPInvokeError()}");
             }
         }
         #endregion

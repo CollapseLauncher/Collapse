@@ -115,14 +115,20 @@ namespace Hi3Helper
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetStdHandle(int nStdHandle);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
+
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
-        [DllImport("Kernel32.dll")]
-        public static extern void AllocConsole();
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern bool AllocConsole();
 
         [DllImport("Kernel32.dll")]
-        public static extern void FreeConsole();
+        public static extern bool FreeConsole();
+
+        [DllImport("Kernel32.dll")]
+        public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
 
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
