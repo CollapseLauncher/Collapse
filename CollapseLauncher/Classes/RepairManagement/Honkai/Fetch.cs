@@ -112,7 +112,7 @@ namespace CollapseLauncher
             // Try get the parent registry key
             RegistryKey? keys = Registry.CurrentUser.OpenSubKey(_gameVersionManager.GamePreset.ConfigRegistryLocation);
             if (keys == null) return HonkaiRepairAssetIgnore.CreateEmpty(); // Return an empty property if the parent key doesn't exist
-            
+
             // Initialize the property
             AudioPCKType[] IgnoredAudioPCKTypes = Array.Empty<AudioPCKType>();
             int[] IgnoredVideoCGSubCategory = Array.Empty<int>();
@@ -171,12 +171,12 @@ namespace CollapseLauncher
                 using (CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber))
                 {
                     // Enumerate and iterate the metadata to asset index
-                    await BuildAndEnumerateVideoVersioningFile(_httpClient, token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, ignoredAssetIDs, assetBundleURL);
+                    await BuildAndEnumerateVideoVersioningFile(token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, ignoredAssetIDs, assetBundleURL);
                 }
             }
         }
 
-        private async Task BuildAndEnumerateVideoVersioningFile(Http _httpClient, CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL)
+        private async Task BuildAndEnumerateVideoVersioningFile(CancellationToken token, IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL)
         {
             // Get the base URL
             string baseURL = CombineURLFromString("http://" + assetBundleURL, "/Video/");
@@ -184,32 +184,42 @@ namespace CollapseLauncher
             // Build video versioning file
             using (StreamWriter sw = new StreamWriter(Path.Combine(_gamePath, NormalizePath(_videoBaseLocalPath), "Version.txt"), false))
             {
-                // Iterate the metadata to be converted into asset index
-                foreach (CGMetadata metadata in enumEntry)
+                // Iterate the metadata to be converted into asset index in parallel
+                await Parallel.ForEachAsync(enumEntry, new ParallelOptions
+                {
+                    CancellationToken = token,
+                    MaxDegreeOfParallelism = _threadCount
+                }, async (metadata, token) =>
                 {
                     // Only add remote available videos (not build-in) and check if the CG file is available in the server
                     // Edit: 2023-12-09
                     // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
-                    if (!metadata.InStreamingAssets && await IsCGFileAvailable(_httpClient, metadata, baseURL, token)
-                     && !ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory))
+                    bool isCGAvailable = await IsCGFileAvailable(metadata, baseURL, token);
+                    bool isCGIgnored = ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory);
+                    if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                     {
                         string name = metadata.CgPath + ".usm";
-                        assetIndex.Add(new FilePropertiesRemote
+                        lock (assetIndex)
                         {
-                            N = CombineURLFromString(_videoBaseLocalPath, name),
-                            RN = CombineURLFromString(baseURL, name),
-                            S = metadata.FileSize,
-                            FT = FileType.Video
-                        });
-
-                        // Append the versioning list
-                        sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
+                            assetIndex.Add(new FilePropertiesRemote
+                            {
+                                N = CombineURLFromString(_videoBaseLocalPath, name),
+                                RN = CombineURLFromString(baseURL, name),
+                                S = metadata.FileSize,
+                                FT = FileType.Video
+                            });
+                        }
+                        lock (sw)
+                        {
+                            // Append the versioning list
+                            sw.WriteLine("Video/" + metadata.CgPath + ".usm\t1");
+                        }
                     }
-                }
+                });
             }
         }
 
-        private async ValueTask<bool> IsCGFileAvailable(Http _httpClient, CGMetadata cgInfo, string baseURL, CancellationToken token)
+        private async ValueTask<bool> IsCGFileAvailable(CGMetadata cgInfo, string baseURL, CancellationToken token)
         {
             // If the file has no appoinment schedule (like non-birthday CG), then return true
             if (cgInfo.AppointmentDownloadScheduleID == 0) return true;
@@ -222,11 +232,11 @@ namespace CollapseLauncher
 
             // Set the URL and try get the status
             string cgURL = CombineURLFromString(baseURL, cgInfo.CgPath + ".usm");
-            (int, bool) urlStatus = await _httpClient.GetURLStatus(cgURL, token);
+            using HttpResponseMessage urlStatus = await FallbackCDNUtil.GetURLHttpResponse(cgURL, token);
 
-            LogWriteLine($"The CG asset: {cgInfo.CgPath} " + (urlStatus.Item2 ? "is" : "is not") + $" available (Status code: {urlStatus.Item1})", LogType.Default, true);
+            LogWriteLine($"The CG asset: {cgInfo.CgPath} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})", LogType.Default, true);
 
-            return urlStatus.Item2;
+            return urlStatus.IsSuccessStatusCode;
         }
 
         #endregion
