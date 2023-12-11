@@ -506,18 +506,11 @@ namespace CollapseLauncher
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
 
-                using (Http _http = new Http(true, 5, 1000, null))
-                {
-                    using (Stream fs = new MemoryStream())
-                    {
-                        await FallbackCDNUtil.DownloadCDNFallbackContent(_http, fs, string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
-                        fs.Position = 0;
-                        NotificationData = await fs.DeserializeAsync<NotificationPush>(InternalAppJSONContext.Default, TokenSource.Token);
-                        IsLoadNotifComplete = true;
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+                NotificationData = await networkStream.DeserializeAsync<NotificationPush>(InternalAppJSONContext.Default, TokenSource.Token);
+                IsLoadNotifComplete = true;
 
-                        NotificationData.EliminatePushList();
-                    }
-                }
+                NotificationData.EliminatePushList();
             }
             catch (Exception ex)
             {

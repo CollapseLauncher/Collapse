@@ -128,15 +128,11 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string Content = "";
-                using (Http _httpClient = new Http(true, 5, 1000, GetAppConfigValue("UserAgent").ToString()))
-                using (MemoryStream _stream = new MemoryStream())
-                {
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, _stream, string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token);
-                    Content = Encoding.UTF8.GetString(_stream.ToArray());
-                }
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token, true);
+                byte[] buffer = new byte[networkStream.Length];
+                await networkStream.ReadExactlyAsync(buffer, _tokenSource.Token);
 
-                ReleaseNotesBox.Text = Content;
+                ReleaseNotesBox.Text = Encoding.UTF8.GetString(buffer);
             }
             catch (Exception ex)
             {

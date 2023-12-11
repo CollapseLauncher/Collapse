@@ -396,36 +396,24 @@ namespace CollapseLauncher
         #region XMFAndAssetIndex
         private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
         {
-            // Fetch metadata dictionary
-            using (MemoryStream mfs = new MemoryStream())
-            {
-                // Set metadata URL
-                string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
+            // Set metadata URL
+            string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
 
-                // Start downloading metadata using FallbackCDNUtil
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
-
-                // Deserialize metadata
-                mfs.Position = 0;
-                return await mfs.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
-            }
+            // Start downloading metadata using FallbackCDNUtil
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            return await stream.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
         }
 
         private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            // Initialize MemoryStream
-            using (MemoryStream mfs = new MemoryStream())
-            {
-                // Set asset index URL
-                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+            // Set asset index URL
+            string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
 
-                // Start downloading asset index using FallbackCDNUtil
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlIndex, token);
+            // Start downloading asset index using FallbackCDNUtil
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
 
-                // Deserialize asset index and return
-                mfs.Position = 0;
-                DeserializeAssetIndex(mfs, assetIndex);
-            }
+            // Deserialize asset index and return
+            DeserializeAssetIndex(stream, assetIndex);
         }
 
         private void DeserializeAssetIndex(Stream stream, List<FilePropertiesRemote> assetIndex)

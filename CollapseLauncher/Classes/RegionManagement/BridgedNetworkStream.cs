@@ -44,6 +44,17 @@ namespace CollapseLauncher
 
         public override int Read(Span<byte> buffer) => ReadBytes(buffer);
         public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
+        public new async ValueTask ReadExactlyAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            int totalRead = 0;
+            while (totalRead < buffer.Length)
+            {
+                int read = await ReadAsync(buffer.Slice(totalRead), cancellationToken).ConfigureAwait(false);
+                if (read == 0) return;
+
+                totalRead += read;
+            }
+        }
 
         public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
@@ -91,6 +102,16 @@ namespace CollapseLauncher
                 _networkResponse?.Dispose();
                 _networkStream?.Dispose();
             }
+        }
+
+        public override async ValueTask DisposeAsync()
+        {
+            _networkResponse?.Dispose();
+            if (_networkStream != null)
+                await _networkStream.DisposeAsync();
+
+            await base.DisposeAsync();
+            return;
         }
     }
 }

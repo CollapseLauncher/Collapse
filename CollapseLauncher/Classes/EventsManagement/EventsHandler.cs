@@ -88,15 +88,8 @@ namespace CollapseLauncher
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
         {
             string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
-
-            using (Http client = new Http(true))
-            using (MemoryStream ms = new MemoryStream())
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(client, ms, relativePath, default);
-                ms.Position = 0;
-
-                return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-            }
+            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
+            return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
         }
 
         public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
