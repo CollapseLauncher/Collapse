@@ -111,8 +111,8 @@
         </StackPanel>
         <TextBlock Grid.Column="1" Margin="8" VerticalAlignment="Bottom" TextAlignment="Right"
                    HorizontalAlignment="Right" Opacity="0.50" Foreground="{ThemeResource DefaultFGColorAccentBrush}">
-            <Run Text="The splash art is a property of"/><LineBreak/>
-            <Run Text="miHoYo / HoYoverse" FontSize="18" FontWeight="Medium"/>
+            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SplashArt_1}"/><LineBreak/>
+            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SplashArt_2}" FontSize="18" FontWeight="Medium"/>
         </TextBlock>
     </Grid>
 </Page>
