@@ -67,6 +67,8 @@ namespace CollapseLauncher.Pages
 #else
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
+
+            UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
