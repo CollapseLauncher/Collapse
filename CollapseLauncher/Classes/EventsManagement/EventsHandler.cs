@@ -396,4 +396,18 @@ namespace CollapseLauncher
         public DragAreaTemplate Template { get; private set; }
     }
     #endregion
+    #region UpdateBindings
+    internal static class UpdateBindings
+    {
+        static UpdateBindingsInvoker invoker = new UpdateBindingsInvoker();
+        public static void Update() => invoker.Update();
+    }
+
+    internal class UpdateBindingsInvoker
+    {
+        private static EventArgs DummyArgs = new EventArgs();
+        public static event EventHandler UpdateEvents;
+        public void Update() => UpdateEvents?.Invoke(this, DummyArgs);
+    }
+    #endregion
 }

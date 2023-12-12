@@ -575,10 +575,7 @@ namespace CollapseLauncher
             LoadGameStaticsByGameType(preset);
 
             // Init NavigationPanel Items
-            if (m_appMode != AppMode.Hi3CacheUpdater)
-                InitializeNavigationItems();
-            else
-                NavigationViewControl.IsSettingsVisible = false;
+            InitializeNavigationItems();
         }
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
