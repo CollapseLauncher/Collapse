@@ -60,7 +60,7 @@ namespace CollapseLauncher.Pages
 
         /// <summary>
         /// Holds the value for how long a checks needs to be delayed before continuing the loop in miliseconds.
-        /// Default : 250 
+        /// Default : 200 (Please set it using RefrehRateDefault instead)
         /// </summary>
         public static int RefreshRate
         {
