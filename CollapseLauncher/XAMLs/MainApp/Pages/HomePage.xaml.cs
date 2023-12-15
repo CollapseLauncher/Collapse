@@ -272,9 +272,9 @@ namespace CollapseLauncher.Pages
             catch (Exception) { }
         }
 
-        private void CarouselStopScroll(object sender, PointerRoutedEventArgs e) => CarouselToken.Cancel();
+        public void CarouselStopScroll(object sender = null, PointerRoutedEventArgs e = null) => CarouselToken.Cancel();
 
-        private void CarouselRestartScroll(object sender, PointerRoutedEventArgs e)
+        public void CarouselRestartScroll(object sender = null, PointerRoutedEventArgs e = null)
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (!CurrentGameProperty.IsGameRunning || !GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
@@ -1934,7 +1934,7 @@ namespace CollapseLauncher.Pages
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
 
-                CarouselStopScroll(null, null);
+                CarouselStopScroll();
                 await proc.WaitForExitAsync();
 
                 using (Process collapseProcess = Process.GetCurrentProcess())
@@ -1943,7 +1943,7 @@ namespace CollapseLauncher.Pages
                     collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
-                CarouselRestartScroll(null, null);
+                CarouselRestartScroll();
             }
             catch (Exception ex)
             {

@@ -178,12 +178,50 @@ namespace CollapseLauncher
         private IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
             const uint WM_SYSCOMMAND = 0x0112;
+            const uint WM_SHOWWINDOW = 0x0018;
             const uint SC_MAXIMIZE = 0xF030;
-            if (msg == WM_SYSCOMMAND && wParam == SC_MAXIMIZE)
+            const uint SC_MINIMIZE = 0xF020;
+            const uint SC_RESTORE = 0xF120;
+            switch (msg)
             {
-                // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                // Thank you Microsoft :)
-                return 1;
+                case WM_SYSCOMMAND:
+                {
+                    switch (wParam)
+                    {
+                        case SC_MAXIMIZE:
+                        {
+                            // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                            // Thank you Microsoft :)
+                            return 0;
+                        }
+                        case SC_MINIMIZE:
+                        {
+                            m_homePage?.CarouselStopScroll();
+
+                            if (GetAppConfigValue("MinimizeToTray").ToBool())
+                            {
+                                TrayIcon.ToggleAllVisibility();
+                                return 0;
+                            }
+
+                            break;
+                        }
+                        case SC_RESTORE:
+                        {
+                            m_homePage?.CarouselRestartScroll();
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case WM_SHOWWINDOW:
+                {
+                    if (wParam == 0)
+                        m_homePage?.CarouselStopScroll();
+                    else
+                        m_homePage?.CarouselRestartScroll();
+                    break;
+                }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }
@@ -335,11 +373,10 @@ namespace CollapseLauncher
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (GetAppConfigValue("MinimizeToTray").ToBool())
-            {
-                TrayIcon.ToggleAllVisibility();
-            }
-            else m_presenter.Minimize();
+            // m_presenter.Minimize() does not send SC_MINIMIZE message
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_MINIMIZE = 0xF020;
+            SendMessage(m_windowHandle, WM_SYSCOMMAND, SC_MINIMIZE, 0);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

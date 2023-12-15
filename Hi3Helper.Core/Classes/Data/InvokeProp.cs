@@ -155,7 +155,7 @@ namespace Hi3Helper
         public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, string lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
         [DllImport("comdlg32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
