@@ -5,6 +5,7 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -141,7 +142,9 @@ namespace CollapseLauncher
             if (isVisible)
             {
                 WindowExtensions.Hide(m_window);
-                MainTaskbarToggle.Text = _showApp;
+                MainTaskbarToggle.Text     = _showApp;
+                // Increase refresh rate to 1000ms when main window is hidden
+                RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
             }
             else
@@ -149,6 +152,8 @@ namespace CollapseLauncher
                 WindowExtensions.Show(m_window);
                 SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
+                // Revert refresh rate to its default
+                RefreshRate = RefreshRateDefault;
                 LogWriteLine("Main window is shown!");
             }
         }
@@ -203,7 +208,7 @@ namespace CollapseLauncher
             }
 
             if (!isMainWindowVisible)
-                WindowExtensions.Show(m_window);
+                ToggleMainVisibility();
             ShowWindow(mainWindowHandle, 9);
             SetForegroundWindow(mainWindowHandle);
         }

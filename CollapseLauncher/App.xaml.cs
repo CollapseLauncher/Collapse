@@ -53,6 +53,7 @@ namespace CollapseLauncher
                 if (m_appMode == AppMode.StartOnTray)
                 {
                     WindowExtensions.Hide(m_window);
+                    Pages.HomePage.RefreshRate = Pages.HomePage.RefreshRateSlow;
                     if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
                     {
                         LoggerConsole.DisposeConsole();

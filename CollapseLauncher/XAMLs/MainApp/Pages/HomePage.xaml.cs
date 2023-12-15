@@ -53,13 +53,34 @@ namespace CollapseLauncher.Pages
         private CancellationTokenSource PageToken { get; set; }
         private CancellationTokenSource CarouselToken { get; set; }
         private CancellationTokenSource PlaytimeToken { get; set; }
+        
+        public static  int RefreshRateDefault { get; } = 200;
+        public static  int RefreshRateSlow    { get; } = 1000;
+        private static int _refreshRate;
+
+        /// <summary>
+        /// Holds the value for how long a checks needs to be delayed before continuing the loop in miliseconds.
+        /// Default : 250 
+        /// </summary>
+        public static int RefreshRate
+        {
+            get => _refreshRate;
+            set
+            {
+                #if DEBUG
+                LogWriteLine($"HomePage Refresh Rate changed to {value}", LogType.Debug, true);
+                #endif
+                _refreshRate = value;
+            }
+        }
         #endregion
 
         #region PageMethod
         public HomePage()
         {
+            RefreshRate =  RefreshRateDefault;
             this.Loaded += StartLoadedRoutine;
-            m_homePage = this;
+            m_homePage  =  this;
         }
 
         ~HomePage()
@@ -742,7 +763,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
             }
         }
-
+        
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
             FontFamily FF = Application.Current.Resources["FontAwesomeSolid"] as FontFamily;
@@ -783,10 +804,11 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                        await Task.Delay(100, Token);
-#if !DISABLEDISCORD
+                        #if !DISABLEDISCORD
                         AppDiscordPresence.SetActivity(ActivityType.Play, 0);
-#endif
+                        #endif
+                        
+                        await Task.Delay(RefreshRate, Token);
                     }
 
                     if (!StartGameBtn.IsEnabled)
@@ -804,16 +826,16 @@ namespace CollapseLauncher.Pages
 
                     PlaytimeIdleStack.Visibility = Visibility.Visible;
                     PlaytimeRunningStack.Visibility = Visibility.Collapsed;
-
-                    await Task.Delay(100, Token);
-#if !DISABLEDISCORD
+                    
+                    #if !DISABLEDISCORD
                     AppDiscordPresence.SetActivity(ActivityType.Idle, 0);
-#endif
+                    #endif
+                    
+                    await Task.Delay(RefreshRate, Token);
                 }
             }
             catch { return; }
         }
-
         #endregion
 
         #region Community Button
@@ -1201,6 +1223,7 @@ namespace CollapseLauncher.Pages
                         break;
                     case "ToTray":
                         H.NotifyIcon.WindowExtensions.Hide(m_window);
+                        RefreshRate = RefreshRateSlow;
                         break;
                     case "Nothing":
                         break;
