@@ -179,13 +179,13 @@ namespace CollapseLauncher
         {
             const uint WM_SYSCOMMAND = 0x0112;
             const uint WM_SHOWWINDOW = 0x0018;
-            const uint SC_MAXIMIZE = 0xF030;
-            const uint SC_MINIMIZE = 0xF020;
-            const uint SC_RESTORE = 0xF120;
+            const uint WM_SIZE = 0x0005;
             switch (msg)
             {
                 case WM_SYSCOMMAND:
                 {
+                    const uint SC_MAXIMIZE = 0xF030;
+                    const uint SC_MINIMIZE = 0xF020;
                     switch (wParam)
                     {
                         case SC_MAXIMIZE:
@@ -196,19 +196,12 @@ namespace CollapseLauncher
                         }
                         case SC_MINIMIZE:
                         {
-                            m_homePage?.CarouselStopScroll();
-
                             if (GetAppConfigValue("MinimizeToTray").ToBool())
                             {
+                                // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
                                 TrayIcon.ToggleAllVisibility();
                                 return 0;
                             }
-
-                            break;
-                        }
-                        case SC_RESTORE:
-                        {
-                            m_homePage?.CarouselRestartScroll();
                             break;
                         }
                     }
@@ -220,6 +213,25 @@ namespace CollapseLauncher
                         m_homePage?.CarouselStopScroll();
                     else
                         m_homePage?.CarouselRestartScroll();
+                    break;
+                }
+                case WM_SIZE:
+                {
+                    const uint SIZE_MINIMIZED = 1;
+                    const uint SIZE_RESTORED = 0;
+                    switch (wParam)
+                    {
+                        case SIZE_MINIMIZED:
+                        {
+                            m_homePage?.CarouselStopScroll();
+                            break;
+                        }
+                        case SIZE_RESTORED:
+                        {
+                            m_homePage?.CarouselRestartScroll();
+                            break;
+                        }
+                    }
                     break;
                 }
             }
@@ -373,10 +385,7 @@ namespace CollapseLauncher
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            // m_presenter.Minimize() does not send SC_MINIMIZE message
-            const uint WM_SYSCOMMAND = 0x0112;
-            const uint SC_MINIMIZE = 0xF020;
-            SendMessage(m_windowHandle, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+            m_presenter.Minimize();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
