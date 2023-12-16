@@ -31,11 +31,11 @@ namespace CollapseLauncher
         private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
         private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
 
-        private readonly string _showApp = Lang._Misc.Taskbar_ShowApp;
-        private readonly string _hideApp = Lang._Misc.Taskbar_HideApp;
+        private readonly string _showApp     = Lang._Misc.Taskbar_ShowApp;
+        private readonly string _hideApp     = Lang._Misc.Taskbar_HideApp;
         private readonly string _showConsole = Lang._Misc.Taskbar_ShowConsole;
         private readonly string _hideConsole = Lang._Misc.Taskbar_HideConsole;
-        private readonly string _exitApp = Lang._Misc.Taskbar_ExitApp;
+        private readonly string _exitApp     = Lang._Misc.Taskbar_ExitApp;
 
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
         private readonly string _stable = Lang._Misc.BuildChannelStable;
@@ -109,13 +109,13 @@ namespace CollapseLauncher
         /// <summary>
         /// Toggle console window visibility
         /// </summary>
-        public void ToggleConsoleVisibility()
+        public void ToggleConsoleVisibility(bool forceShow = false)
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
                 IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
                 if (InvokeProp.m_consoleHandle == IntPtr.Zero) return;
-                if (IsWindowVisible(consoleWindowHandle))
+                if (IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
                     ConsoleTaskbarToggle.Text = _showConsole;
@@ -134,12 +134,12 @@ namespace CollapseLauncher
         /// <summary>
         /// Toggle main window visibility
         /// </summary>
-        public void ToggleMainVisibility()
+        public void ToggleMainVisibility(bool forceShow = false)
         {
             IntPtr mainWindowHandle = m_windowHandle;
             var    isVisible        = IsWindowVisible(mainWindowHandle);
 
-            if (isVisible)
+            if (isVisible && !forceShow)
             {
                 WindowExtensions.Hide(m_window);
                 MainTaskbarToggle.Text     = _showApp;
@@ -198,7 +198,7 @@ namespace CollapseLauncher
             {
                 if (!IsWindowVisible(consoleWindowHandle))
                 {
-                    LoggerConsole.AllocateConsole();
+                    ToggleConsoleVisibility(true);
                 }
                 //Stupid workaround for console window not showing up using SetForegroundWindow
                 //Basically do minimize then maximize action using ShowWindow 6->9 (nice)
@@ -208,7 +208,7 @@ namespace CollapseLauncher
             }
 
             if (!isMainWindowVisible)
-                ToggleMainVisibility();
+                ToggleMainVisibility(true);
             ShowWindow(mainWindowHandle, 9);
             SetForegroundWindow(mainWindowHandle);
         }
@@ -228,6 +228,19 @@ namespace CollapseLauncher
                 ConsoleTaskbarToggle.IsEnabled = false;
                 ConsoleTaskbarToggle.Text = _hideConsole;
             }
+            
+            // Force refresh all text based on their respective window state
+            IntPtr consoleWindowHandle = InvokeProp.GetConsoleWindow();
+            IntPtr mainWindowHandle    = m_windowHandle;
+            
+            bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
+            bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
+
+            if (isConsoleVisible) ConsoleTaskbarToggle.Text = _hideConsole;
+            else ConsoleTaskbarToggle.Text                  = _showConsole;
+
+            if (isMainWindowVisible) MainTaskbarToggle.Text = _hideApp;
+            else MainTaskbarToggle.Text                     = _showApp;
         }
         #endregion
     }
