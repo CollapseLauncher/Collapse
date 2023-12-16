@@ -178,12 +178,58 @@ namespace CollapseLauncher
         private IntPtr WndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
             const uint WM_SYSCOMMAND = 0x0112;
-            const uint SC_MAXIMIZE = 0xF030;
-            if (msg == WM_SYSCOMMAND && wParam == SC_MAXIMIZE)
+            const uint WM_SHOWWINDOW = 0x0018;
+            switch (msg)
             {
-                // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                // Thank you Microsoft :)
-                return 1;
+                case WM_SYSCOMMAND:
+                {
+                    const uint SC_MAXIMIZE = 0xF030;
+                    const uint SC_MINIMIZE = 0xF020;
+                    const uint SC_RESTORE = 0xF120;
+                    switch (wParam)
+                    {
+                        case SC_MAXIMIZE:
+                        {
+                            // TODO: Apply to force disable the "double-click to maximize" feature.
+                            //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+                            //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
+                            //
+                            //       Issues have been described here:
+                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
+                            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
+
+                            // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                            // Thank you Microsoft :)
+                            return 0;
+                        }
+                        case SC_MINIMIZE:
+                        {
+                            if (GetAppConfigValue("MinimizeToTray").ToBool())
+                            {
+                                // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
+                                TrayIcon.ToggleAllVisibility();
+                                return 0;
+                            }
+
+                            m_homePage?.CarouselStopScroll();
+                            break;
+                        }
+                        case SC_RESTORE:
+                        {
+                            m_homePage?.CarouselRestartScroll();
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case WM_SHOWWINDOW:
+                {
+                    if (wParam == 0)
+                        m_homePage?.CarouselStopScroll();
+                    else
+                        m_homePage?.CarouselRestartScroll();
+                    break;
+                }
             }
             return CallWindowProc(m_oldWndProc, hwnd, msg, wParam, lParam);
         }
@@ -214,7 +260,6 @@ namespace CollapseLauncher
             rootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
-        private TypedEventHandler<AppWindow, AppWindowChangedEventArgs> _eventWindowPosChange;
         private int _lastWindowWidth;
         private int _lastWindowHeight;
         private WindowRect _windowPosAndSize = new WindowRect();
@@ -246,48 +291,6 @@ namespace CollapseLauncher
                 Y = yOff
             });
             AssignCurrentWindowPosition(hwnd);
-
-            // TODO: Apply to force disable the "double-click to maximize" feature.
-            //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
-            //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
-            //       
-            //       Issues have been described here:
-            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
-            //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
-            //       
-            // Also TODO: If a fix hasn't been applied yet, then find the way to disable the
-            //            "double-click 2 maximize" feature via Native Methods/PInvoke.
-            AssignWinAppSDK14WindowSizeFix(hwnd);
-        }
-
-        private void AssignWinAppSDK14WindowSizeFix(IntPtr hwnd)
-        {
-            if (_eventWindowPosChange != null) m_appWindow.Changed -= _eventWindowPosChange;
-            _eventWindowPosChange = (sender, args) =>
-            {
-                if (args.DidSizeChange && args.DidPositionChange
-                && !args.DidPresenterChange)
-                {
-                    lock (this)
-                    {
-                        AssignCurrentWindowPosition(hwnd);
-                        if (m_windowPosSize.X > (_lastWindowWidth * -1)
-                         && m_windowPosSize.Y > (_lastWindowHeight * -1))
-                        {
-                            m_presenter.Restore();
-                            sender.MoveAndResize(new RectInt32
-                            {
-                                Width = _lastWindowWidth,
-                                Height = _lastWindowHeight,
-                                X = (int)m_windowPosSize.X,
-                                Y = (int)m_windowPosSize.Y
-                            });
-                        }
-                    }
-                }
-            };
-
-            m_appWindow.Changed += _eventWindowPosChange;
         }
 
         private void AssignCurrentWindowPosition(IntPtr hwnd)
@@ -333,13 +336,23 @@ namespace CollapseLauncher
             }
         }
 
+        public void Minimize()
+        {
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_MINIMIZE = 0xF020;
+            SendMessage(m_windowHandle, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+        }
+
+        public void Restore()
+        {
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_RESTORE = 0xF120;
+            SendMessage(m_windowHandle, WM_SYSCOMMAND, SC_RESTORE, 0);
+        }
+
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (GetAppConfigValue("MinimizeToTray").ToBool())
-            {
-                TrayIcon.ToggleAllVisibility();
-            }
-            else m_presenter.Minimize();
+            this.Minimize();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
