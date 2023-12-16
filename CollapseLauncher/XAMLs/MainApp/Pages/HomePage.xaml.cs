@@ -1219,7 +1219,7 @@ namespace CollapseLauncher.Pages
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
-                        m_presenter.Minimize();
+                        (m_window as MainWindow).Minimize();
                         break;
                     case "ToTray":
                         H.NotifyIcon.WindowExtensions.Hide(m_window);
@@ -1228,7 +1228,7 @@ namespace CollapseLauncher.Pages
                     case "Nothing":
                         break;
                     default:
-                        m_presenter.Minimize();
+                        (m_window as MainWindow).Minimize();
                         break;
                 }
 
@@ -1281,16 +1281,16 @@ namespace CollapseLauncher.Pages
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
                 case "Minimize":
-                    m_presenter.Restore();
+                    (m_window as MainWindow).Restore();
                     break;
                 case "ToTray":
                     H.NotifyIcon.WindowExtensions.Show(m_window);
-                    m_presenter.Restore();
+                    (m_window as MainWindow).Restore();
                     break;
                 case "Nothing":
                     break;
                 default:
-                    m_presenter.Restore();
+                    (m_window as MainWindow).Restore();
                     break;
             }
         }
@@ -1535,7 +1535,7 @@ namespace CollapseLauncher.Pages
             catch (OperationCanceledException)
             {
                 LogWriteLine($"{new string('=', barwidth)} GAME STOPPED {new string('=', barwidth)}", LogType.Warning, true);
-                m_presenter.Restore();
+                (m_window as MainWindow).Restore();
             }
             catch (Exception ex)
             {
