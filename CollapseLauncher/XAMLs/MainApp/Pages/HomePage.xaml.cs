@@ -73,6 +73,11 @@ namespace CollapseLauncher.Pages
                 _refreshRate = value;
             }
         }
+
+        /// <summary>
+        /// Hold cached state for IsGameRunning. The state is controlled inside CheckRunningGameInstance() method.
+        /// </summary>
+        public static bool _cachedIsGameRunning { get; set; }
         #endregion
 
         #region PageMethod
@@ -277,7 +282,7 @@ namespace CollapseLauncher.Pages
         public void CarouselRestartScroll(object sender = null, PointerRoutedEventArgs e = null)
         {
             // Don't restart carousel if game is running and LoPrio is on
-            if (!CurrentGameProperty.IsGameRunning || !GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+            if (!_cachedIsGameRunning || !GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
             {
                 CarouselToken = new CancellationTokenSource();
                 StartCarouselAutoScroll(CarouselToken.Token);
@@ -788,6 +793,8 @@ namespace CollapseLauncher.Pages
                 {
                     while (CurrentGameProperty.IsGameRunning)
                     {
+                        _cachedIsGameRunning = true;
+                            
                         if (StartGameBtn.IsEnabled)
                             LauncherBtn.Translation -= Shadow16;
 
@@ -811,6 +818,8 @@ namespace CollapseLauncher.Pages
                         await Task.Delay(RefreshRate, Token);
                     }
 
+                    _cachedIsGameRunning = false;
+                    
                     if (!StartGameBtn.IsEnabled)
                         LauncherBtn.Translation += Shadow16;
 
@@ -1268,7 +1277,7 @@ namespace CollapseLauncher.Pages
         private async void GameRunningWatcher()
         {
             await Task.Delay(5000);
-            while (CurrentGameProperty.IsGameRunning)
+            while (_cachedIsGameRunning)
             {
                 await Task.Delay(3000);
             }
@@ -1629,7 +1638,7 @@ namespace CollapseLauncher.Pages
         #region Playtime Buttons
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!CurrentGameProperty.IsGameRunning)
+            if (!_cachedIsGameRunning)
             {
                 UpdatePlaytime();
             }
@@ -1779,7 +1788,7 @@ namespace CollapseLauncher.Pages
 
                 if (!dynamicUpdate)
                 {
-                    while (CurrentGameProperty.IsGameRunning) { }
+                    while (_cachedIsGameRunning) { }
                     UpdatePlaytime();
                     return;
                 }
@@ -1788,7 +1797,7 @@ namespace CollapseLauncher.Pages
 
                 if (bootByCollapse)
                 {
-                    while (CurrentGameProperty.IsGameRunning)
+                    while (_cachedIsGameRunning)
                     {
                         await Task.Delay(60000, token);
                         elapsedSeconds += 60;
@@ -1798,7 +1807,7 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                if (CurrentGameProperty.IsGameRunning)
+                if (_cachedIsGameRunning)
                 {
                     await Task.Delay(60000, token);
                     int newTime = ReadPlaytimeFromRegistry(regionKey);
@@ -1808,7 +1817,7 @@ namespace CollapseLauncher.Pages
 
                 }
 
-                while (CurrentGameProperty.IsGameRunning)
+                while (_cachedIsGameRunning)
                 {
                     UpdatePlaytime(false, oldTime + elapsedSeconds);
                     elapsedSeconds += 60;
