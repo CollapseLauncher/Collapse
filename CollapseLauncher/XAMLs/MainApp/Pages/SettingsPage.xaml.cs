@@ -217,12 +217,8 @@ namespace CollapseLauncher.Pages
 
         private async void CheckUpdate(object sender, RoutedEventArgs e)
         {
-            var isMetered = true;
-            NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
-            if (currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown)
-                isMetered = false;
 
-            if (isMetered)
+            if (LauncherUpdateWatcher.isMetered)
             {
                 switch (await Dialog_MeteredConnectionWarning(Content))
                 {
