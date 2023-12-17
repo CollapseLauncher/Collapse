@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -49,7 +50,6 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                // Wait for countdown
                 await WaitForCountdown();
                 await StartUpdateRoutine();
             }
@@ -68,15 +68,22 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                // Hide/Show progress
-                UpdateCountdownPanel.Visibility = Visibility.Collapsed;
-                UpdateBox.Visibility = Visibility.Collapsed;
-                CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
-                AskUpdateCheckbox.Visibility = Visibility.Collapsed;
-                UpdateProgressBox.Visibility = Visibility.Visible;
-
-                // Start Squirrel update routine
-                await GetSquirrelUpdate();
+                if (LauncherUpdateWatcher.isMetered)
+                {
+                    switch (await Dialog_MeteredConnectionWarning(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            await _StartUpdateRoutine();
+                            break;
+                        case ContentDialogResult.None:
+                            CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
+                            UpdateCountdownPanel.Visibility = Visibility.Collapsed;
+                            UpdateBox.Visibility = Visibility.Visible;
+                            return;
+                    }
+                }
+                
+                await _StartUpdateRoutine();
             }
             catch (OperationCanceledException)
             {
@@ -91,6 +98,19 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private async Task _StartUpdateRoutine()
+        {
+            // Hide/Show progress
+            UpdateCountdownPanel.Visibility = Visibility.Collapsed;
+            UpdateBox.Visibility = Visibility.Collapsed;
+            CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
+            AskUpdateCheckbox.Visibility = Visibility.Collapsed;
+            UpdateProgressBox.Visibility = Visibility.Visible;
+
+            // Start Squirrel update routine
+            await GetSquirrelUpdate();
+        }
+        
         private async Task GetSquirrelUpdate()
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
