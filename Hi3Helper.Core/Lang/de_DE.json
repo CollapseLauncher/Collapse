@@ -399,7 +399,16 @@
 
     "KbShortcuts_Title": "Keyboard Shortcuts",
     "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_ResetBtn": "Reset to Default",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray",
+    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
 
   "_Misc": {
@@ -425,7 +434,7 @@
     "OkaySad": "Okay ;-;)",
     "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, zurück zum Menü",
-    "Skip": "Überspringen",
+    "Skip": "Skip, never show again",
     "Next": "Weiter",
     "Prev": "Zurück",
     "Uninstall": "Deinstallieren",
@@ -495,6 +504,8 @@
     "DiscordRP_Ad": "- mit Collapse Launcher",
     "DiscordRP_Region": "Region:",
 
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
     "Taskbar_ShowApp": "Show Collapse window",
     "Taskbar_HideApp": "Hide Collapse window to taskbar",
     "Taskbar_ShowConsole": "Show Collapse console window",
@@ -928,6 +939,8 @@
     "General_GoHome": "Go to the Home page",
     "General_GoSettings": "Go to the Settings page",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",

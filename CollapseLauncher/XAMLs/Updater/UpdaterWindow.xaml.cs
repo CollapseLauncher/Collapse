@@ -55,16 +55,12 @@ namespace CollapseLauncher
 
                 AppUpdateVersionProp updateInfo = new AppUpdateVersionProp();
 
+                await using BridgedNetworkStream metadataStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
+                updateInfo = await metadataStream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
+                NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
+
                 using (Http _httpClient = new Http(true))
                 {
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json", default);
-                        ms.Position = 0;
-                        updateInfo = await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
-                        NewVersionLabel.Text = new GameVersion(updateInfo.ver).VersionString;
-                    }
-
                     FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
                     await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath, Environment.ProcessorCount > 8 ? 8 : Environment.ProcessorCount, $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/ApplyUpdate.exe", default);
                     FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;

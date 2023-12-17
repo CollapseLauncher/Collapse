@@ -5,9 +5,12 @@ name: Build-Canary
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+        - 'main'
   pull_request:
     branches-ignore:
+      - 'stable'
+      - 'preview'
       - 'translations_**'
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
@@ -20,12 +23,13 @@ jobs:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
-        framework: [net7.0-windows10.0.22000.0]
+        framework: [net8.0-windows10.0.22621.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
+      DOTNET_VERSION: '8.0'
 
     steps:
     - name: Checkout
@@ -38,8 +42,8 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.DOTNET_INSTALL_DIR }}
-        key: ${{ runner.os }}-dotnet-7
-        restore-keys: ${{ runner.os }}-dotnet-7   
+        key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
+        restore-keys: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ matrix.platform }}
         
     - name: Cache nuget # cache nuget https://github.com/actions/cache/blob/main/examples.md#c---nuget
       uses: actions/cache@v3
@@ -52,10 +56,13 @@ jobs:
     - name: Install .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
+      with:
+        vs-prerelease: false
+        msbuild-architecture: ${{ matrix.platform }}
 
     - name: Restore
       run: dotnet restore CollapseLauncher
@@ -84,7 +91,7 @@ jobs:
       continue-on-error: true
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
-        title: New canary build is ready!
+        title: Collapse Launcher CI build is complete!
         status: ${{ job.status }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }}

@@ -7,3 +7,5 @@ exclude:
     paths:
       - Hi3Helper.EncTool.Test
       - Hi3Helper.Core/Classes/DiscordPresence/src
+include:
+  - name: CheckDependencyLicenses

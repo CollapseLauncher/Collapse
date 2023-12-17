@@ -399,7 +399,16 @@
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
-    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan"
+    "KbShortcuts_ResetBtn": "Atur Ulang ke Bawaan",
+
+    "AppBehavior_Title": "Perilaku Aplikasi",
+    "AppBehavior_PostGameLaunch": "Setelah Meluncurkan Permainan",
+    "AppBehavior_PostGameLaunch_Minimize": "Mengecilkan",
+    "AppBehavior_PostGameLaunch_ToTray": "Sembunyikan ke Tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Tidak melakukan apapun",
+    "AppBehavior_MinimizeToTray": "Kecilkan ke Tray",
+    "AppBehavior_LaunchOnStartup": "Jalankan Collapse secara otomatis saat komputer menyala",
+    "AppBehavior_StartupToTray": "Sembunyikan jendela Collapse setelah dijalankan secara otomatis"
   },
 
   "_Misc": {
@@ -425,7 +434,7 @@
     "OkaySad": "Oke deh... ;-;)",
     "OkayHappy": "Okehh! (≧▽≦)ﾉ",
     "OkayBackToMenu": "Oke, kembali ke menu",
-    "Skip": "Lewati",
+    "Skip": "Lewati, jangan tunjukkan lagi",
     "Next": "Selanjutnya",
     "Prev": "Sebelumnya",
     "Uninstall": "Hapus Pemasangan",
@@ -495,6 +504,8 @@
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
     "DiscordRP_Region": "Wilayah:",
 
+    "Taskbar_PopupHelp1": "Klik untuk membawa Collapse ke layar depan",
+    "Taskbar_PopupHelp2": "Klik ganda untuk mengatur visibilitas jendela",
     "Taskbar_ShowApp": "Tampilkan jendela Collapse",
     "Taskbar_HideApp": "Sembunyikan jendela Collapse ke taskbar",
     "Taskbar_ShowConsole": "Tampilkan jendela konsol Collapse",
@@ -928,6 +939,8 @@
     "General_GoHome": "Ke Beranda",
     "General_GoSettings": "Ke halaman Pengaturan",
     "General_OpenNotifTray": "Buka Notifikasi",
+    "General_ReloadRegion": "Muat ulang halaman saat ini",
+    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang Wilayah.",
 
     "Switch_Title": "Peralihan Game/Region Cepat",
     "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",

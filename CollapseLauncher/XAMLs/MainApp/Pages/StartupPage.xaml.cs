@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
-using static CollapseLauncher.FileDialogNative;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -45,7 +45,7 @@ namespace CollapseLauncher.Pages
                     break;
                 case ContentDialogResult.Secondary:
                     folder = await GetFolderPicker();
-                    if (folder != null)
+                    if (!string.IsNullOrEmpty(folder))
                     {
                         if (!CheckIfFolderIsValid(folder))
                         {

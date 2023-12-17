@@ -36,6 +36,7 @@ namespace CollapseLauncher
 
                     // Get persistent and streaming paths
                     string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
+
                     string baseBlocksPathPersistent = Path.Combine(_gamePath, @$"{execName}_Data\Persistent\Asb\Windows");
                     string baseBlocksPathStreaming = Path.Combine(_gamePath, @$"{execName}_Data\StreamingAssets\Asb\Windows");
 
@@ -51,6 +52,9 @@ namespace CollapseLauncher
                         // Assign a task depends on the asset type
                         switch (asset.FT)
                         {
+                            case FileType.Generic:
+                                CheckGenericAssetType(asset, brokenAssetIndex, token);
+                                break;
                             case FileType.Blocks:
                                 CheckAssetType(asset, brokenAssetIndex, baseBlocksPathPersistent, baseBlocksPathStreaming, token);
                                 break;
@@ -75,6 +79,93 @@ namespace CollapseLauncher
         }
 
         #region AssetTypeCheck
+        private void CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        {
+            // Update activity status
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+
+            // Increment current total count
+            _progressTotalCountCurrent++;
+
+            // Reset per file size counter
+            _progressPerFileSize = asset.S;
+            _progressPerFileSizeCurrent = 0;
+
+            // Override the path
+            asset.N = Path.Combine(_gamePath, asset.N);
+
+            // Get the file info
+            FileInfo fileInfo = new FileInfo(asset.N);
+
+            // Check if the file exist or has unmached size
+            if (!fileInfo.Exists || (fileInfo.Exists && fileInfo.Length != asset.S))
+            {
+                // Update the total progress and found counter
+                _progressTotalSizeFound += asset.S;
+                _progressTotalCountFound++;
+
+                // Set the per size progress
+                _progressPerFileSizeCurrent = asset.S;
+
+                // Increment the total current progress
+                _progressTotalSizeCurrent += asset.S;
+
+                Dispatch(() => AssetEntry.Add(
+                    new AssetProperty<RepairAssetType>(
+                        Path.GetFileName(asset.N),
+                        ConvertRepairAssetTypeEnum(asset.FT),
+                        Path.GetDirectoryName(asset.N),
+                        asset.S,
+                        null,
+                        null
+                    )
+                ));
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found or has unmatched size", LogType.Warning, true);
+
+                return;
+            }
+
+            // Skip CRC check if fast method is used
+            if (_useFastMethod)
+            {
+                return;
+            }
+
+            // Open and read fileInfo as FileStream 
+            using (FileStream filefs = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                // If pass the check above, then do CRC calculation
+                // Additional: the total file size progress is disabled and will be incremented after this
+                byte[] localCRC = CheckHash(filefs, MD5.Create(), token);
+
+                // If local and asset CRC doesn't match, then add the asset
+                if (!IsArrayMatch(localCRC, asset.CRCArray))
+                {
+                    _progressTotalSizeFound += asset.S;
+                    _progressTotalCountFound++;
+
+                    Dispatch(() => AssetEntry.Add(
+                        new AssetProperty<RepairAssetType>(
+                            Path.GetFileName(asset.N),
+                            ConvertRepairAssetTypeEnum(asset.FT),
+                            Path.GetDirectoryName(asset.N),
+                            asset.S,
+                            localCRC,
+                            asset.CRCArray
+                        )
+                    ));
+
+                    // Mark the main block as "need to be repaired"
+                    asset.IsBlockNeedRepair = true;
+                    targetAssetIndex.Add(asset);
+
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                }
+            }
+        }
+
         private void CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, string basePersistentPath, string baseStreamingPath, CancellationToken token)
         {
             // Update activity status

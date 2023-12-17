@@ -1,9 +1,9 @@
-﻿using CollapseLauncher.Statics;
+﻿using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -295,7 +294,7 @@ namespace CollapseLauncher.Dialogs
                     case ContentDialogResult.Primary:
                         cPath = await FileDialogNative.GetFilePicker(
                             new Dictionary<string, string> { { $"{SourceProfile.ProfileName} to {TargetProfile.ProfileName} Cookbook", FileName } });
-                        IsChoosen = cPath != null;
+                        IsChoosen = !string.IsNullOrEmpty(cPath);
                         break;
                     case ContentDialogResult.None:
                         throw new OperationCanceledException();

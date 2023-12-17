@@ -394,12 +394,21 @@
     "EnableAcrylicEffect": "Usar efeito de desfoque acrílico",
     "EnableDownloadChunksMerging": "Combinar porções de pacotes descarregados",
 
-    "LowerCollapsePrioOnGameLaunch": "Diminui o uso de recursos do Collapse quando um jogo for iniciado",
+    "LowerCollapsePrioOnGameLaunch": "Diminuir o uso de recursos do Collapse quando um jogo for iniciado",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desativa o carrousel da página principal e diminui a prioridade do Collapse para \"Abaixo do normal\" ",
 
     "KbShortcuts_Title": "Atalhos de teclado",
     "KbShortcuts_ShowBtn": "Mostrar atalhos",
-    "KbShortcuts_ResetBtn": "Redefinir atalhos"
+    "KbShortcuts_ResetBtn": "Redefinir atalhos",
+
+    "AppBehavior_Title": "Comportamento da aplicação",
+    "AppBehavior_PostGameLaunch": "Após iniciar o jogo",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimizar",
+    "AppBehavior_PostGameLaunch_ToTray": "Esconder na gaveta de aplicações",
+    "AppBehavior_PostGameLaunch_Nothing": "Não fazer nada",
+    "AppBehavior_MinimizeToTray": "Minimizar para a gaveta de aplicações",
+    "AppBehavior_LaunchOnStartup": "Iniciar o Collapse automaticamente quando o computador ligar",
+    "AppBehavior_StartupToTray": "Esconder a janela do Collapse quando inicia automaticamente"
   },
 
   "_Misc": {
@@ -425,7 +434,7 @@
     "OkaySad": "Okay ;-;)",
     "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, voltar ao menu",
-    "Skip": "Saltar",
+    "Skip": "Saltar e não mostrar novamente",
     "Next": "Próximo",
     "Prev": "Anterior",
     "Uninstall": "Desinstalar",
@@ -495,6 +504,8 @@
     "DiscordRP_Ad": "- Com Collapse Launcher",
     "DiscordRP_Region": "Região:",
 
+    "Taskbar_PopupHelp1": "Clica para trazer o Collapse para primeiro plano",
+    "Taskbar_PopupHelp2": "Clica duas vezes para alterar a visibilidade da janela",
     "Taskbar_ShowApp": "Mostrar janela do Collapse",
     "Taskbar_HideApp": "Esconder janela do Collapse na gaveta de aplicações",
     "Taskbar_ShowConsole": "Mostrar janela da consola do Collapse",
@@ -928,6 +939,8 @@
     "General_GoHome": "Ir para a página principal",
     "General_GoSettings": "Ir para a página de definições",
     "General_OpenNotifTray": "Abrir o painel de notificações",
+    "General_ReloadRegion": "Recarregar página atual",
+    "General_ReloadRegion_Desc": "Em alternativa, podes usar F5 para este atalho.\nNota que recarregar a página principal irá recarregar a região.",
 
     "Switch_Title": "Mudança rápida de jogo/região",
     "Switch_Subtitle": "Nota: Os atalhos seguem a ordem do seletor",

@@ -120,14 +120,14 @@
     "GameSettings_Panel4": "기타",
     "GameSettings_Panel4ShowEventsPanel": "이벤트 패널 표시",
     "GameSettings_Panel4ShowSocialMediaPanel": "소셜 미디어 패널 표시",
-    "GamePlaytime_Panel1": "Edit Playtime",
-    "GamePlaytime_Idle_Panel1Hours": "Hours",
-    "GamePlaytime_Idle_Panel1Minutes": "Minutes",
-    "GamePlaytime_Idle_ResetBtn": "Reset",
-    "GamePlaytime_Idle_ChangeBtn": "Change",
-    "GamePlaytime_Idle_InvalidTimeBlock": "Invalid values provided.",
+    "GamePlaytime_Panel1": "플레이 시간 편집",
+    "GamePlaytime_Idle_Panel1Hours": "시간",
+    "GamePlaytime_Idle_Panel1Minutes": "분",
+    "GamePlaytime_Idle_ResetBtn": "초기화",
+    "GamePlaytime_Idle_ChangeBtn": "변경",
+    "GamePlaytime_Idle_InvalidTimeBlock": "잘못된 값이 제공되었어요.",
     "GamePlaytime_Running_Info1": "게임이 실행 중이므로 플레이타임을 수정할 수 없습니다.",
-    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point) & only sessions started using Collapse will be tracked.",
+    "GamePlaytime_Running_Info2": "Collapse를 완전히 닫으면 플레이 시간 추적이 중지되고 (그 시점까지 플레이된 시간을 저장), Collapse를 통해 시작한 세션만 추적돼요.",
     "PostPanel_Events": "이벤트",
     "PostPanel_Notices": "공지사항",
     "PostPanel_Info": "소식",
@@ -136,7 +136,7 @@
     "CommunityToolsBtn": "Community Tools",
     "CommunityToolsBtn_OfficialText": "Official Tools",
     "CommunityToolsBtn_CommunityText": "Community Tools",
-    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "Select Program Executable: {0}"
+    "CommunityToolsBtn_OpenExecutableAppDialogTitle": "프로그램 실행 파일 선택: {0}"
   },
 
   "_GameRepairPage": {
@@ -303,15 +303,15 @@
     "CustomArgs_Footer2": "Unity Standalone 명령줄 문서를",
     "CustomArgs_Footer3": "참조해 더 많은 인수를 확인하세요.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "게임 우선 순위 올리기 [실험 기능]"
   },
 
   "_SettingsPage": {
     "PageTitle": "앱 설정",
 
-    "Debug": "Additional Settings",
+    "Debug": "추가 설정",
     "Debug_Console": "콘솔 표시",
-    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
+    "Debug_IncludeGameLogs": "게임 로그를 Collapse의 로그에 저장 (중요한 데이터가 포함되어 있을 수 있어요)",
     "Debug_MultipleInstance": "여러 인스턴스에서 실행 허용",
 
     "ChangeRegionWarning_Toggle": "서버 변경 경고 표시",
@@ -347,9 +347,9 @@
     "AppThreads_Help5": "이 스레드는 게임을 설치/복구하는 동안 압축 해제/무결성 검사 작업을 처리해요.",
     "AppThreads_Help6": "참고: 이 설정은 더 이상 붕괴3rd 설치와 작동하지 않아요.",
 
-    "DiscordRPC": "Discord Rich Presence",
+    "DiscordRPC": "Discord 활동 상태",
     "DiscordRPC_Toggle": "Discord 활동 표시",
-    "DiscordRPC_GameStatusToggle": "Show current game on Discord status",
+    "DiscordRPC_GameStatusToggle": "디스코드 활동 상태에 현재 게임 표시",
 
     "Update": "업데이트 확인",
     "Update_CurVer": "현재 버전:",
@@ -365,14 +365,14 @@
     "AppFiles_ClearLogBtn": "로그 파일 삭제",
     "AppFiles_ClearImgCachesBtn": "이미지 파일 삭제",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
-    "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
+    "AppFiles_ClearMetadataBtn": "메타데이터 지우기 및 재시작",
+    "AppFiles_ClearMetadataDialog": "Collapse 메타데이터 지우기!",
+    "AppFiles_ClearMetadataDialogHelp": "Collapse 메타데이터를 지우면 Collapse가 강제로 다시 시작하게 돼요. 서버 로딩에 문제가 있는 경우에만 사용해 주세요.\r\n정말로 지울까요?",
 
     "ReportIssueBtn": "문제 보고",
     "ContributePRBtn": "기여하기",
-    "ContributorListBtn": "Open Source Contributors",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "ContributorListBtn": "오픈 소스 기여자분들",
+    "HelpLocalizeBtn": "Collapse를 번역할 수 있도록 도와주세요!",
 
     "About": "정보",
     "About_Copyright1": "© 2022-2023",
@@ -387,19 +387,28 @@
 
     "DiscordBtn1": "Armada Discord 참여하기",
     "DiscordBtn2": "Honkai Impact 3rd Discord 방문하기",
-    "DiscordBtn3": "Collapse's Official Discord!",
+    "DiscordBtn3": "Collapse의 공식 Discord!",
 
     "AppChangeReleaseChannel": "{0} 릴리스 채널로 변경",
 
-    "EnableAcrylicEffect": "Use Acrylic Blur Effect",
-    "EnableDownloadChunksMerging": "Merge Downloaded Package Chunks",
+    "EnableAcrylicEffect": "아크릴 흐림 효과 사용",
+    "EnableDownloadChunksMerging": "다운로드한 패키지 청크 병합",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "게임이 실행됐을 때 Collapse 프로세스 리소스 사용량 감소",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "메인 페이지의 이미지 슬라이더 비활성화 및 Collapse의 우선순위를 보통 이하로 낮추기",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_Title": "키보드 단축키",
+    "KbShortcuts_ShowBtn": "단축키 표시",
+    "KbShortcuts_ResetBtn": "기본값으로 초기화",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray",
+    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
 
   "_Misc": {
@@ -425,7 +434,7 @@
     "OkaySad": "알겠어요 ;-;)",
     "OkayHappy": "알겠어요 (≧▽≦)ﾉ",
     "OkayBackToMenu": "알겠어요, 메뉴로 돌아갑니다",
-    "Skip": "건너뛰기",
+    "Skip": "스킵 할게요, 더 이상 보여주지 마세요",
     "Next": "다음",
     "Prev": "이전",
     "Uninstall": "삭제",
@@ -477,41 +486,43 @@
     "BuildChannelStable": "안정",
 
     "CDNDescription_Github": "런처의 공식 (기본) 저장소",
-    "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
+    "CDNDescription_Cloudflare": "Cloudflare R2 버킷에서 호스팅되는 공식 (기본) 저장소 미러",
+    "CDNDescription_Bitbucket": "Bitbucket에서 호스팅되는 공식 (기본) 저장소 미러",
 
-    "LocateExecutable": "Locate Executable",
-    "OpenDownloadPage": "Open Download Page",
+    "LocateExecutable": "실행 파일 지정",
+    "OpenDownloadPage": "다운로드 페이지 열기",
 
-    "DiscordRP_Play": "Playing",
-    "DiscordRP_InGame": "In Game",
-    "DiscordRP_Update": "Updating",
-    "DiscordRP_Repair": "Repairing Game",
-    "DiscordRP_Cache": "Updating Cache",
-    "DiscordRP_GameSettings": "Changing Game Settings",
-    "DiscordRP_AppSettings": "Changing App Settings",
-    "DiscordRP_Idle": "Idle",
-    "DiscordRP_Default": "No Activity",
-    "DiscordRP_Ad": "- With Collapse Launcher",
-    "DiscordRP_Region": "Region:",
+    "DiscordRP_Play": "플레이 중",
+    "DiscordRP_InGame": "인게임",
+    "DiscordRP_Update": "업데이트 중",
+    "DiscordRP_Repair": "게임 복구 중",
+    "DiscordRP_Cache": "캐시 업데이트 중",
+    "DiscordRP_GameSettings": "게임 설정 변경 중",
+    "DiscordRP_AppSettings": "앱 설정 변경 중",
+    "DiscordRP_Idle": "대기 상태",
+    "DiscordRP_Default": "활동 없음",
+    "DiscordRP_Ad": "- Collapse Launcher",
+    "DiscordRP_Region": "서버:",
 
-    "Taskbar_ShowApp": "Show Collapse window",
-    "Taskbar_HideApp": "Hide Collapse window to taskbar",
-    "Taskbar_ShowConsole": "Show Collapse console window",
-    "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
+    "Taskbar_ShowApp": "Collapse 창 표시",
+    "Taskbar_HideApp": "작업 표시줄에 Collapse 창 숨기기",
+    "Taskbar_ShowConsole": "Collapse 콘솔 창 표시",
+    "Taskbar_HideConsole": "작업 표시줄에 Collapse 콘솔 창 숨기기",
+    "Taskbar_ExitApp": "Collapse Launcher 종료"
   },
 
   "_BackgroundNotification": {
-    "LoadingTitle": "Loading activity...",
+    "LoadingTitle": "활동 로딩 중...",
     "Placeholder": "-",
 
-    "CategoryTitle_Downloading": "Downloading game: {0}",
-    "CategoryTitle_DownloadingPreload": "Downloading preload: {0}",
-    "CategoryTitle_Updating": "Updating game: {0}",
+    "CategoryTitle_Downloading": "게임 다운로드 중: {0}",
+    "CategoryTitle_DownloadingPreload": "사전 다운로드 다운로드 중: {0}",
+    "CategoryTitle_Updating": "게임 업데이트 중: {0}",
 
-    "NotifBadge_Completed": "[Completed] {0}",
-    "NotifBadge_Error": "[Error/Canceled] {0}"
+    "NotifBadge_Completed": "[완료] {0}",
+    "NotifBadge_Error": "[오류/취소] {0}"
   },
 
   "_Dialogs": {
@@ -590,16 +601,16 @@
     "ReleaseChannelChangeSubtitle2": "참고:",
     "ReleaseChannelChangeSubtitle3": "이 작업으로 인해 되돌릴 수 없는 변경이나 비호환성이 발생할 수 있어요.",
     "ChangePlaytimeTitle": "정말로 플레이타임을 변경하시겠습니까?",
-    "ChangePlaytimeSubtitle": "Changing your playtime means overwriting the current value with the one you just inputted. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
+    "ChangePlaytimeSubtitle": "플레이 시간을 변경한다는 것은 방금 입력한 값으로 현재 값을 덮어쓰는 것을 의미해요.\n\n정말로 계속하시겠어요?\n\n참고: 이 변경은 Collapse 작동에 영향을 미치지 않고 게임을 플레이하지 않을 때는 언제든지 이 값을 변경할 수 있어요.",
     "ResetPlaytimeTitle": "정말로 플레이타임을 초기화하시겠습니까?",
-    "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter back to 0. This is a ",
-    "ResetPlaytimeSubtitle2": "destructive",
-    "ResetPlaytimeSubtitle3": " action, meaning that you cannot undo this once you confirm. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
-    "LocateExePathTitle": "Locate Executable Install Path",
+    "ResetPlaytimeSubtitle": "플레이 시간을 초기화한다는 것은 플레이 시간을 다시 0으로 설정한다는 것을 의미해요. 이 초기화는 ",
+    "ResetPlaytimeSubtitle2": "치명적인",
+    "ResetPlaytimeSubtitle3": " 설정이고, 되돌릴 수 없어요. \n\n정말로 계속하시겠어요?\n\n참고: 이 변경은 Collapse 작동에 영향을 미치지 않고 게임을 플레이하지 않을 때는 언제든지 이 값을 변경할 수 있어요.",
+    "LocateExePathTitle": "실행 파일 설치 경로 지정",
     "LocateExePathSubtitle": "Please point Collapse to the location of your application's executable:",
     "CannotUseAppLocationForGameDirTitle": "폴더가 올바르지 않습니다!",
     "CannotUseAppLocationForGameDirSubtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
-    "StopGameTitle": "Force Stop Game",
+    "StopGameTitle": "게임 강제 종료",
     "StopGameSubtitle": "Are you sure you want to force stop current running game?\r\nYou may lose some in-game progress.",
     "MeteredConnectionWarningTitle": "Metered Connection Detected!",
     "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
@@ -752,8 +763,8 @@
 
     "Graphics_Title": "그래픽 설정",
     "Graphics_ResolutionPanel": "게임 해상도",
-    "Graphics_Fullscreen": "Fullscreen",
-    "Graphics_ExclusiveFullscreen": "Use Exclusive Fullscreen",
+    "Graphics_Fullscreen": "전체 화면",
+    "Graphics_ExclusiveFullscreen": "독점 전체 화면 사용",
     "Graphics_ResSelectPlaceholder": "Select",
     "Graphics_ResCustom": "Use Custom Resolution",
     "Graphics_ResCustomW": "W",
@@ -928,6 +939,8 @@
     "General_GoHome": "Go to the Home page",
     "General_GoSettings": "Go to the Settings page",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",

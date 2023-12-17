@@ -10,6 +10,7 @@ namespace Hi3Helper
     public class LoggerBase
     {
         #region Properties
+        private FileStream _logStream { get; set; }
         private StreamWriter _logWriter { get; set; }
         private string _logFolder { get; set; }
         private string _logPath { get; set; }
@@ -42,6 +43,7 @@ namespace Hi3Helper
             // Try dispose the _logWriter even though it's not initialized.
             // This will be used if the program need to change the log folder to another location.
             _logWriter?.Dispose();
+            _logStream?.Dispose();
 
             try
             {
@@ -114,7 +116,11 @@ namespace Hi3Helper
             }
         }
 
-        protected void DisposeBase() => _logWriter?.Dispose();
+        protected void DisposeBase()
+        {
+            _logWriter?.Dispose();
+            _logStream?.Dispose();
+        }
         #endregion
 
         #region PrivateMethods
@@ -134,8 +140,8 @@ namespace Hi3Helper
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
             // to warm-restart itself in rare occassion (like update mechanism with Squirrel).
-            FileStream fs = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            _logWriter = new StreamWriter(fs, logEncoding) { AutoFlush = true };
+            _logStream = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            _logWriter = new StreamWriter(_logStream, logEncoding, -1, false) { AutoFlush = true };
         }
 
         private int GetTotalInstance()

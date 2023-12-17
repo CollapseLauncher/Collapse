@@ -309,7 +309,7 @@
   "_SettingsPage": {
     "PageTitle": "Cài đặt trình khởi chạy",
 
-    "Debug": "Additional Settings",
+    "Debug": "Cài đặt bổ sung",
     "Debug_Console": "Hiển thị console (cmd)",
     "Debug_IncludeGameLogs": "Lưu nhật ký trò chơi vào Collapse (có thể chứa dữ liệu nhạy cảm)",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
@@ -372,11 +372,11 @@
     "ReportIssueBtn": "Báo lỗi",
     "ContributePRBtn": "Đóng góp",
     "ContributorListBtn": "Người đóng góp mã nguồn mở",
-    "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "HelpLocalizeBtn": "Giúp Chúng Tôi Dịch Collapse!",
 
     "About": "Về chúng tôi",
     "About_Copyright1": "© 2022-2023",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl & Kuro",
+    "About_Copyright2": "neon-nyan, Cry0, bagusnl & Kuro",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký Bản quyền.",
 
@@ -394,12 +394,21 @@
     "EnableAcrylicEffect": "Dùng hiệu ứng làm mờ",
     "EnableDownloadChunksMerging": "Gộp các gói đã tải xuống",
 
-    "LowerCollapsePrioOnGameLaunch": "Lower Collapse process resource usage when a game is launched",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Disables Carousel in main page and lower Collapse's priority to Below Normal",
+    "LowerCollapsePrioOnGameLaunch": "Giảm mức sử dụng tài nguyên sử dụng của Collapse khi trò chơi được khởi động",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Vô hiệu hóa Carousel trong trang chính và giảm mức độ ưu tiên của Collapse xuống Dưới mức bình thường",
 
-    "KbShortcuts_Title": "Keyboard Shortcuts",
-    "KbShortcuts_ShowBtn": "Show Shortcuts",
-    "KbShortcuts_ResetBtn": "Reset to Default"
+    "KbShortcuts_Title": "Phím Tắt",
+    "KbShortcuts_ShowBtn": "Hiện Thị Lối Tắt",
+    "KbShortcuts_ResetBtn": "Đặt Lại Về Mặc Định",
+
+    "AppBehavior_Title": "App Behavior",
+    "AppBehavior_PostGameLaunch": "After Launching Game",
+    "AppBehavior_PostGameLaunch_Minimize": "Minimize",
+    "AppBehavior_PostGameLaunch_ToTray": "Hide to tray",
+    "AppBehavior_PostGameLaunch_Nothing": "Do nothing",
+    "AppBehavior_MinimizeToTray": "Minimize to Tray",
+    "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
+    "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically"
   },
 
   "_Misc": {
@@ -425,7 +434,7 @@
     "OkaySad": "Okay ;-;",
     "OkayHappy": "Okay (≧▽≦)ﾉ",
     "OkayBackToMenu": "Okay, trở lại trang chính",
-    "Skip": "Bỏ qua",
+    "Skip": "Skip, never show again",
     "Next": "Tiếp theo",
     "Prev": "Trước đó",
     "Uninstall": "Gỡ cài đặt",
@@ -495,11 +504,13 @@
     "DiscordRP_Ad": "- Với trình khởi chạy Collapse",
     "DiscordRP_Region": "Khu vực:",
 
-    "Taskbar_ShowApp": "Show Collapse window",
-    "Taskbar_HideApp": "Hide Collapse window to taskbar",
+    "Taskbar_PopupHelp1": "Click to bring Collapse to foreground",
+    "Taskbar_PopupHelp2": "Double click to toggle windows visibility",
+    "Taskbar_ShowApp": "Hiển thị cửa sổ Collapse",
+    "Taskbar_HideApp": "Ẩn cửa sổ Collapse xuống thanh tác vụ",
     "Taskbar_ShowConsole": "Show Collapse console window",
     "Taskbar_HideConsole": "Hide Collapse console window to taskbar",
-    "Taskbar_ExitApp": "Exit Collapse Launcher"
+    "Taskbar_ExitApp": "Thoát trình khởi chạy Collapse"
   },
 
   "_BackgroundNotification": {
@@ -601,11 +612,11 @@
     "CannotUseAppLocationForGameDirSubtitle": "Bạn không thể sử dụng thư mục này vì nó đang được sử dụng làm thư mục hệ thống hoặc được sử dụng để thực thi chính của ứng dụng. Vui lòng chọn thư mục khác!",
     "StopGameTitle": "Buộc dừng trò chơi",
     "StopGameSubtitle": "Bạn có chắc chắn muốn buộc dừng trò chơi đang chạy hiện tại không?\nBạn có thể mất một số tiến trình trong trò chơi.",
-    "MeteredConnectionWarningTitle": "Metered Connection Detected!",
-    "MeteredConnectionWarningSubtitle": "Your current internet connection was detected as being 'Metered'! Continuing the update process may incur additional charges from your internet provider. Do you wish to proceed?",
+    "MeteredConnectionWarningTitle": "Đã phát hiện kết nối bằng Internet có giới hạn dữ liệu!",
+    "MeteredConnectionWarningSubtitle": "Kết nối internet hiện tại của bạn được phát hiện là 'Internet có giới hạn dữ liệu'! Tiếp tục quá trình cập nhật có thể phải trả thêm phí từ nhà cung cấp internet của bạn. Bạn có muốn tiếp tục không?",
 
-    "ResetKbShortcutsTitle": "Are you sure you want to reset all shortcuts?",
-    "ResetKbShortcutsSubtitle": "This means every shortcut will be changed to their default key combination. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can still change the combination of shortcuts by accessing the Keyboard Shortcuts menu."
+    "ResetKbShortcutsTitle": "Bạn có chắc chắn muốn đặt lại tất cả các phím tắt không?",
+    "ResetKbShortcutsSubtitle": "Điều này có nghĩa là mọi phím tắt sẽ được thay đổi thành tổ hợp phím mặc định của chúng. \n\nBạn có muốn tiếp tục không?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn vẫn có thể thay đổi tổ hợp phím tắt bằng cách truy cập menu Phím tắt."
   },
 
   "_InstallMgmt": {
@@ -742,9 +753,9 @@
     "NotifPreviewBuildUsedSubtitle": "Bạn đang sử dụng bản dựng XEM TRƯỚC trong khi vẫn còn đang được thử nghiệm. Nếu có bất kì lỗi nào, vui lòng báo lỗi với chúng tôi bằng cách ấn vào nút \"{0}\" dưới đây. Xin cảm ơn!",
     "NotifPreviewBuildUsedBtn": "Gửi lỗi",
 
-    "NotifKbShortcutTitle": "A new feature has arrived!",
-    "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutTitle": "Một tính năng mới đã đến!",
+    "NotifKbShortcutSubtitle": "Chúng tôi sẽ giới thiệu một cách mới để điều hướng trong Collapse, Phím tắt.\nGiờ đây, bạn có thể sử dụng bàn phím để truy cập nhanh hơn vào một số chức năng!\n\nMuốn biết thêm?\nHãy thử sử dụng CTRL + Tab hoặc nhấp vào nút bên dưới.",
+    "NotifKbShortcutBtn": "Hiển thị tất cả phím tắt"
   },
 
   "_StarRailGameSettingsPage": {
@@ -916,23 +927,25 @@
   },
 
   "_KbShortcuts": {
-    "DialogTitle": "Keyboard Shortcuts",
+    "DialogTitle": "Phím Tắt",
     "GeneralTab": "General",
-    "SwitchTab": "Quick Switch",
-    "GameFolderTab": "Folder Access",
-    "GameManagementTab": "Game Management",
+    "SwitchTab": "Chuyển đổi nhanh",
+    "GameFolderTab": "Truy cập thư mục",
+    "GameManagementTab": "Quản lý trò chơi",
 
     "General_Title": "General",
     "General_OpenMenu": "Open this menu",
     "General_OpenMenu_Desc": "This can also be accessed through the App Settings page.",
-    "General_GoHome": "Go to the Home page",
-    "General_GoSettings": "Go to the Settings page",
+    "General_GoHome": "Đi tới Trang chủ",
+    "General_GoSettings": "Đi tới trang Cài đặt",
     "General_OpenNotifTray": "Open the Notification Tray",
+    "General_ReloadRegion": "Reload current page",
+    "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
 
-    "Switch_Title": "Quick Game/Region change",
-    "Switch_Subtitle": "Note: The keybinds follow the selector order.",
+    "Switch_Title": "Thay đổi trò chơi / khu vực nhanh chóng",
+    "Switch_Subtitle": "Lưu ý: Các tổ hợp phím tuân theo 1 thứ tự.",
     "Switch_SwapBtn": "Swap {0} and {1}",
-    "Switch_ChangeGame": "Change game",
+    "Switch_ChangeGame": "Thay đổi trò chơi",
     "Switch_ChangeGame_Desc": "You can use the NumPad for this shortcut too!\nE.g. {0}+1 or NumPad1 (without the {0} modifier) leads to Honkai Impact 3rd's page (last used region).",
     "Switch_ChangeRegion": "Change region",
     "Switch_ChangeRegion_Desc": "E.g. For Genshin Impact, {0}+1 leads to the Global region.",

@@ -1,4 +1,6 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
@@ -444,7 +446,7 @@ namespace CollapseLauncher.Interfaces
                     if (sdkDllFile != null)
                     {
                         // Try create the file if not exist or open an existing one
-                        await using (Stream sdkDllStream = sdkDllFile.Open(entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate))
+                        await using (Stream sdkDllStream = sdkDllFile.Open(!sdkDllFile.Exists || entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate))
                         {
                             // Initiate the Crc32 hash
                             Crc32 hash = new Crc32();
@@ -718,9 +720,10 @@ namespace CollapseLauncher.Interfaces
             {
                 Content = Lang._InstallMgmt.RepairFilesRequiredShowFilesBtn,
                 Style = Application.Current.Resources["AccentButtonStyle"] as Style,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Center,
+                CornerRadius = new CornerRadius(14)
             };
-            ShowBrokenFilesButton.Click += (async (a, b) =>
+            ShowBrokenFilesButton.Click += async (a, b) =>
             {
                 string tempPath = Path.GetTempFileName() + ".log";
 
@@ -755,7 +758,7 @@ namespace CollapseLauncher.Interfaces
                     File.Delete(tempPath);
                 }
                 catch { }
-            });
+            };
 
             Content.Children.Add(new TextBlock()
             {
@@ -765,21 +768,19 @@ namespace CollapseLauncher.Interfaces
             });
             Content.Children.Add(ShowBrokenFilesButton);
 
-            ContentDialog dialog1 = new ContentDialog
-            {
-                Title = string.Format(Lang._InstallMgmt.RepairFilesRequiredTitle, assetIndex.Count),
-                Content = Content,
-                CloseButtonText = Lang._Misc.Cancel,
-                PrimaryButtonText = Lang._Misc.YesResume,
-                SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary,
-                Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["DialogAcrylicBrush"],
-                XamlRoot = _parentUI.XamlRoot
-            };
-
             if (totalSize == 0) return;
 
-            if (await dialog1.ShowAsync() == ContentDialogResult.None)
+            ContentDialogResult result = await SimpleDialogs.SpawnDialog(
+                string.Format(Lang._InstallMgmt.RepairFilesRequiredTitle, assetIndex.Count),
+                Content,
+                _parentUI,
+                Lang._Misc.Cancel,
+                Lang._Misc.YesResume,
+                null,
+                ContentDialogButton.Primary,
+                ContentDialogTheme.Warning);
+
+            if (result == ContentDialogResult.None)
             {
                 if (actionIfInteractiveCancel != null)
                 {
@@ -793,14 +794,19 @@ namespace CollapseLauncher.Interfaces
         #region HandlerUpdaters
         public void Dispatch(DispatcherQueueHandler handler) => _parentUI.DispatcherQueue.TryEnqueue(handler);
 
-        protected virtual void PopRepairAssetEntry() => Dispatch(() =>
+        protected virtual void PopRepairAssetEntry()
         {
             try
             {
-                AssetEntry.RemoveAt(0);
+                if (_parentUI.DispatcherQueue.HasThreadAccess)
+                {
+                    if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0);
+                    return;
+                }
+                Dispatch(() => { if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0); });
             }
             catch { }
-        });
+        }
 
         protected async Task<bool> CheckIfNeedRefreshStopwatch()
         {

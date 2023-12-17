@@ -12,7 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:f="using:Windows.Globalization.NumberFormatting"
     xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d"
     Loaded="InitializeSettings" Unloaded="OnUnload">
     <Page.Resources>
@@ -77,7 +77,7 @@
                                                    HorizontalAlignment="Left" Width="100"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_FPS}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,16,8,0"/>
-                                <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
+                                <ComboBox x:Name="FPSSelector" SelectedIndex="{x:Bind FPS, Mode=TwoWay}" ItemsSource="{x:Bind static:GlobalPerfData.FPSIndex}" Margin="0,8,0,8" Width="128" CornerRadius="14"/>
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel" Orientation="Horizontal">
                                 <ToggleSwitch Header="{x:Bind helper:Locale.Lang._GameSettingsPage.GameBoost}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" IsOn="{x:Bind IsGameBoost, Mode=TwoWay}" Margin="4,8,0,0"/>
@@ -188,7 +188,7 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_RenderScale}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
-                                            <ComboBox x:Name="RenderScaleSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind RenderScale, Mode=TwoWay}" ItemsSource="{x:Bind static:GraphicsData.RenderScaleValuesStr}"/>
+                                            <ComboBox x:Name="RenderScaleSelector" Margin="0,0,0,8" Width="128" CornerRadius="14" SelectedIndex="{x:Bind RenderScale, Mode=TwoWay}" ItemsSource="{x:Bind static:GlobalPerfData.RenderScaleValuesStr}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_AAMode}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0,0,0,8"/>
@@ -268,7 +268,7 @@
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecDisabled}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecLow}"/>
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecHigh}"/>
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryHigh}"/>
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecExtreme}"/>
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">

@@ -1,19 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Windows.System;
+﻿using CollapseLauncher.CustomControls;
+using CommunityToolkit.WinUI;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using CommunityToolkit.WinUI.UI;
-using CollapseLauncher.CustomControls;
-using static Hi3Helper.Logger;
-using static Hi3Helper.Locale;
-using static Hi3Helper.Shared.Region.LauncherConfig;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.System;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -41,6 +41,7 @@ namespace CollapseLauncher.Dialogs
             genStack.Children.Add(GenerateShortcutBlock(keys[3], Lang._KbShortcuts.General_GoHome));
             genStack.Children.Add(GenerateShortcutBlock(keys[4], Lang._KbShortcuts.General_GoSettings));
             genStack.Children.Add(GenerateShortcutBlock(keys[5], Lang._KbShortcuts.General_OpenNotifTray));
+            genStack.Children.Add(GenerateShortcutBlock(keys[13], Lang._KbShortcuts.General_ReloadRegion, Lang._KbShortcuts.General_ReloadRegion_Desc));
             genStack.Children.Add(new MenuFlyoutSeparator() { Margin = new Thickness(0, 10, 0, 8) });
             pageNum++;
 
@@ -48,7 +49,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel changeStack = new StackPanel() { Orientation = Orientation.Vertical, Visibility = Visibility.Collapsed };
             changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Title, FontSize = 16, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 2) });
             changeStack.Children.Add(new TextBlock { Text = Lang._KbShortcuts.Switch_Subtitle, FontSize = 11.5 });
-
+                        
             string gameMod = keys[0][0];
             string regionMod = keys[1][0];
 
@@ -180,9 +181,10 @@ namespace CollapseLauncher.Dialogs
                 Orientation = Orientation.Horizontal
             };
 
-            List<string> dataKeys = new List<string> { kbKeys[0], kbKeys[1], description, pageNum.ToString() };
-            if (enableSwapButton)
+            
+            if (enableSwapButton && kbKeys.Count > 1)
             {
+                List<string> dataKeys = new List<string> { kbKeys[0], kbKeys[1], description, pageNum.ToString() };
                 Button shortcutSwap = new Button()
                 {
                     Content = new TextBlock() { Text = "", FontSize = 12, Margin = new Thickness(-5, 0, -5, 0), FontFamily = Application.Current.Resources["FontAwesomeSolid"] as FontFamily },
@@ -555,7 +557,7 @@ namespace CollapseLauncher.Dialogs
                     new List<string> { "Ctrl", "1 - 3" },   // Game selection
                     new List<string> { "Shift", "1 - 6" },  // Region selection
 
-                    new List<string> { "Ctrl", "Tab" },     // Keybind menu
+                    new List<string> { "Ctrl", "Tab" },     // Keyboard shortcuts menu
                     new List<string> { "Ctrl", "H" },       // Home page
                     new List<string> { "Ctrl", "S" },       // Settings page
                     new List<string> { "Ctrl", "Q" },       // Notification panel
@@ -567,7 +569,9 @@ namespace CollapseLauncher.Dialogs
 
                     new List<string> { "Shift", "R" },      // Repair page
                     new List<string> { "Shift", "S" },      // Game settings page
-                    new List<string> { "Shift", "C" }       // Caches page
+                    new List<string> { "Shift", "C" },      // Caches page
+
+                    new List<string> { "Ctrl", "R" }        // Reload region
 
                 };
 
@@ -602,7 +606,9 @@ namespace CollapseLauncher.Dialogs
 
                 if (resultList.Count < defaultKeyList.Count)
                 {
-                    resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, defaultKeyList.Count - resultList.Count));
+                    int newKeyCount = defaultKeyList.Count - resultList.Count;
+                    resultList.InsertRange(resultList.Count, defaultKeyList.GetRange(resultList.Count, newKeyCount));
+                    KeyList = resultList;
                 }
 
                 return resultList;

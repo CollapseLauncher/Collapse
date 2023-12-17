@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,42 +40,39 @@ namespace CollapseLauncher
 
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
         {
-            Http _httpClient = new Http(true);
-            MemoryStream fs = new MemoryStream();
-            try
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, GetRelativePathOnly(url), default);
-                return fs.ToArray();
-            }
-            catch { throw; }
-            finally
-            {
-                fs?.Dispose();
-                _httpClient?.Dispose();
-            }
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
+            byte[] buffer = new byte[stream.Length];
+            await stream.ReadExactlyAsync(buffer);
+            return buffer;
         }
 
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
         {
-            Http _httpClient = new Http(true);
-            MemoryStream fs = new MemoryStream();
-            try
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, GetRelativePathOnly(url), default);
-                return Encoding.UTF8.GetString(fs.ToArray());
-            }
-            catch { throw; }
-            finally
-            {
-                fs?.Dispose();
-                _httpClient?.Dispose();
-            }
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
+            byte[] buffer = new byte[stream.Length];
+            await stream.ReadExactlyAsync(buffer);
+            return Encoding.UTF8.GetString(buffer);
         }
 
         private string GetRelativePathOnly(string url)
         {
             string toCompare = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
             return url.AsSpan(toCompare.Length).ToString();
+        }
+    }
+
+    internal readonly struct CDNUtilHTTPStatus
+    {
+        internal readonly HttpStatusCode StatusCode;
+        internal readonly bool IsSuccessStatusCode;
+        internal readonly Uri AbsoluteURL;
+        internal readonly HttpResponseMessage Message;
+        internal CDNUtilHTTPStatus(HttpResponseMessage message)
+        {
+            Message = message;
+            StatusCode = Message.StatusCode;
+            IsSuccessStatusCode = Message.IsSuccessStatusCode;
+            AbsoluteURL = Message.RequestMessage.RequestUri;
         }
     }
 
@@ -87,6 +83,17 @@ namespace CollapseLauncher
             AllowAutoRedirect = true,
             MaxConnectionsPerServer = 16,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli | DecompressionMethods.None
+        })
+        {
+            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
+            DefaultRequestVersion = HttpVersion.Version20,
+            Timeout = TimeSpan.FromMinutes(1)
+        };
+        private static readonly HttpClient _clientNoCompression = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = true,
+            MaxConnectionsPerServer = 16,
+            AutomaticDecompression = DecompressionMethods.None
         })
         {
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
@@ -154,6 +161,35 @@ namespace CollapseLauncher
             }
         }
 
+        public static async ValueTask<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        {
+            // Get the preferred CDN first and try get the content
+            CDNURLProperty preferredCDN = GetPreferredCDN();
+            BridgedNetworkStream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
+
+            // If successful, then return
+            if (contentStream != null) return contentStream;
+
+            // If the fail return code occurred by the token, then throw cancellation exception
+            token.ThrowIfCancellationRequested();
+
+            // If not, then continue to get the content from another CDN
+            foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
+            {
+                // Dispose previous stream
+                await contentStream.DisposeAsync();
+                contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, token, isForceUncompressRequest);
+
+                // If successful, then return
+                if (contentStream != null) return contentStream;
+            }
+
+            // If all of them failed, then throw an exception
+            // Dispose previous stream
+            await contentStream.DisposeAsync();
+            throw new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
+        }
+
         private static void PerformStreamCheckAndSeek(Stream outputStream)
         {
             // Throw if output stream can't write and seek
@@ -162,6 +198,27 @@ namespace CollapseLauncher
 
             // Reset the outputStream position
             outputStream.Position = 0;
+        }
+
+        private static async ValueTask<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        {
+            try
+            {
+                // Get the URL Status then return boolean and and URLStatus
+                CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(cdnProp, relativeURL, token, isForceUncompressRequest);
+
+                // If URL status is false, then return null
+                if (!urlStatus.IsSuccessStatusCode) return null;
+
+                // Continue to get the content and return the stream if successful
+                return await GetHttpStreamFromResponse(urlStatus.Message, token);
+            }
+            // Handle the error and log it. If fails, then log it and return false
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
+                return null;
+            }
         }
 
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, Http httpInstance, Stream outputStream, string relativeURL, CancellationToken token)
@@ -252,6 +309,24 @@ namespace CollapseLauncher
             return (true, absoluteURL);
         }
 
+        private static async ValueTask<CDNUtilHTTPStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
+        {
+            // Concat the URL Prefix and Relative URL
+            string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
+
+            LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
+
+            // Try check the status of the URL
+            HttpResponseMessage responseMessage = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
+
+            // If it's not a successful code, log the information
+            if (!responseMessage.IsSuccessStatusCode)
+                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {responseMessage.StatusCode} ({(int)responseMessage.StatusCode})", LogType.Error, true);
+
+            // Then return the status code
+            return new CDNUtilHTTPStatus(responseMessage);
+        }
+
         public static CDNURLProperty GetPreferredCDN()
         {
             // Get the CurrentCDN index
@@ -269,27 +344,19 @@ namespace CollapseLauncher
         }
 
         public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
-#if NET7_0_OR_GREATER
             => (T)await _client.GetFromJsonAsync(URL, typeof(T), context, token) ?? default;
-#else
-        {
-            using (BridgedNetworkStream content = await GetHttpStreamFromResponse(URL, token))
-            {
-                return (T)await JsonSerializer.DeserializeAsync(content, typeof(T), context, token) ?? default;
-            }
-        }
-#endif
 
-        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token)
+        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
         {
-            HttpRequestMessage requestMsg = new HttpRequestMessage()
+            using HttpRequestMessage requestMsg = new HttpRequestMessage()
             {
                 RequestUri = new Uri(URL),
                 Method = HttpMethod.Get
             };
             requestMsg.Headers.Range = new RangeHeaderValue(0, null);
 
-            return await _client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
+            return isForceUncompressRequest ? await _clientNoCompression.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token)
+                                            : await _client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
         }
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
@@ -299,11 +366,7 @@ namespace CollapseLauncher
         }
 
         public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
-        {
-            long networkLength = responseMsg?.Content?.Headers?.ContentLength ?? 0;
-
-            return new BridgedNetworkStream(await responseMsg.Content.ReadAsStreamAsync(token), networkLength);
-        }
+            => await BridgedNetworkStream.CreateStream(responseMsg, token);
 
         // Re-send the events to the static DownloadProgress
         private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);

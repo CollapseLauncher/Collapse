@@ -7,11 +7,7 @@ using static Hi3Helper.Data.ConverterTool;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<FileType>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum FileType : byte { Generic, Blocks, Audio, Video, Unused }
     public class FilePropertiesRemote : IAssetIndexSummary
     {
@@ -29,6 +25,19 @@ namespace Hi3Helper.Shared.ClassStruct
         public bool IsPatchApplicable { get; set; }
         public bool IsBlockNeedRepair { get; set; }
         public bool IsHasHashMark { get; set; }
+
+        public FilePropertiesRemote Copy() => new FilePropertiesRemote
+        {
+            N = N,
+            RN = RN,
+            CRC = CRC,
+            M = M,
+            FT = FT,
+            S = S,
+            IsPatchApplicable = IsPatchApplicable,
+            IsBlockNeedRepair = IsBlockNeedRepair,
+            IsHasHashMark = IsHasHashMark,
+        };
 
         public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;

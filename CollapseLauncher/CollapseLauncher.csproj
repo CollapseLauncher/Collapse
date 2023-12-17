@@ -1,29 +1,39 @@
-
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- General Properties -->
 		<OutputType>WinExe</OutputType>
-		<EnableWindowsTargeting>true</EnableWindowsTargeting>
-		<TargetFramework>net7.0-windows10.0.22000.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-		<Platforms>x64</Platforms>
-		<UseWinUI>true</UseWinUI>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<LangVersion>preview</LangVersion>
-		<Configurations>Debug;Debug-Trimmed;Release;Publish;Debug-Trimmed</Configurations>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<Version>1.72.5</Version>
-		<DebugType>portable</DebugType>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<StartupObject>CollapseLauncher.MainEntryPoint</StartupObject>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Configurations>Debug;Release;Publish</Configurations>
+		<!-- Versioning -->
+		<Version>1.72.11</Version>
+		<LangVersion>preview</LangVersion>
+		<!-- Target Settings -->
+		<Platforms>x64</Platforms>
+		<TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>		
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<!-- Debug Settings -->
+		<DebugType>portable</DebugType>
+		<GitVersion>false</GitVersion>
+		<!-- Performance Settings -->
+		<TieredPGO>true</TieredPGO>
+		<TieredCompilation>true</TieredCompilation>
+		<TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+		<TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
+		<!-- WinUI Properties -->
+		<UseWinUI>true</UseWinUI>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<!-- Other Settings -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<TieredCompilation>true</TieredCompilation>
-		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
-		<TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
-		<TieredPGO>true</TieredPGO>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <GitVersion>false</GitVersion>
+		<InvariantGlobalization>false</InvariantGlobalization>
 	</PropertyGroup>
+
 <!--
   Constants List:
 		- PREVIEW : States the version is a preview branch 
@@ -32,67 +42,73 @@
 		- ENABLEHTTPREPAIR : Override HTTPS download scheme to HTTP while downloading repair files
 		- SIMULATEAPPLYPRELOAD : Simulates downloading and applying preload update, regardless of current working game version (WILL BREAK GAME)
 		- DUMPGIJSON : Dumps Genshin Impact GeneralData JSON registry into console (CPU INTENSIVE LOAD!)
-    - SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
+		- SIMULATEGIHDR : Force enable Genshin Impact HDR settings panel for non-HDR panels (Note: this wont force GI to use HDR)
+		- GSPBYPASSGAMERUNNING : Bypass checks for Game Settings Pages for currently running game
+		- MHYPLUGINSUPPORT : Enable miHoYo's patching system through launcher (EXPERIMENTAL)
 -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
+		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING</DefineConstants>
+		<DebugType>portable</DebugType>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW</DefineConstants>
 		<Optimize>True</Optimize>
-    <GitSkipCache>true</GitSkipCache>
+		<GitSkipCache>true</GitSkipCache>
+		<DebugType>portable</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION</DefineConstants>
-    <Optimize>true</Optimize>
-    <GitSkipCache>true</GitSkipCache>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Trimmed|x64'">
-	  <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;DEBUG;PREVIEW;SIMULATEAPPLYPRELOAD;DUMPGIJSON;SIMULATEGIHDR</DefineConstants>
-	  <Optimize>true</Optimize>
-	  <GitSkipCache>true</GitSkipCache>
-	  <SelfContained>true</SelfContained>
-	  <PublishTrimmed>true</PublishTrimmed>
-	  <TrimMode>partial</TrimMode>
-	  <PublishReadyToRun>true</PublishReadyToRun>
-	  <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
-	  <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
-	  <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
-	  <EventSourceSupport>false</EventSourceSupport>
-	  <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
-	  <InvariantGlobalization>true</InvariantGlobalization>
+		<Optimize>true</Optimize>
+		<GitSkipCache>true</GitSkipCache>
+		<DebugType>portable</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="Clowd.Squirrel" Version="2.11.1" />
+		<PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
+		<PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.230907" />
+    <!--
+		TODO:
+		Remove WinUI.UI.Controls entirely and replace it with equivalent supported packages. This has to be done due to WinUI.UI package is going out-of-support and will not be updated anymore.
+		List of features linked to this package:
+			- MarkdownTextBlock (UpdatePage.xaml//UpdatePage.xaml.cs)
+					https://github.com/CommunityToolkit/Labs-Windows/pull/480 (Still not available as of Nov, 13th 2023)
+			- DataGrid (DataGrid.xaml//RepairPage.xaml//CachesPage.xaml)
+					Alt: DataTable (Available in WCT-Labs as experimental as of Nov, 13th 2023)
+					https://github.com/CommunityToolkit/Labs-Windows/discussions/415
+    -->
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="GitInfo" Version="3.3.3">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.115" />
-		<PackageReference Include="Dongle.Windows.CsWinRT" Version="3.0.0-wux.2" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.5.1" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
-		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.13.2" />
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.123" />
+		<PackageReference Include="ImageEx" Version="2.1.1" />
+		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
-		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Security.AccessControl" Version="6.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.0" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-	</ItemGroup>
-	
-	<ItemGroup Condition="'$(TargetFramework)'=='net7.0-windows10.0.22000.0'">
-		<PackageReference Include="System.Text.Json" Version="7.0.3" />
+		<PackageReference Include="TaskScheduler" Version="2.10.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
+		<ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
+		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -117,56 +133,81 @@
 
 	<Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
 		<ItemGroup>
+			<!-- Trimmable submodule assemblies -->
+			<TrimmableAssembly Include="ColorThief" />
 			<TrimmableAssembly Include="Hi3Helper.Core" />
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />
 			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
+			<TrimmableAssembly Include="SevenZipExtractor" />
+      
+			<!-- Additional assemblies -->
+			<TrimmableAssembly Include="ColorCode.Core" />
+			<TrimmableAssembly Include="ColorCode.WinUI" />
+			<TrimmableAssembly Include="CommunityToolkit.Common" />
 			<TrimmableAssembly Include="CommunityToolkit.Mvvm" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
-			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI" />
-			<TrimmableAssembly Include="GitInfo" />
 			<TrimmableAssembly Include="Google.Protobuf" />
+			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
+			<TrimmableAssembly Include="H.NotifyIcon" />
 			<TrimmableAssembly Include="H.NotifyIcon.WinUI" />
+			<TrimmableAssembly Include="Microsoft.DirectManipulation" />
 			<TrimmableAssembly Include="Microsoft.Graphics.Canvas" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Canvas.Interop" />
+			<TrimmableAssembly Include="Microsoft.Graphics.Display" />
+			<TrimmableAssembly Include="Microsoft.InputStateManager" />
 			<TrimmableAssembly Include="Microsoft.InteractiveExperiences.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
-			<TrimmableAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.System.Power.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.System.Projection" />
-			<TrimmableAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
-			<TrimmableAssembly Include="Microsoft.WindowsAppSDK" />
-			<TrimmableAssembly Include="Microsoft.WinUI" />
+			<TrimmableAssembly Include="Microsoft.Internal.FrameworkUdk" />
+			<TrimmableAssembly Include="Microsoft.UI.Composition.OSSupport" />
+			<TrimmableAssembly Include="Microsoft.UI" />
+			<TrimmableAssembly Include="Microsoft.ui.xaml" />
+			<TrimmableAssembly Include="Microsoft.UI.Xaml.Controls" />
+			<TrimmableAssembly Include="Microsoft.UI.Xaml.Internal" />
+			<TrimmableAssembly Include="Microsoft.UI.Xaml.Phone" />
+			<TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
+			<TrimmableAssembly Include="Microsoft.UI.Windowing" />
+			<TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
+			<TrimmableAssembly Include="Microsoft.Windows.Widgets" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
+			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
 			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
-			<TrimmableAssembly Include="SquirrelLib" />
-			<TrimmableAssembly Include="SharpCompress" />
 			<TrimmableAssembly Include="System.CommandLine" />
-			<TrimmableAssembly Include="System.CommandLine.NamingConventionBinder" />
-			<TrimmableAssembly Include="System.Drawing" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
-			<TrimmableAssembly Include="System.Drawing.Primitives" />
-			<TrimmableAssembly Include="System.IO.Compression.Brotli" />
-			<TrimmableAssembly Include="System.IO.Compression" />
-			<TrimmableAssembly Include="System.Net.HTTP" />
-			<TrimmableAssembly Include="System.Text.RegularExpression" />
-			<TrimmableAssembly Include="WinRT.Runtime" />
+			<TrimmableAssembly Include="WinUIEdit" />
+
+			<!-- Descriptor for all classes that cannot be trimmed -->
+			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+
+			<!--
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Extensions" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Core" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Input" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Layout" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+			<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
+			<TrimmerRootAssembly Include="ImageEx" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppLifecycle.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Builder.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.AppNotifications.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.DynamicDependency.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.Resources.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.PushNotifications.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.SDK.NET" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.Security.AccessControl.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.System.Power.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.System.Projection" />
+			<TrimmerRootAssembly Include="Microsoft.Windows.Widgets.Providers.Projection" />
+			<TrimmerRootAssembly Include="SquirrelLib" />
+			<TrimmerRootAssembly Include="System.CommandLine.NamingConventionBinder" />
+			<TrimmerRootAssembly Include="WinRT.Runtime" />
+			-->
 		</ItemGroup>
-	</Target>
-  
-	<Target Name="CustomTrim" AfterTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)|$(Platform)'=='Debug-Trimmed|x64'">
-		<ILLink AssemblyPaths="$(TargetDir)$(TargetFileName)"
-						RootAssemblyNames="$(TargetDir)$(TargetFileName)"
-						OutputDirectory="$(TargetDir)trimmed\"
-						ExtraArgs="-t --verbose --skip-unresolved true" />
 	</Target>
 </Project>

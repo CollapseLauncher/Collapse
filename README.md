@@ -182,11 +182,11 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/neon-nyan/Collapse/releases/download/CL-v1.71.15/CL-1.71.15_Installer.exe)
-> **Note**: The version for this build is `1.71.15` (Released on: October 14th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.71.16/CL-1.71.16_Installer.exe)
+> **Note**: The version for this build is `1.71.16` (Released on: November 14th, 2023).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.72.5-pre/CL-1.72.5-preview_Installer.exe)
-> **Note**: The version for this build is `1.72.5` (Released on: October 14th, 2023).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.72.6-pre/CL-1.72.6-preview_Installer.exe)
+> **Note**: The version for this build is `1.72.6` (Released on: November 14th, 2023).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 
@@ -225,3 +225,24 @@ Supporting is never an obligation but is always appreciated and motivates us to 
 - **[PayPal](https://paypal.me/neonnyan)**
 
 Made by all captains around the world with ❤️. Fight for all that is beautiful in this world!
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://prophost.ironmaid.xyz"><img src="https://avatars.githubusercontent.com/u/30566970?v=4?s=100" width="100px;" alt="Kemal Setya Adhi"/><br /><sub><b>Kemal Setya Adhi</b></sub></a><br /><a href="#code-neon-nyan" title="Code">💻</a> <a href="#design-neon-nyan" title="Design">🎨</a> <a href="#mentoring-neon-nyan" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-neon-nyan" title="Maintenance">🚧</a> <a href="#review-neon-nyan" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://ronfriedman.dev"><img src="https://avatars.githubusercontent.com/u/9833218?v=4?s=100" width="100px;" alt="Ron Friedman"/><br /><sub><b>Ron Friedman</b></sub></a><br /><a href="#code-Cryotechnic" title="Code">💻</a> <a href="#maintenance-Cryotechnic" title="Maintenance">🚧</a> <a href="#review-Cryotechnic" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/gablm"><img src="https://avatars.githubusercontent.com/u/44784408?v=4?s=100" width="100px;" alt="Gabriel Lima"/><br /><sub><b>Gabriel Lima</b></sub></a><br /><a href="#code-gablm" title="Code">💻</a> <a href="#translation-gablm" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/shatyuka"><img src="https://avatars.githubusercontent.com/u/31368738?v=4?s=100" width="100px;" alt="Shatyuka"/><br /><sub><b>Shatyuka</b></sub></a><br /><a href="#code-shatyuka" title="Code">💻</a> <a href="#translation-shatyuka" title="Translation">🌍</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

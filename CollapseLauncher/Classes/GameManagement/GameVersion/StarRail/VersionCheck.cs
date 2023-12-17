@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 
 namespace CollapseLauncher.GameVersioning
@@ -33,9 +32,9 @@ namespace CollapseLauncher.GameVersioning
 
         ~GameTypeStarRailVersion() => StarRailMetadataTool?.Dispose();
 
-        public override bool IsGameHasDeltaPatch() => false;
+        public override bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;
 
-        public override DeltaPatchProperty GetDeltaPatchInfo() => null;
+        public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
 
         private void TryReinitializeGameVersion()
         {

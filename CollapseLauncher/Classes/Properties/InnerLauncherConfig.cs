@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Pages;
+using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
@@ -11,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
@@ -42,26 +42,29 @@ namespace CollapseLauncher
             StartOnTray
         }
 
-        public static AppMode m_appMode;
-        public static Arguments m_arguments = new Arguments();
-        public static ushort[] w_windowsVersionNumbers;
-        public static Window m_window;
+        public static AppMode               m_appMode;
+        public static Arguments             m_arguments = new Arguments();
+        public static ushort[]              w_windowsVersionNumbers;
+        public static Window                m_window;
         public static Microsoft.UI.WindowId m_windowID;
-        public static Rect m_windowPosSize;
-        public static IntPtr m_windowHandle;
-        public static AppWindow m_appWindow;
-        public static OverlappedPresenter m_presenter;
-        public static MainPage m_mainPage;
-        public static bool m_windowSupportCustomTitle = false;
-        public static Size m_actualMainFrameSize;
-        public static double m_appDPIScale;
-        public static string m_appCurrentFrameName;
-        public static NotificationPush NotificationData;
-        public static bool IsCustomBG = false;
-        public static bool IsSkippingUpdateCheck = false;
-        public static GameVersion AppCurrentVersion;
-        public static Color SystemAppTheme { get; set; }
-        public static AppThemeMode CurrentAppTheme;
+        public static Rect                  m_windowPosSize;
+        public static IntPtr                m_windowHandle;
+        public static IntPtr                m_oldWndProc;
+        public static Delegate              m_newWndProcDelegate;
+        public static AppWindow             m_appWindow;
+        public static OverlappedPresenter   m_presenter;
+        public static MainPage              m_mainPage;
+        public static HomePage              m_homePage;
+        public static bool                  m_windowSupportCustomTitle = false;
+        public static Size                  m_actualMainFrameSize;
+        public static double                m_appDPIScale;
+        public static string                m_appCurrentFrameName;
+        public static NotificationPush      NotificationData;
+        public static bool                  IsCustomBG            = false;
+        public static bool                  IsSkippingUpdateCheck = false;
+        public static GameVersion           AppCurrentVersion;
+        public static Color                 SystemAppTheme { get; set; }
+        public static AppThemeMode          CurrentAppTheme;
         public static bool IsAppThemeLight
         {
             get => CurrentAppTheme switch
@@ -145,11 +148,11 @@ namespace CollapseLauncher
                     new NotificationPush()
                     .Serialize(InternalAppJSONContext.Default));
 
-            string Data = File.ReadAllText(AppNotifIgnoreFile);
+            string           Data                  = File.ReadAllText(AppNotifIgnoreFile);
             NotificationPush LocalNotificationData = Data.Deserialize<NotificationPush>(InternalAppJSONContext.Default);
-            NotificationData.AppPushIgnoreMsgIds = LocalNotificationData.AppPushIgnoreMsgIds;
+            NotificationData.AppPushIgnoreMsgIds    = LocalNotificationData.AppPushIgnoreMsgIds;
             NotificationData.RegionPushIgnoreMsgIds = LocalNotificationData.RegionPushIgnoreMsgIds;
-            NotificationData.CurrentShowMsgIds = LocalNotificationData.CurrentShowMsgIds;
+            NotificationData.CurrentShowMsgIds      = LocalNotificationData.CurrentShowMsgIds;
             NotificationData.EliminatePushList();
         }
 
@@ -159,13 +162,8 @@ namespace CollapseLauncher
 
             try
             {
-                using (Http _http = new Http())
-                using (Stream s = new MemoryStream())
-                {
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
-                    s.Position = 0;
-                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), CoreLibraryJSONContext.Default);
-                }
+                await using BridgedNetworkStream s = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default);
+                ConfigStamp = await s.DeserializeAsync<Stamp>(CoreLibraryJSONContext.Default);
             }
             catch (Exception ex)
             {
@@ -197,10 +195,9 @@ namespace CollapseLauncher
         {
             string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + prefix);
 
-            using (FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write))
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, URL, default).ConfigureAwait(false);
-            }
+            await using FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write);
+            await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(URL, default);
+            await networkStream.CopyToAsync(fs);
         }
     }
 }

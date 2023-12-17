@@ -8,6 +8,21 @@
             public LangStartupPage _StartupPage { get; set; } = LangFallback?._StartupPage;
             public sealed class LangStartupPage
             {
+                public string SelectLang { get; set; } = LangFallback?._StartupPage.SelectLang;
+                public string SelectLangDesc { get; set; } = LangFallback?._StartupPage.SelectLangDesc;
+                public string SelectWindowSize { get; set; } = LangFallback?._StartupPage.SelectWindowSize;
+                public string SelectCDN { get; set; } = LangFallback?._StartupPage.SelectCDN;
+                public string CDNHelpTitle_1 { get; set; } = LangFallback?._StartupPage.CDNHelpTitle_1;
+                public string CDNHelpTitle_2 { get; set; } = LangFallback?._StartupPage.CDNHelpTitle_2;
+                public string CDNHelpTitle_3 { get; set; } = LangFallback?._StartupPage.CDNHelpTitle_3;
+                public string CDNHelpTitle_4 { get; set; } = LangFallback?._StartupPage.CDNHelpTitle_4;
+                public string CDNHelpDetail_1 { get; set; } = LangFallback?._StartupPage.CDNHelpDetail_1;
+                public string CDNHelpDetail_2 { get; set; } = LangFallback?._StartupPage.CDNHelpDetail_2;
+                public string CDNHelpDetail_3 { get; set; } = LangFallback?._StartupPage.CDNHelpDetail_3;
+                public string CDNHelpDetail_4 { get; set; } = LangFallback?._StartupPage.CDNHelpDetail_4;
+                public string CDNsAvailable { get; set; } = LangFallback?._StartupPage.CDNsAvailable;
+                public string SplashArt_1 { get; set; } = LangFallback?._StartupPage.SplashArt_1;
+                public string SplashArt_2 { get; set; } = LangFallback?._StartupPage.SplashArt_2;
                 public string PageTitle { get; set; } = LangFallback?._StartupPage.PageTitle;
                 public string Title1 { get; set; } = LangFallback?._StartupPage.Title1;
                 public string Title2 { get; set; } = LangFallback?._StartupPage.Title2;

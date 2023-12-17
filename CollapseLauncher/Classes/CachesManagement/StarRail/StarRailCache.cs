@@ -14,7 +14,6 @@ namespace CollapseLauncher
     {
         #region Properties
         private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
-        private string _cacheRegionalCheckName = "sprite";
         private List<SRAsset> _updateAssetIndex { get; set; }
         #endregion
 

@@ -16,11 +16,7 @@ using static Hi3Helper.Logger;
 namespace Hi3Helper.Preset
 {
 #nullable enable
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<ServerRegionID>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum ServerRegionID : int
     {
         os_usa = 0,
@@ -31,11 +27,7 @@ namespace Hi3Helper.Preset
         cn_qd01 = 5
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<GameChannel>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum GameChannel
     {
         Beta = 0,
@@ -43,11 +35,7 @@ namespace Hi3Helper.Preset
         DevRelease = 2
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<GameType>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum GameType
     {
         Honkai = 0,
@@ -57,11 +45,7 @@ namespace Hi3Helper.Preset
         Unknown = int.MinValue
     }
 
-#if NET8_0_OR_GREATER
     [JsonConverter(typeof(JsonStringEnumConverter<GameVendorType>))]
-#else
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-#endif
     public enum GameVendorType
     {
         miHoYo,
@@ -531,30 +515,34 @@ namespace Hi3Helper.Preset
 #nullable disable
         public string GameExecutableName { get; set; }
 #nullable enable
-        public string? GameDispatchURL { get; set; }
-        public string[]? GameSupportedLanguages { get; set; }
-        public string[]? GameDispatchArrayURL { get; set; }
-        public string? GameDispatchChannelName { get; set; }
-        public string? GameDispatchDefaultName { get; set; }
-        public string? GameDispatchURLTemplate { get; set; }
-        public string? GameGatewayURLTemplate { get; set; }
-        public string? GameGatewayDefault { get; set; }
-        public AudioLanguageType GameDefaultCVLanguage { get; set; }
-        public string? ProtoDispatchKey { get; set; }
-        public bool? IsGenshin { get; set; }
-        public bool? IsConvertible { get; set; }
-        public bool IsHideSocMedDesc { get; set; } = true;
-        public List<string>? ConvertibleTo { get; set; }
-        public GameType GameType { get; set; } = GameType.Unknown;
-        public GameType FallbackGameType { get; set; } = GameType.Unknown;
-        public GameVendorType VendorType { get; set; } = GameVendorType.miHoYo;
-        public bool? UseRightSideProgress { get; set; }
-        public bool LauncherSpriteURLMultiLang { get; set; }
-        public string? LauncherSpriteURLMultiLangFallback { get; set; }
-        public string? LauncherSpriteURL { get; set; }
-        public string? LauncherResourceURL { get; set; }
-        public string? DispatcherKey { get; set; }
-        public int? DispatcherKeyBitLength { get; set; }
+        public string?           GameDispatchURL                    { get; set; }
+        public string[]?         GameSupportedLanguages             { get; set; }
+        public string[]?         GameDispatchArrayURL               { get; set; }
+        public string?           GameDispatchChannelName            { get; set; }
+        public string?           GameDispatchDefaultName            { get; set; }
+        public string?           GameDispatchURLTemplate            { get; set; }
+        public string?           GameGatewayURLTemplate             { get; set; }
+        public string?           GameGatewayDefault                 { get; set; }
+        public AudioLanguageType GameDefaultCVLanguage              { get; set; }
+        public string?           ProtoDispatchKey                   { get; set; }
+        public bool?             IsGenshin                          { get; set; }
+        public bool?             IsConvertible                      { get; set; }
+        public bool              IsHideSocMedDesc                   { get; set; } = true;
+        public List<string>?     ConvertibleTo                      { get; set; }
+        public GameType          GameType                           { get; set; } = GameType.Unknown;
+        public GameType          FallbackGameType                   { get; set; } = GameType.Unknown;
+        public GameVendorType    VendorType                         { get; set; } = GameVendorType.miHoYo;
+        public int               LauncherID                         { get; set; }
+        public int               ChannelID                          { get; set; }
+        public int               SubChannelID                       { get; set; } 
+        public bool?             UseRightSideProgress               { get; set; }
+        public bool              LauncherSpriteURLMultiLang         { get; set; }
+        public string?           LauncherSpriteURLMultiLangFallback { get; set; }
+        public string?           LauncherPluginURL                  { get; set; }
+        public string?           LauncherSpriteURL                  { get; set; }
+        public string?           LauncherResourceURL                { get; set; }
+        public string?           DispatcherKey                      { get; set; }
+        public int?              DispatcherKeyBitLength             { get; set; }
 #if DEBUG
         public bool? IsRepairEnabled = true;
         public bool? IsCacheUpdateEnabled = true;

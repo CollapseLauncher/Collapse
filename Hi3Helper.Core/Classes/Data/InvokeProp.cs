@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -21,7 +20,7 @@ namespace Hi3Helper
         public enum SetWindowPosFlags : uint
         {
             SWP_NOMOVE = 2,
-            SWP_SHOWWINDOW = 40,
+            SWP_SHOWWINDOW = 0x40,
         }
 
         public enum SpecialWindowHandles
@@ -116,14 +115,20 @@ namespace Hi3Helper
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetStdHandle(int nStdHandle);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetStdHandle(int nStdHandle, IntPtr hHandle);
+
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
-        [DllImport("Kernel32.dll")]
-        public static extern void AllocConsole();
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        public static extern bool AllocConsole();
 
         [DllImport("Kernel32.dll")]
-        public static extern void FreeConsole();
+        public static extern bool FreeConsole();
+
+        [DllImport("Kernel32.dll")]
+        public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, uint lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, uint hTemplateFile);
 
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -150,7 +155,7 @@ namespace Hi3Helper
         public static extern bool SHGetPathFromIDList(IntPtr pidl, IntPtr pszPath);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, string lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
         [DllImport("comdlg32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
@@ -164,6 +169,28 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
+
+        [DllImport("user32.dll")]
+        public static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+        [DllImport("user32.dll")]
+        public static extern bool CloseClipboard();
+
+        [DllImport("user32.dll")]
+        public static extern bool SetClipboardData(uint uFormat, IntPtr data);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool EmptyClipboard();
+
+        public static void CopyStringToClipboard(string str)
+        {
+            IntPtr ptr = Marshal.StringToHGlobalUni(str);
+            OpenClipboard(IntPtr.Zero);
+            EmptyClipboard();
+            SetClipboardData(13, ptr);
+            CloseClipboard();
+            Marshal.FreeHGlobal(ptr);
+        }
 
         public struct WindowRect
         {
@@ -181,6 +208,18 @@ namespace Hi3Helper
 
         [DllImport("user32.dll")]
         public extern static uint SetWindowLong(IntPtr hwnd, int index, uint value);
+
+        [DllImport("user32.dll")]
+        public extern static IntPtr SetWindowLongPtr(IntPtr hwnd, int index, IntPtr value);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
+        [DllImport("user32.dll")]
+        public static extern bool DestroyWindow(IntPtr hwnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
 
         public static IntPtr GetProcessWindowHandle(string ProcName) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProcName), ".")[0].MainWindowHandle;
 

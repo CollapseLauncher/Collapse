@@ -265,15 +265,18 @@ namespace CollapseLauncher.GameSettings.Genshin
         //[JsonIgnore]
         //public Controllers _overrideControllerMapValueList { get; set; }
 
-        public bool rewiredDisableKeyboard { get; set; } = false;
-        public bool rewiredEnableKeyboard { get; set; } = false;
-        public bool rewiredEnableEDS { get; set; } = false;
-        public bool disableRewiredDelayInit { get; set; } = false;
-        public bool disableRewiredInitProtection { get; set; } = false;
-        public int lastSeenPreDownloadTime { get; set; } = 0;
-        public bool enableEffectAssembleInEditor { get; set; } = true;
-        public bool forceDisableQuestResourceManagement { get; set; } = false;
-        public bool needReportQuestResourceDeleteStatusFiles { get; set; } = false;
+        public bool         rewiredDisableKeyboard                   { get; set; } = false;
+        public bool         rewiredEnableKeyboard                    { get; set; } = false;
+        public bool         rewiredEnableEDS                         { get; set; } = false;
+        public bool         disableRewiredDelayInit                  { get; set; } = false;
+        public bool         disableRewiredInitProtection             { get; set; } = false;
+        public List<object> conflictKeyBindingElementId              { get; set; }
+        public List<object> conflictKeyBindingActionId               { get; set; }
+        public int          lastSeenPreDownloadTime                  { get; set; } = 0;
+        public string       lastSeenSettingResourceTabScriptVersion  { get; set; } = "";
+        public bool         enableEffectAssembleInEditor             { get; set; } = true;
+        public bool         forceDisableQuestResourceManagement      { get; set; } = false;
+        public bool         needReportQuestResourceDeleteStatusFiles { get; set; } = false;
 
         /// <summary>
         /// This defines "<c>The background of the Party Setup screen will change based on your current region</c>" in-game combo box <br/>
@@ -320,36 +323,29 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                object value = RegistryRoot.GetValue(_ValueName) ?? throw new ArgumentNullException($"Cannot find registry key {_ValueName}");
 
-                if (value != null)
-                {
-                    ReadOnlySpan<byte> byteStr = (byte[])value;
+                ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DUMPGIJSON
-                    // Dump GeneralData as raw string
-                    LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
-                        $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                // Dump GeneralData as raw string
+                LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
+                             $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 
-                    // Dump GeneralData as indented JSON output using GeneralData properties
-                    LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
-                        .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
-                        .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
+                // Dump GeneralData as indented JSON output using GeneralData properties
+                LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
+                    .Deserialize<GeneralData>(GenshinSettingsJSONContext.Default)
+                    .Serialize(GenshinSettingsJSONContext.Default, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                    LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
 #else
-                    LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
+                LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
-                    GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
-                    data.graphicsData = GraphicsData.Load(data._graphicsData);
-                    data.globalPerfData = new();
-                    return data;
-                }
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                GraphicsData.Load(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-                return new GeneralData();
+                GeneralData data = byteStr.Deserialize<GeneralData>(GenshinSettingsJSONContext.Default) ?? new GeneralData();
+                data.graphicsData = GraphicsData.Load(data._graphicsData);
+                data.globalPerfData = GlobalPerfData.Load(data._globalPerfData, data.graphicsData);
+                return data;
             }
             catch (Exception ex)
             {
@@ -372,8 +368,8 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                _graphicsData = graphicsData.Save();
-                _globalPerfData = globalPerfData.Create(graphicsData, graphicsData.volatileVersion);
+                _graphicsData = graphicsData.Create(globalPerfData);
+                _globalPerfData = globalPerfData.Save();
 
                 string data = this.Serialize(GenshinSettingsJSONContext.Default);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

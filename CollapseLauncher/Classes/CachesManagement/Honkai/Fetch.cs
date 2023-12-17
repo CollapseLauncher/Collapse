@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -204,13 +203,7 @@ namespace CollapseLauncher
                 }
 
                 // Get the lucky number if it does so 👀
-                if (isNeedReadLuckyNumber &&
-#if NET7_0_OR_GREATER
-                    int.TryParse(line, null, out int luckyNumber)
-#else
-                    int.TryParse(line, out int luckyNumber)
-#endif
-                )
+                if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
                 {
                     _luckyNumber = luckyNumber;
                     isNeedReadLuckyNumber = false;

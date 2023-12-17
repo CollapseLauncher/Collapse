@@ -1,6 +1,4 @@
 ﻿#if !DISABLEDISCORD
-using System;
-
 namespace Discord
 {
     public partial class ActivityManager

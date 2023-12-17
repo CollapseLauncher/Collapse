@@ -7,8 +7,8 @@
     xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
     xmlns:localPage="using:CollapseLauncher.Pages"
     xmlns:helper="using:Hi3Helper"
-    xmlns:s="using:CommunityToolkit.WinUI.UI"
-    xmlns:c="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:s="using:CommunityToolkit.WinUI"
+    xmlns:imageex="using:ImageEx"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -17,14 +17,14 @@
     <Page.Resources>
         <ThemeShadow x:Key="SharedShadow"/>
         <s:AttachedDropShadow x:Key="SharedDropShadow" Offset="0,4,0" BlurRadius="16" Opacity="0.3" CastTo="{x:Bind ImageEventImgShadow}"/>
-        <Style TargetType="c:ImageEx">
+        <Style TargetType="imageex:ImageEx">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{ThemeResource ApplicationForegroundThemeBrush}" />
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="LazyLoadingThreshold" Value="300" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="c:ImageEx">
+                    <ControlTemplate TargetType="imageex:ImageEx">
                         <Grid Background="{TemplateBinding Background}"
                           CornerRadius="{TemplateBinding CornerRadius}"
                           BorderBrush="{TemplateBinding BorderBrush}"
@@ -304,8 +304,8 @@
                                                 </Storyboard>
                                             </Button.Resources>
                                             <Grid>
-                                                <c:ImageEx x:Name="Icon" Source="{Binding Icon}"/>
-                                                <c:ImageEx x:Name="IconHover" Source="{Binding IconHover}" Opacity="0"/>
+                                                <imageex:ImageEx x:Name="Icon" Source="{Binding Icon}"/>
+                                                <imageex:ImageEx x:Name="IconHover" Source="{Binding IconHover}" Opacity="0"/>
                                             </Grid>
                                         </Button>
                                     </DataTemplate>
@@ -326,17 +326,15 @@
                         </Grid>
                         <StackPanel x:Name="ImageCarouselAndPostPanel" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                                 Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBottomMargin}" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                            <StackPanel HorizontalAlignment="Left">
+                            <StackPanel HorizontalAlignment="Left" PointerEntered="CarouselStopScroll" PointerExited="CarouselRestartScroll">
                                 <FlipView x:Name="ImageCarousel" Shadow="{ThemeResource SharedShadow}" Visibility="Collapsed"
                                   MaxWidth="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Width}" Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}" 
                                   CornerRadius="8" ItemsSource="{x:Bind MenuPanels.imageCarouselPanel}"
                                   Style="{ThemeResource CollapseFlipViewStyle}"
-                                  HorizontalAlignment="Center"
-                                  PointerEntered="CarouselStopScroll"
-                                  PointerExited="CarouselRestartScroll">
+                                  HorizontalAlignment="Center">
                                     <FlipView.ItemTemplate>
                                         <DataTemplate>
-                                            <c:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
+                                            <imageex:ImageEx IsCacheEnabled="True" EnableLazyLoading="True" PlaceholderSource="ms-appx:///Assets/Images/default.png" Source="{Binding Icon}" Tag="{Binding URL}" ToolTipService.ToolTip="{Binding Description}" PointerPressed="OpenImageLinkFromTag"/>
                                         </DataTemplate>
                                     </FlipView.ItemTemplate>
                                 </FlipView>
@@ -605,9 +603,7 @@
                                                     </GridView.ItemContainerStyle>
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="1"
-                                                           Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid1" MaximumRowsOrColumns="1" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                 </GridView>
@@ -628,9 +624,7 @@
                                                     </GridView.ItemContainerStyle>
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid x:Name="MaxItemsWrapGrid"
-                                                           MaximumRowsOrColumns="2"
-                                                           Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid x:Name="CommunityToolsMaxItemsWrapGrid2" MaximumRowsOrColumns="2" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                 </GridView>
