@@ -117,16 +117,20 @@ namespace CollapseLauncher.GameVersioning
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
-        protected GameVersion? PluginVersionAPI
+        protected Dictionary<int, GameVersion> PluginVersionsAPI
         {
             get
             {
-                // Return null if the plugin is not exist
-                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+                var value = new Dictionary<int, GameVersion>();
+
+                // Return empty if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return value;
 
                 // Get the version and convert it into GameVersion
-                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-                return new GameVersion(plugin.version);
+                foreach (var plugin in GameAPIProp.data?.plugins!)
+                    value.Add(plugin.plugin_id, new GameVersion(plugin.version));
+
+                return value;
             }
         }
 
@@ -167,29 +171,31 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
-        protected GameVersion? PluginVersionInstalled
+        protected Dictionary<int, GameVersion> PluginVersionsInstalled
         {
             get
             {
-                // Return null if the plugin is not exist
-                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+                var value = new Dictionary<int, GameVersion>();
+
+                // Return empty if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return value;
 
                 // Get the version and convert it into GameVersion
-                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-
-                // Check if the INI has plugin_ID_version key...
-                string keyName = $"plugin_{plugin.plugin_id}_version";
-                if (GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                foreach (var plugin in GameAPIProp.data?.plugins!)
                 {
-                    string val = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
-                    if (string.IsNullOrEmpty(val)) return null;
-                    return new GameVersion(val);
+                    // Check if the INI has plugin_ID_version key...
+                    string keyName = $"plugin_{plugin.plugin_id}_version";
+                    if (GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                    {
+                        string val = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
+                        if (string.IsNullOrEmpty(val)) continue;
+                        value.Add(plugin.plugin_id, new GameVersion(val));
+                    }
                 }
 
-                // If not, then return as null
-                return null;
+                return value;
             }
-            set => UpdatePluginVersion(value ?? PluginVersionAPI.Value);
+            set => UpdatePluginVersions(value ?? PluginVersionsAPI);
         }
 
         // Assign for the Game Delta-Patch properties (if any).
@@ -431,17 +437,20 @@ namespace CollapseLauncher.GameVersioning
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
         }
 
-        public void UpdatePluginVersion(GameVersion version, bool saveValue = true)
+        public void UpdatePluginVersions(Dictionary<int, GameVersion> versions, bool saveValue = true)
         {
             // If the plugin is empty, ignore it
             if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return;
 
             // Get the plugin property and its key name
-            RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-            string keyName = $"plugin_{plugin.plugin_id}_version";
+            foreach (var version in versions)
+            {
+                string keyName = $"plugin_{version.Key}_version";
 
-            // Set the value
-            GameIniVersion[_defaultIniVersionSection][keyName] = version.VersionString;
+                // Set the value
+                GameIniVersion[_defaultIniVersionSection][keyName] = version.Value.VersionString;
+            }
+
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);

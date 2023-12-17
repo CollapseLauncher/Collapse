@@ -6,6 +6,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -298,11 +299,27 @@ namespace CollapseLauncher
             }
         }
 
+        private string GetDeviceId(PresetConfigV2 Preset)
+        {
+            var deviceId = (string)Registry.GetValue(Preset.InstallRegistryLocation, "UUID", null);
+            if (deviceId == null)
+            {
+                const string regKeyCryptography = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography";
+                var guid = (string)Registry.GetValue(regKeyCryptography, "MachineGuid", null) ?? Guid.NewGuid().ToString();
+                deviceId = guid.Replace("-", "") + (long)DateTime.Now.Subtract(DateTime.UnixEpoch).TotalMilliseconds;
+                Registry.SetValue(Preset.InstallRegistryLocation, "UUID", deviceId);
+            }
+            return deviceId;
+        }
+
         private async ValueTask FetchLauncherDownloadInformation(CancellationToken token, PresetConfigV2 Preset)
         {
             _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, InternalAppJSONContext.Default, token);
             if (!string.IsNullOrEmpty(Preset.LauncherPluginURL))
             {
+                // TODO: use string.Format
+                Preset.LauncherPluginURL = Preset.LauncherPluginURL.Replace("111111111111111111111111111111111111111111111", GetDeviceId(Preset));
+
                 RegionResourceProp _pluginAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherPluginURL, InternalAppJSONContext.Default, token);
                 if (_pluginAPIProp?.data != null && _pluginAPIProp?.data?.plugins != null)
                 {
