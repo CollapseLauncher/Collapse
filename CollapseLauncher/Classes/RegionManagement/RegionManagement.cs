@@ -7,6 +7,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,16 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
+    public class CancellationTokenSourceWrapper : CancellationTokenSource
+    {
+        public bool IsDisposed = false;
+        protected override void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+            base.Dispose(disposing);
+        }
+    }
+
     public sealed partial class MainPage : Page
     {
         private enum ResourceLoadingType
@@ -35,19 +46,19 @@ namespace CollapseLauncher
         private GamePresetProperty CurrentGameProperty;
         private bool IsLoadRegionComplete;
         private bool IsExplicitCancel;
-        private CancellationTokenSource InnerTokenSource;
 
         private uint MaxRetry = 5; // Max 5 times of retry attempt
         private uint LoadTimeout = 10; // 10 seconds of initial Load Timeout
         private uint BackgroundImageLoadTimeout = 3600; // Give background image download 1 hour of timeout
         private uint LoadTimeoutStep = 5; // Step 5 seconds for each timeout retries
+        private CancellationTokenSourceWrapper CurrentRegionLoadTokenSource;
 
         private string RegionToChangeName;
         private List<object> LastNavigationItem;
         private HomeMenuPanel LastRegionNewsProp;
         public static string PreviousTag = string.Empty;
 
-        public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset, bool IsInitialStartUp = false)
+        public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             IsExplicitCancel = false;
             RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
@@ -59,9 +70,10 @@ namespace CollapseLauncher
             // Clear MainPage State, like NavigationView, Load State, etc.
             ClearMainPageState();
 
+            bool IsLoadLocalizedResourceSuccess = await TryLoadResourceInfo(ResourceLoadingType.LocalizedResource, preset),
+                 IsLoadResourceRegionSuccess = false;
+
             // Load Region Resource from Launcher API
-            bool IsLoadLocalizedResourceSuccess = await TryLoadResourceInfo(ResourceLoadingType.LocalizedResource, preset);
-            bool IsLoadResourceRegionSuccess = false;
             if (IsLoadLocalizedResourceSuccess) IsLoadResourceRegionSuccess = await TryLoadResourceInfo(ResourceLoadingType.DownloadInformation, preset);
 
             if (IsExplicitCancel)
@@ -111,7 +123,6 @@ namespace CollapseLauncher
             PreviousTagString.Clear();
             PreviousTagString.Add(PreviousTag);
             LauncherFrame.BackStack.Clear();
-            InnerTokenSource?.Cancel();
             ResetRegionProp();
         }
 
@@ -121,49 +132,49 @@ namespace CollapseLauncher
             uint RetryCount = 0;
             while (RetryCount < MaxRetry)
             {
-                // Store the old token into oldToken to check and avoid unnecessary re-throw
-                CancellationTokenSource oldToken = InnerTokenSource;
-
-                // Assign new cancellation token source
-                InnerTokenSource = new CancellationTokenSource(); // Assign the new token
-
-                // Watch for timeout
-                WatchAndCancelIfTimeout(InnerTokenSource, CurrentTimeout);
-
-                // Assign task based on type
-                ConfiguredValueTaskAwaitable loadTask = (resourceType switch
+                using (CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper())
                 {
-                    ResourceLoadingType.LocalizedResource => FetchLauncherLocalizedResources(InnerTokenSource.Token, preset),
-                    ResourceLoadingType.DownloadInformation => FetchLauncherDownloadInformation(InnerTokenSource.Token, preset),
-                    ResourceLoadingType.DownloadBackground => DownloadBackgroundImage(InnerTokenSource.Token),
-                    _ => throw new InvalidOperationException($"Operation is not supported!")
-                }).ConfigureAwait(false);
+                    // Register token source for cancellation registration
+                    CurrentRegionLoadTokenSource = tokenSource;
 
-                try
-                {
-                    // Run and await task
-                    await loadTask;
+                    // Watch for timeout
+                    WatchAndCancelIfTimeout(tokenSource, CurrentTimeout);
 
-                    // Return true as successful
-                    return true;
+                    // Assign task based on type
+                    ConfiguredValueTaskAwaitable loadTask = (resourceType switch
+                    {
+                        ResourceLoadingType.LocalizedResource => FetchLauncherLocalizedResources(tokenSource.Token, preset),
+                        ResourceLoadingType.DownloadInformation => FetchLauncherDownloadInformation(tokenSource.Token, preset),
+                        ResourceLoadingType.DownloadBackground => DownloadBackgroundImage(tokenSource.Token),
+                        _ => throw new InvalidOperationException($"Operation is not supported!")
+                    }).ConfigureAwait(false);
+
+                    try
+                    {
+                        // Run and await task
+                        await loadTask;
+
+                        // Return true as successful
+                        return true;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
+                    }
+                    catch (Exception ex)
+                    {
+                        CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
+                    }
+
+                    // If explicit cancel was triggered, then return false
+                    if (IsExplicitCancel)
+                    {
+                        return false;
+                    }
+
+                    // Increment retry count
+                    RetryCount++;
                 }
-                catch (OperationCanceledException)
-                {
-                    CurrentTimeout = SendTimeoutCancelationMessage(new OperationCanceledException($"Loading was cancelled because timeout has been exceeded!"), CurrentTimeout, ShowLoadingMsg);
-                }
-                catch (Exception ex)
-                {
-                    CurrentTimeout = SendTimeoutCancelationMessage(ex, CurrentTimeout, ShowLoadingMsg);
-                }
-
-                // If explicit cancel was triggered, then return false
-                if (IsExplicitCancel)
-                {
-                    return false;
-                }
-
-                // Increment retry count
-                RetryCount++;
             }
 
             // Return false as fail
@@ -240,6 +251,7 @@ namespace CollapseLauncher
 
         internal static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
         {
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
                 // Try get the remote stream and download the file
@@ -264,7 +276,6 @@ namespace CollapseLauncher
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read = 0;
-                byte[] buffer = new byte[4 << 10];
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
                     await outStream.WriteAsync(buffer, 0, read, token);
 
@@ -280,6 +291,10 @@ namespace CollapseLauncher
             {
                 ErrorSender.SendException(ex, ErrorType.Connection);
 #endif
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
 
@@ -505,9 +520,7 @@ namespace CollapseLauncher
             if (!IsFileCompletelyDownloaded(fInfo))
             {
                 await TryDownloadToCompleteness(URL, fInfo, token);
-                return URL;
             }
-
             return cachePath;
         }
 
@@ -535,7 +548,7 @@ namespace CollapseLauncher
             return currentTimeout;
         }
 
-        private async void WatchAndCancelIfTimeout(CancellationTokenSource TokenSource, uint Timeout)
+        private async void WatchAndCancelIfTimeout(CancellationTokenSourceWrapper TokenSource, uint Timeout)
         {
             // Wait until it timeout
             await Task.Delay((int)Timeout * 1000);
@@ -544,7 +557,7 @@ namespace CollapseLauncher
             if (TokenSource.IsCancellationRequested) return;
 
             // If InnerTask still not loaded successfully, then cancel it
-            if (!IsLoadRegionComplete)
+            if (!IsLoadRegionComplete && !TokenSource.IsDisposed)
             {
                 TokenSource.Cancel();
                 ChangeTimer();
@@ -560,10 +573,7 @@ namespace CollapseLauncher
             LoadGameStaticsByGameType(preset);
 
             // Init NavigationPanel Items
-            if (m_appMode != AppMode.Hi3CacheUpdater)
-                InitializeNavigationItems();
-            else
-                NavigationViewControl.IsSettingsVisible = false;
+            InitializeNavigationItems();
         }
 
         private void LoadGameStaticsByGameType(PresetConfigV2 preset)
@@ -678,7 +688,7 @@ namespace CollapseLauncher
             PresetConfigV2 Preset = LoadCurrentConfigV2(GameCategory, GameRegion);
 
             // Start region loading
-            DelayedLoadingRegionPageTask();
+            ShowAsyncLoadingTimedOutPill();
             if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 LogWriteLine($"Region changed to {Preset.ZoneFullname}", Hi3Helper.LogType.Scheme, true);
@@ -717,7 +727,10 @@ namespace CollapseLauncher
         {
             IsExplicitCancel = true;
             LockRegionChangeBtn = false;
-            InnerTokenSource.Cancel();
+
+            if (CurrentRegionLoadTokenSource != null && !CurrentRegionLoadTokenSource.IsDisposed)
+                CurrentRegionLoadTokenSource.Cancel();
+
             ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
             ChangeRegionConfirmBtn.IsEnabled = true;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
@@ -728,7 +741,7 @@ namespace CollapseLauncher
             ChangeTimer();
         }
 
-        private async void DelayedLoadingRegionPageTask()
+        private async void ShowAsyncLoadingTimedOutPill()
         {
             await Task.Delay(1000);
             if (!IsLoadRegionComplete)

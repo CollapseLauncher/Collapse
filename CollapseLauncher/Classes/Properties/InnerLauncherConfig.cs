@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
@@ -163,13 +162,8 @@ namespace CollapseLauncher
 
             try
             {
-                using (Http _http = new Http())
-                using (Stream s = new MemoryStream())
-                {
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_http, s, string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default).ConfigureAwait(false);
-                    s.Position = 0;
-                    ConfigStamp = (Stamp)JsonSerializer.Deserialize(s, typeof(Stamp), CoreLibraryJSONContext.Default);
-                }
+                await using BridgedNetworkStream s = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + "stamp"), default);
+                ConfigStamp = await s.DeserializeAsync<Stamp>(CoreLibraryJSONContext.Default);
             }
             catch (Exception ex)
             {
@@ -201,10 +195,9 @@ namespace CollapseLauncher
         {
             string URL = string.Format(AppGameConfigV2URLPrefix, (IsPreview ? "preview" : "stable") + prefix);
 
-            using (FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write))
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, fs, URL, default).ConfigureAwait(false);
-            }
+            await using FileStream fs = new FileStream(output, FileMode.Create, FileAccess.Write);
+            await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(URL, default);
+            await networkStream.CopyToAsync(fs);
         }
     }
 }

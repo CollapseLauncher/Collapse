@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -49,7 +50,6 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                // Wait for countdown
                 await WaitForCountdown();
                 await StartUpdateRoutine();
             }
@@ -68,15 +68,22 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                // Hide/Show progress
-                UpdateCountdownPanel.Visibility = Visibility.Collapsed;
-                UpdateBox.Visibility = Visibility.Collapsed;
-                CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
-                AskUpdateCheckbox.Visibility = Visibility.Collapsed;
-                UpdateProgressBox.Visibility = Visibility.Visible;
-
-                // Start Squirrel update routine
-                await GetSquirrelUpdate();
+                if (LauncherUpdateWatcher.isMetered)
+                {
+                    switch (await Dialog_MeteredConnectionWarning(Content))
+                    {
+                        case ContentDialogResult.Primary:
+                            await _StartUpdateRoutine();
+                            break;
+                        case ContentDialogResult.None:
+                            CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
+                            UpdateCountdownPanel.Visibility = Visibility.Collapsed;
+                            UpdateBox.Visibility = Visibility.Visible;
+                            return;
+                    }
+                }
+                
+                await _StartUpdateRoutine();
             }
             catch (OperationCanceledException)
             {
@@ -91,6 +98,19 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private async Task _StartUpdateRoutine()
+        {
+            // Hide/Show progress
+            UpdateCountdownPanel.Visibility = Visibility.Collapsed;
+            UpdateBox.Visibility = Visibility.Collapsed;
+            CancelUpdateCountdownBox.Visibility = Visibility.Collapsed;
+            AskUpdateCheckbox.Visibility = Visibility.Collapsed;
+            UpdateProgressBox.Visibility = Visibility.Visible;
+
+            // Start Squirrel update routine
+            await GetSquirrelUpdate();
+        }
+        
         private async Task GetSquirrelUpdate()
         {
             string ChannelName = IsPreview ? "Preview" : "Stable";
@@ -128,15 +148,11 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                string Content = "";
-                using (Http _httpClient = new Http(true, 5, 1000, GetAppConfigValue("UserAgent").ToString()))
-                using (MemoryStream _stream = new MemoryStream())
-                {
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, _stream, string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token);
-                    Content = Encoding.UTF8.GetString(_stream.ToArray());
-                }
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format("changelog_{0}.md", IsPreview ? "preview" : "stable"), _tokenSource.Token, true);
+                byte[] buffer = new byte[networkStream.Length];
+                await networkStream.ReadExactlyAsync(buffer, _tokenSource.Token);
 
-                ReleaseNotesBox.Text = Content;
+                ReleaseNotesBox.Text = Encoding.UTF8.GetString(buffer);
             }
             catch (Exception ex)
             {

@@ -38,7 +38,8 @@
                                 CornerRadius="14"
                                 ItemsSource="{x:Bind LanguageList}"
                                 MaxDropDownHeight="200"
-                                SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}" />
+                                SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=TwoWay}"
+                                DropDownClosed="UpdateEveryComboBoxLayout"/>
                             <TextBlock
                                 x:Name="AppLangSelectionWarning"
                                 Margin="0,12,0,0"

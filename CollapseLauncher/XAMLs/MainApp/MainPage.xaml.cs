@@ -162,7 +162,7 @@ namespace CollapseLauncher
 
             InitKeyboardShortcuts();
             HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
-            if (await LoadRegionFromCurrentConfigV2(Preset, true))
+            if (await LoadRegionFromCurrentConfigV2(Preset))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
                 HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
@@ -174,6 +174,15 @@ namespace CollapseLauncher
         #endregion
 
         #region Invokers
+        private void UpdateBindingsEvent(object sender, EventArgs e)
+        {
+            NavigationViewControl.MenuItems.Clear();
+            Bindings.Update();
+            UpdateLayout();
+            InitializeNavigationItems(false);
+            ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+        }
+
         private void ShowLoadingPageInvoker_PageEvent(object sender, ShowLoadingPageProperty e)
         {
             BackgroundImgChanger.ToggleBackground(e.Hide);
@@ -421,6 +430,7 @@ namespace CollapseLauncher
             ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
+            UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
         }
 
         private void UnsubscribeEvents()
@@ -435,6 +445,7 @@ namespace CollapseLauncher
             ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
+            UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
         }
         #endregion
 
@@ -506,18 +517,11 @@ namespace CollapseLauncher
                 CancellationTokenSource TokenSource = new CancellationTokenSource();
                 RunTimeoutCancel(TokenSource);
 
-                using (Http _http = new Http(true, 5, 1000, null))
-                {
-                    using (Stream fs = new MemoryStream())
-                    {
-                        await FallbackCDNUtil.DownloadCDNFallbackContent(_http, fs, string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
-                        fs.Position = 0;
-                        NotificationData = await fs.DeserializeAsync<NotificationPush>(InternalAppJSONContext.Default, TokenSource.Token);
-                        IsLoadNotifComplete = true;
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+                NotificationData = await networkStream.DeserializeAsync<NotificationPush>(InternalAppJSONContext.Default, TokenSource.Token);
+                IsLoadNotifComplete = true;
 
-                        NotificationData.EliminatePushList();
-                    }
-                }
+                NotificationData.EliminatePushList();
             }
             catch (Exception ex)
             {
@@ -994,7 +998,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Navigation
-        private void InitializeNavigationItems()
+        private void InitializeNavigationItems(bool ResetSelection = true)
         {
             NavigationViewControl.IsSettingsVisible = true;
             NavigationViewControl.MenuItems.Clear();
@@ -1045,9 +1049,12 @@ namespace CollapseLauncher
                 { Content = Lang._GenshinGameSettingsPage.PageTitle, Icon = IconGameSettings, Tag = "genshingamesettings" });
             }
 
-            NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-            (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
-            (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
+            if (ResetSelection)
+            {
+                NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
+                (NavigationViewControl.SettingsItem as NavigationViewItem).Content = Lang._SettingsPage.PageTitle;
+                (NavigationViewControl.SettingsItem as NavigationViewItem).Icon = IconAppSettings;
+            }
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

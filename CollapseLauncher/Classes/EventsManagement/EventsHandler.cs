@@ -27,13 +27,17 @@ namespace CollapseLauncher
         private static LauncherUpdateInvoker invoker = new LauncherUpdateInvoker();
         public static void GetStatus(LauncherUpdateProperty e) => invoker.GetStatus(e);
         public static bool isUpdateCooldownActive;
-        public static bool isMetered = true;
+        public static bool isMetered
+        {
+            get
+            {
+                NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
+                return !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);  
+            }
+        }
 
         public static async void StartCheckUpdate(bool forceUpdate)
         {
-            NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
-            isMetered = !(currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown);
-
             UpdateChannelName = IsPreview ? "preview" : "stable";
             while (true)
             {
@@ -78,8 +82,8 @@ namespace CollapseLauncher
                         LogWriteLine($"Update check has failed! Will retry in 15 mins.\r\n{ex}", LogType.Error, true);
                     }
                 }
-                // Delay for 15 minutes
-                await Task.Delay(900 * 1000);
+                // Delay for 15 to 60 minutes depending on metered
+                await Task.Delay((isMetered ? 3600 : 900) * 1000);
                 // Reset isUpdateRecentlyInvoked to release the lock
                 isUpdateCooldownActive = false;
             }
@@ -88,15 +92,8 @@ namespace CollapseLauncher
         private static async ValueTask<AppUpdateVersionProp> GetUpdateMetadata()
         {
             string relativePath = ConverterTool.CombineURLFromString(UpdateChannelName, "fileindex.json");
-
-            using (Http client = new Http(true))
-            using (MemoryStream ms = new MemoryStream())
-            {
-                await FallbackCDNUtil.DownloadCDNFallbackContent(client, ms, relativePath, default);
-                ms.Position = 0;
-
-                return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-            }
+            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default);
+            return await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
         }
 
         public static bool CompareVersion(GameVersion? CurrentVer, GameVersion? ComparedVer)
@@ -401,6 +398,20 @@ namespace CollapseLauncher
         }
 
         public DragAreaTemplate Template { get; private set; }
+    }
+    #endregion
+    #region UpdateBindings
+    internal static class UpdateBindings
+    {
+        static UpdateBindingsInvoker invoker = new UpdateBindingsInvoker();
+        public static void Update() => invoker.Update();
+    }
+
+    internal class UpdateBindingsInvoker
+    {
+        private static EventArgs DummyArgs = new EventArgs();
+        public static event EventHandler UpdateEvents;
+        public void Update() => UpdateEvents?.Invoke(this, DummyArgs);
     }
     #endregion
 }

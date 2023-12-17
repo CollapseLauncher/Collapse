@@ -122,16 +122,13 @@ namespace CollapseLauncher
 
         private async Task StartLegacyUpdate()
         {
-
             using (Http _httpClient = new Http(true))
             {
                 UpdateStopwatch = Stopwatch.StartNew();
 
-                using (MemoryStream ms = new MemoryStream())
+                await using (BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream($"{this.ChannelName.ToLower()}/fileindex.json", default))
                 {
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, ms, $"{this.ChannelName.ToLower()}/fileindex.json", default);
-                    ms.Position = 0;
-                    AppUpdateVersionProp updateInfo = await ms.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
+                    AppUpdateVersionProp updateInfo = await stream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
                     NewVersionTag = new GameVersion(updateInfo.ver);
                     UpdateStatus();
                     UpdateProgress();

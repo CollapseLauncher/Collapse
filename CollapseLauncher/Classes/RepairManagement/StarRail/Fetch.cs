@@ -92,7 +92,7 @@ namespace CollapseLauncher
             try
             {
                 // Get the metadata
-                Dictionary<string, string> repoMetadata = await FetchMetadata(client, token);
+                Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!(isSuccess = repoMetadata.ContainsKey(_gameVersion.VersionString)))
@@ -113,16 +113,13 @@ namespace CollapseLauncher
                 string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
 
                 // Start downloading asset index using FallbackCDNUtil and return its stream
-                BridgedNetworkStream stream = await FallbackCDNUtil.DownloadCDNFallbackContent(client, urlIndex, token);
+                await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
                 if (stream != null)
                 {
-                    using (stream)
-                    {
-                        // Deserialize asset index and set it to list
-                        AssetIndexV2 parserTool = new AssetIndexV2();
-                        pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
-                        LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-                    }
+                    // Deserialize asset index and set it to list
+                    AssetIndexV2 parserTool = new AssetIndexV2();
+                    pkgVersion = new List<PkgVersionProperties>(parserTool.Deserialize(stream, out DateTime timestamp));
+                    LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
                 }
             }
             else
@@ -181,21 +178,14 @@ namespace CollapseLauncher
             pkgVersion.Clear();
         }
 
-        private async Task<Dictionary<string, string>> FetchMetadata(Http _httpClient, CancellationToken token)
+        private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
         {
-            // Fetch metadata dictionary
-            using (MemoryStream mfs = new MemoryStream())
-            {
-                // Set metadata URL
-                string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
+            // Set metadata URL
+            string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName);
 
-                // Start downloading metadata using FallbackCDNUtil
-                await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, mfs, urlMetadata, token);
-
-                // Deserialize metadata
-                mfs.Position = 0;
-                return await mfs.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
-            }
+            // Start downloading metadata using FallbackCDNUtil
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            return await stream.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
         }
 
         private void ConvertPkgVersionToAssetIndex(List<PkgVersionProperties> pkgVersion, List<FilePropertiesRemote> assetIndex, Dictionary<string, int> hashtable)

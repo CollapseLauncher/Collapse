@@ -80,9 +80,9 @@
       },
       "ImageEx": {
         "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "kp894Xue0YIflPIao+bEEB65si250ne1sFqDd4aA7pTjQn4TGScuopojx/73vfRKcEsxgclbWjEAlKqGSYqiQA==",
+        "requested": "[2.1.1, )",
+        "resolved": "2.1.1",
+        "contentHash": "aYLuAjSv96ERPpdlLw2EhCaE9S6jx48hnyhZbZpp4ptl1HqbTSPa0ilmD2ERvr81i2U6MaaoQ3MPaiUK/HNHkQ==",
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.0.0"
         }
@@ -95,12 +95,6 @@
         "dependencies": {
           "Microsoft.WindowsAppSDK": "1.4.231115000"
         }
-      },
-      "Microsoft.NETCore.Platforms": {
-        "type": "Direct",
-        "requested": "[8.0.0-preview.7.23375.6, )",
-        "resolved": "8.0.0-preview.7.23375.6",
-        "contentHash": "ym5B/aglUc4K5kkiBOOgsm7EETjenJBbMchAHvcXpfFPmrdTrhnLKC1Tvx5Qnz5kHvhloyCNTpGQvWIpxvINHg=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -375,6 +369,11 @@
         "type": "Transitive",
         "resolved": "4.7.0",
         "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
+      },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "TMBuzAHpTenGbGgk0SMTwyEkyijY/Eae4ZGsFNYJvAr/LDn1ku3Etp3FPxChmDp5HHF3kzJuoaa08N0xjqAJfQ=="
       },
       "Microsoft.NETCore.Targets": {
         "type": "Transitive",

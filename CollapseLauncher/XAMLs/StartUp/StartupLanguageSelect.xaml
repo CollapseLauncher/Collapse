@@ -25,33 +25,36 @@
             <StackPanel x:Name="MenuPanel" CornerRadius="16"
                     Margin="0,32,64,32" Padding="32" Shadow="{ThemeResource SharedShadow}" Background="{ThemeResource DialogAcrylicBrush}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <TextBlock Text="Select your language"
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectLang}"
                    TextAlignment="Left"
                    HorizontalAlignment="Left" Margin="0,0,0,8"
                    TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
-                    <TextBlock Text="Please select your language to start this launcher for the first time!"
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectLangDesc}"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap"/>
-                    <ComboBox PlaceholderText="Select your language"
+                    <ComboBox Name="SelectLang" SelectedIndex="{x:Bind SelectedLangIndex, Mode=TwoWay}"
                   Margin="0,16"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
-                  SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{x:Bind LangList, Mode=OneTime}"/>
+                  ItemsSource="{x:Bind LangList}"
+                  MaxDropDownHeight="1000"
+                  DropDownOpened="SelectLang_OnDropDownOpened"
+                  DropDownClosed="SelectLang_OnDropDownClosed"/>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <TextBlock Text="Select your preferred window size"
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectWindowSize}"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
-                    <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}" 
-                     Margin="0,16">
-                        <ComboBoxItem Content="Normal"/>
-                        <ComboBoxItem Content="Small"/>
+                    <ComboBox SelectedIndex="{x:Bind SelectedWindowSizeProfile, Mode=TwoWay}"
+                     Margin="0,16" Name="SelectWindowSize">
+                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Normal}"/>
+                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._SettingsPage.AppWindowSize_Small}"/>
                     </ComboBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Select your preferred CDN"
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.SelectCDN}"
                            TextAlignment="Left"
                            HorizontalAlignment="Left"
                            TextWrapping="Wrap" Style="{ThemeResource BodyStrongTextBlockStyle}" FontSize="18"/>
@@ -61,18 +64,20 @@
                             </Button.Content>
                             <Button.Flyout>
                                 <Flyout>
-                                    <StackPanel>
+                                    <StackPanel MaxWidth="380">
                                         <TextBlock>
-                                            <Run Text="What is a CDN?" FontWeight="Bold" FontSize="20"/>
-                                            <Run Text="short for" FontSize="12"/>
-                                            <Run Text="Content Delivery Network" FontWeight="Bold" FontSize="12"/>
+                                            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_1}" FontWeight="Bold" FontSize="20"/>
+                                            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_2}" FontSize="12"/><!--
+                                         --><Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_3}" FontWeight="Bold" FontSize="12"/><!--
+                                         --><Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpTitle_4}" FontSize="12"/>
                                         </TextBlock>
                                         <TextBlock TextWrapping="Wrap" MaxWidth="380" Margin="0,8,0,0">
-                                            <Run Text="CDN" FontWeight="Bold"/>
-                                            <Run Text="is a system used to make launcher files available to a larger audience, quickly and efficiently." TextDecorations="None"/>
+                                            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_1}"/><!--
+                                         --><Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_2}" FontWeight="Bold"/><!--
+                                         --><Run Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_3}"/>
                                         </TextBlock>
-                                        <TextBlock Text="Collapse selects GitHub as the default provider."/>
-                                        <TextBlock Text="CDNs available:" FontWeight="Bold" FontSize="20" Margin="0,12,0,0"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNHelpDetail_4}"/>
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._StartupPage.CDNsAvailable}" FontWeight="Bold" FontSize="20" Margin="0,12,0,0"/>
                                         <ItemsControl ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxWidth="380" Margin="0,0,0,-8">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="innerConfig:CDNURLProperty">
@@ -88,7 +93,7 @@
                             </Button.Flyout>
                         </Button>
                     </StackPanel>
-                    <RadioButtons SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="3">
+                    <RadioButtons Name="SelectCDN" SelectedIndex="{x:Bind SelectedCDN, Mode=TwoWay}" ItemsSource="{x:Bind innerConfig:LauncherConfig.CDNList}" MaxColumns="3">
                         <RadioButtons.ItemTemplate>
                             <DataTemplate x:DataType="innerConfig:CDNURLProperty">
                                 <RadioButton>
@@ -100,14 +105,14 @@
                         </RadioButtons.ItemTemplate>
                     </RadioButtons>
                 </StackPanel>
-                <Button x:Name="NextBtn" Content="Next" HorizontalAlignment="Left" IsEnabled="False" Width="128" Margin="0,16,0,0"
+                <Button x:Name="NextBtn" Content="{x:Bind helper:Locale.Lang._Misc.Next}" HorizontalAlignment="Left" Width="128" Margin="0,16,0,0"
                 VerticalAlignment="Bottom" Style="{ThemeResource AccentButtonStyle}" Click="NextBtn_Click"/>
             </StackPanel>
         </StackPanel>
         <TextBlock Grid.Column="1" Margin="8" VerticalAlignment="Bottom" TextAlignment="Right"
                    HorizontalAlignment="Right" Opacity="0.50" Foreground="{ThemeResource DefaultFGColorAccentBrush}">
-            <Run Text="The splash art is a property of"/><LineBreak/>
-            <Run Text="miHoYo / HoYoverse" FontSize="18" FontWeight="Medium"/>
+            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SplashArt_1}"/><LineBreak/>
+            <Run Text="{x:Bind helper:Locale.Lang._StartupPage.SplashArt_2}" FontSize="18" FontWeight="Medium"/>
         </TextBlock>
     </Grid>
 </Page>

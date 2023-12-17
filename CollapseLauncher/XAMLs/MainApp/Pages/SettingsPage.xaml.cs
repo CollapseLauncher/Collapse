@@ -67,6 +67,8 @@ namespace CollapseLauncher.Pages
 #else
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
+
+            UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -215,12 +217,8 @@ namespace CollapseLauncher.Pages
 
         private async void CheckUpdate(object sender, RoutedEventArgs e)
         {
-            var isMetered = true;
-            NetworkCostType currentNetCostType = NetworkInformation.GetInternetConnectionProfile()?.GetConnectionCost().NetworkCostType ?? NetworkCostType.Fixed;
-            if (currentNetCostType == NetworkCostType.Unrestricted || currentNetCostType == NetworkCostType.Unknown)
-                isMetered = false;
 
-            if (isMetered)
+            if (LauncherUpdateWatcher.isMetered)
             {
                 switch (await Dialog_MeteredConnectionWarning(Content))
                 {
@@ -562,18 +560,27 @@ namespace CollapseLauncher.Pages
             get
             {
                 string key = GetAppConfigValue("AppLanguage").ToString().ToLower();
-
-                return LanguageNames.ContainsKey(key) ? LanguageNames[key].LangIndex : -1;
+                return LanguageNames.ContainsKey(key) ? LanguageNames[key].LangIndex : 0;
             }
             set
             {
-                IsAppLangNeedRestart = true;
-                AppLangSelectionWarning.Visibility = Visibility.Visible;
+                if (value < 0) return;
 
                 string key = LanguageIDIndex[value];
-
                 SetAndSaveConfigValue("AppLanguage", key);
+                LoadLocale(key);
             }
+        }
+
+        private void UpdateEveryComboBoxLayout(object sender, object e) => UpdateBindings.Update();
+
+        private void UpdateBindingsEvents(object sender, EventArgs e)
+        {
+            Bindings.Update();
+            UpdateLayout();
+            int lastAppBehavSelected = GameLaunchedBehaviorSelector.SelectedIndex;
+            GameLaunchedBehaviorSelector.SelectedIndex = -1;
+            GameLaunchedBehaviorSelector.SelectedIndex = lastAppBehavSelected;
         }
 
         private List<string> WindowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -650,6 +657,7 @@ namespace CollapseLauncher.Pages
                    };
             set
             {
+                if (value < 0) return;
                 switch (value)
                 {
                     case 0:
@@ -718,7 +726,7 @@ namespace CollapseLauncher.Pages
                 bool? value = false;
                 if (task.Definition.Actions[0] is ExecAction execAction)
                     value = execAction.Arguments?.Trim().Contains("tray", StringComparison.CurrentCultureIgnoreCase);
-                
+
                 task.Dispose();
                 return value ?? false;
             }

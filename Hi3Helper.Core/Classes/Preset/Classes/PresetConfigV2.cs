@@ -515,31 +515,34 @@ namespace Hi3Helper.Preset
 #nullable disable
         public string GameExecutableName { get; set; }
 #nullable enable
-        public string? GameDispatchURL { get; set; }
-        public string[]? GameSupportedLanguages { get; set; }
-        public string[]? GameDispatchArrayURL { get; set; }
-        public string? GameDispatchChannelName { get; set; }
-        public string? GameDispatchDefaultName { get; set; }
-        public string? GameDispatchURLTemplate { get; set; }
-        public string? GameGatewayURLTemplate { get; set; }
-        public string? GameGatewayDefault { get; set; }
-        public AudioLanguageType GameDefaultCVLanguage { get; set; }
-        public string? ProtoDispatchKey { get; set; }
-        public bool? IsGenshin { get; set; }
-        public bool? IsConvertible { get; set; }
-        public bool IsHideSocMedDesc { get; set; } = true;
-        public List<string>? ConvertibleTo { get; set; }
-        public GameType GameType { get; set; } = GameType.Unknown;
-        public GameType FallbackGameType { get; set; } = GameType.Unknown;
-        public GameVendorType VendorType { get; set; } = GameVendorType.miHoYo;
-        public bool? UseRightSideProgress { get; set; }
-        public bool LauncherSpriteURLMultiLang { get; set; }
-        public string? LauncherSpriteURLMultiLangFallback { get; set; }
-        public string? LauncherPluginURL { get; set; }
-        public string? LauncherSpriteURL { get; set; }
-        public string? LauncherResourceURL { get; set; }
-        public string? DispatcherKey { get; set; }
-        public int? DispatcherKeyBitLength { get; set; }
+        public string?           GameDispatchURL                    { get; set; }
+        public string[]?         GameSupportedLanguages             { get; set; }
+        public string[]?         GameDispatchArrayURL               { get; set; }
+        public string?           GameDispatchChannelName            { get; set; }
+        public string?           GameDispatchDefaultName            { get; set; }
+        public string?           GameDispatchURLTemplate            { get; set; }
+        public string?           GameGatewayURLTemplate             { get; set; }
+        public string?           GameGatewayDefault                 { get; set; }
+        public AudioLanguageType GameDefaultCVLanguage              { get; set; }
+        public string?           ProtoDispatchKey                   { get; set; }
+        public bool?             IsGenshin                          { get; set; }
+        public bool?             IsConvertible                      { get; set; }
+        public bool              IsHideSocMedDesc                   { get; set; } = true;
+        public List<string>?     ConvertibleTo                      { get; set; }
+        public GameType          GameType                           { get; set; } = GameType.Unknown;
+        public GameType          FallbackGameType                   { get; set; } = GameType.Unknown;
+        public GameVendorType    VendorType                         { get; set; } = GameVendorType.miHoYo;
+        public int               LauncherID                         { get; set; }
+        public int               ChannelID                          { get; set; }
+        public int               SubChannelID                       { get; set; } 
+        public bool?             UseRightSideProgress               { get; set; }
+        public bool              LauncherSpriteURLMultiLang         { get; set; }
+        public string?           LauncherSpriteURLMultiLangFallback { get; set; }
+        public string?           LauncherPluginURL                  { get; set; }
+        public string?           LauncherSpriteURL                  { get; set; }
+        public string?           LauncherResourceURL                { get; set; }
+        public string?           DispatcherKey                      { get; set; }
+        public int?              DispatcherKeyBitLength             { get; set; }
 #if DEBUG
         public bool? IsRepairEnabled = true;
         public bool? IsCacheUpdateEnabled = true;
