@@ -21,6 +21,7 @@ namespace CollapseLauncher.Pages
             LoadConfigV2();
             GameCategorySelect.ItemsSource = ConfigV2GameCategory;
             BackgroundFrame.Navigate(typeof(StartupPage_SelectGameBG));
+            this.RequestedTheme = IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
         }
 
         private void NextPage_Click(object sender, RoutedEventArgs e)
@@ -54,9 +55,7 @@ namespace CollapseLauncher.Pages
                 bool IsSuccess = await TryLoadGameDetails(ConfigV2.MetadataV2[_selectedCategory][_selectedRegion]);
 
                 if (_gamePosterBitmap != null && IsSuccess)
-                {
                     MainPage.ApplyAccentColor(this, _gamePosterBitmap, _gamePosterPath);
-                }
 
                 NavigationTransitionInfo transition = lastSelectedCategory == _selectedCategory ? new SuppressNavigationTransitionInfo() : new DrillInNavigationTransitionInfo();
 
