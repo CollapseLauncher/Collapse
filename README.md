@@ -133,7 +133,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
     </tr>
     <tr>
-      <td rowspan="2">Genshin Impact</td>
+      <td rowspan="3">Genshin Impact</td>
       <td>Global</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -154,7 +154,17 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
       <td>N/A</td>
     </tr>
     <tr>
-      <td rowspan="2">Honkai: Star Rail</td>
+      <td>Bilibili</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td rowspan="3">Honkai: Star Rail</td>
       <td>Global</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
@@ -166,6 +176,16 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
     </tr>
     <tr>
       <td>Mainland China</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>:white_check_mark:</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Bilibili</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
       <td>:white_check_mark:</td>
