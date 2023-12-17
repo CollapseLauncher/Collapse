@@ -520,9 +520,7 @@ namespace CollapseLauncher
             if (!IsFileCompletelyDownloaded(fInfo))
             {
                 await TryDownloadToCompleteness(URL, fInfo, token);
-                return URL;
             }
-
             return cachePath;
         }
 
