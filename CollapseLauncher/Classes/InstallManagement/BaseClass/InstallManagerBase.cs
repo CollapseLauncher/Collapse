@@ -539,6 +539,9 @@ namespace CollapseLauncher.InstallManager.Base
                             deleteList.MoveTo(Path.Combine(_gamePath, $"deletefiles_{Path.GetFileNameWithoutExtension(asset.PathOutput)}.txt"), true);
                         }
 
+                        // Make sure that the Stream is getting disposed first
+                        stream?.Dispose();
+
                         // If the _canDeleteZip flag is true, then delete the zip
                         if (_canDeleteZip)
                         {
