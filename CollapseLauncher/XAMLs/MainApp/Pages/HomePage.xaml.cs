@@ -722,6 +722,7 @@ namespace CollapseLauncher.Pages
                     }
                     break;
                 case GameInstallStateEnum.NeedsUpdate:
+                case GameInstallStateEnum.InstalledHavePlugin:
                     {
                         RepairGameButton.Visibility = RepairGameButtonVisible;
                         RepairGameButton.IsEnabled = false;
@@ -750,6 +751,7 @@ namespace CollapseLauncher.Pages
         private void RaiseBackgroundInstallationStatus(GameInstallStateEnum GameInstallationState)
         {
             if (GameInstallationState == GameInstallStateEnum.NeedsUpdate
+             || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
              || GameInstallationState == GameInstallStateEnum.GameBroken
              || GameInstallationState == GameInstallStateEnum.NotInstalled)
             {
@@ -1147,6 +1149,7 @@ namespace CollapseLauncher.Pages
             switch (GameInstallationState)
             {
                 case GameInstallStateEnum.NeedsUpdate:
+                case GameInstallStateEnum.InstalledHavePlugin:
                     CancelUpdateDownload();
                     break;
                 case GameInstallStateEnum.InstalledHavePreload:

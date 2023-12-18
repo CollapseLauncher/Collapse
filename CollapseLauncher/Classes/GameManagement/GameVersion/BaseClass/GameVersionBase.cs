@@ -224,8 +224,9 @@ namespace CollapseLauncher.GameVersioning
             // If the game is installed, then move to another step.
             if (IsGameInstalled())
             {
-                // Check for the game version and preload availability.
+                // Check for the game/plugin version and preload availability.
                 if (!IsGameVersionMatch()) return GameInstallStateEnum.NeedsUpdate;
+                if (!IsPluginVersionsMatch()) return GameInstallStateEnum.InstalledHavePlugin;
                 if (IsGameHasPreload()) return GameInstallStateEnum.InstalledHavePreload;
 
                 // If passes, then return as Installed.
@@ -240,6 +241,16 @@ namespace CollapseLauncher.GameVersioning
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
+            // Update the plugins only
+            if (gameState == GameInstallStateEnum.InstalledHavePlugin)
+            {
+                // Add the plugins to the return list
+                var plugins = CheckPluginUpdate();
+                foreach (var plugin in plugins)
+                    returnList.Add(plugin.package);
+                return returnList;
+            }
 
             // If the GameVersion is not installed, then return the latest one
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
@@ -294,12 +305,54 @@ namespace CollapseLauncher.GameVersioning
             // If not, then return false to indicate that the game isn't installed.
             if (!GameVersionInstalled.HasValue) return false;
 
-            // Ensure if the version of the Plugin is matching. Get the plugin state.
-            bool isPluginVersionMatch = IsPluginInstalled();
+            // If the game is installed and the version doesn't match, then return to false.
+            // But if the game version matches, then return to true.
+            return GameVersionInstalled.Value.IsMatch(GameVersionAPI);
+        }
 
-            // If the game/plugin is installed and the version doesn't match, then return to false.
-            // But if the game/plugin version matches, then return to true.
-            return GameVersionInstalled.Value.IsMatch(GameVersionAPI) && isPluginVersionMatch;
+        public virtual bool IsPluginVersionsMatch()
+        {
+#if !MHYPLUGINSUPPORT
+            return true;
+#else
+            // Get the pluginVersions and installedPluginVersions
+            var pluginVersions = PluginVersionsAPI;
+            var installedPluginVersions = PluginVersionsInstalled;
+
+            // Compare each entry in the dict
+            if (pluginVersions.Count != installedPluginVersions.Count) return false;
+            foreach (var pluginVersion in pluginVersions)
+            {
+                if (!installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion))
+                    return false;
+                if (!pluginVersion.Value.IsMatch(installedPluginVersion))
+                    return false;
+            }
+
+            return true;
+#endif
+        }
+
+        public virtual List<RegionResourcePlugin> CheckPluginUpdate()
+        {
+            List<RegionResourcePlugin> result = [];
+
+            // Get the pluginVersions and installedPluginVersions
+            var pluginVersions = PluginVersionsAPI;
+            var installedPluginVersions = PluginVersionsInstalled;
+
+            // Compare each entry in the dict
+            foreach (var pluginVersion in pluginVersions)
+            {
+                if (installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion) &&
+                    pluginVersion.Value.IsMatch(installedPluginVersion))
+                    continue;
+
+                var plugin = GameAPIProp.data.plugins?.Find(plugin => plugin.plugin_id == pluginVersion.Key);
+                if (plugin != null) result.Add(plugin);
+            }
+
+            return result;
         }
 
         public virtual bool IsGameInstalled()
@@ -315,28 +368,6 @@ namespace CollapseLauncher.GameVersioning
 
             // Check all the pattern and return based on the condition
             return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo.Exists && execFileInfo.Length > 1 << 16;
-        }
-
-        public virtual bool IsPluginInstalled()
-        {
-#if !MHYPLUGINSUPPORT
-            // TODO: Work on integration of plugin installations on InstallManagerBase
-            return true;
-#else
-            // Get the pluginVersion
-            GameVersion? pluginVersion = PluginVersionAPI;
-
-            if (pluginVersion != null)
-            {
-                // If the installedPluginVersion is null, the return false
-                GameVersion? installedPluginVersion = PluginVersionInstalled;
-                if (installedPluginVersion == null) return false;
-
-                // Check if the version value is matching
-                return pluginVersion.Value.IsMatch(installedPluginVersion.Value);
-            }
-            return true;
-#endif
         }
 
 #nullable enable
@@ -413,6 +444,7 @@ namespace CollapseLauncher.GameVersioning
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
                 UpdateGameChannels(true);
+                UpdatePluginVersions(PluginVersionsAPI);
             }
         }
 
