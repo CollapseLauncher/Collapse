@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -198,6 +199,8 @@ namespace CollapseLauncher.GameVersioning
             set => UpdatePluginVersions(value ?? PluginVersionsAPI);
         }
 
+        protected List<RegionResourcePlugin> MismatchPlugin { get; set; }
+
         // Assign for the Game Delta-Patch properties (if any).
         // If there's no Delta-Patch, then set it to null.
         protected DeltaPatchProperty GameDeltaPatchProp { get => CheckDeltaPatchUpdate(GameDirPath, GamePreset.ProfileName, GameVersionAPI); }
@@ -246,9 +249,7 @@ namespace CollapseLauncher.GameVersioning
             if (gameState == GameInstallStateEnum.InstalledHavePlugin)
             {
                 // Add the plugins to the return list
-                var plugins = CheckPluginUpdate();
-                foreach (var plugin in plugins)
-                    returnList.Add(plugin.package);
+                MismatchPlugin?.ForEach(plugin => returnList.Add(plugin.package));
                 return returnList;
             }
 
@@ -321,12 +322,24 @@ namespace CollapseLauncher.GameVersioning
 
             // Compare each entry in the dict
             if (pluginVersions.Count != installedPluginVersions.Count) return false;
+
+            MismatchPlugin = null;
+
             foreach (var pluginVersion in pluginVersions)
             {
-                if (!installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion))
+                if (!installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion) ||
+                    !pluginVersion.Value.IsMatch(installedPluginVersion))
+                {
+                    // Uh-oh, we need to calculate the file hash.
+                    MismatchPlugin = CheckPluginUpdate();
+                    if (MismatchPlugin.Count == 0)
+                    {
+                        // Update cached plugin versions
+                        PluginVersionsInstalled = PluginVersionsAPI;
+                        return true;
+                    }
                     return false;
-                if (!pluginVersion.Value.IsMatch(installedPluginVersion))
-                    return false;
+                }
             }
 
             return true;
@@ -336,20 +349,28 @@ namespace CollapseLauncher.GameVersioning
         public virtual List<RegionResourcePlugin> CheckPluginUpdate()
         {
             List<RegionResourcePlugin> result = [];
+            if (GameAPIProp.data?.plugins == null) return result;
 
-            // Get the pluginVersions and installedPluginVersions
-            var pluginVersions = PluginVersionsAPI;
-            var installedPluginVersions = PluginVersionsInstalled;
-
-            // Compare each entry in the dict
-            foreach (var pluginVersion in pluginVersions)
+            foreach (var plugin in GameAPIProp.data?.plugins!)
             {
-                if (installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion) &&
-                    pluginVersion.Value.IsMatch(installedPluginVersion))
-                    continue;
-
-                var plugin = GameAPIProp.data.plugins?.Find(plugin => plugin.plugin_id == pluginVersion.Key);
-                if (plugin != null) result.Add(plugin);
+                foreach (var validate in plugin.package.validate)
+                {
+                    var path = Path.Combine(GameDirPath, validate.path);
+                    try
+                    {
+                        using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                        var md5 = HexTool.BytesToHexUnsafe(MD5.HashData(fs));
+                        if (md5 != validate.md5)
+                        {
+                            result.Add(plugin);
+                            break;
+                        }
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        result.Add(plugin);
+                    }
+                }
             }
 
             return result;
