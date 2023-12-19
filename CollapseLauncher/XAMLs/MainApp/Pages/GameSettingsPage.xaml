@@ -328,7 +328,7 @@
                                                 </ComboBoxItem>
                                             </ComboBox>
                                         </StackPanel>
-                                        <StackPanel Grid.Column="1">
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                                             <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_Mute}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,8,0,4"/>
                                             <ToggleSwitch OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}" IsOn="{x:Bind AudioMute, Mode=TwoWay}"/>
                                         </StackPanel>
