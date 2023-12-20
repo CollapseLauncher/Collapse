@@ -284,31 +284,32 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public bool disableTeamPageBackgroundSwitch { get; set; } = false;
 
-        public bool mtrCached { get; set; } = true;
-        public bool mtrIsOpen { get; set; } = true;
-        public int mtrMaxTTL { get; set; } = 32;
-        public int mtrTimeOut { get; set; } = 5000;
-        public int mtrTraceCount { get; set; } = 5;
-        public int mtrAbortTimeOutCount { get; set; } = 3;
-        public int mtrAutoTraceInterval { get; set; } = 3600;
-        public int mtrTraceCDEachReason { get; set; } = 600;
-        public int mtrTimeInterval { get; set; } = 1000;
-        public List<object> mtrBanReasons { get; set; }
-        public List<string> _customDataKeyList { get; set; }
-        public List<string> _customDataValueList { get; set; }
-        public List<int> _serializedCodeSwitches { get; set; }
-        public bool urlCheckCached { get; set; } = false;
-        public bool urlCheckIsOpen { get; set; } = true;
-        public bool urlCheckAllIP { get; set; } = false;
-        public int urlCheckTimeOut { get; set; } = 5000;
-        public int urlCheckSueecssTraceCount { get; set; } = 5;
-        public int urlCheckErrorTraceCount { get; set; } = 30;
-        public int urlCheckAbortTimeOutCount { get; set; } = 3;
-        public int urlCheckTimeInterval { get; set; } = 1000;
-        public int urlCheckCDEachReason { get; set; } = 600;
-        public List<object> urlCheckBanReasons { get; set; }
-        public bool mtrUseOldWinVersion { get; set; } = false;
-        public string greyTestDeviceUniqueId { get; set; } = "";
+        public bool         disableHttpDns            { get; set; } = false;
+        public bool         mtrCached                 { get; set; } = false;
+        public bool         mtrIsOpen                 { get; set; } = true;
+        public int          mtrMaxTTL                 { get; set; } = 32;
+        public int          mtrTimeOut                { get; set; } = 5000;
+        public int          mtrTraceCount             { get; set; } = 5;
+        public int          mtrAbortTimeOutCount      { get; set; } = 3;
+        public int          mtrAutoTraceInterval      { get; set; } = 3600;
+        public int          mtrTraceCDEachReason      { get; set; } = 600;
+        public int          mtrTimeInterval           { get; set; } = 1000;
+        public List<object> mtrBanReasons             { get; set; }
+        public List<string> _customDataKeyList        { get; set; }
+        public List<string> _customDataValueList      { get; set; }
+        public List<int>    _serializedCodeSwitches   { get; set; }
+        public bool         urlCheckCached            { get; set; } = false;
+        public bool         urlCheckIsOpen            { get; set; } = false;
+        public bool         urlCheckAllIP             { get; set; } = false;
+        public int          urlCheckTimeOut           { get; set; } = 5000;
+        public int          urlCheckSueecssTraceCount { get; set; } = 5;
+        public int          urlCheckErrorTraceCount   { get; set; } = 30;
+        public int          urlCheckAbortTimeOutCount { get; set; } = 3;
+        public int          urlCheckTimeInterval      { get; set; } = 1000;
+        public int          urlCheckCDEachReason      { get; set; } = 600;
+        public List<object> urlCheckBanReasons        { get; set; }
+        public bool         mtrUseOldWinVersion       { get; set; } = false;
+        public string       greyTestDeviceUniqueId    { get; set; } = "";
 
         /// <summary>
         /// This controls if game audio should be disabled when main window is minimized. <br/>
