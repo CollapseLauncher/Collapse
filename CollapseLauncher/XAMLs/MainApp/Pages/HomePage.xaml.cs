@@ -1451,7 +1451,7 @@ namespace CollapseLauncher.Pages
                 return true;
 
             LogWriteLine($"Media pack is not installed!\r\n\t" +
-                        $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t\t" +
+                        $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t" +
                         $"{Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd")}", LogType.Warning, true);
 
             // Skip dialog if user asked before
