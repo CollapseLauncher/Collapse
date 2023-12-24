@@ -192,6 +192,12 @@
                 "IconGlyph": "",
                 "Text": "Guides by KQM",
                 "URL": "https://hsr.keqingmains.com"
+            },
+            {
+                "IconFontFamily": "ms-appx:///Assets/Fonts/FontAwesomeSolid6.otf#Font Awesome 6 Free Solid",
+                "IconGlyph": "\uE0BB",
+                "Text": "Pokke's Library",
+                "URL": "https://pokkelibrary.com/"
             }
         ]
     }

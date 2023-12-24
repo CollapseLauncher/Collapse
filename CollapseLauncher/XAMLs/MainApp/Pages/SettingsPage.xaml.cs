@@ -185,6 +185,8 @@ namespace CollapseLauncher.Pages
             switch (await Dialog_ChangeReleaseChannel(ChannelName, this))
             {
                 case ContentDialogResult.Primary:
+                    // Delete Metadata upon switching release
+                    Directory.Delete(AppGameConfigMetadataFolder, true);
                     LaunchUpdater(ChannelName);
                     break;
             }

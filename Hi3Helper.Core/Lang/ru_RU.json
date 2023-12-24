@@ -4,6 +4,21 @@
   "Author": "ChocolateNao",
 
   "_StartupPage": {
+    "SelectLang": "Select your language",
+    "SelectLangDesc": "Please select your language to start this launcher for the first time!",
+    "SelectWindowSize": "Select your preferred window size",
+    "SelectCDN": "Select your preferred CDN",
+    "CDNHelpTitle_1": "What is a CDN?",
+    "CDNHelpTitle_2": "short for ",
+    "CDNHelpTitle_3": "Content Delivery Network",
+    "CDNHelpTitle_4": "\u200b",
+    "CDNHelpDetail_1": "\u200b",
+    "CDNHelpDetail_2": "CDN",
+    "CDNHelpDetail_3": " is a system used to make launcher files available to a larger audience, quickly and efficiently.",
+    "CDNHelpDetail_4": "Collapse selects GitHub as the default provider.",
+    "CDNsAvailable": "CDNs available:",
+    "SplashArt_1": "The splash art is a property of",
+    "SplashArt_2": "miHoYo / HoYoverse",
     "ChooseFolderBtn": "Выбрать папку",
     "ChooseFolderDialogCancel": "Отменить",
     "ChooseFolderDialogPrimary": "Да, пожалуйста!",
@@ -126,8 +141,8 @@
     "GamePlaytime_Idle_ResetBtn": "Сбросить",
     "GamePlaytime_Idle_ChangeBtn": "Изменить",
     "GamePlaytime_Idle_InvalidTimeBlock": "Invalid values provided.",
-    "GamePlaytime_Running_Info1": "An instance of this game is currently running, therefore playtime can't be edited.",
-    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point) & only sessions started using Collapse will be tracked.",
+    "GamePlaytime_Running_Info1": "Эта игра сейчас запущена, поэтому нельзя изменить время игры.",
+    "GamePlaytime_Running_Info2": "Учтите что полное закрытие Collapse перестанет отслеживать время в игре (сохранится то, что было до запуска), будут отслеживаться только те сеансы, которые запущены с помощью Collapse.",
     "PostPanel_Events": "События",
     "PostPanel_Notices": "Примечания",
     "PostPanel_Info": "Информация",
@@ -269,7 +284,7 @@
     "Audio_VOLang": "Язык озвучки",
     "Audio_VOLang1": "Китайский (КНР)",
     "Audio_VOLang2": "Японский",
-    "Audio_VODefault": " [Default]",
+    "Audio_VODefault": "[По умолчанию]",
     "Audio_VO": "Громкость голоса озвучки",
     "Audio_Elf": "Громкость озвучки эльфа",
     "Audio_Cutscenes": "Громкость кат-сцен",
@@ -303,15 +318,15 @@
     "CustomArgs_Footer2": "документацию по командной строке Unity Standalone Player",
     "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
 
-    "GameBoost": "Boost Game Priority [Experimental]"
+    "GameBoost": "Повысить приоритет игры [Экспериментально]"
   },
 
   "_SettingsPage": {
     "PageTitle": "Настройки приложения",
 
-    "Debug": "Additional Settings",
+    "Debug": "Дополнительные настройки",
     "Debug_Console": "Показать консоль",
-    "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
+    "Debug_IncludeGameLogs": "Сохранять журналы игры в Collapse (могут быть конфиденциальные данные)",
     "Debug_MultipleInstance": "Разрешить запуск нескольких лаунчеров Collapse",
 
     "ChangeRegionWarning_Toggle": "Показывать предупреждение об изменении региона",
@@ -365,8 +380,8 @@
     "AppFiles_ClearLogBtn": "Очистить файлы логов",
     "AppFiles_ClearImgCachesBtn": "Очистить файлы изображений",
 
-    "AppFiles_ClearMetadataBtn": "Clear Metadata and Restart",
-    "AppFiles_ClearMetadataDialog": "Clearing Collapse Metadata!",
+    "AppFiles_ClearMetadataBtn": "Очистить метаданные и перезапустить",
+    "AppFiles_ClearMetadataDialog": "Очистка метаданных Collapse!",
     "AppFiles_ClearMetadataDialogHelp": "Clearing Collapse metadata will cause Collapse to forcefully restart. Only use this if you have problems with region loading.\r\nAre you sure?",
 
     "ReportIssueBtn": "Сообщить о проблеме",
