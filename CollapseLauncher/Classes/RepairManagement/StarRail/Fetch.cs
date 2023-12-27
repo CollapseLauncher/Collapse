@@ -71,6 +71,15 @@ namespace CollapseLauncher
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
                 await FetchBilibiliSDK(token);
 
+                // Remove plugin from assetIndex
+                _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+                {
+                    assetIndex.RemoveAll(asset =>
+                    {
+                        return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                    });
+                });
+
                 // Clear the hashtable
                 hashtable.Clear();
             }

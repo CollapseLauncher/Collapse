@@ -94,6 +94,15 @@ namespace CollapseLauncher
                 // Region: XMFAndAssetIndex
                 // Try check XMF file and fetch it if it doesn't exist
                 await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
+
+                // Remove plugin from assetIndex
+                _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+                {
+                    assetIndex.RemoveAll(asset =>
+                    {
+                        return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                    });
+                });
             }
             finally
             {
