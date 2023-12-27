@@ -346,7 +346,7 @@ namespace CollapseLauncher
             BackgroundAcrylicMask.Visibility = Visibility.Visible;
         }
 
-        public static void ReloadPageTheme(Page page, ElementTheme startTheme)
+        public static void ReloadPageTheme(FrameworkElement page, ElementTheme startTheme)
         {
             bool IsComplete = false;
             while (!IsComplete)

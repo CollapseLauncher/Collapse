@@ -5,7 +5,7 @@ namespace CollapseLauncher.Interfaces
     internal interface IGameSettings
     {
         Exception ImportSettings();
-        Exception ExportSettings();
+        Exception ExportSettings(bool isCompressed = true);
         void ReloadSettings();
         void SaveSettings();
         IGameSettingsUniversal AsIGameSettingsUniversal();

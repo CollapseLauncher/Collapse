@@ -1213,12 +1213,14 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = GetLaunchArguments();
                 LogWriteLine($"Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                proc.StartInfo.WorkingDirectory = CurrentGameProperty._GameVersion.GamePreset.ZoneName == "Bilibili" ||
-                    (CurrentGameProperty._GameVersion.GameType == GameType.Genshin
-                    && GetAppConfigValue("ForceGIHDREnable").ToBool()) ?
-                        NormalizePath(GameDirPath) :
-                        Path.GetDirectoryName(NormalizePath(GameDirPath));
-                proc.StartInfo.Verb = "runas";
+                // proc.StartInfo.WorkingDirectory = CurrentGameProperty._GameVersion.GamePreset.ZoneName == "Bilibili" ||
+                //     (CurrentGameProperty._GameVersion.GameType == GameType.Genshin
+                //     && GetAppConfigValue("ForceGIHDREnable").ToBool()) ?
+                //         NormalizePath(GameDirPath) :
+                //         Path.GetDirectoryName(NormalizePath(GameDirPath));
+                proc.StartInfo.UseShellExecute  = false;
+                proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
+                proc.StartInfo.Verb             = "runas";
                 proc.Start();
 
                 WatchOutputLog = new CancellationTokenSource();
@@ -1452,7 +1454,7 @@ namespace CollapseLauncher.Pages
                 return true;
 
             LogWriteLine($"Media pack is not installed!\r\n\t" +
-                        $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t\t" +
+                        $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t" +
                         $"{Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd")}", LogType.Warning, true);
 
             // Skip dialog if user asked before
