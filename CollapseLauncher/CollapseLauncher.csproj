@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<!-- Versioning -->
-		<Version>1.72.12</Version>
+		<Version>1.72.13</Version>
 		<LangVersion>preview</LangVersion>
 		<!-- Target Settings -->
 		<Platforms>x64</Platforms>
