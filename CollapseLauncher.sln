@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "Hi3Hel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.SharpHDiffPatch", "Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj", "{3AD82793-E1E0-46C6-B239-703373CD11CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoSetupHelper", "InnoSetupHelper\InnoSetupHelper.csproj", "{21691306-8D30-4993-98A2-A5AE0712D81A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -72,6 +74,12 @@ Global
 		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Publish|x64.Build.0 = Release|x64
 		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Release|x64.ActiveCfg = Release|x64
 		{3AD82793-E1E0-46C6-B239-703373CD11CF}.Release|x64.Build.0 = Release|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Debug|x64.ActiveCfg = Debug|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Debug|x64.Build.0 = Debug|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Publish|x64.ActiveCfg = Release|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Publish|x64.Build.0 = Release|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Release|x64.ActiveCfg = Release|x64
+		{21691306-8D30-4993-98A2-A5AE0712D81A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

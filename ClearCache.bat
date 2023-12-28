@@ -17,5 +17,7 @@ echo 	Clearing HDiff cache
 rmdir /S /Q Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\bin && rmdir /S /Q Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\obj
 echo 	Clearing 2nd HDiff cache
 rmdir /S /Q Hi3Helper.SharpHDiffPatch\SharpHDiffPatch\bin && rmdir /S /Q Hi3Helper.SharpHDiffPatch\SharpHDiffPatch\obj
+echo 	Clearing InnoSetupHelper cache
+rmdir /S /Q InnoSetupHelper\bin && rmdir /S /Q InnoSetupHelper\obj
 echo 	Clearing 7z cache
 rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\bin && rmdir /S /Q Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\obj
