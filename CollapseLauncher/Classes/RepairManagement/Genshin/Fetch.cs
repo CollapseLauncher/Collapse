@@ -51,13 +51,7 @@ namespace CollapseLauncher
                 await FetchBilibiliSDK(token);
 
                 // Remove plugin from assetIndex
-                _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
-                {
-                    assetIndex.RemoveAll(asset =>
-                    {
-                        return plugin.package.validate?.Exists(validate => validate.path == asset.remoteName) ?? false;
-                    });
-                });
+                EliminatePluginAssetIndex(assetIndex);
 
                 // Clear hashtableManifest
                 hashtableManifest.Clear();
@@ -71,6 +65,17 @@ namespace CollapseLauncher
                 _httpClient.DownloadProgress -= _httpClient_FetchManifestAssetProgress;
                 _httpClient?.Dispose();
             }
+        }
+
+        private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
+        {
+            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            {
+                assetIndex.RemoveAll(asset =>
+                {
+                    return plugin.package.validate?.Exists(validate => validate.path == asset.remoteName) ?? false;
+                });
+            });
         }
 
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)

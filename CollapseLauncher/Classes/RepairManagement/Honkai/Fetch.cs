@@ -96,13 +96,11 @@ namespace CollapseLauncher
                 await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
 
                 // Remove plugin from assetIndex
-                _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+                // Skip the removal for Delta-Patch
+                if (!_isOnlyRecoverMain)
                 {
-                    assetIndex.RemoveAll(asset =>
-                    {
-                        return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
-                    });
-                });
+                    EliminatePluginAssetIndex(assetIndex);
+                }
             }
             finally
             {
@@ -112,6 +110,17 @@ namespace CollapseLauncher
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 _httpClient.Dispose();
             }
+        }
+
+        private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
+        {
+            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            {
+                assetIndex.RemoveAll(asset =>
+                {
+                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                });
+            });
         }
 
         #region Registry Utils

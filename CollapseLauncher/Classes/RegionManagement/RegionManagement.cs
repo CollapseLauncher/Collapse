@@ -317,10 +317,7 @@ namespace CollapseLauncher
             _gameAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherResourceURL, InternalAppJSONContext.Default, token);
             if (!string.IsNullOrEmpty(Preset.LauncherPluginURL))
             {
-                // TODO: use string.Format
-                Preset.LauncherPluginURL = Preset.LauncherPluginURL.Replace("111111111111111111111111111111111111111111111", GetDeviceId(Preset));
-
-                RegionResourceProp _pluginAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(Preset.LauncherPluginURL, InternalAppJSONContext.Default, token);
+                RegionResourceProp _pluginAPIProp = await FallbackCDNUtil.DownloadAsJSONType<RegionResourceProp>(string.Format(Preset.LauncherPluginURL, GetDeviceId(Preset)), InternalAppJSONContext.Default, token);
                 if (_pluginAPIProp?.data != null && _pluginAPIProp?.data?.plugins != null)
                 {
 #if DEBUG
