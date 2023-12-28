@@ -276,6 +276,7 @@ namespace CollapseLauncher.InstallManager.Base
                     case GameInstallStateEnum.NotInstalled:
                     case GameInstallStateEnum.GameBroken:
                     case GameInstallStateEnum.NeedsUpdate:
+                    case GameInstallStateEnum.InstalledHavePlugin:
                         await GetLatestPackageList(_assetIndex, gameState, false);
                         break;
                     case GameInstallStateEnum.InstalledHavePreload:

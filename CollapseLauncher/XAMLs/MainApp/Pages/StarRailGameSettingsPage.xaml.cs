@@ -150,6 +150,7 @@ namespace CollapseLauncher.Pages
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled
                       || GameInstallationState == GameInstallStateEnum.NeedsUpdate
+                      || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
                       || GameInstallationState == GameInstallStateEnum.GameBroken)
                 {
                     Overlay.Visibility = Visibility.Visible;

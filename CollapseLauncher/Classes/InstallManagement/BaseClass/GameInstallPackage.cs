@@ -37,6 +37,12 @@ namespace CollapseLauncher.InstallManager
                 Name = Path.GetFileName(packageProperty.path);
                 PathOutput = Path.Combine(pathOutput, Name);
             }
+            else if (packageProperty.url != null)
+            {
+                URL = packageProperty.url;
+                Name = Path.GetFileName(packageProperty.url);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
 
             DecompressedURL = packageProperty.decompressed_path;
             SizeRequired = packageProperty.size;

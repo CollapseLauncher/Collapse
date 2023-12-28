@@ -254,6 +254,7 @@ namespace CollapseLauncher.Statics
                 {
                     GameInstallStateEnum.InstalledHavePreload => Locale.Lang._BackgroundNotification.CategoryTitle_DownloadingPreload,
                     GameInstallStateEnum.NeedsUpdate => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
+                    GameInstallStateEnum.InstalledHavePlugin => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
                     _ => Locale.Lang._BackgroundNotification.CategoryTitle_Downloading
                 }, GameProperty._GameVersion.GamePreset.GameName);
 

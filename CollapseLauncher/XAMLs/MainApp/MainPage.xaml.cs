@@ -1296,6 +1296,7 @@ namespace CollapseLauncher
         #region Misc Methods
         private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
                                           GameInstallationState == GameInstallStateEnum.InstalledHavePreload ||
+                                          GameInstallationState == GameInstallStateEnum.InstalledHavePlugin ||
                                           GameInstallationState == GameInstallStateEnum.NeedsUpdate;
 
         private void SpawnWebView2Panel(Uri URL)

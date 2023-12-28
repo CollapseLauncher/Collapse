@@ -24,6 +24,7 @@ namespace Hi3Helper.Shared.ClassStruct
         NotInstalled = 2,
         NeedsUpdate = 3,
         GameBroken = 4,
+        InstalledHavePlugin = 5,
     }
 
     public enum CachesType

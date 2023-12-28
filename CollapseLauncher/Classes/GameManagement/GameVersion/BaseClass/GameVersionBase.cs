@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -117,16 +118,20 @@ namespace CollapseLauncher.GameVersioning
         }
         protected UIElement ParentUIElement { get; init; }
         protected GameVersion GameVersionAPI => new GameVersion(GameAPIProp.data.game.latest.version);
-        protected GameVersion? PluginVersionAPI
+        protected Dictionary<int, GameVersion> PluginVersionsAPI
         {
             get
             {
-                // Return null if the plugin is not exist
-                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+                var value = new Dictionary<int, GameVersion>();
+
+                // Return empty if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return value;
 
                 // Get the version and convert it into GameVersion
-                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-                return new GameVersion(plugin.version);
+                foreach (var plugin in GameAPIProp.data?.plugins!)
+                    value.Add(plugin.plugin_id, new GameVersion(plugin.version));
+
+                return value;
             }
         }
 
@@ -167,30 +172,34 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
-        protected GameVersion? PluginVersionInstalled
+        protected Dictionary<int, GameVersion> PluginVersionsInstalled
         {
             get
             {
-                // Return null if the plugin is not exist
-                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return null;
+                var value = new Dictionary<int, GameVersion>();
+
+                // Return empty if the plugin is not exist
+                if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return value;
 
                 // Get the version and convert it into GameVersion
-                RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-
-                // Check if the INI has plugin_ID_version key...
-                string keyName = $"plugin_{plugin.plugin_id}_version";
-                if (GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                foreach (var plugin in GameAPIProp.data?.plugins!)
                 {
-                    string val = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
-                    if (string.IsNullOrEmpty(val)) return null;
-                    return new GameVersion(val);
+                    // Check if the INI has plugin_ID_version key...
+                    string keyName = $"plugin_{plugin.plugin_id}_version";
+                    if (GameIniVersion[_defaultIniVersionSection].ContainsKey(keyName))
+                    {
+                        string val = GameIniVersion[_defaultIniVersionSection][keyName].ToString();
+                        if (string.IsNullOrEmpty(val)) continue;
+                        value.Add(plugin.plugin_id, new GameVersion(val));
+                    }
                 }
 
-                // If not, then return as null
-                return null;
+                return value;
             }
-            set => UpdatePluginVersion(value ?? PluginVersionAPI.Value);
+            set => UpdatePluginVersions(value ?? PluginVersionsAPI);
         }
+
+        protected List<RegionResourcePlugin> MismatchPlugin { get; set; }
 
         // Assign for the Game Delta-Patch properties (if any).
         // If there's no Delta-Patch, then set it to null.
@@ -218,8 +227,9 @@ namespace CollapseLauncher.GameVersioning
             // If the game is installed, then move to another step.
             if (IsGameInstalled())
             {
-                // Check for the game version and preload availability.
+                // Check for the game/plugin version and preload availability.
                 if (!IsGameVersionMatch()) return GameInstallStateEnum.NeedsUpdate;
+                if (!IsPluginVersionsMatch()) return GameInstallStateEnum.InstalledHavePlugin;
                 if (IsGameHasPreload()) return GameInstallStateEnum.InstalledHavePreload;
 
                 // If passes, then return as Installed.
@@ -234,6 +244,14 @@ namespace CollapseLauncher.GameVersioning
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList = new List<RegionResourceVersion>();
+
+            // Update the plugins only
+            if (gameState == GameInstallStateEnum.InstalledHavePlugin)
+            {
+                // Add the plugins to the return list
+                MismatchPlugin?.ForEach(plugin => returnList.Add(plugin.package));
+                return returnList;
+            }
 
             // If the GameVersion is not installed, then return the latest one
             if (gameState == GameInstallStateEnum.NotInstalled || gameState == GameInstallStateEnum.GameBroken)
@@ -288,12 +306,74 @@ namespace CollapseLauncher.GameVersioning
             // If not, then return false to indicate that the game isn't installed.
             if (!GameVersionInstalled.HasValue) return false;
 
-            // Ensure if the version of the Plugin is matching. Get the plugin state.
-            bool isPluginVersionMatch = IsPluginInstalled();
+            // If the game is installed and the version doesn't match, then return to false.
+            // But if the game version matches, then return to true.
+            return GameVersionInstalled.Value.IsMatch(GameVersionAPI);
+        }
 
-            // If the game/plugin is installed and the version doesn't match, then return to false.
-            // But if the game/plugin version matches, then return to true.
-            return GameVersionInstalled.Value.IsMatch(GameVersionAPI) && isPluginVersionMatch;
+        public virtual bool IsPluginVersionsMatch()
+        {
+#if !MHYPLUGINSUPPORT
+            return true;
+#else
+            // Get the pluginVersions and installedPluginVersions
+            var pluginVersions = PluginVersionsAPI;
+            var installedPluginVersions = PluginVersionsInstalled;
+
+            // Compare each entry in the dict
+            if (pluginVersions.Count != installedPluginVersions.Count) return false;
+
+            MismatchPlugin = null;
+
+            foreach (var pluginVersion in pluginVersions)
+            {
+                if (!installedPluginVersions.TryGetValue(pluginVersion.Key, out var installedPluginVersion) ||
+                    !pluginVersion.Value.IsMatch(installedPluginVersion))
+                {
+                    // Uh-oh, we need to calculate the file hash.
+                    MismatchPlugin = CheckPluginUpdate();
+                    if (MismatchPlugin.Count == 0)
+                    {
+                        // Update cached plugin versions
+                        PluginVersionsInstalled = PluginVersionsAPI;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+
+            return true;
+#endif
+        }
+
+        public virtual List<RegionResourcePlugin> CheckPluginUpdate()
+        {
+            List<RegionResourcePlugin> result = [];
+            if (GameAPIProp.data?.plugins == null) return result;
+
+            foreach (var plugin in GameAPIProp.data?.plugins!)
+            {
+                foreach (var validate in plugin.package.validate)
+                {
+                    var path = Path.Combine(GameDirPath, validate.path);
+                    try
+                    {
+                        using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                        var md5 = HexTool.BytesToHexUnsafe(MD5.HashData(fs));
+                        if (md5 != validate.md5)
+                        {
+                            result.Add(plugin);
+                            break;
+                        }
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        result.Add(plugin);
+                    }
+                }
+            }
+
+            return result;
         }
 
         public virtual bool IsGameInstalled()
@@ -309,28 +389,6 @@ namespace CollapseLauncher.GameVersioning
 
             // Check all the pattern and return based on the condition
             return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo.Exists && execFileInfo.Length > 1 << 16;
-        }
-
-        public virtual bool IsPluginInstalled()
-        {
-#if !MHYPLUGINSUPPORT
-            // TODO: Work on integration of plugin installations on InstallManagerBase
-            return true;
-#else
-            // Get the pluginVersion
-            GameVersion? pluginVersion = PluginVersionAPI;
-
-            if (pluginVersion != null)
-            {
-                // If the installedPluginVersion is null, the return false
-                GameVersion? installedPluginVersion = PluginVersionInstalled;
-                if (installedPluginVersion == null) return false;
-
-                // Check if the version value is matching
-                return pluginVersion.Value.IsMatch(installedPluginVersion.Value);
-            }
-            return true;
-#endif
         }
 
 #nullable enable
@@ -407,6 +465,7 @@ namespace CollapseLauncher.GameVersioning
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
                 UpdateGameChannels(true);
+                UpdatePluginVersions(PluginVersionsAPI);
             }
         }
 
@@ -438,17 +497,20 @@ namespace CollapseLauncher.GameVersioning
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
         }
 
-        public void UpdatePluginVersion(GameVersion version, bool saveValue = true)
+        public void UpdatePluginVersions(Dictionary<int, GameVersion> versions, bool saveValue = true)
         {
             // If the plugin is empty, ignore it
             if (GameAPIProp.data?.plugins == null || GameAPIProp.data?.plugins?.Count == 0) return;
 
             // Get the plugin property and its key name
-            RegionResourcePlugin plugin = GameAPIProp.data?.plugins?.FirstOrDefault();
-            string keyName = $"plugin_{plugin.plugin_id}_version";
+            foreach (var version in versions)
+            {
+                string keyName = $"plugin_{version.Key}_version";
 
-            // Set the value
-            GameIniVersion[_defaultIniVersionSection][keyName] = version.VersionString;
+                // Set the value
+                GameIniVersion[_defaultIniVersionSection][keyName] = version.Value.VersionString;
+            }
+
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);

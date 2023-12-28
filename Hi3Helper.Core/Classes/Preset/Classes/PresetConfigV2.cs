@@ -502,7 +502,7 @@ namespace Hi3Helper.Preset
         public string? ZoneLogoURL { get; set; }
         public string? ZonePosterURL { get; set; }
 #nullable disable
-        private string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
+        public string InstallRegistryLocation { get => string.Format(PrefixRegInstallLocation, InternalGameNameInConfig); }
         public string DefaultGameLocation { get => string.Format(PrefixDefaultProgramFiles, InternalGameNameFolder, SystemDriveLetter); }
         public string ConfigRegistryLocation { get => string.Format(PrefixRegGameConfig, VendorType, InternalGameNameInConfig); }
 #nullable enable
