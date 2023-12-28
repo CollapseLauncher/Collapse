@@ -19,8 +19,8 @@ namespace CollapseLauncher.GameVersioning
         private const string _defaultIniVersionSection = "General";
         private string _defaultGameDirPath { get => Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName, GamePreset.GameDirectoryName); }
         
-        private readonly int gameChannelID    = new PresetConfigV2().ChannelID;
-        private readonly int gameSubChannelID = new PresetConfigV2().SubChannelID;
+        private int gameChannelID    => GamePreset.ChannelID;
+        private int gameSubChannelID => GamePreset.SubChannelID;
         
         private IniSection _defaultIniProfile
         {
@@ -421,12 +421,19 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
+            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
-            
-            if (GamePreset.ZoneName == "Bilibili") 
+
+            if (isBilibili)
                 GameIniVersion[_defaultIniVersionSection]["cps"] = "bilibili";
-            
+            // Remove the contains section if the client is not Bilibili and it does have the value.
+            // This to avoid an issue with HSR config.ini detection
+            else if (!isBilibili && GameIniVersion.ContainsSection(_defaultIniVersionSection)
+                && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
+                && GameIniVersion[_defaultIniVersionSection]["cps"].ToString() == "bilibili")
+                GameIniVersion[_defaultIniVersionSection].Remove("cps");
+
             if (saveValue)
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
         }
@@ -560,6 +567,8 @@ namespace CollapseLauncher.GameVersioning
                     ini[section].Add(value.Key, value.Value);
                 }
             }
+
+            UpdateGameChannels(false);
         }
     }
 }
