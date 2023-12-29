@@ -1297,6 +1297,12 @@
       "hi3helper.sharphdiffpatch": {
         "type": "Project"
       },
+      "innosetuphelper": {
+        "type": "Project",
+        "dependencies": {
+          "Hi3Helper.Core": "[1.0.0, )"
+        }
+      },
       "sevenzipextractor": {
         "type": "Project"
       }
