@@ -29,7 +29,7 @@ namespace InnoSetupHelper
             "Hi3SEA", "Hi3Global", "Hi3TW", "Hi3KR", "Hi3CN", "Hi3JP", "BH3",
             "GIGlb", "GICN", "GenshinImpact", "YuanShen", "GIBilibili",
             "SRGlb", "SRCN", "StarRail", "HSRBilibili",
-            "ZZZGlb", "ZZZCN", "ZZZ"
+            "ZZZGlb", "ZZZCN", "ZZZBilibili" // Adding ZZZ for Bilibili (if that even exist lol)
 #if DEBUG
             // Hi3Helper.Http DLLs
             , "Hi3Helper.Http"

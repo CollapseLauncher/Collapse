@@ -658,7 +658,10 @@ namespace CollapseLauncher
                         if (File.Exists(InnoLogPath)) InnoSetupLogUpdate.UpdateInnoSetupLog(InnoLogPath);
                         File.Delete(NeedInnoUpdateFile);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
+                    }
                 }
 
                 if (File.Exists(UpdateNotifFile))
