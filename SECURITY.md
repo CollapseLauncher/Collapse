@@ -6,8 +6,8 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 
 | Version   | Supported          |
 | -------   | ------------------ |
-| >=1.70.0  | :white_check_mark: |
-| < 1.0.69  | :x:                |
+| >=1.71.0  | :white_check_mark: |
+| < 1.0.70  | :x:                |
 
 
 ## Reporting a Vulnerability
