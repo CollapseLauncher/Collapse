@@ -98,7 +98,7 @@
   },
 
   "_HomePage": {
-    "PageTitle": "Lanzador",
+    "PageTitle": "Launcher",
     "PreloadTitle": "¡La precarga está disponible!",
     "PreloadNotifTitle": "¡Un paquete de precarga para v{0} está disponible!",
     "PreloadNotifDeltaDetectTitle": "¡Se ha detectado un paquete de precarga en formato Delta-Patch para v{0}!",
@@ -409,7 +409,7 @@
     "EnableAcrylicEffect": "Usar efecto de desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
 
-    "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos del proceso de colapso cuando se inicia un juego",
+    "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desactiva el carrusel en la página principal y reduce la prioridad de Collapse a Baja.",
 
     "KbShortcuts_Title": "Atajos de teclado",
@@ -886,7 +886,7 @@
     "Graphics_HDR_NotEnabled2": "La opción \"Usar HDR\" debe estar activada en la Configuración de Windows.",
     "Graphics_HDR_Help_Link": "Más información",
     "Graphics_HDR_MaxLuminosity": "Max Luminosidad (nits)",
-    "Graphics_HDR_MaxLuminosity_Help": "Brillo máximo permitido para destacados",
+    "Graphics_HDR_MaxLuminosity_Help": "Brillo máximo permitido para los destellos",
     "Graphics_HDR_Calibration_Help": "Ajustar hasta que la imagen mostrada sea tenue pero visible",
     "Graphics_HDR_UiBrightness": "Brillo de la interfaz",
     "Graphics_HDR_UiBrightness_Help": "Controla qué tan brillantes deben ser los elementos de la interfaz de usuario.",
