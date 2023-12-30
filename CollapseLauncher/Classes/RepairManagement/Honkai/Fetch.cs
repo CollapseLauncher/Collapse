@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.Http;
@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -89,11 +88,18 @@ namespace CollapseLauncher
 
                 // Region: XMFAndAssetIndex
                 // Fetch asset index
-                await FetchAssetIndex(_httpClient, assetIndex, token);
+                await FetchAssetIndex(assetIndex, token);
 
                 // Region: XMFAndAssetIndex
                 // Try check XMF file and fetch it if it doesn't exist
                 await FetchXMFFile(_httpClient, assetIndex, manifestDict[_gameVersion.VersionString], token);
+
+                // Remove plugin from assetIndex
+                // Skip the removal for Delta-Patch
+                if (!_isOnlyRecoverMain)
+                {
+                    EliminatePluginAssetIndex(assetIndex);
+                }
             }
             finally
             {
@@ -103,6 +109,17 @@ namespace CollapseLauncher
                 _cacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 _httpClient.Dispose();
             }
+        }
+
+        private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
+        {
+            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            {
+                assetIndex.RemoveAll(asset =>
+                {
+                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                });
+            });
         }
 
         #region Registry Utils
@@ -168,11 +185,9 @@ namespace CollapseLauncher
                 memoryStream.Position = 0;
 
                 // Use CacheStream to decrypt and read it as Stream
-                using (CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber))
-                {
-                    // Enumerate and iterate the metadata to asset index
-                    await BuildAndEnumerateVideoVersioningFile(token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, ignoredAssetIDs, assetBundleURL);
-                }
+                await using CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber);
+                // Enumerate and iterate the metadata to asset index
+                await BuildAndEnumerateVideoVersioningFile(token, CGMetadata.Enumerate(cacheStream, Encoding.UTF8), assetIndex, ignoredAssetIDs, assetBundleURL);
             }
         }
 
@@ -404,73 +419,39 @@ namespace CollapseLauncher
             return await stream.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, token);
         }
 
-        private async Task FetchAssetIndex(Http _httpClient, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task FetchAssetIndex(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set asset index URL
-            string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".bin";
+            string urlIndex = string.Format(AppGameRepairIndexURLPrefix, _gameVersionManager.GamePreset.ProfileName, _gameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
 
             // Deserialize asset index and return
-            DeserializeAssetIndex(stream, assetIndex);
+            DeserializeAssetIndexV2(stream, assetIndex);
         }
 
-        private void DeserializeAssetIndex(Stream stream, List<FilePropertiesRemote> assetIndex)
+        private void DeserializeAssetIndexV2(Stream stream, List<FilePropertiesRemote> assetIndexList)
         {
-            using (BinaryReader bRaw = new BinaryReader(stream))
+            AssetIndexV2 assetIndex = new AssetIndexV2();
+            PkgVersionProperties[] pkgVersionEntries = assetIndex.Deserialize(stream, out DateTime timestamp);
+            LogWriteLine($"[HonkaiRepair::DeserializeAssetIndexV2()] Asset index V2 has been deserialized with: {pkgVersionEntries.Length} assets found. Asset index was generated at: {timestamp} (UTC)", LogType.Default, true);
+
+            foreach (PkgVersionProperties pkgVersionEntry in pkgVersionEntries)
             {
-                // Read the signature and do check
-                ulong signature = bRaw.ReadUInt64();
-                if (signature != _assetIndexSignature)
+                FilePropertiesRemote assetInfo = new FilePropertiesRemote
                 {
-                    throw new FormatException($"The asset index manifest is invalid! Reading: {signature} but expecting: {_assetIndexSignature}");
-                }
-
-                // Get the version and do serialization based on its own version implementation
-                byte version = bRaw.ReadByte();
-                switch (version)
-                {
-                    // Read version 1
-                    case 1:
-                        using (BrotliStream brStream = new BrotliStream(stream, CompressionMode.Decompress))
-                        {
-                            ParseAssetIndexChunkV1(brStream, assetIndex);
-                        }
-                        break;
-                    // If format is not valid, then throw
-                    default:
-                        throw new FormatException($"Version of the asset index format is unsupported! Reading: {version}");
-                }
-            }
-        }
-
-        private void ParseAssetIndexChunkV1(Stream stream, List<FilePropertiesRemote> assetIndex)
-        {
-            // Assign stream into the reader
-            using (BinaryReader reader = new BinaryReader(stream))
-            {
-                // Read the asset count
-                int assetCount = reader.ReadInt32();
-
-                // Do loop to read all the information
-                for (int i = 0; i < assetCount; i++)
-                {
-                    // Read the binary information into asset info
-                    FilePropertiesRemote assetInfo = new FilePropertiesRemote();
-                    assetInfo.FT = (FileType)reader.ReadByte();
-                    assetInfo.N = reader.ReadString();
-                    assetInfo.S = reader.ReadInt64();
-                    assetInfo.CRC = HexTool.BytesToHexUnsafe(reader.ReadBytes(16));
-                    assetInfo.RN = CombineURLFromString(_gameRepoURL, assetInfo.N);
+                    FT = FileType.Generic,
+                    N = pkgVersionEntry.remoteName,
+                    S = pkgVersionEntry.fileSize,
+                    CRC = pkgVersionEntry.md5,
+                    RN = CombineURLFromString(_gameRepoURL, pkgVersionEntry.remoteName)
+                };
 
 #if DEBUG
-                    LogWriteLine($"{assetInfo.PrintSummary()} found in manifest");
+                LogWriteLine($"[HonkaiRepair::DeserializeAssetIndexV2()] {assetInfo.PrintSummary()} found in manifest", LogType.Default, true);
 #endif
-
-                    // Add assetInfo
-                    assetIndex.Add(assetInfo);
-                }
+                assetIndexList.Add(assetInfo);
             }
         }
 

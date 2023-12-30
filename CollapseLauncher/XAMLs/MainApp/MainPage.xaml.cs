@@ -5,6 +5,8 @@ using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
+using InnoSetupHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -641,10 +643,26 @@ namespace CollapseLauncher
             try
             {
                 string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
+                string NeedInnoUpdateFile = Path.Combine(AppDataFolder, "_NeedInnoLogUpdate");
                 TypedEventHandler<InfoBar, object> ClickClose = new TypedEventHandler<InfoBar, object>((sender, args) =>
                 {
                     File.Delete(UpdateNotifFile);
                 });
+
+                // If the update was handled by squirrel and it needs Inno Setup Log file to get updated, then do the routine
+                if (File.Exists(NeedInnoUpdateFile))
+                {
+                    try
+                    {
+                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppFolder), "unins000.dat");
+                        if (File.Exists(InnoLogPath)) InnoSetupLogUpdate.UpdateInnoSetupLog(InnoLogPath);
+                        File.Delete(NeedInnoUpdateFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
+                    }
+                }
 
                 if (File.Exists(UpdateNotifFile))
                 {
@@ -1296,6 +1314,7 @@ namespace CollapseLauncher
         #region Misc Methods
         private bool IsGameInstalled() => GameInstallationState == GameInstallStateEnum.Installed ||
                                           GameInstallationState == GameInstallStateEnum.InstalledHavePreload ||
+                                          GameInstallationState == GameInstallStateEnum.InstalledHavePlugin ||
                                           GameInstallationState == GameInstallStateEnum.NeedsUpdate;
 
         private void SpawnWebView2Panel(Uri URL)

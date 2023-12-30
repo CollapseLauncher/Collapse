@@ -158,6 +158,7 @@ namespace CollapseLauncher
         public async Task FinishUpdate(bool NoSuicide = false)
         {
             string newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NewVer");
+            string needInnoLogUpdatePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher", "_NeedInnoLogUpdate");
 
             Status.status = string.Format(Lang._UpdatePage.UpdateStatus5 + $" {Lang._UpdatePage.UpdateMessage5}", NewVersionTag.VersionString);
             UpdateStatus();
@@ -166,6 +167,7 @@ namespace CollapseLauncher
             UpdateProgress();
 
             File.WriteAllText(newVerTagPath, NewVersionTag.VersionString);
+            File.WriteAllText(needInnoLogUpdatePath, NewVersionTag.VersionString);
 
             if (IsUseLegacyDownload)
             {

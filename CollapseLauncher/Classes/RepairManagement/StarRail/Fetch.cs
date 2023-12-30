@@ -71,6 +71,13 @@ namespace CollapseLauncher
                 // Force-Fetch the Bilibili SDK (if exist :pepehands:)
                 await FetchBilibiliSDK(token);
 
+                // Remove plugin from assetIndex
+                // Skip the removal for Delta-Patch
+                if (!_isOnlyRecoverMain)
+                {
+                    EliminatePluginAssetIndex(assetIndex);
+                }
+
                 // Clear the hashtable
                 hashtable.Clear();
             }
@@ -79,6 +86,17 @@ namespace CollapseLauncher
                 // Unsubscribe the fetching progress and dispose it and unsubscribe cacheUtil progress to adapter
                 _innerGameVersionManager.StarRailMetadataTool.HttpEvent -= _httpClient_FetchAssetProgress;
             }
+        }
+
+        private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
+        {
+            _gameVersionManager.GameAPIProp.data.plugins?.ForEach(plugin =>
+            {
+                assetIndex.RemoveAll(asset =>
+                {
+                    return plugin.package.validate?.Exists(validate => validate.path == asset.N) ?? false;
+                });
+            });
         }
 
         #region PrimaryManifest

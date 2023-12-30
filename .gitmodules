@@ -13,3 +13,6 @@
 [submodule "Hi3Helper.SharpHDiffPatch"]
 	path = Hi3Helper.SharpHDiffPatch
 	url = https://github.com/neon-nyan/Hi3Helper.SharpHDiffPatch
+[submodule "InnoSetupHelper/InnoSetupLogParser"]
+	path = InnoSetupHelper/InnoSetupLogParser
+	url = https://github.com/CollapseLauncher/InnoSetupLogParser

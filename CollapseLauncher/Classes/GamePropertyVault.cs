@@ -121,6 +121,10 @@ namespace CollapseLauncher.Statics
             ZoneName = GamePreset.ZoneName,
             ZonePosterURL = GamePreset.ZonePosterURL,
             ZoneURL = GamePreset.ZoneURL,
+            ChannelID = GamePreset.ChannelID,
+            SubChannelID = GamePreset.SubChannelID,
+            LauncherID = GamePreset.LauncherID,
+            LauncherPluginURL = GamePreset.LauncherPluginURL,
             GameDataTemplates = new Dictionary<string, GameDataTemplate>(GamePreset.GameDataTemplates)
         };
         #endregion
@@ -250,6 +254,7 @@ namespace CollapseLauncher.Statics
                 {
                     GameInstallStateEnum.InstalledHavePreload => Locale.Lang._BackgroundNotification.CategoryTitle_DownloadingPreload,
                     GameInstallStateEnum.NeedsUpdate => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
+                    GameInstallStateEnum.InstalledHavePlugin => Locale.Lang._BackgroundNotification.CategoryTitle_Updating,
                     _ => Locale.Lang._BackgroundNotification.CategoryTitle_Downloading
                 }, GameProperty._GameVersion.GamePreset.GameName);
 

@@ -214,7 +214,7 @@ namespace CollapseLauncher
                     // Add asset into targetAssetIndex
                     targetAssetIndex.Add(asset);
 
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} " + (asset.IsPatchApplicable ? "has an update and patch applicable" : $"is broken! Index CRC: {asset.CRC} <--> File CRC: {localCRC}"), LogType.Warning, true);
+                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} " + (asset.IsPatchApplicable ? "has an update and patch applicable" : $"is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}"), LogType.Warning, true);
                 }
             }
         }
