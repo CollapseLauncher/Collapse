@@ -175,7 +175,8 @@ namespace CollapseLauncher.Pages
                 double percentage = double.IsInfinity(e.ProgressPerFilePercentage) ? 0 : e.ProgressPerFilePercentage;
                 RepairPerFileProgressBar.Value = percentage;
 
-                RepairTotalProgressBar.Value = e.ProgressTotalPercentage;
+                double totalPercentage = double.IsInfinity(e.ProgressTotalPercentage) ? 0 : e.ProgressTotalPercentage;
+                RepairTotalProgressBar.Value = totalPercentage;
             });
         }
 
