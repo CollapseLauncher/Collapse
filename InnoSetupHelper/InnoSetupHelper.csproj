@@ -10,6 +10,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 	</ItemGroup>
 

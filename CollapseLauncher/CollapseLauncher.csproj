@@ -84,7 +84,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.123" />
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
 		<PackageReference Include="ImageEx" Version="2.1.1" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.1.1" />
 		<PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
@@ -108,7 +108,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
-		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
 		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
