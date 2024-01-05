@@ -94,6 +94,7 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="PhotoSauce.MagicScaler" Version="0.14.0" />
+		<PackageReference Include="SharpHDiffPatch.Core" Version="2.2.3" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
@@ -110,7 +111,6 @@
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Core\Hi3Helper.Core.csproj" />
 		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
-		<ProjectReference Include="..\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch\Hi3Helper.SharpHDiffPatch.csproj" />
 		<ProjectReference Include="..\InnoSetupHelper\InnoSetupHelper.csproj" />
 	</ItemGroup>
 
@@ -141,9 +141,9 @@
 			<TrimmableAssembly Include="Hi3Helper.Core" />
 			<TrimmableAssembly Include="Hi3Helper.EncTool" />
 			<TrimmableAssembly Include="Hi3Helper.Http" />
-			<TrimmableAssembly Include="Hi3Helper.SharpHDiffPatch" />
 			<TrimmableAssembly Include="InnoSetupHelper" />
 			<TrimmableAssembly Include="SevenZipExtractor" />
+			<TrimmableAssembly Include="SharpHDiffPatch.Core" />
       
 			<!-- Additional assemblies -->
 			<TrimmableAssembly Include="ColorCode.Core" />
