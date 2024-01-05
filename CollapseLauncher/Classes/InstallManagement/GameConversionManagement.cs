@@ -2,7 +2,8 @@
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.SharpHDiffPatch;
+using SharpHDiffPatch.Core;
+using SharpHDiffPatch.Core.Event;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,7 +1,7 @@
 ﻿// Original Source:
 // https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/src/bsdiff/BinaryPatchUtility.cs
 
-using SharpCompress.Compressors.BZip2;
+// using SharpCompress.Compressors.BZip2;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -162,6 +162,11 @@ namespace CollapseLauncher
 
         private Stream TryGetCompressionStream(Stream source, long startPosition)
         {
+            source.Position = startPosition;
+            return new GZipStream(source, CompressionMode.Decompress, true);
+        }
+            /*
+        {
             // Check if the stream is seekable and readable
             if (!source.CanRead) throw new InvalidOperationException("Stream is not readable!");
             if (!source.CanSeek) throw new InvalidOperationException("Stream is not seekable!");
@@ -195,6 +200,7 @@ namespace CollapseLauncher
 
             throw new FormatException("The diff file has unsupported compression format or the file is damaged/invalid!");
         }
+            */
 
         private long[] ReadControlNumbers(Stream source, long newPosition, long newSize)
         {
