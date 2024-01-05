@@ -387,19 +387,19 @@ namespace CollapseLauncher.Pages
         private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             MaxLuminosityValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage1();
+            DrawHDRCalibrationImage1(sender as CanvasSwapChainPanel);
         }
 
         private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             UiPaperWhiteValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage2();
+            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
         }
 
         private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage2();
+            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
         }
         #endregion
 
@@ -418,9 +418,8 @@ namespace CollapseLauncher.Pages
             return file;
         }
 
-        private void DrawHDRCalibrationImage1()
+        private void DrawHDRCalibrationImage1(CanvasSwapChainPanel panel)
         {
-            CanvasSwapChainPanel panel = HDRCalibrationPanel1;
             CanvasSwapChain swapChain = panel.SwapChain;
             if (swapChain == null) return;
             float w = (float)panel.Width;
@@ -462,7 +461,7 @@ namespace CollapseLauncher.Pages
                 HDRCalibrationIcon = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
-            DrawHDRCalibrationImage1();
+            DrawHDRCalibrationImage1(panel);
         }
 
         private float GammaCorrection(float val, float max)
@@ -470,9 +469,8 @@ namespace CollapseLauncher.Pages
             return val * MathF.Pow(val / max, 2.2f);
         }
 
-        private void DrawHDRCalibrationImage2()
+        private void DrawHDRCalibrationImage2(CanvasSwapChainPanel panel)
         {
-            CanvasSwapChainPanel panel = HDRCalibrationPanel2;
             CanvasSwapChain swapChain = panel.SwapChain;
             if (swapChain == null) return;
             float w = (float)panel.Width;
@@ -527,7 +525,7 @@ namespace CollapseLauncher.Pages
                 HDRCalibrationUI = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
-            DrawHDRCalibrationImage2();
+            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
         }
 
         private void HDRExpander_OnExpanding(Expander sender, ExpanderExpandingEventArgs args)
