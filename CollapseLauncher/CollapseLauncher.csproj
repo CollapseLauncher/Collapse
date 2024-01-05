@@ -152,6 +152,7 @@
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Animations" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Controls.Primitives" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.Media" />
+			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" />
 			<TrimmableAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
 			<TrimmableAssembly Include="Google.Protobuf" />
 			<TrimmableAssembly Include="H.GeneratedIcons.System.Drawing" />
@@ -173,13 +174,23 @@
 			<TrimmableAssembly Include="Microsoft.UI.Windowing.Core" />
 			<TrimmableAssembly Include="Microsoft.UI.Windowing" />
 			<TrimmableAssembly Include="Microsoft.Web.WebView2.Core" />
+			<TrimmableAssembly Include="Microsoft.Windows.SDK.NET" />
 			<TrimmableAssembly Include="Microsoft.Windows.Widgets" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime.Bootstrap" />
 			<TrimmableAssembly Include="Microsoft.WindowsAppRuntime" />
 			<TrimmableAssembly Include="PhotoSauce.MagicScaler" />
+			<TrimmableAssembly Include="SquirrelLib" />
 			<TrimmableAssembly Include="System.CommandLine" />
 			<TrimmableAssembly Include="System.Drawing.Common" />
+			<TrimmableAssembly Include="System.Linq.Expressions" />
+			<TrimmableAssembly Include="System.Net.Http" />
+			<TrimmableAssembly Include="System.Net.Security" />
+			<TrimmableAssembly Include="System.Security.Cryptography" />
+			<TrimmableAssembly Include="System.Text.Json" />
+			<TrimmableAssembly Include="System.Text.RegularExpressions" />
+			<TrimmableAssembly Include="WinRT.Runtime" />
 			<TrimmableAssembly Include="WinUIEdit" />
+			<TrimmableAssembly Include="ZstdSharp" />
 
 			<!-- Descriptor for all classes that cannot be trimmed -->
 			<TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
