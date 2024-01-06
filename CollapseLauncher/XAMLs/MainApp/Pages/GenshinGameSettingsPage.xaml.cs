@@ -387,19 +387,19 @@ namespace CollapseLauncher.Pages
         private void MaxLuminositySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             MaxLuminosityValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage1(sender as CanvasSwapChainPanel);
+            DrawHDRCalibrationImage1();
         }
 
         private void UiPaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             UiPaperWhiteValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
+            DrawHDRCalibrationImage2();
         }
 
         private void ScenePaperWhiteSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             ScenePaperWhiteValue.Value = Math.Round(e.NewValue, 1);
-            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
+            DrawHDRCalibrationImage2();
         }
         #endregion
 
@@ -418,12 +418,14 @@ namespace CollapseLauncher.Pages
             return file;
         }
 
-        private void DrawHDRCalibrationImage1(CanvasSwapChainPanel panel)
+        private void DrawHDRCalibrationImage1()
         {
-            CanvasSwapChain swapChain = panel.SwapChain;
+            CanvasSwapChainPanel panel     = HDRCalibrationPanel1;
+            CanvasSwapChain      swapChain = panel.SwapChain;
+            
             if (swapChain == null) return;
-            float w = (float)panel.Width;
-            float h = (float)panel.Height;
+            float w      = (float)panel.Width;
+            float h      = (float)panel.Height;
             float bgGain = (float)MaxLuminosity / 80;
 
             using (CanvasDrawingSession ds = swapChain.CreateDrawingSession(Colors.White))
@@ -461,7 +463,7 @@ namespace CollapseLauncher.Pages
                 HDRCalibrationIcon = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
-            DrawHDRCalibrationImage1(panel);
+            DrawHDRCalibrationImage1();
         }
 
         private float GammaCorrection(float val, float max)
@@ -469,12 +471,14 @@ namespace CollapseLauncher.Pages
             return val * MathF.Pow(val / max, 2.2f);
         }
 
-        private void DrawHDRCalibrationImage2(CanvasSwapChainPanel panel)
+        private void DrawHDRCalibrationImage2()
         {
-            CanvasSwapChain swapChain = panel.SwapChain;
+            CanvasSwapChainPanel panel     = HDRCalibrationPanel2;
+            CanvasSwapChain      swapChain = panel.SwapChain;
+            
             if (swapChain == null) return;
-            float w = (float)panel.Width;
-            float h = (float)panel.Height;
+            float w      = (float)panel.Width;
+            float h      = (float)panel.Height;
             float bgGain = (float)ScenePaperWhite / 80;
             float uiGain = (GammaCorrection(((float)UiPaperWhite - (float)ScenePaperWhite + 350) * 2, 1600) + 50) / 80;
 
@@ -525,7 +529,7 @@ namespace CollapseLauncher.Pages
                 HDRCalibrationUI = await CanvasBitmap.LoadAsync(swapChain, stream, dpi);
             }
 
-            DrawHDRCalibrationImage2(sender as CanvasSwapChainPanel);
+            DrawHDRCalibrationImage2();
         }
 
         private void HDRExpander_OnExpanding(Expander sender, ExpanderExpandingEventArgs args)
