@@ -765,6 +765,7 @@
     "ApplyUpdateUpdateStatusTitle": "Status:",
     "ApplyUpdateMiscIdle": "Idle",
     "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
 
     "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
     "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
