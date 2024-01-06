@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CollapseLauncher"
+    xmlns:helper="using:Hi3Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -16,23 +17,23 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,0,40">
                     <StackPanel>
-                        <TextBlock Text="We're updating" Style="{ThemeResource TitleTextBlockStyle}" FontWeight="Normal"/>
-                        <TextBlock Text="Collapse Launcher" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Bold"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateTitle1}" Style="{ThemeResource TitleTextBlockStyle}" FontWeight="Normal"/>
+                        <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateTitle2}" Style="{ThemeResource TitleLargeTextBlockStyle}" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom">
                         <Grid>
                             <StackPanel Margin="0,4,0,0">
-                                <TextBlock Text="Update:"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateVersionTitle}"/>
                                 <TextBlock>
                                     <Run x:Name="CurrentVersionLabel" Text="-" FontWeight="Bold"/>
-                                    <Run Text="to"/>
+                                    <Run Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateVersionSeparator}"/>
                                     <Run x:Name="NewVersionLabel" Text="-" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                 </TextBlock>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Right">
-                                <TextBlock Text="Channel:" HorizontalAlignment="Right"/>
+                                <TextBlock Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateChannelTitle}" HorizontalAlignment="Right"/>
                                 <TextBlock>
-                                    <Run x:Name="UpdateChannelLabel" Text="Preview" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
+                                    <Run x:Name="UpdateChannelLabel" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateChannelSubtitlePlaceholder}" FontWeight="Bold" Foreground="{ThemeResource AccentColor}"/>
                                 </TextBlock>
                             </StackPanel>
                         </Grid>
@@ -46,9 +47,9 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.ColumnSpan="3">
-                            <TextBlock x:Name="Status" Text="Status:" Margin="0,0,0,4"/>
-                            <TextBlock x:Name="ActivityStatus" Text="Idle" Margin="0,0,0,4" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="ActivitySubStatus" Text="- B / - B" FontWeight="Bold"/>
+                            <TextBlock x:Name="Status" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateUpdateStatusTitle}" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="ActivityStatus" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateMiscIdle}" Margin="0,0,0,4" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="ActivitySubStatus" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadSizePlaceholder}" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel x:Name="ProgressStatus" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">
                             <TextBlock Text="{Binding Value, ElementName=progressBar}" FontWeight="Bold"/>
@@ -56,8 +57,8 @@
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Right" Grid.Column="2">
                             <TextBlock/>
-                            <TextBlock x:Name="SpeedStatus" Text="- B/s" HorizontalAlignment="Right" Margin="0,0,0,4"/>
-                            <TextBlock x:Name="TimeEstimation" Text="--m--s" HorizontalAlignment="Right" FontWeight="Bold"/>
+                            <TextBlock x:Name="SpeedStatus" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadSpeedPlaceholder}" HorizontalAlignment="Right" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="TimeEstimation" Text="{x:Bind helper:Locale.Lang._UpdatePage.ApplyUpdateDownloadTimeEstPlaceholder}" HorizontalAlignment="Right" FontWeight="Bold"/>
                         </StackPanel>
                     </Grid>
                     <ProgressBar x:Name="progressBar" Value="0" Maximum="100" IsIndeterminate="False"/>
