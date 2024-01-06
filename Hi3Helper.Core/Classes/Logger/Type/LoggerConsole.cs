@@ -6,7 +6,12 @@ namespace Hi3Helper
 {
     public class LoggerConsole : LoggerBase, ILog
     {
-        public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding) => AllocateConsole();
+        public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding)
+#if !APPLYUPDATE
+            => AllocateConsole();
+#else
+        { }
+#endif
 
         // Only dispose base on deconstruction.
         ~LoggerConsole() => DisposeBase();
