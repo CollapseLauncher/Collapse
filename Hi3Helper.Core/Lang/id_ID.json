@@ -461,6 +461,7 @@
     "YesRelocate": "Ya, Lanjutkan",
     "YesMigrateIt": "Ya, Pindahkan",
     "YesConvertIt": "Ya, Ubahkan",
+    "YesImReallySure": "Iya, Aku yakin banget!",
     "YesIHaveBeefyPC": "Ya, Aku punya PC gahar!",
     "YesChangeLocation": "Ya, Ubah lokasi",
 
@@ -471,6 +472,7 @@
     "NoIgnoreIt": "Tidak, Abaikan",
     "NoOtherLocation": "Tidak, Tetap pasang",
     "NotSelected": "Belum dipilih",
+    "ExtractAnyway": "Ekstrak Saja!",
 
     "LangNameENUS": "Inggris (AS)",
     "LangNameJP": "Jepang",
@@ -579,6 +581,10 @@
     "SteamConvertFailedSubtitle": "Maaf tapi proses pengubahan telah gagal! :(\nMohon coba lagi proses pengubahannya dari awal.",
     "InstallDataCorruptTitle": "Oops! Game Installation is Corrupted",
     "InstallDataCorruptSubtitle": "Maaf tapi sepertinya salah satu file yang telah terunduh telah rusak.\r\n\r\nCek Server: {0}\r\nCek Unduhan: {1}\r\n\r\nApakah kamu ingin mengunduh ulang filenya?",
+    "InstallCorruptDataAnywayTitle": "Ekstrak Data Corrupt",
+    "InstallCorruptDataAnywaySubtitle1": "Kamu akan mengekstrak data yang rusak ini: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Ingat bahwa akan ada kemungkinan kegagalan saat mengekstrak data ini atau bahkan menyebabkan game tidak dapat berjalan.\r\n\r\nApakah kamu yakin untuk lanjut mengekstrak data ini?",
     "InstallDataDownloadResumeTitle": "Lanjutkan Unduhan?",
     "InstallDataDownloadResumeSubtitle": "Kamu telah mengunduh {0} dari total ukuran game sebesar {1} sebelumnya.\r\n\r\nMau lanjut?",
     "InsufficientDiskTitle": "Ruang Penyimpanan Tidak Cukup",
