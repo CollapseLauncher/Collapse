@@ -461,6 +461,7 @@
     "YesRelocate": "Yes, Resume",
     "YesMigrateIt": "Yes, Migrate it",
     "YesConvertIt": "Yes, Convert it",
+    "YesImReallySure": "Yes, I'm really sure!",
     "YesIHaveBeefyPC": "Yes, I have a beefy PC! ᕦ(ò_ó)ᕤ",
     "YesChangeLocation": "Yes, Change location",
 
@@ -471,6 +472,7 @@
     "NoIgnoreIt": "Ignore it",
     "NoOtherLocation": "Keep installing it",
     "NotSelected": "Not Selected",
+    "ExtractAnyway": "Extract Anyway!",
 
     "LangNameENUS": "English (US)",
     "LangNameJP": "Japanese",
@@ -579,6 +581,10 @@
     "SteamConvertFailedSubtitle": "Conversion process has failed! :(\nPlease try to start the conversion process again.",
     "InstallDataCorruptTitle": "Game Installation Corrupted",
     "InstallDataCorruptSubtitle": "One of the downloaded file is corrupted.\r\n\r\nServer Hash: {0}\r\nDownloaded Hash: {1}\r\n\r\nDo you want to try and redownload the file?",
+    "InstallCorruptDataAnywayTitle": "Extract Corrupted Data",
+    "InstallCorruptDataAnywaySubtitle1": "You're about to extract this corrupted data: ",
+    "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} bytes)",
+    "InstallCorruptDataAnywaySubtitle3": ". Keep in-mind that the extraction for this data might fail or renders the game fail to run.\r\n\r\nAre you sure to extract this data anyway?",
     "InstallDataDownloadResumeTitle": "Resume Download?",
     "InstallDataDownloadResumeSubtitle": "You have downloaded {0}/{1} of the game previously.\r\n\r\nDo you want to resume the download?",
     "InsufficientDiskTitle": "Insufficient Disk Space",
