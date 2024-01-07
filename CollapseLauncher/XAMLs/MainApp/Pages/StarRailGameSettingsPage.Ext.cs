@@ -132,6 +132,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
         #endregion
+
         #region Models
         //FPS
         public int FPS
