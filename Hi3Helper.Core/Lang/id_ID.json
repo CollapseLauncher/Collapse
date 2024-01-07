@@ -1029,5 +1029,22 @@
     "ChangeShortcut_Help2": "・Pengubah - Shift, Ctrl atau Alt/Menu",
     "ChangeShortcut_Help3": "・Tombol - Alfabet (A ke Z) atau Tab",
     "ChangeShortcut_Help4": "Kamu dapat memilih kombinasi apa pun dari masing-masing bagian, kecuali juga sudah digunakan oleh Collapse atau sistem."
+  },
+
+  "_GameClientTitles": {
+    "Honkai Impact 3rd": "Honkai Impact 3rd",
+    "Genshin Impact": "Genshin Impact",
+    "Honkai: Star Rail": "Honkai: Star Rail",
+    "Zenless Zone Zero": "Zenless Zone Zero"
+  },
+
+  "_GameClientRegions": {
+    "Southeast Asia": "Asia Tenggara",
+    "Global": "Global",
+    "Mainland China": "China Tiongkok",
+    "TW/HK/MO": "TW/HK/MO",
+    "Korea": "Korea",
+    "Japan": "Jepang",
+    "Bilibili": "Bilibili"
   }
 }
