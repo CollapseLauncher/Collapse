@@ -1,7 +1,7 @@
 {
   "LanguageName": "Español (LATAM)",
   "LanguageID": "es-419",
-  "Author": "BloodDragooner, d-l-n, IhoFox",
+  "Author": "BloodDragooner, d-l-n, IhoFox, Laly",
 
   "_StartupPage": {
     "SelectLang": "Seleccione su idioma",
@@ -12,7 +12,7 @@
     "CDNHelpTitle_2": "abreviado para",
     "CDNHelpTitle_3": "Red de Distribución de Contenido",
     "CDNHelpTitle_4": "​",
-    "CDNHelpDetail_1": "\u200b",
+    "CDNHelpDetail_1": "​",
     "CDNHelpDetail_2": "CDN",
     "CDNHelpDetail_3": "es un sistema utilizado para poner archivos de lanzamiento a disposición de una audiencia más amplia, de manera rápida y eficiente.",
     "CDNHelpDetail_4": "Collapse selecciona GitHub como el proveedor predeterminado.",
@@ -36,7 +36,7 @@
     "Pg1NextBtn": "Siguiente - Seleccionar Juego",
     "Pg2ComboBox": "Seleccionar Juego",
     "Pg2ComboBoxRegion": "Seleccionar Región",
-    "Pg2NextBtn": "Finalizar - Correr el Lanzador",
+    "Pg2NextBtn": "Finalizar - Iniciar el Launcher",
     "Pg2PrevBtn": "Atrás - Seleccionar Carpeta",
     "Pg2Subtitle1_1": "Solo un paso más antes de que comienzes a jugar desde",
     "Pg2Subtitle1_2": "a Collapse Launcher.",
@@ -48,8 +48,8 @@
     "Pg2Subtitle2_5": "",
     "Pg2Title": "Hora de volar~",
     "Subtitle1": "¡Hola!",
-    "Subtitle2": "Parece que es la primera vez que usas este lanzador.",
-    "Subtitle3": "¡Gracias por probar el proyecto! Para configurarlo todo, por favor elige dónde quieres que Collapse almacene los datos del lanzador.",
+    "Subtitle2": "Parece que es la primera vez que usas este launcher.",
+    "Subtitle3": "¡Gracias por probar el proyecto! Para configurarlo todo, por favor elige dónde quieres que Collapse almacene los datos del launcher.",
     "Subtitle4_1": "Para empezar, haz clic en el botón de",
     "Subtitle4_2": "\"Buscar Carpeta\"",
     "Subtitle4_3": "abajo para elegir dónde deseas instalar el juego.",
@@ -87,7 +87,7 @@
     "RegionChangeWarnExper1": "El juego está actualmente en {0}.\n¡Úsalo bajo tu propio riesgo!",
     "RegionLoadingTitle": "Cargando Región",
     "RegionLoadingAPITitle1": "Cargando",
-    "RegionLoadingAPITitle2": "API del Lanzador",
+    "RegionLoadingAPITitle2": "API del Launcher",
     "RegionLoadingSubtitleTimeOut": "Acción agotada (> {1} segundos). Reintentando cargar la región {0}...",
     "RegionLoadingSubtitleTooLong": "Esto está tardando un poco más de lo esperado... ¡Por favor asegúrate de que tu conexión a Internet es estable!",
     "NavCtrlTitleSettings": "Ajustes de la Aplicación",
@@ -190,7 +190,7 @@
     "RepairBtn2Quick": "Chequeo Rápido",
     "RepairBtn2QuickDesc": "Este método chequea sólo el tamaño de los archivos y la disponibilidad. Por favor usa el Chequeo Completo si desea revisar la integridad de los archivos",
     "OverlayNotInstalledTitle": "¡No puedes usar esta característica porque la región seleccionada no está instalada o necesita ser actualizada!",
-    "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del lanzador del juego!",
+    "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del launcher del juego!",
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
     "OverlayGameRunningSubtitle": "¡Por favor cierra el juego primero para usar esta característica!"
   },
@@ -306,7 +306,7 @@
     "RegImportTooltip": "Importar claves de registro de un archivo de Registro de Collapse",
 
     "OverlayNotInstalledTitle": "¡No puedes usar esta característica porque la región no está instalada o necesita ser actualizada!",
-    "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del lanzador del juego!",
+    "OverlayNotInstalledSubtitle": "Por favor descarga/actualiza el juego primero en la página del launcher del juego!",
     "OverlayGameRunningTitle": "¡El juego se está ejecutando!",
     "OverlayGameRunningSubtitle": "¡Por favor, cierra el juego primero para usar esta característica!",
     "OverlayFirstTimeTitle": "¡Nunca has jugado este juego!",
@@ -500,7 +500,7 @@
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
 
-    "CDNDescription_Github": "El repositorio oficial (principal) del lanzador.",
+    "CDNDescription_Github": "El repositorio oficial (principal) del launcher.",
     "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado en Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado en Bitbucket.",
 
@@ -599,7 +599,7 @@
     "InstallingMediaPackSubtitleFinished": "Finalizado",
     "GameConfigBrokenTitle1": "Configuración del Juego Roto",
     "GameConfigBrokenSubtitle1": "La configuración del Launcher esta corrupta. Por favor selecciona la ubicación del juego manualmente.",
-    "GameConfigBrokenSubtitle2": "\nAsegúrate de que la ubicación del juego no esté en el mismo directorio en el que está el archivo `config.ini` de tu lanzador, que se encuentra en:\n\n{0}\n\n",
+    "GameConfigBrokenSubtitle2": "\r\nAsegúrate de que la ubicación del juego no esté en el mismo directorio en el que está el archivo `config.ini` de tu launcher, que se encuentra en:\r\n\r\n{0}\r\n\r\n",
     "GameConfigBrokenSubtitle3": "Si lo anterior es válido, por favor mueve todos los archivos del juego a otra ubicación, luego haz clic en \"Ubicar Directorio\" para elegir la ruta.",
     "CookbookLocateTitle": "Ubicar Archivo de Cookbook",
     "CookbookLocateSubtitle1": "Ubica el archivo de Cookbook descargado antes de iniciar el proceso.\nSi todavía no lo has descargado, ",
@@ -716,7 +716,7 @@
     "StepCancelledTitle": "¡El proceso de migración fue detenido! Regresando en unos momentos...",
     "PageFooter1": "Por favor",
     "PageFooter2": "NO CAMBIES",
-    "PageFooter3": "a otra página mientras se ejecuta el proceso"
+    "PageFooter3": "cambies a otra página o cierres el launcher mientras el proceso se está ejecutando"
   },
 
   "_UpdatePage": {
@@ -746,16 +746,61 @@
     "UpdateStatus4": "¡Ya estás usando la última versión ({0})!",
     "UpdateMessage4": "Volviendo al alcance del launcher del juego en breve...",
     "UpdateStatus5": "¡La versión ha sido actualizada a {0}!",
-    "UpdateMessage5": "Tu lanzador se reabrirá en breve...",
+    "UpdateMessage5": "El Launcher se reabrirá en breve...",
 
-    "UpdateCountdownMessage1": "Tu lanzador se actualizará en {0}...",
+    "UpdateCountdownMessage1": "El Launcher se actualizará en {0}...",
     "UpdateCountdownMessage2": "(Haz clic",
-    "UpdateCountdownMessage3": "para abortar la cuenta regresiva)"
+    "UpdateCountdownMessage3": "para abortar la cuenta regresiva)",
+
+    "ApplyUpdateTitle1": "Actualizando",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Elige un CDN para actualizar ",
+    "ApplyUpdateCDNSelectorSubtitle": "¡Selecciona un CDN y haz clic en \"{0}\" para comenzar!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "El CDN se seleccionara automáticamente en: {0}",
+    "ApplyUpdateUpdateNowBtn": "¡Actualizar Ahora!",
+
+    "ApplyUpdateUpdateVersionTitle": "Actualización:",
+    "ApplyUpdateUpdateChannelTitle": "Canal:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Desconocido",
+    "ApplyUpdateUpdateStatusTitle": "Estado:",
+    "ApplyUpdateMiscIdle": "Inactivo",
+    "ApplyUpdateMiscNone": "Ninguna",
+    "ApplyUpdateVersionSeparator": "a",
+
+    "ApplyUpdateErrCollapseRunTitle": "¡Por favor, cierra Collapse antes de actualizar! ",
+    "ApplyUpdateErrCollapseRunSubtitle": "Esperando que Collapse se cierre...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\nEl archivo \"release\" no tiene el string \"stable\" o \"preview\" en él",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Por favor verifica el archivo \"release\" e intenta de nuevo",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s restantes",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s restantes",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "¡Se detectó una instalación antigua de Collapse v{0}! ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "Detectamos que tienes Collapse v{0} instalado en tu PC.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "El Actualizador necesita limpiar todos los archivos antiguos de la carpeta.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "¡Por favor, verifica que no tienes archivos importantes dentro de la carpeta de Collapse o estos SERÁN ELIMINADOS!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nHaz clic en \"Sí\" para continuar o \"No\" para cancelar",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Haz clic en \"Sí\" de nuevo para confirmar.",
+    "ApplyUpdateTaskLegacyCleanupCount": "La limpieza de archivos comenzara en {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Eliminando: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Descargando paquete",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extrayendo paquete ",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removiendo paquete antiguo ",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moviendo los archivos extraídos",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "¡El Launcher fue actualizado a: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Iniciando Collapse en {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\n¡Ocurrió un error mientras se actualizaba!\r\n{0}"
   },
 
   "_AppNotification": {
-    "NotifMetadataUpdateTitle": "¡ Una actualización de Metadatos del Lanzador está disponible!",
-    "NotifMetadataUpdateSubtitle": "¡Hay nuevos metadatos para el lanzador! Este proceso es automático y se realiza para asegurar que el lanzador pueda comunicarse correctamente con los servidores de miHoYo/HoYoverse. ¡La actualización empezará pronto!",
+    "NotifMetadataUpdateTitle": "¡Una actualización de Metadatos del Launcher está disponible!",
+    "NotifMetadataUpdateSubtitle": "¡Hay nuevos metadatos para el launcher! Este proceso es automático y se realiza para asegurar que el launcher pueda comunicarse correctamente con los servidores de miHoYo/HoYoverse. ¡La actualización empezará pronto!",
     "NotifMetadataUpdateBtn": "Actualizar Metadatos",
     "NotifMetadataUpdateBtnCountdown": "Actualizando metadatos en: {0}",
     "NotifMetadataUpdateBtnUpdating": "Actualizando Metadatos, por favor espera...",
