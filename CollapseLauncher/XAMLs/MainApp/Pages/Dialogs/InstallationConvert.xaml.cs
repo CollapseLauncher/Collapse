@@ -239,13 +239,16 @@ namespace CollapseLauncher.Dialogs
             PresetConfigV2 SourceRet = null;
             PresetConfigV2 TargetRet = null;
 
+            string sourceGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(SourceGame.SelectedItem);
+            string targetGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(TargetGame.SelectedItem);
+
             switch (Result)
             {
                 case ContentDialogResult.Secondary:
                     SourceRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
-                        Values.Where(x => x.ZoneName == SourceGame.SelectedItem.ToString()).First();
+                        Values.Where(x => x.ZoneName == sourceGameRegionString).First();
                     TargetRet = ConfigV2.MetadataV2[CurrentConfigV2GameCategory].
-                        Values.Where(x => x.ZoneName == TargetGame.SelectedItem.ToString()).First();
+                        Values.Where(x => x.ZoneName == targetGameRegionString).First();
                     break;
                 case ContentDialogResult.Primary:
                     throw new OperationCanceledException();

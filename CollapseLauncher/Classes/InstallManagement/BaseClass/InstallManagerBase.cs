@@ -632,8 +632,13 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the Game folder
             string GameFolder = ConverterTool.NormalizePath(_gamePath);
 
+            // Get translated fullname
+            string translatedGameTitle = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.GameName, Lang._GameClientTitles);
+            string translatedGameRegion = InnerLauncherConfig.GetGameTitleRegionTranslationString(_gameVersionManager.GamePreset.ZoneName, Lang._GameClientRegions);
+            string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
+
             // Check if the dialog result is Okay (Primary). If not, then return false
-            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI, GameFolder, _gameVersionManager.GamePreset.ZoneFullname);
+            ContentDialogResult DialogResult = await Dialog_UninstallGame(_parentUI, GameFolder, translatedFullName);
             if (DialogResult != ContentDialogResult.Primary) return false;
 
             try

@@ -153,7 +153,8 @@ namespace CollapseLauncher.Dialogs
             {
                 TargetGame.IsEnabled = true;
                 Dialog.IsSecondaryButtonEnabled = false;
-                TargetGame.ItemsSource = InstallationConvert.GetConvertibleNameList((sender as ComboBox).SelectedItem.ToString());
+                TargetGame.ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, InstallationConvert.GetConvertibleNameList(
+                    InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
             });
             SelectionChangedEventHandler TargetGameChangedArgs = new SelectionChangedEventHandler((object sender, SelectionChangedEventArgs e) =>
             {
@@ -163,7 +164,7 @@ namespace CollapseLauncher.Dialogs
             SourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = new List<string>(ConvertibleRegions.Keys),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(CurrentConfigV2GameCategory, new List<string>(ConvertibleRegions.Keys)),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };

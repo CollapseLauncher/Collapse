@@ -62,7 +62,7 @@ namespace CollapseLauncher
         public async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfigV2 preset)
         {
             IsExplicitCancel = false;
-            RegionToChangeName = $"{CurrentConfigV2GameCategory} - {CurrentConfigV2GameRegion}";
+            RegionToChangeName = $"{GetGameTitleRegionTranslationString(CurrentConfigV2GameCategory, Lang._GameClientTitles)} - {GetGameTitleRegionTranslationString(CurrentConfigV2GameRegion, Lang._GameClientRegions)}";
             LogWriteLine($"Initializing {RegionToChangeName}...", LogType.Scheme, true);
 
             // Set IsLoadRegionComplete to false
@@ -690,7 +690,7 @@ namespace CollapseLauncher
 
         private async Task<bool> LoadRegionRootButton()
         {
-            string GameCategory = (string)ComboBoxGameCategory.SelectedValue;
+            string GameCategory = GetComboBoxGameRegionValue(ComboBoxGameCategory.SelectedValue);
             string GameRegion = GetComboBoxGameRegionValue(ComboBoxGameRegion.SelectedValue);
 
             // Set and Save CurrentRegion in AppConfig

@@ -82,14 +82,37 @@ namespace CollapseLauncher
             return TextBlock.Text;
         }
 
-        public static List<StackPanel> BuildGameRegionListUI(string GameCategory)
+        public static List<StackPanel> BuildGameTitleListUI()
         {
             List<StackPanel> list = new List<StackPanel>();
-            foreach (string region in ConfigV2GameRegions)
+            foreach (string title in ConfigV2GameCategory)
+            {
+                StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
+                TextBlock gameTitleTextBlock = new TextBlock { Text = title };
+                TextBlock gameTitleTranslatedTextBlock = GetGameTitleRegionTranslationTextBlock(ref gameTitleTextBlock, Locale.Lang._GameClientTitles);
+
+                panel.Children.Add(gameTitleTextBlock);
+                if (gameTitleTranslatedTextBlock != null) panel.Children.Add(gameTitleTranslatedTextBlock);
+                list.Add(panel);
+            }
+
+            return list;
+        }
+
+        public static List<StackPanel> BuildGameRegionListUI(string GameCategory, List<string> GameCategoryList = null)
+        {
+            GameCategoryList ??= ConfigV2GameRegions;
+            List<StackPanel> list = new List<StackPanel>();
+            foreach (string region in GameCategoryList)
             {
                 PresetConfigV2 config = ConfigV2.MetadataV2[GameCategory][region];
                 StackPanel panel = new StackPanel { Orientation = Orientation.Horizontal };
-                panel.Children.Add(new TextBlock { Text = region });
+                TextBlock gameRegionTextBlock = new TextBlock { Text = region };
+                TextBlock gameRegionTranslatedTextBlock = GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
+
+                panel.Children.Add(gameRegionTextBlock);
+                if (gameRegionTranslatedTextBlock != null) panel.Children.Add(gameRegionTranslatedTextBlock);
+
                 if (config.IsExperimental)
                 {
                     Grid expTag = new Grid
@@ -121,6 +144,42 @@ namespace CollapseLauncher
                 list.Add(panel);
             }
             return list;
+        }
+
+        public static TextBlock GetGameTitleRegionTranslationTextBlock(ref TextBlock originalTextBlock, Dictionary<string, string> translationDictionary)
+        {
+            // Get the original region string
+            string originalString = originalTextBlock?.Text;
+
+            // If the originalTextBlock or regionString is null or empty, then return null
+            if (originalTextBlock == null || string.IsNullOrEmpty(originalString)) return null;
+
+            // Check if the translation is available. If not, then return null
+            if (translationDictionary == null || translationDictionary.Count == 0
+             || !translationDictionary.ContainsKey(originalString)) return null;
+
+            // If it exists in the translation, then return the TextBlock and set the original
+            // TextBlock visibility to collapse
+            string translatedString = translationDictionary[originalString];
+            originalTextBlock.Visibility = Visibility.Collapsed;
+            TextBlock translatedTextBlock = new TextBlock { Text = translatedString };
+            if (translatedString.Length > 15)
+            {
+                translatedTextBlock.TextWrapping = TextWrapping.Wrap;
+                translatedTextBlock.TextTrimming = TextTrimming.WordEllipsis;
+            }
+
+            return translatedTextBlock;
+        }
+
+        public static string GetGameTitleRegionTranslationString(string originalString, Dictionary<string, string> translationDictionary)
+        {
+            // Check if the region translation is available. If not, then return null
+            if (translationDictionary == null || translationDictionary.Count == 0
+             || !translationDictionary.ContainsKey(originalString)) return originalString;
+
+            // If the key exist, then return the translated string
+            return translationDictionary[originalString];
         }
 
         private static string GetGameChannelLabel(GameChannel channel) => channel switch
