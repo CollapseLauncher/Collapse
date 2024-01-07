@@ -11,8 +11,8 @@
     "CDNHelpTitle_1": "Apa itu CDN?",
     "CDNHelpTitle_2": "singkatan dari",
     "CDNHelpTitle_3": "Content Delivery Network (Jaringan Pengiriman Konten)",
-    "CDNHelpTitle_4": "\u200b",
-    "CDNHelpDetail_1": "\u200b",
+    "CDNHelpTitle_4": "​",
+    "CDNHelpDetail_1": "​",
     "CDNHelpDetail_2": "CDN",
     "CDNHelpDetail_3": "adalah sistem yang digunakan untuk membuat berkas-berkas launcher tersedia untuk lebih banyak pengguna secara cepat dan efisien.",
     "CDNHelpDetail_4": "Collapse memilih GitHub sebagai penyedia bawaan.",
@@ -175,7 +175,7 @@
     "Status11": "Menunggu proses perbaikan dimulai...",
     "Status12": "Memperbarui Audio: {0}",
     "Status13": "Memperbarui Blok: {0}",
-    "StatusNone": "-",
+    "StatusNone": "Tidak diketahui",
     "PerProgressTitle1": "Progres Per File",
     "PerProgressSubtitle1": "Menunggu...",
     "PerProgressSubtitle2": "Progres: {0}/{1}",
@@ -211,7 +211,7 @@
     "CachesStatusNeedUpdate": "{0} cache (dengan ukuran: {1}) butuh diperbarui. Klik \"Perbarui\" untuk memperbarui.",
     "CachesStatusUpToDate": "Cache sudah terbaru!",
     "CachesStatusChecking": "Memeriksa {0}: {1}",
-    "CachesTotalStatusNone": "Kosong",
+    "CachesTotalStatusNone": "Tidak diketahui",
     "CachesTotalStatusChecking": "Memproses: {0}/{1}",
     "CachesBtn1": "Perbarui",
     "CachesBtn2": "Periksa",
@@ -750,7 +750,52 @@
 
     "UpdateCountdownMessage1": "Launcher akan diperbaruhi dalam {0}...",
     "UpdateCountdownMessage2": "(Klik",
-    "UpdateCountdownMessage3": "untuk membatalkan hitungan mundur)"
+    "UpdateCountdownMessage3": "untuk membatalkan hitungan mundur)",
+
+    "ApplyUpdateTitle1": "Memperbarui",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Pilih CDN untuk memperbarui",
+    "ApplyUpdateCDNSelectorSubtitle": "Pilih opsi CDN dan klik \"{0}\" untuk memulai pembaruan!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "CDN akan otomatis dipilih dalam: {0}",
+    "ApplyUpdateUpdateNowBtn": "Perbarui Sekarang!",
+
+    "ApplyUpdateUpdateVersionTitle": "Memperbarui:",
+    "ApplyUpdateUpdateChannelTitle": "Kanal:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Tidak diketahui",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "Tidak diketahui",
+    "ApplyUpdateVersionSeparator": "ke",
+
+    "ApplyUpdateErrCollapseRunTitle": "Mohon tutup Collapse sebelum menerapkan pembaruan!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Menunggu Collapse untuk ditutup...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\nfile \"release\" tidak memiliki string \"stable\" atau \"preview\" didalamnya",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Mohon periksa file \"release\" dan coba lagi.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/d",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/d",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}j{0:%m}m{0:%s}d tersisa",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--j--m--d tersisa",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "Instalasi legacy dari Collapse v{0} terdeteksi!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "Kami mendeteksi bahwa kamu memiliki instalasi legacy dari Collapse {0}.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "File-file lama didalamnya perlu dibersihkan terlebih dahulu sebelum melakukan pembaruan.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Pastikan kamu tidak memiliki file penting di dalam folder Collapse atau file kamu akan IKUT TERHAPUS!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nKlik \"Yes\" untuk melanjutkan atau \"No\" untuk membatalkan.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Klik \"Yes\" sekali lagi untuk melanjutkan.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Proses pembersihan akan dimulai dalam {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Menghapus: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Mengunduh paket",
+    "ApplyUpdateTaskExtractingPkgTitle": "Mengekstrak paket",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Menghapus paket lama",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Memindahkan file ter-ekstrak",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher telah diupdate ke versi: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Menjalankan Collapse dalam {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError telah terjadi saat menerapkan pembaruan!\r\n{0}"
   },
 
   "_AppNotification": {
