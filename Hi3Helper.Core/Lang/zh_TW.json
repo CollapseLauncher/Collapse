@@ -750,7 +750,52 @@
 
     "UpdateCountdownMessage1": "您的啟動器將在 {0} 秒後更新…",
     "UpdateCountdownMessage2": "（點擊",
-    "UpdateCountdownMessage3": "以終止倒計時）"
+    "UpdateCountdownMessage3": "以終止倒計時）",
+
+    "ApplyUpdateTitle1": "We're updating",
+    "ApplyUpdateTitle2": "Collapse Launcher",
+    "ApplyUpdateCDNSelectorTitle": "Select your CDN for update",
+    "ApplyUpdateCDNSelectorSubtitle": "Select the CDN options and click \"{0}\" to start the update!",
+    "ApplyUpdateCDNSelectorSubtitleCount": "The CDN will be automatically selected in: {0}",
+    "ApplyUpdateUpdateNowBtn": "Update Now!",
+
+    "ApplyUpdateUpdateVersionTitle": "Update:",
+    "ApplyUpdateUpdateChannelTitle": "Channel:",
+    "ApplyUpdateUpdateChannelSubtitlePlaceholder": "Unknown",
+    "ApplyUpdateUpdateStatusTitle": "Status:",
+    "ApplyUpdateMiscIdle": "Idle",
+    "ApplyUpdateMiscNone": "None",
+    "ApplyUpdateVersionSeparator": "to",
+
+    "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
+    "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
+    "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
+
+    "ApplyUpdateDownloadSizePlaceholder": "- B / - B",
+    "ApplyUpdateDownloadSpeed": "{0}/s",
+    "ApplyUpdateDownloadSpeedPlaceholder": "- B/s",
+    "ApplyUpdateDownloadTimeEst": "{0:%h}h{0:%m}m{0:%s}s left",
+    "ApplyUpdateDownloadTimeEstPlaceholder": "--h--m--s left",
+
+    "ApplyUpdateTaskLegacyVerFoundTitle": "A previous legacy installation of Collapse v{0} detected!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle1": "We detected that you have a legacy Collapse v{0} installed on your PC. ",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle2": "The updater needs to clean-up all the old files inside its directory.\r\n",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle3": "Please make sure you don't have any important files inside of the Collapse directory or it will be COMPLETELY WIPED OUT!",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle4": "\r\n\r\nClick \"Yes\" to proceed or \"No\" to cancel.",
+    "ApplyUpdateTaskLegacyVerFoundSubtitle5": "Click \"Yes\" once again to confirm.",
+    "ApplyUpdateTaskLegacyCleanupCount": "Clean-up process will be started in {0}...",
+    "ApplyUpdateTaskLegacyDeleting": "Deleting: {0}...",
+
+    "ApplyUpdateTaskDownloadingPkgTitle": "Downloading package",
+    "ApplyUpdateTaskExtractingPkgTitle": "Extracting package",
+    "ApplyUpdateTaskRemoveOldPkgTitle": "Removing old package",
+    "ApplyUpdateTaskMovingExtractFileTitle": "Moving extracted files",
+
+    "ApplyUpdateTaskLauncherUpdatedTitle": "Launcher has been updated to: {0}!",
+    "ApplyUpdateTaskLauncherUpdatedSubtitle": "Launching Collapse in {0}...",
+
+    "ApplyUpdateTaskError": "ERROR:\r\nError occurred while applying update!\r\n{0}"
   },
 
   "_AppNotification": {
