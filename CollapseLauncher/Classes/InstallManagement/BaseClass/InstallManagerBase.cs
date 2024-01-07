@@ -417,6 +417,12 @@ namespace CollapseLauncher.InstallManager.Base
                         return 0;
                     case ContentDialogResult.None:
                         return -1;
+                    case ContentDialogResult.Secondary: // To proceed on extracting the file even it's corrupted
+                        string fileName = Path.GetFileName(asset.PathOutput);
+                        ContentDialogResult installCorruptDialogResult = await Dialog_GameInstallCorruptedDataAnyway(_parentUI, fileName, asset.Size);
+                        // If cancel is pressed, then cancel the whole process
+                        if (installCorruptDialogResult == ContentDialogResult.None) return -1;
+                        break;
                 }
             }
 

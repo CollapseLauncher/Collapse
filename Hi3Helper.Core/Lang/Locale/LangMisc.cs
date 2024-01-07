@@ -39,6 +39,7 @@
                 public string YesRelocate { get; set; } = LangFallback?._Misc.YesRelocate;
                 public string YesMigrateIt { get; set; } = LangFallback?._Misc.YesMigrateIt;
                 public string YesConvertIt { get; set; } = LangFallback?._Misc.YesConvertIt;
+                public string YesImReallySure { get; set; } = LangFallback?._Misc.YesImReallySure;
                 public string YesIHaveBeefyPC { get; set; } = LangFallback?._Misc.YesIHaveBeefyPC;
                 public string YesChangeLocation { get; set; } = LangFallback?._Misc.YesChangeLocation;
                 public string No { get; set; } = LangFallback?._Misc.No;
@@ -48,6 +49,7 @@
                 public string NoIgnoreIt { get; set; } = LangFallback?._Misc.NoIgnoreIt;
                 public string NoOtherLocation { get; set; } = LangFallback?._Misc.NoOtherLocation;
                 public string NotSelected { get; set; } = LangFallback?._Misc.NotSelected;
+                public string ExtractAnyway { get; set; } = LangFallback?._Misc.ExtractAnyway;
                 public string LangNameENUS { get; set; } = LangFallback?._Misc.LangNameENUS;
                 public string LangNameJP { get; set; } = LangFallback?._Misc.LangNameJP;
                 public string LangNameCN { get; set; } = LangFallback?._Misc.LangNameCN;

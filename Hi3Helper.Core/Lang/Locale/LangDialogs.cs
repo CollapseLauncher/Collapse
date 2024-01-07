@@ -46,6 +46,10 @@ namespace Hi3Helper
                 public string SteamConvertFailedSubtitle { get; set; } = LangFallback?._Dialogs.SteamConvertFailedSubtitle;
                 public string InstallDataCorruptTitle { get; set; } = LangFallback?._Dialogs.InstallDataCorruptTitle;
                 public string InstallDataCorruptSubtitle { get; set; } = LangFallback?._Dialogs.InstallDataCorruptSubtitle;
+                public string InstallCorruptDataAnywayTitle { get; set; } = LangFallback?._Dialogs.InstallCorruptDataAnywayTitle;
+                public string InstallCorruptDataAnywaySubtitle1 { get; set; } = LangFallback?._Dialogs.InstallCorruptDataAnywaySubtitle1;
+                public string InstallCorruptDataAnywaySubtitle2 { get; set; } = LangFallback?._Dialogs.InstallCorruptDataAnywaySubtitle2;
+                public string InstallCorruptDataAnywaySubtitle3 { get; set; } = LangFallback?._Dialogs.InstallCorruptDataAnywaySubtitle3;
                 public string InstallDataDownloadResumeTitle { get; set; } = LangFallback?._Dialogs.InstallDataDownloadResumeTitle;
                 public string InstallDataDownloadResumeSubtitle { get; set; } = LangFallback?._Dialogs.InstallDataDownloadResumeSubtitle;
                 public string InsufficientDiskTitle { get; set; } = LangFallback?._Dialogs.InsufficientDiskTitle;
