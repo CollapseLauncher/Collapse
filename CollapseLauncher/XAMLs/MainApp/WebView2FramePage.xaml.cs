@@ -18,21 +18,8 @@ namespace CollapseLauncher
 
         public WebView2FramePage()
         {
-            if (WebView2URL == null) return;
-            
-            if (GetAppConfigValue("UseExternalBrowser").ToBool())
-            {
-                Process.Start(new ProcessStartInfo
-                              {
-                                  FileName        = WebView2URL.ToString(),
-                                  UseShellExecute = true,
-                              });
-            }
-            else
-            {
-                this.InitializeComponent();
-                SpawnWebView2Panel(WebView2URL);
-            }
+            this.InitializeComponent();
+            SpawnWebView2Panel(WebView2URL);
         }
 
         private async void SpawnWebView2Panel(Uri URL)
@@ -42,20 +29,20 @@ namespace CollapseLauncher
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
 
                 WebView2Runtime = new WebView2()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch
-                };
+                                  {
+                                      HorizontalAlignment = HorizontalAlignment.Stretch,
+                                      VerticalAlignment   = VerticalAlignment.Stretch
+                                  };
                 WebViewWindowTitle.Text = string.Empty;
 
                 WebView2Runtime.CoreWebView2Initialized += WebView2Window_CoreWebView2Initialized;
-                WebView2Runtime.NavigationStarting += WebView2Window_PageLoading;
-                WebView2Runtime.NavigationCompleted += WebView2Window_PageLoaded;
+                WebView2Runtime.NavigationStarting      += WebView2Window_PageLoading;
+                WebView2Runtime.NavigationCompleted     += WebView2Window_PageLoaded;
 
                 WebView2WindowContainer.Children.Clear();
                 WebView2WindowContainer.Children.Add(WebView2Runtime);
 
-                WebView2Panel.Visibility = Visibility.Visible;
+                WebView2Panel.Visibility  =  Visibility.Visible;
                 WebView2Panel.Translation += Shadow32;
                 await WebView2Runtime.EnsureCoreWebView2Async();
 

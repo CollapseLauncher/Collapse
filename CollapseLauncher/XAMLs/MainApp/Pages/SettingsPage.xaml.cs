@@ -649,7 +649,7 @@ namespace CollapseLauncher.Pages
 
         private bool IsAlwaysUseExternalBrowser
         {
-            get => GetAppConfigValue("UserExternalBrowser").ToBool();
+            get => GetAppConfigValue("UseExternalBrowser").ToBool();
             set => SetAndSaveConfigValue("UseExternalBrowser", value);
         }
 
