@@ -18,8 +18,21 @@ namespace CollapseLauncher
 
         public WebView2FramePage()
         {
-            this.InitializeComponent();
-            SpawnWebView2Panel(WebView2URL);
+            if (WebView2URL == null) return;
+            
+            if (GetAppConfigValue("UseExternalBrowser").ToBool())
+            {
+                Process.Start(new ProcessStartInfo
+                              {
+                                  FileName        = WebView2URL.ToString(),
+                                  UseShellExecute = true,
+                              });
+            }
+            else
+            {
+                this.InitializeComponent();
+                SpawnWebView2Panel(WebView2URL);
+            }
         }
 
         private async void SpawnWebView2Panel(Uri URL)
