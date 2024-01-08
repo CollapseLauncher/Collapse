@@ -26,6 +26,7 @@ namespace CollapseLauncher
 
             var args = e.Data as ILaunchActivatedEventArgs;
             ArgumentParser.ResetRootCommand();
+            m_arguments = new Arguments();
             ArgumentParser.ParseArguments(args.Arguments.Split(" ").Skip(2).ToArray());
 
             if (m_arguments.StartGame != null)
