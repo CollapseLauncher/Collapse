@@ -1769,10 +1769,13 @@ namespace CollapseLauncher
 
             if (!GetConfigV2Regions(GameName))
             {
-                bool result = int.TryParse(args.Game, out int Game);
-                GameName = ConfigV2GameCategory.ElementAtOrDefault(result ? Game : 0);
+                bool res = int.TryParse(args.Game, out int Game);
+                if (!res || Game < 0 || Game >= ConfigV2GameCategory.Count)
+                    return;
+                GameName = ConfigV2GameCategory[Game];
             }
 
+            LogWriteLine(GameName);
             SetAndSaveConfigValue("GameCategory", GameName);
             GetConfigV2Regions(GameName);
 
@@ -1781,8 +1784,10 @@ namespace CollapseLauncher
                 string GameRegion = args.Region;
                 if (!ConfigV2GameRegions.Contains(GameRegion))
                 {
-                    bool result = int.TryParse(args.Region, out int Region);
-                    GameRegion = ConfigV2GameRegions.ElementAtOrDefault(result ? Region : 0);
+                    bool res = int.TryParse(args.Region, out int Region);
+                    if (res || Region < 0 || Region >= ConfigV2GameRegions.Count)
+                        return;
+                    GameRegion = ConfigV2GameRegions[Region];
                 }
                 SetPreviousGameRegion(GameName, GameRegion);
                 SetAndSaveConfigValue("GameRegion", GameRegion);
