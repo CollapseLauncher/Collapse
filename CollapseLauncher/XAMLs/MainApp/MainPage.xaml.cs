@@ -1806,12 +1806,11 @@ namespace CollapseLauncher
 
             DispatcherQueue.TryEnqueue(async () => {
 
-                if (!(IsLoadRegionComplete || IsExplicitCancel))
+                if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                     return;
 
                 SetStartRegion();
 
-                // Lock ChangeBtn for first start
                 LockRegionChangeBtn = true;
 
                 PresetConfigV2 Preset = LoadSavedGameSelection();
@@ -1823,7 +1822,6 @@ namespace CollapseLauncher
                     HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
                 }
 
-                // Unlock ChangeBtn for first start
                 LockRegionChangeBtn = false;
             });
         }
