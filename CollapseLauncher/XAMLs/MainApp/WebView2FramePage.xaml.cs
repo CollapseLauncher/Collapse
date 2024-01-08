@@ -64,7 +64,7 @@ namespace CollapseLauncher
                 }.Start();
 
                 WebView2Runtime?.Close();
-                SpawnWebView2.SpawnWebView2Window(null);
+                SpawnWebView2.SpawnWebView2Window(null, this.Content);
             }
         }
 
@@ -111,7 +111,7 @@ namespace CollapseLauncher
                 }
             }.Start();
         }
-        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e) => SpawnWebView2.SpawnWebView2Window(null);
+        private void WebView2CloseBtn_Click(object sender, RoutedEventArgs e) => SpawnWebView2.SpawnWebView2Window(null, this.Content);
 
         private void WebView2Unload(object sender, RoutedEventArgs e)
         {

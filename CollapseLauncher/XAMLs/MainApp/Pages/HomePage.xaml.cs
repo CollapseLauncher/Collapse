@@ -436,7 +436,7 @@ namespace CollapseLauncher.Pages
         private void OpenImageLinkFromTag(object sender, PointerRoutedEventArgs e)
         {
             if (!e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed) return;
-            SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString());
+            SpawnWebView2.SpawnWebView2Window(((ImageEx.ImageEx)sender).Tag.ToString(), this.Content);
         }
 
         private async void OpenButtonLinkFromTag(object sender, RoutedEventArgs e)
@@ -466,7 +466,7 @@ namespace CollapseLauncher.Pages
                 if (action == null)
                 {
                     LogWriteLine($"Tag Property seems to be invalid or incomplete. Failback to open the URL instead!\r\nTag String: {tagProperty[1]}", LogType.Warning, true);
-                    SpawnWebView2.SpawnWebView2Window(tagProperty[0]);
+                    SpawnWebView2.SpawnWebView2Window(tagProperty[0], this.Content);
                     return;
                 }
 
@@ -480,14 +480,14 @@ namespace CollapseLauncher.Pages
             }
 
             // Open the URL and spawn WebView2 window
-            SpawnWebView2.SpawnWebView2Window(tagProperty[0]);
+            SpawnWebView2.SpawnWebView2Window(tagProperty[0], this.Content);
         }
 
         private void OpenLinkFromButtonWithTag(object sender, RoutedEventArgs e)
         {
             object ImageTag = ((Button)sender).Tag;
             if (ImageTag == null) return;
-            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
+            SpawnWebView2.SpawnWebView2Window((string)ImageTag, this.Content);
         }
 
         private void ClickImageEventSpriteLink(object sender, PointerRoutedEventArgs e)
@@ -495,7 +495,7 @@ namespace CollapseLauncher.Pages
             if (!e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed) return;
             object ImageTag = ((Image)sender).Tag;
             if (ImageTag == null) return;
-            SpawnWebView2.SpawnWebView2Window((string)ImageTag);
+            SpawnWebView2.SpawnWebView2Window((string)ImageTag, this.Content);
         }
         #endregion
 
