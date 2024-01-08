@@ -154,7 +154,7 @@ namespace CollapseLauncher
             else
             {
                 LoadConfigV2();
-                SetStartRegion();
+                SetActivatedRegion();
                 Page = typeof(HomePage);
             }
 
@@ -446,7 +446,6 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
-            AppInstance.GetCurrent().Activated += MainPage_Activated;
         }
 
         private void UnsubscribeEvents()
@@ -462,7 +461,6 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
-            AppInstance.GetCurrent().Activated -= MainPage_Activated;
         }
         #endregion
 
@@ -1759,7 +1757,7 @@ namespace CollapseLauncher
 
         #region AppActivation
 
-        private void SetStartRegion()
+        private void SetActivatedRegion()
         {
             var args = m_arguments.StartGame;
             if (args == null)
@@ -1775,7 +1773,6 @@ namespace CollapseLauncher
                 GameName = ConfigV2GameCategory[Game];
             }
 
-            LogWriteLine(GameName);
             SetAndSaveConfigValue("GameCategory", GameName);
             GetConfigV2Regions(GameName);
 
@@ -1785,7 +1782,7 @@ namespace CollapseLauncher
                 if (!ConfigV2GameRegions.Contains(GameRegion))
                 {
                     bool res = int.TryParse(args.Region, out int Region);
-                    if (res || Region < 0 || Region >= ConfigV2GameRegions.Count)
+                    if (!res || Region < 0 || Region >= ConfigV2GameRegions.Count)
                         return;
                     GameRegion = ConfigV2GameRegions[Region];
                 }
@@ -1794,17 +1791,8 @@ namespace CollapseLauncher
             }
         }
 
-        private void MainPage_Activated(object sender, AppActivationArguments e)
+        public void OpenAppActivation()
         {
-            if (e.Kind != ExtendedActivationKind.Launch)
-                return;
-            if (e.Data == null)
-                return;
-
-            var args = e.Data as ILaunchActivatedEventArgs;
-            ArgumentParser.ResetRootCommand();
-            ArgumentParser.ParseArguments(args.Arguments.Split(" ").Skip(2).ToArray());
-
             if (m_arguments.StartGame == null)
                 return;
 
@@ -1813,7 +1801,7 @@ namespace CollapseLauncher
                 if (!(IsLoadRegionComplete || IsExplicitCancel) || IsKbShortcutCannotChange)
                     return;
 
-                SetStartRegion();
+                SetActivatedRegion();
 
                 LockRegionChangeBtn = true;
 
