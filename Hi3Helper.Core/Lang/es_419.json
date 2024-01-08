@@ -408,6 +408,7 @@
 
     "EnableAcrylicEffect": "Usar efecto de desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
+    "UseExternalBrowser": "Usar Navegador Web Externo ",
 
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
     "LowerCollapsePrioOnGameLaunch_Tooltip": "Desactiva el carrusel en la página principal y reduce la prioridad de Collapse a Baja.",
