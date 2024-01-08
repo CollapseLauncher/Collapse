@@ -1429,10 +1429,13 @@ namespace CollapseLauncher.Pages
             {
                 parameter.Append("-popupwindow ");
             }
-            string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
 
-            if (!string.IsNullOrEmpty(customArgs))
-                parameter.Append(customArgs);
+            if (_Settings.SettingsCollapseMisc.UseCustomArguments)
+            {
+                string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
+                if (!string.IsNullOrEmpty(customArgs))
+                    parameter.Append(customArgs);
+            }
 
             return parameter.ToString();
         }
@@ -1441,6 +1444,12 @@ namespace CollapseLauncher.Pages
         {
             get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
             set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+        }
+
+        public bool UseCustomArgs
+        {
+            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
         }
         #endregion
 
