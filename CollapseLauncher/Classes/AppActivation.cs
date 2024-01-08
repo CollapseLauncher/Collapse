@@ -8,7 +8,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public static partial class AppActivation
+    public static class AppActivation
     {
         public static void Enable() 
         {
