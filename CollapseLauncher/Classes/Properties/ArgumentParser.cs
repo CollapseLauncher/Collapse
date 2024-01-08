@@ -54,6 +54,10 @@ namespace CollapseLauncher
                     m_appMode = AppMode.StartOnTray;
                     ParseStartOnTrayArguments(args);
                     break;
+                case "play":
+                    m_appMode = AppMode.StartOnTray;
+                    ParsePlayArguments(args);
+                    break;
             }
 
             if (rootCommand.Invoke(args) > 0)
@@ -207,6 +211,26 @@ namespace CollapseLauncher
             var rootCommand = new RootCommand();
             rootCommand.AddCommand(command);
         }
+
+        private static void ParsePlayArguments(params string[] args)
+        {
+            var gameOption = new Option<string>(new string[] { "--game", "-g" }, description: "Game") { IsRequired = true };
+            var regionOption = new Option<string>(new string[] { "--region", "-r" }, description: "Region") { IsRequired = false };
+            var command = new Command("play", "Open the Launcher in a specific region and start the Game");
+            command.AddOption(gameOption);
+            command.AddOption(regionOption);
+            command.Handler = CommandHandler.Create(
+                (string Game, string Region = "") =>
+                {
+                    m_arguments.StartGame = new ArgumentStartGame
+                    {
+                        Game = Game,
+                        Region = Region
+                    };
+                });
+            var rootCommand = new RootCommand();
+            rootCommand.AddCommand(command);
+        }
     }
 
     public class Arguments
@@ -215,6 +239,7 @@ namespace CollapseLauncher
         public ArgumentReindexer Reindexer { get; set; }
         public ArgumentReindexer TakeOwnership { get; set; }
         public ArgumentMigrate Migrate { get; set; }
+        public ArgumentStartGame StartGame { get; set; }
     }
 
     public class ArgumentUpdater
@@ -237,5 +262,11 @@ namespace CollapseLauncher
         public string RegLoc { get; set; }
         public string KeyName { get; set; }
         public bool IsBHI3L { get; set; }
+    }
+
+    public class ArgumentStartGame
+    {
+        public string Game { get; set; }
+        public string Region { get; set; }
     }
 }
