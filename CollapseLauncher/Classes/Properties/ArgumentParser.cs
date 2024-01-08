@@ -55,7 +55,7 @@ namespace CollapseLauncher
                     ParseStartOnTrayArguments(args);
                     break;
                 case "open":
-                    m_appMode = AppMode.Launcher;
+                    m_appMode = AppMode.StartGame;
                     ParseStartGameArguments(args);
                     break;
             }

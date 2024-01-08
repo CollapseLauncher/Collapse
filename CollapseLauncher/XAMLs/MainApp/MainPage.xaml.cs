@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +21,7 @@ using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.System;
@@ -152,33 +154,7 @@ namespace CollapseLauncher
             else
             {
                 LoadConfigV2();
-                var args = m_arguments.StartGame;
-                if (args != null)
-                {
-                    string GameName = args.Game;
-                    
-                    if (!GetConfigV2Regions(GameName))
-                    {
-                        bool result = int.TryParse(args.Game, out int Game);
-                        GameName = ConfigV2GameCategory.ElementAtOrDefault(result ? Game : 0);
-                    }
-
-                    SetAndSaveConfigValue("GameCategory", GameName);
-                    GetConfigV2Regions(GameName);
-
-                    if (args.Region != null)
-                    {
-                        string GameRegion = args.Region;
-                        if (!ConfigV2GameRegions.Contains(GameRegion))
-                        {
-                            bool result = int.TryParse(args.Region, out int Region);
-                            GameRegion = ConfigV2GameRegions.ElementAtOrDefault(result ? Region : 0);
-                        }
-                        SetPreviousGameRegion(GameName, GameRegion);
-                        SetAndSaveConfigValue("GameRegion", GameRegion);
-                    }
-                    SetAppConfigValue("PlayOnStart", args.Play);
-                }
+                SetStartRegion();
                 Page = typeof(HomePage);
             }
 
@@ -197,6 +173,73 @@ namespace CollapseLauncher
 
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
+        }
+
+        private void SetStartRegion()
+        {
+            var args = m_arguments.StartGame;
+            if (args == null)
+                return;
+
+            string GameName = args.Game;
+
+            if (!GetConfigV2Regions(GameName))
+            {
+                bool result = int.TryParse(args.Game, out int Game);
+                GameName = ConfigV2GameCategory.ElementAtOrDefault(result ? Game : 0);
+            }
+
+            SetAndSaveConfigValue("GameCategory", GameName);
+            GetConfigV2Regions(GameName);
+
+            if (args.Region != null)
+            {
+                string GameRegion = args.Region;
+                if (!ConfigV2GameRegions.Contains(GameRegion))
+                {
+                    bool result = int.TryParse(args.Region, out int Region);
+                    GameRegion = ConfigV2GameRegions.ElementAtOrDefault(result ? Region : 0);
+                }
+                SetPreviousGameRegion(GameName, GameRegion);
+                SetAndSaveConfigValue("GameRegion", GameRegion);
+            }
+            SetAppConfigValue("PlayOnStart", args.Play);
+        }
+
+        private async void MainPage_Activated(object sender, AppActivationArguments e)
+        {
+            LogWriteLine(e.Kind.ToString());
+            LogWriteLine(e.Data.ToString());
+            if (e.Kind != ExtendedActivationKind.Launch)
+                return;
+            if (e.Data == null)
+                return;
+
+            var args = e.Data as ILaunchActivatedEventArgs;
+            LogWriteLine(args.Arguments);
+            ArgumentParser.ParseArguments(args.Arguments.Split(" ").Skip(2).ToArray());
+            SetStartRegion();
+
+            try
+            {
+                // Lock ChangeBtn for first start
+                LockRegionChangeBtn = true;
+
+                PresetConfigV2 Preset = LoadSavedGameSelection();
+
+                HideLoadingPopup(false, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                if (await LoadRegionFromCurrentConfigV2(Preset))
+                {
+                    MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                    HideLoadingPopup(true, Lang._MainPage.RegionLoadingTitle, Preset.ZoneFullname);
+                }
+
+                // Unlock ChangeBtn for first start
+                LockRegionChangeBtn = false;
+            } catch (Exception ex)
+            {
+                LogWriteLine(ex.Message, LogType.Error);
+            }
         }
         #endregion
 
@@ -470,6 +513,7 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
+            //AppInstance.GetCurrent().Activated += MainPage_Activated;
         }
 
         private void UnsubscribeEvents()
@@ -485,6 +529,7 @@ namespace CollapseLauncher
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             Dialogs.KeyboardShortcuts.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
+            //AppInstance.GetCurrent().Activated -= MainPage_Activated;
         }
         #endregion
 

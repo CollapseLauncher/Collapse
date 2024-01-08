@@ -32,6 +32,7 @@ namespace CollapseLauncher
                         m_window = new UpdaterWindow();
                         break;
                     case AppMode.Hi3CacheUpdater:
+                    case AppMode.StartGame:
                     case AppMode.Launcher:
                         m_window = new MainWindow();
                         ((MainWindow)m_window).InitializeWindowProperties();

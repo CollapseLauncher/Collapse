@@ -114,7 +114,7 @@ namespace CollapseLauncher
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-                if (!DecideRedirection())
+                if (!DecideRedirection() || m_appMode == AppMode.StartGame)
                 {
                     XamlCheckProcessRequirements();
 
