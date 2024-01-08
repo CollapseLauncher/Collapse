@@ -158,11 +158,11 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
-                if (GetAppConfigValue("PlayOnStart").ToBool())
+                if (m_arguments.StartGame != null && m_arguments.StartGame.Play)
                 {
                     if (CurrentGameProperty._GameVersion.IsGameInstalled())
                         StartGame(null, null);
-                    SetAppConfigValue("PlayOnStart", false);
+                    m_arguments.StartGame.Play = false;
                 }
                 else
                 {

@@ -1787,7 +1787,6 @@ namespace CollapseLauncher
                 SetPreviousGameRegion(GameName, GameRegion);
                 SetAndSaveConfigValue("GameRegion", GameRegion);
             }
-            SetAppConfigValue("PlayOnStart", args.Play);
         }
 
         private void MainPage_Activated(object sender, AppActivationArguments e)
