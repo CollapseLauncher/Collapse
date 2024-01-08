@@ -152,6 +152,33 @@ namespace CollapseLauncher
             else
             {
                 LoadConfigV2();
+                var args = m_arguments.StartGame;
+                if (args != null)
+                {
+                    string GameName = args.Game;
+                    
+                    if (!GetConfigV2Regions(GameName))
+                    {
+                        bool result = int.TryParse(args.Game, out int Game);
+                        GameName = ConfigV2GameCategory.ElementAtOrDefault(result ? Game : 0);
+                    }
+
+                    SetAndSaveConfigValue("GameCategory", GameName);
+                    GetConfigV2Regions(GameName);
+
+                    if (args.Region != null)
+                    {
+                        string GameRegion = args.Region;
+                        if (!ConfigV2GameRegions.Contains(GameRegion))
+                        {
+                            bool result = int.TryParse(args.Region, out int Region);
+                            GameRegion = ConfigV2GameRegions.ElementAtOrDefault(result ? Region : 0);
+                        }
+                        SetPreviousGameRegion(GameName, GameRegion);
+                        SetAndSaveConfigValue("GameRegion", GameRegion);
+                    }
+                    SetAppConfigValue("PlayOnStart", args.Play);
+                }
                 Page = typeof(HomePage);
             }
 

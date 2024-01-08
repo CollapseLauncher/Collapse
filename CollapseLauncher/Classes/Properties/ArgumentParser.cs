@@ -54,9 +54,9 @@ namespace CollapseLauncher
                     m_appMode = AppMode.StartOnTray;
                     ParseStartOnTrayArguments(args);
                     break;
-                case "play":
-                    m_appMode = AppMode.StartOnTray;
-                    ParsePlayArguments(args);
+                case "open":
+                    m_appMode = AppMode.Launcher;
+                    ParseStartGameArguments(args);
                     break;
             }
 
@@ -212,23 +212,25 @@ namespace CollapseLauncher
             rootCommand.AddCommand(command);
         }
 
-        private static void ParsePlayArguments(params string[] args)
+        private static void ParseStartGameArguments(params string[] args)
         {
             var gameOption = new Option<string>(new string[] { "--game", "-g" }, description: "Game") { IsRequired = true };
             var regionOption = new Option<string>(new string[] { "--region", "-r" }, description: "Region") { IsRequired = false };
-            var command = new Command("play", "Open the Launcher in a specific region and start the Game");
+            var startGameOption = new Option<bool>(new string[] { "--play", "-p" }, description: "Start Game after loading the Region") { IsRequired = false };
+            var command = new Command("open", "Open the Launcher in a specific region");
             command.AddOption(gameOption);
             command.AddOption(regionOption);
+            command.AddOption(startGameOption);
             command.Handler = CommandHandler.Create(
-                (string Game, string Region = "") =>
+                (string Game, string Region, bool Play) =>
                 {
                     m_arguments.StartGame = new ArgumentStartGame
                     {
                         Game = Game,
-                        Region = Region
+                        Region = Region,
+                        Play = Play
                     };
                 });
-            var rootCommand = new RootCommand();
             rootCommand.AddCommand(command);
         }
     }
@@ -268,5 +270,6 @@ namespace CollapseLauncher
     {
         public string Game { get; set; }
         public string Region { get; set; }
+        public bool Play { get; set; }
     }
 }

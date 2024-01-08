@@ -158,7 +158,16 @@ namespace CollapseLauncher.Pages
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
                 CheckRunningGameInstance(PageToken.Token);
-                AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
+                if (GetAppConfigValue("PlayOnStart").ToBool())
+                {
+                    if (CurrentGameProperty._GameVersion.IsGameInstalled())
+                        StartGame(null, null);
+                    SetAppConfigValue("PlayOnStart", false);
+                }
+                else
+                {
+                    AutoUpdatePlaytimeCounter(false, PlaytimeToken.Token);
+                }
 
                 StartCarouselAutoScroll(CarouselToken.Token);
             }
