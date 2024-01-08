@@ -55,7 +55,7 @@ namespace CollapseLauncher
                     ParseStartOnTrayArguments(args);
                     break;
                 case "open":
-                    m_appMode = AppMode.StartGame;
+                    m_appMode = AppMode.Launcher;
                     ParseStartGameArguments(args);
                     break;
             }
@@ -232,6 +232,11 @@ namespace CollapseLauncher
                     };
                 });
             rootCommand.AddCommand(command);
+        }
+
+        public static void ResetRootCommand()
+        {
+            rootCommand = new RootCommand();
         }
     }
 

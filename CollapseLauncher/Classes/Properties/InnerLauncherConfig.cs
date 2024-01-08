@@ -39,8 +39,7 @@ namespace CollapseLauncher
             InvokerMoveSteam,
             Hi3CacheUpdater,
             OOBEState,
-            StartOnTray,
-            StartGame
+            StartOnTray
         }
 
         public static AppMode               m_appMode;
