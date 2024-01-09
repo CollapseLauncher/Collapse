@@ -1,0 +1,52 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# A sample workflow which sets up Snyk to analyze the full Snyk platform (Snyk Open Source, Snyk Code,
+# Snyk Container and Snyk Infrastructure as Code)
+# The setup installs the Snyk CLI - for more details on the possible commands
+# check https://docs.snyk.io/snyk-cli/cli-reference
+# The results of Snyk Code are then uploaded to GitHub Security Code Scanning
+#
+# In order to use the Snyk Action you will need to have a Snyk API token.
+# More details in https://github.com/snyk/actions#getting-your-snyk-token
+# or you can signup for free at https://snyk.io/login
+#
+# For more examples, including how to limit scans to only high-severity issues
+# and fail PR checks, see https://github.com/snyk/actions/
+
+name: Snyk Security
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  actions: read
+  contents: read
+  checks: write
+  security-events: write
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive # many many submodules 
+      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/dotnet@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+          
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
