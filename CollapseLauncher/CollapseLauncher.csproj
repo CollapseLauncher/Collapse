@@ -224,8 +224,4 @@
 			-->
 		</ItemGroup>
 	</Target>
-
-	<ItemGroup>
-	  <NativeLibs Remove="Classes\AppActivation.cs" />
-	</ItemGroup>
 </Project>

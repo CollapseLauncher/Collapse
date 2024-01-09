@@ -214,10 +214,17 @@ namespace CollapseLauncher
 
         private static void ParseStartGameArguments(params string[] args)
         {
-            var gameOption = new Option<string>(new string[] { "--game", "-g" }, description: "Game") { IsRequired = true };
-            var regionOption = new Option<string>(new string[] { "--region", "-r" }, description: "Region") { IsRequired = false };
-            var startGameOption = new Option<bool>(new string[] { "--play", "-p" }, description: "Start Game after loading the Region") { IsRequired = false };
-            var command = new Command("open", "Open the Launcher in a specific region");
+            var gameOption = new Option<string>(new string[] { "--game", "-g" }, 
+                description:    "Game number/name\n" +
+                                "e.g. 0 or \"Honkai Impact 3rd\", 1 or \"Genshin Impact\", 2 or \"Honkai: Star Rail\", etc") { IsRequired = true, AllowMultipleArgumentsPerToken = true };
+            var regionOption = new Option<string>(new string[] { "--region", "-r" }, 
+                description:    "Region number/name\n" +
+                                "The available regions depend on the Game specified before\n" +
+                                "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false, AllowMultipleArgumentsPerToken = true };
+            var startGameOption = new Option<bool>(new string[] { "--play", "-p" }, description: "Start Game after loading the Game/Region") { IsRequired = false };
+            var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified)\n" +
+                                "Note that game/regions provided will be ignored if invalid\n" +
+                                "The quotes are required if the game/region name has spaces");
             command.AddOption(gameOption);
             command.AddOption(regionOption);
             command.AddOption(startGameOption);

@@ -1,16 +1,16 @@
-﻿using Microsoft.Windows.AppLifecycle;
+﻿using System;
 using System.Linq;
-using System;
+using System.Text.RegularExpressions;
+using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
 
 namespace CollapseLauncher
 {
     public static class AppActivation
     {
-        public static void Enable() 
+        public static void Enable()
         {
             AppInstance.GetCurrent().Activated += App_Activated;
         }
@@ -27,7 +27,13 @@ namespace CollapseLauncher
             var args = e.Data as ILaunchActivatedEventArgs;
             ArgumentParser.ResetRootCommand();
             m_arguments = new Arguments();
-            ArgumentParser.ParseArguments(args.Arguments.Split(" ").Skip(2).ToArray());
+
+            // Matches anything that is between two \" or " and anything that is not a space.
+            var splitArgs = Regex.Matches(args.Arguments, @"[\""].+?[\""]|[^ ]+")
+                                    .Cast<Match>()
+                                    .Select(x => x.Value.Trim('"'));
+
+            ArgumentParser.ParseArguments(splitArgs.Skip(1).ToArray());
 
             if (m_arguments.StartGame != null)
             {
