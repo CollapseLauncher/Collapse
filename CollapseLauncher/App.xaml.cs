@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 
@@ -14,7 +15,10 @@ namespace CollapseLauncher
     public partial class App : Application
     {
         public static bool IsAppKilled = false;
-
+        
+        [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int SetCurrentProcessExplicitAppUserModelID(string AppID);
+        
         public App()
         {
             try
@@ -25,7 +29,7 @@ namespace CollapseLauncher
 
                 this.InitializeComponent();
                 RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-
+                
                 switch (m_appMode)
                 {
                     case AppMode.Updater:
@@ -47,6 +51,12 @@ namespace CollapseLauncher
                         break;
                 }
 
+                string appUserModelId = "Collapse.CollapseLauncher";
+                
+                int setAUMIDResult = SetCurrentProcessExplicitAppUserModelID(appUserModelId);
+                if (setAUMIDResult != 0) LogWriteLine($"Error when setting AppUserModelId to {appUserModelId}. Error code: {setAUMIDResult}", LogType.Error, true);
+                else LogWriteLine($"Successfully set AppUserModelId to {appUserModelId}", LogType.Default, true);
+                
                 m_window.Activate();
                 bool IsAcrylicEnabled = LauncherConfig.GetAppConfigValue("EnableAcrylicEffect").ToBool();
                 if (!IsAcrylicEnabled) ToggleBlurBackdrop(false);
