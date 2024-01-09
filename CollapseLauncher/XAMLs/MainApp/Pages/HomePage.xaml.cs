@@ -1990,5 +1990,10 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
+        private async void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            await Dialog_CreateShortcut(sender as Button);
+        }
     }
 }

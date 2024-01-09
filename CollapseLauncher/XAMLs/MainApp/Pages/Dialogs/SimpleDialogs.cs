@@ -1,6 +1,5 @@
 using CollapseLauncher.CustomControls;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -10,14 +9,14 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
+using IWshRuntimeLibrary;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseLauncher.Statics;
+using System.IO;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -644,6 +643,59 @@ namespace CollapseLauncher.Dialogs
                 if (copyButton != null)
                     copyButton.Click -= CopyTextToClipboard;
             }
+        }
+
+        public static async Task<ContentDialogResult> Dialog_CreateShortcut(UIElement Content)
+        {
+            bool play = false;
+
+            StackPanel stack = new StackPanel() { Orientation = Orientation.Vertical };
+
+            StackPanel buttonStack = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
+            stack.Children.Add(buttonStack);
+
+            Button desktop = new Button()
+            {
+                Margin = new Thickness(0, 8, 20, 8),
+                Content = new TextBlock() { Text = "Add to Desktop", Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold },
+                DataContext = play ? 0 : 1
+            };
+            desktop.Click += Shortcut_Click;
+
+            Button steam = new Button() { 
+                Margin = new Thickness(20, 8, 0, 8),
+                Content = new TextBlock() { Text = "Add to Steam", Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold },
+                DataContext = play ? 2 : 3
+            };
+            steam.Click += Shortcut_Click;
+
+            buttonStack.Children.Add(desktop);
+            buttonStack.Children.Add(steam);
+
+            CheckBox autoStart = new CheckBox() { Content = new TextBlock() { Text = "Auto-start game after using the shortcut" }, Margin = new Thickness(0, 8, 0, 8) };
+            autoStart.Checked += (o, e) => { play = true; };
+            autoStart.Unchecked += (o, e) => { play = false; };
+            stack.Children.Add(autoStart);
+
+            return await SpawnDialog(
+                "Create shortcut",
+                stack,
+                Content,
+                Lang._Misc.Close
+                );
+        }
+
+        private static void Shortcut_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            PresetConfigV2 preset = GamePropertyVault.GetCurrentGameProperty()._GamePreset;
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(desktop + @"\" + preset.ZoneFullname + @"(Collapse Launcher).lnk");
+            shortcut.Description = string.Format("Shortcut for Collapse Launcher ({0})", preset.ZoneFullname);
+            shortcut.TargetPath = AppExecutablePath;
+            shortcut.Arguments = string.Format("open -g \"{0}\" -r \"{1}\"" + ((int)button.DataContext == 0 ? " -p" : ""), preset.GameName, preset.ZoneName);
+            shortcut.Save();
         }
 
         public static async Task<ContentDialogResult> SpawnDialog(
