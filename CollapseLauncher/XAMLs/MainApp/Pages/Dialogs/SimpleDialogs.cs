@@ -1,4 +1,5 @@
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Preset;
 using Microsoft.UI.Text;
@@ -10,13 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IWshRuntimeLibrary;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Preset.ConfigV2Store;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using CollapseLauncher.Statics;
-using System.IO;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -687,15 +685,8 @@ namespace CollapseLauncher.Dialogs
 
         private static void Shortcut_Click(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;
-            PresetConfigV2 preset = GamePropertyVault.GetCurrentGameProperty()._GamePreset;
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            WshShell shell = new WshShell();
-            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(desktop + @"\" + preset.ZoneFullname + @"(Collapse Launcher).lnk");
-            shortcut.Description = string.Format("Shortcut for Collapse Launcher ({0})", preset.ZoneFullname);
-            shortcut.TargetPath = AppExecutablePath;
-            shortcut.Arguments = string.Format("open -g \"{0}\" -r \"{1}\"" + ((int)button.DataContext == 0 ? " -p" : ""), preset.GameName, preset.ZoneName);
-            shortcut.Save();
+            ShortcutCreator.CreateShortcut(desktop, GamePropertyVault.GetCurrentGameProperty()._GamePreset);
         }
 
         public static async Task<ContentDialogResult> SpawnDialog(
