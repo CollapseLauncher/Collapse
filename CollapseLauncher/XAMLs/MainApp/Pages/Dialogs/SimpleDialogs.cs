@@ -665,7 +665,7 @@ namespace CollapseLauncher.Dialogs
                 Content = new TextBlock() { Text = "Add to Steam", Margin = new Thickness(5, 0, 5, 0), FontWeight = FontWeights.SemiBold },
                 DataContext = play ? 2 : 3
             };
-            steam.Click += Shortcut_Click;
+            steam.Click += Steam_Click;
 
             buttonStack.Children.Add(desktop);
             buttonStack.Children.Add(steam);
@@ -681,6 +681,11 @@ namespace CollapseLauncher.Dialogs
                 Content,
                 Lang._Misc.Close
                 );
+        }
+
+        private static void Steam_Click(object sender, RoutedEventArgs e)
+        {
+            ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty());
         }
 
         private static void Shortcut_Click(object sender, RoutedEventArgs e)
