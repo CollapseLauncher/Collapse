@@ -12,19 +12,30 @@ namespace CollapseLauncher
             string shortcutName = preset.ZoneFullname + " - Collapse Launcher" + ".lnk";
             WshShell shell = new WshShell();
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(path, shortcutName));
-            shortcut.Description = string.Format("Shortcut for Collapse Launcher ({0})", preset.ZoneFullname);
+            shortcut.Description = string.Format("Launches {0} using Collapse Launcher.", preset.ZoneFullname);
             shortcut.TargetPath = AppExecutablePath;
             shortcut.Arguments = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
-            
-            shortcut.IconLocation = Path.GetFullPath(Path.Combine(AppExecutablePath, preset.GameType switch
-            {
-                GameType.Honkai => @"Assets\Images\GameLogo\honkai-logo.ico",
-                GameType.Genshin => @"Assets\Images\GameLogo\genshin-logo.ico",
-                GameType.StarRail => @"Assets\Images\GameLogo\starrail-logo.ico",
-                GameType.Zenless => @"Assets\Images\GameLogo\zenless-logo.ico",
-                _ => @"icon.ico"
-            }));
             shortcut.Save();
+        }
+
+        /// Heavily based on Heroic Games Launcher "Add to Steam" feature.
+        /// 
+        /// Source:
+        /// https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/blob/8bdee1383446d3b81e240a4300baaf337d48ec92/src/backend/shortcuts/nonesteamgame/nonesteamgame.ts
+
+        public static void AddToSteam(PresetConfigV2 preset)
+        {
+
+        }
+
+        public static void RemoveFromSteam(string zoneFullName)
+        {
+
+        }
+
+        public static bool IsAddedToSteam(string zoneFullName)
+        {
+            return false;
         }
     }
 }
