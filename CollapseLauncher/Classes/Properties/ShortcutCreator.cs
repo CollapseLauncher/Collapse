@@ -1,11 +1,13 @@
-﻿using IWshRuntimeLibrary;
-using Hi3Helper.Preset;
+﻿using Hi3Helper.Preset;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.IO;
 using Microsoft.Win32;
 using System.Linq;
 using static Hi3Helper.Logger;
 using CollapseLauncher.Statics;
+using System.Text;
+using System;
+using System.Collections.Generic;
 
 namespace CollapseLauncher
 {
@@ -14,8 +16,8 @@ namespace CollapseLauncher
         public static void CreateShortcut(string path, PresetConfigV2 preset)
         {
             string shortcutName = preset.ZoneFullname + " - Collapse Launcher" + ".lnk";
-            WshShell shell = new WshShell();
-            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(path, shortcutName));
+            IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
+            IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(Path.Combine(path, shortcutName));
             shortcut.Description = string.Format("Launches {0} using Collapse Launcher.", preset.ZoneFullname);
             shortcut.TargetPath = AppExecutablePath;
             shortcut.Arguments = string.Format("open -g \"{0}\" -r \"{1}\"", preset.GameName, preset.ZoneName);
@@ -61,6 +63,8 @@ namespace CollapseLauncher
 
             foreach (string b in a)
                 LogWriteLine(b, Hi3Helper.LogType.Error);
+
+
         }
 
         public static void RemoveFromSteam(string zoneFullName)
@@ -73,47 +77,113 @@ namespace CollapseLauncher
             return false;
         }
 
+        /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
+        /// 
+        /// Source:
+        /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
         private static int entryCount = 0;
+        private static List<SteamShortcut> shortcuts;
         private struct SteamShortcut
         {
             public int entryID = entryCount;
-            public string appName;
-            public string unquotedPath = AppExecutablePath;
-            public string startDir;
-            public string iconPath;
-            public string shortcutPath = AppExecutablePath;
-            public string launchOptions;
-            public bool isHidden = false;
-            public bool allowDeskConf = false;
-            public bool allowOverlay = false;
-            public bool openVR = false;
-            public string lastPlayTime = "";
+            public ulong appid;
+            public string AppName;
+            public string Exe;
+            public string StartDir;
+            public string icon;
+            public string ShortcutPath;
+            public string LaunchOptions;
+            public bool IsHidden = false;
+            public bool AllowDesktopConfig = false;
+            public bool AllowOverlay = false;
+            public bool OpenVR = false;
+            public bool Devkit;
+            public string DevkitGameID;
+            public bool DevkitOverrideAppID;
+            public string LastPlayTime;
+            public string FlatpakAppID;
             public string tags = "";
+
+            public SteamShortcut() { }
 
             public SteamShortcut(GamePresetProperty preset, bool play = false)
             {
-                startDir = preset._GameVersion.GameDirPath;
-                launchOptions = string.Format("-g {0} -r {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
+                AppName = preset._GamePreset.ZoneFullname + " - Collapse Launcher";
+                Exe = Path.Combine(AppExecutablePath, AppExecutableName);
+                appid = generateAppId(Exe, AppName);
+
+                StartDir = AppExecutablePath;
+                LaunchOptions = string.Format("-g {0} -r {1}", preset._GamePreset.GameName, preset._GamePreset.ZoneName);
                 if (play)
-                    launchOptions += " -p";
-                appName = preset._GamePreset.ZoneFullname + " - Collapse Launcher";
+                    LaunchOptions += " -p";
+                
+                LastPlayTime = "\x00\x00\x00\x00";
+                entryCount++;
+                shortcuts.Add(this);
             }
 
             public string ToEntry()
             {
-                return    '\x00' + entryID.ToString() + '\x00'
-                        + '\x01' + "appname" + '\x00' + appName + '\x00'
-                        + '\x01' + "exe" + '\x00' + unquotedPath + '\x00'
-                        + '\x01' + "StartDir" + '\x00' + startDir + '\x00' +
-                        + '\x01' + "icon" + '\x00' + iconPath + '\x00' +
-                        + '\x01' + "ShortcutPath" + '\x00' + shortcutPath + '\x00' +
-                        + '\x01' + "LaunchOptions" + '\x00' + launchOptions + '\x00'
-                        + '\x02' + "IsHidden" + '\x00' + isHidden + "\x00\x00\x00"
-                        + '\x02' + "AllowDesktopConfig" + '\x00' + allowDeskConf + "\x00\x00\x00"
-                        + '\x02' + "AllowOverlay" + '\x00' + allowOverlay + "\x00\x00\x00"
-                        + '\x02' + "OpenVR" + '\x00' + openVR + "\x00\x00\x00"
-                        + '\x02' + "LastPlayTime" + '\x00' + lastPlayTime
+                return    '\x00' + entryID + '\x00'
+                        + '\x02' + "appid" + '\x00' + appid + '\x00'
+                        + '\x01' + "AppName" + '\x00' + AppName + '\x00'
+                        + '\x01' + "Exe" + '\x00' + Exe + '\x00'
+                        + '\x01' + "StartDir" + '\x00' + StartDir + '\x00' +
+                        + '\x01' + "icon" + '\x00' + icon + '\x00' +
+                        + '\x01' + "ShortcutPath" + '\x00' + ShortcutPath + '\x00' +
+                        + '\x01' + "LaunchOptions" + '\x00' + LaunchOptions + '\x00'
+                        + '\x02' + "IsHidden" + '\x00' + IsHidden + "\x00\x00\x00"
+                        + '\x02' + "AllowDesktopConfig" + '\x00' + AllowDesktopConfig + "\x00\x00\x00"
+                        + '\x02' + "AllowOverlay" + '\x00' + AllowOverlay + "\x00\x00\x00"
+                        + '\x02' + "OpenVR" + '\x00' + OpenVR + "\x00\x00\x00"
+                        + '\x02' + "Devkit" + '\x00' + Devkit + "\x00\x00\x00"
+                        + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
+                        + '\x02' + "DevkitOverrideAppID" + '\x00' + DevkitOverrideAppID + '\x00'
+                        + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime + '\x00'
+                        + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID
                         + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
+            }
+        }
+
+        private static ulong generateAppId(string exe, string appname)
+        {
+            string key = exe + appname;
+            var crc32 = new System.IO.Hashing.Crc32();
+            crc32.Append(Encoding.UTF8.GetBytes(key));
+            ulong top = BitConverter.ToUInt64(crc32.GetCurrentHash()) | 0x80000000;
+            return top << 32 | 0x02000000;
+        }
+
+        private static void LoadFile(string path)
+        {
+            path = Path.Combine(path, "shortcuts.vdf");
+            if (!File.Exists(path))
+                return;
+
+            var contents = File.ReadAllText(path);
+            contents = contents.Skip(11).ToString();
+
+            while (contents.Length > 0)
+            {
+                SteamShortcut newShortcut = new SteamShortcut();
+                shortcuts.Add(newShortcut);
+            }
+            
+        }
+
+        private static void WriteFile(string path)
+        {
+            string file = Path.Combine(path, "shortcuts.vdf");
+            File.Copy(file, Path.Combine(path, "shortcuts.vdf.old"));
+
+            FileStream fs = File.OpenWrite(file);
+            StreamWriter sw = new StreamWriter(fs);
+
+            sw.Write("\x00shortcuts\x00");
+
+            foreach (SteamShortcut st in shortcuts)
+            {
+                sw.Write(st.ToEntry());
             }
         }
     }
