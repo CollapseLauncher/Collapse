@@ -9,6 +9,7 @@ using System.Text;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace CollapseLauncher
 {
@@ -62,7 +63,13 @@ namespace CollapseLauncher
 
             if (a == null || a.Length == 0) return;
 
-            LoadFile(a[0]);
+            try
+            {
+                LoadFile(a[0]);
+            } catch (Exception e)
+            {
+                LogWriteLine(e.Message, Hi3Helper.LogType.Error);
+            }
 
 
         }
@@ -160,9 +167,9 @@ namespace CollapseLauncher
                 foreach (char c in line)
                     ln.Enqueue(c);
                 ln.Enqueue('\x08');
-                newShortcut.entryID = (int)parseValue(ref ln);
-                newShortcut.appid = (string)parseValue(ref ln);
-                newShortcut.AppName = (string)parseValue(ref ln);
+                newShortcut.entryID = (int)parseValue(ref ln, null);
+                newShortcut.appid = (string)parseValue(ref ln, "appid");
+                newShortcut.AppName = (string)parseValue(ref ln, "AppName");
                 shortcuts.Add(newShortcut);
             }
             
@@ -174,19 +181,67 @@ namespace CollapseLauncher
             
         }
 
-        private static object parseValue(ref Queue<char> line, int leadingNulls = 1)
+        private static object parseValue(ref Queue<char> line, string expectedName, int leadingNulls = 1)
         {
             if (line.Count == 0)
                 return null;
             
-            object res = null;
-            string name;
-            bool quote = false;
+            string name = "";
+            int quoteCount = 0;
+            char type = 'a';
             while (line.First() != '\x08' && line.Count > 0)
             {
-                
+                char c = line.Dequeue();
+
+                if ((c == '\x01' || c == '\x02') && quoteCount == 0)
+                {
+                    quoteCount++;
+                    type = c;
+                    continue;
+                }
+
+                if ((c == '\x00' || c == '\x01') && quoteCount == 3 && type == '\x02')
+                {
+                    while (line.Peek() == '\x00')
+                        line.Dequeue();
+                    return c == '\x01';
+                }
+
+                if (c == '\x08')
+                        return type == '\x03' ? name : null;
+
+                if (c == '\x00')
+                {
+                    switch (quoteCount)
+                    {
+                        case 0:
+                            type = c;
+                            break;
+                        case 1:
+                            if (name != "tags" && type == '\x00')
+                            {
+                                _ = int.TryParse(name, out int res);
+                                return res;
+                            }
+                            break;
+                        case 2:
+                            if (name != expectedName)
+                                return null;
+                            if (name == "tags")
+                                type = '\x03';
+                            if (name == "appid")
+                                type = '\x01';
+                            name = "";
+                            break;
+                        case 3:
+                            return name;
+                    }
+                    quoteCount++;
+                    continue;
+                }
+                name += c;
             }
-            return res;
+            return null;
         }
 
         private static ulong generateAppId(string exe, string appname)
