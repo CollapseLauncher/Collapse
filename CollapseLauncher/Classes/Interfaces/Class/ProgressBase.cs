@@ -824,7 +824,14 @@ namespace CollapseLauncher.Interfaces
             UpdateStatus();
             UpdateProgress();
         }
-        protected virtual void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
+
+        protected virtual void UpdateProgress()
+        {
+            _progress.ProgressPerFilePercentage = double.IsInfinity(_progress.ProgressPerFilePercentage) ? 0 : _progress.ProgressPerFilePercentage;
+            _progress.ProgressTotalPercentage = double.IsInfinity(_progress.ProgressTotalPercentage) ? 0 : _progress.ProgressTotalPercentage;
+            ProgressChanged?.Invoke(this, _progress);
+        }
+
         protected virtual void UpdateStatus() => StatusChanged?.Invoke(this, _status);
         protected virtual void RestartStopwatch() => _stopwatch.Restart();
         #endregion

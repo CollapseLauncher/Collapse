@@ -153,10 +153,7 @@ namespace CollapseLauncher
                 _ => LogType.Default
             };
 
-            if (severity != LogType.Default)
-            {
-                LogWriteLine(e.Message, severity, true);
-            }
+            LogWriteLine(e.Message, severity, true);
         }
 
         private static void OnProcessExit(object sender, EventArgs e)
